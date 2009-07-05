@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openspotlight</groupId>
+	<artifactId>osl-common</artifactId>
+	<packaging>jar</packaging>
+	<name>OpenSpotLight Commons Library</name>
+	<url>http://caravelatech.com</url>
+	<parent>
+		<groupId>org.openspotlight</groupId>
+		<artifactId>osl</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<developers>
+		<developer>
+			<name>Alexandre Porcelli</name>
+			<email>porcelli@caravelatech.com.br</email>
+		</developer>
+		<developer>
+			<name>Luiz Fernando Teston</name>
+			<email>feu.teston@caravelatech.com</email>
+		</developer>
+		<developer>
+			<name>Vitor Hugo Chagas</name>
+			<email>vitorhugo@caravelatech.com</email>
+		</developer>
+		<developer>
+			<name>Vinicius Carvalho</name>
+			<email>vinicius@caravelatech.com.br</email>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<organization>
+		<name>Caravela</name>
+		<url>http://www.caravelatech.com/</url>
+	</organization>
+	<dependencies>
+		<!-- ant dependency to use the same logic for directory mappings -->
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant</artifactId>
+		</dependency>
+
+
+		<!-- Java Concurrency in Practice annotations -->
+		<dependency>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Cryptography utilities -->
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+	</dependencies>
+</project>
