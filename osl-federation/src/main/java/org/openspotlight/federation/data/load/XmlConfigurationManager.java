@@ -1,59 +1,10 @@
-/*
- * OpenSpotLight - Open Source IT Governance Platform
- *  
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
- * or third-party contributors as indicated by the @author tags or express 
- * copyright attribution statements applied by the authors.  All third-party 
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
- * TECNOLOGIA EM INFORMATICA LTDA. 
- * 
- * This copyrighted material is made available to anyone wishing to use, modify, 
- * copy, or redistribute it subject to the terms and conditions of the GNU 
- * Lesser General Public License, as published by the Free Software Foundation. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * See the GNU Lesser General Public License  for more details. 
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this distribution; if not, write to: 
- * Free Software Foundation, Inc. 
- * 51 Franklin Street, Fifth Floor 
- * Boston, MA  02110-1301  USA 
- * 
- *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
- * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
- * Foundation. 
- * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
- * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
- * Free Software Foundation, Inc. 
- * 51 Franklin Street, Fifth Floor 
- * Boston, MA  02110-1301  USA
- */
-
 package org.openspotlight.federation.data.load;
 
-import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
+import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
+import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.BufferedOutputStream;
@@ -76,201 +27,190 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.AbstractConfigurationNode;
 import org.openspotlight.federation.data.Configuration;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata;
+import org.openspotlight.federation.data.ConfigurationNode;
 
 /**
  * This configuration manager class loads and stores the configuration on a
  * simple and easily readable xml file, since the xml exported from jcr was to
  * much dirty for using as a simple configuration.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * @author feu
  * 
  */
 public class XmlConfigurationManager implements ConfigurationManager {
-    
-    private final NodeClassHelper classHelper = new NodeClassHelper();
-    
-    private final String DEFAULT_NAME = "name";
-    private final boolean ignoreArtifacts;
-    private final String url;
-    private final SAXReader reader = new SAXReader();
-    
-    /**
-     * Default constructor that receives a file url and a boolean to mark the
-     * artifacts as an ignored node. This should be useful to use this as a
-     * simple configuration and not to store all the artifact metadata.
-     * 
-     * @param url
-     * @param ignoreArtifacts
-     */
-    public XmlConfigurationManager(final String url,
-            final boolean ignoreArtifacts) {
-        this.url = url;
-        this.ignoreArtifacts = ignoreArtifacts;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void createEachXmlNode(final Element element,
-            final ConfigurationNodeMetadata configurationNode)
-            throws SLException {
-        final Set<Class<?>> childrenClasses = configurationNode
-                .getChildrenTypes();
-        for (final Class<?> clazz : childrenClasses) {
-            
-            final Set<String> names = configurationNode
-                    .getKeysFromChildrenOfType((Class<? extends ConfigurationNodeMetadata>) clazz);
-            for (final String name : names) {
-                final ConfigurationNodeMetadata innerNode = configurationNode
-                        .getChildByName(
-                                (Class<? extends ConfigurationNodeMetadata>) clazz,
-                                name);
-                final Element newElement = element
-                        .addElement(removeBegginingFrom(
-                                "osl:",
-                                this.classHelper
-                                        .getNameFromNodeClass((Class<? extends AbstractConfigurationNode>) clazz)));
-                newElement.addAttribute(this.DEFAULT_NAME, name);
-                final Map<String, Serializable> properties = innerNode
-                        .getProperties();
-                final Map<String, Class<?>> propertyTypes = innerNode
-                        .getPropertyTypes();
-                for (final Map.Entry<String, Serializable> propertyEntry : properties
-                        .entrySet()) {
-                    if (propertyEntry.getValue() != null) {
-                        this.setPropertyOnXml(newElement, propertyEntry
-                                .getKey(), propertyEntry.getValue(),
-                                propertyTypes.get(propertyEntry.getKey()));
-                    }
-                }
-                this.createEachXmlNode(newElement, innerNode);
-            }
-        }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public Configuration load() throws ConfigurationException {
-        try {
-            final Document document = this.reader.read(this.url);
-            final Element root = document.getRootElement();
-            final Configuration configuration = new Configuration();
-            this.loopOnEachElement(root, configuration);
-            configuration.markAsSaved();
-            return configuration;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, ConfigurationException.class);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void loopOnEachElement(final Element parentElement,
-            final ConfigurationNodeMetadata parentNode) throws SLException {
-        for (final Iterator<Element> elements = parentElement.elementIterator(); elements
-                .hasNext();) {
-            final Element nextElement = elements.next();
-            final String nodeClass = nextElement.getName();
-            if (this.ignoreArtifacts && "osl:artifact".equals(nodeClass)) {
-                continue;
-            }
-            final String nodeName = nextElement
-                    .attributeValue(this.DEFAULT_NAME);
-            final ConfigurationNodeMetadata newNode = this.classHelper
-                    .createInstance(nodeName, parentNode, "osl:" + nodeClass);
-            final Map<String, Class<?>> propertyTypes = newNode
-                    .getPropertyTypes();
-            
-            for (final Iterator<Attribute> properties = nextElement
-                    .attributeIterator(); properties.hasNext();) {
-                final Attribute nextProperty = properties.next();
-                final String propertyName = nextProperty.getName();
-                if (this.DEFAULT_NAME.equals(propertyName)) {
-                    continue;
-                }
-                final String valueAsString = nextProperty.getStringValue();
-                this.setPropertyOnNode(newNode, propertyName, propertyTypes
-                        .get(propertyName), valueAsString);
-            }
-            this.loopOnEachElement(nextElement, newNode);
-        }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void save(final Configuration configuration)
-            throws ConfigurationException {
-        try {
-            final Document document = DocumentFactory.getInstance()
-                    .createDocument();
-            final Element element = document.addElement("configuration");
-            final ConfigurationNodeMetadata configurationNode = configuration;
-            this.createEachXmlNode(element, configurationNode);
-            final OutputStream os = new BufferedOutputStream(
-                    new FileOutputStream(this.url));
-            final OutputFormat outformat = OutputFormat.createPrettyPrint();
-            final XMLWriter writer = new XMLWriter(os, outformat);
-            writer.write(document);
-            writer.flush();
-            configuration.markAsSaved();
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, ConfigurationException.class);
-        }
-    }
-    
-    private void setPropertyOnNode(final ConfigurationNodeMetadata newNode,
-            final String propertyName, final Class<?> propertyClass,
-            final String valueAsString) throws SLException {
-        if (valueAsString == null) {
-            newNode.setProperty(propertyName, null);
-        } else if (Boolean.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Boolean.valueOf(valueAsString));
-        } else if (Double.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Double.valueOf(valueAsString));
-        } else if (Long.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Long.valueOf(valueAsString));
-        } else if (String.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, valueAsString);
-        } else if (Integer.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Integer.valueOf(valueAsString));
-        } else if (Byte.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Byte.valueOf(valueAsString));
-        } else if (Float.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Float.valueOf(valueAsString));
-        } else if (Date.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, dateFromString(valueAsString));
-        } else {
-            final Serializable value = readFromBase64(valueAsString);
-            newNode.setProperty(propertyName, value);
-        }
-        
-    }
-    
-    private void setPropertyOnXml(final Element newElement, final String key,
-            final Serializable value, final Class<?> propertyClass)
-            throws SLException {
-        if (value == null) {
-            newElement.addAttribute(key, null);
-        } else if (Boolean.class.equals(propertyClass)) {
-            newElement.addAttribute(key, Boolean.toString((Boolean) value));
-        } else if (Double.class.equals(propertyClass)) {
-            newElement.addAttribute(key, Double.toString((Double) value));
-        } else if (Long.class.equals(propertyClass)) {
-            newElement.addAttribute(key, Long.toString((Long) value));
-        } else if (String.class.equals(propertyClass)) {
-            newElement.addAttribute(key, (String) value);
-        } else if (Integer.class.equals(propertyClass)) {
-            newElement.addAttribute(key, Integer.toString((Integer) value));
-        } else if (Byte.class.equals(propertyClass)) {
-            newElement.addAttribute(key, Byte.toString((Byte) value));
-        } else if (Float.class.equals(propertyClass)) {
-            newElement.addAttribute(key, Float.toString((Float) value));
-        } else if (Date.class.equals(propertyClass)) {
-            newElement.addAttribute(key, stringFromDate((Date) value));
-        } else {
-            final String valueAsString = serializeToBase64(value);
-            newElement.addAttribute(key, valueAsString);
-        }
-    }
-    
+
+	private final NodeClassHelper classHelper = new NodeClassHelper();
+
+	private final String DEFAULT_NAME = "name";
+	private final boolean ignoreArtifacts;
+	private final String url;
+	private final SAXReader reader = new SAXReader();
+
+	/**
+	 * Default constructor that receives a file url and a boolean to mark the
+	 * artifacts as an ignored node. This should be useful to use this as a
+	 * simple configuration and not to store all the artifact metadata.
+	 * 
+	 * @param url
+	 * @param ignoreArtifacts
+	 */
+	public XmlConfigurationManager(String url, boolean ignoreArtifacts) {
+		this.url = url;
+		this.ignoreArtifacts = ignoreArtifacts;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Configuration load() throws ConfigurationException {
+		try {
+			Document document = reader.read(url);
+			Element root = document.getRootElement();
+			Configuration configuration = new Configuration();
+			loopOnEachElement(root, configuration);
+			configuration.markAsSaved();
+			return configuration;
+		} catch (Exception e) {
+			throw logAndReturnNew(e, ConfigurationException.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loopOnEachElement(Element parentElement,
+			ConfigurationNode parentNode) throws SLException {
+		for (Iterator<Element> elements = parentElement.elementIterator(); elements
+				.hasNext();) {
+			Element nextElement = elements.next();
+			String nodeClass = nextElement.getName();
+			if (ignoreArtifacts && "osl:artifact".equals(nodeClass)) {
+				continue;
+			}
+			String nodeName = nextElement.attributeValue(DEFAULT_NAME);
+			ConfigurationNode newNode = classHelper.createInstance(nodeName,
+					parentNode, "osl:" + nodeClass);
+			Map<String, Class<?>> propertyTypes = newNode.getPropertyTypes();
+
+			for (Iterator<Attribute> properties = nextElement
+					.attributeIterator(); properties.hasNext();) {
+				Attribute nextProperty = properties.next();
+				String propertyName = nextProperty.getName();
+				if (DEFAULT_NAME.equals(propertyName))
+					continue;
+				String valueAsString = nextProperty.getStringValue();
+				setPropertyOnNode(newNode, propertyName, propertyTypes
+						.get(propertyName), valueAsString);
+			}
+			loopOnEachElement(nextElement, newNode);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void save(Configuration configuration) throws ConfigurationException {
+		try {
+			Document document = DocumentFactory.getInstance().createDocument();
+			Element element = document.addElement("configuration");
+			ConfigurationNode configurationNode = configuration;
+			createEachXmlNode(element, configurationNode);
+			OutputStream os = new BufferedOutputStream(
+					new FileOutputStream(url));
+			OutputFormat outformat = OutputFormat.createPrettyPrint();
+			XMLWriter writer = new XMLWriter(os, outformat);
+			writer.write(document);
+			writer.flush();
+			configuration.markAsSaved();
+		} catch (Exception e) {
+			throw logAndReturnNew(e, ConfigurationException.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void createEachXmlNode(Element element,
+			ConfigurationNode configurationNode) throws SLException {
+		Set<Class<?>> childrenClasses = configurationNode.getChildrenTypes();
+		for (Class<?> clazz : childrenClasses) {
+
+			Set<String> names = configurationNode
+					.getNamesFromChildrenOfType((Class<? extends ConfigurationNode>) clazz);
+			for (String name : names) {
+				ConfigurationNode innerNode = configurationNode.getChildByName(
+						(Class<? extends ConfigurationNode>) clazz, name);
+				Element newElement = element
+						.addElement(removeBegginingFrom(
+								"osl:",
+								classHelper
+										.getNameFromNodeClass((Class<? extends AbstractConfigurationNode>) clazz)));
+				newElement.addAttribute(DEFAULT_NAME, name);
+				Map<String, Serializable> properties = innerNode
+						.getProperties();
+				Map<String, Class<?>> propertyTypes = innerNode
+						.getPropertyTypes();
+				for (Map.Entry<String, Serializable> propertyEntry : properties
+						.entrySet()) {
+					if (propertyEntry.getValue() != null) {
+						setPropertyOnXml(newElement, propertyEntry.getKey(),
+								propertyEntry.getValue(), propertyTypes
+										.get(propertyEntry.getKey()));
+					}
+				}
+				createEachXmlNode(newElement, innerNode);
+			}
+		}
+	}
+
+	private void setPropertyOnXml(Element newElement, String key,
+			Serializable value, Class<?> propertyClass) throws SLException {
+		if (value == null) {
+			newElement.addAttribute(key, null);
+		} else if (Boolean.class.equals(propertyClass)) {
+			newElement.addAttribute(key, Boolean.toString((Boolean) value));
+		} else if (Double.class.equals(propertyClass)) {
+			newElement.addAttribute(key, Double.toString((Double) value));
+		} else if (Long.class.equals(propertyClass)) {
+			newElement.addAttribute(key, Long.toString((Long) value));
+		} else if (String.class.equals(propertyClass)) {
+			newElement.addAttribute(key, (String) value);
+		} else if (Integer.class.equals(propertyClass)) {
+			newElement.addAttribute(key, Integer.toString((Integer) value));
+		} else if (Byte.class.equals(propertyClass)) {
+			newElement.addAttribute(key, Byte.toString((Byte) value));
+		} else if (Float.class.equals(propertyClass)) {
+			newElement.addAttribute(key, Float.toString((Float) value));
+		} else if (Date.class.equals(propertyClass)) {
+			newElement.addAttribute(key, stringFromDate((Date) value));
+		} else {
+			String valueAsString = serializeToBase64(value);
+			newElement.addAttribute(key, valueAsString);
+		}
+	}
+
+	private void setPropertyOnNode(ConfigurationNode newNode,
+			String propertyName, Class<?> propertyClass, String valueAsString)
+			throws SLException {
+		if (valueAsString == null) {
+			newNode.setProperty(propertyName, null);
+		} else if (Boolean.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, Boolean.valueOf(valueAsString));
+		} else if (Double.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, Double.valueOf(valueAsString));
+		} else if (Long.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, Long.valueOf(valueAsString));
+		} else if (String.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, valueAsString);
+		} else if (Integer.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, Integer.valueOf(valueAsString));
+		} else if (Byte.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, Byte.valueOf(valueAsString));
+		} else if (Float.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, Float.valueOf(valueAsString));
+		} else if (Date.class.equals(propertyClass)) {
+			newNode.setProperty(propertyName, dateFromString(valueAsString));
+		} else {
+			Serializable value = readFromBase64(valueAsString);
+			newNode.setProperty(propertyName, value);
+		}
+
+	}
+
 }
