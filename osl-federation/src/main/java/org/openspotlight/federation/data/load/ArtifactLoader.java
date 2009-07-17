@@ -1,3 +1,52 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
+
 package org.openspotlight.federation.data.load;
 
 import static java.text.MessageFormat.format;
@@ -21,93 +70,97 @@ import org.openspotlight.federation.data.Bundle;
  * decisions if it knows any form to load the Artifacts that match the mapping
  * that it receives.
  * 
- * The Artifact loader has the responsibility to resolve each mapping.
+ * The Artifact loader has the responsibility to resolve each mapping. FIXME
+ * create refresh method
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public interface ArtifactLoader {
-
-	/**
-	 * Loads all the Artifacts contained from each ArtifactMapping.
-	 * 
-	 * @param bundle
-	 */
-	public ArtifactProcessingCount loadArtifactsFromMappings(Bundle bundle)
-			throws ConfigurationException;
-
-	/**
-	 * Returns the count for each possible action during a Artifact load, such
-	 * as load, ignore and error.
-	 * 
-	 * @author feu
-	 * 
-	 */
-	public final class ArtifactProcessingCount implements
-			Comparable<ArtifactProcessingCount> {
-
-		public static final ArtifactProcessingCount ONE_LOADED = new ArtifactProcessingCount(
-				1, 0, 0);
-		public static final ArtifactProcessingCount ONE_IGNORED = new ArtifactProcessingCount(
-				0, 1, 0);
-		public static final ArtifactProcessingCount ONE_ERROR = new ArtifactProcessingCount(
-				0, 0, 1);
-
-		public ArtifactProcessingCount(long loadCount, long ignoreCount,
-				long errorCount) {
-			this.loadCount = loadCount;
-			this.ignoreCount = ignoreCount;
-			this.errorCount = errorCount;
-			this.hashCode = hashOf(loadCount, ignoreCount, errorCount);
-			this.description = format("loaded:{0} ignored:{1} error:{2}",
-					loadCount, ignoreCount, errorCount);
-		}
-
-		private final long loadCount;
-		private final long ignoreCount;
-		private final long errorCount;
-		private final int hashCode;
-		private final String description;
-
-		public long getLoadCount() {
-			return loadCount;
-		}
-
-		public long getIgnoreCount() {
-			return ignoreCount;
-		}
-
-		public long getErrorCount() {
-			return errorCount;
-		}
-
-		public int compareTo(ArtifactProcessingCount that) {
-			return compareAll(of(this.loadCount, this.ignoreCount,
-					this.errorCount), andOf(that.loadCount, that.ignoreCount,
-					that.errorCount));
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o == this)
-				return true;
-			if (!(o instanceof ArtifactProcessingCount))
-				return false;
-			ArtifactProcessingCount that = (ArtifactProcessingCount) o;
-			return eachEquality(of(this.loadCount, this.ignoreCount,
-					this.errorCount), andOf(that.loadCount, that.ignoreCount,
-					that.errorCount));
-		}
-
-		@Override
-		public int hashCode() {
-			return hashCode;
-		}
-
-		@Override
-		public String toString() {
-			return description;
-		}
-	}
-
+    
+    /**
+     * Returns the count for each possible action during a Artifact load, such
+     * as load, ignore and error.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public final class ArtifactProcessingCount implements
+            Comparable<ArtifactProcessingCount> {
+        
+        public static final ArtifactProcessingCount ONE_LOADED = new ArtifactProcessingCount(
+                1, 0, 0);
+        public static final ArtifactProcessingCount ONE_IGNORED = new ArtifactProcessingCount(
+                0, 1, 0);
+        public static final ArtifactProcessingCount ONE_ERROR = new ArtifactProcessingCount(
+                0, 0, 1);
+        
+        private final long loadCount;
+        
+        private final long ignoreCount;
+        private final long errorCount;
+        private final int hashCode;
+        private final String description;
+        
+        public ArtifactProcessingCount(final long loadCount,
+                final long ignoreCount, final long errorCount) {
+            this.loadCount = loadCount;
+            this.ignoreCount = ignoreCount;
+            this.errorCount = errorCount;
+            this.hashCode = hashOf(loadCount, ignoreCount, errorCount);
+            this.description = format("loaded:{0} ignored:{1} error:{2}",
+                    loadCount, ignoreCount, errorCount);
+        }
+        
+        public int compareTo(final ArtifactProcessingCount that) {
+            return compareAll(of(this.loadCount, this.ignoreCount,
+                    this.errorCount), andOf(that.loadCount, that.ignoreCount,
+                    that.errorCount));
+        }
+        
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof ArtifactProcessingCount)) {
+                return false;
+            }
+            final ArtifactProcessingCount that = (ArtifactProcessingCount) o;
+            return eachEquality(of(this.loadCount, this.ignoreCount,
+                    this.errorCount), andOf(that.loadCount, that.ignoreCount,
+                    that.errorCount));
+        }
+        
+        public long getErrorCount() {
+            return errorCount;
+        }
+        
+        public long getIgnoreCount() {
+            return ignoreCount;
+        }
+        
+        public long getLoadCount() {
+            return loadCount;
+        }
+        
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
+        
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
+    
+    /**
+     * Loads all the Artifacts contained from each ArtifactMapping.
+     * 
+     * @param bundle
+     */
+    public ArtifactProcessingCount loadArtifactsFromMappings(Bundle bundle)
+            throws ConfigurationException;
+    
 }
