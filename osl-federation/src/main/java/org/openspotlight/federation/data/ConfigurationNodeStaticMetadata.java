@@ -1,0 +1,630 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
+
+package org.openspotlight.federation.data;
+
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.HashCodes.hashOf;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * This class is used to store static meta data for {@link ConfigurationNode
+ * configuration nodes}. Use the {@link Factory} static methods to create this
+ * metadata.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+public interface ConfigurationNodeStaticMetadata {
+    
+    /**
+     * Static methods to create {@link ConfigurationNodeStaticMetadata the
+     * static metadata } for {@link ConfigurationNode configuration nodes}
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    static class Factory {
+        
+        /**
+         * This inner class was made to store class behavior data for nodes. It
+         * should be created and frozen on a static way.
+         * 
+         * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+         * 
+         */
+        private static class ImmutableClassMetadata implements
+                ConfigurationNodeStaticMetadata {
+            
+            private final Class<? extends ConfigurationNode> type;
+            private final Set<Class<? extends ConfigurationNode>> parentNodeValidTypes;
+            private final Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes;
+            private final Class<?> keyPropertyType;
+            private final Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes;
+            
+            private final String keyProperty;
+            
+            private final Map<String, Class<?>> propertyTypes;
+            
+            private final int hashCode;
+            
+            /**
+             * copy constructor
+             * 
+             * @param base
+             */
+            public ImmutableClassMetadata(
+                    final ConfigurationNodeStaticMetadata base) {
+                this.type = base.getType();
+                this.keyProperty = base.getKeyProperty();
+                this.parentNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
+                        base.getParentNodeValidTypes()));
+                this.childrenNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
+                        base.getChildrenNodeValidTypes()));
+                this.propertyTypes = unmodifiableMap(new HashMap<String, Class<?>>(
+                        base.getPropertyTypes()));
+                
+                this.keyPropertyType = base.getKeyPropertyType();
+                this.singleChildrenNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
+                        base.getSingleChildrenNodeValidTypes()));
+                
+                this.hashCode = hashOf(this.type, this.keyProperty,
+                        this.parentNodeValidTypes, this.childrenNodeValidTypes,
+                        this.propertyTypes, this.keyPropertyType,
+                        this.singleChildrenNodeValidTypes);
+            }
+            
+            @Override
+            public boolean equals(final Object o) {
+                if (o == this) {
+                    return true;
+                }
+                if (!(o instanceof ConfigurationNodeStaticMetadata)) {
+                    return false;
+                }
+                final ConfigurationNodeStaticMetadata that = (ConfigurationNodeStaticMetadata) o;
+                return eachEquality(of(this.type, this.keyProperty,
+                        this.parentNodeValidTypes, this.childrenNodeValidTypes,
+                        this.propertyTypes, this.keyPropertyType,
+                        this.singleChildrenNodeValidTypes), andOf(that
+                        .getType(), that.getKeyProperty(), that
+                        .getParentNodeValidTypes(), that
+                        .getChildrenNodeValidTypes(), that.getPropertyTypes(),
+                        that.getKeyPropertyType(), that
+                                .getSingleChildrenNodeValidTypes()));
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Set<Class<? extends ConfigurationNode>> getChildrenNodeValidTypes() {
+                return this.childrenNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public String getKeyProperty() {
+                return this.keyProperty;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Class<?> getKeyPropertyType() {
+                return this.keyPropertyType;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Set<Class<? extends ConfigurationNode>> getParentNodeValidTypes() {
+                return this.parentNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Map<String, Class<?>> getPropertyTypes() {
+                return this.propertyTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Set<Class<? extends ConfigurationNode>> getSingleChildrenNodeValidTypes() {
+                return this.singleChildrenNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Class<? extends ConfigurationNode> getType() {
+                return this.type;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public int hashCode() {
+                return this.hashCode;
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setChildrenNodeValidTypes(
+                    final Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes) {
+                throw logAndReturn(new UnsupportedOperationException());
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setKeyProperty(final String keyProperty) {
+                throw logAndReturn(new UnsupportedOperationException());
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setKeyPropertyType(final Class<?> keyPropertyType) {
+                throw logAndReturn(new UnsupportedOperationException());
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setParentNodeValidTypes(
+                    final Set<Class<? extends ConfigurationNode>> parentNodeValidTypes) {
+                throw logAndReturn(new UnsupportedOperationException());
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setPropertyTypes(
+                    final Map<String, Class<?>> propertyTypes) {
+                throw logAndReturn(new UnsupportedOperationException());
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setSingleChildrenNodeValidTypes(
+                    final Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes) {
+                throw logAndReturn(new UnsupportedOperationException());
+                
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             * @throws UnsupportedOperationException
+             *             since it is a non mutable
+             *             {@link ConfigurationNodeStaticMetadata}.
+             */
+            public void setType(final Class<? extends ConfigurationNode> type) {
+                throw logAndReturn(new UnsupportedOperationException());
+            }
+        }
+        
+        /**
+         * This inner class was made to store class behavior data for nodes. It
+         * should be created and frozen on a static way.
+         * 
+         * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+         * 
+         */
+        private static class MutableClassMetadata implements
+                ConfigurationNodeStaticMetadata {
+            
+            private Class<? extends ConfigurationNode> type;
+            private Set<Class<? extends ConfigurationNode>> parentNodeValidTypes;
+            private Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes;
+            private String keyProperty;
+            private Class<?> keyPropertyType;
+            private Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes;
+            
+            private Map<String, Class<?>> propertyTypes;
+            
+            /**
+             * default constructor
+             */
+            public MutableClassMetadata() {
+                // 
+            }
+            
+            /**
+             * copy constructor
+             * 
+             * @param base
+             */
+            public MutableClassMetadata(
+                    final ConfigurationNodeStaticMetadata base) {
+                this.type = base.getType();
+                this.keyProperty = base.getKeyProperty();
+                this.parentNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
+                        base.getParentNodeValidTypes());
+                this.childrenNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
+                        base.getChildrenNodeValidTypes());
+                this.propertyTypes = new HashMap<String, Class<?>>(base
+                        .getPropertyTypes());
+                this.keyPropertyType = base.getKeyPropertyType();
+                this.singleChildrenNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
+                        base.getSingleChildrenNodeValidTypes());
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean equals(final Object o) {
+                if (o == this) {
+                    return true;
+                }
+                if (!(o instanceof ConfigurationNodeStaticMetadata)) {
+                    return false;
+                }
+                final ConfigurationNodeStaticMetadata that = (ConfigurationNodeStaticMetadata) o;
+                return eachEquality(of(this.type, this.keyProperty,
+                        this.parentNodeValidTypes, this.childrenNodeValidTypes,
+                        this.propertyTypes, this.keyPropertyType,
+                        this.singleChildrenNodeValidTypes), andOf(that
+                        .getType(), that.getKeyProperty(), that
+                        .getParentNodeValidTypes(), that
+                        .getChildrenNodeValidTypes(), that.getPropertyTypes(),
+                        that.getKeyPropertyType(), that
+                                .getSingleChildrenNodeValidTypes()));
+                
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Set<Class<? extends ConfigurationNode>> getChildrenNodeValidTypes() {
+                return this.childrenNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public String getKeyProperty() {
+                return this.keyProperty;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Class<?> getKeyPropertyType() {
+                return this.keyPropertyType;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Set<Class<? extends ConfigurationNode>> getParentNodeValidTypes() {
+                return this.parentNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Map<String, Class<?>> getPropertyTypes() {
+                return this.propertyTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Set<Class<? extends ConfigurationNode>> getSingleChildrenNodeValidTypes() {
+                return this.singleChildrenNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public Class<? extends ConfigurationNode> getType() {
+                return this.type;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public int hashCode() {
+                return hashOf(this.type, this.keyProperty,
+                        this.parentNodeValidTypes, this.childrenNodeValidTypes,
+                        this.propertyTypes, this.keyPropertyType,
+                        this.singleChildrenNodeValidTypes);
+                
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setChildrenNodeValidTypes(
+                    final Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes) {
+                this.childrenNodeValidTypes = childrenNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setKeyProperty(final String keyProperty) {
+                this.keyProperty = keyProperty;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setKeyPropertyType(final Class<?> keyPropertyType) {
+                this.keyPropertyType = keyPropertyType;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setParentNodeValidTypes(
+                    final Set<Class<? extends ConfigurationNode>> parentNodeValidTypes) {
+                this.parentNodeValidTypes = parentNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setPropertyTypes(
+                    final Map<String, Class<?>> propertyTypes) {
+                this.propertyTypes = propertyTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setSingleChildrenNodeValidTypes(
+                    final Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes) {
+                this.singleChildrenNodeValidTypes = singleChildrenNodeValidTypes;
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void setType(final Class<? extends ConfigurationNode> type) {
+                this.type = type;
+            }
+            
+        }
+        
+        /**
+         * Creates an immutable and thread safe
+         * {@link ConfigurationNodeStaticMetadata}
+         * 
+         * @param origin
+         * @return
+         */
+        public static ConfigurationNodeStaticMetadata createImmutable(
+                final ConfigurationNodeStaticMetadata origin) {
+            return new ImmutableClassMetadata(origin);
+        }
+        
+        /**
+         * Creates an mutable {@link ConfigurationNodeStaticMetadata}. An
+         * immutable one can be created using the
+         * {@link #createImmutable(ConfigurationNodeStaticMetadata)} after this
+         * {@link ConfigurationNodeStaticMetadata} is setted correctly.
+         * 
+         * @return
+         */
+        public static ConfigurationNodeStaticMetadata createMutable() {
+            return new MutableClassMetadata();
+        }
+        
+        /**
+         * Creates an mutable {@link ConfigurationNodeStaticMetadata} using a
+         * existing one as a base. An immutable one can be created using the
+         * {@link #createImmutable(ConfigurationNodeStaticMetadata)} after this
+         * {@link ConfigurationNodeStaticMetadata} is setted correctly.
+         * 
+         * @param origin
+         *            the base {@link ConfigurationNodeStaticMetadata}
+         * 
+         * @return a new {@link ConfigurationNodeStaticMetadata}
+         */
+        public static ConfigurationNodeStaticMetadata createMutable(
+                final ConfigurationNodeStaticMetadata origin) {
+            return new MutableClassMetadata(origin);
+        }
+    }
+    
+    /**
+     * The types that can be used as a children for this kind of node.
+     * 
+     * @return all the valid types to be used as a children types
+     */
+    public abstract Set<Class<? extends ConfigurationNode>> getChildrenNodeValidTypes();
+    
+    /**
+     * It's keyProperty name should change depending on the node type. For
+     * example, for a file, the keyProperty should be location, and for a
+     * project the keyProperty should be name.
+     * 
+     * @return the key property name
+     */
+    public abstract String getKeyProperty();
+    
+    /**
+     * See the {@link #getKeyPropertyType()}.
+     * 
+     * @return the key property type.
+     */
+    public Class<?> getKeyPropertyType();
+    
+    /**
+     * The parent type should be null in case of a root node, or all the valid
+     * parent types. As it is, a node can have multiple parent types and should
+     * be valid when placed in all that types.
+     * 
+     * @return all valid parent types
+     */
+    public abstract Set<Class<? extends ConfigurationNode>> getParentNodeValidTypes();
+    
+    /**
+     * All valid properties on a {@link ConfigurationNode} needs to be maped
+     * with its name and type. So, with that its posible to validate its data
+     * and also to recover the metadata without using reflection.
+     * 
+     * @return the property types
+     */
+    public abstract Map<String, Class<?>> getPropertyTypes();
+    
+    /**
+     * Returns all valid single children node types. This is the node types that
+     * don't need to have any key property, and because of that, this nodes can
+     * be stored only by a single property, but not by many of them
+     * (collection).
+     * 
+     * @return
+     */
+    public Set<Class<? extends ConfigurationNode>> getSingleChildrenNodeValidTypes();
+    
+    /**
+     * It is the {@link ConfigurationNode} type itself with the node associated
+     * with this {@link ConfigurationNodeStaticMetadata static metadata}.
+     * 
+     * @return the node type
+     */
+    public abstract Class<? extends ConfigurationNode> getType();
+    
+    /**
+     * Sets the childrenNodeValidTypes. See {@link #getChildrenNodeValidTypes()}
+     * 
+     * @param childrenNodeValidTypes
+     */
+    public abstract void setChildrenNodeValidTypes(
+            Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes);
+    
+    /**
+     * Sets the keyProperty. See {@link #getKeyProperty()}.
+     * 
+     * @param keyProperty
+     */
+    public abstract void setKeyProperty(String keyProperty);
+    
+    /**
+     * Sets the key property type. Should be any single java class, but not a
+     * new pojo class for example.
+     * 
+     * @param keyPropertyType
+     */
+    public void setKeyPropertyType(Class<?> keyPropertyType);
+    
+    /**
+     * Sets the parentNodeValidTypes. See {@link #getParentNodeValidTypes()}.
+     * 
+     * @param parentNodeValidTypes
+     */
+    public abstract void setParentNodeValidTypes(
+            Set<Class<? extends ConfigurationNode>> parentNodeValidTypes);
+    
+    /**
+     * Sets the propertyTypes. See {@link #getPropertyTypes()}.
+     * 
+     * @param propertyTypes
+     */
+    public abstract void setPropertyTypes(Map<String, Class<?>> propertyTypes);
+    
+    /**
+     * Sets the single children node valid types.
+     * 
+     * @param singleChildrenNodeValidTypes
+     */
+    public void setSingleChildrenNodeValidTypes(
+            Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes);
+    
+    /**
+     * Sets the type. See {@link #getType()}.
+     * 
+     * @param type
+     */
+    public abstract void setType(Class<? extends ConfigurationNode> type);
+}
