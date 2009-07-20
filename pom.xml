@@ -71,6 +71,7 @@
 	<modules>
 		<module>osl-common</module>
 		<module>osl-federation</module>
+		<module>osl-graph</module>
 	</modules>
 	<build>
 		<plugins>
