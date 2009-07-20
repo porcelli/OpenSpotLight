@@ -1,9 +1,57 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
+
 package org.openspotlight.federation.data;
 
 import static java.text.MessageFormat.format;
 import static java.util.Collections.synchronizedList;
 import static java.util.Collections.unmodifiableCollection;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Arrays.andOf;
@@ -20,7 +68,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,8 +75,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Class to abstract thread safe {@link ConfigurationNode} creation. All the
- * public methods of this class are final. The correct way to extend this
+ * Class to abstract thread safe {@link ConfigurationNodeMetadata} creation. All
+ * the public methods of this class are final. The correct way to extend this
  * abstract class is to implement its abstract methods and also to create some
  * new methods to be used as a syntactic sugar.
  * 
@@ -101,512 +148,343 @@ import net.jcip.annotations.ThreadSafe;
  * 	}
  * 
  * }
- * 
+ * FIXME use this as an internal representation and just create an interface with #getInternalRepresentation
  * </pre>
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @ThreadSafe
-public abstract class AbstractConfigurationNode implements ConfigurationNode {
-
-	/**
-	 * Protected constructor that sets all the final fields and verify if the
-	 * inheritance was correct by verifying the parent node, creating entries
-	 * for children classes and so on.
-	 * 
-	 * This constructor also will share some properties of the parent node, such
-	 * as dirty flag, it's listeners and it's change cache.
-	 * 
-	 * @param <N>
-	 * @param name
-	 * @param parent
-	 * @param propertyTypes
-	 */
-	protected <N extends AbstractConfigurationNode> AbstractConfigurationNode(
-			String name, N parent, Map<String, Class<?>> propertyTypes) {
-		checkNotEmpty("name", name);
-		checkNotNull("propertyTypes", propertyTypes);
-		if (getParentType() != null) {
-			checkNotNull("parent", parent);
-			checkCondition("correctParentClass", this.getParentType().equals(
-					parent.getClass()));
-		} else {
-			checkNullMandatory("parent", parent);
-		}
-		checkNotNull("childrenNodeClasses", getChildrenTypes());
-		this.propertyTypes = propertyTypes;
-		this.name = name;
-		this.parent = parent;
-		if (this.parent != null) {
-			parent.addChild(this);
-			nodeListeners = parent.nodeListeners;
-			propertyListeners = parent.propertyListeners;
-
-			nodeChangeCache = parent.nodeChangeCache;
-			propertyChangeCache = parent.propertyChangeCache;
-
-			dirtyFlag = parent.dirtyFlag;
-
-			cacheEntryLock = parent.cacheEntryLock;
-		} else {
-			nodeListeners = synchronizedList(new LinkedList<ItemEventListener<ConfigurationNode>>());
-			propertyListeners = synchronizedList(new LinkedList<ItemEventListener<PropertyValue>>());
-
-			nodeChangeCache = synchronizedList(new LinkedList<ItemChangeEvent<ConfigurationNode>>());
-			propertyChangeCache = synchronizedList(new LinkedList<ItemChangeEvent<PropertyValue>>());
-
-			dirtyFlag = new AtomicBoolean(false);
-
-			cacheEntryLock = new Object();
-		}
-		for (Class<?> childClass : getChildrenTypes()) {
-			children.put(childClass, new HashMap<String, ConfigurationNode>());
-		}
-	}
-
-	private static final long serialVersionUID = 75811796109301931L;
-
-	/**
-	 * reference for the property types of this kind of node.
-	 */
-	private final Map<String, Class<?>> propertyTypes;
-
-	/**
-	 * Lock for all the changes on all nodes of the current graph.
-	 */
-	private final Object cacheEntryLock;
-
-	/**
-	 * dirty flag for all nodes of the current graph.
-	 */
-	private final AtomicBoolean dirtyFlag;
-
-	/**
-	 * All the node listeners for all nodes of the current graph.
-	 */
-	private final List<ItemEventListener<ConfigurationNode>> nodeListeners;
-
-	/**
-	 * All the property listeners for all nodes of the current graph.
-	 */
-	private final List<ItemEventListener<PropertyValue>> propertyListeners;
-
-	/**
-	 * Property change cache that store all the property change events since the
-	 * last {@link #markAsSaved()} method call. This cache is used by all nodes
-	 * of the current graph.
-	 */
-	private final List<ItemChangeEvent<PropertyValue>> propertyChangeCache;
-
-	/**
-	 * Node change cache that store all the node change events since the last
-	 * {@link #markAsSaved()} method call. This cache is used by all nodes of
-	 * the current graph.
-	 */
-	private final List<ItemChangeEvent<ConfigurationNode>> nodeChangeCache;
-
-	/**
-	 * volatile field to be used on {@link #toString()} method
-	 */
-	private volatile String description = null;
-
-	/**
-	 * Mandatory name
-	 */
-	private final String name;
-
-	/**
-	 * hashCode cache
-	 */
-	private volatile int hashcode = 0;
-
-	/**
-	 * optional parent node
-	 */
-	private final ConfigurationNode parent;
-
-	/**
-	 * Children node map that contains the children classes and a map with its
-	 * entries.
-	 */
-	private final Map<Class<?>, Map<String, ConfigurationNode>> children = new HashMap<Class<?>, Map<String, ConfigurationNode>>();
-
-	/**
-	 * Property map.
-	 */
-	private final Map<String, Serializable> properties = new HashMap<String, Serializable>();
-
-	/**
-	 * Transient property map. This properties won't be saved.
-	 */
-	private final Map<String, Object> transientProperties = new HashMap<String, Object>();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public abstract Class<?> getParentType();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public abstract Set<Class<?>> getChildrenTypes();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final Map<String, Class<?>> getPropertyTypes() {
-		return unmodifiableMap(propertyTypes);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public final <N extends ConfigurationNode> N getParent() {
-		return (N) this.parent;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final Map<String, Serializable> getProperties() {
-		return unmodifiableMap(properties);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public final <N extends ConfigurationNode> Collection<N> getChildrensOfType(
-			Class<N> childClass) {
-		checkNotNull("childClass", childClass);
-		checkCondition("childClassOwned", getChildrenTypes().contains(
-				childClass));
-		Map<String, ConfigurationNode> childrenMap = children.get(childClass);
-		Collection<ConfigurationNode> childrenCollection = childrenMap.values();
-		return (Collection<N>) unmodifiableCollection(childrenCollection);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final Set<String> getNamesFromChildrenOfType(
-			Class<? extends ConfigurationNode> childClass) {
-		checkNotNull("childClass", childClass);
-		checkCondition("childClassOwned", getChildrenTypes().contains(
-				childClass));
-		Map<String, ConfigurationNode> childrenMap = children.get(childClass);
-		Set<String> childrenNames = childrenMap.keySet();
-		return unmodifiableSet(childrenNames);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public final <N extends ConfigurationNode> N getChildByName(
-			Class<N> childClass, String name) {
-		checkNotNull("childClass", childClass);
-		checkNotEmpty("name", name);
-		checkCondition("childClassOwned", getChildrenTypes().contains(
-				childClass));
-		return (N) children.get(childClass).get(name);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final synchronized <N extends ConfigurationNode> void addChild(
-			N child) {
-		checkNotNull("child", child);
-		checkCondition("childClassOwned", getChildrenTypes().contains(
-				child.getClass()));
-		if (children.containsValue(child)) {
-			return;
-		}
-		ConfigurationNode oldNode = getChildByName(child.getClass(), child
-				.getName());
-		children.get(child.getClass()).put(child.getName(), child);
-		fireNodeChange(oldNode, child);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	final synchronized <N extends ConfigurationNode> void removeChild(N child) {
-		checkNotNull("child", child);
-		checkCondition("childClassOwned", getChildrenTypes().contains(
-				child.getClass()));
-		if (!children.get(child.getClass()).containsValue(child)) {
-			return;
-		}
-		children.get(child.getClass()).put(child.getName(), null);
-		fireNodeChange(child, null);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public final <N extends Serializable> N getProperty(String name) {
-		checkNotEmpty("name", name);
-		N value = (N) properties.get(name);
-		return value;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public final synchronized <N extends Serializable> void setProperty(
-			String name, N value) {
-		checkNotEmpty("name", name);
-		if (value != null && !value.getClass().equals(propertyTypes.get(name))) {
-			logAndThrow(new AssertionError(
-					format(
-							"Error on property type mapping on class {0} for property named {1} and value class {2}.",
-							getClass(), name, value.getClass())));
-		}
-		N oldValue = (N) getProperty(name);
-		if (!eachEquality(oldValue, value)) {
-			properties.put(name, value);
-			firePropertyChange(name, oldValue, value);
-		}
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	public final <N> N getTransientProperty(String name) {
-		checkNotEmpty("name", name);
-		return (N) transientProperties.get(name);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final synchronized <N> void setTransientProperty(String name, N value) {
-		checkNotEmpty("name", name);
-		transientProperties.put(name, value);
-	}
-
-	/**
-	 * Equals method that is safe to use also over an inheritance. Should not be
-	 * overloaded.
-	 */
-	@Override
-	public final boolean equals(Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof AbstractConfigurationNode))
-			return false;
-		AbstractConfigurationNode that = (AbstractConfigurationNode) o;
-		return eachEquality(of(this.getClass(), this.getName(), this
-				.getParent()), andOf(that.getClass(), that.getName(), that
-				.getParent()));
-
-	}
-
-	/**
-	 * Hash code that uses the same field of the equals method.
-	 */
-	@Override
-	public final int hashCode() {
-		if (hashcode == 0) {
-			hashcode = hashOf(this.getClass(), this.getName(), this.getParent());
-		}
-		return hashcode;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final String getName() {
-		return name;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final int compareTo(ConfigurationNode o) {
-		return toString().compareTo(o.toString());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String toString() {
-		if (description == null) {
-			this.description = "AbstractConfigurationNode["
-					+ getClass().getName() + "] " + name;
-		}
-		return description;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void addNodeListener(
-			ItemEventListener<ConfigurationNode> listener) {
-		nodeListeners.add(listener);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void addPropertyListener(
-			ItemEventListener<PropertyValue> listener) {
-		propertyListeners.add(listener);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final List<ItemChangeEvent<ConfigurationNode>> getNodeChangesSinceLastSave() {
-		return unmodifiableList(nodeChangeCache);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final List<ItemChangeEvent<PropertyValue>> getPropertyChangesSinceLastSave() {
-		return unmodifiableList(propertyChangeCache);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final boolean isDirty() {
-		return dirtyFlag.get();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void markAsSaved() {
-		synchronized (cacheEntryLock) {
-			dirtyFlag.set(false);
-			propertyChangeCache.clear();
-			nodeChangeCache.clear();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void markAsDirty() {
-		dirtyFlag.set(true);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void removeNodeListener(
-			ItemEventListener<ConfigurationNode> listener) {
-		nodeListeners.remove(listener);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void removePropertyListener(
-			ItemEventListener<PropertyValue> listener) {
-		propertyListeners.remove(listener);
-	}
-
-	/**
-	 * Method used to fire a property change event. It discovers the event type
-	 * based on old and new values. This method is synchronized on the
-	 * notification part that is common for all nodes of the current graph. This
-	 * method will mark the dirty flag that is common for all the nodes of the
-	 * current graph.
-	 * 
-	 * @param propertyName
-	 *            the name of the property.
-	 * @param oldValue
-	 *            the convenient values of the property before the change.
-	 * @param newValue
-	 *            the convenient values of the property after the change.
-	 */
-	private void firePropertyChange(String propertyName, Serializable oldValue,
-			Serializable newValue) {
-		checkNotEmpty("propertyName", propertyName);
-		if (eachEquality(oldValue, newValue)) {
-			return; // no changes at all
-		}
-		ItemChangeType type;
-		if (oldValue == null && newValue != null) {
-			type = ItemChangeType.ADDED;
-		} else if (oldValue != null && newValue == null) {
-			type = ItemChangeType.EXCLUDED;
-		} else {
-			type = ItemChangeType.CHANGED;
-		}
-		PropertyValue newPropertyValue = new PropertyValue(propertyName,
-				newValue, this);
-		PropertyValue oldPropertyValue = new PropertyValue(propertyName,
-				oldValue, this);
-		ItemChangeEvent<PropertyValue> changeEvent = new ItemChangeEvent<PropertyValue>(
-				type, oldPropertyValue, newPropertyValue);
-
-		synchronized (cacheEntryLock) {
-			propertyChangeCache.add(changeEvent);
-			dirtyFlag.set(true);
-		}
-		synchronized (propertyListeners) {
-			for (ItemEventListener<PropertyValue> listener : propertyListeners) {
-				listener.changeEventHappened(changeEvent);
-			}
-		}
-	}
-
-	/**
-	 * Method used to fire a node change event. It discovers the event type
-	 * based on old and new values. This method is synchronized on the
-	 * notification part that is common for all nodes of the current graph. This
-	 * method will mark the dirty flag that is common for all the nodes of the
-	 * current graph.
-	 * 
-	 * @param oldValue
-	 *            the node value before the change event
-	 * @param newValue
-	 *            the node value after the change event
-	 */
-	private void fireNodeChange(ConfigurationNode oldValue,
-			ConfigurationNode newValue) {
-		if (eachEquality(of(oldValue), andOf(newValue))) {
-			return; // no changes at all
-		}
-		ItemChangeType type;
-		if (oldValue == null && newValue != null) {
-			type = ItemChangeType.ADDED;
-		} else if (oldValue != null && newValue == null) {
-			type = ItemChangeType.EXCLUDED;
-		} else {
-			type = ItemChangeType.CHANGED; // should never happen at this actual
-			// implementation
-		}
-		ItemChangeEvent<ConfigurationNode> changeEvent = new ItemChangeEvent<ConfigurationNode>(
-				type, oldValue, newValue);
-
-		synchronized (cacheEntryLock) {
-			nodeChangeCache.add(changeEvent);
-			dirtyFlag.set(true);
-		}
-		synchronized (nodeListeners) {
-			for (ItemEventListener<ConfigurationNode> listener : nodeListeners) {
-				listener.changeEventHappened(changeEvent);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void __dont_implement_Node__instead_extend_AbstractNode__() {
-	}
+public abstract class AbstractConfigurationNode implements
+        ConfigurationNodeMetadata {
+    
+    private static final long serialVersionUID = 75811796109301931L;
+    
+    /**
+     * reference for the property types of this kind of node.
+     */
+    private final Map<String, Class<?>> propertyTypes;
+    
+    /**
+     * Lock for all the changes on all nodes of the current graph.
+     */
+    private final Object cacheEntryLock;
+    
+    /**
+     * volatile field to be used on {@link #toString()} method
+     */
+    private volatile String description = null;
+    
+    /**
+     * hashCode cache
+     */
+    private volatile int hashcode = 0;
+    
+    /**
+     * optional parent node
+     */
+    private final ConfigurationNode parent;
+    
+    /**
+     * Children node map that contains the children classes and a map with its
+     * entries.
+     */
+    private final Map<Class<?>, Map<String, ConfigurationNode>> children = new HashMap<Class<?>, Map<String, ConfigurationNode>>();
+    
+    /**
+     * Property map.
+     */
+    private final Map<String, Serializable> properties = new HashMap<String, Serializable>();
+    
+    /**
+     * Transient property map. This properties won't be saved.
+     */
+    private final Map<String, Object> transientProperties = new HashMap<String, Object>();
+    
+    private final Class<?> parentType;
+    
+    private final Set<Class<?>> childrenTypes;
+    
+    /**
+     * Protected constructor that sets all the final fields and verify if the
+     * inheritance was correct by verifying the parent node, creating entries
+     * for children classes and so on.
+     * 
+     * This constructor also will share some properties of the parent node, such
+     * as dirty flag, it's listeners and it's change cache.
+     * 
+     * @param <N>
+     * @param name
+     * @param parent
+     * @param propertyTypes
+     */
+    public <N extends AbstractConfigurationNode> AbstractConfigurationNode(
+            final ConfigurationNode owner,
+            final ConfigurationNodeStaticMetadata metadata) {
+        checkNotNull("owner", owner);
+        checkNotEmpty("name", name);
+        checkNotNull("propertyTypes", this.propertyTypes);
+        if (this.getParentType() != null) {
+            checkNotNull("parent", this.parent);
+            checkCondition("correctParentClass", this.getParentType().equals(
+                    this.parent.getClass()));
+        } else {
+            checkNullMandatory("parent", this.parent);
+        }
+        checkNotNull("childrenNodeClasses", this.getChildrenTypes());
+        this.propertyTypes = unmodifiableMap(metadata.getPropertyTypes());
+        this.parent = (ConfigurationNode) this.parent;
+        if (this.parent != null) {
+            this.parent.getMetadata().addChild(this);
+            this.nodeListeners = this.parent.nodeListeners;
+            this.propertyListeners = this.parent.propertyListeners;
+            
+            this.nodeChangeCache = this.parent.nodeChangeCache;
+            this.propertyChangeCache = this.parent.propertyChangeCache;
+            
+            this.dirtyFlag = this.parent.dirtyFlag;
+            
+            this.cacheEntryLock = this.parent.cacheEntryLock;
+        } else {
+            this.nodeListeners = synchronizedList(new LinkedList<ItemEventListener<ConfigurationNode>>());
+            this.propertyListeners = synchronizedList(new LinkedList<ItemEventListener<PropertyValue>>());
+            
+            this.nodeChangeCache = synchronizedList(new LinkedList<ItemChangeEvent<ConfigurationNode>>());
+            this.propertyChangeCache = synchronizedList(new LinkedList<ItemChangeEvent<PropertyValue>>());
+            
+            this.dirtyFlag = new AtomicBoolean(false);
+            
+            this.cacheEntryLock = new Object();
+        }
+        for (final Class<?> childClass : this.getChildrenTypes()) {
+            this.children.put(childClass,
+                    new HashMap<String, ConfigurationNode>());
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final void __dont_implement_Node__instead_extend_AbstractNode__() {
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final synchronized <N extends ConfigurationNode> void addChild(
+            final N child) {
+        checkNotNull("child", child);
+        checkCondition("childClassOwned", this.getChildrenTypes().contains(
+                child.getClass()));
+        if (this.children.containsValue(child)) {
+            return;
+        }
+        final ConfigurationNode oldNode = this.getChildByName(child.getClass(),
+                child.getMetadata().getName());
+        this.children.get(child.getClass()).put(child.getMetadata().getName(),
+                child);
+        this.fireNodeChange(oldNode, child);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final int compareTo(final ConfigurationNode o) {
+        return this.toString().compareTo(o.toString());
+    }
+    
+    /**
+     * Equals method that is safe to use also over an inheritance. Should not be
+     * overloaded.
+     */
+    @Override
+    public final boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof AbstractConfigurationNode)) {
+            return false;
+        }
+        final AbstractConfigurationNode that = (AbstractConfigurationNode) o;
+        return eachEquality(of(this.getClass(), this.getName(), this
+                .getParent()), andOf(that.getClass(), that.getName(), that
+                .getParent()));
+        
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public final <N extends ConfigurationNode> N getChildByName(
+            final Class<N> childClass, final String name) {
+        checkNotNull("childClass", childClass);
+        checkNotEmpty("name", name);
+        checkCondition("childClassOwned", this.getChildrenTypes().contains(
+                childClass));
+        return (N) this.children.get(childClass).get(name);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public final <N extends ConfigurationNode> Collection<N> getChildrensOfType(
+            final Class<N> childClass) {
+        checkNotNull("childClass", childClass);
+        checkCondition("childClassOwned", this.getChildrenTypes().contains(
+                childClass));
+        final Map<String, ConfigurationNode> childrenMap = this.children
+                .get(childClass);
+        final Collection<ConfigurationNode> childrenCollection = childrenMap
+                .values();
+        return (Collection<N>) unmodifiableCollection(childrenCollection);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Set<Class<?>> getChildrenTypes() {
+        return this.childrenTypes;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final String getName() {
+        return name;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final Set<String> getNamesFromChildrenOfType(
+            final Class<? extends ConfigurationNode> childClass) {
+        checkNotNull("childClass", childClass);
+        checkCondition("childClassOwned", this.getChildrenTypes().contains(
+                childClass));
+        final Map<String, ConfigurationNode> childrenMap = this.children
+                .get(childClass);
+        final Set<String> childrenNames = childrenMap.keySet();
+        return unmodifiableSet(childrenNames);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public final <N extends ConfigurationNode> N getParent() {
+        return (N) this.parent;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Class<?> getParentType() {
+        return this.parentType;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final Map<String, Serializable> getProperties() {
+        return unmodifiableMap(this.properties);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public final <N extends Serializable> N getProperty(final String name) {
+        checkNotEmpty("name", name);
+        final N value = (N) this.properties.get(name);
+        return value;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final Map<String, Class<?>> getPropertyTypes() {
+        return unmodifiableMap(this.propertyTypes);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public final <N> N getTransientProperty(final String name) {
+        checkNotEmpty("name", name);
+        return (N) this.transientProperties.get(name);
+    }
+    
+    /**
+     * Hash code that uses the same field of the equals method.
+     */
+    @Override
+    public final int hashCode() {
+        if (this.hashcode == 0) {
+            this.hashcode = hashOf(this.getClass(), this.getName(), this
+                    .getParent());
+        }
+        return this.hashcode;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    final synchronized <N extends ConfigurationNode> void removeChild(
+            final N child) {
+        checkNotNull("child", child);
+        checkCondition("childClassOwned", this.getChildrenTypes().contains(
+                child.getClass()));
+        if (!this.children.get(child.getClass()).containsValue(child)) {
+            return;
+        }
+        this.children.get(child.getClass()).put(child.getMetadata().getName(),
+                null);
+        this.fireNodeChange(child, null);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public final synchronized <N extends Serializable> void setProperty(
+            final String name, final N value) {
+        checkNotEmpty("name", name);
+        if ((value != null)
+                && !value.getClass().equals(this.propertyTypes.get(name))) {
+            logAndThrow(new AssertionError(
+                    format(
+                            "Error on property type mapping on class {0} for property named {1} and value class {2}.",
+                            this.getClass(), name, value.getClass())));
+        }
+        final N oldValue = (N) this.getProperty(name);
+        if (!eachEquality(oldValue, value)) {
+            this.properties.put(name, value);
+            this.firePropertyChange(name, oldValue, value);
+        }
+        
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final synchronized <N> void setTransientProperty(final String name,
+            final N value) {
+        checkNotEmpty("name", name);
+        this.transientProperties.put(name, value);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final String toString() {
+        if (this.description == null) {
+            this.description = "AbstractConfigurationNode["
+                    + this.getClass().getName() + "] " + name;
+        }
+        return this.description;
+    }
 }

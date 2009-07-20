@@ -1,3 +1,52 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
+
 package org.openspotlight.federation.data.test;
 
 import static org.hamcrest.core.Is.is;
@@ -10,127 +59,135 @@ import org.junit.Test;
 import org.openspotlight.federation.data.AbstractConfigurationNode;
 import org.openspotlight.federation.data.Bundle;
 import org.openspotlight.federation.data.Configuration;
-import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.ConfigurationNodeMetadata;
 import org.openspotlight.federation.data.Project;
 import org.openspotlight.federation.data.Repository;
-import org.openspotlight.federation.data.ConfigurationNode.ItemChangeEvent;
-import org.openspotlight.federation.data.ConfigurationNode.ItemChangeType;
-import org.openspotlight.federation.data.ConfigurationNode.ItemEventListener;
-import org.openspotlight.federation.data.ConfigurationNode.PropertyValue;
+import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemChangeEvent;
+import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemChangeType;
+import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemEventListener;
+import org.openspotlight.federation.data.ConfigurationNodeMetadata.PropertyValue;
 
 /**
- * Test for class {@link AbstractConfigurationNode} and {@link ConfigurationNode}
+ * Test for class {@link AbstractConfigurationNode} and
+ * {@link ConfigurationNodeMetadata}
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public class AbstractNodeTest extends NodeTest {
-
-	@Test
-	public void shouldEqualsAndHashCodeWorkOk() {
-		Configuration configuration = new Configuration();
-		Configuration group1 = new Configuration();
-		assertThat(configuration.equals(group1), is(true));
-		assertThat(configuration.hashCode(), is(group1.hashCode()));
-		assertThat(configuration.compareTo(group1), is(0));
-		Repository rep = new Repository("a", configuration);
-		Repository rep1 = new Repository("b", configuration);
-		assertThat(rep.equals(rep1), is(false));
-		assertThat(rep.hashCode(), is(not(rep1.hashCode())));
-		assertThat(rep.compareTo(rep1), is(not(0)));
-	}
-
-	@Before
-	public void releaseChanges() {
-		this.lastNodeChange = null;
-		this.lastPropertyChange = null;
-	}
-
-	private ItemChangeEvent<PropertyValue> lastPropertyChange;
-
-	private ItemChangeEvent<ConfigurationNode> lastNodeChange;
-
-	private void setLastPropertyChange(ItemChangeEvent<PropertyValue> value) {
-		this.lastPropertyChange = value;
-	}
-
-	private void setLastNodeChange(ItemChangeEvent<ConfigurationNode> value) {
-		this.lastNodeChange = value;
-	}
-
-	private Configuration createGroupWithListeners() {
-		Configuration configuration = createSampleData();
-		configuration.markAsSaved();
-		configuration.addPropertyListener(new ItemEventListener<PropertyValue>() {
-			public void changeEventHappened(ItemChangeEvent<PropertyValue> event) {
-				setLastPropertyChange(event);
-			}
-		});
-		configuration.addNodeListener(new ItemEventListener<ConfigurationNode>() {
-			public void changeEventHappened(ItemChangeEvent<ConfigurationNode> event) {
-				setLastNodeChange(event);
-			}
-		});
-		return configuration;
-	}
-
-	@Test
-	public void shouldListenChangesOnProperties() throws Exception {
-		Configuration configuration = createGroupWithListeners();
-		assertThat(configuration.isDirty(), is(false));
-		Repository repository = configuration.getRepositoryByName("r-1");
-		repository.setActive(false);
-		assertThat(lastPropertyChange.getType(), is(ItemChangeType.CHANGED));
-		assertThat(lastPropertyChange.getNewItem().getPropertyName(),
-				is("active"));
-		assertThat((Repository) lastPropertyChange.getNewItem().getOwner(),
-				is(repository));
-		assertThat(
-				(Boolean) lastPropertyChange.getNewItem().getPropertyValue(),
-				is(false));
-		assertThat(
-				(Boolean) lastPropertyChange.getOldItem().getPropertyValue(),
-				is(true));
-		lastPropertyChange = null;
-		repository.setActive(false);
-		assertThat(lastPropertyChange, is(nullValue()));
-		repository.setNumberOfParallelThreads(null);
-		assertThat(lastPropertyChange.getType(), is(ItemChangeType.EXCLUDED));
-		assertThat(lastPropertyChange.getNewItem().getPropertyValue(),
-				is(nullValue()));
-		repository.setNumberOfParallelThreads(1);
-		assertThat(lastPropertyChange.getType(), is(ItemChangeType.ADDED));
-		assertThat((Integer) lastPropertyChange.getNewItem().getPropertyValue(),
-				is(1));
-		assertThat(configuration.isDirty(), is(true));
-		assertThat(repository.getPropertyChangesSinceLastSave().size(), is(3));
-		configuration.markAsSaved();
-		assertThat(repository.isDirty(), is(false));
-		assertThat(repository.getPropertyChangesSinceLastSave().size(), is(0));
-	}
-
-	@Test
-	public void shouldListenChangesOnNodes() throws Exception {
-		Configuration configuration = createGroupWithListeners();
-		Repository repository = configuration.getRepositoryByName("r-1");
-		Project newProject = new Project("newProject", repository);
-		assertThat(lastNodeChange.getType(), is(ItemChangeType.ADDED));
-		assertThat((Project) lastNodeChange.getNewItem(), is(newProject));
-		assertThat(lastNodeChange.getOldItem(), is(nullValue()));
-		lastNodeChange = null;
-		new Project("newProject", repository);
-		assertThat(lastNodeChange, is(nullValue()));
-		Bundle newBundle = new Bundle("newBundle", newProject);
-		assertThat((Bundle) lastNodeChange.getNewItem(), is(newBundle));
-		repository.removeProject(newProject);
-		assertThat(lastNodeChange.getType(), is(ItemChangeType.EXCLUDED));
-		assertThat(lastNodeChange.getNewItem(), is(nullValue()));
-		assertThat((Project) lastNodeChange.getOldItem(), is(newProject));
-		assertThat(configuration.isDirty(), is(true));
-		assertThat(repository.getNodeChangesSinceLastSave().size(), is(3));
-		configuration.markAsSaved();
-		assertThat(repository.isDirty(), is(false));
-		assertThat(repository.getNodeChangesSinceLastSave().size(), is(0));
-	}
-
+    
+    private ItemChangeEvent<PropertyValue> lastPropertyChange;
+    
+    private ItemChangeEvent<ConfigurationNodeMetadata> lastNodeChange;
+    
+    private Configuration createGroupWithListeners() {
+        final Configuration configuration = this.createSampleData();
+        configuration.markAsSaved();
+        configuration
+                .addPropertyListener(new ItemEventListener<PropertyValue>() {
+                    public void changeEventHappened(
+                            final ItemChangeEvent<PropertyValue> event) {
+                        AbstractNodeTest.this.setLastPropertyChange(event);
+                    }
+                });
+        configuration
+                .addNodeListener(new ItemEventListener<ConfigurationNodeMetadata>() {
+                    public void changeEventHappened(
+                            final ItemChangeEvent<ConfigurationNodeMetadata> event) {
+                        AbstractNodeTest.this.setLastNodeChange(event);
+                    }
+                });
+        return configuration;
+    }
+    
+    @Before
+    public void releaseChanges() {
+        this.lastNodeChange = null;
+        this.lastPropertyChange = null;
+    }
+    
+    private void setLastNodeChange(
+            final ItemChangeEvent<ConfigurationNodeMetadata> value) {
+        this.lastNodeChange = value;
+    }
+    
+    private void setLastPropertyChange(
+            final ItemChangeEvent<PropertyValue> value) {
+        this.lastPropertyChange = value;
+    }
+    
+    @Test
+    public void shouldEqualsAndHashCodeWorkOk() {
+        final Configuration configuration = new Configuration();
+        final Configuration group1 = new Configuration();
+        assertThat(configuration.equals(group1), is(true));
+        assertThat(configuration.hashCode(), is(group1.hashCode()));
+        assertThat(configuration.compareTo(group1), is(0));
+        final Repository rep = new Repository("a", configuration);
+        final Repository rep1 = new Repository("b", configuration);
+        assertThat(rep.equals(rep1), is(false));
+        assertThat(rep.hashCode(), is(not(rep1.hashCode())));
+        assertThat(rep.compareTo(rep1), is(not(0)));
+    }
+    
+    @Test
+    public void shouldListenChangesOnNodes() throws Exception {
+        final Configuration configuration = this.createGroupWithListeners();
+        final Repository repository = configuration.getRepositoryByName("r-1");
+        final Project newProject = new Project("newProject", repository);
+        assertThat(this.lastNodeChange.getType(), is(ItemChangeType.ADDED));
+        assertThat((Project) this.lastNodeChange.getNewItem(), is(newProject));
+        assertThat(this.lastNodeChange.getOldItem(), is(nullValue()));
+        this.lastNodeChange = null;
+        new Project("newProject", repository);
+        assertThat(this.lastNodeChange, is(nullValue()));
+        final Bundle newBundle = new Bundle("newBundle", newProject);
+        assertThat((Bundle) this.lastNodeChange.getNewItem(), is(newBundle));
+        repository.removeProject(newProject);
+        assertThat(this.lastNodeChange.getType(), is(ItemChangeType.EXCLUDED));
+        assertThat(this.lastNodeChange.getNewItem(), is(nullValue()));
+        assertThat((Project) this.lastNodeChange.getOldItem(), is(newProject));
+        assertThat(configuration.isDirty(), is(true));
+        assertThat(repository.getNodeChangesSinceLastSave().size(), is(3));
+        configuration.markAsSaved();
+        assertThat(repository.isDirty(), is(false));
+        assertThat(repository.getNodeChangesSinceLastSave().size(), is(0));
+    }
+    
+    @Test
+    public void shouldListenChangesOnProperties() throws Exception {
+        final Configuration configuration = this.createGroupWithListeners();
+        assertThat(configuration.isDirty(), is(false));
+        final Repository repository = configuration.getRepositoryByName("r-1");
+        repository.setActive(false);
+        assertThat(this.lastPropertyChange.getType(),
+                is(ItemChangeType.CHANGED));
+        assertThat(this.lastPropertyChange.getNewItem().getPropertyName(),
+                is("active"));
+        assertThat(
+                (Repository) this.lastPropertyChange.getNewItem().getOwner(),
+                is(repository));
+        assertThat((Boolean) this.lastPropertyChange.getNewItem()
+                .getPropertyValue(), is(false));
+        assertThat((Boolean) this.lastPropertyChange.getOldItem()
+                .getPropertyValue(), is(true));
+        this.lastPropertyChange = null;
+        repository.setActive(false);
+        assertThat(this.lastPropertyChange, is(nullValue()));
+        repository.setNumberOfParallelThreads(null);
+        assertThat(this.lastPropertyChange.getType(),
+                is(ItemChangeType.EXCLUDED));
+        assertThat(this.lastPropertyChange.getNewItem().getPropertyValue(),
+                is(nullValue()));
+        repository.setNumberOfParallelThreads(1);
+        assertThat(this.lastPropertyChange.getType(), is(ItemChangeType.ADDED));
+        assertThat((Integer) this.lastPropertyChange.getNewItem()
+                .getPropertyValue(), is(1));
+        assertThat(configuration.isDirty(), is(true));
+        assertThat(repository.getPropertyChangesSinceLastSave().size(), is(3));
+        configuration.markAsSaved();
+        assertThat(repository.isDirty(), is(false));
+        assertThat(repository.getPropertyChangesSinceLastSave().size(), is(0));
+    }
+    
 }
