@@ -49,11 +49,16 @@
 
 package org.openspotlight.federation.data;
 
+import static java.text.MessageFormat.format;
 import static java.util.Collections.unmodifiableList;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Compare.compareAll;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -62,11 +67,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemChangeType;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemEventListener;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.PropertyValue;
 
 /**
  * This type guards the {@link ConfigurationNode} instance metadata, using the
@@ -84,27 +84,349 @@ public interface ConfigurationNodeDynamicMetadata {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    static class Factory {
+    public static class Factory {
         
+        /**
+         * Creates a dynamic metadata for a root node.
+         * 
+         * @param staticMetadata
+         * @param owner
+         * @return a new root dynamic metadata
+         */
         public static ConfigurationNodeDynamicMetadata createRoot(
                 final ConfigurationNodeStaticMetadata staticMetadata,
                 final ConfigurationNode owner) {
-            return null;
+            throw new IllegalArgumentException("not implemented yet"); //$NON-NLS-1$
         }
         
+        /**
+         * Creates a new child root node with a key property. This node should
+         * be the most common.
+         * 
+         * @param <K>
+         * @param staticMetadata
+         *            for the node
+         * @param owner
+         *            the node itself
+         * @param parentNode
+         *            node parent
+         * @param keyPropertyValue
+         *            the key value
+         * @return a new dynamic metadata
+         */
         public static <K extends Serializable> ConfigurationNodeDynamicMetadata createWithKeyProperty(
                 final ConfigurationNodeStaticMetadata staticMetadata,
                 final ConfigurationNode owner,
                 final ConfigurationNode parentNode, final K keyPropertyValue) {
             
-            return null;
+            throw new IllegalArgumentException("not implemented yet"); //$NON-NLS-1$
         }
         
+        /**
+         * Creates a dynamic metadata for a node that should be used as a simple
+         * property.
+         * 
+         * @param staticMetadata
+         * @param owner
+         * @param parentNode
+         * @return a new dynamic metadata
+         */
         public static ConfigurationNodeDynamicMetadata createWithoutKeyProperty(
                 final ConfigurationNodeStaticMetadata staticMetadata,
                 final ConfigurationNode owner,
                 final ConfigurationNode parentNode) {
-            return null;
+            throw new IllegalArgumentException("not implemented yet"); //$NON-NLS-1$
+        }
+    }
+    
+    /**
+     * A node or property change event witch is used on
+     * {@link ConfigurationNodeMetadata} listener infrastructure. <B>It's not
+     * okay to change node and property values inside its listeners</b>. It can
+     * result in unexpected results such as dead locks since the list of changes
+     * are synchronized and setting a new value will try to add a new change to
+     * the list of changes.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * @param <T>
+     *            the item type been changed
+     * 
+     */
+    public static class ItemChangeEvent<T extends Comparable<T>> implements
+            Comparable<ItemChangeEvent<T>>, Serializable {
+        
+        private static final long serialVersionUID = 1291076849217066265L;
+        
+        /**
+         * {@link #hashCode()} return.
+         */
+        private final int hashcode;
+        
+        /**
+         * Type of change event.
+         */
+        private final ItemChangeType type;
+        
+        /**
+         * The item value before change.
+         */
+        private final T oldItem;
+        
+        /**
+         * The item value after change.
+         */
+        private final T newItem;
+        
+        /**
+         * Constructor to set all the final fields.
+         * 
+         * @param type
+         *            of change event.
+         * @param oldItem
+         *            the old value of this item before change.
+         * @param newItem
+         *            the new value of this item after change.
+         */
+        public ItemChangeEvent(final ItemChangeType type, final T oldItem,
+                final T newItem) {
+            checkNotNull("type", type); //$NON-NLS-1$
+            checkCondition("atLeastOneNonNull", (oldItem != null) //$NON-NLS-1$
+                    || (newItem != null));
+            this.type = type;
+            this.oldItem = oldItem;
+            this.newItem = newItem;
+            this.hashcode = hashOf(type, oldItem, newItem);
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        public int compareTo(final ItemChangeEvent that) {
+            return compareAll(of(this.type, this.oldItem, this.newItem), andOf(
+                    that.type, that.oldItem, that.newItem));
+        }
+        
+        /**
+         * {@link Object#equals(Object)} implementation.
+         */
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof ItemChangeEvent)) {
+                return false;
+            }
+            final ItemChangeEvent that = (ItemChangeEvent) o;
+            return eachEquality(of(this.type, this.oldItem, this.newItem),
+                    andOf(that.type, that.oldItem, that.newItem));
+        }
+        
+        /**
+         * returns the item value after change.
+         * 
+         * @return item value after change.
+         */
+        public T getNewItem() {
+            return this.newItem;
+        }
+        
+        /**
+         * returns the item value before change.
+         * 
+         * @return item value before change.
+         */
+        public T getOldItem() {
+            return this.oldItem;
+        }
+        
+        /**
+         * Returns the type of change event.
+         * 
+         * @return the type of change event.
+         */
+        public ItemChangeType getType() {
+            return this.type;
+        }
+        
+        /**
+         * {@link Object#hashCode()} implementation.
+         */
+        @Override
+        public int hashCode() {
+            return this.hashcode;
+        }
+        
+    }
+    
+    /**
+     * Type of event changes that are possible to properties and configuration
+     * nodes.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public enum ItemChangeType {
+        /**
+         * inclusion event
+         */
+        ADDED,
+        /**
+         * update event
+         */
+        CHANGED,
+        /**
+         * delete event
+         */
+        EXCLUDED
+    }
+    
+    /**
+     * Listener interface to be used on listener infrastructure for node and
+     * property changes.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * @param <T>
+     *            the type been listened
+     * 
+     */
+    public interface ItemEventListener<T extends Comparable<T>> {
+        /**
+         * The notification method that will be called to tell about a new
+         * change event that happened.
+         * 
+         * @param event
+         */
+        void changeEventHappened(ItemChangeEvent<T> event);
+    }
+    
+    /**
+     * This class is used to group a property change with possible needed data,
+     * such as owner node, property name and value.
+     * 
+     * Its used on property listener methods such as
+     * {@link SharedData#addPropertyListener(ItemEventListener)},
+     * {@link SharedData#removePropertyListener(ItemEventListener)} and
+     * {@link ConfigurationNodeMetadata#getPropertyChangesSinceLastSave()}
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * 
+     */
+    public static class PropertyValue implements Comparable<PropertyValue> {
+        
+        /**
+         * Node that owns it property.
+         */
+        private final ConfigurationNode owner;
+        
+        /**
+         * The name of the property.
+         */
+        private final String propertyName;
+        /**
+         * The value of the property.
+         */
+        private final Serializable propertyValue;
+        /**
+         * return to the {@link #hashCode()} method.
+         */
+        private final int hashcode;
+        /**
+         * return to the {@link #toString()} method.
+         */
+        private final String toString;
+        
+        /**
+         * Constructor to set all the final fields.
+         * 
+         * @param propertyName
+         * @param propertyValue
+         * @param owner
+         */
+        public PropertyValue(final String propertyName,
+                final Serializable propertyValue, final ConfigurationNode owner) {
+            checkNotEmpty("propertyName", propertyName); //$NON-NLS-1$
+            checkNotNull("owner", owner); //$NON-NLS-1$
+            this.propertyName = propertyName;
+            this.propertyValue = propertyValue;
+            this.owner = owner;
+            this.hashcode = hashOf(propertyName, propertyValue, owner);
+            this.toString = format("Property[{0} = {1}]", propertyName, //$NON-NLS-1$
+                    propertyValue);
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public int compareTo(final PropertyValue that) {
+            return compareAll(of(this.propertyName, this.propertyValue,
+                    this.owner), andOf(that.propertyName, that.propertyValue,
+                    that.owner));
+        }
+        
+        /**
+         * {@link Object#equals(Object)} implementation.
+         */
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof PropertyValue)) {
+                return false;
+            }
+            final PropertyValue that = (PropertyValue) o;
+            return eachEquality(of(this.propertyName, this.propertyValue,
+                    this.owner), andOf(that.propertyName, that.propertyValue,
+                    that.owner));
+        }
+        
+        /**
+         * Gets the configuration node that owns its property.
+         * 
+         * @return the owner node.
+         */
+        public ConfigurationNode getOwner() {
+            return this.owner;
+        }
+        
+        /**
+         * Gets the property name.
+         * 
+         * @return the property name.
+         */
+        public String getPropertyName() {
+            return this.propertyName;
+        }
+        
+        /**
+         * Gets the property value.
+         * 
+         * @return the property value.
+         */
+        public Serializable getPropertyValue() {
+            return this.propertyValue;
+        }
+        
+        /**
+         * {@link Object#hashCode()} implementation.
+         */
+        @Override
+        public int hashCode() {
+            return this.hashcode;
+        }
+        
+        /**
+         * {@link Object#toString()} implementation.
+         */
+        @Override
+        public String toString() {
+            return this.toString;
         }
     }
     
@@ -116,7 +438,7 @@ public interface ConfigurationNodeDynamicMetadata {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    static class SharedData {
+    public static class SharedData {
         /**
          * dirty flag for all nodes of the current graph.
          */
@@ -320,33 +642,113 @@ public interface ConfigurationNodeDynamicMetadata {
         
     }
     
+    /**
+     * Adds a child witch should be used as a set of childs. It must have a key
+     * property.
+     * 
+     * @param <N>
+     *            child type
+     * @param child
+     */
     public <N extends ConfigurationNode> void addChild(N child);
     
+    /**
+     * Returns a given child by its type and key.
+     * 
+     * @param <N>
+     *            type of child
+     * @param childClass
+     * @param key
+     * @return A given child by its key or null when not found
+     */
     public <N extends ConfigurationNode> N getChildByKeyValue(
             Class<N> childClass, Serializable key);
     
+    /**
+     * Returns a collection of children for a given type.
+     * 
+     * @param <N>
+     *            type of children to be returned
+     * @param childClass
+     *            type of children to be returned
+     * @return all children of a given type
+     */
     public <N extends ConfigurationNode> Collection<N> getChildrensOfType(
             Class<N> childClass);
     
+    /**
+     * This method returns the parent without the need to pass the parent type.
+     * 
+     * @return the parent
+     */
     public ConfigurationNode getDefaultParent();
     
+    /**
+     * Some nodes are using in multiple times inside a node. For this nodes to
+     * be uniquely identified there is the key property name on static metadata
+     * and key property value on dynamic metadata.
+     * 
+     * @return the key property value
+     */
     public Serializable getKeyPropertyValue();
     
+    /**
+     * Returns a set of all keys for a given type, since multiple types needs to
+     * have a key property.
+     * 
+     * @param childClass
+     * @return key for each child of a given type
+     */
     public Set<Serializable> getKeysFromChildrenOfType(
             Class<? extends ConfigurationNode> childClass);
     
     /**
+     * The node properties are properties to store single node types inside a
+     * node.
+     * 
+     * @return the map with all types and nodes
+     */
+    public Map<Class<? extends ConfigurationNode>, ConfigurationNode> getNodeProperties();
+    
+    /**
+     * The property as a node returned by its type.
      * 
      * @param <N>
+     *            type of node for this property
      * @param type
-     * @return
+     *            of node for this property
+     * @return a node
      */
     public <N extends ConfigurationNode> N getNodeProperty(Class<N> type);
     
+    /**
+     * The metadata is associated with one instance of {@link ConfigurationNode}
+     * . So, its property just store the node who created its metadata.
+     * 
+     * @return the node who owns its metadata
+     */
     public ConfigurationNode getOwner();
     
+    /**
+     * Retuns the parent node for this configuration node. In case of this node
+     * been the root node, it should return null instead of throw an exception.
+     * 
+     * Note that a kind of node could have more than one single type of parent.
+     * A node can be inserted inside more than one kind of node.
+     * 
+     * @param <N>
+     *            parent node type
+     * @param parentType
+     * @return the parent node
+     */
     public <N extends ConfigurationNode> N getParent(Class<N> parentType);
     
+    /**
+     * Returns a map with all of the property names and values to be used on
+     * reflection purposes during saving and loading.
+     * 
+     * @return the property map
+     */
     public Map<String, Serializable> getProperties();
     
     /**
@@ -429,4 +831,5 @@ public interface ConfigurationNodeDynamicMetadata {
      *            of the transient property
      */
     public <N> void setTransientProperty(String name, N value);
+    
 }

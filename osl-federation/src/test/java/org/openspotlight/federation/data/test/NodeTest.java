@@ -58,12 +58,12 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.Artifact;
-import org.openspotlight.federation.data.ArtifactMapping;
-import org.openspotlight.federation.data.Bundle;
-import org.openspotlight.federation.data.Configuration;
-import org.openspotlight.federation.data.Project;
-import org.openspotlight.federation.data.Repository;
+import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.ArtifactMapping;
+import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Repository;
 
 public class NodeTest {
     

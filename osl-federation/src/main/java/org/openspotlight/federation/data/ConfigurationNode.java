@@ -53,8 +53,8 @@ import java.io.Serializable;
 
 public interface ConfigurationNode extends Comparable<ConfigurationNode>,
         Serializable {
-    ConfigurationNodeDynamicMetadata getDynamicMetadata();
     
-    ConfigurationNodeMetadata getMetadata();
+    public ConfigurationNodeDynamicMetadata getDynamicMetadata();
     
+    public ConfigurationNodeStaticMetadata getStaticMetadata();
 }

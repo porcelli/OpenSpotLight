@@ -47,72 +47,85 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.test;
+package org.openspotlight.federation.data.impl;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Collections.setOf;
+import static org.openspotlight.common.util.Arrays.andValues;
+import static org.openspotlight.common.util.Arrays.map;
+import static org.openspotlight.common.util.Arrays.ofKeys;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.load.AbstractArtifactLoader;
-import org.openspotlight.federation.data.load.ArtifactLoader;
-import org.openspotlight.federation.data.test.AbstractNodeTest;
+import org.openspotlight.federation.data.AbstractConfigurationNode;
 
-/**
- * Test for class {@link AbstractArtifactLoader}
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
- */
-public class AbstractArtifactLoaderTest extends AbstractNodeTest {
+import net.jcip.annotations.ThreadSafe;
+
+@ThreadSafe
+public final class Project extends AbstractConfigurationNode {
     
-    protected ArtifactLoader artifactLoader;
+    /**
+	 * 
+	 */
+    private static final long serialVersionUID = 2046784379709017337L;
     
-    protected Configuration configuration;
+    private static final String ACTIVE = "active";
     
-    @Before
-    public void createArtifactLoader() {
-        this.artifactLoader = new AbstractArtifactLoader() {
-            
-            @Override
-            protected Set<String> getAllArtifactNames(final Bundle bundle)
-                    throws ConfigurationException {
-                return setOf("1", "2", "3", "4", "5");
-            }
-            
-            @Override
-            protected byte[] loadArtifact(final Bundle bundle,
-                    final String artifactName) throws Exception {
-                return artifactName.getBytes();
-            }
-            
-        };
+    @SuppressWarnings("unchecked")
+    private static final Map<String, Class<?>> PROPERTY_TYPES = map(
+            ofKeys(ACTIVE), andValues(Boolean.class));
+    
+    private static final Set<Class<?>> CHILDREN_CLASSES = new HashSet<Class<?>>();
+    
+    static {
+        CHILDREN_CLASSES.add(Bundle.class);
     }
     
-    @Before
-    public void createConfiguration() {
-        this.configuration = this.createSampleData();
+    public Project(final String name, final Repository repository) {
+        super(name, repository, PROPERTY_TYPES);
     }
     
-    @Test
-    public void shouldLoadArtifacts() throws Exception {
-        for (final Repository repository : this.configuration.getRepositories()) {
-            for (final Project project : repository.getProjects()) {
-                for (final Bundle bundle : project.getBundles()) {
-                    this.artifactLoader.loadArtifactsFromMappings(bundle);
-                    assertThat(bundle.getArtifacts().size(), is(not(0)));
-                }
-            }
-        }
+    public void addBundle(final Bundle bundle) {
+        this.addChild(bundle);
+    }
+    
+    public Boolean getActive() {
+        return this.getProperty(ACTIVE);
+    }
+    
+    public Bundle getBundleByName(final String name) {
+        return super.getChildByName(Bundle.class, name);
+    }
+    
+    public Set<String> getBundleNames() {
+        return super.getKeysFromChildrenOfType(Bundle.class);
+    }
+    
+    public Collection<Bundle> getBundles() {
+        return super.getChildrensOfType(Bundle.class);
+    }
+    
+    @Override
+    public Set<Class<?>> getChildrenTypes() {
+        return CHILDREN_CLASSES;
+    }
+    
+    @Override
+    public Class<?> getParentType() {
+        return Repository.class;
+    }
+    
+    public Repository getRepository() {
+        return this.getParent();
+    }
+    
+    public void removeBundle(final Bundle bundle) {
+        this.removeChild(bundle);
+    }
+    
+    public void setActive(final Boolean active) {
+        this.setProperty(ACTIVE, active);
     }
     
 }

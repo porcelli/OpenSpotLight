@@ -47,72 +47,81 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.test;
+package org.openspotlight.federation.data.impl;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Collections.setOf;
+import static org.openspotlight.common.util.Arrays.andValues;
+import static org.openspotlight.common.util.Arrays.map;
+import static org.openspotlight.common.util.Arrays.ofKeys;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.load.AbstractArtifactLoader;
-import org.openspotlight.federation.data.load.ArtifactLoader;
-import org.openspotlight.federation.data.test.AbstractNodeTest;
+import org.openspotlight.federation.data.AbstractConfigurationNode;
 
-/**
- * Test for class {@link AbstractArtifactLoader}
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
- */
-public class AbstractArtifactLoaderTest extends AbstractNodeTest {
+import net.jcip.annotations.ThreadSafe;
+
+@ThreadSafe
+public final class ArtifactMapping extends AbstractConfigurationNode {
     
-    protected ArtifactLoader artifactLoader;
+    /**
+	 * 
+	 */
+    private static final long serialVersionUID = -294480799746694450L;
     
-    protected Configuration configuration;
+    private static final String ACTIVE = "active";
     
-    @Before
-    public void createArtifactLoader() {
-        this.artifactLoader = new AbstractArtifactLoader() {
-            
-            @Override
-            protected Set<String> getAllArtifactNames(final Bundle bundle)
-                    throws ConfigurationException {
-                return setOf("1", "2", "3", "4", "5");
-            }
-            
-            @Override
-            protected byte[] loadArtifact(final Bundle bundle,
-                    final String artifactName) throws Exception {
-                return artifactName.getBytes();
-            }
-            
-        };
+    private static final String INCLUDED = "included";
+    
+    private static final String EXCLUDED = "excluded";
+    
+    @SuppressWarnings("unchecked")
+    private static final Map<String, Class<?>> PROPERTY_TYPES = map(ofKeys(
+            ACTIVE, INCLUDED, EXCLUDED), andValues(Boolean.class, String.class,
+            String.class));
+    
+    private static final Set<Class<?>> CHILDREN_CLASSES = new HashSet<Class<?>>();
+    
+    public ArtifactMapping(final String name, final Bundle bundle) {
+        super(name, bundle, PROPERTY_TYPES);
     }
     
-    @Before
-    public void createConfiguration() {
-        this.configuration = this.createSampleData();
+    public Boolean getActive() {
+        return this.getProperty(ACTIVE);
     }
     
-    @Test
-    public void shouldLoadArtifacts() throws Exception {
-        for (final Repository repository : this.configuration.getRepositories()) {
-            for (final Project project : repository.getProjects()) {
-                for (final Bundle bundle : project.getBundles()) {
-                    this.artifactLoader.loadArtifactsFromMappings(bundle);
-                    assertThat(bundle.getArtifacts().size(), is(not(0)));
-                }
-            }
-        }
+    public Bundle getBundle() {
+        return this.getParent();
+    }
+    
+    @Override
+    public Set<Class<?>> getChildrenTypes() {
+        return CHILDREN_CLASSES;
+    }
+    
+    public String getExcluded() {
+        return this.getProperty(EXCLUDED);
+    }
+    
+    public String getIncluded() {
+        return this.getProperty(INCLUDED);
+    }
+    
+    @Override
+    public Class<?> getParentType() {
+        return Bundle.class;
+    }
+    
+    public void setActive(final Boolean active) {
+        this.setProperty(ACTIVE, active);
+    }
+    
+    public void setExcluded(final String excluded) {
+        this.setProperty(EXCLUDED, excluded);
+    }
+    
+    public void setIncluded(final String included) {
+        this.setProperty(INCLUDED, included);
     }
     
 }

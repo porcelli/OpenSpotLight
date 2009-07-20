@@ -50,7 +50,7 @@
 package org.openspotlight.federation.data.test;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.Configuration;
+import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 
 public abstract class AbstractConfigurationManagerTest extends NodeTest {

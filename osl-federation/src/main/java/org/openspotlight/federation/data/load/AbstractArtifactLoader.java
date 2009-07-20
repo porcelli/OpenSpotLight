@@ -60,9 +60,9 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
-import org.openspotlight.federation.data.Artifact;
-import org.openspotlight.federation.data.ArtifactMapping;
-import org.openspotlight.federation.data.Bundle;
+import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.ArtifactMapping;
+import org.openspotlight.federation.data.impl.Bundle;
 
 /**
  * The AbstractArtifactLoader class is itself a {@link ArtifactLoader} that do

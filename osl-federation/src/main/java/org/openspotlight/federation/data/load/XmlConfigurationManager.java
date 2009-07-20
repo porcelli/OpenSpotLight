@@ -75,8 +75,8 @@ import org.dom4j.io.XMLWriter;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.AbstractConfigurationNode;
-import org.openspotlight.federation.data.Configuration;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata;
+import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata;
 
 /**
  * This configuration manager class loads and stores the configuration on a

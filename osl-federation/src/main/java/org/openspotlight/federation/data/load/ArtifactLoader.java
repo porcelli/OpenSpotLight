@@ -57,7 +57,7 @@ import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.Bundle;
+import org.openspotlight.federation.data.impl.Bundle;
 
 /**
  * Artifact loader is the interface witch abstract the Artifact loading stuff,

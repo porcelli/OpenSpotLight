@@ -78,7 +78,7 @@ import javax.jcr.Session;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.AbstractConfigurationNode;
-import org.openspotlight.federation.data.Configuration;
+import org.openspotlight.federation.data.impl.Configuration;
 
 /**
  * Configuration manager that stores and loads the configuration from a

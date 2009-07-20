@@ -57,15 +57,15 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.AbstractConfigurationNode;
-import org.openspotlight.federation.data.Bundle;
-import org.openspotlight.federation.data.Configuration;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata;
-import org.openspotlight.federation.data.Project;
-import org.openspotlight.federation.data.Repository;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemChangeType;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.ItemEventListener;
-import org.openspotlight.federation.data.ConfigurationNodeMetadata.PropertyValue;
+import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata;
+import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.ItemChangeEvent;
+import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.ItemChangeType;
+import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.ItemEventListener;
+import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.PropertyValue;
 
 /**
  * Test for class {@link AbstractConfigurationNode} and

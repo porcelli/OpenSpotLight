@@ -56,8 +56,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.AbstractConfigurationNode;
-import org.openspotlight.federation.data.Configuration;
-import org.openspotlight.federation.data.Repository;
+import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager.NodeClassHelper;
 
 public class NodeClassHelperTest {

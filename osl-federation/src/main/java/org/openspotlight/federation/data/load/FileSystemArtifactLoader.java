@@ -62,7 +62,7 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.federation.data.Bundle;
+import org.openspotlight.federation.data.impl.Bundle;
 
 /**
  * Artifact loader that loads Artifact for file system.

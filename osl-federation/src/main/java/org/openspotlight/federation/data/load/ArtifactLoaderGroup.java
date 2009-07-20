@@ -53,7 +53,7 @@ import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.Bundle;
+import org.openspotlight.federation.data.impl.Bundle;
 
 /**
  * The ArtifactLoaderGroup class is itself a {@link ArtifactLoader} that groups

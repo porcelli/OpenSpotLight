@@ -47,72 +47,50 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.test;
+package org.openspotlight.federation.data.impl;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Collections.setOf;
+import net.jcip.annotations.ThreadSafe;
 
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.load.AbstractArtifactLoader;
-import org.openspotlight.federation.data.load.ArtifactLoader;
-import org.openspotlight.federation.data.test.AbstractNodeTest;
+import org.openspotlight.federation.data.AbstractConfigurationNode;
 
 /**
- * Test for class {@link AbstractArtifactLoader}
+ * This is the root node of the configuration classes that contains the
+ * following structure.
+ * 
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ * &lt;configuration&gt;
+ * 	&lt;repository name=&quot;development&quot; active=&quot;true&quot;
+ * 		numberOfParallelThreads=&quot;15&quot;&gt;
+ * 		&lt;project name=&quot;Open SpotLight&quot; active=&quot;true&quot;&gt;
+ * 			&lt;bundle name=&quot;Java sources&quot; active=&quot;true&quot; type=&quot;fileSystem&quot;
+ * 				initialLookup=&quot;/usr/src/osl&quot;&gt;
+ * 				&lt;artifact
+ * 					name=&quot;/usr/src/osl/src/main/java/org/openspotligth/Example.java&quot;
+ * 					dataSha1=&quot;sha1&quot; /&gt;
+ * 				&lt;artifact
+ * 					name=&quot;/usr/src/osl/src/main/java/org/openspotligth/AnotherOneExample.java&quot;
+ * 					dataSha1=&quot;sha1&quot; /&gt;
+ * 				&lt;artifactMapping name=&quot;all java files&quot; active=&quot;true&quot;
+ * 					included=&quot;/src/main/java/ **.java&quot; /&gt;
+ * 				&lt;artifactMapping name=&quot;no older types&quot; active=&quot;true&quot;
+ * 					excluded=&quot;** / *.asm&quot; /&gt;
+ * 			&lt;/bundle&gt;
+ * 		&lt;/project&gt;
+ * 	&lt;/repository&gt;
+ * &lt;/configuration&gt;
+ * </pre>
+ * 
+ * This structure are used to pass the artifacts to the parser. All the classes
+ * are thread save by default.
+ * 
+ * @see ConfigurationNodeMetadata
+ * @see AbstractConfigurationNode
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class AbstractArtifactLoaderTest extends AbstractNodeTest {
-    
-    protected ArtifactLoader artifactLoader;
-    
-    protected Configuration configuration;
-    
-    @Before
-    public void createArtifactLoader() {
-        this.artifactLoader = new AbstractArtifactLoader() {
-            
-            @Override
-            protected Set<String> getAllArtifactNames(final Bundle bundle)
-                    throws ConfigurationException {
-                return setOf("1", "2", "3", "4", "5");
-            }
-            
-            @Override
-            protected byte[] loadArtifact(final Bundle bundle,
-                    final String artifactName) throws Exception {
-                return artifactName.getBytes();
-            }
-            
-        };
-    }
-    
-    @Before
-    public void createConfiguration() {
-        this.configuration = this.createSampleData();
-    }
-    
-    @Test
-    public void shouldLoadArtifacts() throws Exception {
-        for (final Repository repository : this.configuration.getRepositories()) {
-            for (final Project project : repository.getProjects()) {
-                for (final Bundle bundle : project.getBundles()) {
-                    this.artifactLoader.loadArtifactsFromMappings(bundle);
-                    assertThat(bundle.getArtifacts().size(), is(not(0)));
-                }
-            }
-        }
-    }
+@ThreadSafe
+public final class Configuration {
     
 }
