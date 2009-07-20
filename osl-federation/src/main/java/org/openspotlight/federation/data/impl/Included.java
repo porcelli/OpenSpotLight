@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.impl;
 
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -77,23 +78,28 @@ public class Included implements ConfigurationNode {
         final StaticMetadata newStaticMetadata = createMutable();
         newStaticMetadata.setType(Included.class);
         newStaticMetadata.setParentNodeValidTypes(ArtifactMapping.class);
+        newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setKeyProperty(NAME);
         staticMetadata = createImmutable(newStaticMetadata);
     }
     
     private final InstanceMetadata instanceMetadata;
     
-    private static final StaticMetadata staticMetadata;
+    /** the static metadata for this class */
+    public static final StaticMetadata staticMetadata;
     
     /**
-     * Constructor to create an included node inside an artifact mapping.
+     * Creates an included node inside this artifact mapping.
      * 
      * @param name
      * @param artifactMapping
      */
-    public Included(final String name, final ArtifactMapping artifactMapping) {
+    public Included(final ArtifactMapping artifactMapping, final String name) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 artifactMapping, name);
+        checkCondition("noIncluded", //$NON-NLS-1$
+                artifactMapping.getIncludedByName(name) == null);
+        artifactMapping.addIncluded(this);
     }
     
     /**

@@ -50,12 +50,14 @@
 package org.openspotlight.federation.data.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.StaticMetadata;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager.NodeClassHelper;
@@ -80,8 +82,9 @@ public class NodeClassHelperTest {
     @Test
     public void shouldCreateInstance() throws Exception {
         final Configuration configuration = new Configuration();
-        final Repository theSameRepository = new Repository(configuration,
-                "name");
+        final Configuration anotherConfiguration = new Configuration();
+        final Repository theSameRepository = new Repository(
+                anotherConfiguration, "name");
         final Repository newRepository = this.nodeClassHelper.createInstance(
                 "name", configuration, "osl:repository");
         assertThat(newRepository, is(theSameRepository));
@@ -108,6 +111,13 @@ public class NodeClassHelperTest {
         final Class<? extends ConfigurationNode> clazz = this.nodeClassHelper
                 .getNodeClassFromName("osl:repository");
         assertThat(Repository.class.equals(clazz), is(true));
+    }
+    
+    @Test
+    public void shouldGetStaticData() throws Exception {
+        final StaticMetadata staticMetadata = this.nodeClassHelper
+                .getStaticMetadataFromClass(Configuration.class);
+        assertThat(staticMetadata, is(notNullValue()));
     }
     
     @Test(expected = ConfigurationException.class)

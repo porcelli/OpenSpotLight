@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.impl;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -73,8 +74,9 @@ import org.openspotlight.federation.data.StaticMetadata;
  * As this class is non final, the protected constructor should be called and
  * also all nonfinal methods should be ovewriten.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com FIXME create
- *         inheritance example
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ *         FIXME create inheritance example
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
@@ -96,6 +98,7 @@ public class Bundle implements ConfigurationNode {
         final StaticMetadata newStaticMetadata = createMutable();
         newStaticMetadata.setChildrenNodeValidTypes(StreamArtifact.class,
                 JcrArtifact.class, ArtifactMapping.class, Bundle.class);
+        newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setType(Bundle.class);
         newStaticMetadata.setParentNodeValidTypes(Project.class);
         newStaticMetadata.setKeyProperty(NAME);
@@ -107,10 +110,11 @@ public class Bundle implements ConfigurationNode {
     
     private final InstanceMetadata instanceMetadata;
     
-    private static final StaticMetadata staticMetadata;
+    /** the static metadata for this class */
+    public static final StaticMetadata staticMetadata;
     
     /**
-     * Creates a bundle within a project.
+     * creates a bundle inside this project.
      * 
      * @param project
      * @param name
@@ -118,6 +122,10 @@ public class Bundle implements ConfigurationNode {
     public Bundle(final Project project, final String name) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 project, name);
+        checkCondition("noBundle", //$NON-NLS-1$
+                project.getBundleByName(name) == null);
+        project.addBundle(this);
+        
     }
     
     /**
@@ -130,15 +138,6 @@ public class Bundle implements ConfigurationNode {
     protected Bundle(final StaticMetadata staticMetadata,
             final InstanceMetadata instanceMetadata) {
         this.instanceMetadata = instanceMetadata;
-    }
-    
-    /**
-     * Adds an artifact.
-     * 
-     * @param Artifact
-     */
-    public final void addArtifact(final StreamArtifact Artifact) {
-        this.instanceMetadata.addChild(Artifact);
     }
     
     /**
@@ -180,6 +179,15 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
+     * Adds an artifact.
+     * 
+     * @param Artifact
+     */
+    public final void addStreamArtifact(final StreamArtifact Artifact) {
+        this.instanceMetadata.addChild(Artifact);
+    }
+    
+    /**
      * 
      * {@inheritDoc}
      */
@@ -193,17 +201,6 @@ public class Bundle implements ConfigurationNode {
      */
     public final Boolean getActive() {
         return this.instanceMetadata.getProperty(ACTIVE);
-    }
-    
-    /**
-     * Returns an artifact by its name.
-     * 
-     * @param name
-     * @return an artifact
-     */
-    public final StreamArtifact getArtifactByName(final String name) {
-        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
-                name);
     }
     
     /**
@@ -241,14 +238,6 @@ public class Bundle implements ConfigurationNode {
     public final Set<String> getArtifactNames() {
         return (Set<String>) this.instanceMetadata
                 .getKeysFromChildrenOfType(StreamArtifact.class);
-    }
-    
-    /**
-     * 
-     * @return all artifacts
-     */
-    public final Collection<StreamArtifact> getArtifacts() {
-        return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
     }
     
     /**
@@ -362,6 +351,25 @@ public class Bundle implements ConfigurationNode {
      */
     public StaticMetadata getStaticMetadata() {
         return staticMetadata;
+    }
+    
+    /**
+     * Returns an artifact by its name.
+     * 
+     * @param name
+     * @return an artifact
+     */
+    public final StreamArtifact getStreamArtifactByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
+                name);
+    }
+    
+    /**
+     * 
+     * @return all artifacts
+     */
+    public final Collection<StreamArtifact> getStreamArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
     }
     
     /**

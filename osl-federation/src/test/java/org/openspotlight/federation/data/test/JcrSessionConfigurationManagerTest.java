@@ -64,7 +64,8 @@ import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 
 /**
- * Test class to see if the Jcr configuration is working ok.
+ * Test class to see if the Jcr configuration is working ok. This test was based
+ * on tests found on DNA project http://jboss.org/dna/
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 

@@ -50,15 +50,14 @@
 package org.openspotlight.federation.data;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Collections.createImmutableMap;
+import static org.openspotlight.common.util.Collections.createImmutableSet;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -111,16 +110,16 @@ public interface StaticMetadata {
             public ImmutableClassMetadata(final StaticMetadata base) {
                 this.type = base.getType();
                 this.keyProperty = base.getKeyProperty();
-                this.parentNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getParentNodeValidTypes()));
-                this.childrenNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getChildrenValidNodeTypes()));
-                this.propertyTypes = unmodifiableMap(new HashMap<String, Class<?>>(
-                        base.getPropertyTypes()));
+                
+                this.parentNodeValidTypes = createImmutableSet(base
+                        .getParentNodeValidTypes());
+                this.childrenNodeValidTypes = createImmutableSet(base
+                        .getChildrenValidNodeTypes());
+                this.propertyTypes = createImmutableMap(base.getPropertyTypes());
                 
                 this.keyPropertyType = base.getKeyPropertyType();
-                this.singleChildrenNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getSingleChildrenNodeValidTypes()));
+                this.singleChildrenNodeValidTypes = createImmutableSet(base
+                        .getSingleChildrenNodeValidTypes());
                 
                 this.hashCode = hashOf(this.type, this.keyProperty,
                         this.parentNodeValidTypes, this.childrenNodeValidTypes,
@@ -314,15 +313,15 @@ public interface StaticMetadata {
             public MutableClassMetadata(final StaticMetadata base) {
                 this.type = base.getType();
                 this.keyProperty = base.getKeyProperty();
-                this.parentNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getParentNodeValidTypes());
-                this.childrenNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getChildrenValidNodeTypes());
-                this.propertyTypes = new HashMap<String, Class<?>>(base
-                        .getPropertyTypes());
+                this.parentNodeValidTypes = createImmutableSet(base
+                        .getParentNodeValidTypes());
+                this.childrenNodeValidTypes = createImmutableSet(base
+                        .getChildrenValidNodeTypes());
+                this.propertyTypes = createImmutableMap(base.getPropertyTypes());
+                
                 this.keyPropertyType = base.getKeyPropertyType();
-                this.singleChildrenNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getSingleChildrenNodeValidTypes());
+                this.singleChildrenNodeValidTypes = createImmutableSet(base
+                        .getSingleChildrenNodeValidTypes());
             }
             
             /**

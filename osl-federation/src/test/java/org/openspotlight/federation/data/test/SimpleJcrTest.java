@@ -64,7 +64,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test case for JCR test time configuration
+ * Test case for JCR test time configuration. This test was based on tests found
+ * on DNA project http://jboss.org/dna/
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 

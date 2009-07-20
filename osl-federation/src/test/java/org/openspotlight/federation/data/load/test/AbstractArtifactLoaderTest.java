@@ -110,7 +110,7 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
             for (final Project project : repository.getProjects()) {
                 for (final Bundle bundle : project.getBundles()) {
                     this.artifactLoader.loadArtifactsFromMappings(bundle);
-                    assertThat(bundle.getArtifacts().size(), is(not(0)));
+                    assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
                 }
             }
         }

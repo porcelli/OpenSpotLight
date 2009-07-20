@@ -47,7 +47,11 @@
 			<groupId>ant</groupId>
 			<artifactId>ant</artifactId>
 		</dependency>
-
+		<!-- bean utils-->
+		<dependency>
+		  <groupId>commons-beanutils</groupId>
+		  <artifactId>commons-beanutils</artifactId>
+		</dependency>
 
 		<!-- Java Concurrency in Practice annotations -->
 		<dependency>

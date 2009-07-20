@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.impl;
 
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -85,6 +86,7 @@ public final class ArtifactMapping implements ConfigurationNode {
         final StaticMetadata newStaticMetadata = createMutable();
         newStaticMetadata.setChildrenNodeValidTypes(Excluded.class,
                 Included.class);
+        newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setType(ArtifactMapping.class);
         newStaticMetadata.setParentNodeValidTypes(Bundle.class, Project.class);
         newStaticMetadata.setKeyProperty(RELATIVE);
@@ -93,7 +95,7 @@ public final class ArtifactMapping implements ConfigurationNode {
     
     private final InstanceMetadata instanceMetadata;
     
-    private static final StaticMetadata staticMetadata;
+    /** the static metadata for this class */ public static final StaticMetadata staticMetadata;
     
     /**
      * Creates an artifact mapping inside a bundle.
@@ -104,6 +106,9 @@ public final class ArtifactMapping implements ConfigurationNode {
     public ArtifactMapping(final Bundle bundle, final String relative) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 bundle, relative);
+        checkCondition("noArtifactMapping", //$NON-NLS-1$
+                bundle.getArtifactMappingByName(relative) == null);
+        bundle.addArtifactMapping(this);
     }
     
     /**
@@ -115,6 +120,10 @@ public final class ArtifactMapping implements ConfigurationNode {
     public ArtifactMapping(final Project project, final String relative) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 project, relative);
+        checkCondition("noArtifactMapping", //$NON-NLS-1$
+                project.getArtifactMappingByName(relative) == null);
+        project.addArtifactMapping(this);
+        
     }
     
     /**

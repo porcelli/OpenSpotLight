@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -106,8 +107,8 @@ public class NodeTest {
         assertThat(bundle.getArtifactMappings().size(), is(not(0)));
         assertThat(bundle.getArtifactMappingNames().size(), is(not(0)));
         if (verifyArtifacts) {
-            assertThat(bundle.getArtifacts().size(), is(not(0)));
-            assertThat(bundle.getArtifacts().size(), is(not(0)));
+            assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
+            assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
         }
         final ArtifactMapping artifactMapping = bundle
                 .getArtifactMappingByName("rm-1,1,1,1");
@@ -119,7 +120,7 @@ public class NodeTest {
         
         if (verifyArtifacts) {
             final StreamArtifact artifact = bundle
-                    .getArtifactByName("r-1,1,1,1");
+                    .getStreamArtifactByName("r-1,1,1,1");
             // THIS IS TRANSIENT : Artifact.getData()
             assertThat(artifact.getDataSha1(), is(notNullValue()));
         }
@@ -148,8 +149,8 @@ public class NodeTest {
                     for (final int l : numbers) {
                         final ArtifactMapping artifactMapping = new ArtifactMapping(
                                 bundle, "rm-" + i + "," + j + "," + k + "," + l);
-                        new Included("*", artifactMapping);
-                        new Excluded("**/*.excluded", artifactMapping);
+                        new Included(artifactMapping, "*");
+                        new Excluded(artifactMapping, "**/*.excluded");
                     }
                     for (final int m : numbers) {
                         final StreamArtifact Artifact = new StreamArtifact(
@@ -171,25 +172,21 @@ public class NodeTest {
     
     @Test
     public void shouldFindArtifactByName() throws Exception {
-        throw new IllegalStateException("not implemented");
-        // FIXME CREATE THIS
-        // final Configuration configuration = this.createSampleData();
-        // final StreamArtifact artifact = configuration.findByName(
-        // "initialLookup", "r-1,1,1,1");
-        // assertThat(artifact, is(notNullValue()));
+        final Configuration configuration = this.createSampleData();
+        final StreamArtifact artifact = configuration.findByName(
+                "initialLookup", "r-1,1,1,1");
+        assertThat(artifact, is(notNullValue()));
     }
     
     @Test
     public void shouldRetturnNullWhenFindingArtifactWithInvalidName()
             throws Exception {
-        throw new IllegalStateException("not implemented");
-        // FIXME CREATE THIS
-        // final Configuration configuration = this.createSampleData();
-        // StreamArtifact artifact = configuration.findByName("initialLookup",
-        // "invalidName");
-        // assertThat(artifact, is(nullValue()));
-        // artifact = configuration.findByName("invalidName", "invalidName");
-        // assertThat(artifact, is(nullValue()));
+        final Configuration configuration = this.createSampleData();
+        StreamArtifact artifact = configuration.findByName("initialLookup",
+                "invalidName");
+        assertThat(artifact, is(nullValue()));
+        artifact = configuration.findByName("invalidName", "invalidName");
+        assertThat(artifact, is(nullValue()));
     }
     
 }

@@ -47,44 +47,16 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.test;
-
-import org.junit.Before;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Project;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
+package org.openspotlight.federation.data;
 
 /**
- * Test for class {@link FileSystemArtifactLoader}
+ * This interface is used to mark some configuration node as a generated node.
+ * This kind of node is a metadata for internal use only and do not need to be
+ * exposed in a simple xml configuration for example.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@SuppressWarnings("all")
-public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
-    
-    @Override
-    @Before
-    public void createArtifactLoader() {
-        this.artifactLoader = new FileSystemArtifactLoader();
-    }
-    
-    @Override
-    @Before
-    public void createConfiguration() {
-        this.configuration = new Configuration();
-        final Repository repository = new Repository(this.configuration,
-                "Current source files");
-        final Project project = new Project(repository, "current project");
-        final Bundle bundle = new Bundle(project, "java source");
-        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-                "All java files");
-        bundle.setInitialLookup("src/main/java");
-        new Included(artifactMapping, "*.java");
-    }
-    
+public interface GeneratedNode {
+    // just a marker interface
 }

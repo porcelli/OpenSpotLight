@@ -47,44 +47,34 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.test;
+package org.openspotlight.common.util.test;
 
-import org.junit.Before;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Project;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Conversion.convert;
+
+import java.math.BigDecimal;
+
+import org.junit.Test;
+import org.openspotlight.common.util.Conversion;
 
 /**
- * Test for class {@link FileSystemArtifactLoader}
+ * Test class for {@link Conversion}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @SuppressWarnings("all")
-public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
+public class ConversionTest {
     
-    @Override
-    @Before
-    public void createArtifactLoader() {
-        this.artifactLoader = new FileSystemArtifactLoader();
+    @Test
+    public void shouldConvertValidValues() throws Exception {
+        final Long l = 3l;
+        final String asString = convert(l, String.class);
+        final Integer asInt = convert(asString, Integer.class);
+        final BigDecimal asBd = convert(l, BigDecimal.class);
+        assertThat(asString, is("3"));
+        assertThat(asInt, is(3));
+        assertThat(asBd, is(new BigDecimal("3")));
     }
-    
-    @Override
-    @Before
-    public void createConfiguration() {
-        this.configuration = new Configuration();
-        final Repository repository = new Repository(this.configuration,
-                "Current source files");
-        final Project project = new Project(repository, "current project");
-        final Bundle bundle = new Bundle(project, "java source");
-        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-                "All java files");
-        bundle.setInitialLookup("src/main/java");
-        new Included(artifactMapping, "*.java");
-    }
-    
 }

@@ -71,6 +71,13 @@ import java.io.Serializable;
  * As these configuration nodes should be used by a lot of parses at the same
  * time, it is mandatory to these classes to be thread safe.
  * 
+ * There's a few mandatory conditions to the {@link ConfigurationNode} work
+ * well. The first one is that the package should be the same of the current
+ * root node. The second one is that the constructors parameters should be in a
+ * order that the parent node is the first parameter and the key value is the
+ * second one. The third condition is that the node should have an static
+ * property named staticMetadata as an public attribute.
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */

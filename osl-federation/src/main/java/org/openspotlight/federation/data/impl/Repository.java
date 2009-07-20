@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.impl;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -87,6 +88,7 @@ public final class Repository implements ConfigurationNode {
         newStaticMetadata.setChildrenNodeValidTypes(Project.class);
         newStaticMetadata.setType(Repository.class);
         newStaticMetadata.setParentNodeValidTypes(Configuration.class);
+        newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setKeyProperty(NAME);
         newStaticMetadata.setPropertyTypes(map(ofKeys(
                 NUMBER_OF_PARALLEL_THREADS, ACTIVE), andValues(Integer.class,
@@ -96,11 +98,9 @@ public final class Repository implements ConfigurationNode {
     
     private final InstanceMetadata instanceMetadata;
     
-    private static final StaticMetadata staticMetadata;
+    /** the static metadata for this class */
+    public static final StaticMetadata staticMetadata;
     
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = -3606246260530743008L;
     
     /**
@@ -112,6 +112,10 @@ public final class Repository implements ConfigurationNode {
     public Repository(final Configuration configuration, final String name) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 configuration, name);
+        checkCondition("noRepository", //$NON-NLS-1$
+                configuration.getRepositoryByName(name) == null);
+        configuration.addRepository(this);
+        
     }
     
     /**

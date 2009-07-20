@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.load;
 
+import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
@@ -75,6 +76,8 @@ import org.dom4j.io.XMLWriter;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.GeneratedNode;
+import org.openspotlight.federation.data.StaticMetadata;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
@@ -91,7 +94,6 @@ public class XmlConfigurationManager implements ConfigurationManager {
     
     private final NodeClassHelper classHelper = new NodeClassHelper();
     
-    private final boolean ignoreArtifacts;
     private final String url;
     private final SAXReader reader = new SAXReader();
     
@@ -101,31 +103,36 @@ public class XmlConfigurationManager implements ConfigurationManager {
      * simple configuration and not to store all the artifact metadata.
      * 
      * @param url
-     * @param ignoreArtifacts
      */
-    public XmlConfigurationManager(final String url,
-            final boolean ignoreArtifacts) {
+    public XmlConfigurationManager(final String url) {
         this.url = url;
-        this.ignoreArtifacts = ignoreArtifacts;
     }
     
     @SuppressWarnings("unchecked")
     private void createEachXmlNode(final Element element,
             final ConfigurationNode configurationNode) throws SLException {
+        if (configurationNode instanceof GeneratedNode) {
+            return;
+        }
         final Set<Class<? extends ConfigurationNode>> childrenClasses = configurationNode
                 .getStaticMetadata().getChildrenValidNodeTypes();
-        for (final Class<? extends ConfigurationNode> clazz : childrenClasses) {
-            
+        for (final Class<? extends ConfigurationNode> childClass : childrenClasses) {
+            if (GeneratedNode.class.isAssignableFrom(childClass)) {
+                continue;
+            }
             final Set<Serializable> keys = (Set<Serializable>) configurationNode
-                    .getInstanceMetadata().getKeysFromChildrenOfType(clazz);
+                    .getInstanceMetadata()
+                    .getKeysFromChildrenOfType(childClass);
             for (final Serializable key : keys) {
                 final ConfigurationNode innerNode = configurationNode
                         .getInstanceMetadata()
                         .getChildByKeyValue(
-                                (Class<? extends ConfigurationNode>) clazz, key);
+                                (Class<? extends ConfigurationNode>) childClass,
+                                key);
                 final Element newElement = element
                         .addElement(removeBegginingFrom("osl:", //$NON-NLS-1$
-                                this.classHelper.getNameFromNodeClass(clazz)));
+                                this.classHelper
+                                        .getNameFromNodeClass(childClass)));
                 newElement.addAttribute(innerNode.getStaticMetadata()
                         .getKeyProperty(), key.toString());
                 final Map<String, Serializable> properties = innerNode
@@ -167,17 +174,22 @@ public class XmlConfigurationManager implements ConfigurationManager {
         for (final Iterator<Element> elements = parentElement.elementIterator(); elements
                 .hasNext();) {
             final Element nextElement = elements.next();
-            final String nodeClass = nextElement.getName();
-            // FIXME create a list of ignored artifacts (using interfaces)
-            if ((this.ignoreArtifacts && ("osl:streamArtifact" //$NON-NLS-1$
-                    .equals(nodeClass)))
-                    || "osl:jcrArtifact".equals(nodeClass)) { //$NON-NLS-1$ 
+            final String nodeClassName = nextElement.getName();
+            final Class<? extends ConfigurationNode> nodeClass = this.classHelper
+                    .getNodeClassFromName("osl:" + nodeClassName); //$NON-NLS-1$
+            if (GeneratedNode.class.isAssignableFrom(nodeClass)) {
                 continue;
             }
-            final String keyProperty = "key";//FIXME get this in a dynamic way //$NON-NLS-1$
-            final String nodeName = nextElement.attributeValue(keyProperty);
+            final StaticMetadata staticMetadata = this.classHelper
+                    .getStaticMetadataFromClass(nodeClass);
+            final String keyProperty = staticMetadata.getKeyProperty();
+            final String keyPropertyValueAsString = nextElement
+                    .attributeValue(keyProperty);
+            final Serializable keyPropertyValue = (Serializable) convert(
+                    keyPropertyValueAsString, staticMetadata
+                            .getKeyPropertyType());
             final ConfigurationNode newNode = this.classHelper.createInstance(
-                    nodeName, parentNode, "osl:" + nodeClass); //$NON-NLS-1$
+                    keyPropertyValue, parentNode, "osl:" + nodeClassName); //$NON-NLS-1$
             final Map<String, Class<?>> propertyTypes = newNode
                     .getStaticMetadata().getPropertyTypes();
             

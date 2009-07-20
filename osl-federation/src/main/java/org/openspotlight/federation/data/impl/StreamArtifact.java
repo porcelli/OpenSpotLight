@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.impl;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -61,6 +62,7 @@ import java.io.InputStream;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
@@ -72,7 +74,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
-public final class StreamArtifact implements ConfigurationNode {
+public final class StreamArtifact implements ConfigurationNode, GeneratedNode {
     
     /**
 	 * 
@@ -89,6 +91,7 @@ public final class StreamArtifact implements ConfigurationNode {
         newStaticMetadata.setType(StreamArtifact.class);
         newStaticMetadata.setParentNodeValidTypes(Project.class, Bundle.class);
         newStaticMetadata.setKeyProperty(RELATIVE_NAME);
+        newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setPropertyTypes(map(ofKeys(DATA_SHA1, DATA,
                 RELATIVE_NAME), andValues(String.class, InputStream.class,
                 String.class)));
@@ -96,10 +99,11 @@ public final class StreamArtifact implements ConfigurationNode {
     }
     private final InstanceMetadata instanceMetadata;
     
-    private static final StaticMetadata staticMetadata;
+    /** the static metadata for this class */
+    public static final StaticMetadata staticMetadata;
     
     /**
-     * Constructor to create a stream artifact inside a bundle.
+     * Creates a stream artifact inside a bundle.
      * 
      * @param bundle
      * @param relativeName
@@ -107,6 +111,9 @@ public final class StreamArtifact implements ConfigurationNode {
     public StreamArtifact(final Bundle bundle, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 bundle, relativeName);
+        checkCondition("noStreamArtifact", //$NON-NLS-1$
+                bundle.getStreamArtifactByName(relativeName) == null);
+        bundle.addStreamArtifact(this);
     }
     
     /**
@@ -118,6 +125,9 @@ public final class StreamArtifact implements ConfigurationNode {
     public StreamArtifact(final Project project, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 project, relativeName);
+        checkCondition("noStreamArtifact", //$NON-NLS-1$
+                project.getStreamArtifactByName(relativeName) == null);
+        project.addStreamArtifact(this);
     }
     
     /**

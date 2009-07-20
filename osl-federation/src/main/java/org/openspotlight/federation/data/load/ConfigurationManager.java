@@ -57,12 +57,15 @@ import static org.openspotlight.common.util.Strings.firstLetterToLowerCase;
 import static org.openspotlight.common.util.Strings.firstLetterToUpperCase;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.StaticMetadata;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
@@ -99,25 +102,29 @@ public interface ConfigurationManager {
          * string and a node, as in the super class {@link ConfigurationNode}.
          * 
          * @param <N>
-         * @param nodeName
+         * @param <S>
+         * @param keyValue
          * @param parentNode
          * @param nodeClassName
          * @return a new configuration node
          * @throws ConfigurationException
          */
-        public <N extends ConfigurationNode> N createInstance(
-                final String nodeName, final ConfigurationNode parentNode,
+        public <N extends ConfigurationNode, S extends Serializable> N createInstance(
+                final S keyValue, final ConfigurationNode parentNode,
                 final String nodeClassName) throws ConfigurationException {
-            checkNotEmpty("nodeName", nodeName); //$NON-NLS-1$
+            checkNotNull("keyValue", keyValue); //$NON-NLS-1$
             checkNotNull("parentNode", parentNode); //$NON-NLS-1$
             checkNotEmpty("nodeClassName", nodeClassName); //$NON-NLS-1$
             checkCondition("nodeClassNameWithPrefix", nodeClassName //$NON-NLS-1$
                     .startsWith(DEFAULT_OSL_PREFIX + ":")); //$NON-NLS-1$
             try {
-                final Class<N> clazz = getNodeClassFromName(nodeClassName);
-                final Constructor<N> constructor = clazz.getConstructor(
-                        String.class, parentNode.getClass());
-                final N node = constructor.newInstance(nodeName, parentNode);
+                
+                final Class<N> nodeClass = getNodeClassFromName(nodeClassName);
+                final StaticMetadata staticMetadata = getStaticMetadataFromClass(nodeClass);
+                final Constructor<N> constructor = nodeClass.getConstructor(
+                        parentNode.getClass(), staticMetadata
+                                .getKeyPropertyType());
+                final N node = constructor.newInstance(parentNode, keyValue);
                 return node;
             } catch (final Exception e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
@@ -206,6 +213,28 @@ public interface ConfigurationManager {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }
             
+        }
+        
+        /**
+         * Gets the static metadata from a static field on
+         * {@link ConfigurationNode} extended class.
+         * 
+         * @param configurationNodeClass
+         * @return the static metadata
+         * @throws ConfigurationException
+         */
+        public StaticMetadata getStaticMetadataFromClass(
+                final Class<? extends ConfigurationNode> configurationNodeClass)
+                throws ConfigurationException {
+            try {
+                final Field staticField = configurationNodeClass
+                        .getDeclaredField("staticMetadata"); //$NON-NLS-1$
+                final StaticMetadata staticMetadata = (StaticMetadata) staticField
+                        .get(null);
+                return staticMetadata;
+            } catch (final Exception e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            }
         }
     }
     

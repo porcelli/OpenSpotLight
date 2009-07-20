@@ -174,6 +174,11 @@ public interface InstanceMetadata {
                 this.keyPropertyValue = keyPropertyValue;
                 this.parent = parent;
                 this.owner = owner;
+                for (final Class<?> childClass : staticMetadata
+                        .getChildrenValidNodeTypes()) {
+                    this.children.put(childClass,
+                            new HashMap<Serializable, ConfigurationNode>());
+                }
             }
             
             /**

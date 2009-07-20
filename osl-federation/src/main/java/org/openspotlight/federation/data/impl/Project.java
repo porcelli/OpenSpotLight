@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.impl;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -89,6 +90,7 @@ public final class Project implements ConfigurationNode {
         newStaticMetadata.setType(Project.class);
         newStaticMetadata.setParentNodeValidTypes(Project.class,
                 Repository.class);
+        newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setKeyProperty(NAME);
         newStaticMetadata.setPropertyTypes(map(ofKeys(ACTIVE),
                 andValues(Boolean.class)));
@@ -97,12 +99,7 @@ public final class Project implements ConfigurationNode {
     
     private final InstanceMetadata instanceMetadata;
     
-    private static final StaticMetadata staticMetadata;
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -3606246260530743008L;
+    /** the static metadata for this class */ public static final StaticMetadata staticMetadata; static final long serialVersionUID = -3606246260530743008L;
     
     /**
      * Creates a project within a other project.
@@ -113,6 +110,10 @@ public final class Project implements ConfigurationNode {
     public Project(final Project project, final String name) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 project, name);
+        checkCondition("noProject", //$NON-NLS-1$
+                project.getProjectByName(name) == null);
+        project.addProject(this);
+        
     }
     
     /**
@@ -124,15 +125,9 @@ public final class Project implements ConfigurationNode {
     public Project(final Repository repository, final String name) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
                 repository, name);
-    }
-    
-    /**
-     * Adds an artifact.
-     * 
-     * @param Artifact
-     */
-    public final void addArtifact(final StreamArtifact Artifact) {
-        this.instanceMetadata.addChild(Artifact);
+        checkCondition("noProject", //$NON-NLS-1$
+                repository.getProjectByName(name) == null);
+        repository.addProject(this);
     }
     
     /**
@@ -172,6 +167,15 @@ public final class Project implements ConfigurationNode {
     }
     
     /**
+     * Adds an artifact.
+     * 
+     * @param Artifact
+     */
+    public final void addStreamArtifact(final StreamArtifact Artifact) {
+        this.instanceMetadata.addChild(Artifact);
+    }
+    
+    /**
      * 
      * {@inheritDoc}
      */
@@ -185,17 +189,6 @@ public final class Project implements ConfigurationNode {
      */
     public final Boolean getActive() {
         return this.instanceMetadata.getProperty(ACTIVE);
-    }
-    
-    /**
-     * Returns an artifact by its name.
-     * 
-     * @param name
-     * @return an artifact
-     */
-    public final StreamArtifact getArtifactByName(final String name) {
-        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
-                name);
     }
     
     /**
@@ -365,6 +358,17 @@ public final class Project implements ConfigurationNode {
      */
     public final StaticMetadata getStaticMetadata() {
         return staticMetadata;
+    }
+    
+    /**
+     * Returns an artifact by its name.
+     * 
+     * @param name
+     * @return an artifact
+     */
+    public final StreamArtifact getStreamArtifactByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
+                name);
     }
     
     /**

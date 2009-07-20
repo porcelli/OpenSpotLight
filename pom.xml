@@ -142,6 +142,12 @@
   <artifactId>jasypt</artifactId>
   <version>1.5</version>
 </dependency>
+<!-- Bean utils -->
+<dependency>
+  <groupId>commons-beanutils</groupId>
+  <artifactId>commons-beanutils</artifactId>
+  <version>1.8.0</version>
+</dependency>
 <!-- Java Content Repository API -->
 			<dependency>
 				<groupId>javax.jcr</groupId>

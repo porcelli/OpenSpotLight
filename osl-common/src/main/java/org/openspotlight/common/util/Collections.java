@@ -49,9 +49,15 @@
 
 package org.openspotlight.common.util;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,6 +67,41 @@ import java.util.Set;
  * 
  */
 public class Collections {
+    
+    /**
+     * Creates an immutable map in a null pointer safe way
+     * 
+     * @param <K>
+     * @param <V>
+     * @param base
+     * @return an immutable map
+     */
+    public static <K, V> Map<K, V> createImmutableMap(final Map<K, V> base) {
+        Map<K, V> temp = base;
+        if (temp == null) {
+            temp = emptyMap();
+        } else {
+            temp = unmodifiableMap(new HashMap<K, V>(temp));
+        }
+        return temp;
+    }
+    
+    /**
+     * Creates an immutable set in a null pointer safe way
+     * 
+     * @param <E>
+     * @param base
+     * @return an immutable set
+     */
+    public static <E> Set<E> createImmutableSet(final Set<E> base) {
+        Set<E> temp = base;
+        if (temp == null) {
+            temp = emptySet();
+        } else {
+            temp = unmodifiableSet(new HashSet<E>(temp));
+        }
+        return temp;
+    }
     
     /**
      * Convenient method to create a typed set using varargs.
