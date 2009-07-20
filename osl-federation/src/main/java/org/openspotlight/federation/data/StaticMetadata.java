@@ -114,7 +114,7 @@ public interface StaticMetadata {
                 this.parentNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
                         base.getParentNodeValidTypes()));
                 this.childrenNodeValidTypes = unmodifiableSet(new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getChildrenNodeValidTypes()));
+                        base.getChildrenValidNodeTypes()));
                 this.propertyTypes = unmodifiableMap(new HashMap<String, Class<?>>(
                         base.getPropertyTypes()));
                 
@@ -143,7 +143,7 @@ public interface StaticMetadata {
                         this.singleChildrenNodeValidTypes), andOf(that
                         .getType(), that.getKeyProperty(), that
                         .getParentNodeValidTypes(), that
-                        .getChildrenNodeValidTypes(), that.getPropertyTypes(),
+                        .getChildrenValidNodeTypes(), that.getPropertyTypes(),
                         that.getKeyPropertyType(), that
                                 .getSingleChildrenNodeValidTypes()));
             }
@@ -151,7 +151,7 @@ public interface StaticMetadata {
             /**
              * {@inheritDoc}
              */
-            public Set<Class<? extends ConfigurationNode>> getChildrenNodeValidTypes() {
+            public Set<Class<? extends ConfigurationNode>> getChildrenValidNodeTypes() {
                 return this.childrenNodeValidTypes;
             }
             
@@ -317,7 +317,7 @@ public interface StaticMetadata {
                 this.parentNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
                         base.getParentNodeValidTypes());
                 this.childrenNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
-                        base.getChildrenNodeValidTypes());
+                        base.getChildrenValidNodeTypes());
                 this.propertyTypes = new HashMap<String, Class<?>>(base
                         .getPropertyTypes());
                 this.keyPropertyType = base.getKeyPropertyType();
@@ -343,7 +343,7 @@ public interface StaticMetadata {
                         this.singleChildrenNodeValidTypes), andOf(that
                         .getType(), that.getKeyProperty(), that
                         .getParentNodeValidTypes(), that
-                        .getChildrenNodeValidTypes(), that.getPropertyTypes(),
+                        .getChildrenValidNodeTypes(), that.getPropertyTypes(),
                         that.getKeyPropertyType(), that
                                 .getSingleChildrenNodeValidTypes()));
                 
@@ -352,7 +352,7 @@ public interface StaticMetadata {
             /**
              * {@inheritDoc}
              */
-            public Set<Class<? extends ConfigurationNode>> getChildrenNodeValidTypes() {
+            public Set<Class<? extends ConfigurationNode>> getChildrenValidNodeTypes() {
                 return this.childrenNodeValidTypes;
             }
             
@@ -510,7 +510,7 @@ public interface StaticMetadata {
      * 
      * @return all the valid types to be used as a children types
      */
-    public abstract Set<Class<? extends ConfigurationNode>> getChildrenNodeValidTypes();
+    public abstract Set<Class<? extends ConfigurationNode>> getChildrenValidNodeTypes();
     
     /**
      * It's keyProperty name should change depending on the node type. For
@@ -565,7 +565,7 @@ public interface StaticMetadata {
     public abstract Class<? extends ConfigurationNode> getType();
     
     /**
-     * Sets the childrenNodeValidTypes. See {@link #getChildrenNodeValidTypes()}
+     * Sets the childrenNodeValidTypes. See {@link #getChildrenValidNodeTypes()}
      * 
      * @param childrenNodeValidTypes
      */

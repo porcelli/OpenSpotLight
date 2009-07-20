@@ -113,7 +113,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
     private void createEachXmlNode(final Element element,
             final ConfigurationNode configurationNode) throws SLException {
         final Set<Class<? extends ConfigurationNode>> childrenClasses = configurationNode
-                .getStaticMetadata().getChildrenNodeValidTypes();
+                .getStaticMetadata().getChildrenValidNodeTypes();
         for (final Class<? extends ConfigurationNode> clazz : childrenClasses) {
             
             final Set<Serializable> keys = (Set<Serializable>) configurationNode

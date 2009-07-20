@@ -249,7 +249,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             throws PathNotFoundException, RepositoryException,
             ConfigurationException, Exception {
         final Set<Class<? extends ConfigurationNode>> childClasses = configurationNode
-                .getStaticMetadata().getChildrenNodeValidTypes();
+                .getStaticMetadata().getChildrenValidNodeTypes();
         for (final Class<?> childClass : childClasses) {
             final String childNodeClassName = this.classHelper
                     .getNameFromNodeClass((Class<? extends ConfigurationNode>) childClass);
@@ -340,7 +340,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     private void saveChilds(final ConfigurationNode node, final Node newJcrNode)
             throws ConfigurationException, Exception {
         final Set<Class<? extends ConfigurationNode>> classes = node
-                .getStaticMetadata().getChildrenNodeValidTypes();
+                .getStaticMetadata().getChildrenValidNodeTypes();
         for (final Class<? extends ConfigurationNode> clazz : classes) {
             final Class<? extends ConfigurationNode> nodeClass = clazz;
             final Set<Serializable> childKeys = (Set<Serializable>) node

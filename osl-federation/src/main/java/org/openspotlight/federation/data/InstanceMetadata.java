@@ -50,7 +50,10 @@
 package org.openspotlight.federation.data;
 
 import static java.text.MessageFormat.format;
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Assertions.checkCondition;
@@ -58,10 +61,12 @@ import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Compare.compareAll;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,6 +92,402 @@ public interface InstanceMetadata {
     public static class Factory {
         
         /**
+         * Default implementation for {@link InstanceMetadata}.
+         * 
+         * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+         * 
+         */
+        private static class BasicInstanceMetadata implements InstanceMetadata {
+            
+            /**
+             * Type metadata.
+             */
+            private final StaticMetadata staticMetadata;
+            
+            /**
+             * Shared data to use on listener infrastructure.
+             */
+            private final SharedData sharedData;
+            
+            /**
+             * volatile field to be used on {@link #toString()} method
+             */
+            private volatile String description = null;
+            
+            /**
+             * The key property value.
+             */
+            private final Serializable keyPropertyValue;
+            
+            /**
+             * hashCode cache
+             */
+            private volatile int hashcode = 0;
+            
+            /**
+             * optional parent node
+             */
+            private final ConfigurationNode parent;
+            
+            /**
+             * mandatory owner node
+             */
+            private final ConfigurationNode owner;
+            
+            /**
+             * Children node map that contains the children classes and a map
+             * with its entries.
+             */
+            private final Map<Class<?>, Map<Serializable, ConfigurationNode>> children = new HashMap<Class<?>, Map<Serializable, ConfigurationNode>>();
+            
+            /**
+             * Property map.
+             */
+            private final Map<String, Serializable> properties = new HashMap<String, Serializable>();
+            
+            /**
+             * Property map.
+             */
+            private final Map<Class<? extends ConfigurationNode>, ConfigurationNode> nodeProperties = new HashMap<Class<? extends ConfigurationNode>, ConfigurationNode>();
+            
+            /**
+             * Transient property map. This properties won't be saved.
+             */
+            private final Map<String, Object> transientProperties = new HashMap<String, Object>();
+            
+            /**
+             * Constructor with mandatory fields.
+             * 
+             * @param staticMetadata
+             * @param sharedData
+             * @param keyPropertyValue
+             * @param parent
+             * @param owner
+             */
+            public BasicInstanceMetadata(final StaticMetadata staticMetadata,
+                    final SharedData sharedData,
+                    final Serializable keyPropertyValue,
+                    final ConfigurationNode parent,
+                    final ConfigurationNode owner) {
+                this.staticMetadata = staticMetadata;
+                this.sharedData = sharedData;
+                this.keyPropertyValue = keyPropertyValue;
+                this.parent = parent;
+                this.owner = owner;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N extends ConfigurationNode> void addChild(final N child) {
+                checkNotNull("child", child); //$NON-NLS-1$
+                checkCondition(
+                        "childClassOwned", this.staticMetadata.getChildrenValidNodeTypes().contains( //$NON-NLS-1$
+                                        child.getClass()));
+                if (this.children.containsValue(child)) {
+                    return;
+                }
+                final ConfigurationNode oldNode = getChildByKeyValue(child
+                        .getClass(), child.getInstanceMetadata()
+                        .getKeyPropertyValue());
+                this.children.get(child.getClass()).put(
+                        child.getInstanceMetadata().getKeyPropertyValue(),
+                        child);
+                this.sharedData.fireNodeChange(oldNode, child);
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public int compare(final ConfigurationNode thisNode,
+                    final ConfigurationNode that) {
+                return compareAll(of(thisNode.getInstanceMetadata().getOwner()
+                        .getClass(), thisNode.getInstanceMetadata()
+                        .getKeyPropertyValue(), thisNode.getInstanceMetadata()
+                        .getDefaultParent()), andOf(that.getClass(), that
+                        .getInstanceMetadata().getKeyPropertyValue(), that
+                        .getInstanceMetadata().getDefaultParent()));
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @Override
+            public final boolean equals(final Object o) {
+                if (o == this) {
+                    return true;
+                }
+                if (o instanceof ConfigurationNode) {
+                    final ConfigurationNode that = (ConfigurationNode) o;
+                    return eachEquality(of(this.getOwner().getClass(), this
+                            .getKeyPropertyValue(), this.getDefaultParent()),
+                            andOf(that.getClass(), that.getInstanceMetadata()
+                                    .getKeyPropertyValue(), that
+                                    .getInstanceMetadata().getDefaultParent()));
+                } else if (o instanceof InstanceMetadata) {
+                    final InstanceMetadata that = (InstanceMetadata) o;
+                    return eachEquality(of(this.getOwner().getClass(), this
+                            .getKeyPropertyValue(), this.getDefaultParent()),
+                            andOf(that.getClass(), that.getKeyPropertyValue(),
+                                    that.getDefaultParent()));
+                } else {
+                    return false;
+                }
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @SuppressWarnings("unchecked")
+            public <N extends ConfigurationNode> N getChildByKeyValue(
+                    final Class<N> childClass, final Serializable key) {
+                checkNotNull("childClass", childClass); //$NON-NLS-1$
+                checkNotNull("key", key); //$NON-NLS-1$
+                checkCondition(
+                        "childClassOwned", this.staticMetadata.getChildrenValidNodeTypes().contains( //$NON-NLS-1$
+                                        childClass));
+                return (N) this.children.get(childClass).get(key);
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @SuppressWarnings("unchecked")
+            public <N extends ConfigurationNode> Collection<N> getChildrensOfType(
+                    final Class<N> childClass) {
+                checkNotNull("childClass", childClass); //$NON-NLS-1$
+                checkCondition(
+                        "childClassOwned", this.staticMetadata.getChildrenValidNodeTypes().contains( //$NON-NLS-1$
+                                        childClass));
+                final Map<Serializable, ConfigurationNode> childrenMap = this.children
+                        .get(childClass);
+                final Collection<ConfigurationNode> childrenCollection = childrenMap
+                        .values();
+                return (Collection<N>) unmodifiableCollection(childrenCollection);
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public ConfigurationNode getDefaultParent() {
+                return this.parent;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public Serializable getKeyPropertyValue() {
+                return this.keyPropertyValue;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public Set<? extends Serializable> getKeysFromChildrenOfType(
+                    final Class<? extends ConfigurationNode> childClass) {
+                checkNotNull("childClass", childClass); //$NON-NLS-1$
+                checkCondition("childClassOwned", this.staticMetadata//$NON-NLS-1$
+                        .getChildrenValidNodeTypes().contains(childClass));
+                final Map<Serializable, ConfigurationNode> childrenMap = this.children
+                        .get(childClass);
+                final Set<Serializable> childrenNames = childrenMap.keySet();
+                return unmodifiableSet(childrenNames);
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public Map<Class<? extends ConfigurationNode>, ConfigurationNode> getNodeProperties() {
+                return unmodifiableMap(this.nodeProperties);
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @SuppressWarnings("unchecked")
+            public <N extends ConfigurationNode> N getNodeProperty(
+                    final Class<N> type) {
+                checkNotNull("type", type); //$NON-NLS-1$
+                checkCondition("validNodePropertyClass", this.staticMetadata //$NON-NLS-1$
+                        .getChildrenValidNodeTypes().contains(type));
+                final N value = (N) this.nodeProperties.get(type
+                        .getSimpleName());
+                return value;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public ConfigurationNode getOwner() {
+                return this.owner;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N extends ConfigurationNode> N getParent(
+                    final Class<N> parentType) {
+                checkNotNull("parentType", parentType); //$NON-NLS-1$
+                checkCondition("validParentType", this.staticMetadata//$NON-NLS-1$
+                        .getParentNodeValidTypes().contains(parentType));
+                return parentType.cast(this.parent);
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public Map<String, Serializable> getProperties() {
+                return unmodifiableMap(this.properties);
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @SuppressWarnings("unchecked")
+            public <N extends Serializable> N getProperty(final String name) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                final N value = (N) this.properties.get(name);
+                return value;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public SharedData getSharedData() {
+                return this.sharedData;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @SuppressWarnings("unchecked")
+            public <N> N getTransientProperty(final String name) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                return (N) this.transientProperties.get(name);
+            }
+            
+            /**
+             * Hash code that uses the same field of the equals method.
+             */
+            @Override
+            public final int hashCode() {
+                if (this.hashcode == 0) {
+                    this.hashcode = hashOf(this.getClass(), this
+                            .getKeyPropertyValue(), this.getDefaultParent());
+                }
+                return this.hashcode;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N extends ConfigurationNode> void removeChild(final N child) {
+                checkNotNull("child", child); //$NON-NLS-1$
+                checkCondition(
+                        "childClassOwned", this.staticMetadata.getChildrenValidNodeTypes().contains( //$NON-NLS-1$
+                                        child.getClass()));
+                if (!this.children.get(child.getClass()).containsValue(child)) {
+                    return;
+                }
+                this.children.remove(child.getInstanceMetadata()
+                        .getKeyPropertyValue());
+                this.sharedData.fireNodeChange(child, null);
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N extends ConfigurationNode> void setNodeProperty(
+                    final Class<N> type, final N value) {
+                checkNotNull("type", type); //$NON-NLS-1$
+                checkCondition("validNodePropertyClass", this.staticMetadata //$NON-NLS-1$
+                        .getChildrenValidNodeTypes().contains(type));
+                final String name = type.getSimpleName();
+                final N oldValue = getNodeProperty(type);
+                if (!eachEquality(oldValue, value)) {
+                    this.nodeProperties.put(type, value);
+                    this.sharedData.firePropertyChange(this.getOwner(), name,
+                            oldValue, value);
+                }
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            @SuppressWarnings("unchecked")
+            public <N extends Serializable> void setProperty(final String name,
+                    final N value) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                if ((value != null)
+                        && !value.getClass().equals(
+                                this.staticMetadata.getPropertyTypes()
+                                        .get(name))) {
+                    logAndThrow(new AssertionError(
+                            format(
+                                    Messages
+                                            .getString("InstanceMetadata.propertyMappingError"), //$NON-NLS-1$
+                                    getClass(), name, value.getClass())));
+                }
+                final N oldValue = (N) getProperty(name);
+                if (!eachEquality(oldValue, value)) {
+                    this.properties.put(name, value);
+                    this.sharedData.firePropertyChange(this.getOwner(), name,
+                            oldValue, value);
+                }
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N> void setTransientProperty(final String name,
+                    final N value) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                this.transientProperties.put(name, value);
+                
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public final String toString() {
+                if (this.description == null) {
+                    this.description = format(
+                            Messages
+                                    .getString("InstanceMetadata.configurationNodeToString"), getClass() //$NON-NLS-1$
+                                    .getName(), getKeyPropertyValue());
+                }
+                return this.description;
+            }
+            
+        }
+        
+        /**
          * Creates a dynamic metadata for a root node.
          * 
          * @param staticMetadata
@@ -96,7 +497,15 @@ public interface InstanceMetadata {
         public static InstanceMetadata createRoot(
                 final StaticMetadata staticMetadata,
                 final ConfigurationNode owner) {
-            throw new IllegalArgumentException("not implemented yet"); //$NON-NLS-1$
+            checkNotNull("staticMetadata", staticMetadata); //$NON-NLS-1$
+            checkNotNull("owner", owner); //$NON-NLS-1$
+            checkCondition("correctOwnerClass", staticMetadata.getType() //$NON-NLS-1$
+                    .isInstance(owner));
+            checkCondition("ownerIsRoot", staticMetadata //$NON-NLS-1$
+                    .getParentNodeValidTypes().isEmpty());
+            return new BasicInstanceMetadata(staticMetadata, new SharedData(),
+                    null, null, owner);
+            
         }
         
         /**
@@ -118,8 +527,32 @@ public interface InstanceMetadata {
                 final StaticMetadata staticMetadata,
                 final ConfigurationNode owner,
                 final ConfigurationNode parentNode, final K keyPropertyValue) {
+            checkNotNull("staticMetadata", staticMetadata); //$NON-NLS-1$
+            checkNotNull("owner", owner); //$NON-NLS-1$
+            checkNotNull("parentNode", parentNode); //$NON-NLS-1$
+            checkNotNull("keyPropertyValue", keyPropertyValue); //$NON-NLS-1$
+            checkCondition("ownerIsNotRoot", !staticMetadata //$NON-NLS-1$
+                    .getParentNodeValidTypes().isEmpty());
+            checkCondition(
+                    "correctKeyPropertyClass", staticMetadata.getKeyPropertyType() //$NON-NLS-1$
+                            .isInstance(keyPropertyValue));
+            boolean foundRoot = false;
+            for (final Class<? extends ConfigurationNode> parentClass : staticMetadata
+                    .getParentNodeValidTypes()) {
+                if (parentClass.isInstance(parentNode)) {
+                    foundRoot = true;
+                    break;
+                }
+            }
+            checkCondition("correctRootClass", foundRoot); //$NON-NLS-1$
             
-            throw new IllegalArgumentException("not implemented yet"); //$NON-NLS-1$
+            final BasicInstanceMetadata newInstanceMetadata = new BasicInstanceMetadata(
+                    staticMetadata, parentNode.getInstanceMetadata()
+                            .getSharedData(), keyPropertyValue, parentNode,
+                    owner);
+            
+            return newInstanceMetadata;
+            
         }
         
         /**
@@ -135,7 +568,29 @@ public interface InstanceMetadata {
                 final StaticMetadata staticMetadata,
                 final ConfigurationNode owner,
                 final ConfigurationNode parentNode) {
-            throw new IllegalArgumentException("not implemented yet"); //$NON-NLS-1$
+            checkNotNull("staticMetadata", staticMetadata); //$NON-NLS-1$
+            checkNotNull("owner", owner); //$NON-NLS-1$
+            checkNotNull("parentNode", parentNode); //$NON-NLS-1$
+            checkCondition("ownerIsNotRoot", !staticMetadata //$NON-NLS-1$
+                    .getParentNodeValidTypes().isEmpty());
+            checkCondition(
+                    "correctNullKeyProperty", staticMetadata.getKeyPropertyType() //$NON-NLS-1$
+                    == null);
+            boolean foundRoot = false;
+            for (final Class<? extends ConfigurationNode> parentClass : staticMetadata
+                    .getParentNodeValidTypes()) {
+                if (parentClass.isInstance(parentNode)) {
+                    foundRoot = true;
+                    break;
+                }
+            }
+            checkCondition("correctRootClass", foundRoot); //$NON-NLS-1$
+            
+            final BasicInstanceMetadata newInstanceMetadata = new BasicInstanceMetadata(
+                    staticMetadata, parentNode.getInstanceMetadata()
+                            .getSharedData(), null, parentNode, owner);
+            
+            return newInstanceMetadata;
         }
     }
     
@@ -356,7 +811,8 @@ public interface InstanceMetadata {
             this.propertyValue = propertyValue;
             this.owner = owner;
             this.hashcode = hashOf(propertyName, propertyValue, owner);
-            this.toString = format("Property[{0} = {1}]", propertyName, //$NON-NLS-1$
+            this.toString = format(
+                    Messages.getString("InstanceMetadata.propertyToString"), propertyName, //$NON-NLS-1$
                     propertyValue);
         }
         
