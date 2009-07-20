@@ -187,9 +187,17 @@ public interface InstanceMetadata {
              */
             public <N extends ConfigurationNode> void addChild(final N child) {
                 checkNotNull("child", child); //$NON-NLS-1$
-                checkCondition(
-                        "childClassOwned", this.staticMetadata.getChildrenValidNodeTypes().contains( //$NON-NLS-1$
-                                        child.getClass()));
+                boolean foundChildClass = false;
+                for (final Class<? extends ConfigurationNode> childClass : this.staticMetadata
+                        .getChildrenValidNodeTypes()) {
+                    
+                    if (childClass.isInstance(child)) {
+                        foundChildClass = true;
+                        break;
+                    }
+                }
+                
+                checkCondition("childClassOwned", foundChildClass); //$NON-NLS-1$
                 if (this.children.containsValue(child)) {
                     return;
                 }

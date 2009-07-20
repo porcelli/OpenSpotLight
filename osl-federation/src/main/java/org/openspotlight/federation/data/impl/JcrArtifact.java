@@ -72,6 +72,10 @@ import org.openspotlight.federation.data.StaticMetadata;
  * 
  * FIXME implement this
  * 
+ * FIXME color information: for each line: enum type, start column, end column
+ * 
+ * FIXME DNA Federation - artifact loader
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */

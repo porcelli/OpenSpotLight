@@ -50,6 +50,7 @@
 package org.openspotlight.federation.data.test;
 
 import org.junit.Test;
+import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 
@@ -62,6 +63,16 @@ import org.openspotlight.federation.data.load.ConfigurationManager;
 @SuppressWarnings("all")
 public abstract class AbstractConfigurationManagerTest extends NodeTest {
     
+    /**
+     * 
+     * @return true if the {@link GeneratedNode} should be ignored by the tests
+     */
+    protected abstract boolean assertAllData();
+    
+    /**
+     * 
+     * @return a instance of the {@link ConfigurationManager} been tested
+     */
     protected abstract ConfigurationManager createInstance();
     
     @Test
@@ -70,6 +81,7 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
         final Configuration anotherGroup = manager.load();
-        this.assertTheSameInitialDataOnSomeNodes(anotherGroup, true);
+        this.assertTheSameInitialDataOnSomeNodes(anotherGroup, this
+                .assertAllData());
     }
 }

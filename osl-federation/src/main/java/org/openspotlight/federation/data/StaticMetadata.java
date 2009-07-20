@@ -58,6 +58,7 @@ import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -93,7 +94,7 @@ public interface StaticMetadata {
             private final Class<? extends ConfigurationNode> type;
             private final Set<Class<? extends ConfigurationNode>> parentNodeValidTypes;
             private final Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes;
-            private final Class<?> keyPropertyType;
+            private final Class<? extends Serializable> keyPropertyType;
             private final Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes;
             
             private final String keyProperty;
@@ -164,7 +165,7 @@ public interface StaticMetadata {
             /**
              * {@inheritDoc}
              */
-            public Class<?> getKeyPropertyType() {
+            public Class<? extends Serializable> getKeyPropertyType() {
                 return this.keyPropertyType;
             }
             
@@ -231,7 +232,8 @@ public interface StaticMetadata {
              * @throws UnsupportedOperationException
              *             since it is a non mutable {@link StaticMetadata}.
              */
-            public void setKeyPropertyType(final Class<?> keyPropertyType) {
+            public void setKeyPropertyType(
+                    final Class<? extends Serializable> keyPropertyType) {
                 throw logAndReturn(new UnsupportedOperationException());
             }
             
@@ -293,7 +295,7 @@ public interface StaticMetadata {
             private Set<Class<? extends ConfigurationNode>> parentNodeValidTypes;
             private Set<Class<? extends ConfigurationNode>> childrenNodeValidTypes;
             private String keyProperty;
-            private Class<?> keyPropertyType;
+            private Class<? extends Serializable> keyPropertyType;
             private Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes;
             
             private Map<String, Class<?>> propertyTypes;
@@ -365,7 +367,7 @@ public interface StaticMetadata {
             /**
              * {@inheritDoc}
              */
-            public Class<?> getKeyPropertyType() {
+            public Class<? extends Serializable> getKeyPropertyType() {
                 return this.keyPropertyType;
             }
             
@@ -428,7 +430,8 @@ public interface StaticMetadata {
             /**
              * {@inheritDoc}
              */
-            public void setKeyPropertyType(final Class<?> keyPropertyType) {
+            public void setKeyPropertyType(
+                    final Class<? extends Serializable> keyPropertyType) {
                 this.keyPropertyType = keyPropertyType;
             }
             
@@ -525,7 +528,7 @@ public interface StaticMetadata {
      * 
      * @return the key property type.
      */
-    public Class<?> getKeyPropertyType();
+    public Class<? extends Serializable> getKeyPropertyType();
     
     /**
      * The parent type should be null in case of a root node, or all the valid
@@ -584,7 +587,7 @@ public interface StaticMetadata {
      * 
      * @param keyPropertyType
      */
-    public void setKeyPropertyType(Class<?> keyPropertyType);
+    public void setKeyPropertyType(Class<? extends Serializable> keyPropertyType);
     
     /**
      * Sets the parentNodeValidTypes. See {@link #getParentNodeValidTypes()}.
@@ -596,6 +599,8 @@ public interface StaticMetadata {
     
     /**
      * Sets the propertyTypes. See {@link #getPropertyTypes()}.
+     * 
+     * FIXME addPropertyTypes
      * 
      * @param propertyTypes
      */

@@ -63,6 +63,11 @@ public class XmlConfigurationManagerTest extends
         AbstractConfigurationManagerTest {
     
     @Override
+    protected boolean assertAllData() {
+        return false;
+    }
+    
+    @Override
     protected ConfigurationManager createInstance() {
         return new XmlConfigurationManager("./target/exampleConfigFile.xml");
     }

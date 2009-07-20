@@ -74,6 +74,38 @@ import org.openspotlight.federation.data.impl.Bundle;
  * 
  * FIXME create refresh method
  * 
+ * FIXME create deletion tests
+ * 
+ * FIXME create global lists of added and excluded nodes using listeners
+ * 
+ * 
+ * FIXME copy artifacts on jcr
+ * 
+ * FIXME give options to process all children or just current node children
+ * 
+ * FIXME verify jcr id that changes on version changes (uuid and version name) -
+ * lineref
+ * 
+ * FIXME log:artifact->err->desc : store data on JCR
+ * 
+ * FIXME use jcr version
+ * 
+ * FIXME methods to get artifact metadata and also load resources by demand
+ * 
+ * FIXME create db artifact loader structure for tables using jcr
+ * 
+ * FIXME bundle executor needs to add syntax higliht info
+ * 
+ * FIXME bundle executor needs the log interface
+ * 
+ * FIXME bundle executor needs slgraphsession
+ * 
+ * FIXME checkstyle, pmd, etc on profiles
+ * 
+ * FIXME create db artifact loader structure for triggers and procedures
+ * 
+ * FIXME create integration tests for bundle execution
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */

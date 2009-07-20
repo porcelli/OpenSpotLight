@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.load;
 
+import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
@@ -65,6 +66,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.jcr.NamespaceRegistry;
@@ -75,9 +77,12 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.StaticMetadata;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
@@ -118,6 +123,21 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         this.initDataInsideSession();
     }
     
+    private Node create(final Node parentNode, final String nodePath,
+            final String keyPropertyName, final Serializable keyPropertyValue,
+            final Class<? extends Serializable> keyPropertyType)
+            throws Exception {
+        checkNotNull("parentNode", parentNode); //$NON-NLS-1$
+        checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
+        final Node newNode = parentNode.addNode(nodePath);
+        if (keyPropertyName != null) {
+            this.setProperty(newNode, keyPropertyName, keyPropertyType,
+                    keyPropertyValue);
+        }
+        return newNode;
+        
+    }
+    
     /**
      * Method to create nodes on jcr only when necessary.
      * 
@@ -126,15 +146,43 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @return
      * @throws ConfigurationException
      */
-    private Node createIfDontExists(final Node parentNode, final String nodePath)
+    private Node createIfDontExists(final Node parentNode,
+            final String nodePath, final String keyPropertyName,
+            final Serializable keyPropertyValue,
+            final Class<? extends Serializable> keyPropertyType)
             throws ConfigurationException {
         checkNotNull("parentNode", parentNode); //$NON-NLS-1$
         checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
         try {
             try {
-                return this.session.getRootNode().getNode(nodePath);
+                Node foundNode;
+                if (keyPropertyName != null) {
+                    assert keyPropertyValue != null;
+                    final String pathToFind = format(
+                            "/{0}/{1}[@osl:{2}=''{3}'']", //$NON-NLS-1$
+                            parentNode.getPath(), nodePath, keyPropertyName,
+                            keyPropertyValue);
+                    final Query query = this.session.getWorkspace()
+                            .getQueryManager().createQuery(pathToFind,
+                                    Query.XPATH);
+                    final QueryResult result = query.execute();
+                    final NodeIterator nodes = result.getNodes();
+                    foundNode = nodes.nextNode();
+                } else {
+                    foundNode = parentNode.getNode(nodePath);
+                }
+                if (foundNode == null) {
+                    foundNode = this.create(parentNode, nodePath,
+                            keyPropertyName, keyPropertyValue, keyPropertyType);
+                }
+                return foundNode;
             } catch (final PathNotFoundException e) {
-                final Node newNode = parentNode.addNode(nodePath);
+                final Node newNode = this.create(parentNode, nodePath,
+                        keyPropertyName, keyPropertyValue, keyPropertyType);
+                return newNode;
+            } catch (final NoSuchElementException e) {
+                final Node newNode = this.create(parentNode, nodePath,
+                        keyPropertyName, keyPropertyValue, keyPropertyType);
                 return newNode;
             }
         } catch (final Exception e) {
@@ -221,7 +269,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final Node rootJcrNode = this.session.getRootNode().getNode(
                     defaultRootNode);
             final Configuration rootNode = new Configuration();
-            this.load(rootJcrNode, rootNode);
+            this.load(rootJcrNode, rootNode, rootNode.getStaticMetadata());
             rootNode.getInstanceMetadata().getSharedData().markAsSaved();
             return rootNode;
         } catch (final Exception e) {
@@ -237,9 +285,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @throws Exception
      */
     private void load(final Node jcrNode,
-            final ConfigurationNode configurationNode) throws Exception {
+            final ConfigurationNode configurationNode,
+            final StaticMetadata staticMetadata) throws Exception {
         this.loadProperties(jcrNode, configurationNode, configurationNode
-                .getStaticMetadata().getPropertyTypes());
+                .getStaticMetadata().getPropertyTypes(), staticMetadata
+                .getKeyProperty());
         this.loadChildren(jcrNode, configurationNode);
     }
     
@@ -253,38 +303,58 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         for (final Class<?> childClass : childClasses) {
             final String childNodeClassName = this.classHelper
                     .getNameFromNodeClass((Class<? extends ConfigurationNode>) childClass);
-            final Node childNode = jcrNode.getNode(childNodeClassName);
-            final NodeIterator grandChildren = childNode.getNodes();
-            while (grandChildren.hasNext()) {
-                final Node grandChild = grandChildren.nextNode();
-                final String childName = removeBegginingFrom(DEFAULT_OSL_PREFIX
-                        + ":", grandChild.getName()); //$NON-NLS-1$
-                final ConfigurationNode newNode = this.classHelper
-                        .createInstance(childName, configurationNode,
-                                childNodeClassName);
-                this.load(grandChild, newNode);
+            NodeIterator children;
+            try {
+                children = jcrNode.getNodes(childNodeClassName);
+            } catch (final PathNotFoundException e) {
+                children = null;
+                // Thats ok, just didn't find the node
             }
+            if (children == null) {
+                continue;
+            }
+            while (children.hasNext()) {
+                final Node child = children.nextNode();
+                final Class<ConfigurationNode> nodeClass = this.classHelper
+                        .getNodeClassFromName(child.getName());
+                final StaticMetadata staticMetadata = this.classHelper
+                        .getStaticMetadataFromClass(nodeClass);
+                final Serializable keyValue = this.getProperty(child,
+                        staticMetadata.getKeyProperty(), staticMetadata
+                                .getKeyPropertyType());
+                
+                final ConfigurationNode newNode = this.classHelper
+                        .createInstance(keyValue, configurationNode,
+                                childNodeClassName);
+                this.load(child, newNode, staticMetadata);
+            }
+            
         }
     }
     
     private void loadProperties(final Node jcrNode,
             final ConfigurationNode configurationNode,
-            final Map<String, Class<?>> propertyTypes)
-            throws RepositoryException, ConfigurationException, Exception {
+            final Map<String, Class<?>> propertyTypes,
+            final String keyPropertyName) throws RepositoryException,
+            ConfigurationException, Exception {
         final PropertyIterator propertyIterator = jcrNode.getProperties();
         while (propertyIterator.hasNext()) {
             final Property prop = propertyIterator.nextProperty();
             final String propertyIdentifier = prop.getName();
             
             if (this.propertyHelper.isPropertyNode(propertyIdentifier)) {
-                final String nodeName = removeBegginingFrom(DEFAULT_OSL_PREFIX
-                        + ":", propertyIdentifier); //$NON-NLS-1$
-                final Class<?> propertyClass = propertyTypes.get(nodeName);
+                final String propertyName = removeBegginingFrom(
+                        DEFAULT_OSL_PREFIX + ":", propertyIdentifier); //$NON-NLS-1$
+                if ((keyPropertyName != null)
+                        && keyPropertyName.equals(propertyName)) {
+                    continue;
+                }
+                final Class<?> propertyClass = propertyTypes.get(propertyName);
                 if (propertyClass != null) {
                     final Serializable value = this.getProperty(jcrNode,
                             propertyIdentifier, propertyClass);
                     configurationNode.getInstanceMetadata().setProperty(
-                            nodeName, value);
+                            propertyName, value);
                 }
                 
             }
@@ -323,8 +393,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         try {
             final String nodeStr = this.classHelper.getNameFromNodeClass(node
                     .getClass());
+            
             final Node newJcrNode = this.createIfDontExists(this.session
-                    .getRootNode(), nodeStr);
+                    .getRootNode(), nodeStr, null, null, null);
             this.saveProperties(node, newJcrNode);
             
             this.saveChilds(node, newJcrNode);
@@ -347,15 +418,18 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     .getInstanceMetadata().getKeysFromChildrenOfType(nodeClass);
             final String childNodeStr = this.classHelper
                     .getNameFromNodeClass(nodeClass);
-            final Node newChildJcrNode = this.createIfDontExists(newJcrNode,
-                    childNodeStr);
+            final StaticMetadata staticMetadata = this.classHelper
+                    .getStaticMetadataFromClass(clazz);
+            
             for (final Serializable key : childKeys) {
                 final ConfigurationNode childNode = node.getInstanceMetadata()
                         .getChildByKeyValue(nodeClass, key);
-                final Node newGranphChildNode = this.createIfDontExists(
-                        newChildJcrNode, DEFAULT_OSL_PREFIX + ":" + key); //$NON-NLS-1$
-                this.saveProperties(childNode, newGranphChildNode);
-                this.saveChilds(childNode, newGranphChildNode);
+                final Node newChildJcrNode = this.createIfDontExists(
+                        newJcrNode, childNodeStr, staticMetadata
+                                .getKeyProperty(), key, staticMetadata
+                                .getKeyPropertyType());
+                this.saveProperties(childNode, newChildJcrNode);
+                this.saveChilds(childNode, newChildJcrNode);
             }
         }
     }
