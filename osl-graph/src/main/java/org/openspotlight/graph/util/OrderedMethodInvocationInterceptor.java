@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
 
 public class OrderedMethodInvocationInterceptor implements IMethodInterceptor {
 	
-	@Override
+	//@Override
 	public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
 		if (methods.size() > 0) {
 			List<IMethodInstance> res = new ArrayList<IMethodInstance>();

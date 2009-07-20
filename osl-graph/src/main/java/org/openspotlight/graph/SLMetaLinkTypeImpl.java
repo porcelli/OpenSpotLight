@@ -20,7 +20,7 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
+	//@Override
 	public Class<? extends SLLink> getType() throws SLGraphSessionException {
 		if (linkType == null) {
 			try {
@@ -33,7 +33,7 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 		return linkType;
 	}
 
-	@Override
+	//@Override
 	public Collection<SLMetaLink> getMetaLinks(Class<? extends SLNode> sourceType,
 		Class<? extends SLNode> targetType, Boolean bidirectional) throws SLGraphSessionException {
 		Collection<SLMetaLink> metaLinks = getMetalinks();
@@ -62,7 +62,7 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 		return metaLinks;
 	}
 	
-	@Override
+	//@Override
 	@SuppressWarnings("unchecked")
 	public Collection<SLMetaLink> getMetalinks() throws SLGraphSessionException {
 		
@@ -121,7 +121,7 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metadata;
 	}

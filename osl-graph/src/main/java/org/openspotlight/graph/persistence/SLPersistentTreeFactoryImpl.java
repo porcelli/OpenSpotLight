@@ -12,7 +12,7 @@ import org.apache.jackrabbit.core.config.RepositoryConfig;
 
 public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
 
-	@Override
+	//@Override
 	public SLPersistentTree createPersistentTree() throws SLPersistentTreeFactoryException {
 		try {
 			deleteDir(new File("/tmp/repository"));

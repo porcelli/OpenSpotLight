@@ -30,7 +30,7 @@ class UserHandler implements InvocationHandler {
 		target = user;
 	}
 
-	@Override
+	//@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		try {
 			return method.invoke(target, args);
@@ -50,7 +50,7 @@ abstract class User {
 
 class UserImpl extends User {
 
-	@Override
+	//@Override
 	public String getName() throws UserException {
 		throw new UserException();
 	}

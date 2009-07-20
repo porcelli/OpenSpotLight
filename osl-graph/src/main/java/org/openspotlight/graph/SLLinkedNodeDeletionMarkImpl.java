@@ -12,17 +12,17 @@ public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
 		this.node = node;
 	}
 
-	@Override
+	//@Override
 	public Class<? extends SLLink> getLinkType() {
 		return linkType;
 	}
 
-	@Override
+	//@Override
 	public SLNode getNode() {
 		return node;
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		try {
 			return linkType.getName().concat(node.getID()).hashCode();
@@ -32,7 +32,7 @@ public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
 		}
 	}
 	
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		try {
 			if (!(obj instanceof SLLinkedNodeDeletionMark)) return false;

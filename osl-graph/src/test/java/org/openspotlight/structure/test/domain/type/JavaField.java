@@ -10,7 +10,7 @@ public class JavaField extends SLSimpleType {
         super(key, contextHandle);
     }
 
-    @Override
+    //@Override
     public String getLabel() {
         return "Java Field";
     }

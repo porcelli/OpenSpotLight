@@ -471,7 +471,7 @@ public class SLStructureImpl implements SLStructure {
         return new Pair<SLSimpleType>(first, second);
     }
 
-	@Override
+	//@Override
 	public void clear() throws SLStructureException {
 		// TODO Auto-generated method stub
 		

@@ -10,12 +10,12 @@ public class SLPersistentQueryResultImpl implements SLPersistentQueryResult {
 		this.persistentNodes = persistentNodes;
 	}
 
-	@Override
+	//@Override
 	public Collection<SLPersistentNode> getNodes() {
 		return persistentNodes;
 	}
 
-	@Override
+	//@Override
 	public int getRowCount() {
 		return persistentNodes.size();
 	}

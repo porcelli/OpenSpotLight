@@ -14,7 +14,7 @@ import org.openspotlight.graph.util.AbstractFactory;
 
 public class SLGraphFactoryImpl extends SLGraphFactory {
 
-	@Override
+	//@Override
 	public SLGraph createGraph() throws SLGraphFactoryException {
 		try {
 			SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
@@ -26,22 +26,22 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 		}
 	}
 
-	@Override
+	//@Override
 	SLGraphSession createGraphSession(SLPersistentTreeSession treeSession) {
 		return new SLGraphSessionImpl(treeSession);
 	}
 	
-	@Override
+	//@Override
 	SLNode createNode(SLContext context, SLPersistentNode persistentNode, SLGraphSessionEventPoster eventPoster) throws SLGraphFactoryException {
 		return new SLNodeImpl(context, null, persistentNode, eventPoster);
 	}
 
-	@Override
+	//@Override
 	SLNode createNode(SLContext context, SLNode parent, SLPersistentNode persistentNode, SLGraphSessionEventPoster eventPoster) throws SLGraphFactoryException {
 		return new SLNodeImpl(context, parent, persistentNode, eventPoster);
 	}
 	
-	@Override
+	//@Override
 	<T extends SLNode> T createNode(Class<T> clazz, SLContext context, SLNode parent, SLPersistentNode persistentNode) throws SLGraphFactoryException {
 		try {
 			Constructor<T> constructor = clazz.getConstructor(SLContext.class, SLNode.class, SLPersistentNode.class);
@@ -52,17 +52,17 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 		}
 	}
 	
-	@Override
+	//@Override
 	Class<? extends SLContext> getContextImplClass() throws SLGraphFactoryException {
 		return SLContextImpl.class;
 	}
 
-	@Override
+	//@Override
 	<V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty) throws SLGraphFactoryException {
 		return new SLNodePropertyImpl<V>(node, persistentProperty);
 	}
 
-	@Override
+	//@Override
 	SLPersistentEventListener getEventListener() {
 		return new SLPersistentEventListenerImpl();
 		

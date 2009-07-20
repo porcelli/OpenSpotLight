@@ -21,12 +21,12 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		this.pMetaNode = pNode;
 	}
 
-	@Override
+	//@Override
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metadata;
 	}
 	
-	@Override
+	//@Override
 	@SuppressWarnings("unchecked")
 	public Class<? extends SLNode> getType() throws SLGraphSessionException {
 		try {
@@ -37,7 +37,7 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public Collection<SLMetaNodeProperty> getMetaProperties() throws SLGraphSessionException {
 		try {
 			Collection<SLMetaNodeProperty> metaProperties = new HashSet<SLMetaNodeProperty>();
@@ -53,7 +53,7 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLMetaNodeProperty getMetaProperty(String name) throws SLGraphSessionException {
 		try {
 			String propName = SLCommonSupport.toUserPropertyName(name);
@@ -73,7 +73,7 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public SLMetaNode getMetaNode(Class<? extends SLNode> nodeClass) throws SLGraphSessionException {
 		try {
 			SLMetaNode metaNode = null;
@@ -88,7 +88,7 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public Collection<SLMetaNode> getMetaNodes() throws SLGraphSessionException {
 		try {
 			Collection<SLMetaNode> metaNodes = new ArrayList<SLMetaNode>();
@@ -104,14 +104,14 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof SLMetaNodeImpl)) return false;
 		SLMetaNodeImpl metaNode = (SLMetaNodeImpl) obj;
 		return pMetaNode.equals(metaNode);
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		return pMetaNode.hashCode();
 	}

@@ -8,7 +8,7 @@ public class JavaInterface extends JavaClass {
         super(key, contextHandle);
     }
 
-    @Override
+    //@Override
     public String getLabel() {
         return "Java Interface";
     }

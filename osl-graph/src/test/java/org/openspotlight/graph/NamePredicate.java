@@ -10,7 +10,7 @@ public class NamePredicate implements SLNodePredicate {
 		this.name = name;
 	}
 
-	@Override
+	//@Override
 	public boolean evaluate(SLNode node) {
 		try {
 			return node.getName().indexOf(name) > -1;

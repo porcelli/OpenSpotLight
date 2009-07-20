@@ -19,12 +19,12 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 		this.persistentProperty = persistentProperty;
 	}
 
-	@Override
+	//@Override
 	public SLNode getNode() {
 		return node;
 	}
 
-	@Override
+	//@Override
 	public String getName() throws SLGraphSessionException {
 		try {
 			return SLCommonSupport.toSimpleUserPropertyName(persistentProperty.getName());
@@ -34,7 +34,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 		}
 	}
 
-	@Override
+	//@Override
 	public V getValue() throws SLInvalidNodePropertyTypeException, SLGraphSessionException {
 		try {
 			return persistentProperty.getValue();
@@ -47,12 +47,12 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 		}
 	}
 	
-	@Override
+	//@Override
 	public String getValueAsString() throws SLGraphSessionException {
 		return getValue().toString();
 	}
 	
-	@Override
+	//@Override
 	public void setValue(V value) throws SLGraphSessionException {
 		try {
 			persistentProperty.setValue(value);
@@ -62,7 +62,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 		}
 	}
 
-	@Override
+	//@Override
 	public void remove() throws SLGraphSessionException {
 		try {
 			persistentProperty.remove();
@@ -73,7 +73,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		try {
 			if (obj == null) return false;
@@ -87,7 +87,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 		}
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		try {
 			return (getNode().getID() + ":" + getName()).hashCode();

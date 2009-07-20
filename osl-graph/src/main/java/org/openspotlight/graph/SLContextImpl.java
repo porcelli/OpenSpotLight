@@ -15,22 +15,22 @@ public class SLContextImpl implements SLContext {
 		this.rootNode = new SLNodeImpl(this, null, contextRootPersistentNode, eventPoster);
 	}
 
-	@Override
+	//@Override
 	public SLGraphSession getSession() {
 		return session;
 	}
 
-	@Override
+	//@Override
 	public Long getID() throws SLGraphSessionException {
 		return new Long(rootNode.getName());
 	}
 
-	@Override
+	//@Override
 	public SLNode getRootNode() throws SLGraphSessionException {
 		return rootNode;
 	}
 	
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		try {
 			if (obj == null) return false;

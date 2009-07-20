@@ -5,7 +5,7 @@ import org.openspotlight.structure.elements.SLLinkType;
 public class TableViewColumn extends SLLinkType {
     private static final long serialVersionUID = 5778056441402049079L;
 
-    @Override
+    //@Override
     public String getLabel() {
         return null;
     }

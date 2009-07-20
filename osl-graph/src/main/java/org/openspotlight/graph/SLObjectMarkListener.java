@@ -14,7 +14,7 @@ public class SLObjectMarkListener implements SLGraphSessionEventListener {
 		nodesForDeletion = new HashSet<SLNode>();
 	}
 
-	@Override
+	//@Override
 	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException {
 		
 		SLGraphSession session = event.getSession();
@@ -42,7 +42,7 @@ public class SLObjectMarkListener implements SLGraphSessionEventListener {
 		nodesForDeletion.remove(node);
 	}
 
-	@Override
+	//@Override
 	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {
 		// unmark link and its sides ...
 		SLLink link = event.getLink();
@@ -52,7 +52,7 @@ public class SLObjectMarkListener implements SLGraphSessionEventListener {
 		nodesForDeletion.remove(sides[1]);
 	}
 
-	@Override
+	//@Override
 	public void beforeSave(SLGraphSessionEvent event) throws SLGraphSessionException {
 		
 		// delete links ...

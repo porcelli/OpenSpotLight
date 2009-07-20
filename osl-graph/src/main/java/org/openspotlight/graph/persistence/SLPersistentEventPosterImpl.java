@@ -8,7 +8,7 @@ public class SLPersistentEventPosterImpl implements SLPersistentEventPoster {
 		this.listener = listener;
 	}
 
-	@Override
+	//@Override
 	public void post(SLPersistentNodeEvent event) throws SLPersistentTreeSessionException {
 		switch (event.getType()) {
 			case SLPersistentNodeEvent.TYPE_NODE_ADDED:
@@ -22,7 +22,7 @@ public class SLPersistentEventPosterImpl implements SLPersistentEventPoster {
 		}
 	}
 
-	@Override
+	//@Override
 	public void post(SLPersistentPropertyEvent event) throws SLPersistentTreeSessionException {
 		switch (event.getType()) {
 			case SLPersistentPropertyEvent.TYPE_PROPERTY_SET:

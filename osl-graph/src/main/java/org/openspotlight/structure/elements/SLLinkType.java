@@ -34,7 +34,7 @@ package org.openspotlight.structure.elements;
 public abstract class SLLinkType extends SLElement {
     private static final long serialVersionUID = 806513545381938129L;
 
-    @Override
+    //@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -42,7 +42,7 @@ public abstract class SLLinkType extends SLElement {
         return result;
     }
 
-    @Override
+    //@Override
     public boolean equals( Object obj ) {
         if (this == obj) return true;
         if (obj == null) return false;

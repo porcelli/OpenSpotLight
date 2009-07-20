@@ -28,7 +28,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		this.eventPoster = new SLPersistentEventPosterImpl(listener);
 	}
 	
-	@Override
+	//@Override
 	public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException {
 		if (rootNode == null) {
 			try {
@@ -65,12 +65,12 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		return new SLPersistentNodeImpl(this, null, rootNode, eventPoster);		
 	}
 
-	@Override
+	//@Override
 	public void close() {
 		jcrSession.logout();
 	}
 
-	@Override
+	//@Override
 	public void save() throws SLPersistentTreeSessionException {
 		try {
 			rootNode.save();
@@ -82,7 +82,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		}
 	}
 
-	@Override
+	//@Override
 	public void clear() throws SLPersistentTreeSessionException {
 		if (rootNode != null) {
 			try {
@@ -98,12 +98,12 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLPersistentQuery createQuery(String statement, int type) throws SLPersistentTreeSessionException {
 		return new SLPersistentQueryImpl(this, jcrSession, statement, type);
 	}
 
-	@Override
+	//@Override
 	public SLPersistentNode getNodeByID(String id) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
 		try {
 			SLPersistentNode persistentNode = null;
@@ -127,7 +127,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLPersistentNode getNodeByPath(String path) throws SLPersistentTreeSessionException {
 		SLPersistentQuery query = createQuery(path, SLPersistentQuery.TYPE_XPATH);
 		SLPersistentQueryResult result = query.execute();

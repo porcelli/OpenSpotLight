@@ -28,12 +28,12 @@ public class SLMetaLinkImpl implements SLMetaLink {
 		this.bidirectional = bidirectional;
 	}
 
-	@Override
+	//@Override
 	public SLMetaLinkType getMetaLinkType() throws SLGraphSessionException {
 		return metaLinkType;
 	}
 
-	@Override
+	//@Override
 	public Class<? extends SLNode> getSourceType() throws SLGraphSessionException {
 		if (bidirectional) {
 			// this method cannot be used on bidirecional meta links, because source and targets types are relatives.
@@ -43,7 +43,7 @@ public class SLMetaLinkImpl implements SLMetaLink {
 		return sourceType;
 	}
 
-	@Override
+	//@Override
 	public Class<? extends SLNode> getTargetType() throws SLGraphSessionException {
 		if (bidirectional) {
 			// this method cannot be used on bidirecional meta links, because source and targets types are relatives.
@@ -54,7 +54,7 @@ public class SLMetaLinkImpl implements SLMetaLink {
 	}
 
 	
-	@Override
+	//@Override
 	public Class<? extends SLNode> getOtherSideType(Class<? extends SLNode> sideType) throws SLInvalidMetaLinkSideTypeException, SLGraphSessionException {
 		Class<? extends SLNode> otherSideType = null;
 		if (sideType.equals(sourceType)) otherSideType = targetType;
@@ -63,22 +63,22 @@ public class SLMetaLinkImpl implements SLMetaLink {
 		return otherSideType;
 	}
 
-	@Override
+	//@Override
 	public List<Class<? extends SLNode>> getSideTypes() throws SLGraphSessionException {
 		return sideTypes;
 	}
 
-	@Override
+	//@Override
 	public boolean isBidirectional() throws SLGraphSessionException {
 		return bidirectional;
 	}
 
-	@Override
+	//@Override
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metaLinkType.getMetadata();
 	}
 
-	@Override
+	//@Override
 	public Collection<SLMetaLinkProperty> getMetaProperties() throws SLGraphSessionException {
 		try {
 			Collection<SLMetaLinkProperty> metaProperties = new HashSet<SLMetaLinkProperty>();
@@ -94,7 +94,7 @@ public class SLMetaLinkImpl implements SLMetaLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLMetaLinkProperty getMetaProperty(String name) throws SLGraphSessionException {
 		try {
 			String propName = SLCommonSupport.toUserPropertyName(name);

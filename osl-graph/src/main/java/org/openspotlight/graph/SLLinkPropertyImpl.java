@@ -16,12 +16,12 @@ public class SLLinkPropertyImpl<V extends Serializable> implements SLLinkPropert
 		this.persistentProperty = persistentProperty;
 	}
 
-	@Override
+	//@Override
 	public SLLink getLink() {
 		return link;
 	}
 
-	@Override
+	//@Override
 	public String getName() throws SLGraphSessionException {
 		try {
 			return SLCommonSupport.toSimpleUserPropertyName(persistentProperty.getName());
@@ -31,7 +31,7 @@ public class SLLinkPropertyImpl<V extends Serializable> implements SLLinkPropert
 		}
 	}
 
-	@Override
+	//@Override
 	public V getValue() throws SLInvalidLinkPropertyTypeException, SLGraphSessionException {
 		try {
 			return persistentProperty.getValue();
@@ -44,12 +44,12 @@ public class SLLinkPropertyImpl<V extends Serializable> implements SLLinkPropert
 		}
 	}
 
-	@Override
+	//@Override
 	public String getValueAsString() throws SLGraphSessionException {
 		return getValue().toString();
 	}
 
-	@Override
+	//@Override
 	public void remove() throws SLGraphSessionException {
 		try {
 			persistentProperty.remove();
@@ -59,7 +59,7 @@ public class SLLinkPropertyImpl<V extends Serializable> implements SLLinkPropert
 		}
 	}
 
-	@Override
+	//@Override
 	public void setValue(V value) throws SLGraphSessionException {
 		try {
 			persistentProperty.setValue(value);

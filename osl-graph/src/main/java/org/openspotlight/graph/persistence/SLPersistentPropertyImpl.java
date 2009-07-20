@@ -30,12 +30,12 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 		if (loadValue) getValue();
 	}
 
-	@Override
+	//@Override
 	public SLPersistentNode getNode() {
 		return persistentNode;
 	}
 
-	@Override
+	//@Override
 	public String getName() throws SLPersistentTreeSessionException {
 		try {
 			return jcrProperty.getName();
@@ -45,7 +45,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 		}
 	}
 
-	@Override
+	//@Override
 	public V getValue() throws SLInvalidPersistentPropertyTypeException, SLPersistentTreeSessionException {
 		try {
 			V value = null;
@@ -73,7 +73,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 		}
 	}
 	
-	@Override
+	//@Override
 	public void setValue(V value) throws SLPersistentTreeSessionException {
 		try {
 			Session session = jcrProperty.getSession();
@@ -241,7 +241,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 		return value;
 	}
 
-	@Override
+	//@Override
 	public void remove() throws SLPersistentTreeSessionException {
 		try {
 			jcrProperty.remove();
@@ -253,7 +253,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		try {
 			if (obj == null) return false;
@@ -267,7 +267,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 		}
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		try {
 			return (getNode().getID() + ":" + getName()).hashCode();

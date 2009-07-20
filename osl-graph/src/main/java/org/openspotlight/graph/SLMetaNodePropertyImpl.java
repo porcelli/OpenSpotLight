@@ -17,17 +17,17 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 		this.pProperty = pProperty;
 	}
 
-	@Override
+	//@Override
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metadata;
 	}
 
-	@Override
+	//@Override
 	public SLMetaNode getMetaNode() throws SLGraphSessionException {
 		return metaNode;
 	}
 
-	@Override
+	//@Override
 	public String getName() throws SLGraphSessionException {
 		try {
 			return SLCommonSupport.toSimpleUserPropertyName(pProperty.getName());
@@ -37,7 +37,7 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 		}
 	}
 	
-	@Override
+	//@Override
 	@SuppressWarnings("unchecked")
 	public Class<? extends Serializable> getType() throws SLGraphSessionException {
 		try {
@@ -48,14 +48,14 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 		}
 	}
 	
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof SLMetaNodePropertyImpl)) return false;
 		SLMetaNodePropertyImpl metaProperty = (SLMetaNodePropertyImpl) obj;
 		return pProperty.equals(metaProperty.pProperty);
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		return pProperty.hashCode();
 	}

@@ -35,17 +35,17 @@ public class SLNodeImpl implements SLNode {
 		this.eventPoster = eventPoster;
 	}
 
-	@Override
+	//@Override
 	public SLGraphSession getSession() {
 		return context.getSession();
 	}
 
-	@Override
+	//@Override
 	public SLContext getContext() {
 		return context;
 	}
 
-	@Override
+	//@Override
 	public String getID() throws SLGraphSessionException {
 		try {
 			return pNode.getID();
@@ -55,7 +55,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public String getName() throws SLGraphSessionException {
 		try {
 			return pNode.getName();
@@ -65,32 +65,32 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLNode addNode(String name) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
 		return addChildNode(SLNode.class, name, null, null);
 	}
 
-	@Override
+	//@Override
 	public <T extends SLNode> T addNode(Class<T> clazz, String name) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
 		return addChildNode(clazz, name, null, null);
 	}
 	
-	@Override
+	//@Override
 	public <T extends SLNode> T addNode(Class<T> clazz, String name, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
 		return addChildNode(clazz, name, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
 	}
 
-	@Override
+	//@Override
 	public SLNode getNode(String name) throws SLInvalidNodeTypeException, SLGraphSessionException {
 		return getChildNode(SLNode.class, name);
 	}
 
-	@Override
+	//@Override
 	public <T extends SLNode> T getNode(Class<T> clazz, String name) throws SLInvalidNodeTypeException, SLGraphSessionException {
 		return getChildNode(clazz, name);
 	}
 
-	@Override
+	//@Override
 	public Set<SLNode> getNodes() throws SLGraphSessionException {
 		try {
 			SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
@@ -109,7 +109,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public void remove() throws SLGraphSessionException {
 		try {
 			Collection<SLNode> childNodes = new ArrayList<SLNode>();
@@ -130,12 +130,12 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLNode getParent() throws SLGraphSessionException {
 		return parent;
 	}
 	
-	@Override
+	//@Override
 	public <V extends Serializable> SLNodeProperty<V> setProperty(Class<V> clazz, String name, V value)	throws SLGraphSessionException {
 		try {
 			String propName = SLCommonSupport.toUserPropertyName(name);
@@ -150,7 +150,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public <V extends Serializable> SLNodeProperty<V> getProperty(Class<V> clazz, String name) 
 		throws SLNodePropertyNotFoundException, SLInvalidNodePropertyTypeException, SLGraphSessionException {
 		try {
@@ -170,12 +170,12 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public String getPropertyValueAsString(String name) throws SLNodePropertyNotFoundException, SLGraphSessionException {
 		return getProperty(Serializable.class, name).getValue().toString();
 	}
 
-	@Override
+	//@Override
 	public Set<SLNodeProperty<Serializable>> getProperties() throws SLGraphSessionException {
 		try {
 			SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
@@ -192,12 +192,12 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public SLLineReference addLineReference() throws SLGraphSessionException {
 		return addLineReference("default");
 	}
 	
-	@Override
+	//@Override
 	public SLLineReference addLineReference(String name) throws SLGraphSessionException {
 		try {
 			return addNode(SLLineReference.class, "lineRef." + name);
@@ -207,12 +207,12 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public SLLineReference getLineReference() throws SLGraphSessionException {
 		return getLineReference("default");
 	}
 
-	@Override
+	//@Override
 	public SLLineReference getLineReference(String name) throws SLGraphSessionException {
 		try {
 			return getNode(SLLineReference.class, "lineRef." + name);
@@ -222,7 +222,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		try {
 			if (obj == null || !(obj instanceof SLNode)) return false;
@@ -235,7 +235,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		try {
 			return getID().hashCode();
@@ -245,7 +245,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public int compareTo(SLNode node) {
 		try {
 			SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy.getInvocationHandler(node);
@@ -257,7 +257,7 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public String toString() {
 		return pNode.toString();
 	}

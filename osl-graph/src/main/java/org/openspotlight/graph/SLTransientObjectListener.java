@@ -15,7 +15,7 @@ public class SLTransientObjectListener implements SLGraphSessionEventListener {
 		transientNodes = new HashSet<SLNode>();
 	}
 
-	@Override
+	//@Override
 	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {
 		SLLink link = event.getLink();
 		if (isTransient(link)) {
@@ -23,7 +23,7 @@ public class SLTransientObjectListener implements SLGraphSessionEventListener {
 		}
 	}
 
-	@Override
+	//@Override
 	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException {
 		SLNode node = event.getNode();
 		if (isTransient(node)) {
@@ -31,7 +31,7 @@ public class SLTransientObjectListener implements SLGraphSessionEventListener {
 		}
 	}
 
-	@Override
+	//@Override
 	public void beforeSave(SLGraphSessionEvent event) throws SLGraphSessionException {
 		for (SLLink link : transientLinks) {
 			link.remove();
@@ -41,6 +41,7 @@ public class SLTransientObjectListener implements SLGraphSessionEventListener {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean isTransient(Object object) {
 		return object.getClass().getInterfaces()[0].getAnnotation(SLTransient.class) != null;
 	}

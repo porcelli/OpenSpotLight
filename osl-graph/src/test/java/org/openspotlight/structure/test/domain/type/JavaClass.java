@@ -17,7 +17,7 @@ public class JavaClass extends SLSimpleType {
         addRenderHint("FOREGROUND_COLOR", new Color(255, 255, 255));
     }
 
-    @Override
+    //@Override
     public String getLabel() {
         return "Java Class";
     }

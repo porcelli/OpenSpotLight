@@ -30,12 +30,12 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		this.eventPoster = eventPoster;
 	}
 
-	@Override
+	//@Override
 	public SLPersistentTreeSession getSession() {
 		return session;
 	}
 
-	@Override
+	//@Override
 	public String getID() throws SLPersistentTreeSessionException {
 		try {
 			return jcrNode.getUUID();
@@ -45,7 +45,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 	
-	@Override
+	//@Override
 	public String getName() throws SLPersistentTreeSessionException {
 		try {
 			return jcrNode.getName();
@@ -55,12 +55,12 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLPersistentNode getParent() throws SLPersistentTreeSessionException {
 		return parent;
 	}
 
-	@Override
+	//@Override
 	public SLPersistentNode addNode(String name) throws SLPersistentNodeAlreadyExistsException, SLPersistentTreeSessionException {
 		SLPersistentNode persistentNode = null;
 		try {
@@ -78,7 +78,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		return persistentNode;
 	}
 
-	@Override
+	//@Override
 	public SLPersistentNode getNode(String name) throws SLPersistentTreeSessionException {
 		SLPersistentNode childPersistentNode = null;
 		try {
@@ -93,7 +93,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		return childPersistentNode;
 	}
 
-	@Override
+	//@Override
 	public void remove() throws SLPersistentTreeSessionException {
 		try {
 			jcrNode.remove();
@@ -104,7 +104,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public <V extends Serializable> SLPersistentProperty<V> setProperty(Class<V> clazz, String name, V value) 
 		throws SLPersistentTreeSessionException {
 		SLPersistentProperty<V> persistentProperty = null;
@@ -128,7 +128,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		return persistentProperty;
 	}
 	
-	@Override
+	//@Override
 	public <V extends Serializable> SLPersistentProperty<V> getProperty(Class<V> clazz, String name)
 		throws SLPersistentPropertyNotFoundException, SLPersistentTreeSessionException {
 		SLPersistentProperty<V> persistentProperty = null;
@@ -145,7 +145,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		return persistentProperty;
 	}
 
-	@Override
+	//@Override
 	public Set<SLPersistentProperty<Serializable>> getProperties(String pattern) throws SLPersistentTreeSessionException {
 		try {
 			Set<SLPersistentProperty<Serializable>> persistentProperties = new HashSet<SLPersistentProperty<Serializable>>();
@@ -162,7 +162,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public Set<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
 		try {
 			Set<SLPersistentNode> persistentNodes = new HashSet<SLPersistentNode>();
@@ -179,7 +179,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public void save() throws SLPersistentTreeSessionException {
 		try {
 			jcrNode.save();
@@ -189,7 +189,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public String getPath() throws SLPersistentTreeSessionException {
 		try {
 			return jcrNode.getPath();
@@ -199,7 +199,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	@Override
+	//@Override
 	public String toString() {
 		return jcrNode.toString();
 	}

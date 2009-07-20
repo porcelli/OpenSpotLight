@@ -25,7 +25,7 @@ public class SLLinkImpl implements SLLink {
 		this.linkNode = linkNode;
 	}
 
-	@Override
+	//@Override
 	public String getID() throws SLGraphSessionException {
 		try {
 			return linkNode.getID();
@@ -35,7 +35,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLNode getOtherSide(SLNode side) throws SLInvalidLinkSideException, SLGraphSessionException {
 		SLNode otherSide = null;
 		try {
@@ -56,7 +56,7 @@ public class SLLinkImpl implements SLLink {
 		return otherSide;
 	}
 
-	@Override
+	//@Override
 	public SLNode[] getSides() throws SLGraphSessionException {
 		try {
 			return new SLNode[] {getANode(), getBNode()};
@@ -66,7 +66,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLNode getSource() throws SLGraphSessionException {
 		if (isBidirectional()) {
 			// this method cannot be used on bidirecional links, because source and targets are relatives.
@@ -81,7 +81,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLNode getTarget() throws SLGraphSessionException {
 		if (isBidirectional()) {
 			// this method cannot be used on bidirecional links, because source and targets are relatives.
@@ -96,7 +96,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 	
-	@Override
+	//@Override
 	public boolean isBidirectional() throws SLGraphSessionException {
 		try {
 			return getDirection() == SLConsts.DIRECTION_BOTH;
@@ -106,7 +106,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 	
-	@Override
+	//@Override
 	public boolean equals(Object obj) {
 		try {
 			if (obj == null || !(obj instanceof SLLink)) return false;
@@ -125,7 +125,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 	
-	@Override
+	//@Override
 	public int hashCode() {
 		try {
 			return getID().hashCode();
@@ -135,7 +135,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 	
-	@Override
+	//@Override
 	public <V extends Serializable> SLLinkProperty<V> setProperty(Class<V> clazz, String name, V value) throws SLGraphSessionException {
 		try {
 			String propName = SLCommonSupport.toUserPropertyName(name);
@@ -148,7 +148,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public <V extends Serializable> SLLinkProperty<V> getProperty(Class<V> clazz, String name)
 		throws SLLinkPropertyNotFoundException, SLInvalidLinkPropertyTypeException, SLGraphSessionException {
 		try {
@@ -167,12 +167,12 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public String getPropertyValueAsString(String name) throws SLLinkPropertyNotFoundException, SLGraphSessionException {
 		return getProperty(Serializable.class, name).getValue().toString();
 	}
 
-	@Override
+	//@Override
 	public Set<SLLinkProperty<Serializable>> getProperties() throws SLGraphSessionException {
 		try {
 			Set<SLLinkProperty<Serializable>> properties = new HashSet<SLLinkProperty<Serializable>>();
@@ -188,12 +188,12 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public String toString() {
 		return linkNode.toString();
 	}
 
-	@Override
+	//@Override
 	public int compareTo(SLLink l) {
 		try {
 			SimpleInvocationHandler handler = (SimpleInvocationHandler) Proxy.getInvocationHandler(l);
@@ -221,7 +221,7 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	@Override
+	//@Override
 	public void remove() throws SLGraphSessionException {
 		try {
 			linkNode.remove();

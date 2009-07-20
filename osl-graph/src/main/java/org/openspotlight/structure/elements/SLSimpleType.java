@@ -314,12 +314,12 @@ public class SLSimpleType extends SLElement {
         this.deleteLinks = deleteLinks;
     }
 
-    @Override
+    //@Override
     public String toString() {
         return (this.getClass().getName() + ":" + this.getHandle() + ":" + this.getKey() + ":" + this.getContextHandle());
     }
 
-    @Override
+    //@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -327,7 +327,7 @@ public class SLSimpleType extends SLElement {
         return result;
     }
 
-    @Override
+    //@Override
     public boolean equals( Object obj ) {
         if (this == obj) return true;
         if (obj == null) return false;
@@ -337,7 +337,7 @@ public class SLSimpleType extends SLElement {
         return true;
     }
 
-    @Override
+    //@Override
     public String getLabel() {
         return null;
     }

@@ -21,7 +21,7 @@ public class SLNodeInvocationHandler implements InvocationHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
+	//@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		Object result = null;
 		if (!method.getDeclaringClass().equals(SLNode.class) && SLNode.class.isAssignableFrom(method.getDeclaringClass())) {

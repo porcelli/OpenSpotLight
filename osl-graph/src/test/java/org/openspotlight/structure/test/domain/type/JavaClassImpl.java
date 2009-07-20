@@ -11,7 +11,7 @@ public class JavaClassImpl extends JavaClass {
         super(key, contextHandle);
     }
 
-    @Override
+    //@Override
     public String getLabel() {
         return "Java Class Impl";
     }

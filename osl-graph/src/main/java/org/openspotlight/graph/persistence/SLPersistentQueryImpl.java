@@ -26,17 +26,17 @@ public class SLPersistentQueryImpl implements SLPersistentQuery {
 		this.type = type;
 	}
 
-	@Override
+	//@Override
 	public String getStatement() {
 		return statement;
 	}
 
-	@Override
+	//@Override
 	public int getType() {
 		return type;
 	}
 	
-	@Override
+	//@Override
 	public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException {
 		try {
 			
@@ -53,7 +53,7 @@ public class SLPersistentQueryImpl implements SLPersistentQuery {
 				String[] names = node.getPath().split("/");
 				SLPersistentNode persistentNode = null;
 				for (int i = 0; i < names.length; i++) {
-					if (names[i].isEmpty()) continue;
+					if (names[i].trim().equals("")) continue;
 					if (persistentNode == null && names[i].equals("osl")) {
 						persistentNode = treeSession.getRootNode();
 					}

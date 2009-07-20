@@ -10,7 +10,7 @@ public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster 
 		this.listeners = listeners;
 	}
 
-	@Override
+	//@Override
 	public void post(SLGraphSessionEvent event) throws SLGraphSessionException {
 		if (event.getType() == SLGraphSessionEvent.TYPE_BEFORE_SAVE) {
 			for (SLGraphSessionEventListener listener : listeners) {
@@ -19,7 +19,7 @@ public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster 
 		}
 	}
 
-	@Override
+	//@Override
 	public void post(SLNodeEvent event) throws SLGraphSessionException {
 		if (event.getType() == SLNodeEvent.TYPE_NODE_ADDED) {
 			for (SLGraphSessionEventListener listener : listeners) {
@@ -28,7 +28,7 @@ public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster 
 		}
 	}
 
-	@Override
+	//@Override
 	public void post(SLLinkEvent event) throws SLGraphSessionException {
 		if (event.getType() == SLLinkEvent.TYPE_LINK_ADDED) {
 			for (SLGraphSessionEventListener listener : listeners) {

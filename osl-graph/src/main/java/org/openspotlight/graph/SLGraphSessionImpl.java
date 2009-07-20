@@ -31,7 +31,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		this.eventPoster = new SLGraphSessionEventPosterImpl(listeners);
 	}
  	
-	@Override
+	//@Override
 	public SLContext createContext(Long id) throws SLContextAlreadyExistsException, SLGraphSessionException {
 		SLContext context = null;
 		try {
@@ -50,7 +50,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return context;
 	}
 	
-	@Override
+	//@Override
 	public SLContext getContext(Long id) throws SLGraphSessionException {
 		try {
 			SLContext context = null;
@@ -66,12 +66,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
-	@Override
+	//@Override
 	public void close() {
 		treeSession.close();
 	}
 
-	@Override
+	//@Override
 	public void save() throws SLGraphSessionException {
 		try {
 			eventPoster.post(new SLGraphSessionEvent(SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));
@@ -82,7 +82,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
-	@Override
+	//@Override
 	public void clear() throws SLGraphSessionException {
 		try {
 			treeSession.clear();
@@ -92,7 +92,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLNode getNodeByID(String id) throws SLNodeNotFoundException, SLGraphSessionException {
 		final int INDEX_CONTEXT_ID = 2;
 		try {
@@ -119,7 +119,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
-	@Override
+	//@Override
 	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException {
 
 		try  {
@@ -185,7 +185,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
-	@Override
+	//@Override
 	public Collection<SLNode> getNodesByPredicate(SLNodePredicate predicate) throws SLGraphSessionException {
 		try {
 			Collection<SLNode> nodes = new ArrayList<SLNode>();
@@ -205,12 +205,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 
-	@Override
+	//@Override
 	public Collection<SLNode> getNodesByLink(SLNode node) throws SLGraphSessionException {
 		return getNodesByLink(node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLNode> getNodesByLink(SLNode node, int direction) throws SLGraphSessionException {
 		return getNodesByLink(node, SLNode.class, true, direction);
 	}
@@ -219,7 +219,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return getNodesByLink(node, nodeClass, returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public <N extends SLNode> Collection<N> getNodesByLink(SLNode node, Class<N> nodeClass, boolean returnSubTypes, int direction) throws SLGraphSessionException {
 		try {
 			Collection<? extends SLLink> links = getLinks(node, null, direction); 
@@ -230,18 +230,18 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 
-	@Override
+	//@Override
 	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, null);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
 	
-	@Override
+	//@Override
 	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, int direction) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, node, SLNode.class, true, direction);
 	}
@@ -250,7 +250,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return getNodesByLink(linkClass, node, nodeClass, returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public <N extends SLNode> Collection<N> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass, boolean returnSubTypes, int direction) throws SLGraphSessionException {
 		try {
 			Collection<? extends SLLink> links = getLinks(linkClass, node, null, direction); 
@@ -261,62 +261,62 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getBidirectionalLinks(Class<L> linkClass, SLNode side1, SLNode side2) throws SLGraphSessionException {
 		return getLinks(linkClass, side1, side2, SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getBidirectionalLinksBySide(Class<L> linkClass, SLNode side) throws SLGraphSessionException {
 		return getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLLink> getBidirectionalLinks(SLNode side1, SLNode side2) throws SLGraphSessionException {
 		return getLinks(side1, side2, SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLLink> getBidirectionalLinksBySide(SLNode side) throws SLGraphSessionException {
 		return getLinks(side, null, SLLink.DIRECTION_BI);
 	}
 
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getUnidirectionalLinks(Class<L> linkClass, SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(linkClass, source, target, SLLink.DIRECTION_UNI);
 	}
 
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource(Class<L> linkClass, SLNode source) throws SLGraphSessionException {
 		return getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
 	}
 
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget(Class<L> linkClass, SLNode target) throws SLGraphSessionException {
 		return getLinks(linkClass, null, target, SLLink.DIRECTION_UNI);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLLink> getUnidirectionalLinks(SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(source, target, SLLink.DIRECTION_UNI);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLLink> getUnidirectionalLinksBySource(SLNode source) throws SLGraphSessionException {
 		return getLinks(source, null, SLLink.DIRECTION_UNI);
 	}
 
-	@Override
+	//@Override
 	public Collection<SLLink> getUnidirectionalLinksByTarget(SLNode target) throws SLGraphSessionException {
 		return getLinks(null, target, SLLink.DIRECTION_UNI);
 	}
 	
-	@Override
+	//@Override
 	public Collection<SLLink> getLinks(SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(source, target, SLLink.DIRECTION_ANY);
 	}
 	
-	@Override
+	//@Override
 	public Collection<SLLink> getLinks(SLNode source, SLNode target, int directionType) throws SLGraphSessionException {
 		Collection<SLLink> links = new ArrayList<SLLink>();
 		Collection<Class<? extends SLLink>> linkClasses = getLinkClasses();
@@ -326,12 +326,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return links;
 	}
 	
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(linkClass, source, target, SLLink.DIRECTION_ANY);
 	}
 	
-	@Override
+	//@Override
 	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target, int direction) throws SLGraphSessionException {
 		
 		try {
@@ -454,7 +454,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
-	@Override
+	//@Override
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return new SLMetadataImpl(treeSession);
 	}

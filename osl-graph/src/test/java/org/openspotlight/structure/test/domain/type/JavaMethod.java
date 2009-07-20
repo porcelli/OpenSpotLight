@@ -14,7 +14,7 @@ public class JavaMethod extends SLSimpleType {
         super(key, contextHandle);
     }
 
-    @Override
+    //@Override
     public String getLabel() {
         return null;
     }

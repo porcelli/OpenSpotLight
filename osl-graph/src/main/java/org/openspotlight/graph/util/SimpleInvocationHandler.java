@@ -12,7 +12,7 @@ public class SimpleInvocationHandler implements InvocationHandler {
 		this.target = target;
 	}
 
-	@Override
+	//@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		try {
 			return method.invoke(target, args);

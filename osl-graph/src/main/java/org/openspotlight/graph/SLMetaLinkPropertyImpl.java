@@ -15,17 +15,17 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
 		this.pProperty = pProperty;
 	}
 
-	@Override
+	//@Override
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metaLink.getMetadata();
 	}
 
-	@Override
+	//@Override
 	public SLMetaLink getMetaLink() throws SLGraphSessionException {
 		return metaLink;
 	}
 
-	@Override
+	//@Override
 	public String getName() throws SLGraphSessionException {
 		try {
 			return SLCommonSupport.toSimpleUserPropertyName(pProperty.getName());
@@ -35,7 +35,7 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
 		}
 	}
 	
-	@Override
+	//@Override
 	@SuppressWarnings("unchecked")
 	public Class<? extends Serializable> getType() throws SLGraphSessionException {
 		try {

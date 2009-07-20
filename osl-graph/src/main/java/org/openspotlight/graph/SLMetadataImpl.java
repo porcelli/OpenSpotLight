@@ -17,7 +17,7 @@ public class SLMetadataImpl implements SLMetadata {
 		this.treeSession = treeSession;
 	}
 
-	@Override
+	//@Override
 	public SLMetaNode getMetaNode(Class<? extends SLNode> nodeClass) throws SLGraphSessionException {
 		try {
 			SLPersistentQuery query = treeSession.createQuery("//osl/metadata/types/" + nodeClass.getName(), SLPersistentQuery.TYPE_XPATH);
@@ -34,7 +34,7 @@ public class SLMetadataImpl implements SLMetadata {
 		}
 	}
 
-	@Override
+	//@Override
 	public Collection<SLMetaNode> getMetaNodes() throws SLGraphSessionException {
 		try {
 			Collection<SLMetaNode> metaNodes = new ArrayList<SLMetaNode>();
@@ -52,7 +52,7 @@ public class SLMetadataImpl implements SLMetadata {
 		}
 	}
 
-	@Override
+	//@Override
 	public SLMetaLinkType getMetaLinkType(Class<? extends SLLink> linkType) throws SLGraphSessionException {
 		try {
 			StringBuilder statement = new StringBuilder();
@@ -70,7 +70,7 @@ public class SLMetadataImpl implements SLMetadata {
 		}
 	}
 
-	@Override
+	//@Override
 	public Collection<SLMetaLinkType> getMetaLinkTypes() throws SLGraphSessionException {
 		try {
 			Collection<SLMetaLinkType> metaLinkTypes = new ArrayList<SLMetaLinkType>();
