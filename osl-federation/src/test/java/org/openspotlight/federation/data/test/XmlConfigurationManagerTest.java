@@ -52,6 +52,13 @@ package org.openspotlight.federation.data.test;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
 
+/**
+ * Test class for {@link XmlConfigurationManager}.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+@SuppressWarnings("all")
 public class XmlConfigurationManagerTest extends
         AbstractConfigurationManagerTest {
     

@@ -62,12 +62,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.AbstractConfigurationNode;
+import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata;
 
 /**
- * Interface responsible to load and save the group data on a persistent layer
+ * Interface responsible to load and save the configuration data on a persistent
+ * layer.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -82,35 +82,37 @@ public interface ConfigurationManager {
      */
     public static class NodeClassHelper {
         
-        public static final String DEFAULT_NODE_PACKAGE = AbstractConfigurationNode.class
+        /**
+         * Default package used to find configuration pojo classes.
+         */
+        public static final String DEFAULT_NODE_PACKAGE = Configuration.class
                 .getPackage().getName();
         
         /**
          * Class and name cache
          */
-        private final Map<Class<? extends AbstractConfigurationNode>, String> cache = new ConcurrentHashMap<Class<? extends AbstractConfigurationNode>, String>();
+        private final Map<Class<? extends ConfigurationNode>, String> cache = new ConcurrentHashMap<Class<? extends ConfigurationNode>, String>();
         
         /**
          * Create a new node instance based on a node name, a parent node and
          * the class name. The node class should have a constructor with a
-         * string and a node, as in the super class
-         * {@link AbstractConfigurationNode}.
+         * string and a node, as in the super class {@link ConfigurationNode}.
          * 
          * @param <N>
          * @param nodeName
          * @param parentNode
          * @param nodeClassName
-         * @return
+         * @return a new configuration node
+         * @throws ConfigurationException
          */
-        public <N extends ConfigurationNodeMetadata> N createInstance(
-                final String nodeName,
-                final ConfigurationNodeMetadata parentNode,
+        public <N extends ConfigurationNode> N createInstance(
+                final String nodeName, final ConfigurationNode parentNode,
                 final String nodeClassName) throws ConfigurationException {
-            checkNotEmpty("nodeName", nodeName);
-            checkNotNull("parentNode", parentNode);
-            checkNotEmpty("nodeClassName", nodeClassName);
-            checkCondition("nodeClassNameWithPrefix", nodeClassName
-                    .startsWith(DEFAULT_OSL_PREFIX + ":"));
+            checkNotEmpty("nodeName", nodeName); //$NON-NLS-1$
+            checkNotNull("parentNode", parentNode); //$NON-NLS-1$
+            checkNotEmpty("nodeClassName", nodeClassName); //$NON-NLS-1$
+            checkCondition("nodeClassNameWithPrefix", nodeClassName //$NON-NLS-1$
+                    .startsWith(DEFAULT_OSL_PREFIX + ":")); //$NON-NLS-1$
             try {
                 final Class<N> clazz = getNodeClassFromName(nodeClassName);
                 final Constructor<N> constructor = clazz.getConstructor(
@@ -125,18 +127,19 @@ public interface ConfigurationManager {
         /**
          * Creates a new root node instance based on class name. The node class
          * should have a default constructor with calls the super constructor
-         * from {@AbstractConfigurationNode} using
-         * default arguments.
+         * from {@ConfigurationNode} using default
+         * arguments.
          * 
          * @param <N>
          * @param nodeClassName
-         * @return
+         * @return a new root instance for a configuration node
+         * @throws ConfigurationException
          */
-        public <N extends ConfigurationNodeMetadata> N createRootInstance(
+        public <N extends ConfigurationNode> N createRootInstance(
                 final String nodeClassName) throws ConfigurationException {
-            checkNotEmpty("nodeClassName", nodeClassName);
-            checkCondition("nodeClassNameWithPrefix", nodeClassName
-                    .startsWith(DEFAULT_OSL_PREFIX + ":"));
+            checkNotEmpty("nodeClassName", nodeClassName); //$NON-NLS-1$
+            checkCondition("nodeClassNameWithPrefix", nodeClassName //$NON-NLS-1$
+                    .startsWith(DEFAULT_OSL_PREFIX + ":")); //$NON-NLS-1$
             try {
                 final Class<N> clazz = getNodeClassFromName(nodeClassName);
                 final N node = clazz.newInstance();
@@ -150,37 +153,40 @@ public interface ConfigurationManager {
          * Returns a valid node name based on class name
          * 
          * @param nodeClass
-         * @return
+         * @return a new name for this node type
          */
         public String getNameFromNodeClass(
-                final Class<? extends AbstractConfigurationNode> nodeClass) {
-            checkNotNull("nodeClass", nodeClass);
-            checkCondition("samePackage", DEFAULT_NODE_PACKAGE.equals(nodeClass
+                final Class<? extends ConfigurationNode> nodeClass) {
+            checkNotNull("nodeClass", nodeClass); //$NON-NLS-1$
+            checkCondition("samePackage", DEFAULT_NODE_PACKAGE.equals(nodeClass //$NON-NLS-1$
                     .getPackage().getName()));
-            String name = cache.get(nodeClass);
+            String name = this.cache.get(nodeClass);
             if (name == null) {
                 name = nodeClass.getSimpleName();
                 name = firstLetterToLowerCase(name);
-                name = DEFAULT_OSL_PREFIX + ":" + name;
-                cache.put(nodeClass, name);
+                name = DEFAULT_OSL_PREFIX + ":" + name; //$NON-NLS-1$
+                this.cache.put(nodeClass, name);
             }
             return name;
         }
         
         /**
-         * Returns a valid node Class based on node class name
+         * Returns a valid node Class based on node class name. This class will
+         * be taken from the {@link #DEFAULT_NODE_PACKAGE} static attribute.
          * 
+         * @param <N>
          * @param nodeClassName
-         * @return
+         * @return a node class for this name
+         * @throws ConfigurationException
          */
         @SuppressWarnings("unchecked")
-        public <N extends ConfigurationNodeMetadata> Class<N> getNodeClassFromName(
+        public <N extends ConfigurationNode> Class<N> getNodeClassFromName(
                 final String nodeClassName) throws ConfigurationException {
-            checkNotEmpty("nodeClassName", nodeClassName);
-            checkCondition("nodeClassNameWithPrefix", nodeClassName
-                    .startsWith(DEFAULT_OSL_PREFIX + ":"));
-            if (cache.containsValue(nodeClassName)) {
-                for (final Map.Entry<Class<? extends AbstractConfigurationNode>, String> entry : cache
+            checkNotEmpty("nodeClassName", nodeClassName); //$NON-NLS-1$
+            checkCondition("nodeClassNameWithPrefix", nodeClassName //$NON-NLS-1$
+                    .startsWith(DEFAULT_OSL_PREFIX + ":")); //$NON-NLS-1$
+            if (this.cache.containsValue(nodeClassName)) {
+                for (final Map.Entry<Class<? extends ConfigurationNode>, String> entry : this.cache
                         .entrySet()) {
                     if (nodeClassName.equals(entry.getValue())) {
                         return (Class<N>) entry.getKey();
@@ -188,13 +194,13 @@ public interface ConfigurationManager {
                 }
             }
             String realClassName = removeBegginingFrom(
-                    DEFAULT_OSL_PREFIX + ":", nodeClassName);
+                    DEFAULT_OSL_PREFIX + ":", nodeClassName); //$NON-NLS-1$
             realClassName = firstLetterToUpperCase(realClassName);
-            realClassName = DEFAULT_NODE_PACKAGE + "." + realClassName;
+            realClassName = DEFAULT_NODE_PACKAGE + "." + realClassName; //$NON-NLS-1$
             try {
-                final Class<? extends AbstractConfigurationNode> clazz = (Class<? extends AbstractConfigurationNode>) Class
+                final Class<? extends ConfigurationNode> clazz = (Class<? extends ConfigurationNode>) Class
                         .forName(realClassName);
-                cache.put(clazz, nodeClassName);
+                this.cache.put(clazz, nodeClassName);
                 return (Class<N>) clazz;
             } catch (final Exception e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
@@ -212,11 +218,15 @@ public interface ConfigurationManager {
     public static class PropertyEntryHelper {
         
         /**
-         * Verify if that identifier is an osl property
+         * Verify if that identifier is an osl property. Used on Jcr when
+         * loading the nodes.
+         * 
+         * @param propertyIdentifier
+         * @return true if this is a valid property
          */
         public boolean isPropertyNode(final String propertyIdentifier) {
-            checkNotEmpty("propertyIdentifier", propertyIdentifier);
-            if (propertyIdentifier.startsWith(DEFAULT_OSL_PREFIX + ":")) {
+            checkNotEmpty("propertyIdentifier", propertyIdentifier); //$NON-NLS-1$
+            if (propertyIdentifier.startsWith(DEFAULT_OSL_PREFIX + ":")) { //$NON-NLS-1$
                 return true;
             }
             return false;
@@ -224,13 +234,17 @@ public interface ConfigurationManager {
         
     }
     
-    public static final String DEFAULT_OSL_PREFIX = "osl";
+    /**
+     * The default OpenSpotlight prefix used on Jcr.
+     */
+    public static final String DEFAULT_OSL_PREFIX = "osl"; //$NON-NLS-1$
     
     /**
      * Loads the current group from configuration, marking the configuration as
      * saved.
      * 
-     * @return
+     * @return a fresh configuration
+     * @throws ConfigurationException
      */
     Configuration load() throws ConfigurationException;
     
@@ -239,6 +253,7 @@ public interface ConfigurationManager {
      * as a saved configuration.
      * 
      * @param configuration
+     * @throws ConfigurationException
      */
     void save(Configuration configuration) throws ConfigurationException;
 }

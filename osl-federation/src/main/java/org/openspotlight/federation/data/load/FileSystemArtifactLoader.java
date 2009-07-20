@@ -78,7 +78,7 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle)
             throws ConfigurationException {
-        checkNotNull("bundle", bundle);
+        checkNotNull("bundle", bundle); //$NON-NLS-1$
         final String basePath = bundle.getInitialLookup();
         try {
             final Set<String> allFiles = listFileNamesFrom(basePath);
@@ -94,11 +94,11 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
     @Override
     protected byte[] loadArtifact(final Bundle bundle, final String artifactName)
             throws Exception {
-        checkNotNull("bundle", bundle);
-        checkNotEmpty("artifactName", artifactName);
+        checkNotNull("bundle", bundle); //$NON-NLS-1$
+        checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
         final String fileName = bundle.getInitialLookup() + artifactName;
         final File file = new File(fileName);
-        checkCondition("fileExists", file.exists());
+        checkCondition("fileExists", file.exists()); //$NON-NLS-1$
         final FileInputStream fis = new FileInputStream(file);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while (fis.available() > 0) {

@@ -73,6 +73,7 @@ import org.openspotlight.federation.data.test.AbstractNodeTest;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class AbstractArtifactLoaderTest extends AbstractNodeTest {
     
     protected ArtifactLoader artifactLoader;

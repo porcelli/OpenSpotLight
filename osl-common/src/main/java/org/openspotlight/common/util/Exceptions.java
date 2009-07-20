@@ -94,6 +94,7 @@ public class Exceptions {
      * 
      * @param <E>
      * @param exception
+     * @return the same exception
      */
     public static <E extends Throwable> E logAndReturn(final E exception) {
         logger.error(exception.getMessage(), exception);
@@ -116,7 +117,7 @@ public class Exceptions {
      * @param baseException
      * @param newExceptionClass
      *            that has a constructor to wrap the original exception
-     * @return
+     * @return a new exception wich type is the same as passed on parameter
      */
     @SuppressWarnings("unchecked")
     public static <E extends Exception> E logAndReturnNew(
@@ -153,6 +154,7 @@ public class Exceptions {
      * @param baseException
      * @param newExceptionClass
      *            that has a constructor to wrap the original exception
+     * @return a new exception wich type is the same as passed on parameter
      */
     public static <E extends Exception> E logAndReturnNew(final String message,
             final Exception baseException, final Class<E> newExceptionClass) {
@@ -241,6 +243,7 @@ public class Exceptions {
      * </pre>
      * 
      * @param <E>
+     * @param message
      * @param baseException
      * @param newExceptionClass
      *            that has a constructor to wrap the original exception

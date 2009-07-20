@@ -74,7 +74,7 @@ public class Arrays {
      * 
      * @param <T>
      * @param array
-     * @return
+     * @return the same parameters in a array
      */
     public static <T> T[] andOf(final T... array) {
         return array;
@@ -91,7 +91,7 @@ public class Arrays {
      * 
      * @param <T>
      * @param array
-     * @return
+     * @return the same parameters in a array
      */
     public static <T> T[] andValues(final T... array) {
         return array;
@@ -105,10 +105,9 @@ public class Arrays {
      * </pre>
      * 
      * @param <K>
-     * @param <V>
      * @param ofKeys
      * @param andValues
-     * @return
+     * @return a new map with the parameters
      */
     public static <K> Map<K, Class<?>> map(final K[] ofKeys,
             final Class<?>[] andValues) {
@@ -138,7 +137,7 @@ public class Arrays {
      * @param <V>
      * @param ofKeys
      * @param andValues
-     * @return
+     * @return a new map with the parameters
      */
     public static <K, V> Map<K, V> map(final K[] ofKeys, final V[] andValues) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
@@ -167,7 +166,7 @@ public class Arrays {
      * 
      * @param <T>
      * @param array
-     * @return
+     * @return the same parameters in a array
      */
     public static <T> T[] of(final T... array) {
         return array;
@@ -184,7 +183,7 @@ public class Arrays {
      * 
      * @param <T>
      * @param array
-     * @return
+     * @return the same parameters in a array
      */
     public static <T> T[] ofKeys(final T... array) {
         return array;

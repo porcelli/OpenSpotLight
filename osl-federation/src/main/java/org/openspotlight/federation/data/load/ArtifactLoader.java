@@ -70,8 +70,9 @@ import org.openspotlight.federation.data.impl.Bundle;
  * decisions if it knows any form to load the Artifacts that match the mapping
  * that it receives.
  * 
- * The Artifact loader has the responsibility to resolve each mapping. FIXME
- * create refresh method
+ * The Artifact loader has the responsibility to resolve each mapping.
+ * 
+ * FIXME create refresh method
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -88,10 +89,21 @@ public interface ArtifactLoader {
     public final class ArtifactProcessingCount implements
             Comparable<ArtifactProcessingCount> {
         
+        /**
+         * Representes a artifact processing witch just loaded one artifact.
+         */
         public static final ArtifactProcessingCount ONE_LOADED = new ArtifactProcessingCount(
                 1, 0, 0);
+        /**
+         * Representes a artifact processing witch just ignored one artifact.
+         */
         public static final ArtifactProcessingCount ONE_IGNORED = new ArtifactProcessingCount(
                 0, 1, 0);
+        
+        /**
+         * Representes a artifact processing witch just got an error loading one
+         * artifact.
+         */
         public static final ArtifactProcessingCount ONE_ERROR = new ArtifactProcessingCount(
                 0, 0, 1);
         
@@ -102,22 +114,39 @@ public interface ArtifactLoader {
         private final int hashCode;
         private final String description;
         
+        /**
+         * Creates an processing data based on load counts for artifact loading.
+         * 
+         * @param loadCount
+         * @param ignoreCount
+         * @param errorCount
+         */
+        @SuppressWarnings("boxing")
         public ArtifactProcessingCount(final long loadCount,
                 final long ignoreCount, final long errorCount) {
             this.loadCount = loadCount;
             this.ignoreCount = ignoreCount;
             this.errorCount = errorCount;
             this.hashCode = hashOf(loadCount, ignoreCount, errorCount);
-            this.description = format("loaded:{0} ignored:{1} error:{2}",
+            this.description = format(Messages
+                    .getString("ArtifactLoader.loadDescription"), //$NON-NLS-1$
                     loadCount, ignoreCount, errorCount);
         }
         
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("boxing")
         public int compareTo(final ArtifactProcessingCount that) {
             return compareAll(of(this.loadCount, this.ignoreCount,
                     this.errorCount), andOf(that.loadCount, that.ignoreCount,
                     that.errorCount));
         }
         
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("boxing")
         @Override
         public boolean equals(final Object o) {
             if (o == this) {
@@ -132,26 +161,41 @@ public interface ArtifactLoader {
                     that.errorCount));
         }
         
+        /**
+         * @return the error count
+         */
         public long getErrorCount() {
-            return errorCount;
+            return this.errorCount;
         }
         
+        /**
+         * @return the loading count
+         */
         public long getIgnoreCount() {
-            return ignoreCount;
+            return this.ignoreCount;
         }
         
+        /**
+         * @return the loading count
+         */
         public long getLoadCount() {
-            return loadCount;
+            return this.loadCount;
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
-            return hashCode;
+            return this.hashCode;
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
-            return description;
+            return this.description;
         }
     }
     
@@ -159,6 +203,8 @@ public interface ArtifactLoader {
      * Loads all the Artifacts contained from each ArtifactMapping.
      * 
      * @param bundle
+     * @return the loading count
+     * @throws ConfigurationException
      */
     public ArtifactProcessingCount loadArtifactsFromMappings(Bundle bundle)
             throws ConfigurationException;

@@ -63,6 +63,7 @@ import org.openspotlight.common.util.HashCodes;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class HashsTest {
     
     @SuppressWarnings("boxing")

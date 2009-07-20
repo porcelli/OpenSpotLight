@@ -71,7 +71,7 @@ public class Sha1 {
      * Returns a sha-1 signature for that content.
      * 
      * @param content
-     * @return
+     * @return a byte array representing the signature
      * @throws SLException
      */
     public static byte[] getSha1Signature(final byte[] content)
@@ -88,7 +88,7 @@ public class Sha1 {
      * Returns a sha-1 signature for that content as a base64 string.
      * 
      * @param content
-     * @return
+     * @return a base64 string representing the signature
      * @throws SLException
      */
     public static String getSha1SignatureEncodedAsBase64(final byte[] content)

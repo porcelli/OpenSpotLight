@@ -49,12 +49,11 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Arrays.andValues;
-import static org.openspotlight.common.util.Arrays.map;
-import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
+import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
+import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
-import java.util.HashSet;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 
 import net.jcip.annotations.ThreadSafe;
@@ -63,82 +62,196 @@ import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
+/**
+ * An artifact mapping represents a group of included and excluded paterns that
+ * should be used to load and verify if an artifact belongs to this patterns.
+ * This patterns of inclusion and exclusion are the same as used on apache ant.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+@SuppressWarnings("unchecked")
 @ThreadSafe
 public final class ArtifactMapping implements ConfigurationNode {
     
     /**
-	 * 
-	 */
-    private static final long serialVersionUID = -294480799746694450L;
+     * 
+     */
+    private static final long serialVersionUID = 4945977241903059466L;
     
-    private static final String ACTIVE = "active";
+    private static final String RELATIVE = "relative"; //$NON-NLS-1$
     
-    private static final String INCLUDED = "included";
-    
-    private static final String EXCLUDED = "excluded";
-    
-    @SuppressWarnings("unchecked")
-    private static final Map<String, Class<?>> PROPERTY_TYPES = map(ofKeys(
-            ACTIVE, INCLUDED, EXCLUDED), andValues(Boolean.class, String.class,
-            String.class));
-    
-    private static final Set<Class<?>> CHILDREN_CLASSES = new HashSet<Class<?>>();
-    
-    public ArtifactMapping(final String name, final Bundle bundle) {
-        super(name, bundle, PROPERTY_TYPES);
+    static {
+        final StaticMetadata newStaticMetadata = createMutable();
+        newStaticMetadata.setChildrenNodeValidTypes(Excluded.class,
+                Included.class);
+        newStaticMetadata.setType(ArtifactMapping.class);
+        newStaticMetadata.setParentNodeValidTypes(Bundle.class, Project.class);
+        newStaticMetadata.setKeyProperty(RELATIVE);
+        staticMetadata = createImmutable(newStaticMetadata);
     }
     
-    public int compareTo(final ConfigurationNode o) {
-        // TODO Auto-generated method stub
-        return 0;
+    private final InstanceMetadata instanceMetadata;
+    
+    private static final StaticMetadata staticMetadata;
+    
+    /**
+     * Creates an artifact mapping inside a bundle.
+     * 
+     * @param bundle
+     * @param relative
+     */
+    public ArtifactMapping(final Bundle bundle, final String relative) {
+        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
+                bundle, relative);
     }
     
-    public Boolean getActive() {
-        return this.getProperty(ACTIVE);
+    /**
+     * Creates an artifact mapping inside a project.
+     * 
+     * @param project
+     * @param relative
+     */
+    public ArtifactMapping(final Project project, final String relative) {
+        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
+                project, relative);
     }
     
-    public Bundle getBundle() {
-        return this.getParent();
+    /**
+     * adds a excluded inside this repository.
+     * 
+     * @param excluded
+     */
+    public final void addExcluded(final Excluded excluded) {
+        this.instanceMetadata.addChild(excluded);
     }
     
+    /**
+     * adds a included inside this repository.
+     * 
+     * @param included
+     */
+    public final void addIncluded(final Included included) {
+        this.instanceMetadata.addChild(included);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final int compareTo(final ConfigurationNode o) {
+        return this.instanceMetadata.compare(this, o);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
     @Override
-    public Set<Class<?>> getChildrenTypes() {
-        return CHILDREN_CLASSES;
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
     }
     
-    public String getExcluded() {
-        return this.getProperty(EXCLUDED);
+    /**
+     * 
+     * @param name
+     * @return a excluded by its name
+     */
+    public final Excluded getExcludedByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(Excluded.class, name);
     }
     
-    public String getIncluded() {
-        return this.getProperty(INCLUDED);
+    /**
+     * 
+     * @return all valid names existing excludeds inside this repository
+     */
+    public final Set<String> getExcludedNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(Excluded.class);
     }
     
-    public InstanceMetadata getInstanceMetadata() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * 
+     * @return all excludeds inside this repository
+     */
+    public final Collection<Excluded> getExcludeds() {
+        return this.instanceMetadata.getChildrensOfType(Excluded.class);
     }
     
+    /**
+     * 
+     * @param name
+     * @return a included by its name
+     */
+    public final Included getIncludedByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(Included.class, name);
+    }
+    
+    /**
+     * 
+     * @return all valid names existing includeds inside this repository
+     */
+    public final Set<String> getIncludedNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(Included.class);
+    }
+    
+    /**
+     * 
+     * @return all includeds inside this repository
+     */
+    public final Collection<Included> getIncludeds() {
+        return this.instanceMetadata.getChildrensOfType(Included.class);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public final InstanceMetadata getInstanceMetadata() {
+        return this.instanceMetadata;
+    }
+    
+    /**
+     * 
+     * @return the relative initial path for this mapping.
+     */
+    public String getRelative() {
+        return (String) this.instanceMetadata.getKeyPropertyValue();
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public final StaticMetadata getStaticMetadata() {
+        return staticMetadata;
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
     @Override
-    public Class<?> getParentType() {
-        return Bundle.class;
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
     }
     
-    public StaticMetadata getStaticMetadata() {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * removes a given excluded from this repository.
+     * 
+     * @param excluded
+     */
+    public final void removeExcluded(final Excluded excluded) {
+        this.instanceMetadata.removeChild(excluded);
     }
     
-    public void setActive(final Boolean active) {
-        this.setProperty(ACTIVE, active);
-    }
-    
-    public void setExcluded(final String excluded) {
-        this.setProperty(EXCLUDED, excluded);
-    }
-    
-    public void setIncluded(final String included) {
-        this.setProperty(INCLUDED, included);
+    /**
+     * removes a given included from this repository.
+     * 
+     * @param included
+     */
+    public final void removeIncluded(final Included included) {
+        this.instanceMetadata.removeChild(included);
     }
     
 }

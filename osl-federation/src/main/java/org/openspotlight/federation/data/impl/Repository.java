@@ -162,6 +162,16 @@ public final class Repository implements ConfigurationNode {
     }
     
     /**
+     * The name, in this case, is a unique identifier (with parent node) to this
+     * node.
+     * 
+     * @return the node name
+     */
+    public String getName() {
+        return (String) this.instanceMetadata.getKeyPropertyValue();
+    }
+    
+    /**
      * 
      * @return the number of parallel threads for this repository processing
      */

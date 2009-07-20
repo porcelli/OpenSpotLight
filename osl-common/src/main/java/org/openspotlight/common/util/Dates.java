@@ -78,7 +78,7 @@ public class Dates {
      * Creates a date using the default date format
      * 
      * @param dateString
-     * @return
+     * @return a new date
      */
     public static Date dateFromString(final String dateString) {
         checkNotEmpty("dateString", dateString); //$NON-NLS-1$
@@ -94,7 +94,7 @@ public class Dates {
      * Returns a string using the date passed on argument and the default format
      * 
      * @param date
-     * @return
+     * @return a formatted string
      */
     public static String stringFromDate(final Date date) {
         checkNotNull("date", date); //$NON-NLS-1$

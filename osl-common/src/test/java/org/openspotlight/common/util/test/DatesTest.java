@@ -66,6 +66,7 @@ import org.openspotlight.common.util.Dates;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class DatesTest {
     
     @Test

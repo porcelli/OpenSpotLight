@@ -1,31 +1,44 @@
 package org.openspotlight.common.exception;
 
 //FIXME replace with Vitor's implementation 
+/**
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
 public class SLException extends Exception {
-    
-    public SLException() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-    
-    public SLException(String message, Throwable cause) {
-        super(message, cause);
-        // TODO Auto-generated constructor stub
-    }
-    
-    public SLException(String message) {
-        super(message);
-        // TODO Auto-generated constructor stub
-    }
-    
-    public SLException(Throwable cause) {
-        super(cause);
-        // TODO Auto-generated constructor stub
-    }
     
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * 
+     */
+    public SLException() {
+        super();
+    }
+    
+    /**
+     * @param message
+     */
+    public SLException(final String message) {
+        super(message);
+    }
+    
+    /**
+     * @param message
+     * @param cause
+     */
+    public SLException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+    
+    /**
+     * @param cause
+     */
+    public SLException(final Throwable cause) {
+        super(cause);
+    }
     
 }

@@ -65,7 +65,7 @@ public class Equals {
      * 
      * @param o1
      * @param o2
-     * @return
+     * @return true if the two object are equal
      */
     public static boolean eachEquality(final Object o1, final Object o2) {
         if (o1 == o2) {
@@ -104,7 +104,7 @@ public class Equals {
      * 
      * @param of
      * @param andOf
-     * @return
+     * @return true if all objects are equal
      */
     public static boolean eachEquality(final Object[] of, final Object[] andOf) {
         if (of == null) {

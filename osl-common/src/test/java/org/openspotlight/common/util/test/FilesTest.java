@@ -72,6 +72,7 @@ import org.openspotlight.common.util.Files;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class FilesTest {
     
     private static String LOWEST_PATH = "./target"; //$NON-NLS-1$

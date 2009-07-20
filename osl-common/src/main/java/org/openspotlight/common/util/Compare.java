@@ -98,7 +98,7 @@ public class Compare {
      * @param <T>
      * @param of
      * @param andOf
-     * @return
+     * @return a int resulted by the items comparison
      */
     public static <T> int compareAll(final T[] of, final T andOf[]) {
         if ((of == null) && (andOf == null)) {
@@ -134,7 +134,7 @@ public class Compare {
      * @param <T>
      * @param thisObject
      * @param thatObject
-     * @return
+     * @return an int resulted by the comparison
      */
     @SuppressWarnings("unchecked")
     public static <T> int npeSafeCompare(final T thisObject, final T thatObject) {

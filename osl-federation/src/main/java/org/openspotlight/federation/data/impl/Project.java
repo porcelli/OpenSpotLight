@@ -305,6 +305,16 @@ public final class Project implements ConfigurationNode {
     }
     
     /**
+     * The name, in this case, is a unique identifier (with parent node) to this
+     * node.
+     * 
+     * @return the node name
+     */
+    public String getName() {
+        return (String) this.instanceMetadata.getKeyPropertyValue();
+    }
+    
+    /**
      * Returns a child project by its name
      * 
      * @param name

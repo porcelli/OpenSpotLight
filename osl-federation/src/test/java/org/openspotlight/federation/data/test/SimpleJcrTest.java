@@ -69,6 +69,7 @@ import org.junit.Test;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class SimpleJcrTest {
     
     public static final String TESTDATA_PATH = "./src/test/resources/";

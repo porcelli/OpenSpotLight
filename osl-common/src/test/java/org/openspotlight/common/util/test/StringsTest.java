@@ -64,7 +64,7 @@ import org.openspotlight.common.util.Strings;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@SuppressWarnings("nls")
+@SuppressWarnings("all")
 public class StringsTest {
     
     @Test

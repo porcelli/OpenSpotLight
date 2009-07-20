@@ -65,6 +65,7 @@ import org.openspotlight.common.util.Sha1;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class Sha1Test {
     
     @SuppressWarnings( { "nls", "boxing" })

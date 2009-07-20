@@ -79,7 +79,7 @@ public class Serialization {
      * 
      * @param <E>
      * @param string
-     * @return
+     * @return the serialized object
      * @throws SLException
      */
     @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ public class Serialization {
      * 
      * @param <E>
      * @param bytes
-     * @return
+     * @return the serialized object
      * @throws SLException
      */
     @SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class Serialization {
      * 
      * @param <E>
      * @param inputStream
-     * @return
+     * @return the serialized object
      * @throws SLException
      */
     @SuppressWarnings("unchecked")
@@ -144,7 +144,7 @@ public class Serialization {
      * 
      * @param <E>
      * @param object
-     * @return
+     * @return a base64 string
      * @throws SLException
      */
     public static <E extends Serializable> String serializeToBase64(
@@ -165,7 +165,7 @@ public class Serialization {
      * 
      * @param <E>
      * @param object
-     * @return
+     * @return a byte array
      * @throws SLException
      */
     public static <E extends Serializable> byte[] serializeToBytes(

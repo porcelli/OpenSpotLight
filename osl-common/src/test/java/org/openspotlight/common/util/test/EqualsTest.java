@@ -64,6 +64,7 @@ import org.openspotlight.common.util.Equals;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class EqualsTest {
     
     @SuppressWarnings("boxing")

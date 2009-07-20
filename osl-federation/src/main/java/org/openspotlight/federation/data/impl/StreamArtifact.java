@@ -157,7 +157,7 @@ public final class StreamArtifact implements ConfigurationNode {
      * @return the relative name for this artifact.
      */
     public String getRelativeName() {
-        return this.instanceMetadata.getProperty(RELATIVE_NAME);
+        return (String) this.instanceMetadata.getKeyPropertyValue();
     }
     
     /**
@@ -184,15 +184,6 @@ public final class StreamArtifact implements ConfigurationNode {
      */
     public void setDataSha1(final String dataSha1) {
         this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
-    }
-    
-    /**
-     * Sets the relative name for this artifact.
-     * 
-     * @param relativeName
-     */
-    public void setRelativeName(final String relativeName) {
-        this.instanceMetadata.setProperty(RELATIVE_NAME, relativeName);
     }
     
 }

@@ -56,16 +56,13 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.data.AbstractConfigurationNode;
+import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
+import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
+import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.ItemChangeType;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.ItemEventListener;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.PropertyValue;
 
 /**
  * Test for class {@link AbstractConfigurationNode} and
@@ -74,6 +71,7 @@ import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata.Property
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class AbstractNodeTest extends NodeTest {
     
     private ItemChangeEvent<PropertyValue> lastPropertyChange;

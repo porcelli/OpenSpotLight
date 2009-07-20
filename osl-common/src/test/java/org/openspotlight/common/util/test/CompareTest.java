@@ -66,6 +66,7 @@ import org.openspotlight.common.util.Compare;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class CompareTest {
     
     @SuppressWarnings("boxing")

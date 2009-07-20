@@ -66,6 +66,7 @@ import org.openspotlight.common.util.Assertions;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class AssertionsTest {
     
     @Test

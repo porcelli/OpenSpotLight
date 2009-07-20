@@ -53,6 +53,13 @@ import org.junit.Test;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 
+/**
+ * Base test for {@link ConfigurationManager} classes.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+@SuppressWarnings("all")
 public abstract class AbstractConfigurationManagerTest extends NodeTest {
     
     protected abstract ConfigurationManager createInstance();

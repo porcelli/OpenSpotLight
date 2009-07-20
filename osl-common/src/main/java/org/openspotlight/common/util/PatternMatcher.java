@@ -60,6 +60,13 @@ import java.util.Set;
 
 import org.apache.tools.ant.types.selectors.SelectorUtils;
 
+/**
+ * This class has the necessary logic to filter names using the apache ant
+ * pattern.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
 public class PatternMatcher {
     
     /**
@@ -91,18 +98,34 @@ public class PatternMatcher {
             this.ignoredNames = unmodifiableSet(ignoredNames);
         }
         
+        /**
+         * 
+         * @return all names passed to be processed
+         */
         public Set<String> getAllNames() {
             return this.allNames;
         }
         
+        /**
+         * 
+         * @return a set of excluded names
+         */
         public Set<String> getExcludedNames() {
             return this.excludedNames;
         }
         
+        /**
+         * 
+         * @return a set of ignored names
+         */
         public Set<String> getIgnoredNames() {
             return this.ignoredNames;
         }
         
+        /**
+         * 
+         * @return a set of included names
+         */
         public Set<String> getIncludedNames() {
             return this.includedNames;
         }
@@ -117,7 +140,7 @@ public class PatternMatcher {
      * @param includedPatterns
      * @param excludedPatterns
      * @param caseSensitive
-     * @return
+     * @return a filter result
      */
     public static FilterResult filterNamesByPattern(
             final Set<String> namesToFilter,

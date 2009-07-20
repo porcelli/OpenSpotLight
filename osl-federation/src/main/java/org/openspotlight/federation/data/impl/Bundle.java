@@ -143,6 +143,17 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
+     * Adds an artifact by its name.
+     * 
+     * @param artifactName
+     * @return the new added artifact
+     * 
+     */
+    public final StreamArtifact addArtifact(final String artifactName) {
+        return new StreamArtifact(this, artifactName);
+    }
+    
+    /**
      * Adds an artifact mapping.
      * 
      * @param ArtifactMapping
@@ -317,6 +328,16 @@ public class Bundle implements ConfigurationNode {
      */
     public final Collection<JcrArtifact> getJcrArtifacts() {
         return this.instanceMetadata.getChildrensOfType(JcrArtifact.class);
+    }
+    
+    /**
+     * The name, in this case, is a unique identifier (with parent node) to this
+     * node.
+     * 
+     * @return the node name
+     */
+    public String getName() {
+        return (String) this.instanceMetadata.getKeyPropertyValue();
     }
     
     /**

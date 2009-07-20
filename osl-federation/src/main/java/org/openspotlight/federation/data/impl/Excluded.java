@@ -49,117 +49,85 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Arrays.andValues;
-import static org.openspotlight.common.util.Arrays.map;
-import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
-
-import java.io.InputStream;
-
-import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * A Jcr artifact is an artifact with hierarchical data. So, this artifact is
- * easily represented with Jcr structure instead of bytes to be parsed.
- * 
- * FIXME implement this
+ * This node is to map excluded artifacts inside an artifact mapping in a ant
+ * like way.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @SuppressWarnings("unchecked")
-@ThreadSafe
-public final class JcrArtifact implements ConfigurationNode {
+public class Excluded implements ConfigurationNode {
     
     /**
-	 * 
-	 */
-    private static final long serialVersionUID = -889016915372708085L;
+     * 
+     */
+    private static final long serialVersionUID = -2338153689125625472L;
     
-    private static final String DATA = "data"; //$NON-NLS-1$
-    private static final String RELATIVE_NAME = "relativeName"; //$NON-NLS-1$
-    
-    private static final String DATA_SHA1 = "dataSha1"; //$NON-NLS-1$
-    
+    private static final String NAME = "name"; //$NON-NLS-1$
     static {
         final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setType(JcrArtifact.class);
-        newStaticMetadata.setParentNodeValidTypes(Project.class, Bundle.class);
-        newStaticMetadata.setKeyProperty(RELATIVE_NAME);
-        newStaticMetadata.setPropertyTypes(map(ofKeys(DATA_SHA1, DATA,
-                RELATIVE_NAME), andValues(String.class, InputStream.class,
-                String.class)));
+        newStaticMetadata.setType(Excluded.class);
+        newStaticMetadata.setParentNodeValidTypes(ArtifactMapping.class);
+        newStaticMetadata.setKeyProperty(NAME);
         staticMetadata = createImmutable(newStaticMetadata);
     }
+    
     private final InstanceMetadata instanceMetadata;
     
     private static final StaticMetadata staticMetadata;
     
     /**
-     * Constructor to create a stream artifact inside a bundle.
+     * Constructor to create an excluded node inside an artifact mapping.
      * 
-     * @param bundle
-     * @param relativeName
+     * @param name
+     * @param artifactMapping
      */
-    public JcrArtifact(final Bundle bundle, final String relativeName) {
+    public Excluded(final String name, final ArtifactMapping artifactMapping) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                bundle, relativeName);
-    }
-    
-    /**
-     * Constructor to create a stream artifact inside a project.
-     * 
-     * @param project
-     * @param relativeName
-     */
-    public JcrArtifact(final Project project, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                project, relativeName);
+                artifactMapping, name);
     }
     
     /**
      * 
      * {@inheritDoc}
      */
-    public int compareTo(final ConfigurationNode o) {
+    public final int compareTo(final ConfigurationNode o) {
         return this.instanceMetadata.compare(this, o);
     }
     
     /**
      * 
-     * @return a data stream for this artifact as a transient property
+     * {@inheritDoc}
      */
-    public InputStream getData() {
-        return this.instanceMetadata.getTransientProperty(DATA);
-    }
-    
-    /**
-     * 
-     * @return a valid signature for this data
-     */
-    public String getDataSha1() {
-        return this.instanceMetadata.getProperty(DATA_SHA1);
+    @Override
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
     }
     
     /**
      * 
      * {@inheritDoc}
      */
-    public InstanceMetadata getInstanceMetadata() {
+    public final InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
     }
     
     /**
+     * The name, in this case, is a unique identifier (with parent node) to this
+     * node.
      * 
-     * @return the relative name for this artifact.
+     * @return the node name
      */
-    public String getRelativeName() {
+    public String getName() {
         return (String) this.instanceMetadata.getKeyPropertyValue();
     }
     
@@ -167,26 +135,17 @@ public final class JcrArtifact implements ConfigurationNode {
      * 
      * {@inheritDoc}
      */
-    public StaticMetadata getStaticMetadata() {
+    public final StaticMetadata getStaticMetadata() {
         return staticMetadata;
     }
     
     /**
-     * Sets a data stream for this artifact as a transient property.
      * 
-     * @param data
+     * {@inheritDoc}
      */
-    public void setData(final InputStream data) {
-        this.instanceMetadata.setTransientProperty(DATA, data);
-    }
-    
-    /**
-     * Sets a valid signature for this data
-     * 
-     * @param dataSha1
-     */
-    public void setDataSha1(final String dataSha1) {
-        this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
     }
     
 }

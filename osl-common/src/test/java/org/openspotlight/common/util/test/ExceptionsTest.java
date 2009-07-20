@@ -65,6 +65,7 @@ import org.openspotlight.common.util.Exceptions;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class ExceptionsTest {
     
     public void dangerousMethod() throws Exception {

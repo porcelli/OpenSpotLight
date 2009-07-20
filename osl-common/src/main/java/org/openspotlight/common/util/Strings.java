@@ -66,7 +66,7 @@ public class Strings {
      * Converts the first character to lower case
      * 
      * @param toBeCorrected
-     * @return
+     * @return a string that starts with lower case
      */
     public static String firstLetterToLowerCase(final String toBeCorrected) {
         checkNotNull("toBeCorrected", toBeCorrected);//$NON-NLS-1$
@@ -85,7 +85,7 @@ public class Strings {
      * Converts the first character to upper case
      * 
      * @param toBeCorrected
-     * @return
+     * @return a string that starts with capital letter
      */
     public static String firstLetterToUpperCase(final String toBeCorrected) {
         checkNotNull("toBeCorrected", toBeCorrected);//$NON-NLS-1$
@@ -105,7 +105,7 @@ public class Strings {
      * 
      * @param beginning
      * @param toBeCorrected
-     * @return
+     * @return the string without the beggining
      */
     public static String removeBegginingFrom(final String beginning,
             final String toBeCorrected) {

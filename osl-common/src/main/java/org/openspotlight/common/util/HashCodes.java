@@ -115,7 +115,7 @@ public class HashCodes {
      * </pre>
      * 
      * @param b
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final boolean b) {
         return b ? 1 : 0;
@@ -142,10 +142,10 @@ public class HashCodes {
      * </pre>
      * 
      * @param b
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final byte b) {
-        return (int) b;
+        return b;
     }
     
     /**
@@ -169,10 +169,10 @@ public class HashCodes {
      * </pre>
      * 
      * @param c
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final char c) {
-        return (int) c;
+        return c;
     }
     
     /**
@@ -196,7 +196,7 @@ public class HashCodes {
      * </pre>
      * 
      * @param d
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final double d) {
         return hashOf(doubleToLongBits(d));
@@ -222,8 +222,8 @@ public class HashCodes {
      * 
      * </pre>
      * 
-     * @param b
-     * @return
+     * @param f
+     * @return the hash code
      */
     public static int hashOf(final float f) {
         return floatToIntBits(f);
@@ -249,8 +249,8 @@ public class HashCodes {
      * 
      * </pre>
      * 
-     * @param b
-     * @return
+     * @param i
+     * @return the hash code
      */
     public static int hashOf(final int i) {
         return i;
@@ -272,7 +272,7 @@ public class HashCodes {
      * </pre>
      * 
      * @param iterable
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final Iterable<?> iterable) {
         int result = 17;
@@ -302,8 +302,8 @@ public class HashCodes {
      * 
      * </pre>
      * 
-     * @param b
-     * @return
+     * @param l
+     * @return the hash code
      */
     public static int hashOf(final long l) {
         return (int) (l ^ (l >>> 32));
@@ -325,7 +325,7 @@ public class HashCodes {
      * </pre>
      * 
      * @param map
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final Map<?, ?> map) {
         int result = 17;
@@ -356,8 +356,8 @@ public class HashCodes {
      * 
      * </pre>
      * 
-     * @param b
-     * @return
+     * @param o
+     * @return the hash code
      */
     public static int hashOf(final Object o) {
         return o == null ? 0 : o.hashCode();
@@ -379,7 +379,7 @@ public class HashCodes {
      * </pre>
      * 
      * @param attributes
-     * @return
+     * @return the hash code
      */
     public static int hashOf(final Object... attributes) {
         int result = 17;
@@ -416,11 +416,11 @@ public class HashCodes {
      * 
      * </pre>
      * 
-     * @param b
-     * @return
+     * @param s
+     * @return the hash code
      */
     public static int hashOf(final short s) {
-        return (int) s;
+        return s;
     }
     
     /**

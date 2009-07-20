@@ -55,11 +55,18 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.AbstractConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager.NodeClassHelper;
 
+/**
+ * Test for class {@link NodeClassHelper}.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+
+@SuppressWarnings("all")
 public class NodeClassHelperTest {
     
     private NodeClassHelper nodeClassHelper;

@@ -63,6 +63,7 @@ import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
     
     @Override

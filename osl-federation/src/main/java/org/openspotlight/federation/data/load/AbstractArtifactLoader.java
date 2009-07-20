@@ -60,9 +60,11 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.Excluded;
+import org.openspotlight.federation.data.impl.Included;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 
 /**
  * The AbstractArtifactLoader class is itself a {@link ArtifactLoader} that do
@@ -99,20 +101,25 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     /**
      * Filter the included and excluded patterns and also creates each artifact
      * and calculates the sha-1 key for the content.
+     * 
+     * @param bundle
+     * @return a {@link ArtifactLoader.ArtifactProcessingCount} with statistical
+     *         data
+     * @throws ConfigurationException
      */
     public ArtifactProcessingCount loadArtifactsFromMappings(final Bundle bundle)
             throws ConfigurationException {
-        checkNotNull("bundle", bundle);
+        checkNotNull("bundle", bundle); //$NON-NLS-1$
         int loadCount = 0;
         int errorCount = 0;
         final Set<String> includedPatterns = new HashSet<String>();
         final Set<String> excludedPatterns = new HashSet<String>();
         for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
-            if (mapping.getIncluded() != null) {
-                includedPatterns.add(mapping.getIncluded());
+            for (final Included included : mapping.getIncludeds()) {
+                includedPatterns.add(included.getName());
             }
-            if (mapping.getExcluded() != null) {
-                includedPatterns.add(mapping.getExcluded());
+            for (final Excluded excluded : mapping.getExcludeds()) {
+                includedPatterns.add(excluded.getName());
             }
         }
         final Set<String> namesToFilter = this.getAllArtifactNames(bundle);
@@ -124,7 +131,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 final byte[] content = this.loadArtifact(bundle, artifactName);
                 final String sha1 = getSha1SignatureEncodedAsBase64(content);
                 final InputStream is = new ByteArrayInputStream(content);
-                final StreamArtifact artifact = bundle.addArtifact(artifactName);
+                final StreamArtifact artifact = bundle
+                        .addArtifact(artifactName);
                 artifact.setData(is);
                 artifact.setDataSha1(sha1);
                 loadCount++;

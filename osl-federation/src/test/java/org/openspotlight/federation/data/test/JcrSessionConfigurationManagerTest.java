@@ -63,6 +63,14 @@ import org.junit.Before;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 
+/**
+ * Test class to see if the Jcr configuration is working ok.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+
+@SuppressWarnings("all")
 public class JcrSessionConfigurationManagerTest extends
         AbstractConfigurationManagerTest {
     

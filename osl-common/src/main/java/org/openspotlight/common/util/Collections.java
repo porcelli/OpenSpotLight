@@ -63,11 +63,11 @@ import java.util.Set;
 public class Collections {
     
     /**
-     * Convenient method to create a typed set using varargs
+     * Convenient method to create a typed set using varargs.
      * 
      * @param <T>
      * @param elements
-     * @return
+     * @return a new set with the elements
      */
     public static <T> Set<T> setOf(final T... elements) {
         final HashSet<T> set = new HashSet<T>();

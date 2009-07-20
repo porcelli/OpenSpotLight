@@ -66,6 +66,7 @@ import org.openspotlight.common.util.PatternMatcher.FilterResult;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public class PaternMatcherTest {
     
     @SuppressWarnings( { "nls", "boxing" })
