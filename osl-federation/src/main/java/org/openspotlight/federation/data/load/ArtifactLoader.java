@@ -74,7 +74,6 @@ import org.openspotlight.federation.data.impl.Bundle;
  * 
  * FIXME create refresh method
  * 
- * FIXME create deletion tests
  * 
  * FIXME create global lists of added and excluded nodes using listeners
  * 

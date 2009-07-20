@@ -102,7 +102,7 @@ public class Bundle implements ConfigurationNode {
         newStaticMetadata.setType(Bundle.class);
         newStaticMetadata.setParentNodeValidTypes(Project.class);
         newStaticMetadata.setKeyProperty(NAME);
-        newStaticMetadata.setPropertyTypes(map(ofKeys(ACTIVE, TYPE,
+        newStaticMetadata.addPropertyTypes(map(ofKeys(ACTIVE, TYPE,
                 INITIAL_LOOKUP), andValues(Boolean.class, String.class,
                 String.class)));
         staticMetadata = createImmutable(newStaticMetadata);

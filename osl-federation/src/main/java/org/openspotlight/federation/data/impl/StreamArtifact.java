@@ -92,7 +92,7 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode {
         newStaticMetadata.setParentNodeValidTypes(Project.class, Bundle.class);
         newStaticMetadata.setKeyProperty(RELATIVE_NAME);
         newStaticMetadata.setKeyPropertyType(String.class);
-        newStaticMetadata.setPropertyTypes(map(ofKeys(DATA_SHA1, DATA,
+        newStaticMetadata.addPropertyTypes(map(ofKeys(DATA_SHA1, DATA,
                 RELATIVE_NAME), andValues(String.class, InputStream.class,
                 String.class)));
         staticMetadata = createImmutable(newStaticMetadata);

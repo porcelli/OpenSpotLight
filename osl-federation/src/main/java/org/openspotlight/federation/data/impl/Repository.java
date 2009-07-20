@@ -90,7 +90,7 @@ public final class Repository implements ConfigurationNode {
         newStaticMetadata.setParentNodeValidTypes(Configuration.class);
         newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setKeyProperty(NAME);
-        newStaticMetadata.setPropertyTypes(map(ofKeys(
+        newStaticMetadata.addPropertyTypes(map(ofKeys(
                 NUMBER_OF_PARALLEL_THREADS, ACTIVE), andValues(Integer.class,
                 Boolean.class)));
         staticMetadata = createImmutable(newStaticMetadata);

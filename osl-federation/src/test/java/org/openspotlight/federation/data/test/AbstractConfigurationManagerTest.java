@@ -49,6 +49,10 @@
 
 package org.openspotlight.federation.data.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -74,6 +78,21 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
      * @return a instance of the {@link ConfigurationManager} been tested
      */
     protected abstract ConfigurationManager createInstance();
+    
+    @Test
+    public void shouldDeleteNodesFromTheConfiguration() throws Exception {
+        final Configuration configuration = this.createSampleData();
+        final ConfigurationManager manager = this.createInstance();
+        manager.save(configuration);
+        configuration
+                .removeRepository(configuration.getRepositoryByName("r-1"));
+        manager.save(configuration);
+        assertThat(configuration.getRepositoryByName("r-1"), is(nullValue()));
+        
+        final Configuration anotherGroup = manager.load();
+        
+        assertThat(anotherGroup.getRepositoryByName("r-1"), is(nullValue()));
+    }
     
     @Test
     public void shouldSaveTheConfiguration() throws Exception {

@@ -92,7 +92,7 @@ public final class Project implements ConfigurationNode {
                 Repository.class);
         newStaticMetadata.setKeyPropertyType(String.class);
         newStaticMetadata.setKeyProperty(NAME);
-        newStaticMetadata.setPropertyTypes(map(ofKeys(ACTIVE),
+        newStaticMetadata.addPropertyTypes(map(ofKeys(ACTIVE),
                 andValues(Boolean.class)));
         staticMetadata = createImmutable(newStaticMetadata);
     }

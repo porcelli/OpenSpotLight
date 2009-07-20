@@ -59,6 +59,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -126,6 +127,15 @@ public interface StaticMetadata {
                         this.parentNodeValidTypes, this.childrenNodeValidTypes,
                         this.propertyTypes, this.keyPropertyType,
                         this.singleChildrenNodeValidTypes);
+            }
+            
+            /**
+             * {@inheritDoc}
+             * 
+             */
+            public void addPropertyTypes(
+                    final Map<String, Class<?>> newPropertyTypes) {
+                throw logAndReturn(new UnsupportedOperationException());
             }
             
             @Override
@@ -254,17 +264,6 @@ public interface StaticMetadata {
              * @throws UnsupportedOperationException
              *             since it is a non mutable {@link StaticMetadata}.
              */
-            public void setPropertyTypes(
-                    final Map<String, Class<?>> propertyTypes) {
-                throw logAndReturn(new UnsupportedOperationException());
-            }
-            
-            /**
-             * {@inheritDoc}
-             * 
-             * @throws UnsupportedOperationException
-             *             since it is a non mutable {@link StaticMetadata}.
-             */
             public void setSingleChildrenNodeValidTypes(
                     final Class<? extends ConfigurationNode>... singleChildrenNodeValidTypes) {
                 throw logAndReturn(new UnsupportedOperationException());
@@ -298,13 +297,13 @@ public interface StaticMetadata {
             private Class<? extends Serializable> keyPropertyType;
             private Set<Class<? extends ConfigurationNode>> singleChildrenNodeValidTypes;
             
-            private Map<String, Class<?>> propertyTypes;
+            private final Map<String, Class<?>> propertyTypes;
             
             /**
              * default constructor
              */
             public MutableClassMetadata() {
-                // 
+                this.propertyTypes = new HashMap<String, Class<?>>();
             }
             
             /**
@@ -315,15 +314,21 @@ public interface StaticMetadata {
             public MutableClassMetadata(final StaticMetadata base) {
                 this.type = base.getType();
                 this.keyProperty = base.getKeyProperty();
-                this.parentNodeValidTypes = createImmutableSet(base
-                        .getParentNodeValidTypes());
-                this.childrenNodeValidTypes = createImmutableSet(base
-                        .getChildrenValidNodeTypes());
-                this.propertyTypes = createImmutableMap(base.getPropertyTypes());
-                
+                this.parentNodeValidTypes = base.getParentNodeValidTypes();
+                this.childrenNodeValidTypes = base.getChildrenValidNodeTypes();
+                this.propertyTypes = base.getPropertyTypes() == null ? new HashMap<String, Class<?>>()
+                        : base.getPropertyTypes();
                 this.keyPropertyType = base.getKeyPropertyType();
-                this.singleChildrenNodeValidTypes = createImmutableSet(base
-                        .getSingleChildrenNodeValidTypes());
+                this.singleChildrenNodeValidTypes = base
+                        .getSingleChildrenNodeValidTypes();
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            public void addPropertyTypes(
+                    final Map<String, Class<?>> newPropertyTypes) {
+                this.propertyTypes.putAll(newPropertyTypes);
             }
             
             /**
@@ -447,14 +452,6 @@ public interface StaticMetadata {
             /**
              * {@inheritDoc}
              */
-            public void setPropertyTypes(
-                    final Map<String, Class<?>> propertyTypes) {
-                this.propertyTypes = propertyTypes;
-            }
-            
-            /**
-             * {@inheritDoc}
-             */
             public void setSingleChildrenNodeValidTypes(
                     final Class<? extends ConfigurationNode>... singleChildrenNodeValidTypes) {
                 this.singleChildrenNodeValidTypes = new HashSet<Class<? extends ConfigurationNode>>(
@@ -506,6 +503,14 @@ public interface StaticMetadata {
             return new MutableClassMetadata(origin);
         }
     }
+    
+    /**
+     * Sets the propertyTypes. See {@link #getPropertyTypes()}.
+     * 
+     * 
+     * @param propertyTypes
+     */
+    public abstract void addPropertyTypes(Map<String, Class<?>> propertyTypes);
     
     /**
      * The types that can be used as a children for this kind of node.
@@ -596,15 +601,6 @@ public interface StaticMetadata {
      */
     public abstract void setParentNodeValidTypes(
             Class<? extends ConfigurationNode>... parentNodeValidTypes);
-    
-    /**
-     * Sets the propertyTypes. See {@link #getPropertyTypes()}.
-     * 
-     * FIXME addPropertyTypes
-     * 
-     * @param propertyTypes
-     */
-    public abstract void setPropertyTypes(Map<String, Class<?>> propertyTypes);
     
     /**
      * Sets the single children node valid types.

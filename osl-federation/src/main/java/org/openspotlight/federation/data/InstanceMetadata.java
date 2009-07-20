@@ -416,14 +416,13 @@ public interface InstanceMetadata {
              */
             public <N extends ConfigurationNode> void removeChild(final N child) {
                 checkNotNull("child", child); //$NON-NLS-1$
-                checkCondition(
-                        "childClassOwned", this.staticMetadata.getChildrenValidNodeTypes().contains( //$NON-NLS-1$
-                                        child.getClass()));
+                checkCondition("childClassOwned", this.staticMetadata //$NON-NLS-1$
+                        .getChildrenValidNodeTypes().contains(child.getClass()));
                 if (!this.children.get(child.getClass()).containsValue(child)) {
                     return;
                 }
-                this.children.remove(child.getInstanceMetadata()
-                        .getKeyPropertyValue());
+                this.children.get(child.getClass()).remove(
+                        child.getInstanceMetadata().getKeyPropertyValue());
                 this.sharedData.fireNodeChange(child, null);
                 
             }

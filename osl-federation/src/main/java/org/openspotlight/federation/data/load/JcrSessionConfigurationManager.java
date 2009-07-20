@@ -65,8 +65,8 @@ import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.jcr.NamespaceRegistry;
@@ -83,6 +83,8 @@ import javax.jcr.query.QueryResult;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
+import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
@@ -131,8 +133,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
         final Node newNode = parentNode.addNode(nodePath);
         if (keyPropertyName != null) {
-            this.setProperty(newNode, keyPropertyName, keyPropertyType,
-                    keyPropertyValue);
+            this.setProperty(newNode, "osl:" + keyPropertyName, //$NON-NLS-1$
+                    keyPropertyType, keyPropertyValue);
         }
         return newNode;
         
@@ -155,7 +157,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
         try {
             try {
-                Node foundNode;
+                Node foundNode = null;
                 if (keyPropertyName != null) {
                     assert keyPropertyValue != null;
                     final String pathToFind = format(
@@ -167,7 +169,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                                     Query.XPATH);
                     final QueryResult result = query.execute();
                     final NodeIterator nodes = result.getNodes();
-                    foundNode = nodes.nextNode();
+                    if (nodes.hasNext()) {
+                        foundNode = nodes.nextNode();
+                    }
                 } else {
                     foundNode = parentNode.getNode(nodePath);
                 }
@@ -180,11 +184,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 final Node newNode = this.create(parentNode, nodePath,
                         keyPropertyName, keyPropertyValue, keyPropertyType);
                 return newNode;
-            } catch (final NoSuchElementException e) {
-                final Node newNode = this.create(parentNode, nodePath,
-                        keyPropertyName, keyPropertyValue, keyPropertyType);
-                return newNode;
             }
+            
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
@@ -319,9 +320,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                         .getNodeClassFromName(child.getName());
                 final StaticMetadata staticMetadata = this.classHelper
                         .getStaticMetadataFromClass(nodeClass);
-                final Serializable keyValue = this.getProperty(child,
-                        staticMetadata.getKeyProperty(), staticMetadata
-                                .getKeyPropertyType());
+                final Serializable keyValue = this.getProperty(child, "osl:" //$NON-NLS-1$
+                        + staticMetadata.getKeyProperty(), staticMetadata
+                        .getKeyPropertyType());
                 
                 final ConfigurationNode newNode = this.classHelper
                         .createInstance(keyValue, configurationNode,
@@ -382,6 +383,36 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         return hasFound;
     }
     
+    private void removeNode(final ConfigurationNode oldItem, final Node rootNode)
+            throws Exception {
+        assert oldItem != null;
+        assert rootNode != null;
+        final StringBuilder path = new StringBuilder();
+        ConfigurationNode currentItem = oldItem;
+        while (currentItem != null) {
+            path.insert(0, this.classHelper.getNameFromNodeClass(currentItem
+                    .getClass()));
+            path.insert(0, '/');
+            currentItem = currentItem.getInstanceMetadata().getDefaultParent();
+        }
+        path.insert(0, '/');
+        if (oldItem.getStaticMetadata().getKeyProperty() != null) {
+            path.append(format("[@osl:{0}=''{1}'']", oldItem //$NON-NLS-1$
+                    .getStaticMetadata().getKeyProperty(), oldItem
+                    .getInstanceMetadata().getKeyPropertyValue()));
+        }
+        
+        final String pathToFind = path.toString();
+        final Query query = this.session.getWorkspace().getQueryManager()
+                .createQuery(pathToFind, Query.XPATH);
+        final QueryResult result = query.execute();
+        final NodeIterator nodes = result.getNodes();
+        if (nodes.hasNext()) {
+            final Node foundNode = nodes.nextNode();
+            foundNode.remove();
+        }
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -399,6 +430,17 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             this.saveProperties(node, newJcrNode);
             
             this.saveChilds(node, newJcrNode);
+            
+            final List<ItemChangeEvent<ConfigurationNode>> lastChanges = configuration
+                    .getInstanceMetadata().getSharedData()
+                    .getNodeChangesSinceLastSave();
+            
+            for (final ItemChangeEvent<ConfigurationNode> event : lastChanges) {
+                if (ItemChangeType.EXCLUDED.equals(event.getType())) {
+                    this.removeNode(event.getOldItem(), this.session
+                            .getRootNode());
+                }
+            }
             
             this.session.save();
             configuration.getInstanceMetadata().getSharedData().markAsSaved();
