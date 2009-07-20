@@ -52,7 +52,6 @@ package org.openspotlight.federation.data.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -61,6 +60,8 @@ import org.junit.Test;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Excluded;
+import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
@@ -111,10 +112,10 @@ public class NodeTest {
         final ArtifactMapping artifactMapping = bundle
                 .getArtifactMappingByName("rm-1,1,1,1");
         assertThat(artifactMapping, is(notNullValue()));
-        assertThat(artifactMapping.getActive(), is(true));
-        assertThat(artifactMapping.getBundle(), is(bundle));
-        assertThat(artifactMapping.getExcluded(), is("**/*.excluded"));
-        assertThat(artifactMapping.getIncluded(), is("*"));
+        assertThat(artifactMapping.getExcludeds().iterator().next().getName(),
+                is("**/*.excluded"));
+        assertThat(artifactMapping.getIncludeds().iterator().next().getName(),
+                is("*"));
         
         if (verifyArtifacts) {
             final StreamArtifact artifact = bundle
@@ -130,31 +131,29 @@ public class NodeTest {
         
         final Configuration configuration = new Configuration();
         for (final int i : numbers) {
-            final Repository repository = new Repository("r-" + i,
-                    configuration);
+            final Repository repository = new Repository(configuration, "r-"
+                    + i);
             repository.setActive(true);
             repository.setNumberOfParallelThreads(1);
             for (final int j : numbers) {
-                final Project project = new Project("p-" + i + "," + j,
-                        repository);
+                final Project project = new Project(repository, "p-" + i + ","
+                        + j);
                 project.setActive(true);
                 for (final int k : numbers) {
-                    final Bundle bundle = new Bundle("b-" + i + "," + j + ","
-                            + k, project);
+                    final Bundle bundle = new Bundle(project, "b-" + i + ","
+                            + j + "," + k);
                     bundle.setActive(true);
                     bundle.setInitialLookup("initialLookup");
                     bundle.setType("type");
                     for (final int l : numbers) {
-                        final ArtifactMapping ArtifactMapping = new ArtifactMapping(
-                                "rm-" + i + "," + j + "," + k + "," + l, bundle);
-                        ArtifactMapping.setActive(true);
-                        ArtifactMapping.setExcluded("**/*.excluded");
-                        ArtifactMapping.setIncluded("*");
-                        
+                        final ArtifactMapping artifactMapping = new ArtifactMapping(
+                                bundle, "rm-" + i + "," + j + "," + k + "," + l);
+                        new Included("*", artifactMapping);
+                        new Excluded("**/*.excluded", artifactMapping);
                     }
                     for (final int m : numbers) {
-                        final StreamArtifact Artifact = new StreamArtifact("r-"
-                                + i + "," + j + "," + k + "," + m, bundle);
+                        final StreamArtifact Artifact = new StreamArtifact(
+                                bundle, "r-" + i + "," + j + "," + k + "," + m);
                         Artifact.setData(new ByteArrayInputStream(new byte[0]));
                         Artifact.setDataSha1("sha1");
                     }
@@ -172,21 +171,25 @@ public class NodeTest {
     
     @Test
     public void shouldFindArtifactByName() throws Exception {
-        final Configuration configuration = this.createSampleData();
-        final StreamArtifact artifact = configuration.findByName(
-                "initialLookup", "r-1,1,1,1");
-        assertThat(artifact, is(notNullValue()));
+        throw new IllegalStateException("not implemented");
+        // FIXME CREATE THIS
+        // final Configuration configuration = this.createSampleData();
+        // final StreamArtifact artifact = configuration.findByName(
+        // "initialLookup", "r-1,1,1,1");
+        // assertThat(artifact, is(notNullValue()));
     }
     
     @Test
     public void shouldRetturnNullWhenFindingArtifactWithInvalidName()
             throws Exception {
-        final Configuration configuration = this.createSampleData();
-        StreamArtifact artifact = configuration.findByName("initialLookup",
-                "invalidName");
-        assertThat(artifact, is(nullValue()));
-        artifact = configuration.findByName("invalidName", "invalidName");
-        assertThat(artifact, is(nullValue()));
+        throw new IllegalStateException("not implemented");
+        // FIXME CREATE THIS
+        // final Configuration configuration = this.createSampleData();
+        // StreamArtifact artifact = configuration.findByName("initialLookup",
+        // "invalidName");
+        // assertThat(artifact, is(nullValue()));
+        // artifact = configuration.findByName("invalidName", "invalidName");
+        // assertThat(artifact, is(nullValue()));
     }
     
 }

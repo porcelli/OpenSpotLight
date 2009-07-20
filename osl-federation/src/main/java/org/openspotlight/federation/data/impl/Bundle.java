@@ -73,8 +73,8 @@ import org.openspotlight.federation.data.StaticMetadata;
  * As this class is non final, the protected constructor should be called and
  * also all nonfinal methods should be ovewriten.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com FIXME create
+ *         inheritance example
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
@@ -94,9 +94,8 @@ public class Bundle implements ConfigurationNode {
     private static final String NAME = "name"; //$NON-NLS-1$
     static {
         final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setChildrenNodeValidTypes(Project.class,
-                StreamArtifact.class, JcrArtifact.class, ArtifactMapping.class,
-                Bundle.class);
+        newStaticMetadata.setChildrenNodeValidTypes(StreamArtifact.class,
+                JcrArtifact.class, ArtifactMapping.class, Bundle.class);
         newStaticMetadata.setType(Bundle.class);
         newStaticMetadata.setParentNodeValidTypes(Project.class);
         newStaticMetadata.setKeyProperty(NAME);
@@ -178,15 +177,6 @@ public class Bundle implements ConfigurationNode {
      */
     public final void addJcrArtifact(final JcrArtifact JcrArtifact) {
         this.instanceMetadata.addChild(JcrArtifact);
-    }
-    
-    /**
-     * Adds a inner project.
-     * 
-     * @param Project
-     */
-    public final void addProject(final Project Project) {
-        this.instanceMetadata.addChild(Project);
     }
     
     /**
@@ -341,30 +331,11 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
-     * Returns a child project by its name
      * 
-     * @param name
-     * @return a project
+     * @return the parent project
      */
-    public final Project getProjectByName(final String name) {
-        return this.instanceMetadata.getChildByKeyValue(Project.class, name);
-    }
-    
-    /**
-     * 
-     * @return all child project names
-     */
-    public final Set<String> getProjectNames() {
-        return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Project.class);
-    }
-    
-    /**
-     * 
-     * @return all child projects
-     */
-    public final Collection<Project> getProjects() {
-        return this.instanceMetadata.getChildrensOfType(Project.class);
+    public Project getProject() {
+        return (Project) this.instanceMetadata.getDefaultParent();
     }
     
     /**
@@ -473,5 +444,4 @@ public class Bundle implements ConfigurationNode {
     public final void setType(final String type) {
         this.instanceMetadata.setProperty(TYPE, type);
     }
-    
 }

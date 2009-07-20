@@ -74,14 +74,15 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.federation.data.AbstractConfigurationNode;
+import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.ConfigurationNodeMetadata;
 
 /**
  * This configuration manager class loads and stores the configuration on a
  * simple and easily readable xml file, since the xml exported from jcr was to
  * much dirty for using as a simple configuration.
+ * 
+ * FIXME implement node property
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -90,7 +91,6 @@ public class XmlConfigurationManager implements ConfigurationManager {
     
     private final NodeClassHelper classHelper = new NodeClassHelper();
     
-    private final String DEFAULT_NAME = "name";
     private final boolean ignoreArtifacts;
     private final String url;
     private final SAXReader reader = new SAXReader();
@@ -111,29 +111,27 @@ public class XmlConfigurationManager implements ConfigurationManager {
     
     @SuppressWarnings("unchecked")
     private void createEachXmlNode(final Element element,
-            final ConfigurationNodeMetadata configurationNode)
-            throws SLException {
-        final Set<Class<?>> childrenClasses = configurationNode
-                .getChildrenTypes();
-        for (final Class<?> clazz : childrenClasses) {
+            final ConfigurationNode configurationNode) throws SLException {
+        final Set<Class<? extends ConfigurationNode>> childrenClasses = configurationNode
+                .getStaticMetadata().getChildrenNodeValidTypes();
+        for (final Class<? extends ConfigurationNode> clazz : childrenClasses) {
             
-            final Set<String> names = configurationNode
-                    .getKeysFromChildrenOfType((Class<? extends ConfigurationNodeMetadata>) clazz);
-            for (final String name : names) {
-                final ConfigurationNodeMetadata innerNode = configurationNode
-                        .getChildByName(
-                                (Class<? extends ConfigurationNodeMetadata>) clazz,
-                                name);
+            final Set<Serializable> keys = (Set<Serializable>) configurationNode
+                    .getInstanceMetadata().getKeysFromChildrenOfType(clazz);
+            for (final Serializable key : keys) {
+                final ConfigurationNode innerNode = configurationNode
+                        .getInstanceMetadata()
+                        .getChildByKeyValue(
+                                (Class<? extends ConfigurationNode>) clazz, key);
                 final Element newElement = element
-                        .addElement(removeBegginingFrom(
-                                "osl:",
-                                this.classHelper
-                                        .getNameFromNodeClass((Class<? extends AbstractConfigurationNode>) clazz)));
-                newElement.addAttribute(this.DEFAULT_NAME, name);
+                        .addElement(removeBegginingFrom("osl:", //$NON-NLS-1$
+                                this.classHelper.getNameFromNodeClass(clazz)));
+                newElement.addAttribute(innerNode.getStaticMetadata()
+                        .getKeyProperty(), key.toString());
                 final Map<String, Serializable> properties = innerNode
-                        .getProperties();
+                        .getInstanceMetadata().getProperties();
                 final Map<String, Class<?>> propertyTypes = innerNode
-                        .getPropertyTypes();
+                        .getStaticMetadata().getPropertyTypes();
                 for (final Map.Entry<String, Serializable> propertyEntry : properties
                         .entrySet()) {
                     if (propertyEntry.getValue() != null) {
@@ -156,7 +154,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
             final Element root = document.getRootElement();
             final Configuration configuration = new Configuration();
             this.loopOnEachElement(root, configuration);
-            configuration.markAsSaved();
+            configuration.getInstanceMetadata().getSharedData().markAsSaved();
             return configuration;
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
@@ -165,26 +163,29 @@ public class XmlConfigurationManager implements ConfigurationManager {
     
     @SuppressWarnings("unchecked")
     private void loopOnEachElement(final Element parentElement,
-            final ConfigurationNodeMetadata parentNode) throws SLException {
+            final ConfigurationNode parentNode) throws SLException {
         for (final Iterator<Element> elements = parentElement.elementIterator(); elements
                 .hasNext();) {
             final Element nextElement = elements.next();
             final String nodeClass = nextElement.getName();
-            if (this.ignoreArtifacts && "osl:artifact".equals(nodeClass)) {
+            // FIXME create a list of ignored artifacts (using interfaces)
+            if ((this.ignoreArtifacts && ("osl:streamArtifact" //$NON-NLS-1$
+                    .equals(nodeClass)))
+                    || "osl:jcrArtifact".equals(nodeClass)) { //$NON-NLS-1$ 
                 continue;
             }
-            final String nodeName = nextElement
-                    .attributeValue(this.DEFAULT_NAME);
-            final ConfigurationNodeMetadata newNode = this.classHelper
-                    .createInstance(nodeName, parentNode, "osl:" + nodeClass);
+            final String keyProperty = "key";//FIXME get this in a dynamic way //$NON-NLS-1$
+            final String nodeName = nextElement.attributeValue(keyProperty);
+            final ConfigurationNode newNode = this.classHelper.createInstance(
+                    nodeName, parentNode, "osl:" + nodeClass); //$NON-NLS-1$
             final Map<String, Class<?>> propertyTypes = newNode
-                    .getPropertyTypes();
+                    .getStaticMetadata().getPropertyTypes();
             
             for (final Iterator<Attribute> properties = nextElement
                     .attributeIterator(); properties.hasNext();) {
                 final Attribute nextProperty = properties.next();
                 final String propertyName = nextProperty.getName();
-                if (this.DEFAULT_NAME.equals(propertyName)) {
+                if (keyProperty.equals(propertyName)) {
                     continue;
                 }
                 final String valueAsString = nextProperty.getStringValue();
@@ -203,8 +204,8 @@ public class XmlConfigurationManager implements ConfigurationManager {
         try {
             final Document document = DocumentFactory.getInstance()
                     .createDocument();
-            final Element element = document.addElement("configuration");
-            final ConfigurationNodeMetadata configurationNode = configuration;
+            final Element element = document.addElement("configuration"); //$NON-NLS-1$
+            final ConfigurationNode configurationNode = configuration;
             this.createEachXmlNode(element, configurationNode);
             final OutputStream os = new BufferedOutputStream(
                     new FileOutputStream(this.url));
@@ -212,40 +213,49 @@ public class XmlConfigurationManager implements ConfigurationManager {
             final XMLWriter writer = new XMLWriter(os, outformat);
             writer.write(document);
             writer.flush();
-            configuration.markAsSaved();
+            configuration.getInstanceMetadata().getSharedData().markAsSaved();
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
     }
     
-    private void setPropertyOnNode(final ConfigurationNodeMetadata newNode,
+    private void setPropertyOnNode(final ConfigurationNode newNode,
             final String propertyName, final Class<?> propertyClass,
             final String valueAsString) throws SLException {
         if (valueAsString == null) {
-            newNode.setProperty(propertyName, null);
+            newNode.getInstanceMetadata().setProperty(propertyName, null);
         } else if (Boolean.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Boolean.valueOf(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    Boolean.valueOf(valueAsString));
         } else if (Double.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Double.valueOf(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    Double.valueOf(valueAsString));
         } else if (Long.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Long.valueOf(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    Long.valueOf(valueAsString));
         } else if (String.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, valueAsString);
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    valueAsString);
         } else if (Integer.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Integer.valueOf(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    Integer.valueOf(valueAsString));
         } else if (Byte.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Byte.valueOf(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    Byte.valueOf(valueAsString));
         } else if (Float.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, Float.valueOf(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    Float.valueOf(valueAsString));
         } else if (Date.class.equals(propertyClass)) {
-            newNode.setProperty(propertyName, dateFromString(valueAsString));
+            newNode.getInstanceMetadata().setProperty(propertyName,
+                    dateFromString(valueAsString));
         } else {
             final Serializable value = readFromBase64(valueAsString);
-            newNode.setProperty(propertyName, value);
+            newNode.getInstanceMetadata().setProperty(propertyName, value);
         }
         
     }
     
+    @SuppressWarnings("boxing")
     private void setPropertyOnXml(final Element newElement, final String key,
             final Serializable value, final Class<?> propertyClass)
             throws SLException {

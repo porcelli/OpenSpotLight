@@ -53,6 +53,7 @@ import org.junit.Before;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
@@ -76,14 +77,14 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
     @Before
     public void createConfiguration() {
         this.configuration = new Configuration();
-        final Repository repository = new Repository("Current source files",
-                this.configuration);
-        final Project project = new Project("current project", repository);
-        final Bundle bundle = new Bundle("java source", project);
-        final ArtifactMapping artifactMapping = new ArtifactMapping(
-                "All java files", bundle);
+        final Repository repository = new Repository(this.configuration,
+                "Current source files");
+        final Project project = new Project(repository, "current project");
+        final Bundle bundle = new Bundle(project, "java source");
+        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
+                "All java files");
         bundle.setInitialLookup("src/main/java");
-        artifactMapping.setIncluded("**/*.java");
+        new Included("*.java", artifactMapping);
     }
     
 }

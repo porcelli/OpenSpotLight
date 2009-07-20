@@ -77,19 +77,21 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.AbstractConfigurationNode;
+import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
  * Configuration manager that stores and loads the configuration from a
  * JcrRepository.
  * 
+ * FIXME implement node property
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public class JcrSessionConfigurationManager implements ConfigurationManager {
     
-    private static final String NS_DESCRIPTION = "www.openspotlight.org";
+    private static final String NS_DESCRIPTION = "www.openspotlight.org"; //$NON-NLS-1$
     
     /**
      * JCR session
@@ -110,8 +112,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      */
     public JcrSessionConfigurationManager(final Session session)
             throws ConfigurationException {
-        checkNotNull("session", session);
-        checkCondition("session", session.isLive());
+        checkNotNull("session", session); //$NON-NLS-1$
+        checkCondition("session", session.isLive()); //$NON-NLS-1$
         this.session = session;
         this.initDataInsideSession();
     }
@@ -126,8 +128,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      */
     private Node createIfDontExists(final Node parentNode, final String nodePath)
             throws ConfigurationException {
-        checkNotNull("parentNode", parentNode);
-        checkNotEmpty("nodePath", nodePath);
+        checkNotNull("parentNode", parentNode); //$NON-NLS-1$
+        checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
         try {
             try {
                 return this.session.getRootNode().getNode(nodePath);
@@ -148,6 +150,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @return
      * @throws Exception
      */
+    @SuppressWarnings("boxing")
     private Serializable getProperty(final Node jcrNode,
             final String propertyName, final Class<?> propertyClass)
             throws Exception {
@@ -211,7 +214,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * {@inheritDoc}
      */
     public Configuration load() throws ConfigurationException {
-        checkCondition("sessionAlive", this.session.isLive());
+        checkCondition("sessionAlive", this.session.isLive()); //$NON-NLS-1$
         try {
             final String defaultRootNode = this.classHelper
                     .getNameFromNodeClass(Configuration.class);
@@ -219,7 +222,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     defaultRootNode);
             final Configuration rootNode = new Configuration();
             this.load(rootJcrNode, rootNode);
-            rootNode.markAsSaved();
+            rootNode.getInstanceMetadata().getSharedData().markAsSaved();
             return rootNode;
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
@@ -233,32 +236,30 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @param configurationNode
      * @throws Exception
      */
-    private void load(
-            final Node jcrNode,
-            final org.openspotlight.federation.data.ConfigurationNodeMetadata configurationNode)
-            throws Exception {
+    private void load(final Node jcrNode,
+            final ConfigurationNode configurationNode) throws Exception {
         this.loadProperties(jcrNode, configurationNode, configurationNode
-                .getPropertyTypes());
+                .getStaticMetadata().getPropertyTypes());
         this.loadChildren(jcrNode, configurationNode);
     }
     
     @SuppressWarnings("unchecked")
-    private void loadChildren(
-            final Node jcrNode,
-            final org.openspotlight.federation.data.ConfigurationNodeMetadata configurationNode)
+    private void loadChildren(final Node jcrNode,
+            final ConfigurationNode configurationNode)
             throws PathNotFoundException, RepositoryException,
             ConfigurationException, Exception {
-        final Set<Class<?>> childClasses = configurationNode.getChildrenTypes();
+        final Set<Class<? extends ConfigurationNode>> childClasses = configurationNode
+                .getStaticMetadata().getChildrenNodeValidTypes();
         for (final Class<?> childClass : childClasses) {
             final String childNodeClassName = this.classHelper
-                    .getNameFromNodeClass((Class<? extends AbstractConfigurationNode>) childClass);
+                    .getNameFromNodeClass((Class<? extends ConfigurationNode>) childClass);
             final Node childNode = jcrNode.getNode(childNodeClassName);
             final NodeIterator grandChildren = childNode.getNodes();
             while (grandChildren.hasNext()) {
                 final Node grandChild = grandChildren.nextNode();
                 final String childName = removeBegginingFrom(DEFAULT_OSL_PREFIX
-                        + ":", grandChild.getName());
-                final org.openspotlight.federation.data.ConfigurationNodeMetadata newNode = this.classHelper
+                        + ":", grandChild.getName()); //$NON-NLS-1$
+                final ConfigurationNode newNode = this.classHelper
                         .createInstance(childName, configurationNode,
                                 childNodeClassName);
                 this.load(grandChild, newNode);
@@ -266,9 +267,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
     
-    private void loadProperties(
-            final Node jcrNode,
-            final org.openspotlight.federation.data.ConfigurationNodeMetadata configurationNode,
+    private void loadProperties(final Node jcrNode,
+            final ConfigurationNode configurationNode,
             final Map<String, Class<?>> propertyTypes)
             throws RepositoryException, ConfigurationException, Exception {
         final PropertyIterator propertyIterator = jcrNode.getProperties();
@@ -278,12 +278,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             
             if (this.propertyHelper.isPropertyNode(propertyIdentifier)) {
                 final String nodeName = removeBegginingFrom(DEFAULT_OSL_PREFIX
-                        + ":", propertyIdentifier);
+                        + ":", propertyIdentifier); //$NON-NLS-1$
                 final Class<?> propertyClass = propertyTypes.get(nodeName);
                 if (propertyClass != null) {
                     final Serializable value = this.getProperty(jcrNode,
                             propertyIdentifier, propertyClass);
-                    configurationNode.setProperty(nodeName, value);
+                    configurationNode.getInstanceMetadata().setProperty(
+                            nodeName, value);
                 }
                 
             }
@@ -316,9 +317,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      */
     public void save(final Configuration configuration)
             throws ConfigurationException {
-        checkNotNull("group", configuration);
-        checkCondition("sessionAlive", this.session.isLive());
-        final AbstractConfigurationNode node = configuration;
+        checkNotNull("group", configuration); //$NON-NLS-1$
+        checkCondition("sessionAlive", this.session.isLive()); //$NON-NLS-1$
+        final ConfigurationNode node = configuration;
         try {
             final String nodeStr = this.classHelper.getNameFromNodeClass(node
                     .getClass());
@@ -329,45 +330,45 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             this.saveChilds(node, newJcrNode);
             
             this.session.save();
-            configuration.markAsSaved();
+            configuration.getInstanceMetadata().getSharedData().markAsSaved();
         } catch (final Exception e) {
             logAndThrowNew(e, ConfigurationException.class);
         }
     }
     
     @SuppressWarnings("unchecked")
-    private void saveChilds(final AbstractConfigurationNode node,
-            final Node newJcrNode) throws ConfigurationException, Exception {
-        final Set<Class<?>> classes = node.getChildrenTypes();
-        for (final Class<?> clazz : classes) {
-            final Class<? extends AbstractConfigurationNode> nodeClass = (Class<? extends AbstractConfigurationNode>) clazz;
-            final Set<String> childNames = node
-                    .getKeysFromChildrenOfType(nodeClass);
+    private void saveChilds(final ConfigurationNode node, final Node newJcrNode)
+            throws ConfigurationException, Exception {
+        final Set<Class<? extends ConfigurationNode>> classes = node
+                .getStaticMetadata().getChildrenNodeValidTypes();
+        for (final Class<? extends ConfigurationNode> clazz : classes) {
+            final Class<? extends ConfigurationNode> nodeClass = clazz;
+            final Set<Serializable> childKeys = (Set<Serializable>) node
+                    .getInstanceMetadata().getKeysFromChildrenOfType(nodeClass);
             final String childNodeStr = this.classHelper
                     .getNameFromNodeClass(nodeClass);
             final Node newChildJcrNode = this.createIfDontExists(newJcrNode,
                     childNodeStr);
-            for (final String childName : childNames) {
-                final AbstractConfigurationNode childNode = node
-                        .getChildByName(nodeClass, childName);
+            for (final Serializable key : childKeys) {
+                final ConfigurationNode childNode = node.getInstanceMetadata()
+                        .getChildByKeyValue(nodeClass, key);
                 final Node newGranphChildNode = this.createIfDontExists(
-                        newChildJcrNode, DEFAULT_OSL_PREFIX + ":" + childName);
+                        newChildJcrNode, DEFAULT_OSL_PREFIX + ":" + key); //$NON-NLS-1$
                 this.saveProperties(childNode, newGranphChildNode);
                 this.saveChilds(childNode, newGranphChildNode);
             }
         }
     }
     
-    private void saveProperties(
-            final org.openspotlight.federation.data.ConfigurationNodeMetadata configurationNode,
+    private void saveProperties(final ConfigurationNode configurationNode,
             final Node innerNewJcrNode) throws Exception {
         final Map<String, Serializable> properties = configurationNode
-                .getProperties();
+                .getInstanceMetadata().getProperties();
         for (final Map.Entry<String, Serializable> entry : properties
                 .entrySet()) {
             final Serializable value = entry.getValue();
             final Class<?> clazz = value != null ? value.getClass() : null;
-            this.setProperty(innerNewJcrNode, DEFAULT_OSL_PREFIX + ":"
+            this.setProperty(innerNewJcrNode, DEFAULT_OSL_PREFIX + ":" //$NON-NLS-1$
                     + entry.getKey(), clazz, entry.getValue());
         }
     }
@@ -381,6 +382,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @param value
      * @throws Exception
      */
+    @SuppressWarnings("boxing")
     private void setProperty(final Node jcrNode, final String propertyName,
             final Class<?> propertyClass, final Serializable value)
             throws Exception {

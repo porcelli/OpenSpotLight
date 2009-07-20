@@ -55,6 +55,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager.NodeClassHelper;
@@ -79,8 +80,8 @@ public class NodeClassHelperTest {
     @Test
     public void shouldCreateInstance() throws Exception {
         final Configuration configuration = new Configuration();
-        final Repository theSameRepository = new Repository("name",
-                configuration);
+        final Repository theSameRepository = new Repository(configuration,
+                "name");
         final Repository newRepository = this.nodeClassHelper.createInstance(
                 "name", configuration, "osl:repository");
         assertThat(newRepository, is(theSameRepository));
@@ -104,7 +105,7 @@ public class NodeClassHelperTest {
     
     @Test
     public void shouldGetNodeClassFromName() throws Exception {
-        final Class<? extends AbstractConfigurationNode> clazz = this.nodeClassHelper
+        final Class<? extends ConfigurationNode> clazz = this.nodeClassHelper
                 .getNodeClassFromName("osl:repository");
         assertThat(Repository.class.equals(clazz), is(true));
     }
