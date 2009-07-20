@@ -49,7 +49,6 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createRoot;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
@@ -151,34 +150,6 @@ public final class Configuration implements ConfigurationNode {
     @Override
     public final boolean equals(final Object obj) {
         return this.instanceMetadata.equals(obj);
-    }
-    
-    /**
-     * FIXME search in all projects either
-     * 
-     * @param initialLookup
-     * @param artifactName
-     * @return the stream artifacts inside this configuration
-     */
-    public StreamArtifact findByName(final String initialLookup,
-            final String artifactName) {
-        checkNotEmpty("initialLookup", initialLookup); //$NON-NLS-1$
-        checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
-        for (final Repository repository : this.getRepositories()) {
-            for (final Project project : repository.getProjects()) {
-                for (final Bundle bundle : project.getBundles()) {
-                    if (bundle.getInitialLookup().equals(initialLookup)) {
-                        for (final StreamArtifact artifact : bundle
-                                .getStreamArtifacts()) {
-                            if (artifactName.equals(artifact.getRelativeName())) {
-                                return artifact;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
     }
     
     /**

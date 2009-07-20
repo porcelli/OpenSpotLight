@@ -52,7 +52,6 @@ package org.openspotlight.federation.data.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
@@ -168,25 +167,6 @@ public class NodeTest {
     public void shouldCreateSampleData() {
         final Configuration configuration = this.createSampleData();
         this.assertTheSameInitialDataOnSomeNodes(configuration, true);
-    }
-    
-    @Test
-    public void shouldFindArtifactByName() throws Exception {
-        final Configuration configuration = this.createSampleData();
-        final StreamArtifact artifact = configuration.findByName(
-                "initialLookup", "r-1,1,1,1");
-        assertThat(artifact, is(notNullValue()));
-    }
-    
-    @Test
-    public void shouldRetturnNullWhenFindingArtifactWithInvalidName()
-            throws Exception {
-        final Configuration configuration = this.createSampleData();
-        StreamArtifact artifact = configuration.findByName("initialLookup",
-                "invalidName");
-        assertThat(artifact, is(nullValue()));
-        artifact = configuration.findByName("invalidName", "invalidName");
-        assertThat(artifact, is(nullValue()));
     }
     
 }

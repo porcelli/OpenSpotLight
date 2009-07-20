@@ -61,12 +61,14 @@ import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Compare.compareAll;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,6 +83,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  */
 public interface InstanceMetadata {
+    
+    /**
+     * Visitor interface for {@link ConfigurationNode}.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public static interface ConfigurationNodeVisitor {
+        /**
+         * Method called durring node visiting
+         * 
+         * @param node
+         */
+        public void visitNode(ConfigurationNode node);
+    }
     
     /**
      * Factory class to create the private implementations for
@@ -178,6 +195,22 @@ public interface InstanceMetadata {
                         .getChildrenValidNodeTypes()) {
                     this.children.put(childClass,
                             new HashMap<Serializable, ConfigurationNode>());
+                }
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public void accept(final ConfigurationNodeVisitor visitor) {
+                visitor.visitNode(this.getOwner());
+                for (final Class<? extends ConfigurationNode> childClass : this.staticMetadata
+                        .getChildrenValidNodeTypes()) {
+                    final Collection<? extends ConfigurationNode> allChildren = this
+                            .getChildrensOfType(childClass);
+                    for (final ConfigurationNode child : allChildren) {
+                        child.getInstanceMetadata().accept(visitor);
+                    }
                 }
             }
             
@@ -604,6 +637,61 @@ public interface InstanceMetadata {
             
             return newInstanceMetadata;
         }
+    }
+    
+    /**
+     * This visitor groups all children of a given type from the node that
+     * accepted this visitor. This visitor should be used only in a one visit,
+     * because it stores the found nodes inside an attribute.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * @param <T>
+     *            type of nodes that should be found
+     */
+    public static class FindAllNodesVisitor<T extends ConfigurationNode>
+            implements ConfigurationNodeVisitor {
+        
+        private final Class<T> typeClass;
+        
+        private boolean valid = true;
+        
+        private final Set<T> foundNodes = new HashSet<T>();
+        
+        /**
+         * Constructor with target type class to be found.
+         * 
+         * @param newTypeClass
+         */
+        public FindAllNodesVisitor(final Class<T> newTypeClass) {
+            this.typeClass = newTypeClass;
+            
+        }
+        
+        /**
+         * Return the found nodes and invalidate this visitor
+         * 
+         * @return all found nodes of a given type
+         */
+        public Set<T> getFoundNodesAndInvalidate() {
+            this.valid = false;
+            return this.foundNodes;
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        public void visitNode(final ConfigurationNode node) {
+            if (!this.valid) {
+                throw logAndReturn(new IllegalStateException());
+            }
+            if (this.typeClass.isInstance(node)) {
+                this.foundNodes.add((T) node);
+            }
+        }
+        
     }
     
     /**
@@ -1111,6 +1199,17 @@ public interface InstanceMetadata {
     }
     
     /**
+     * Accepts a {@link ConfigurationNodeVisitor} on this node and all its
+     * children.
+     * 
+     * Repare that the parent wont be visited by this method. If there's a need
+     * to visit all nodes, call this method on the root parent.
+     * 
+     * @param visitor
+     */
+    public void accept(ConfigurationNodeVisitor visitor);
+    
+    /**
      * Adds a child witch should be used as a set of childs. It must have a key
      * property.
      * 
@@ -1308,5 +1407,4 @@ public interface InstanceMetadata {
      *            of the transient property
      */
     public <N> void setTransientProperty(String name, N value);
-    
 }
