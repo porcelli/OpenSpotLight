@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="SLGraphTest" failures="0" tests="3" time="1.534" errors="0">
-  <properties/>
-  <testcase name="testContextOperations" time="0.028" classname="org.openspotlight.newgraph.SLGraphTest"/>
-  <testcase name="testIntegerProperty" time="0.0070" classname="org.openspotlight.newgraph.SLGraphTest"/>
-  <testcase name="testPropertyValueOverwriting" time="0.0050" classname="org.openspotlight.newgraph.SLGraphTest"/>
-</testsuite>
