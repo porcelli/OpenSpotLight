@@ -1,15 +1,10 @@
 package test;
 
-import java.util.Iterator;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.xpath.XPath;
 
 public class XPathTest {
 
 	public static void main(String[] args) {
-
+/**
 		try {
 
 			Element hello = new Element("hello");
@@ -39,7 +34,7 @@ public class XPathTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+**/
 	}
 
 }

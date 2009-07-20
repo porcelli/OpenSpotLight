@@ -13,9 +13,6 @@ import javax.jcr.Workspace;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.Version;
-import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
 
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
@@ -39,9 +36,7 @@ public class Test4 {
 			
 			hello.checkout();
 			System.out.println(hello.getBaseVersion());
-			Property property = hello.setProperty("message", "Hello World!");
 			session.save();
-			Version firstVersion = hello.checkin();
 			
 			System.out.println(hello.getBaseVersion());;
 			
