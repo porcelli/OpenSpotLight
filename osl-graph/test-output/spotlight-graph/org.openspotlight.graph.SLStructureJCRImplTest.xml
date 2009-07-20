@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.openspotlight.graph.SLStructureJCRImplTest" failures="1" tests="1" time="0.515" errors="0">
+  <properties/>
+  <testcase name="testAddType" time="0.411" classname="org.openspotlight.graph.SLStructureJCRImplTest">
+    <failure type="java.lang.AssertionError" message="addType() cannot return null expected:&lt;true&gt; but was:&lt;false&gt;">
+      <![CDATA[java.lang.AssertionError: addType() cannot return null expected:<true> but was:<false>
+	at org.openspotlight.graph.SLStructureJCRImplTest.testAddType(SLStructureJCRImplTest.java:40)
+... Removed 26 stack frames]]>
+    </failure>
+  </testcase>
+</testsuite>

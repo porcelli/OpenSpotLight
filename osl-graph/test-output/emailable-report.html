@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>TestNG:  Unit Test</title>
+<style type="text/css">
+table caption,table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}
+table.info_table td,table.info_table th,table.param td,table.param th,table.passed td,table.passed th,table.failed td,table.failed th {
+border:1px solid #000099;padding:.25em .5em .25em .5em
+}
+table.param th {vertical-align:bottom}
+td.numi,th.numi,td.numi_attn {
+text-align:right
+}
+tr.total td {font-weight:bold}
+table caption {
+text-align:center;font-weight:bold;
+}
+table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}
+table.passed td,table tr.passedeven td {background-color: #33FF33;}
+table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}
+table.passed td,table tr.skippedodd td {background-color: #dddddd;}
+table.failed tr.stripe td,table tr.failedodd td,table.param td.numi_attn {background-color: #FF3333;}
+table.failed td,table tr.failedeven td,table.param tr.stripe td.numi_attn {background-color: #DD0000;}
+tr.stripe td,tr.stripe th {background-color: #E6EBF9;}
+p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}
+div.shootout {padding:2em;border:3px #4854A8 solid}
+</style>
+</head>
+<body>
+<table cellspacing=0 cellpadding=0 class="param">
+<tr><th>Test</th><th class="numi">Methods<br/>Passed</th><th class="numi">Scenarios<br/>Passed</th><th class="numi"># skipped</th><th class="numi"># failed</th><th class="numi">Total<br/>Time</th><th class="numi">Included<br/>Groups</th><th class="numi">Excluded<br/>Groups</th></tr>
+<tr><td style="text-align:left;padding-right:2em">org.openspotlight.graph.SLGraphTest</td><td class="numi">54</td><td class="numi">54</td><td class="numi">0</td><td class="numi">0</td><td class="numi">15.1 seconds</td><td class="numi"></td><td class="numi"></td></tr>
+</table>
+<a id="summary"></a>
+<table cellspacing=0 cellpadding=0 class="passed">
+<tr><th>Class</th><th>Method</th><th># of<br/>Scenarios</th><th>Time<br/>(Msecs)</th></tr>
+<tr><th colspan="4">org.openspotlight.graph.SLGraphTest &#8212; passed</th></tr>
+<tr class="passedodd"><td rowspan="54">org.openspotlight.graph.SLGraphTest<td><a href="#m1"><b>addAddMultipleLinkEmptyCase</b> </a></td><td class="numi">1</td><td class="numi">487</td></tr><tr class="passedodd"><td><a href="#m2"><b>addAddMultipleLinkExistentABCase</b> </a></td><td class="numi">1</td><td class="numi">554</td></tr><tr class="passedodd"><td><a href="#m3"><b>addAddMultipleLinkExistentBACase</b> </a></td><td class="numi">1</td><td class="numi">736</td></tr><tr class="passedodd"><td><a href="#m4"><b>addAddMultipleLinkExistentBothCase</b> </a></td><td class="numi">1</td><td class="numi">293</td></tr><tr class="passedodd"><td><a href="#m5"><b>testAddNodeTypeHierarchyCase</b> </a></td><td class="numi">1</td><td class="numi">314</td></tr><tr class="passedodd"><td><a href="#m6"><b>testAddSimpleLinkEmptyCase</b> </a></td><td class="numi">1</td><td class="numi">584</td></tr><tr class="passedodd"><td><a href="#m7"><b>testAddSimpleLinkEmptyCaseACTB</b> </a></td><td class="numi">1</td><td class="numi">580</td></tr><tr class="passedodd"><td><a href="#m8"><b>testAddSimpleLinkExistentABCase</b> </a></td><td class="numi">1</td><td class="numi">652</td></tr><tr class="passedodd"><td><a href="#m9"><b>testAddSimpleLinkExistentABCaseACTB</b> </a></td><td class="numi">1</td><td class="numi">508</td></tr><tr class="passedodd"><td><a href="#m10"><b>testAddSimpleLinkExistentBACase</b> </a></td><td class="numi">1</td><td class="numi">803</td></tr><tr class="passedodd"><td><a href="#m11"><b>testAddSimpleLinkExistentBACaseACTB</b> </a></td><td class="numi">1</td><td class="numi">499</td></tr><tr class="passedodd"><td><a href="#m12"><b>testAddSimpleLinkExistentBothCase</b> </a></td><td class="numi">1</td><td class="numi">786</td></tr><tr class="passedodd"><td><a href="#m13"><b>testAddSimpleLinkExistentBothCaseACTB</b> </a></td><td class="numi">1</td><td class="numi">333</td></tr><tr class="passedodd"><td><a href="#m14"><b>testAnySerializableProperty</b> </a></td><td class="numi">1</td><td class="numi">28</td></tr><tr class="passedodd"><td><a href="#m15"><b>testBooleanProperty</b> </a></td><td class="numi">1</td><td class="numi">28</td></tr><tr class="passedodd"><td><a href="#m16"><b>testChiLdNodesRetrieval</b> </a></td><td class="numi">1</td><td class="numi">25</td></tr><tr class="passedodd"><td><a href="#m17"><b>testContextOperations</b> </a></td><td class="numi">1</td><td class="numi">210</td></tr><tr class="passedodd"><td><a href="#m18"><b>testDoubleProperty</b> </a></td><td class="numi">1</td><td class="numi">17</td></tr><tr class="passedodd"><td><a href="#m19"><b>testFloatProperty</b> </a></td><td class="numi">1</td><td class="numi">14</td></tr><tr class="passedodd"><td><a href="#m20"><b>testGetBidirectionalLinks</b> </a></td><td class="numi">1</td><td class="numi">101</td></tr><tr class="passedodd"><td><a href="#m21"><b>testGetBidirectionalLinksBySide</b> </a></td><td class="numi">1</td><td class="numi">129</td></tr><tr class="passedodd"><td><a href="#m22"><b>testGetChildMetaNodes</b> </a></td><td class="numi">1</td><td class="numi">57</td></tr><tr class="passedodd"><td><a href="#m23"><b>testGetChildNodeNode</b> </a></td><td class="numi">1</td><td class="numi">141</td></tr><tr class="passedodd"><td><a href="#m24"><b>testGetLinks</b> </a></td><td class="numi">1</td><td class="numi">375</td></tr><tr class="passedodd"><td><a href="#m25"><b>testGetMetaLinkProperties</b> </a></td><td class="numi">1</td><td class="numi">69</td></tr><tr class="passedodd"><td><a href="#m26"><b>testGetMetaLinkProperty</b> </a></td><td class="numi">1</td><td class="numi">92</td></tr><tr class="passedodd"><td><a href="#m27"><b>testGetMetaNode</b> </a></td><td class="numi">1</td><td class="numi">90</td></tr><tr class="passedodd"><td><a href="#m28"><b>testGetMetaNodeProperties</b> </a></td><td class="numi">1</td><td class="numi">30</td></tr><tr class="passedodd"><td><a href="#m29"><b>testGetMetaNodes</b> </a></td><td class="numi">1</td><td class="numi">53</td></tr><tr class="passedodd"><td><a href="#m30"><b>testGetNodesByLinkWithLinkType</b> </a></td><td class="numi">1</td><td class="numi">306</td></tr><tr class="passedodd"><td><a href="#m31"><b>testGetNodesByLinkWithoutLinkType</b> </a></td><td class="numi">1</td><td class="numi">308</td></tr><tr class="passedodd"><td><a href="#m32"><b>testGetNodesByPredicate</b> </a></td><td class="numi">1</td><td class="numi">178</td></tr><tr class="passedodd"><td><a href="#m33"><b>testGetPropertyAsString</b> </a></td><td class="numi">1</td><td class="numi">62</td></tr><tr class="passedodd"><td><a href="#m34"><b>testGetUnidirectionalLinks</b> </a></td><td class="numi">1</td><td class="numi">359</td></tr><tr class="passedodd"><td><a href="#m35"><b>testGetUnidirectionalLinksBySource</b> </a></td><td class="numi">1</td><td class="numi">227</td></tr><tr class="passedodd"><td><a href="#m36"><b>testGetUnidirectionalLinksByTarget</b> </a></td><td class="numi">1</td><td class="numi">276</td></tr><tr class="passedodd"><td><a href="#m37"><b>testIntegerProperty</b> </a></td><td class="numi">1</td><td class="numi">19</td></tr><tr class="passedodd"><td><a href="#m38"><b>testInvalidNodeTypeRetrieval</b> </a></td><td class="numi">1</td><td class="numi">38</td></tr><tr class="passedodd"><td><a href="#m39"><b>testLineReference</b> </a></td><td class="numi">1</td><td class="numi">57</td></tr><tr class="passedodd"><td><a href="#m40"><b>testLinkProperties</b> </a></td><td class="numi">1</td><td class="numi">76</td></tr><tr class="passedodd"><td><a href="#m41"><b>testLinkTypesForLinkDeletionMarkAndUnmarkCase</b> </a></td><td class="numi">1</td><td class="numi">215</td></tr><tr class="passedodd"><td><a href="#m42"><b>testLinkTypesForLinkDeletionMarkCase</b> </a></td><td class="numi">1</td><td class="numi">309</td></tr><tr class="passedodd"><td><a href="#m43"><b>testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase</b> </a></td><td class="numi">1</td><td class="numi">371</td></tr><tr class="passedodd"><td><a href="#m44"><b>testLinkTypesForLinkedNodeDeletionMarkCase</b> </a></td><td class="numi">1</td><td class="numi">138</td></tr><tr class="passedodd"><td><a href="#m45"><b>testLinksRemovalByNodeDeletion</b> </a></td><td class="numi">1</td><td class="numi">411</td></tr><tr class="passedodd"><td><a href="#m46"><b>testLongProperty</b> </a></td><td class="numi">1</td><td class="numi">14</td></tr><tr class="passedodd"><td><a href="#m47"><b>testNodeOperations</b> </a></td><td class="numi">1</td><td class="numi">22</td></tr><tr class="passedodd"><td><a href="#m48"><b>testPropertiesRetrieval</b> </a></td><td class="numi">1</td><td class="numi">20</td></tr><tr class="passedodd"><td><a href="#m49"><b>testPropertyRemoval</b> </a></td><td class="numi">1</td><td class="numi">26</td></tr><tr class="passedodd"><td><a href="#m50"><b>testPropertyValueOverwriting</b> </a></td><td class="numi">1</td><td class="numi">27</td></tr><tr class="passedodd"><td><a href="#m51"><b>testStringProperty</b> </a></td><td class="numi">1</td><td class="numi">15</td></tr><tr class="passedodd"><td><a href="#m52"><b>testTransientLinks</b> </a></td><td class="numi">1</td><td class="numi">234</td></tr><tr class="passedodd"><td><a href="#m53"><b>testTransientNodes</b> </a></td><td class="numi">1</td><td class="numi">107</td></tr><tr class="passedodd"><td><a href="#m54"><b>testTypedNodeOperations</b> </a></td><td class="numi">1</td><td class="numi">69</td></tr>
+</table>
+<h1>org.openspotlight.graph.SLGraphTest</h1>
+<a id="m1"></a><h2>org.openspotlight.graph.SLGraphTest:addAddMultipleLinkEmptyCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m2"></a><h2>org.openspotlight.graph.SLGraphTest:addAddMultipleLinkExistentABCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m3"></a><h2>org.openspotlight.graph.SLGraphTest:addAddMultipleLinkExistentBACase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m4"></a><h2>org.openspotlight.graph.SLGraphTest:addAddMultipleLinkExistentBothCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m5"></a><h2>org.openspotlight.graph.SLGraphTest:testAddNodeTypeHierarchyCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m6"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkEmptyCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m7"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkEmptyCaseACTB</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m8"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkExistentABCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m9"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkExistentABCaseACTB</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m10"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkExistentBACase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m11"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkExistentBACaseACTB</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m12"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkExistentBothCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m13"></a><h2>org.openspotlight.graph.SLGraphTest:testAddSimpleLinkExistentBothCaseACTB</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m14"></a><h2>org.openspotlight.graph.SLGraphTest:testAnySerializableProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m15"></a><h2>org.openspotlight.graph.SLGraphTest:testBooleanProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m16"></a><h2>org.openspotlight.graph.SLGraphTest:testChiLdNodesRetrieval</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m17"></a><h2>org.openspotlight.graph.SLGraphTest:testContextOperations</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m18"></a><h2>org.openspotlight.graph.SLGraphTest:testDoubleProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m19"></a><h2>org.openspotlight.graph.SLGraphTest:testFloatProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m20"></a><h2>org.openspotlight.graph.SLGraphTest:testGetBidirectionalLinks</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m21"></a><h2>org.openspotlight.graph.SLGraphTest:testGetBidirectionalLinksBySide</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m22"></a><h2>org.openspotlight.graph.SLGraphTest:testGetChildMetaNodes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m23"></a><h2>org.openspotlight.graph.SLGraphTest:testGetChildNodeNode</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m24"></a><h2>org.openspotlight.graph.SLGraphTest:testGetLinks</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m25"></a><h2>org.openspotlight.graph.SLGraphTest:testGetMetaLinkProperties</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m26"></a><h2>org.openspotlight.graph.SLGraphTest:testGetMetaLinkProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m27"></a><h2>org.openspotlight.graph.SLGraphTest:testGetMetaNode</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m28"></a><h2>org.openspotlight.graph.SLGraphTest:testGetMetaNodeProperties</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m29"></a><h2>org.openspotlight.graph.SLGraphTest:testGetMetaNodes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m30"></a><h2>org.openspotlight.graph.SLGraphTest:testGetNodesByLinkWithLinkType</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m31"></a><h2>org.openspotlight.graph.SLGraphTest:testGetNodesByLinkWithoutLinkType</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m32"></a><h2>org.openspotlight.graph.SLGraphTest:testGetNodesByPredicate</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m33"></a><h2>org.openspotlight.graph.SLGraphTest:testGetPropertyAsString</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m34"></a><h2>org.openspotlight.graph.SLGraphTest:testGetUnidirectionalLinks</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m35"></a><h2>org.openspotlight.graph.SLGraphTest:testGetUnidirectionalLinksBySource</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m36"></a><h2>org.openspotlight.graph.SLGraphTest:testGetUnidirectionalLinksByTarget</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m37"></a><h2>org.openspotlight.graph.SLGraphTest:testIntegerProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m38"></a><h2>org.openspotlight.graph.SLGraphTest:testInvalidNodeTypeRetrieval</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m39"></a><h2>org.openspotlight.graph.SLGraphTest:testLineReference</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m40"></a><h2>org.openspotlight.graph.SLGraphTest:testLinkProperties</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m41"></a><h2>org.openspotlight.graph.SLGraphTest:testLinkTypesForLinkDeletionMarkAndUnmarkCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m42"></a><h2>org.openspotlight.graph.SLGraphTest:testLinkTypesForLinkDeletionMarkCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m43"></a><h2>org.openspotlight.graph.SLGraphTest:testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m44"></a><h2>org.openspotlight.graph.SLGraphTest:testLinkTypesForLinkedNodeDeletionMarkCase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m45"></a><h2>org.openspotlight.graph.SLGraphTest:testLinksRemovalByNodeDeletion</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m46"></a><h2>org.openspotlight.graph.SLGraphTest:testLongProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m47"></a><h2>org.openspotlight.graph.SLGraphTest:testNodeOperations</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m48"></a><h2>org.openspotlight.graph.SLGraphTest:testPropertiesRetrieval</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m49"></a><h2>org.openspotlight.graph.SLGraphTest:testPropertyRemoval</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m50"></a><h2>org.openspotlight.graph.SLGraphTest:testPropertyValueOverwriting</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m51"></a><h2>org.openspotlight.graph.SLGraphTest:testStringProperty</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m52"></a><h2>org.openspotlight.graph.SLGraphTest:testTransientLinks</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m53"></a><h2>org.openspotlight.graph.SLGraphTest:testTransientNodes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m54"></a><h2>org.openspotlight.graph.SLGraphTest:testTypedNodeOperations</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+</body></html>

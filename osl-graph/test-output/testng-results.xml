@@ -1,0 +1,338 @@
+<testng-results>
+  <reporter-output>
+  </reporter-output>
+  <suite name="spotlight-graph">
+    <groups>
+    </groups>
+    <test name="org.openspotlight.graph.SLGraphTest">
+      <class name="org.openspotlight.graph.SLGraphTest">
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:24Z" finished-at="2009-07-20T15:58:24Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetNodesByLinkWithoutLinkType()" name="testGetNodesByLinkWithoutLinkType" duration-ms="308" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:27Z" finished-at="2009-07-20T15:58:27Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="testLinkTypesForLinkDeletionMarkCase()" name="testLinkTypesForLinkDeletionMarkCase" duration-ms="309" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkEmptyCaseACTB()" name="testAddSimpleLinkEmptyCaseACTB" duration-ms="580" started-at="2009-07-20T15:58:26Z" finished-at="2009-07-20T15:58:27Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="4" started-at="2009-07-20T15:58:26Z" finished-at="2009-07-20T15:58:26Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetNodesByLinkWithLinkType()" name="testGetNodesByLinkWithLinkType" duration-ms="306" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetChildNodeNode()" name="testGetChildNodeNode" duration-ms="141" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:29Z" finished-at="2009-07-20T15:58:29Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetNodesByPredicate()" name="testGetNodesByPredicate" duration-ms="178" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="addAddMultipleLinkExistentBACase()" name="addAddMultipleLinkExistentBACase" duration-ms="736" started-at="2009-07-20T15:58:29Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:29Z" finished-at="2009-07-20T15:58:29Z">
+        </test-method>
+        <test-method status="PASS" signature="testTransientLinks()" name="testTransientLinks" duration-ms="234" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:28Z" finished-at="2009-07-20T15:58:28Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="136" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testPropertyRemoval()" name="testPropertyRemoval" duration-ms="26" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetPropertyAsString()" name="testGetPropertyAsString" duration-ms="62" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="addAddMultipleLinkEmptyCase()" name="addAddMultipleLinkEmptyCase" duration-ms="487" started-at="2009-07-20T15:58:28Z" finished-at="2009-07-20T15:58:29Z">
+        </test-method>
+        <test-method status="PASS" signature="testLinksRemovalByNodeDeletion()" name="testLinksRemovalByNodeDeletion" duration-ms="411" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="addAddMultipleLinkExistentABCase()" name="addAddMultipleLinkExistentABCase" duration-ms="554" started-at="2009-07-20T15:58:29Z" finished-at="2009-07-20T15:58:29Z">
+        </test-method>
+        <test-method status="PASS" signature="testLinkTypesForLinkDeletionMarkAndUnmarkCase()" name="testLinkTypesForLinkDeletionMarkAndUnmarkCase" duration-ms="215" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetUnidirectionalLinksBySource()" name="testGetUnidirectionalLinksBySource" duration-ms="227" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:28Z" finished-at="2009-07-20T15:58:28Z">
+        </test-method>
+        <test-method status="PASS" signature="testStringProperty()" name="testStringProperty" duration-ms="15" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="4" started-at="2009-07-20T15:58:27Z" finished-at="2009-07-20T15:58:27Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:26Z" finished-at="2009-07-20T15:58:26Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:25Z" finished-at="2009-07-20T15:58:25Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testAnySerializableProperty()" name="testAnySerializableProperty" duration-ms="28" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:24Z" finished-at="2009-07-20T15:58:24Z">
+        </test-method>
+        <test-method status="PASS" signature="testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase()" name="testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" duration-ms="371" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetUnidirectionalLinks()" name="testGetUnidirectionalLinks" duration-ms="359" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:25Z" finished-at="2009-07-20T15:58:25Z">
+        </test-method>
+        <test-method status="PASS" signature="testFloatProperty()" name="testFloatProperty" duration-ms="14" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetLinks()" name="testGetLinks" duration-ms="375" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetMetaLinkProperty()" name="testGetMetaLinkProperty" duration-ms="92" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkExistentBothCase()" name="testAddSimpleLinkExistentBothCase" duration-ms="786" started-at="2009-07-20T15:58:25Z" finished-at="2009-07-20T15:58:26Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetChildMetaNodes()" name="testGetChildMetaNodes" duration-ms="57" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="addAddMultipleLinkExistentBothCase()" name="addAddMultipleLinkExistentBothCase" duration-ms="293" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testLinkProperties()" name="testLinkProperties" duration-ms="76" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetMetaNode()" name="testGetMetaNode" duration-ms="90" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkExistentABCase()" name="testAddSimpleLinkExistentABCase" duration-ms="652" started-at="2009-07-20T15:58:24Z" finished-at="2009-07-20T15:58:24Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkExistentBothCaseACTB()" name="testAddSimpleLinkExistentBothCaseACTB" duration-ms="333" started-at="2009-07-20T15:58:28Z" finished-at="2009-07-20T15:58:28Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testInvalidNodeTypeRetrieval()" name="testInvalidNodeTypeRetrieval" duration-ms="38" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetBidirectionalLinks()" name="testGetBidirectionalLinks" duration-ms="101" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="testIntegerProperty()" name="testIntegerProperty" duration-ms="19" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:29Z" finished-at="2009-07-20T15:58:29Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddNodeTypeHierarchyCase()" name="testAddNodeTypeHierarchyCase" duration-ms="314" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testPropertiesRetrieval()" name="testPropertiesRetrieval" duration-ms="20" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="4" started-at="2009-07-20T15:58:24Z" finished-at="2009-07-20T15:58:24Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testContextOperations()" name="testContextOperations" duration-ms="210" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkExistentBACase()" name="testAddSimpleLinkExistentBACase" duration-ms="803" started-at="2009-07-20T15:58:24Z" finished-at="2009-07-20T15:58:25Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:29Z" finished-at="2009-07-20T15:58:29Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:28Z" finished-at="2009-07-20T15:58:28Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testTransientNodes()" name="testTransientNodes" duration-ms="107" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testDoubleProperty()" name="testDoubleProperty" duration-ms="17" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="testLinkTypesForLinkedNodeDeletionMarkCase()" name="testLinkTypesForLinkedNodeDeletionMarkCase" duration-ms="138" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:35Z" finished-at="2009-07-20T15:58:35Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="5" started-at="2009-07-20T15:58:27Z" finished-at="2009-07-20T15:58:27Z">
+        </test-method>
+        <test-method status="PASS" signature="testBooleanProperty()" name="testBooleanProperty" duration-ms="28" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="4" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkEmptyCase()" name="testAddSimpleLinkEmptyCase" duration-ms="584" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:24Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:27Z" finished-at="2009-07-20T15:58:27Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetMetaLinkProperties()" name="testGetMetaLinkProperties" duration-ms="69" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetUnidirectionalLinksByTarget()" name="testGetUnidirectionalLinksByTarget" duration-ms="276" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testNodeOperations()" name="testNodeOperations" duration-ms="22" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="testChiLdNodesRetrieval()" name="testChiLdNodesRetrieval" duration-ms="25" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="testPropertyValueOverwriting()" name="testPropertyValueOverwriting" duration-ms="27" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetMetaNodes()" name="testGetMetaNodes" duration-ms="53" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="24" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkExistentBACaseACTB()" name="testAddSimpleLinkExistentBACaseACTB" duration-ms="499" started-at="2009-07-20T15:58:27Z" finished-at="2009-07-20T15:58:28Z">
+        </test-method>
+        <test-method status="PASS" signature="testTypedNodeOperations()" name="testTypedNodeOperations" duration-ms="69" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetBidirectionalLinksBySide()" name="testGetBidirectionalLinksBySide" duration-ms="129" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="testAddSimpleLinkExistentABCaseACTB()" name="testAddSimpleLinkExistentABCaseACTB" duration-ms="508" started-at="2009-07-20T15:58:27Z" finished-at="2009-07-20T15:58:27Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:24Z" finished-at="2009-07-20T15:58:24Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="testLineReference()" name="testLineReference" duration-ms="57" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:33Z" finished-at="2009-07-20T15:58:33Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:32Z" finished-at="2009-07-20T15:58:32Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="1" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="testLongProperty()" name="testLongProperty" duration-ms="14" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="2" started-at="2009-07-20T15:58:30Z" finished-at="2009-07-20T15:58:30Z">
+        </test-method>
+        <test-method status="PASS" signature="testGetMetaNodeProperties()" name="testGetMetaNodeProperties" duration-ms="30" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:31Z" finished-at="2009-07-20T15:58:31Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:28Z" finished-at="2009-07-20T15:58:28Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:23Z" finished-at="2009-07-20T15:58:23Z">
+        </test-method>
+        <test-method status="PASS" signature="beforeTest()" name="beforeTest" is-config="true" duration-ms="0" started-at="2009-07-20T15:58:34Z" finished-at="2009-07-20T15:58:34Z">
+        </test-method>
+        <test-method status="PASS" signature="init()" name="init" is-config="true" duration-ms="1385" started-at="2009-07-20T15:58:21Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+        <test-method status="PASS" signature="afterTest()" name="afterTest" is-config="true" duration-ms="3" started-at="2009-07-20T15:58:22Z" finished-at="2009-07-20T15:58:22Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>

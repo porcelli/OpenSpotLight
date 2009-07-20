@@ -1,0 +1,348 @@
+<html>
+<head>
+<title>TestNG:  org.openspotlight.graph.SLGraphTest</title>
+<link href="../testng.css" rel="stylesheet" type="text/css" />
+<link href="../my-testng.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+.log { display: none;} 
+.stack-trace { display: none;} 
+</style>
+<script type="text/javascript">
+<!--
+function flip(e) {
+  current = e.style.display;
+  if (current == 'block') {
+    e.style.display = 'none';
+    return 0;
+  }
+  else {
+    e.style.display = 'block';
+    return 1;
+  }
+}
+
+function toggleBox(szDivId, elem, msg1, msg2)
+{
+  var res = -1;  if (document.getElementById) {
+    res = flip(document.getElementById(szDivId));
+  }
+  else if (document.all) {
+    // this is the way old msie versions work
+    res = flip(document.all[szDivId]);
+  }
+  if(elem) {
+    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;
+  }
+
+}
+
+function toggleAllBoxes() {
+  if (document.getElementsByTagName) {
+    d = document.getElementsByTagName('div');
+    for (i = 0; i < d.length; i++) {
+      if (d[i].className == 'log') {
+        flip(d[i]);
+      }
+    }
+  }
+}
+
+// -->
+</script>
+
+</head>
+<body>
+<h2 align='center'>org.openspotlight.graph.SLGraphTest</h2><table border='1' align="center">
+<tr>
+<td>Tests passed/Failed/Skipped:</td><td>54/0/0</td>
+</tr><tr>
+<td>Started on:</td><td>Mon Jul 20 15:58:20 BRT 2009</td>
+</tr>
+<tr><td>Total time:</td><td>15 seconds (15075 ms)</td>
+</tr><tr>
+<td>Included groups:</td><td></td>
+</tr><tr>
+<td>Excluded groups:</td><td></td>
+</tr>
+</table><p/>
+<small><i>(Hover the method name to see the test class name)</i></small><p/>
+<table width='100%' border='1' class='invocation-passed'>
+<tr><td colspan='3' align='center'><b>PASSED TESTS</b></td></tr>
+<tr><td><b>Test method</b></td>
+<td width="10%"><b>Time (seconds)</b></td>
+<td width="30%"><b>Exception</b></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.addAddMultipleLinkEmptyCase()'>addAddMultipleLinkEmptyCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.addAddMultipleLinkExistentABCase()'>addAddMultipleLinkExistentABCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.addAddMultipleLinkExistentBACase()'>addAddMultipleLinkExistentBACase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.addAddMultipleLinkExistentBothCase()'>addAddMultipleLinkExistentBothCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddNodeTypeHierarchyCase()'>testAddNodeTypeHierarchyCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkEmptyCase()'>testAddSimpleLinkEmptyCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkEmptyCaseACTB()'>testAddSimpleLinkEmptyCaseACTB</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkExistentABCase()'>testAddSimpleLinkExistentABCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkExistentABCaseACTB()'>testAddSimpleLinkExistentABCaseACTB</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkExistentBACase()'>testAddSimpleLinkExistentBACase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkExistentBACaseACTB()'>testAddSimpleLinkExistentBACaseACTB</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkExistentBothCase()'>testAddSimpleLinkExistentBothCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAddSimpleLinkExistentBothCaseACTB()'>testAddSimpleLinkExistentBothCaseACTB</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testAnySerializableProperty()'>testAnySerializableProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testBooleanProperty()'>testBooleanProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testChiLdNodesRetrieval()'>testChiLdNodesRetrieval</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testContextOperations()'>testContextOperations</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testDoubleProperty()'>testDoubleProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testFloatProperty()'>testFloatProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetBidirectionalLinks()'>testGetBidirectionalLinks</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetBidirectionalLinksBySide()'>testGetBidirectionalLinksBySide</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetChildMetaNodes()'>testGetChildMetaNodes</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetChildNodeNode()'>testGetChildNodeNode</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetLinks()'>testGetLinks</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetMetaLinkProperties()'>testGetMetaLinkProperties</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetMetaLinkProperty()'>testGetMetaLinkProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetMetaNode()'>testGetMetaNode</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetMetaNodeProperties()'>testGetMetaNodeProperties</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetMetaNodes()'>testGetMetaNodes</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetNodesByLinkWithLinkType()'>testGetNodesByLinkWithLinkType</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetNodesByLinkWithoutLinkType()'>testGetNodesByLinkWithoutLinkType</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetNodesByPredicate()'>testGetNodesByPredicate</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetPropertyAsString()'>testGetPropertyAsString</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetUnidirectionalLinks()'>testGetUnidirectionalLinks</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetUnidirectionalLinksBySource()'>testGetUnidirectionalLinksBySource</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testGetUnidirectionalLinksByTarget()'>testGetUnidirectionalLinksByTarget</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testIntegerProperty()'>testIntegerProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testInvalidNodeTypeRetrieval()'>testInvalidNodeTypeRetrieval</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLineReference()'>testLineReference</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLinkProperties()'>testLinkProperties</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLinkTypesForLinkDeletionMarkAndUnmarkCase()'>testLinkTypesForLinkDeletionMarkAndUnmarkCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLinkTypesForLinkDeletionMarkCase()'>testLinkTypesForLinkDeletionMarkCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase()'>testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLinkTypesForLinkedNodeDeletionMarkCase()'>testLinkTypesForLinkedNodeDeletionMarkCase</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLinksRemovalByNodeDeletion()'>testLinksRemovalByNodeDeletion</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testLongProperty()'>testLongProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testNodeOperations()'>testNodeOperations</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testPropertiesRetrieval()'>testPropertiesRetrieval</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testPropertyRemoval()'>testPropertyRemoval</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testPropertyValueOverwriting()'>testPropertyValueOverwriting</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testStringProperty()'>testStringProperty</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testTransientLinks()'>testTransientLinks</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testTransientNodes()'>testTransientNodes</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td title='org.openspotlight.graph.SLGraphTest.testTypedNodeOperations()'>testTypedNodeOperations</td>
+<td>0</td>
+<td></td>
+</tr>
+</table><p>
+</body>
+</html>
