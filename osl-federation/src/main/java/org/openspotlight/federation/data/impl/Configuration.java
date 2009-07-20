@@ -49,9 +49,18 @@
 
 package org.openspotlight.federation.data.impl;
 
+import static org.openspotlight.federation.data.InstanceMetadata.Factory.createRoot;
+import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
+import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
+
+import java.util.Collection;
+import java.util.Set;
+
 import net.jcip.annotations.ThreadSafe;
 
-import org.openspotlight.federation.data.AbstractConfigurationNode;
+import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.InstanceMetadata;
+import org.openspotlight.federation.data.StaticMetadata;
 
 /**
  * This is the root node of the configuration classes that contains the
@@ -84,13 +93,130 @@ import org.openspotlight.federation.data.AbstractConfigurationNode;
  * This structure are used to pass the artifacts to the parser. All the classes
  * are thread save by default.
  * 
- * @see ConfigurationNodeMetadata
- * @see AbstractConfigurationNode
+ * @see ConfigurationNode
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("unchecked")
 @ThreadSafe
-public final class Configuration {
+public final class Configuration implements ConfigurationNode {
+    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5615522050633506216L;
+    
+    static {
+        final StaticMetadata newStaticMetadata = createMutable();
+        newStaticMetadata.setChildrenNodeValidTypes(Repository.class);
+        newStaticMetadata.setType(Configuration.class);
+        staticMetadata = createImmutable(newStaticMetadata);
+    }
+    
+    private final InstanceMetadata instanceMetadata;
+    
+    private static final StaticMetadata staticMetadata;
+    
+    /**
+     * Default constructor
+     */
+    public Configuration() {
+        this.instanceMetadata = createRoot(staticMetadata, this);
+    }
+    
+    /**
+     * Adds a new repository.
+     * 
+     * @param repository
+     *            to be added
+     */
+    public final void addRepository(final Repository repository) {
+        this.instanceMetadata.addChild(repository);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final int compareTo(final ConfigurationNode o) {
+        return this.instanceMetadata.compare(this, o);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final InstanceMetadata getInstanceMetadata() {
+        return this.instanceMetadata;
+    }
+    
+    /**
+     * 
+     * @return all repositories
+     */
+    public final Collection<Repository> getRepositories() {
+        return this.instanceMetadata.getChildrensOfType(Repository.class);
+    }
+    
+    /**
+     * Returns a repository by its name.
+     * 
+     * @param name
+     * @return a repository
+     */
+    public final Repository getRepositoryByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(Repository.class, name);
+    }
+    
+    /**
+     * 
+     * @return all repository names
+     */
+    public final Set<String> getRepositoryNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(Repository.class);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public final StaticMetadata getStaticMetadata() {
+        return staticMetadata;
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
+    }
+    
+    /**
+     * Removes a given repository
+     * 
+     * @param repository
+     */
+    public final void removeRepository(final Repository repository) {
+        this.instanceMetadata.removeChild(repository);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final String toString() {
+        return this.instanceMetadata.toString();
+    }
     
 }

@@ -57,12 +57,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.federation.data.AbstractConfigurationNode;
-
 import net.jcip.annotations.ThreadSafe;
 
+import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.InstanceMetadata;
+import org.openspotlight.federation.data.StaticMetadata;
+
 @ThreadSafe
-public final class ArtifactMapping extends AbstractConfigurationNode {
+public final class ArtifactMapping implements ConfigurationNode {
     
     /**
 	 * 
@@ -86,6 +88,11 @@ public final class ArtifactMapping extends AbstractConfigurationNode {
         super(name, bundle, PROPERTY_TYPES);
     }
     
+    public int compareTo(final ConfigurationNode o) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    
     public Boolean getActive() {
         return this.getProperty(ACTIVE);
     }
@@ -107,9 +114,19 @@ public final class ArtifactMapping extends AbstractConfigurationNode {
         return this.getProperty(INCLUDED);
     }
     
+    public InstanceMetadata getInstanceMetadata() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
     @Override
     public Class<?> getParentType() {
         return Bundle.class;
+    }
+    
+    public StaticMetadata getStaticMetadata() {
+        // TODO Auto-generated method stub
+        return null;
     }
     
     public void setActive(final Boolean active) {

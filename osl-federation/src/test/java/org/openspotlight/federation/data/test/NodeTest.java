@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -111,7 +111,7 @@ public class NodeTest {
         assertThat(artifactMapping.getIncluded(), is("*"));
         
         if (verifyArtifacts) {
-            final Artifact artifact = bundle.getArtifactByName("r-1,1,1,1");
+            final StreamArtifact artifact = bundle.getArtifactByName("r-1,1,1,1");
             // THIS IS TRANSIENT : Artifact.getData()
             assertThat(artifact.getDataSha1(), is(notNullValue()));
         }
@@ -146,7 +146,7 @@ public class NodeTest {
                         
                     }
                     for (final int m : numbers) {
-                        final Artifact Artifact = new Artifact("r-" + i + ","
+                        final StreamArtifact Artifact = new StreamArtifact("r-" + i + ","
                                 + j + "," + k + "," + m, bundle);
                         Artifact.setData(new ByteArrayInputStream(new byte[0]));
                         Artifact.setDataSha1("sha1");
@@ -166,7 +166,7 @@ public class NodeTest {
     @Test
     public void shouldFindArtifactByName() throws Exception {
         final Configuration configuration = this.createSampleData();
-        final Artifact artifact = configuration.findByName("initialLookup",
+        final StreamArtifact artifact = configuration.findByName("initialLookup",
                 "r-1,1,1,1");
         assertThat(artifact, is(notNullValue()));
     }
@@ -175,7 +175,7 @@ public class NodeTest {
     public void shouldRetturnNullWhenFindingArtifactWithInvalidName()
             throws Exception {
         final Configuration configuration = this.createSampleData();
-        Artifact artifact = configuration.findByName("initialLookup",
+        StreamArtifact artifact = configuration.findByName("initialLookup",
                 "invalidName");
         assertThat(artifact, is(nullValue()));
         artifact = configuration.findByName("invalidName", "invalidName");

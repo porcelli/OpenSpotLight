@@ -60,7 +60,7 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
-import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 
@@ -124,7 +124,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 final byte[] content = this.loadArtifact(bundle, artifactName);
                 final String sha1 = getSha1SignatureEncodedAsBase64(content);
                 final InputStream is = new ByteArrayInputStream(content);
-                final Artifact artifact = bundle.addArtifact(artifactName);
+                final StreamArtifact artifact = bundle.addArtifact(artifactName);
                 artifact.setData(is);
                 artifact.setDataSha1(sha1);
                 loadCount++;

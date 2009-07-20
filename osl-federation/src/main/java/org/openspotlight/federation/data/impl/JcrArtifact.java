@@ -56,8 +56,7 @@ import static org.openspotlight.federation.data.InstanceMetadata.Factory.createW
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
 import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
-import java.util.Collection;
-import java.util.Set;
+import java.io.InputStream;
 
 import net.jcip.annotations.ThreadSafe;
 
@@ -66,188 +65,137 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * A repository represents a group of projects. There's some properties that can
- * reflect on project processing such as number or threads for processing this
- * repository.
+ * A Jcr artifact is an artifact with hierarchical data. So, this artifact is
+ * easily represented with Jcr structure instead of bytes to be parsed.
+ * 
+ * FIXME implement this
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
-public final class Repository implements ConfigurationNode {
+public final class JcrArtifact implements ConfigurationNode {
     
-    private static final String NUMBER_OF_PARALLEL_THREADS = "numberOfParallelThreads"; //$NON-NLS-1$
+    /**
+	 * 
+	 */
+    private static final long serialVersionUID = -889016915372708085L;
     
-    private static final String ACTIVE = "active"; //$NON-NLS-1$
+    private static final String DATA = "data"; //$NON-NLS-1$
+    private static final String RELATIVE_NAME = "relativeName"; //$NON-NLS-1$
     
-    private static final String NAME = "name"; //$NON-NLS-1$
+    private static final String DATA_SHA1 = "dataSha1"; //$NON-NLS-1$
+    
     static {
         final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setChildrenNodeValidTypes(Project.class);
-        newStaticMetadata.setType(Repository.class);
-        newStaticMetadata.setParentNodeValidTypes(Configuration.class);
-        newStaticMetadata.setKeyProperty(NAME);
-        newStaticMetadata.setPropertyTypes(map(ofKeys(
-                NUMBER_OF_PARALLEL_THREADS, ACTIVE), andValues(Integer.class,
-                Boolean.class)));
+        newStaticMetadata.setType(JcrArtifact.class);
+        newStaticMetadata.setParentNodeValidTypes(Project.class, Bundle.class);
+        newStaticMetadata.setKeyProperty(RELATIVE_NAME);
+        newStaticMetadata.setPropertyTypes(map(ofKeys(DATA_SHA1, DATA,
+                RELATIVE_NAME), andValues(String.class, InputStream.class,
+                String.class)));
         staticMetadata = createImmutable(newStaticMetadata);
     }
-    
     private final InstanceMetadata instanceMetadata;
     
     private static final StaticMetadata staticMetadata;
     
     /**
-	 * 
-	 */
-    private static final long serialVersionUID = -3606246260530743008L;
-    
-    /**
-     * Creates a repository within a configuration.
+     * Constructor to create a stream artifact inside a bundle.
      * 
-     * @param configuration
-     * @param name
+     * @param bundle
+     * @param relativeName
      */
-    public Repository(final Configuration configuration, final String name) {
+    public JcrArtifact(final Bundle bundle, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                configuration, name);
+                bundle, relativeName);
     }
     
     /**
-     * adds a project inside this repository.
+     * Constructor to create a stream artifact inside a project.
      * 
      * @param project
+     * @param relativeName
      */
-    public final void addProject(final Project project) {
-        this.instanceMetadata.addChild(project);
+    public JcrArtifact(final Project project, final String relativeName) {
+        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
+                project, relativeName);
     }
     
     /**
+     * 
      * {@inheritDoc}
      */
-    public final int compareTo(final ConfigurationNode o) {
+    public int compareTo(final ConfigurationNode o) {
         return this.instanceMetadata.compare(this, o);
     }
     
     /**
      * 
-     * {@inheritDoc}
+     * @return a data stream for this artifact as a transient property
      */
-    @Override
-    public final boolean equals(final Object obj) {
-        return this.instanceMetadata.equals(obj);
+    public InputStream getData() {
+        return this.instanceMetadata.getTransientProperty(DATA);
     }
     
     /**
-     * @return active property
+     * 
+     * @return a valid signature for this data
      */
-    public final Boolean getActive() {
-        return this.instanceMetadata.getProperty(ACTIVE);
-    }
-    
-    /**
-     * @return the configuration (parent node)
-     */
-    public final Configuration getConfiguration() {
-        return this.instanceMetadata.getParent(Configuration.class);
+    public String getDataSha1() {
+        return this.instanceMetadata.getProperty(DATA_SHA1);
     }
     
     /**
      * 
      * {@inheritDoc}
      */
-    public final InstanceMetadata getInstanceMetadata() {
+    public InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
     }
     
     /**
      * 
-     * @return the number of parallel threads for this repository processing
+     * @return the relative name for this artifact.
      */
-    public final Integer getNumberOfParallelThreads() {
-        return this.instanceMetadata.getProperty(NUMBER_OF_PARALLEL_THREADS);
-    }
-    
-    /**
-     * 
-     * @param name
-     * @return a project by its name
-     */
-    public final Project getProjectByName(final String name) {
-        return this.instanceMetadata.getChildByKeyValue(Project.class, name);
-    }
-    
-    /**
-     * 
-     * @return all valid names existing projects inside this repository
-     */
-    public final Set<String> getProjectNames() {
-        return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Project.class);
-    }
-    
-    /**
-     * 
-     * @return all projects inside this repository
-     */
-    public final Collection<Project> getProjects() {
-        return this.instanceMetadata.getChildrensOfType(Project.class);
+    public String getRelativeName() {
+        return this.instanceMetadata.getProperty(RELATIVE_NAME);
     }
     
     /**
      * 
      * {@inheritDoc}
      */
-    public final StaticMetadata getStaticMetadata() {
+    public StaticMetadata getStaticMetadata() {
         return staticMetadata;
     }
     
     /**
+     * Sets a data stream for this artifact as a transient property.
      * 
-     * {@inheritDoc}
+     * @param data
      */
-    @Override
-    public final int hashCode() {
-        return this.instanceMetadata.hashCode();
+    public void setData(final InputStream data) {
+        this.instanceMetadata.setTransientProperty(DATA, data);
     }
     
     /**
-     * removes a given project from this repository.
+     * Sets a valid signature for this data
      * 
-     * @param project
+     * @param dataSha1
      */
-    public final void removeProject(final Project project) {
-        this.instanceMetadata.removeChild(project);
+    public void setDataSha1(final String dataSha1) {
+        this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
     }
     
     /**
-     * Sets the active property.
+     * Sets the relative name for this artifact.
      * 
-     * @param active
+     * @param relativeName
      */
-    public final void setActive(final Boolean active) {
-        this.instanceMetadata.setProperty(ACTIVE, active);
-    }
-    
-    /**
-     * Sets the number of parallel threads.
-     * 
-     * @param numberOfParallelThreads
-     */
-    public final void setNumberOfParallelThreads(
-            final Integer numberOfParallelThreads) {
-        this.instanceMetadata.setProperty(NUMBER_OF_PARALLEL_THREADS,
-                numberOfParallelThreads);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public final String toString() {
-        return this.instanceMetadata.toString();
+    public void setRelativeName(final String relativeName) {
+        this.instanceMetadata.setProperty(RELATIVE_NAME, relativeName);
     }
     
 }

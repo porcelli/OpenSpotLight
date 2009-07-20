@@ -52,80 +52,364 @@ package org.openspotlight.federation.data.impl;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
+import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
+import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import org.openspotlight.federation.data.AbstractConfigurationNode;
 
 import net.jcip.annotations.ThreadSafe;
 
+import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.InstanceMetadata;
+import org.openspotlight.federation.data.StaticMetadata;
+
+/**
+ * A project represents a group of artifacts such as source folders with program
+ * files, database artifacts such as tables, procedures, and so on, and so on. A
+ * common processing task should take care of project bundles. But is possible
+ * to store artifacts inside projects.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+@SuppressWarnings("unchecked")
 @ThreadSafe
-public final class Project extends AbstractConfigurationNode {
+public final class Project implements ConfigurationNode {
+    
+    private static final String ACTIVE = "active"; //$NON-NLS-1$
+    
+    private static final String NAME = "name"; //$NON-NLS-1$
+    static {
+        final StaticMetadata newStaticMetadata = createMutable();
+        newStaticMetadata.setChildrenNodeValidTypes(Project.class,
+                StreamArtifact.class, JcrArtifact.class, ArtifactMapping.class,
+                Bundle.class);
+        newStaticMetadata.setType(Project.class);
+        newStaticMetadata.setParentNodeValidTypes(Project.class,
+                Repository.class);
+        newStaticMetadata.setKeyProperty(NAME);
+        newStaticMetadata.setPropertyTypes(map(ofKeys(ACTIVE),
+                andValues(Boolean.class)));
+        staticMetadata = createImmutable(newStaticMetadata);
+    }
+    
+    private final InstanceMetadata instanceMetadata;
+    
+    private static final StaticMetadata staticMetadata;
     
     /**
-	 * 
-	 */
-    private static final long serialVersionUID = 2046784379709017337L;
+     * 
+     */
+    private static final long serialVersionUID = -3606246260530743008L;
     
-    private static final String ACTIVE = "active";
-    
-    @SuppressWarnings("unchecked")
-    private static final Map<String, Class<?>> PROPERTY_TYPES = map(
-            ofKeys(ACTIVE), andValues(Boolean.class));
-    
-    private static final Set<Class<?>> CHILDREN_CLASSES = new HashSet<Class<?>>();
-    
-    static {
-        CHILDREN_CLASSES.add(Bundle.class);
+    /**
+     * Creates a project within a other project.
+     * 
+     * @param project
+     * @param name
+     */
+    public Project(final Project project, final String name) {
+        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
+                project, name);
     }
     
-    public Project(final String name, final Repository repository) {
-        super(name, repository, PROPERTY_TYPES);
+    /**
+     * Creates a project within a repository.
+     * 
+     * @param repository
+     * @param name
+     */
+    public Project(final Repository repository, final String name) {
+        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
+                repository, name);
     }
     
-    public void addBundle(final Bundle bundle) {
-        this.addChild(bundle);
+    /**
+     * Adds an artifact.
+     * 
+     * @param Artifact
+     */
+    public final void addArtifact(final StreamArtifact Artifact) {
+        this.instanceMetadata.addChild(Artifact);
     }
     
-    public Boolean getActive() {
-        return this.getProperty(ACTIVE);
+    /**
+     * Adds an artifact mapping.
+     * 
+     * @param ArtifactMapping
+     */
+    public final void addArtifactMapping(final ArtifactMapping ArtifactMapping) {
+        this.instanceMetadata.addChild(ArtifactMapping);
     }
     
-    public Bundle getBundleByName(final String name) {
-        return super.getChildByName(Bundle.class, name);
+    /**
+     * Adds a bundle.
+     * 
+     * @param bundle
+     */
+    public final void addBundle(final Bundle bundle) {
+        this.instanceMetadata.addChild(bundle);
     }
     
-    public Set<String> getBundleNames() {
-        return super.getKeysFromChildrenOfType(Bundle.class);
+    /**
+     * Adds a jcr artifact.
+     * 
+     * @param JcrArtifact
+     */
+    public final void addJcrArtifact(final JcrArtifact JcrArtifact) {
+        this.instanceMetadata.addChild(JcrArtifact);
     }
     
-    public Collection<Bundle> getBundles() {
-        return super.getChildrensOfType(Bundle.class);
+    /**
+     * Adds a inner project.
+     * 
+     * @param Project
+     */
+    public final void addProject(final Project Project) {
+        this.instanceMetadata.addChild(Project);
     }
     
-    @Override
-    public Set<Class<?>> getChildrenTypes() {
-        return CHILDREN_CLASSES;
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public final int compareTo(final ConfigurationNode o) {
+        return this.instanceMetadata.compare(this, o);
     }
     
-    @Override
-    public Class<?> getParentType() {
-        return Repository.class;
+    /**
+     * 
+     * @return active property
+     */
+    public final Boolean getActive() {
+        return this.instanceMetadata.getProperty(ACTIVE);
     }
     
-    public Repository getRepository() {
-        return this.getParent();
+    /**
+     * Returns an artifact by its name.
+     * 
+     * @param name
+     * @return an artifact
+     */
+    public final StreamArtifact getArtifactByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
+                name);
     }
     
-    public void removeBundle(final Bundle bundle) {
-        this.removeChild(bundle);
+    /**
+     * Returns a artifact mapping by its name.
+     * 
+     * @param name
+     * @return an artifact mapping
+     */
+    public final ArtifactMapping getArtifactMappingByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(ArtifactMapping.class,
+                name);
     }
     
-    public void setActive(final Boolean active) {
-        this.setProperty(ACTIVE, active);
+    /**
+     * 
+     * @return all artifact mapping names
+     */
+    public final Set<String> getArtifactMappingNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(ArtifactMapping.class);
+    }
+    
+    /**
+     * 
+     * @return all artifact mappings
+     */
+    public final Collection<ArtifactMapping> getArtifactMappings() {
+        return this.instanceMetadata.getChildrensOfType(ArtifactMapping.class);
+    }
+    
+    /**
+     * 
+     * @return all artifact names
+     */
+    public final Set<String> getArtifactNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(StreamArtifact.class);
+    }
+    
+    /**
+     * 
+     * @return all artifacts
+     */
+    public final Collection<StreamArtifact> getArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
+    }
+    
+    /**
+     * Returns a bundle by its name
+     * 
+     * @param name
+     * @return a bundle
+     */
+    public final Bundle getBundleByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(Bundle.class, name);
+    }
+    
+    /**
+     * 
+     * @return all bundle names
+     */
+    public final Set<String> getBundleNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(Bundle.class);
+    }
+    
+    /**
+     * 
+     * @return all bundles
+     */
+    public final Collection<Bundle> getBundles() {
+        return this.instanceMetadata.getChildrensOfType(Bundle.class);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public final InstanceMetadata getInstanceMetadata() {
+        return this.instanceMetadata;
+    }
+    
+    /**
+     * Returns a jcr artifact by its name.
+     * 
+     * @param name
+     * @return a jcr artifact
+     */
+    public final JcrArtifact getJcrArtifactByName(final String name) {
+        return this.instanceMetadata
+                .getChildByKeyValue(JcrArtifact.class, name);
+    }
+    
+    /**
+     * @return all jcr artifact names
+     */
+    public final Set<String> getJcrArtifactNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(JcrArtifact.class);
+    }
+    
+    /**
+     * @return all jcr artifacts
+     */
+    public final Collection<JcrArtifact> getJcrArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(JcrArtifact.class);
+    }
+    
+    /**
+     * Returns a child project by its name
+     * 
+     * @param name
+     * @return a project
+     */
+    public final Project getProjectByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(Project.class, name);
+    }
+    
+    /**
+     * 
+     * @return all child project names
+     */
+    public final Set<String> getProjectNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(Project.class);
+    }
+    
+    /**
+     * 
+     * @return all child projects
+     */
+    public final Collection<Project> getProjects() {
+        return this.instanceMetadata.getChildrensOfType(Project.class);
+    }
+    
+    /**
+     * Returns the repository if this node has one, or the parent's project
+     * repository instead.
+     * 
+     * @return a repository
+     */
+    public final Repository getRepository() {
+        final ConfigurationNode parent = this.instanceMetadata
+                .getDefaultParent();
+        if (parent instanceof Repository) {
+            return (Repository) parent;
+        } else if (parent instanceof Project) {
+            final Project proj = (Project) parent;
+            return proj.getRepository();
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public final StaticMetadata getStaticMetadata() {
+        return staticMetadata;
+    }
+    
+    /**
+     * Removes an artifact.
+     * 
+     * @param Artifact
+     */
+    public final void removeArtifact(final StreamArtifact Artifact) {
+        this.instanceMetadata.removeChild(Artifact);
+    }
+    
+    /**
+     * Removes a artifact mapping.
+     * 
+     * @param ArtifactMapping
+     */
+    public final void removeArtifactMapping(
+            final ArtifactMapping ArtifactMapping) {
+        this.instanceMetadata.removeChild(ArtifactMapping);
+    }
+    
+    /**
+     * removes a bundle.
+     * 
+     * @param bundle
+     */
+    public final void removeBundle(final Bundle bundle) {
+        this.instanceMetadata.removeChild(bundle);
+    }
+    
+    /**
+     * Removes a Jcr Artifact.
+     * 
+     * @param JcrArtifact
+     */
+    public final void removeJcrArtifact(final JcrArtifact JcrArtifact) {
+        this.instanceMetadata.removeChild(JcrArtifact);
+    }
+    
+    /**
+     * Removes a project.
+     * 
+     * @param Project
+     */
+    public final void removeProject(final Project Project) {
+        this.instanceMetadata.removeChild(Project);
+    }
+    
+    /**
+     * Sets the active property.
+     * 
+     * @param active
+     */
+    public final void setActive(final Boolean active) {
+        this.instanceMetadata.setProperty(ACTIVE, active);
     }
     
 }

@@ -51,10 +51,44 @@ package org.openspotlight.federation.data;
 
 import java.io.Serializable;
 
+/**
+ * Interface to abstract the ConfigurationNode. The configuration node is used
+ * on configuration purposes and also to load the artifacts that will be
+ * processed by the parsers on OSL.
+ * 
+ * It has a lot of methods to make possible to discover each node characteristic
+ * without using reflection.
+ * 
+ * This interface has some mandatory methods just to tell the parent and
+ * children classes. This methods needs to be used inside the implementation to
+ * verify if the parent classes passed on constructor or the children classes
+ * are correct or not.
+ * 
+ * So, why do we need to to a lot of stuff like this instead of just using
+ * simple java beans? There's a lot of good reasons to do that. First of all, it
+ * contains the listener infrastructure to observe property and node changes.
+ * Another reason is that the default implementation is by default thread safe.
+ * As these configuration nodes should be used by a lot of parses at the same
+ * time, it is mandatory to these classes to be thread safe.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
 public interface ConfigurationNode extends Comparable<ConfigurationNode>,
         Serializable {
     
-    public ConfigurationNodeDynamicMetadata getDynamicMetadata();
+    /**
+     * This instance metadata groups all data needed to save, retrieve and
+     * listen modifications on a node.
+     * 
+     * @return the instance metadata
+     */
+    public InstanceMetadata getInstanceMetadata();
     
-    public ConfigurationNodeStaticMetadata getStaticMetadata();
+    /**
+     * This static metadata defines the behavior of a given node.
+     * 
+     * @return type metadata
+     */
+    public StaticMetadata getStaticMetadata();
 }
