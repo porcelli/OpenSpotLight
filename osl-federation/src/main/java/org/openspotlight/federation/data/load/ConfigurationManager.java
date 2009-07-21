@@ -53,13 +53,13 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Reflection.searchType;
 import static org.openspotlight.common.util.Strings.firstLetterToLowerCase;
 import static org.openspotlight.common.util.Strings.firstLetterToUpperCase;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -121,9 +121,13 @@ public interface ConfigurationManager {
                 
                 final Class<N> nodeClass = getNodeClassFromName(nodeClassName);
                 final StaticMetadata staticMetadata = getStaticMetadataFromClass(nodeClass);
-                final Constructor<N> constructor = nodeClass.getConstructor(
-                        parentNode.getClass(), staticMetadata
-                                .getKeyPropertyType());
+                final Class<?>[] types = new Class<?>[2];
+                types[0] = searchType(parentNode.getClass(), staticMetadata
+                        .validParentTypes());
+                checkNotNull("parentType", types[0]); //$NON-NLS-1$
+                types[1] = staticMetadata.keyPropertyType();
+                final Constructor<N> constructor = nodeClass
+                        .getConstructor(types);
                 final N node = constructor.newInstance(parentNode, keyValue);
                 return node;
             } catch (final Exception e) {
@@ -216,8 +220,8 @@ public interface ConfigurationManager {
         }
         
         /**
-         * Gets the static metadata from a static field on
-         * {@link ConfigurationNode} extended class.
+         * Gets the static metadata from a {@link ConfigurationNode} extended
+         * class.
          * 
          * @param configurationNodeClass
          * @return the static metadata
@@ -227,11 +231,8 @@ public interface ConfigurationManager {
                 final Class<? extends ConfigurationNode> configurationNodeClass)
                 throws ConfigurationException {
             try {
-                final Field staticField = configurationNodeClass
-                        .getDeclaredField("staticMetadata"); //$NON-NLS-1$
-                final StaticMetadata staticMetadata = (StaticMetadata) staticField
-                        .get(null);
-                return staticMetadata;
+                return configurationNodeClass
+                        .getAnnotation(StaticMetadata.class);
             } catch (final Exception e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }

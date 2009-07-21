@@ -126,6 +126,27 @@ public class Assertions {
     }
     
     /**
+     * Assert that this parameter is not empty. It will test for null and also
+     * the size of this array.
+     * 
+     * @param <T>
+     *            type of the array
+     * 
+     * @param name
+     *            of parameter
+     * @param parameter
+     *            itself
+     * 
+     */
+    public static <T> void checkNotEmpty(final String name, final T[] parameter) {
+        if ((parameter == null) || (parameter.length == 0)) {
+            throw logAndReturn(new IllegalArgumentException(
+                    MessageFormat.format(Messages
+                            .getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
+        }
+    }
+    
+    /**
      * Assert that this parameter is not null.
      * 
      * @param name

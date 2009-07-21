@@ -74,10 +74,6 @@ import org.openspotlight.federation.data.impl.Bundle;
  * 
  * FIXME create refresh method
  * 
- * 
- * FIXME create global lists of added and excluded nodes using listeners
- * 
- * 
  * FIXME copy artifacts on jcr
  * 
  * FIXME give options to process all children or just current node children

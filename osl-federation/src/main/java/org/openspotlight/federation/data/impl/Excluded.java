@@ -51,8 +51,7 @@ package org.openspotlight.federation.data.impl;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
+import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
@@ -65,7 +64,8 @@ import org.openspotlight.federation.data.StaticMetadata;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@SuppressWarnings("unchecked")
+@ThreadSafe
+@StaticMetadata(keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { ArtifactMapping.class })
 public class Excluded implements ConfigurationNode {
     
     /**
@@ -73,20 +73,7 @@ public class Excluded implements ConfigurationNode {
      */
     private static final long serialVersionUID = -2338153689125625472L;
     
-    private static final String NAME = "name"; //$NON-NLS-1$
-    static {
-        final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setType(Excluded.class);
-        newStaticMetadata.setKeyPropertyType(String.class);
-        newStaticMetadata.setParentNodeValidTypes(ArtifactMapping.class);
-        newStaticMetadata.setKeyProperty(NAME);
-        staticMetadata = createImmutable(newStaticMetadata);
-    }
-    
     private final InstanceMetadata instanceMetadata;
-    
-    /** the static metadata for this class */
-    public static final StaticMetadata staticMetadata;
     
     /**
      * Constructor to create an excluded node inside an artifact mapping.
@@ -95,8 +82,7 @@ public class Excluded implements ConfigurationNode {
      * @param artifactMapping
      */
     public Excluded(final ArtifactMapping artifactMapping, final String name) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                artifactMapping, name);
+        this.instanceMetadata = createWithKeyProperty(this, artifactMapping, name);
         checkCondition("noExcluded", //$NON-NLS-1$
                 artifactMapping.getExcludedByName(name) == null);
         artifactMapping.addExcluded(this);
@@ -135,14 +121,6 @@ public class Excluded implements ConfigurationNode {
      */
     public String getName() {
         return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final StaticMetadata getStaticMetadata() {
-        return staticMetadata;
     }
     
     /**

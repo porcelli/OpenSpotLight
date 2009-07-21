@@ -51,8 +51,6 @@ package org.openspotlight.federation.data.impl;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -73,6 +71,9 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
+@StaticMetadata(keyPropertyName = "relative", keyPropertyType = String.class, validParentTypes = {
+        Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
+        Included.class })
 public final class ArtifactMapping implements ConfigurationNode {
     
     /**
@@ -80,22 +81,7 @@ public final class ArtifactMapping implements ConfigurationNode {
      */
     private static final long serialVersionUID = 4945977241903059466L;
     
-    private static final String RELATIVE = "relative"; //$NON-NLS-1$
-    
-    static {
-        final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setChildrenNodeValidTypes(Excluded.class,
-                Included.class);
-        newStaticMetadata.setKeyPropertyType(String.class);
-        newStaticMetadata.setType(ArtifactMapping.class);
-        newStaticMetadata.setParentNodeValidTypes(Bundle.class, Project.class);
-        newStaticMetadata.setKeyProperty(RELATIVE);
-        staticMetadata = createImmutable(newStaticMetadata);
-    }
-    
     private final InstanceMetadata instanceMetadata;
-    
-    /** the static metadata for this class */ public static final StaticMetadata staticMetadata;
     
     /**
      * Creates an artifact mapping inside a bundle.
@@ -104,8 +90,7 @@ public final class ArtifactMapping implements ConfigurationNode {
      * @param relative
      */
     public ArtifactMapping(final Bundle bundle, final String relative) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                bundle, relative);
+        this.instanceMetadata = createWithKeyProperty(this, bundle, relative);
         checkCondition("noArtifactMapping", //$NON-NLS-1$
                 bundle.getArtifactMappingByName(relative) == null);
         bundle.addArtifactMapping(this);
@@ -118,8 +103,7 @@ public final class ArtifactMapping implements ConfigurationNode {
      * @param relative
      */
     public ArtifactMapping(final Project project, final String relative) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                project, relative);
+        this.instanceMetadata = createWithKeyProperty(this, project, relative);
         checkCondition("noArtifactMapping", //$NON-NLS-1$
                 project.getArtifactMappingByName(relative) == null);
         project.addArtifactMapping(this);
@@ -226,14 +210,6 @@ public final class ArtifactMapping implements ConfigurationNode {
      */
     public String getRelative() {
         return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final StaticMetadata getStaticMetadata() {
-        return staticMetadata;
     }
     
     /**

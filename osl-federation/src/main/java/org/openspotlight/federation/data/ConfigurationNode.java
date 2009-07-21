@@ -92,10 +92,4 @@ public interface ConfigurationNode extends Comparable<ConfigurationNode>,
      */
     public InstanceMetadata getInstanceMetadata();
     
-    /**
-     * This static metadata defines the behavior of a given node.
-     * 
-     * @return type metadata
-     */
-    public StaticMetadata getStaticMetadata();
 }

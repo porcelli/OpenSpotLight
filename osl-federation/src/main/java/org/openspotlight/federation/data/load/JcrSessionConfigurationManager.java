@@ -50,6 +50,9 @@
 package org.openspotlight.federation.data.load;
 
 import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Arrays.andValues;
+import static org.openspotlight.common.util.Arrays.map;
+import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
@@ -158,7 +161,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         try {
             try {
                 Node foundNode = null;
-                if (keyPropertyName != null) {
+                if ((keyPropertyName != null) && !"".equals(keyPropertyName)) { //$NON-NLS-1$
                     assert keyPropertyValue != null;
                     final String pathToFind = format(
                             "/{0}/{1}[@osl:{2}=''{3}'']", //$NON-NLS-1$
@@ -270,7 +273,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final Node rootJcrNode = this.session.getRootNode().getNode(
                     defaultRootNode);
             final Configuration rootNode = new Configuration();
-            this.load(rootJcrNode, rootNode, rootNode.getStaticMetadata());
+            this.load(rootJcrNode, rootNode, rootNode.getInstanceMetadata()
+                    .getStaticMetadata());
             rootNode.getInstanceMetadata().getSharedData().markAsSaved();
             return rootNode;
         } catch (final Exception e) {
@@ -288,49 +292,49 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     private void load(final Node jcrNode,
             final ConfigurationNode configurationNode,
             final StaticMetadata staticMetadata) throws Exception {
-        this.loadProperties(jcrNode, configurationNode, configurationNode
-                .getStaticMetadata().getPropertyTypes(), staticMetadata
-                .getKeyProperty());
+        final String[] propKeys = configurationNode.getInstanceMetadata()
+                .getStaticMetadata().propertyNames();
+        final Class<? extends Serializable>[] propValues = configurationNode
+                .getInstanceMetadata().getStaticMetadata().propertyTypes();
+        final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys),
+                andValues(propValues));
+        this.loadProperties(jcrNode, configurationNode, propertyTypes,
+                staticMetadata.keyPropertyName());
         this.loadChildren(jcrNode, configurationNode);
     }
     
-    @SuppressWarnings("unchecked")
     private void loadChildren(final Node jcrNode,
             final ConfigurationNode configurationNode)
             throws PathNotFoundException, RepositoryException,
             ConfigurationException, Exception {
-        final Set<Class<? extends ConfigurationNode>> childClasses = configurationNode
-                .getStaticMetadata().getChildrenValidNodeTypes();
-        for (final Class<?> childClass : childClasses) {
-            final String childNodeClassName = this.classHelper
-                    .getNameFromNodeClass((Class<? extends ConfigurationNode>) childClass);
-            NodeIterator children;
-            try {
-                children = jcrNode.getNodes(childNodeClassName);
-            } catch (final PathNotFoundException e) {
-                children = null;
-                // Thats ok, just didn't find the node
-            }
-            if (children == null) {
+        NodeIterator children;
+        try {
+            children = jcrNode.getNodes();
+        } catch (final PathNotFoundException e) {
+            children = null;
+            // Thats ok, just didn't find the node
+        }
+        if (children == null) {
+            return;
+        }
+        while (children.hasNext()) {
+            final Node child = children.nextNode();
+            if (!child.getName().startsWith("osl:")) { //$NON-NLS-1$
                 continue;
             }
-            while (children.hasNext()) {
-                final Node child = children.nextNode();
-                final Class<ConfigurationNode> nodeClass = this.classHelper
-                        .getNodeClassFromName(child.getName());
-                final StaticMetadata staticMetadata = this.classHelper
-                        .getStaticMetadataFromClass(nodeClass);
-                final Serializable keyValue = this.getProperty(child, "osl:" //$NON-NLS-1$
-                        + staticMetadata.getKeyProperty(), staticMetadata
-                        .getKeyPropertyType());
-                
-                final ConfigurationNode newNode = this.classHelper
-                        .createInstance(keyValue, configurationNode,
-                                childNodeClassName);
-                this.load(child, newNode, staticMetadata);
-            }
-            
+            final Class<ConfigurationNode> nodeClass = this.classHelper
+                    .getNodeClassFromName(child.getName());
+            final StaticMetadata staticMetadata = this.classHelper
+                    .getStaticMetadataFromClass(nodeClass);
+            final Serializable keyValue = this.getProperty(child, "osl:" //$NON-NLS-1$
+                    + staticMetadata.keyPropertyName(), staticMetadata
+                    .keyPropertyType());
+            final String childNodeClassName = child.getName();
+            final ConfigurationNode newNode = this.classHelper.createInstance(
+                    keyValue, configurationNode, childNodeClassName);
+            this.load(child, newNode, staticMetadata);
         }
+        
     }
     
     private void loadProperties(final Node jcrNode,
@@ -396,10 +400,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             currentItem = currentItem.getInstanceMetadata().getDefaultParent();
         }
         path.insert(0, '/');
-        if (oldItem.getStaticMetadata().getKeyProperty() != null) {
+        if (!"".equals(oldItem.getInstanceMetadata().getStaticMetadata() //$NON-NLS-1$
+                .keyPropertyName())) {
             path.append(format("[@osl:{0}=''{1}'']", oldItem //$NON-NLS-1$
-                    .getStaticMetadata().getKeyProperty(), oldItem
-                    .getInstanceMetadata().getKeyPropertyValue()));
+                    .getInstanceMetadata().getStaticMetadata()
+                    .keyPropertyName(), oldItem.getInstanceMetadata()
+                    .getKeyPropertyValue()));
         }
         
         final String pathToFind = path.toString();
@@ -452,24 +458,29 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     @SuppressWarnings("unchecked")
     private void saveChilds(final ConfigurationNode node, final Node newJcrNode)
             throws ConfigurationException, Exception {
-        final Set<Class<? extends ConfigurationNode>> classes = node
-                .getStaticMetadata().getChildrenValidNodeTypes();
-        for (final Class<? extends ConfigurationNode> clazz : classes) {
-            final Class<? extends ConfigurationNode> nodeClass = clazz;
+        for (final Class<? extends ConfigurationNode> configuredChildClass : node
+                .getInstanceMetadata().getStaticMetadata().validChildrenTypes()) {
+            if (configuredChildClass.equals(ConfigurationNode.class)) {
+                continue;
+            }
             final Set<Serializable> childKeys = (Set<Serializable>) node
-                    .getInstanceMetadata().getKeysFromChildrenOfType(nodeClass);
-            final String childNodeStr = this.classHelper
-                    .getNameFromNodeClass(nodeClass);
-            final StaticMetadata staticMetadata = this.classHelper
-                    .getStaticMetadataFromClass(clazz);
+                    .getInstanceMetadata().getKeysFromChildrenOfType(
+                            configuredChildClass);
             
             for (final Serializable key : childKeys) {
                 final ConfigurationNode childNode = node.getInstanceMetadata()
-                        .getChildByKeyValue(nodeClass, key);
+                        .getChildByKeyValue(configuredChildClass, key);
+                final Class<? extends ConfigurationNode> nodeClass = childNode
+                        .getClass();
+                final String childNodeStr = this.classHelper
+                        .getNameFromNodeClass(nodeClass);
+                final StaticMetadata staticMetadata = this.classHelper
+                        .getStaticMetadataFromClass(nodeClass);
+                
                 final Node newChildJcrNode = this.createIfDontExists(
                         newJcrNode, childNodeStr, staticMetadata
-                                .getKeyProperty(), key, staticMetadata
-                                .getKeyPropertyType());
+                                .keyPropertyName(), key, staticMetadata
+                                .keyPropertyType());
                 this.saveProperties(childNode, newChildJcrNode);
                 this.saveChilds(childNode, newChildJcrNode);
             }

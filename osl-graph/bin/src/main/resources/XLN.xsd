@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 4 U (http://www.xmlspy.com) by Developer Expert (DevExp) -->
+<xs:schema targetNamespace="http://www.devexp.com.br/XLNV1" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xl="http://www.devexp.com.br/XLNV1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="XLN">
+		<xs:annotation>
+			<xs:documentation>Root do arquivo de informações de linhas.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="XFileRef">
+					<xs:annotation>
+						<xs:documentation>Arquivo de onde as informações estão sendo referenciadas</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="XLineRef">
+								<xs:annotation>
+									<xs:documentation>Referência de Linha de determinado elemento</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="ElementHandle" type="xs:int" use="required">
+										<xs:annotation>
+											<xs:documentation>Handle do Elemento referenciado.</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="ElementType" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="XParseObject"/>
+												<xs:enumeration value="XLink"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="Statement" type="xs:string" use="required">
+										<xs:annotation>
+											<xs:documentation>Satement onde foi feita a referência para o elemento</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="BeginLine" type="xs:int" use="required"/>
+									<xs:attribute name="BeginColumn" type="xs:int" use="required"/>
+									<xs:attribute name="EndLine" type="xs:int" use="required"/>
+									<xs:attribute name="EndColumn" type="xs:int" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="Path" type="xs:string" use="required"/>
+						<xs:attribute name="Name" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="FormatVersion" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Versão do Formato</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="CreationDate" type="xs:dateTime" use="required">
+				<xs:annotation>
+					<xs:documentation>Data da Criação do Arquivo</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

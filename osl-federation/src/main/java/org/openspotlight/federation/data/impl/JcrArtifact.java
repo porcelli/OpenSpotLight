@@ -49,13 +49,8 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Arrays.andValues;
-import static org.openspotlight.common.util.Arrays.map;
-import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
 import java.io.InputStream;
 
@@ -79,8 +74,11 @@ import org.openspotlight.federation.data.StaticMetadata;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@SuppressWarnings("unchecked")
 @ThreadSafe
+@StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
+        Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
+        Included.class }, propertyNames = { "name", "dataSha1" }, propertyTypes = {
+        String.class, String.class })
 public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
     
     /**
@@ -89,25 +87,10 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
     private static final long serialVersionUID = -889016915372708085L;
     
     private static final String DATA = "data"; //$NON-NLS-1$
-    private static final String RELATIVE_NAME = "relativeName"; //$NON-NLS-1$
     
     private static final String DATA_SHA1 = "dataSha1"; //$NON-NLS-1$
     
-    static {
-        final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setType(JcrArtifact.class);
-        newStaticMetadata.setParentNodeValidTypes(Project.class, Bundle.class);
-        newStaticMetadata.setKeyPropertyType(String.class);
-        newStaticMetadata.setKeyProperty(RELATIVE_NAME);
-        newStaticMetadata.addPropertyTypes(map(ofKeys(DATA_SHA1, DATA,
-                RELATIVE_NAME), andValues(String.class, InputStream.class,
-                String.class)));
-        staticMetadata = createImmutable(newStaticMetadata);
-    }
     private final InstanceMetadata instanceMetadata;
-    
-    /** the static metadata for this class */
-    public static final StaticMetadata staticMetadata;
     
     /**
      * Creates a stream artifact inside a bundle.
@@ -116,8 +99,7 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
      * @param relativeName
      */
     public JcrArtifact(final Bundle bundle, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                bundle, relativeName);
+        this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
         checkCondition("noJcrArtifact", //$NON-NLS-1$
                 bundle.getJcrArtifactByName(relativeName) == null);
         bundle.addJcrArtifact(this);
@@ -130,8 +112,7 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
      * @param relativeName
      */
     public JcrArtifact(final Project project, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                project, relativeName);
+        this.instanceMetadata = createWithKeyProperty(this, project, relativeName);
         checkCondition("noJcrArtifact", //$NON-NLS-1$
                 project.getJcrArtifactByName(relativeName) == null);
         project.addJcrArtifact(this);
@@ -175,14 +156,6 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
      */
     public String getRelativeName() {
         return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public StaticMetadata getStaticMetadata() {
-        return staticMetadata;
     }
     
     /**

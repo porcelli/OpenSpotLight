@@ -49,6 +49,9 @@
 
 package org.openspotlight.federation.data.load;
 
+import static org.openspotlight.common.util.Arrays.andValues;
+import static org.openspotlight.common.util.Arrays.map;
+import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
@@ -114,37 +117,52 @@ public class XmlConfigurationManager implements ConfigurationManager {
         if (configurationNode instanceof GeneratedNode) {
             return;
         }
-        final Set<Class<? extends ConfigurationNode>> childrenClasses = configurationNode
-                .getStaticMetadata().getChildrenValidNodeTypes();
-        for (final Class<? extends ConfigurationNode> childClass : childrenClasses) {
-            if (GeneratedNode.class.isAssignableFrom(childClass)) {
+        
+        for (final Class<? extends ConfigurationNode> configuredChildClass : configurationNode
+                .getInstanceMetadata().getStaticMetadata().validChildrenTypes()) {
+            if (configuredChildClass.equals(ConfigurationNode.class)) {
                 continue;
             }
+            if (GeneratedNode.class.isAssignableFrom(configuredChildClass)) {
+                continue;
+            }
+            
             final Set<Serializable> keys = (Set<Serializable>) configurationNode
-                    .getInstanceMetadata()
-                    .getKeysFromChildrenOfType(childClass);
+                    .getInstanceMetadata().getKeysFromChildrenOfType(
+                            configuredChildClass);
             for (final Serializable key : keys) {
                 final ConfigurationNode innerNode = configurationNode
                         .getInstanceMetadata()
                         .getChildByKeyValue(
-                                (Class<? extends ConfigurationNode>) childClass,
+                                (Class<? extends ConfigurationNode>) configuredChildClass,
                                 key);
+                final Class<? extends ConfigurationNode> childClass = innerNode
+                        .getClass();
                 final Element newElement = element
                         .addElement(removeBegginingFrom("osl:", //$NON-NLS-1$
                                 this.classHelper
                                         .getNameFromNodeClass(childClass)));
-                newElement.addAttribute(innerNode.getStaticMetadata()
-                        .getKeyProperty(), key.toString());
+                if (!innerNode.getInstanceMetadata().getStaticMetadata()
+                        .keyPropertyName().equals("")) { //$NON-NLS-1$
+                    newElement.addAttribute(innerNode.getInstanceMetadata()
+                            .getStaticMetadata().keyPropertyName(), convert(
+                            key, String.class));
+                }
                 final Map<String, Serializable> properties = innerNode
                         .getInstanceMetadata().getProperties();
-                final Map<String, Class<?>> propertyTypes = innerNode
-                        .getStaticMetadata().getPropertyTypes();
+                final String[] propKeys = innerNode.getInstanceMetadata()
+                        .getStaticMetadata().propertyNames();
+                final Class<? extends Serializable>[] propValues = innerNode
+                        .getInstanceMetadata().getStaticMetadata()
+                        .propertyTypes();
+                final Map<String, Class<?>> propertyTypesMap = map(
+                        ofKeys(propKeys), andValues(propValues));
                 for (final Map.Entry<String, Serializable> propertyEntry : properties
                         .entrySet()) {
-                    if (propertyEntry.getValue() != null) {
+                    if (!propertyEntry.getKey().equals("")) { //$NON-NLS-1$
                         this.setPropertyOnXml(newElement, propertyEntry
                                 .getKey(), propertyEntry.getValue(),
-                                propertyTypes.get(propertyEntry.getKey()));
+                                propertyTypesMap.get(propertyEntry.getKey()));
                     }
                 }
                 this.createEachXmlNode(newElement, innerNode);
@@ -182,17 +200,26 @@ public class XmlConfigurationManager implements ConfigurationManager {
             }
             final StaticMetadata staticMetadata = this.classHelper
                     .getStaticMetadataFromClass(nodeClass);
-            final String keyProperty = staticMetadata.getKeyProperty();
-            final String keyPropertyValueAsString = nextElement
-                    .attributeValue(keyProperty);
-            final Serializable keyPropertyValue = (Serializable) convert(
-                    keyPropertyValueAsString, staticMetadata
-                            .getKeyPropertyType());
-            final ConfigurationNode newNode = this.classHelper.createInstance(
-                    keyPropertyValue, parentNode, "osl:" + nodeClassName); //$NON-NLS-1$
-            final Map<String, Class<?>> propertyTypes = newNode
-                    .getStaticMetadata().getPropertyTypes();
-            
+            final String keyProperty = staticMetadata.keyPropertyName();
+            final ConfigurationNode newNode;
+            if (!"".equals(keyProperty)) { //$NON-NLS-1$
+                final String keyPropertyValueAsString = nextElement
+                        .attributeValue(keyProperty);
+                final Serializable keyPropertyValue = convert(
+                        keyPropertyValueAsString, staticMetadata
+                                .keyPropertyType());
+                newNode = this.classHelper.createInstance(keyPropertyValue,
+                        parentNode, "osl:" + nodeClassName); //$NON-NLS-1$
+            } else {
+                newNode = this.classHelper.createInstance(null, parentNode,
+                        "osl:" + nodeClassName); //$NON-NLS-1$
+            }
+            final String[] propKeys = newNode.getInstanceMetadata()
+                    .getStaticMetadata().propertyNames();
+            final Class<? extends Serializable>[] propValues = newNode
+                    .getInstanceMetadata().getStaticMetadata().propertyTypes();
+            final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys),
+                    andValues(propValues));
             for (final Iterator<Attribute> properties = nextElement
                     .attributeIterator(); properties.hasNext();) {
                 final Attribute nextProperty = properties.next();

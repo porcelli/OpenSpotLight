@@ -49,13 +49,8 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Arrays.andValues;
-import static org.openspotlight.common.util.Arrays.map;
-import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -71,15 +66,15 @@ import org.openspotlight.federation.data.StaticMetadata;
  * tables and so on. The bundle should group similar artifacts (example: java
  * files).
  * 
- * As this class is non final, the protected constructor should be called and
- * also all nonfinal methods should be ovewriten.
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
- *         FIXME create inheritance example
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
+@StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
+        Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
+        Project.class, StreamArtifact.class, JcrArtifact.class,
+        ArtifactMapping.class, Bundle.class })
 public class Bundle implements ConfigurationNode {
     
     /**
@@ -87,31 +82,11 @@ public class Bundle implements ConfigurationNode {
 	 */
     private static final long serialVersionUID = 1092283780730455977L;
     
-    private static final String TYPE = "type"; //$NON-NLS-1$
-    
     private static final String INITIAL_LOOKUP = "initialLookup"; //$NON-NLS-1$
     
     private static final String ACTIVE = "active"; //$NON-NLS-1$
     
-    private static final String NAME = "name"; //$NON-NLS-1$
-    static {
-        final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setChildrenNodeValidTypes(StreamArtifact.class,
-                JcrArtifact.class, ArtifactMapping.class, Bundle.class);
-        newStaticMetadata.setKeyPropertyType(String.class);
-        newStaticMetadata.setType(Bundle.class);
-        newStaticMetadata.setParentNodeValidTypes(Project.class);
-        newStaticMetadata.setKeyProperty(NAME);
-        newStaticMetadata.addPropertyTypes(map(ofKeys(ACTIVE, TYPE,
-                INITIAL_LOOKUP), andValues(Boolean.class, String.class,
-                String.class)));
-        staticMetadata = createImmutable(newStaticMetadata);
-    }
-    
     private final InstanceMetadata instanceMetadata;
-    
-    /** the static metadata for this class */
-    public static final StaticMetadata staticMetadata;
     
     /**
      * creates a bundle inside this project.
@@ -120,24 +95,11 @@ public class Bundle implements ConfigurationNode {
      * @param name
      */
     public Bundle(final Project project, final String name) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                project, name);
+        this.instanceMetadata = createWithKeyProperty(this, project, name);
         checkCondition("noBundle", //$NON-NLS-1$
                 project.getBundleByName(name) == null);
         project.addBundle(this);
         
-    }
-    
-    /**
-     * This constructor should be called when overiding this class. The method
-     * {@link #getStaticMetadata()} should be overiten too.
-     * 
-     * @param staticMetadata
-     * @param instanceMetadata
-     */
-    protected Bundle(final StaticMetadata staticMetadata,
-            final InstanceMetadata instanceMetadata) {
-        this.instanceMetadata = instanceMetadata;
     }
     
     /**
@@ -346,14 +308,6 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
-     * 
-     * {@inheritDoc}
-     */
-    public StaticMetadata getStaticMetadata() {
-        return staticMetadata;
-    }
-    
-    /**
      * Returns an artifact by its name.
      * 
      * @param name
@@ -370,14 +324,6 @@ public class Bundle implements ConfigurationNode {
      */
     public final Collection<StreamArtifact> getStreamArtifacts() {
         return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
-    }
-    
-    /**
-     * 
-     * @return the type property
-     */
-    public final String getType() {
-        return this.instanceMetadata.getProperty(TYPE);
     }
     
     /**
@@ -444,12 +390,4 @@ public class Bundle implements ConfigurationNode {
         this.instanceMetadata.setProperty(INITIAL_LOOKUP, initialLookup);
     }
     
-    /**
-     * Sets the type property.
-     * 
-     * @param type
-     */
-    public final void setType(final String type) {
-        this.instanceMetadata.setProperty(TYPE, type);
-    }
 }

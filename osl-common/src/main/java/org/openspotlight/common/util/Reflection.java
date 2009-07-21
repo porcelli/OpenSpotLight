@@ -47,89 +47,97 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.impl;
+package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import net.jcip.annotations.ThreadSafe;
+import static java.util.EnumSet.of;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Equals.eachEquality;
 
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata;
-import org.openspotlight.federation.data.StaticMetadata;
+import java.util.Set;
 
 /**
- * This node is to map included artifacts inside an artifact mapping in a ant
- * like way.
+ * This class has a set of static methods to use for reflection purposes.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@ThreadSafe
-@StaticMetadata(keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { ArtifactMapping.class })
-public class Included implements ConfigurationNode {
+public class Reflection {
     
     /**
+     * This enum has the inheritance types between two classes.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    private static final long serialVersionUID = -2338153689125625472L;
-    
-    private final InstanceMetadata instanceMetadata;
-    
-    /**
-     * Creates an included node inside this artifact mapping.
-     * 
-     * @param name
-     * @param artifactMapping
-     */
-    public Included(final ArtifactMapping artifactMapping, final String name) {
-        this.instanceMetadata = createWithKeyProperty(this, artifactMapping, name);
-        checkCondition("noIncluded", //$NON-NLS-1$
-                artifactMapping.getIncludedByName(name) == null);
-        artifactMapping.addIncluded(this);
+    public static enum InheritanceType {
+        /**
+         * The two types are equals
+         */
+        SAME_CLASS,
+        /**
+         * The first type are inherited from the second
+         */
+        INHERITED_CLASS,
+        /**
+         * There's no realtion between two types in the given order
+         */
+        NO_INHERITANCE
     }
     
     /**
-     * 
-     * {@inheritDoc}
+     * Enum set of the inherited types.
      */
-    public final int compareTo(final ConfigurationNode o) {
-        return this.instanceMetadata.compare(this, o);
+    public static final Set<InheritanceType> INHERITED_TYPES = of(
+            InheritanceType.SAME_CLASS, InheritanceType.INHERITED_CLASS);
+    
+    /**
+     * Search for inheritance type on the given type array.
+     * 
+     * @param type
+     * @param types
+     * @return the inheritance type between the type and found type in a array
+     */
+    public static InheritanceType searchInheritanceType(final Class<?> type,
+            final Class<?>... types) {
+        checkNotNull("type", type); //$NON-NLS-1$
+        checkNotEmpty("types", types); //$NON-NLS-1$
+        for (final Class<?> innerType : types) {
+            if (eachEquality(type, innerType)) {
+                return InheritanceType.SAME_CLASS;
+            }
+        }
+        for (final Class<?> innerType : types) {
+            if (innerType.isAssignableFrom(type)) {
+                return InheritanceType.INHERITED_CLASS;
+            }
+        }
+        return InheritanceType.NO_INHERITANCE;
     }
     
     /**
+     * Search for a type on the given type array.
      * 
-     * {@inheritDoc}
+     * @param type
+     * @param types
+     * @return the type (same or inherited) in the given array, or null if it
+     *         was not found
      */
-    @Override
-    public final boolean equals(final Object obj) {
-        return this.instanceMetadata.equals(obj);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final InstanceMetadata getInstanceMetadata() {
-        return this.instanceMetadata;
-    }
-    
-    /**
-     * The name, in this case, is a unique identifier (with parent node) to this
-     * node.
-     * 
-     * @return the node name
-     */
-    public String getName() {
-        return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public final int hashCode() {
-        return this.instanceMetadata.hashCode();
+    public static Class<?> searchType(final Class<?> type,
+            final Class<?>... types) {
+        checkNotNull("type", type); //$NON-NLS-1$
+        checkNotEmpty("types", types); //$NON-NLS-1$
+        for (final Class<?> innerType : types) {
+            if (eachEquality(type, innerType)) {
+                return innerType;
+            }
+        }
+        for (final Class<?> innerType : types) {
+            if (innerType.isAssignableFrom(type)) {
+                return innerType;
+            }
+        }
+        return null;
     }
     
 }

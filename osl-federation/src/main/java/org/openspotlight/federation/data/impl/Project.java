@@ -49,13 +49,8 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Arrays.andValues;
-import static org.openspotlight.common.util.Arrays.map;
-import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -77,29 +72,17 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
+@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {
+        Project.class, Repository.class }, validChildrenTypes = {
+        Project.class, StreamArtifact.class, JcrArtifact.class,
+        ArtifactMapping.class, Bundle.class })
 public final class Project implements ConfigurationNode {
     
     private static final String ACTIVE = "active"; //$NON-NLS-1$
     
-    private static final String NAME = "name"; //$NON-NLS-1$
-    static {
-        final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setChildrenNodeValidTypes(Project.class,
-                StreamArtifact.class, JcrArtifact.class, ArtifactMapping.class,
-                Bundle.class);
-        newStaticMetadata.setType(Project.class);
-        newStaticMetadata.setParentNodeValidTypes(Project.class,
-                Repository.class);
-        newStaticMetadata.setKeyPropertyType(String.class);
-        newStaticMetadata.setKeyProperty(NAME);
-        newStaticMetadata.addPropertyTypes(map(ofKeys(ACTIVE),
-                andValues(Boolean.class)));
-        staticMetadata = createImmutable(newStaticMetadata);
-    }
-    
     private final InstanceMetadata instanceMetadata;
     
-    /** the static metadata for this class */ public static final StaticMetadata staticMetadata; static final long serialVersionUID = -3606246260530743008L;
+    static final long serialVersionUID = -3606246260530743008L;
     
     /**
      * Creates a project within a other project.
@@ -108,8 +91,7 @@ public final class Project implements ConfigurationNode {
      * @param name
      */
     public Project(final Project project, final String name) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                project, name);
+        this.instanceMetadata = createWithKeyProperty(this, project, name);
         checkCondition("noProject", //$NON-NLS-1$
                 project.getProjectByName(name) == null);
         project.addProject(this);
@@ -123,8 +105,7 @@ public final class Project implements ConfigurationNode {
      * @param name
      */
     public Project(final Repository repository, final String name) {
-        this.instanceMetadata = createWithKeyProperty(staticMetadata, this,
-                repository, name);
+        this.instanceMetadata = createWithKeyProperty(this, repository, name);
         checkCondition("noProject", //$NON-NLS-1$
                 repository.getProjectByName(name) == null);
         repository.addProject(this);
@@ -350,14 +331,6 @@ public final class Project implements ConfigurationNode {
             return proj.getRepository();
         }
         return null;
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final StaticMetadata getStaticMetadata() {
-        return staticMetadata;
     }
     
     /**

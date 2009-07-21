@@ -70,6 +70,11 @@ import org.openspotlight.common.util.Assertions;
 public class AssertionsTest {
     
     @Test
+    public void shouldDoNotThrowExceptionWhenGettingNotEmptyArray() {
+        checkNotEmpty("notEmpty", new Object[] { 1, 2, 3 });
+    }
+    
+    @Test
     public void shouldDoNotThrowExceptionWhenGettingNotEmptyParameter() {
         checkNotEmpty("notEmpty", "notEmpty"); //$NON-NLS-1$ //$NON-NLS-2$
     }
@@ -107,12 +112,17 @@ public class AssertionsTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnCheckEmptyWhenGettingNullParameter() {
-        checkNotEmpty("notEmpty", null); //$NON-NLS-1$
+        checkNotEmpty("notEmpty", (String) null); //$NON-NLS-1$
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenGettinAllNullParameter() {
         checkEachParameterNotNull("notNullable", (Object) null); //$NON-NLS-1$
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenGettingEmptyArray() {
+        checkNotEmpty("empty", new Object[] {});
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -128,6 +138,11 @@ public class AssertionsTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenGettingNonNullParameter() {
         checkNullMandatory("nullable", "non null"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenGettingNullArray() {
+        checkNotEmpty("empty", (Object[]) null);
     }
     
     @Test(expected = IllegalArgumentException.class)

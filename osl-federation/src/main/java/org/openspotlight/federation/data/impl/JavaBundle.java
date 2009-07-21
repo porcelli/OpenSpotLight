@@ -49,87 +49,58 @@
 
 package org.openspotlight.federation.data.impl;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import net.jcip.annotations.ThreadSafe;
-
-import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * This node is to map included artifacts inside an artifact mapping in a ant
- * like way.
+ * Bundle class for java processing purposes
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@ThreadSafe
-@StaticMetadata(keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { ArtifactMapping.class })
-public class Included implements ConfigurationNode {
+@StaticMetadata(propertyNames = { "active", "initialLookup",
+        "virtualMachineVersion" }, propertyTypes = { Boolean.class,
+        String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
+        Project.class, StreamArtifact.class, JcrArtifact.class,
+        ArtifactMapping.class, Bundle.class })
+public class JavaBundle extends Bundle {
     
     /**
      * 
      */
-    private static final long serialVersionUID = -2338153689125625472L;
+    private static final long serialVersionUID = -5833154085064816324L;
+    
+    private static final String VIRTUAL_MACHINE_VERSION = "virtualMachineVersion"; //$NON-NLS-1$
     
     private final InstanceMetadata instanceMetadata;
     
     /**
-     * Creates an included node inside this artifact mapping.
+     * Constructor to create a java bundle inside a project.
      * 
+     * @param project
      * @param name
-     * @param artifactMapping
      */
-    public Included(final ArtifactMapping artifactMapping, final String name) {
-        this.instanceMetadata = createWithKeyProperty(this, artifactMapping, name);
-        checkCondition("noIncluded", //$NON-NLS-1$
-                artifactMapping.getIncludedByName(name) == null);
-        artifactMapping.addIncluded(this);
+    public JavaBundle(final Project project, final String name) {
+        super(project, name);
+        this.instanceMetadata = super.getInstanceMetadata();
     }
     
     /**
      * 
-     * {@inheritDoc}
+     * @return the virtual machine version
      */
-    public final int compareTo(final ConfigurationNode o) {
-        return this.instanceMetadata.compare(this, o);
+    public String getVirtualMachineVersion() {
+        return this.instanceMetadata.getProperty(VIRTUAL_MACHINE_VERSION);
     }
     
     /**
+     * Sets the virtual machine version.
      * 
-     * {@inheritDoc}
+     * @param virtualMachineVersion
      */
-    @Override
-    public final boolean equals(final Object obj) {
-        return this.instanceMetadata.equals(obj);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final InstanceMetadata getInstanceMetadata() {
-        return this.instanceMetadata;
-    }
-    
-    /**
-     * The name, in this case, is a unique identifier (with parent node) to this
-     * node.
-     * 
-     * @return the node name
-     */
-    public String getName() {
-        return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public final int hashCode() {
-        return this.instanceMetadata.hashCode();
+    public void setVirtualMachineVersion(final String virtualMachineVersion) {
+        this.instanceMetadata.setProperty(VIRTUAL_MACHINE_VERSION,
+                virtualMachineVersion);
     }
     
 }

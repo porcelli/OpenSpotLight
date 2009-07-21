@@ -50,8 +50,6 @@
 package org.openspotlight.federation.data.impl;
 
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createRoot;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createImmutable;
-import static org.openspotlight.federation.data.StaticMetadata.Factory.createMutable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -100,6 +98,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
+@StaticMetadata(validChildrenTypes = Repository.class)
 public final class Configuration implements ConfigurationNode {
     
     /**
@@ -107,23 +106,13 @@ public final class Configuration implements ConfigurationNode {
      */
     private static final long serialVersionUID = -5615522050633506216L;
     
-    static {
-        final StaticMetadata newStaticMetadata = createMutable();
-        newStaticMetadata.setChildrenNodeValidTypes(Repository.class);
-        newStaticMetadata.setType(Configuration.class);
-        staticMetadata = createImmutable(newStaticMetadata);
-    }
-    
     private final InstanceMetadata instanceMetadata;
-    
-    /** the static metadata for this class */
-    public static final StaticMetadata staticMetadata;
     
     /**
      * Default constructor
      */
     public Configuration() {
-        this.instanceMetadata = createRoot(staticMetadata, this);
+        this.instanceMetadata = createRoot(this);
     }
     
     /**
@@ -184,13 +173,6 @@ public final class Configuration implements ConfigurationNode {
     public final Set<String> getRepositoryNames() {
         return (Set<String>) this.instanceMetadata
                 .getKeysFromChildrenOfType(Repository.class);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public final StaticMetadata getStaticMetadata() {
-        return staticMetadata;
     }
     
     /**

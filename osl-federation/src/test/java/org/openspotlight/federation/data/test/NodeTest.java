@@ -62,6 +62,7 @@ import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
+import org.openspotlight.federation.data.impl.JavaBundle;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
@@ -97,11 +98,24 @@ public class NodeTest {
         assertThat(project.getBundleNames().size(), is(not(0)));
         assertThat(project.getBundles().size(), is(not(0)));
         
+        final Project innerProject = project.getProjectByName("ip-1,1");
+        assertThat(innerProject.getActive(), is(true));
+        assertThat(innerProject.getRepository(), is(repository));
+        assertThat(innerProject.getBundleNames().size(), is(0));
+        assertThat(innerProject.getBundles().size(), is(0));
+        
+        final JavaBundle javaBundle = (JavaBundle) project
+                .getBundleByName("jb-1,1,1");
+        assertThat(javaBundle, is(notNullValue()));
+        assertThat(javaBundle.getActive(), is(true));
+        assertThat(javaBundle.getInitialLookup(), is("initialLookup"));
+        assertThat(javaBundle.getVirtualMachineVersion(), is("1.5"));
+        assertThat(javaBundle.getProject(), is(project));
+        
         final Bundle bundle = project.getBundleByName("b-1,1,1");
         assertThat(bundle, is(notNullValue()));
         assertThat(bundle.getActive(), is(true));
         assertThat(bundle.getInitialLookup(), is("initialLookup"));
-        assertThat(bundle.getType(), is("type"));
         assertThat(bundle.getProject(), is(project));
         assertThat(bundle.getArtifactMappings().size(), is(not(0)));
         assertThat(bundle.getArtifactMappingNames().size(), is(not(0)));
@@ -139,12 +153,21 @@ public class NodeTest {
                 final Project project = new Project(repository, "p-" + i + ","
                         + j);
                 project.setActive(true);
+                final Project innerProject = new Project(project, "ip-" + i
+                        + "," + j);
+                innerProject.setActive(true);
                 for (final int k : numbers) {
+                    
+                    final JavaBundle javaBundle = new JavaBundle(project, "jb-"
+                            + i + "," + j + "," + k);
+                    javaBundle.setActive(true);
+                    javaBundle.setInitialLookup("initialLookup");
+                    javaBundle.setVirtualMachineVersion("1.5");
+                    
                     final Bundle bundle = new Bundle(project, "b-" + i + ","
                             + j + "," + k);
                     bundle.setActive(true);
                     bundle.setInitialLookup("initialLookup");
-                    bundle.setType("type");
                     for (final int l : numbers) {
                         final ArtifactMapping artifactMapping = new ArtifactMapping(
                                 bundle, "rm-" + i + "," + j + "," + k + "," + l);
