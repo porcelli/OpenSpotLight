@@ -10,7 +10,26 @@
 	<artifactId>osl-graph</artifactId>
 	<packaging>jar</packaging>
 	<name>SpotLight :: Graph</name>
-	<build />
+	<build >
+		<plugins>
+		  <plugin>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-surefire-plugin</artifactId>
+		    <configuration>
+		      <properties>
+		        <property>
+		          <name>usedefaultlisteners</name>
+		          <value>false</value> <!-- disabling default listeners is optional -->
+		        </property>
+		        <property>
+		          <name>listener</name>
+		          <value>org.openspotlight.graph.util.OrderedMethodInvocationInterceptor</value>
+		        </property>
+		      </properties>
+		    </configuration>
+		  </plugin>
+		</plugins></build>
+	
 	<dependencies>
 		<!-- External dependencies -->
 		<dependency>
