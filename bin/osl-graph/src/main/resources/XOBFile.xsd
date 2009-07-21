@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.devexp.com.br/XOBV1" elementFormDefault="qualified"  xmlns:xo="http://www.devexp.com.br/XOBV1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="XOB">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="XObjectList">
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="XParserObject">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="xo:XPropertyList"/>
+										<xs:element name="XDeleteLinkList">
+											<xs:complexType>
+												<xs:sequence maxOccurs="unbounded">
+													<xs:element name="XDeleteLink">
+														<xs:complexType>
+															<xs:attribute name="LinkType" type="xs:string" use="required"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="XDeleteLinkedObjectList">
+											<xs:complexType>
+												<xs:sequence maxOccurs="unbounded">
+													<xs:element name="XDeleteLinkedObject">
+														<xs:complexType>
+															<xs:attribute name="LinkType" type="xs:string" use="required"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="XLinkedDocumentList">
+											<xs:complexType>
+												<xs:sequence minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="XLinkedDocument">
+														<xs:complexType>
+															<xs:attribute name="Name" type="xs:string" use="required"/>
+															<xs:attribute name="CompletePath" type="xs:string" use="required"/>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="Handle" type="xs:int" use="required"/>
+									<xs:attribute name="ContextHandle" type="xs:int"/>
+									<xs:attribute name="Type" type="xs:string" use="required"/>
+									<xs:attribute name="Key" type="xs:string" use="required"/>
+									<xs:attribute name="Caption" type="xs:string" use="required"/>
+									<xs:attribute name="Path" type="xs:string"/>
+									<xs:attribute name="Version" type="xs:double"/>
+									<xs:attribute name="Status">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="Included"/>
+												<xs:enumeration value="Changed"/>
+												<xs:enumeration value="Deleted"/>
+												<xs:enumeration value="Nothing"/>
+												<xs:enumeration value="Referenced"/>
+												<xs:enumeration value="Share_Included"/>
+												<xs:enumeration value="Share_Changed"/>
+												<xs:enumeration value="Share_Deleted"/>
+												<xs:enumeration value="Share_Nothing"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="XLinkList">
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="XLink">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="xo:XPropertyList"/>
+									</xs:sequence>
+									<xs:attribute name="Handle" type="xs:int" use="required"/>
+									<xs:attribute name="ObjectAHandle" type="xs:int" use="required"/>
+									<xs:attribute name="ObjectBHandle" type="xs:int" use="required"/>
+									<xs:attribute name="Direction" use="required">
+										<xs:simpleType>
+											<xs:restriction base="xs:NMTOKEN">
+												<xs:enumeration value="A2B"/>
+												<xs:enumeration value="Both"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="Type" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="FormatVersion" type="xs:string" use="required"/>
+			<xs:attribute name="CreationDate" type="xs:dateTime" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="XPropertyList">
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element name="XProperty">
+					<xs:complexType>
+						<xs:attribute name="Name" type="xs:string" use="required"/>
+						<xs:attribute name="Value" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openspotlight</groupId>
+	<artifactId>osl</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>OpenSpotLight</name>
+	<url>http://caravelatech.com</url>
+	<developers>
+		<developer>
+			<name>Alexandre Porcelli</name>
+			<email>porcelli@caravelatech.com.br</email>
+		</developer>
+		<developer>
+			<name>Luiz Fernando Teston</name>
+			<email>feu.teston@caravelatech.com</email>
+		</developer>
+		<developer>
+			<name>Vitor Hugo Chagas</name>
+			<email>vitorhugo@caravelatech.com</email>
+		</developer>
+		<developer>
+			<name>Vinicius Carvalho</name>
+			<email>vinicius@caravelatech.com.br</email>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<organization>
+		<name>Caravela</name>
+		<url>http://www.caravelatech.com/</url>
+	</organization>
+	<repositories>
+		<repository>
+			<id>snapshots.jboss.org</id>
+			<url>http://snapshots.jboss.org/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>repository.jboss.org</id>
+			<url>http://repository.jboss.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>repository.jboss.org</id>
+			<url>http://repository.jboss.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>snapshots.jboss.org</id>
+			<url>http://snapshots.jboss.org/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+	<modules>
+		<module>osl-common</module>
+		<module>osl-federation</module>
+		<module>osl-graph</module>
+	</modules>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.5</source>
+					<target>1.5</target>
+					<showDeprecation>false</showDeprecation>
+					<showWarnings>false</showWarnings>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.4.3</version>
+				<configuration>
+					<argLine>-Xmx256m</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+<!-- osl modules -->
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-common</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>osl-federation</artifactId>
+				<version>org.openspotlight</version>
+			</dependency>
+<!-- dna federation dependencies -->
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-connector-filesystem</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-repository</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-jcr</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+<!-- Java Concurrency in Practice annotations -->
+			<dependency>
+				<groupId>net.jcip</groupId>
+				<artifactId>jcip-annotations</artifactId>
+				<version>1.0</version>
+				<scope>compile</scope>
+			</dependency>
+<!-- Cryptography utilities-->
+<dependency>
+  <groupId>org.jasypt</groupId>
+  <artifactId>jasypt</artifactId>
+  <version>1.5</version>
+</dependency>
+<!-- Bean utils -->
+<dependency>
+  <groupId>commons-beanutils</groupId>
+  <artifactId>commons-beanutils</artifactId>
+  <version>1.8.0</version>
+</dependency>
+<!-- Java Content Repository API -->
+			<dependency>
+				<groupId>javax.jcr</groupId>
+				<artifactId>jcr</artifactId>
+				<version>1.0.1</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-common</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-graph</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-common</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+			<!-- XML dependencies just to write and read the configuration in a simple way -->
+			<dependency>
+			  <groupId>dom4j</groupId>
+			  <artifactId>dom4j</artifactId>
+			  <version>1.6.1</version>
+			</dependency>
+			<!-- ant dependency to use the same logic for directory mappings -->
+			<dependency>
+			  <groupId>ant</groupId>
+			  <artifactId>ant</artifactId>
+			  <version>1.7.0</version>
+			</dependency>
+			
+			
+<!-- Tests and BDD dependencies -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.4</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-library</artifactId>
+				<version>1.1</version>
+				<scope>test</scope>
+			</dependency>
+<!-- JAAS implementation (and dependencies) for DNA security -->
+			<dependency>
+				<groupId>org.jboss.security</groupId>
+				<artifactId>jboss-idtrust</artifactId>
+				<version>2.0.2.CR1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.security</groupId>
+				<artifactId>jboss-security-spi-bare</artifactId>
+				<version>2.0.2.SP6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.security</groupId>
+				<artifactId>jbosssx-bare</artifactId>
+				<version>2.0.2.SP6</version>
+			</dependency>
+<!-- log dependencies -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.5.8</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.5.8</version>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.12</version>
+			</dependency>
+<!-- Apache Jackrabbit (JCR Implementation) -->
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>jackrabbit-api</artifactId>
+				<version>1.5.0</version>
+				<scope>test</scope>
+<!-- Exclude these since they are included in JDK 1.5 -->
+				<exclusions>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>jackrabbit-core</artifactId>
+				<version>1.5.0</version>
+				<scope>test</scope>
+<!-- Exclude these since they are included in JDK 1.5 -->
+				<exclusions>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+<!-- Databases and JDBC Drivers -->
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derby</artifactId>
+				<version>10.2.1.6</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>

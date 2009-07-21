@@ -61,6 +61,7 @@ import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.JavaBundle;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.AbstractArtifactLoader;
@@ -110,7 +111,10 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
             for (final Project project : repository.getProjects()) {
                 for (final Bundle bundle : project.getBundles()) {
                     this.artifactLoader.loadArtifactsFromMappings(bundle);
-                    assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
+                    if (!(bundle instanceof JavaBundle)) {
+                        assertThat(bundle.getStreamArtifacts().size(),
+                                is(not(0)));
+                    }
                 }
             }
         }

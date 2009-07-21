@@ -119,7 +119,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 includedPatterns.add(included.getName());
             }
             for (final Excluded excluded : mapping.getExcludeds()) {
-                includedPatterns.add(excluded.getName());
+                excludedPatterns.add(excluded.getName());
             }
         }
         final Set<String> namesToFilter = this.getAllArtifactNames(bundle);

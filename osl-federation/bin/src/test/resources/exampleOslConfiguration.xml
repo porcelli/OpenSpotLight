@@ -1,0 +1,38 @@
+<configuration>
+	<repository 
+		name="Unique repository name" 
+		active="true"
+		numberOfThreads="16">
+		<project 
+			name="Unique project name" 
+			active="true" >
+			<bundle 
+				name="Java sources" 
+				active="true"
+				type="file"
+				initialLookup="/tmp/files">
+				<artifactMapping
+					name="all java files"
+					included="src/**/*.java"
+					excluded="*.cs"
+					active="true"/>
+				<artifactMapping
+					name="all java files"
+					included="src/**/*.java"
+					excluded="*.cs"
+					active="true"/>
+			</bundle>
+			<bundle 
+				name="Database artifacts" 
+				active="true"
+				type="db"
+				initialLookup="jdbc:oracle@someip:">
+				<artifactMapping
+					name="all java files"
+					included="*.java"
+					excluded="*.cs"
+					active="true"/>
+			</bundle>
+		</project>
+	</repository>
+</configuration>
