@@ -47,6 +47,17 @@
 			<artifactId>osl-common</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph</artifactId>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<!--
 			XML dependencies just to write and read the configuration in a simple
 			way
@@ -55,7 +66,7 @@
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 		</dependency>
-				<!-- Java Concurrency in Practice annotations -->
+		<!-- Java Concurrency in Practice annotations -->
 		<dependency>
 			<groupId>net.jcip</groupId>
 			<artifactId>jcip-annotations</artifactId>
