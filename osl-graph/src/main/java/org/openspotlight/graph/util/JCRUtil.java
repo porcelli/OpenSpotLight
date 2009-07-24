@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph.util;
 
 import java.io.InputStream;
@@ -11,32 +59,44 @@ import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 
 
+/**
+ * The Class JCRUtil.
+ * 
+ * @author Vitor Hugo Chagas
+ */
 public class JCRUtil {
 	
 	/**
+	 * Make versionable.
 	 * 
-	 * @param node
-	 * @throws RepositoryException
+	 * @param node the node
+	 * 
+	 * @throws RepositoryException the repository exception
 	 */
 	public static void makeVersionable(Node node) throws RepositoryException {
 		node.addMixin("mix:versionable");
 	}
 	
 	/**
+	 * Make referenceable.
 	 * 
-	 * @param node
-	 * @throws RepositoryException
+	 * @param node the node
+	 * 
+	 * @throws RepositoryException the repository exception
 	 */
 	public static void makeReferenceable(Node node) throws RepositoryException {
 		node.addMixin("mix:referenceable");
 	}
 	
 	/**
+	 * Gets the child node.
 	 * 
-	 * @param node
-	 * @param name
-	 * @return
-	 * @throws RepositoryException
+	 * @param node the node
+	 * @param name the name
+	 * 
+	 * @return the child node
+	 * 
+	 * @throws RepositoryException the repository exception
 	 */
 	public static Node getChildNode(Node node, String name) throws RepositoryException {
 		try {
@@ -48,11 +108,14 @@ public class JCRUtil {
 	}
 	
 	/**
+	 * Creates the value.
 	 * 
-	 * @param session
-	 * @param value
-	 * @return
-	 * @throws JCRUtilException
+	 * @param session the session
+	 * @param value the value
+	 * 
+	 * @return the value
+	 * 
+	 * @throws JCRUtilException the JCR util exception
 	 */
 	public static Value createValue(Session session, Object value) throws JCRUtilException {
 		try {
@@ -84,11 +147,14 @@ public class JCRUtil {
 	}
 	
 	/**
+	 * Creates the values.
 	 * 
-	 * @param session
-	 * @param value
-	 * @return
-	 * @throws JCRUtilException
+	 * @param session the session
+	 * @param value the value
+	 * 
+	 * @return the value[]
+	 * 
+	 * @throws JCRUtilException the JCR util exception
 	 */
 	public static Value[] createValues(Session session, Object value) throws JCRUtilException {
 		try {

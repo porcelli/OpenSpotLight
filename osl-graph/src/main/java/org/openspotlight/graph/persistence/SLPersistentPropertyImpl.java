@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph.persistence;
 
 import java.io.Serializable;
@@ -14,13 +62,37 @@ import org.openspotlight.SLRuntimeException;
 import org.openspotlight.graph.util.JCRUtil;
 import org.openspotlight.graph.util.SerializationUtil;
 
+/**
+ * The Class SLPersistentPropertyImpl.
+ * 
+ * @author Vitor Hugo Chagas
+ */
 public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersistentProperty<V> {
 	
+	/** The persistent node. */
 	private SLPersistentNode persistentNode;
+	
+	/** The jcr property. */
 	private Property jcrProperty;
+	
+	/** The clazz. */
 	private Class<V> clazz;
+	
+	/** The event poster. */
 	private SLPersistentEventPoster eventPoster;
 	
+	/**
+	 * Instantiates a new sL persistent property impl.
+	 * 
+	 * @param persistentNode the persistent node
+	 * @param clazz the clazz
+	 * @param jcrProperty the jcr property
+	 * @param loadValue the load value
+	 * @param eventPoster the event poster
+	 * 
+	 * @throws SLPersistentPropertyNotFoundException the SL persistent property not found exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
 	public SLPersistentPropertyImpl(SLPersistentNode persistentNode, Class<V> clazz, Property jcrProperty, boolean loadValue, SLPersistentEventPoster eventPoster) 
 		throws SLPersistentPropertyNotFoundException, SLPersistentTreeSessionException {
 		this.persistentNode = persistentNode;
@@ -31,11 +103,17 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#getNode()
+	 */
 	public SLPersistentNode getNode() {
 		return persistentNode;
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#getName()
+	 */
 	public String getName() throws SLPersistentTreeSessionException {
 		try {
 			return jcrProperty.getName();
@@ -46,6 +124,9 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#getValue()
+	 */
 	public V getValue() throws SLInvalidPersistentPropertyTypeException, SLPersistentTreeSessionException {
 		try {
 			V value = null;
@@ -74,6 +155,9 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#setValue(java.io.Serializable)
+	 */
 	public void setValue(V value) throws SLPersistentTreeSessionException {
 		try {
 			Session session = jcrProperty.getSession();
@@ -93,11 +177,13 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 	
 	/**
+	 * Gets the jCR property value.
 	 * 
-	 * @return
-	 * @throws SLInvalidPersistentPropertyTypeException
-	 * @throws SLException
-	 * @throws RepositoryException
+	 * @return the jCR property value
+	 * 
+	 * @throws SLInvalidPersistentPropertyTypeException the SL invalid persistent property type exception
+	 * @throws SLException the SL exception
+	 * @throws RepositoryException the repository exception
 	 */
 	private V getJCRPropertyValue() throws SLInvalidPersistentPropertyTypeException, SLException, RepositoryException {
 		V value = null;
@@ -154,11 +240,13 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 	
 	/**
+	 * Gets the jCR array property value.
 	 * 
-	 * @return
-	 * @throws SLInvalidPersistentPropertyTypeException
-	 * @throws SLException
-	 * @throws RepositoryException
+	 * @return the jCR array property value
+	 * 
+	 * @throws SLInvalidPersistentPropertyTypeException the SL invalid persistent property type exception
+	 * @throws SLException the SL exception
+	 * @throws RepositoryException the repository exception
 	 */
 	private V getJCRArrayPropertyValue() throws SLInvalidPersistentPropertyTypeException, SLException, RepositoryException {
 		V value = null;
@@ -242,6 +330,9 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#remove()
+	 */
 	public void remove() throws SLPersistentTreeSessionException {
 		try {
 			jcrProperty.remove();
@@ -252,6 +343,9 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@SuppressWarnings("unchecked")
 	//@Override
 	public boolean equals(Object obj) {
@@ -268,6 +362,9 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements SLPersi
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		try {
 			return (getNode().getID() + ":" + getName()).hashCode();

@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph;
 
 import static org.openspotlight.graph.SLLink.DIRECTION_ANY;
@@ -6,11 +54,13 @@ import static org.openspotlight.graph.SLLink.DIRECTION_UNI;
 import static org.openspotlight.graph.SLLink.DIRECTION_UNI_REVERSAL;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,37 +75,72 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+/**
+ * The Class SLGraphTest.
+ * 
+ * @author Vitor Hugo Chagas
+ */
 @Test
 public class SLGraphTest {
 	
+	/** The Constant LOGGER. */
 	static final Logger LOGGER = Logger.getLogger(SLGraphTest.class);
 	
+	/** The graph. */
 	private SLGraph graph;
+	
+	/** The session. */
 	private SLGraphSession session;
 	
+	/** The java class node. */
 	private JavaClassNode javaClassNode;
+	
+	/** The java method node. */
 	private JavaMethodNode javaMethodNode;
 	
+	/** The link ab. */
 	private SLLink linkAB;
+	
+	/** The link ba. */
 	private SLLink linkBA;
+	
+	/** The link both. */
 	private SLLink linkBoth;
 	
+	/**
+	 * Inits the.
+	 * 
+	 * @throws AbstractFactoryException the abstract factory exception
+	 */
 	@BeforeClass
 	public void init() throws AbstractFactoryException {
 		SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
 		graph = factory.createGraph();
 	}
 	
+	/**
+	 * Finish.
+	 */
 	@AfterClass
 	public void finish() {
 		graph.shutdown();
 	}
 	
+	/**
+	 * Before test.
+	 * 
+	 * @throws SLGraphException the SL graph exception
+	 */
 	@BeforeMethod
 	public void beforeTest() throws SLGraphException {
 		if (session == null) session = graph.openSession();
 	}
 	
+	/**
+	 * After test.
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	@AfterMethod
 	public void afterTest() throws SLGraphSessionException {
 		session.clear();
@@ -64,6 +149,11 @@ public class SLGraphTest {
 		//session.close();
 	}
 
+	/**
+	 * Test context operations.
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	@Test
 	public void testContextOperations() throws SLGraphSessionException {
 		SLContext context1 = session.createContext(1L);
@@ -78,6 +168,9 @@ public class SLGraphTest {
 		Assert.assertEquals(context1, context2);
 	}
 	
+	/**
+	 * Test integer property.
+	 */
 	@Test
 	public void testIntegerProperty() {
 		
@@ -129,6 +222,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test long property.
+	 */
 	@Test
 	public void testLongProperty() {
 		
@@ -180,6 +276,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test float property.
+	 */
 	@Test
 	public void testFloatProperty() {
 
@@ -230,6 +329,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test double property.
+	 */
 	@Test
 	public void testDoubleProperty() {
 
@@ -280,6 +382,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test boolean property.
+	 */
 	@Test
 	public void testBooleanProperty() {
 
@@ -318,6 +423,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test string property.
+	 */
 	@Test
 	public void testStringProperty() {
 		
@@ -356,6 +464,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test any serializable property.
+	 */
 	@Test
 	public void testAnySerializableProperty() {
 
@@ -396,6 +507,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get property as string.
+	 */
 	@Test
 	public void testGetPropertyAsString() {
 		try {
@@ -415,6 +529,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test property value overwriting.
+	 */
 	@Test
 	public void testPropertyValueOverwriting() {
 		try {
@@ -431,6 +548,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test property removal.
+	 */
 	@Test
 	public void testPropertyRemoval() {
 		try {
@@ -451,6 +571,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test properties retrieval.
+	 */
 	@Test
 	public void testPropertiesRetrieval() {
 		try {
@@ -473,6 +596,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test node operations.
+	 */
 	@Test
 	public void testNodeOperations() {
 		try {
@@ -504,6 +630,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test add node type hierarchy case.
+	 */
 	@Test
 	public void testAddNodeTypeHierarchyCase() {
 		
@@ -522,15 +651,13 @@ public class SLGraphTest {
 			JavaClassNode javaClassNode2 = root.addNode(JavaClassNode.class, "node2");
 			Assert.assertEquals(javaClassNode2, javaElementNode2);
 			
-			// add two types of different hierarchies; SLNodeTypeNotInExistentHierarchy is expected ...
-			try {
-				root.addNode(JavaElementNode.class, "node3");
-				root.addNode(CobolElementNode.class, "node3");
-				Assert.fail();
-			}
-			catch (SLNodeTypeNotInExistentHierarchy e) {
-				Assert.assertTrue(true);
-			}
+			// add two types of different hierarchies ...
+			JavaElementNode javaElementNode3 = root.addNode(JavaElementNode.class, "node3");
+			CobolElementNode cobolElementNode3 = root.addNode(CobolElementNode.class, "node3");
+			Assert.assertEquals(javaElementNode3.getName(), "node3");
+			Assert.assertEquals(cobolElementNode3.getName(), "node3");
+			Assert.assertNotSame(javaElementNode3, cobolElementNode3);
+			
 		}
 		catch (SLGraphSessionException e) {
 			LOGGER.error(e);
@@ -538,6 +665,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test typed node operations.
+	 */
 	@Test 
 	public void testTypedNodeOperations() {
 		try {
@@ -572,6 +702,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test chi ld nodes retrieval.
+	 */
 	@Test
 	public void testChiLdNodesRetrieval() {
 		try {
@@ -593,30 +726,8 @@ public class SLGraphTest {
 		}
 	}
 	
-	@Test
-	public void testInvalidNodeTypeRetrieval() {
-		try {
-			SLNode root = session.createContext(1L).getRootNode();
-			root.addNode(JavaClassNode.class, "javaClassNode");
-			try {
-				root.getNode(JavaMethodNode.class, "javaClassNode");	
-				Assert.fail();
-			}
-			catch (SLInvalidNodeTypeException e) {
-				Assert.assertTrue(true);
-			}
-		}
-		catch (SLGraphSessionException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
-	}
-	
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL NOT SET
-	 * empty         --> add AB   --> add AB
-	 * empty         --> add BA   --> add BA
-	 * empty         --> add BOTH --> add BOTH
+	 * Test add simple link empty case.
 	 */
 	@Test
 	public void testAddSimpleLinkEmptyCase() {
@@ -645,10 +756,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL NOT SET
-	 * existent AB   --> add AB   --> remains AB
-	 * existent AB   --> add BA   --> add BA
-	 * existent AB   --> add BOTH --> add BOTH
+	 * Test add simple link existent ab case.
 	 */
 	@Test
 	public void testAddSimpleLinkExistentABCase() {
@@ -680,10 +788,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL NOT SET
-	 * existent BA   --> add AB   --> add AB
-	 * existent BA   --> add BA   --> remains BA
-	 * existent BA   --> add BOTH --> add BOTH
+	 * Test add simple link existent ba case.
 	 */
 	@Test
 	public void testAddSimpleLinkExistentBACase() {
@@ -716,10 +821,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL NOT SET
-	 * existent BOTH --> add AB   --> add AB
-	 * existent BOTH --> add BA   --> add BA
-	 * existent BOTH --> add BOTH --> remains BOTH
+	 * Test add simple link existent both case.
 	 */
 	@Test
 	public void testAddSimpleLinkExistentBothCase() {
@@ -751,10 +853,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL (ACTB) SET
-	 * empty         --> add AB   --> add AB
-	 * empty         --> add BA   --> add BA
-	 * empty         --> add BOTH --> add BOTH
+	 * Test add simple link empty case actb.
 	 */
 	@Test
 	public void testAddSimpleLinkEmptyCaseACTB() {
@@ -784,10 +883,7 @@ public class SLGraphTest {
 	}
 
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL (ACTB) SET
-	 * existent AB   --> add AB   --> remains AB
-	 * existent AB   --> add BA   --> changes to BOTH
-	 * existent AB   --> add BOTH --> changes to BOTH
+	 * Test add simple link existent ab case actb.
 	 */
 	@Test
 	public void testAddSimpleLinkExistentABCaseACTB() {
@@ -820,10 +916,7 @@ public class SLGraphTest {
 	}
 
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL (ACTB) SET
-	 * existent BA   --> add AB   --> changes to BOTH
-	 * existent BA   --> add BA   --> remains BA
-	 * existent BA   --> add BOTH --> changes to BOTH
+	 * Test add simple link existent ba case actb.
 	 */
 	@Test
 	public void testAddSimpleLinkExistentBACaseACTB() {
@@ -856,10 +949,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_CHANGE_TO_BIDIRECTIONAL (ACTB) SET
-	 * existent BOTH --> add AB   --> remains BOTH
-	 * existent BOTH --> add BA   --> remains BOTH
-	 * existent BOTH --> add BOTH --> remains BOTH
+	 * Test add simple link existent both case actb.
 	 */
 	@Test
 	public void testAddSimpleLinkExistentBothCaseACTB() {
@@ -892,10 +982,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_MULTIPLE SET
-	 * empty         --> add AB   --> add AB
-	 * empty         --> add BA   --> add BA
-	 * empty         --> add BOTH --> add BOTH
+	 * Adds the add multiple link empty case.
 	 */
 	@Test
 	public void addAddMultipleLinkEmptyCase() {
@@ -925,10 +1012,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_MULTIPLE SET
-	 * existent AB   --> add AB   --> add NEW AB
-	 * existent AB   --> add BA   --> add BA
-	 * existent AB   --> add BOTH --> add BOTH
+	 * Adds the add multiple link existent ab case.
 	 */
 	@Test
 	public void addAddMultipleLinkExistentABCase() {
@@ -961,10 +1045,7 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * ALLOWS_MULTIPLE SET
-	 * existent BA   --> add BA   --> add NEW BA
-	 * existent BA   --> add AB   --> add AB
-	 * existent BA   --> add BOTH --> add BOTH
+	 * Adds the add multiple link existent ba case.
 	 */
 	@Test
 	public void addAddMultipleLinkExistentBACase() {
@@ -998,10 +1079,7 @@ public class SLGraphTest {
 
 
 	/**
-	 * ALLOWS_MULTIPLE SET
-	 * existent BOTH --> add AB   --> add AB
-	 * existent BOTH --> add BA   --> add BA
-	 * existent BOTH --> add BOTH --> add NEW BOTH
+	 * Adds the add multiple link existent both case.
 	 */
 	@Test
 	public void addAddMultipleLinkExistentBothCase() {
@@ -1033,6 +1111,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test link properties.
+	 */
 	@Test
 	public void testLinkProperties() {
 		
@@ -1072,7 +1153,38 @@ public class SLGraphTest {
 			Assert.fail();
 		}
 	}
+	
+	/**
+	 * Test link property with annotations.
+	 */
+	@Test
+	public void testLinkPropertyWithAnnotations() {
+		try {
 
+			SLNode root1 = session.createContext(1L).getRootNode();
+			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
+			JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
+
+			JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+			
+			Date creationTime = new Date();
+			link.setLinkName("myLink");
+			link.setCreationTime(creationTime);
+			
+			Assert.assertNotNull(link.getLinkName());
+			Assert.assertEquals(link.getLinkName(), "myLink");
+			Assert.assertNotNull(link.getCreationTime());
+			Assert.assertEquals(link.getCreationTime(), creationTime);
+		} 
+		catch (SLGraphSessionException e) {
+			LOGGER.error(e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Test get links.
+	 */
 	@Test
 	public void testGetLinks() {
 		
@@ -1220,6 +1332,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get unidirectional links.
+	 */
 	@Test
 	public void testGetUnidirectionalLinks() {
 		
@@ -1260,6 +1375,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get unidirectional links by source.
+	 */
 	@Test
 	public void testGetUnidirectionalLinksBySource() {
 		
@@ -1300,6 +1418,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get unidirectional links by target.
+	 */
 	@Test
 	public void testGetUnidirectionalLinksByTarget() {
 		
@@ -1340,6 +1461,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get bidirectional links.
+	 */
 	@Test
 	public void testGetBidirectionalLinks() {
 
@@ -1372,6 +1496,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get bidirectional links by side.
+	 */
 	@Test
 	public void testGetBidirectionalLinksBySide() {
 
@@ -1410,6 +1537,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test transient nodes.
+	 */
 	@Test
 	public void testTransientNodes() {
 		
@@ -1439,6 +1569,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test transient links.
+	 */
 	@Test
 	public void testTransientLinks() {
 		
@@ -1468,6 +1601,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get nodes by link with link type.
+	 */
 	@Test
 	public void testGetNodesByLinkWithLinkType() {
 		
@@ -1517,6 +1653,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get nodes by link without link type.
+	 */
 	@Test
 	public void testGetNodesByLinkWithoutLinkType() {
 		
@@ -1559,6 +1698,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test links removal by node deletion.
+	 */
 	@Test
 	public void testLinksRemovalByNodeDeletion() {
 		
@@ -1600,6 +1742,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get nodes by predicate.
+	 */
 	@Test
 	public void testGetNodesByPredicate() {
 		
@@ -1633,6 +1778,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test line reference.
+	 */
 	@Test
 	public void testLineReference() {
 		
@@ -1640,21 +1788,36 @@ public class SLGraphTest {
 			SLNode root1 = session.createContext(1L).getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			
-			SLLineReference lineRef1 = javaClassNode1.addLineReference();
-			lineRef1.setStartLine(8);
-			lineRef1.setEndLine(17);
-			lineRef1.setStartColumn(26);
-			lineRef1.setEndColumn(44);
-			lineRef1.setLineType(SLLineReference.LINE_TYPE_1);
-			lineRef1.setStatement("Hello World!");
+			SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, SLLineReference.LINE_TYPE_1, "Hello World!", "/tmp/anyfile.txt");
+			SLLineReference lineRef2 = javaClassNode1.addLineReference(71, 80, 35, 53, SLLineReference.LINE_TYPE_2, "Bye World!", "/tmp/anyfile.txt");
 			
-			SLLineReference lineRef2 = javaClassNode1.getLineReference();
-			Assert.assertEquals(lineRef1.getStartLine(), lineRef2.getStartLine());
-			Assert.assertEquals(lineRef1.getEndLine(), lineRef2.getEndLine());
-			Assert.assertEquals(lineRef1.getStartColumn(), lineRef2.getStartColumn());
-			Assert.assertEquals(lineRef1.getEndColumn(), lineRef2.getEndColumn());
-			Assert.assertEquals(lineRef1.getLineType(), lineRef2.getLineType());
-			Assert.assertEquals(lineRef1.getStatement(), lineRef2.getStatement());
+			Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences();
+			Assert.assertNotNull(lineRefs);
+			Assert.assertEquals(lineRefs.size(), 2);
+			
+			for (SLLineReference lineRef : lineRefs) {
+				if (lineRef.getLineType() == SLLineReference.LINE_TYPE_1) {
+					Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
+					Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
+					Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
+					Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
+					Assert.assertEquals(lineRef1.getLineType(), new Integer(SLLineReference.LINE_TYPE_1));
+					Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
+					Assert.assertEquals(lineRef1.getPath(), "/tmp/anyfile.txt");
+				}
+				else if (lineRef.getLineType() == SLLineReference.LINE_TYPE_2) {
+					Assert.assertEquals(lineRef2.getStartLine(), new Integer(71));
+					Assert.assertEquals(lineRef2.getEndLine(), new Integer(80));
+					Assert.assertEquals(lineRef2.getStartColumn(), new Integer(35));
+					Assert.assertEquals(lineRef2.getEndColumn(), new Integer(53));
+					Assert.assertEquals(lineRef2.getLineType(), new Integer(SLLineReference.LINE_TYPE_2));
+					Assert.assertEquals(lineRef2.getStatement(), "Bye World!");
+					Assert.assertEquals(lineRef2.getPath(), "/tmp/anyfile.txt");
+				}
+				else {
+					Assert.fail();
+				}
+			}
 		}
 		catch (SLGraphSessionException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -1662,6 +1825,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get meta node.
+	 */
 	@Test
 	public void testGetMetaNode() {
 
@@ -1690,6 +1856,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get meta nodes.
+	 */
 	@Test
 	public void testGetMetaNodes() {
 
@@ -1710,6 +1879,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get child node node.
+	 */
 	@Test 
 	public void testGetChildNodeNode() {
 
@@ -1738,6 +1910,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get child meta nodes.
+	 */
 	@Test
 	public void testGetChildMetaNodes() {
 		
@@ -1760,6 +1935,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get meta node properties.
+	 */
 	@Test
 	public void testGetMetaNodeProperties() {
 		
@@ -1798,6 +1976,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get meta node property.
+	 */
 	public void testGetMetaNodeProperty() {
 		
 		try {
@@ -1833,6 +2014,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get meta link properties.
+	 */
 	@Test
 	public void testGetMetaLinkProperties() {
 		
@@ -1867,6 +2051,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test get meta link property.
+	 */
 	@Test
 	public void testGetMetaLinkProperty() {
 		
@@ -1906,6 +2093,9 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test link types for link deletion mark case.
+	 */
 	@Test
 	public void testLinkTypesForLinkDeletionMarkCase() {
 		
@@ -1942,6 +2132,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test link types for link deletion mark and unmark case.
+	 */
 	@Test
 	public void testLinkTypesForLinkDeletionMarkAndUnmarkCase() {
 		
@@ -1977,6 +2170,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test link types for linked node deletion mark case.
+	 */
 	@Test
 	public void testLinkTypesForLinkedNodeDeletionMarkCase() {
 
@@ -2008,6 +2204,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test link types for linked node deletion mark and unmark case.
+	 */
 	@Test
 	public void testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase() {
 
@@ -2043,6 +2242,177 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Test get meta render hints.
+	 */
+	@Test
+	public void testGetMetaRenderHints() {
+		
+		try {
+			SLNode root1 = session.createContext(1L).getRootNode();
+			root1.addNode(JavaClassNode.class, "javaClassNode1");
+			SLMetadata metadata = session.getMetadata();
+			SLMetaNode metaNode = metadata.getMetaNode(JavaClassNode.class);
+			Collection<SLMetaRenderHint> renderHints = metaNode.getMetaRenderHints();
+			Assert.assertEquals(renderHints.size(), 2);
+			for (SLMetaRenderHint renderHint : renderHints) {
+				if (renderHint.getName().equals("format")) {
+					Assert.assertEquals(renderHint.getValue(), "cube");
+				}
+				else if (renderHint.getName().equals("foreground")) {
+					Assert.assertEquals(renderHint.getValue(), "gold");
+				}
+				else {
+					Assert.fail();
+				}
+			}
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Test get meta render hint.
+	 */
+	@Test
+	public void testGetMetaRenderHint() {
+		
+		try {
+			
+			SLNode root1 = session.createContext(1L).getRootNode();
+			root1.addNode(JavaClassNode.class, "javaClassNode1");
+			SLMetadata metadata = session.getMetadata();
+			SLMetaNode metaNode = metadata.getMetaNode(JavaClassNode.class);
+			
+			SLMetaRenderHint formatRenderHint = metaNode.getMetaRenderHint("format");
+			Assert.assertNotNull(formatRenderHint);
+			Assert.assertEquals(formatRenderHint.getName(), "format");
+			Assert.assertEquals(formatRenderHint.getValue(), "cube");
+
+			SLMetaRenderHint foregroundRenderHint = metaNode.getMetaRenderHint("foreground");
+			Assert.assertNotNull(foregroundRenderHint);
+			Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
+			Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
+
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Test node collator.
+	 */
+	@Test
+	public void testNodeCollator() {
+
+		try {
+			SLNode root1 = session.createContext(1L).getRootNode();
+			
+			// test addNode ...
+			SQLElement element1 = root1.addNode(SQLElement.class, "selecao");
+			SQLElement element2 = root1.addNode(SQLElement.class, "seleção");
+			Assert.assertEquals(element1, element2);
+			
+			// test getNode ...
+			SQLElement element3 = root1.getNode(SQLElement.class, "seleção");
+			Assert.assertEquals(element1, element3);
+			
+			// the original name remains ...
+			Assert.assertEquals(element1.getName(), "selecao");
+			Assert.assertEquals(element2.getName(), "selecao");
+			Assert.assertEquals(element3.getName(), "selecao");
+		} 
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+	
+	/**
+	 * Test node property collator.
+	 */
+	@Test
+	public void testNodePropertyCollator() {
+		
+		try {
+			
+			SLNode root1 = session.createContext(1L).getRootNode();
+			SQLElement element = root1.addNode(SQLElement.class, "element");
+			
+			SLNodeProperty<String> prop1 = element.setProperty(String.class, "selecao", "great");
+			SLNodeProperty<String> prop2 = element.getProperty(String.class, "seleção");
+			Assert.assertEquals(prop1, prop2);
+			Assert.assertEquals(prop1.getName(), "selecao");
+			Assert.assertEquals(prop1.getName(), "selecao");
+			
+			try {
+				Collator collator = Collator.getInstance(Locale.US);
+				collator.setStrength(Collator.TERTIARY);
+				element.getProperty(String.class, "seleção", collator);
+				Assert.fail();
+			} 
+			catch (SLNodePropertyNotFoundException e) {
+				Assert.assertTrue(true);
+			}
+		} 
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Test link property collator.
+	 */
+	@Test
+	public void testLinkPropertyCollator() {
+
+		try {
+			
+			SLNode root1 = session.createContext(1L).getRootNode();
+			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
+			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
+			
+			JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+			
+			SLLinkProperty<String> prop1 = link.setProperty(String.class, "selecao", "great");
+			SLLinkProperty<String> prop2 = link.getProperty(String.class, "seleção");
+			
+			Assert.assertEquals(prop1, prop2);
+			Assert.assertEquals(prop1.getName(), "selecao");
+			Assert.assertEquals(prop1.getName(), "selecao");
+			
+			try {
+				Collator collator = Collator.getInstance(Locale.US);
+				collator.setStrength(Collator.TERTIARY);
+				link.getProperty(String.class, "seleção", collator);
+				Assert.fail();
+			} 
+			catch (SLNodePropertyNotFoundException e) {
+				Assert.assertTrue(true);
+			}
+		} 
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Assert simple link.
+	 * 
+	 * @param link the link
+	 * @param linkClass the link class
+	 * @param source the source
+	 * @param target the target
+	 * @param bidirecional the bidirecional
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private void assertSimpleLink(SLLink link, Class<? extends SLLink> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException {
 		Assert.assertNotNull(link);
 		Assert.assertTrue(linkClass.isInstance(link));
@@ -2055,6 +2425,9 @@ public class SLGraphTest {
 		Assert.assertEquals(link.isBidirectional(), bidirecional);
 	}
 
+	/**
+	 * Sets the up empty link scenario.
+	 */
 	private void setUpEmptyLinkScenario() {
 		try {
 			session.clear();
@@ -2068,6 +2441,13 @@ public class SLGraphTest {
 		}
 	}
 	
+	/**
+	 * Sets the up existent ab link scenario.
+	 * 
+	 * @param linkClass the new up existent ab link scenario
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private void setUpExistentABLinkScenario(Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		session.clear();
 		SLNode root = session.createContext(1L).getRootNode();
@@ -2078,6 +2458,13 @@ public class SLGraphTest {
 		linkAB = session.addLink(linkClass, javaClassNode, javaMethodNode, false);
 	}
 	
+	/**
+	 * Sets the up existent ba link scenario.
+	 * 
+	 * @param linkClass the new up existent ba link scenario
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private void setUpExistentBALinkScenario(Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		session.clear();
 		SLNode root = session.createContext(1L).getRootNode();
@@ -2088,6 +2475,13 @@ public class SLGraphTest {
 		linkBA = session.addLink(linkClass, javaMethodNode, javaClassNode, false);
 	}
 	
+	/**
+	 * Sets the up existent both link scenario.
+	 * 
+	 * @param linkClass the new up existent both link scenario
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private void setUpExistentBothLinkScenario(Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		session.clear();
 		SLNode root = session.createContext(1L).getRootNode();
@@ -2098,6 +2492,12 @@ public class SLGraphTest {
 		linkBoth = session.addLink(linkClass, javaClassNode, javaMethodNode, true);
 	}
 	
+	/**
+	 * Assert links.
+	 * 
+	 * @param links the links
+	 * @param expectedLinks the expected links
+	 */
 	private void assertLinks(Collection<? extends SLLink> links, SLLink...expectedLinks) {
 		Assert.assertNotNull(links);
 		Assert.assertEquals(links.size(), expectedLinks.length);
@@ -2106,6 +2506,12 @@ public class SLGraphTest {
 		Assert.assertEquals(linkSet, expectedLinkSet);
 	}
 	
+	/**
+	 * Assert links in order.
+	 * 
+	 * @param links the links
+	 * @param expectedLinks the expected links
+	 */
 	private void assertLinksInOrder(Collection<? extends SLLink> links, SLLink...expectedLinks) {
 		Assert.assertNotNull(links);
 		Assert.assertEquals(links.size(), expectedLinks.length);
@@ -2115,6 +2521,12 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Assert nodes.
+	 * 
+	 * @param nodes the nodes
+	 * @param expectedNodes the expected nodes
+	 */
 	private void assertNodes(Collection<? extends SLNode> nodes, SLNode...expectedNodes) {
 		Assert.assertNotNull(nodes);
 		Assert.assertEquals(nodes.size(), expectedNodes.length);
@@ -2123,6 +2535,14 @@ public class SLGraphTest {
 		Assert.assertEquals(nodeSet, expectedNodeSet);
 	}
 	
+	/**
+	 * Assert meta nodes.
+	 * 
+	 * @param metaNodes the meta nodes
+	 * @param expectedNodeTypes the expected node types
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private void assertMetaNodes(Collection<SLMetaNode> metaNodes, Class<?>...expectedNodeTypes) throws SLGraphSessionException {
 		Assert.assertNotNull(metaNodes);
 		Assert.assertEquals(metaNodes.size(), expectedNodeTypes.length);
@@ -2131,6 +2551,15 @@ public class SLGraphTest {
 		Assert.assertEquals(metaNodeTypeNameSet, expectedNodeTypeNameSet);
 	}
 	
+	/**
+	 * Gets the node type name set.
+	 * 
+	 * @param metaNodes the meta nodes
+	 * 
+	 * @return the node type name set
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private Set<String> getNodeTypeNameSet(Collection<SLMetaNode> metaNodes) throws SLGraphSessionException {
 		Set<String> set = new TreeSet<String>();
 		for (SLMetaNode metaNode : metaNodes) {
@@ -2139,6 +2568,15 @@ public class SLGraphTest {
 		return set;
 	}
 	
+	/**
+	 * Gets the node type name set.
+	 * 
+	 * @param expectedNodeTypes the expected node types
+	 * 
+	 * @return the node type name set
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private Set<String> getNodeTypeNameSet(Class<?>[] expectedNodeTypes) throws SLGraphSessionException {
 		Set<String> set = new TreeSet<String>();
 		for (Class<?> nodeType : expectedNodeTypes) {

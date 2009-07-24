@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph.persistence;
 
 import java.util.SortedSet;
@@ -14,14 +62,30 @@ import javax.jcr.version.VersionIterator;
 import org.apache.log4j.Logger;
 import org.openspotlight.graph.util.JCRUtil;
 
+/**
+ * The Class SLPersistentTreeSessionImpl.
+ * 
+ * @author Vitor Hugo Chagas
+ */
 public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	
+	/** The Constant LOGGER. */
 	static final Logger LOGGER = Logger.getLogger(SLPersistentTreeSessionImpl.class);
 	
+	/** The jcr session. */
 	private Session jcrSession;
+	
+	/** The event poster. */
 	private SLPersistentEventPoster eventPoster;
+	
+	/** The root node. */
 	private Node rootNode;
 
+	/**
+	 * Instantiates a new sL persistent tree session impl.
+	 * 
+	 * @param session the session
+	 */
 	public SLPersistentTreeSessionImpl(Session session) {
 		this.jcrSession = session;
 		SLPersistentEventListener listener = new SLPersistentEventListenerImpl();
@@ -29,6 +93,9 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getRootNode()
+	 */
 	public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException {
 		if (rootNode == null) {
 			try {
@@ -66,11 +133,17 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#close()
+	 */
 	public void close() {
 		jcrSession.logout();
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#save()
+	 */
 	public void save() throws SLPersistentTreeSessionException {
 		try {
 			rootNode.save();
@@ -83,6 +156,9 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#clear()
+	 */
 	public void clear() throws SLPersistentTreeSessionException {
 		if (rootNode != null) {
 			try {
@@ -99,11 +175,17 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#createQuery(java.lang.String, int)
+	 */
 	public SLPersistentQuery createQuery(String statement, int type) throws SLPersistentTreeSessionException {
 		return new SLPersistentQueryImpl(this, jcrSession, statement, type);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByID(java.lang.String)
+	 */
 	public SLPersistentNode getNodeByID(String id) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
 		try {
 			SLPersistentNode persistentNode = null;
@@ -128,6 +210,9 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByPath(java.lang.String)
+	 */
 	public SLPersistentNode getNodeByPath(String path) throws SLPersistentTreeSessionException {
 		SLPersistentQuery query = createQuery(path, SLPersistentQuery.TYPE_XPATH);
 		SLPersistentQueryResult result = query.execute();

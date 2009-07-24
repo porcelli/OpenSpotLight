@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph;
 
 import java.util.ArrayList;
@@ -18,20 +66,37 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
 
+/**
+ * The Class SLGraphSessionImpl.
+ * 
+ * @author Vitor Hugo Chagas
+ */
 public class SLGraphSessionImpl implements SLGraphSession {
 	
+	/** The tree session. */
 	private SLPersistentTreeSession treeSession;
+	
+	/** The event poster. */
 	private SLGraphSessionEventPoster eventPoster;
 	
+	/**
+	 * Instantiates a new sL graph session impl.
+	 * 
+	 * @param treeSession the tree session
+	 */
 	public SLGraphSessionImpl(SLPersistentTreeSession treeSession) {
 		this.treeSession = treeSession;
 		Collection<SLGraphSessionEventListener> listeners = new ArrayList<SLGraphSessionEventListener>();
 		listeners.add(new SLObjectMarkListener());
 		listeners.add(new SLTransientObjectListener());
+		listeners.add(new SLMetadataListener());
 		this.eventPoster = new SLGraphSessionEventPosterImpl(listeners);
 	}
  	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#createContext(java.lang.Long)
+	 */
 	public SLContext createContext(Long id) throws SLContextAlreadyExistsException, SLGraphSessionException {
 		SLContext context = null;
 		try {
@@ -51,6 +116,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getContext(java.lang.Long)
+	 */
 	public SLContext getContext(Long id) throws SLGraphSessionException {
 		try {
 			SLContext context = null;
@@ -67,11 +135,17 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#close()
+	 */
 	public void close() {
 		treeSession.close();
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#save()
+	 */
 	public void save() throws SLGraphSessionException {
 		try {
 			eventPoster.post(new SLGraphSessionEvent(SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));
@@ -83,6 +157,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#clear()
+	 */
 	public void clear() throws SLGraphSessionException {
 		try {
 			treeSession.clear();
@@ -93,6 +170,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodeByID(java.lang.String)
+	 */
 	public SLNode getNodeByID(String id) throws SLNodeNotFoundException, SLGraphSessionException {
 		final int INDEX_CONTEXT_ID = 2;
 		try {
@@ -120,6 +200,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#addLink(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, boolean)
+	 */
 	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException {
 
 		try  {
@@ -155,9 +238,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
 							SLPersistentProperty<Integer> directionProp = linkNode.getProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION);
 							if (directionProp.getValue() != SLConsts.DIRECTION_BOTH) {
 								directionProp.setValue(SLConsts.DIRECTION_BOTH);
-								SLPersistentNode metaLinkNode = addMetaLinkNode(linkClass, source, target, true);
-								String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_META_NODE_ID);
-								linkNode.setProperty(String.class, propName, metaLinkNode.getID());
 							}
 						}
 					}
@@ -169,15 +249,11 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			
 			if (status) {
 				linkNode = addLinkNode(pairKeyNode, direction);
-				SLPersistentNode metaLinkNode = addMetaLinkNode(linkClass, source, target, bidirecional);
-				String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_META_NODE_ID);
-				linkNode.setProperty(String.class, propName, metaLinkNode.getID());
 			}
 			
-			SLLink link = new SLLinkImpl(this, linkNode);
-			L linkProxy = ProxyUtil.createProxy(linkClass, link);
-			eventPoster.post(new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, this, linkProxy));
-			
+			SLLink link = new SLLinkImpl(this, linkNode, eventPoster);
+			L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
+			eventPoster.post(new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode));
 			return linkProxy;
 		}
 		catch (SLException e) {
@@ -186,6 +262,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByPredicate(org.openspotlight.graph.SLNodePredicate)
+	 */
 	public Collection<SLNode> getNodesByPredicate(SLNodePredicate predicate) throws SLGraphSessionException {
 		try {
 			Collection<SLNode> nodes = new ArrayList<SLNode>();
@@ -206,20 +285,32 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLNode> getNodesByLink(SLNode node) throws SLGraphSessionException {
 		return getNodesByLink(node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight.graph.SLNode, int)
+	 */
 	public Collection<SLNode> getNodesByLink(SLNode node, int direction) throws SLGraphSessionException {
 		return getNodesByLink(node, SLNode.class, true, direction);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight.graph.SLNode, java.lang.Class, boolean)
+	 */
 	public <N extends SLNode> Collection<N> getNodesByLink(SLNode node, Class<N> nodeClass, boolean returnSubTypes) throws SLGraphSessionException {
 		return getNodesByLink(node, nodeClass, returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight.graph.SLNode, java.lang.Class, boolean, int)
+	 */
 	public <N extends SLNode> Collection<N> getNodesByLink(SLNode node, Class<N> nodeClass, boolean returnSubTypes, int direction) throws SLGraphSessionException {
 		try {
 			Collection<? extends SLLink> links = getLinks(node, null, direction); 
@@ -231,26 +322,41 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class)
+	 */
 	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, null);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class, org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class, org.openspotlight.graph.SLNode, int)
+	 */
 	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, int direction) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, node, SLNode.class, true, direction);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class, org.openspotlight.graph.SLNode, java.lang.Class, boolean)
+	 */
 	public <N extends SLNode> Collection<N> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass, boolean returnSubTypes) throws SLGraphSessionException {
 		return getNodesByLink(linkClass, node, nodeClass, returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class, org.openspotlight.graph.SLNode, java.lang.Class, boolean, int)
+	 */
 	public <N extends SLNode> Collection<N> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass, boolean returnSubTypes, int direction) throws SLGraphSessionException {
 		try {
 			Collection<? extends SLLink> links = getLinks(linkClass, node, null, direction); 
@@ -262,61 +368,97 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getBidirectionalLinks(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+	 */
 	public <L extends SLLink> Collection<L> getBidirectionalLinks(Class<L> linkClass, SLNode side1, SLNode side2) throws SLGraphSessionException {
 		return getLinks(linkClass, side1, side2, SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getBidirectionalLinksBySide(java.lang.Class, org.openspotlight.graph.SLNode)
+	 */
 	public <L extends SLLink> Collection<L> getBidirectionalLinksBySide(Class<L> linkClass, SLNode side) throws SLGraphSessionException {
 		return getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getBidirectionalLinks(org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLLink> getBidirectionalLinks(SLNode side1, SLNode side2) throws SLGraphSessionException {
 		return getLinks(side1, side2, SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getBidirectionalLinksBySide(org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLLink> getBidirectionalLinksBySide(SLNode side) throws SLGraphSessionException {
 		return getLinks(side, null, SLLink.DIRECTION_BI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getUnidirectionalLinks(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+	 */
 	public <L extends SLLink> Collection<L> getUnidirectionalLinks(Class<L> linkClass, SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(linkClass, source, target, SLLink.DIRECTION_UNI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksBySource(java.lang.Class, org.openspotlight.graph.SLNode)
+	 */
 	public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource(Class<L> linkClass, SLNode source) throws SLGraphSessionException {
 		return getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksByTarget(java.lang.Class, org.openspotlight.graph.SLNode)
+	 */
 	public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget(Class<L> linkClass, SLNode target) throws SLGraphSessionException {
 		return getLinks(linkClass, null, target, SLLink.DIRECTION_UNI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getUnidirectionalLinks(org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLLink> getUnidirectionalLinks(SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(source, target, SLLink.DIRECTION_UNI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksBySource(org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLLink> getUnidirectionalLinksBySource(SLNode source) throws SLGraphSessionException {
 		return getLinks(source, null, SLLink.DIRECTION_UNI);
 	}
 
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksByTarget(org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLLink> getUnidirectionalLinksByTarget(SLNode target) throws SLGraphSessionException {
 		return getLinks(null, target, SLLink.DIRECTION_UNI);
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getLinks(org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+	 */
 	public Collection<SLLink> getLinks(SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(source, target, SLLink.DIRECTION_ANY);
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getLinks(org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, int)
+	 */
 	public Collection<SLLink> getLinks(SLNode source, SLNode target, int directionType) throws SLGraphSessionException {
 		Collection<SLLink> links = new ArrayList<SLLink>();
 		Collection<Class<? extends SLLink>> linkClasses = getLinkClasses();
@@ -327,11 +469,17 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getLinks(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+	 */
 	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target) throws SLGraphSessionException {
 		return getLinks(linkClass, source, target, SLLink.DIRECTION_ANY);
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getLinks(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, int)
+	 */
 	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target, int direction) throws SLGraphSessionException {
 		
 		try {
@@ -442,8 +590,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
 				}
 				
 				if (status) {
-					SLLink link = new SLLinkImpl(this, linkNode);
-					links.add(ProxyUtil.createProxy(linkClass, link));
+					SLLink link = new SLLinkImpl(this, linkNode, eventPoster);
+					links.add(ProxyUtil.createLinkProxy(linkClass, link));
 				}
 			}
 			
@@ -455,10 +603,23 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	}
 	
 	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getMetadata()
+	 */
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return new SLMetadataImpl(treeSession);
 	}
 	
+	/**
+	 * Adds the link node.
+	 * 
+	 * @param pairKeyNode the pair key node
+	 * @param direction the direction
+	 * 
+	 * @return the sL persistent node
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
 	private SLPersistentNode addLinkNode(SLPersistentNode pairKeyNode, int direction) throws SLPersistentTreeSessionException {
 		long linkCount = incLinkCount(pairKeyNode);
 		String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
@@ -468,10 +629,29 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return linkNode;
 	}
 	
+	/**
+	 * Find unique link node.
+	 * 
+	 * @param pairKeyNode the pair key node
+	 * 
+	 * @return the sL persistent node
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
 	private SLPersistentNode findUniqueLinkNode(SLPersistentNode pairKeyNode) throws SLPersistentTreeSessionException {
 		return pairKeyNode.getNodes().isEmpty() ? null : pairKeyNode.getNodes().iterator().next();
 	}
 	
+	/**
+	 * Gets the link node by direction.
+	 * 
+	 * @param pairKeyNode the pair key node
+	 * @param direction the direction
+	 * 
+	 * @return the link node by direction
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
 	private SLPersistentNode getLinkNodeByDirection(SLPersistentNode pairKeyNode, int direction) throws SLPersistentTreeSessionException {
 		SLPersistentNode linkNode = null;
 		for (SLPersistentNode node : pairKeyNode.getNodes()) {
@@ -483,6 +663,15 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return linkNode;
 	}
 	
+	/**
+	 * Inc link count.
+	 * 
+	 * @param linkKeyPairNode the link key pair node
+	 * 
+	 * @return the long
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
 	private long incLinkCount(SLPersistentNode linkKeyPairNode) throws SLPersistentTreeSessionException {
 		SLPersistentProperty<Long> linkCountProp = linkKeyPairNode.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
 		long linkCount = linkCountProp.getValue() + 1;
@@ -490,6 +679,17 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return linkCount;
 	}
 	
+	/**
+	 * Gets the pair key node.
+	 * 
+	 * @param linkClass the link class
+	 * @param source the source
+	 * @param target the target
+	 * 
+	 * @return the pair key node
+	 * 
+	 * @throws SLException the SL exception
+	 */
 	private SLPersistentNode getPairKeyNode(Class<? extends SLLink> linkClass, SLNode source, SLNode target) throws SLException {
 
 		SLNode a = getANode(source, target); 
@@ -512,6 +712,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return pairKeyNode;
 	}
 	
+	/**
+	 * Gets the link classes.
+	 * 
+	 * @return the link classes
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	@SuppressWarnings("unchecked")
 	private Collection<Class<? extends SLLink>> getLinkClasses() throws SLGraphSessionException {
 		try {
@@ -530,29 +737,86 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
+	/**
+	 * Gets the direction.
+	 * 
+	 * @param source the source
+	 * @param target the target
+	 * @param bidirecional the bidirecional
+	 * 
+	 * @return the direction
+	 * 
+	 * @throws SLException the SL exception
+	 */
 	private int getDirection(SLNode source, SLNode target, boolean bidirecional) throws SLException {
 		if (bidirecional) return SLConsts.DIRECTION_BOTH;
 		else return getANode(source, target).equals(source) ? SLConsts.DIRECTION_AB : SLConsts.DIRECTION_BA;
 	}
 	
+	/**
+	 * Gets the a node.
+	 * 
+	 * @param source the source
+	 * @param target the target
+	 * 
+	 * @return the a node
+	 * 
+	 * @throws SLException the SL exception
+	 */
 	private SLNode getANode(SLNode source, SLNode target) throws SLException {
 		return source.getID().compareTo(target.getID()) < 0 ? source : target; 
 	}
 
+	/**
+	 * Gets the b node.
+	 * 
+	 * @param source the source
+	 * @param target the target
+	 * 
+	 * @return the b node
+	 * 
+	 * @throws SLException the SL exception
+	 */
 	private SLNode getBNode(SLNode source, SLNode target) throws SLException {
 		return source.getID().compareTo(target.getID()) < 0 ? target : source; 
 	}
 	
+	/**
+	 * Allows multiple.
+	 * 
+	 * @param linkTypeClass the link type class
+	 * 
+	 * @return true, if successful
+	 */
 	private boolean allowsMultiple(Class<? extends SLLink> linkTypeClass) {
 		SLLinkAttribute attribute = linkTypeClass.getAnnotation(SLLinkAttribute.class);
 		return attribute != null && Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_MULTIPLE) > -1;
 	}
 
+	/**
+	 * Allows change to bidirecional.
+	 * 
+	 * @param linkTypeClass the link type class
+	 * 
+	 * @return true, if successful
+	 */
 	private boolean allowsChangeToBidirecional(Class<? extends SLLink> linkTypeClass) {
 		SLLinkAttribute attribute = linkTypeClass.getAnnotation(SLLinkAttribute.class);
 		return attribute != null && Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL) > -1;
 	}
 	
+	/**
+	 * Filter nodes from links.
+	 * 
+	 * @param links the links
+	 * @param node the node
+	 * @param nodeClass the node class
+	 * @param returnSubTypes the return sub types
+	 * 
+	 * @return the set< n>
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	private <N extends SLNode> Set<N> filterNodesFromLinks(Collection<? extends SLLink> links, SLNode node, Class<N> nodeClass, boolean returnSubTypes) throws SLGraphSessionException {
 		Set<N> nodes = new HashSet<N>();
 		for (SLLink link : links) {
@@ -576,65 +840,18 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		return nodes;
 	}
 	
+	/**
+	 * Node of type.
+	 * 
+	 * @param node the node
+	 * @param nodeClass the node class
+	 * @param returnSubTypes the return sub types
+	 * 
+	 * @return true, if successful
+	 */
 	private boolean nodeOfType(SLNode node, Class<? extends SLNode> nodeClass, boolean returnSubTypes) {
 		return (returnSubTypes && nodeClass.isAssignableFrom(node.getClass().getInterfaces()[0]))
 			|| (!returnSubTypes && nodeClass.equals(node.getClass().getInterfaces()[0]));
-	}
-	
-	private SLPersistentNode addMetaLinkNode(Class<? extends SLLink> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLException {
-		
-		SLPersistentNode metaLinkNode = null;
-		
-		Class<?> sourceClass = source.getClass().getInterfaces()[0];
-		Class<?> targetClass = target.getClass().getInterfaces()[0];
-
-		SLPersistentNode classPairKeyNode = getClassPairKeyNode(linkClass, sourceClass, targetClass);
-		int direction = getMetaLinkDirection(sourceClass, targetClass, bidirecional);
-		
-		StringBuilder statement = new StringBuilder();
-		statement.append(classPairKeyNode.getPath())
-			.append("/*[").append(SLConsts.PROPERTY_NAME_DIRECTION).append("=").append(direction).append(']');
-		
-		SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
-		SLPersistentQueryResult result = query.execute();
-		if (result.getRowCount() == 0) {
-			metaLinkNode = addLinkNode(classPairKeyNode, direction);
-		}
-		
-		return metaLinkNode;
-	}
-
-	private int getMetaLinkDirection(Class<?> sourceClass, Class<?> targetClass, boolean bidirecional) throws SLException {
-		if (bidirecional) return SLConsts.DIRECTION_BOTH;
-		else return getAClass(sourceClass, targetClass).equals(sourceClass) ? SLConsts.DIRECTION_AB : SLConsts.DIRECTION_BA;
-	}
-
-	private Class<?> getAClass(Class<?> sourceClass, Class<?> targetClass) throws SLException {
-		return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? sourceClass : targetClass; 
-	}
-
-	private Class<?> getBClass(Class<?> sourceClass, Class<?> targetClass) throws SLException {
-		return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? targetClass : sourceClass; 
-	}
-
-	private SLPersistentNode getClassPairKeyNode(Class<? extends SLLink> linkClass, Class<?> sourceClass, Class<?> targetClass) throws SLException {
-
-		Class<?> aClass = getAClass(sourceClass, targetClass); 
-		Class<?> bClass = getBClass(sourceClass, targetClass);
-		
-		StringBuilder pairKey = new StringBuilder();
-		pairKey.append(aClass.getName()).append('.').append(bClass.getName());
-		SLPersistentNode linkClassNode = SLCommonSupport.getMetaLinkClassNode(treeSession, linkClass);
-		SLPersistentNode pairKeyNode = linkClassNode.getNode(pairKey.toString());
-		
-		if (pairKeyNode == null) {
-			pairKeyNode = linkClassNode.addNode(pairKey.toString());
-			pairKeyNode.setProperty(String.class, SLConsts.PROPERTY_NAME_A_CLASS_NAME, aClass.getName());
-			pairKeyNode.setProperty(String.class, SLConsts.PROPERTY_NAME_B_CLASS_NAME, bClass.getName());
-			pairKeyNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT, 0L);
-		}
-		
-		return pairKeyNode;
 	}
  }
 

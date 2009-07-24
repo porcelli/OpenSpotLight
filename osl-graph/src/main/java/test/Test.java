@@ -2,20 +2,17 @@ package test;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import javax.jcr.Value;
 import javax.jcr.Workspace;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.apache.jackrabbit.core.RepositoryImpl;
-import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.apache.jackrabbit.core.TransientRepository;
 
 public class Test {
 	
@@ -25,9 +22,7 @@ public class Test {
 		
 		try {
 			
-			   RepositoryConfig repositoryConfig = RepositoryConfig.create(
-					      "/Users/vitorchagas/local/projects/workspace/openspotlight/spotlight-graph/repository.xml", "/tmp/repository");
-					    Repository repo = RepositoryImpl.create(repositoryConfig);
+			   Repository repo = new TransientRepository();
 
 			Credentials credentials = new SimpleCredentials("username", "password".toCharArray());
 			session = repo.login(credentials);
@@ -78,8 +73,17 @@ public class Test {
 			QueryManager queryManager = workspace.getQueryManager();
 			Query query = queryManager.createQuery("//*//descendant::node()" , Query.XPATH);
 			QueryResult result = query.execute();
-			NodeIterator nodeIter = result.getNodes();
 			
+			System.out.println();
+			System.out.println();
+			String[] names = result.getColumnNames();
+			for (int i = 0; i < names.length; i++) {
+				System.out.println(names[i]);
+			}
+			
+
+			/**
+			NodeIterator nodeIter = result.getNodes();
 			while (nodeIter.hasNext()) {
 				Node node = nodeIter.nextNode();
 				System.out.println(node.getPath());
@@ -99,6 +103,8 @@ public class Test {
 					
 				}
 			}
+			
+			**/
 			
 			root.getNode("hello").remove();
 			session.save();
