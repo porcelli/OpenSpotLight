@@ -49,12 +49,15 @@
 
 package org.openspotlight.federation.data.processing;
 
+import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
 import java.util.Set;
 
 import net.jcip.annotations.ThreadSafe;
 
+import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -117,13 +120,15 @@ public interface BundleProcessor<T extends Artifact> {
          * @param allValidArtifacts
          * @param notProcessedArtifacts
          * @param alreadyProcessedArtifacts
+         * @param mutableType
          */
         public BundleProcessingGroup(final Bundle bundle,
                 final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
                 final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
                 final Set<T> modifiedArtifacts, final Set<T> allValidArtifacts,
                 final Set<T> notProcessedArtifacts,
-                final Set<T> alreadyProcessedArtifacts) {
+                final Set<T> alreadyProcessedArtifacts,
+                final MutableType mutableType) {
             checkNotNull("bundle", bundle); //$NON-NLS-1$
             checkNotNull("addedArtifacts", addedArtifacts);//$NON-NLS-1$
             checkNotNull("excludedArtifacts", excludedArtifacts);//$NON-NLS-1$
@@ -135,14 +140,31 @@ public interface BundleProcessor<T extends Artifact> {
             checkNotNull("alreadyProcessedArtifacts", alreadyProcessedArtifacts);//$NON-NLS-1$
             
             this.bundle = bundle;
-            this.addedArtifacts = addedArtifacts;
-            this.excludedArtifacts = excludedArtifacts;
-            this.ignoredArtifacts = ignoredArtifacts;
-            this.artifactsWithError = artifactsWithError;
-            this.modifiedArtifacts = modifiedArtifacts;
-            this.allValidArtifacts = allValidArtifacts;
-            this.notProcessedArtifacts = notProcessedArtifacts;
-            this.alreadyProcessedArtifacts = alreadyProcessedArtifacts;
+            switch (mutableType) {
+                case IMMUTABLE:
+                    this.addedArtifacts = unmodifiableSet(addedArtifacts);
+                    this.excludedArtifacts = unmodifiableSet(excludedArtifacts);
+                    this.ignoredArtifacts = unmodifiableSet(ignoredArtifacts);
+                    this.artifactsWithError = unmodifiableSet(artifactsWithError);
+                    this.modifiedArtifacts = unmodifiableSet(modifiedArtifacts);
+                    this.allValidArtifacts = unmodifiableSet(allValidArtifacts);
+                    this.notProcessedArtifacts = unmodifiableSet(notProcessedArtifacts);
+                    this.alreadyProcessedArtifacts = unmodifiableSet(alreadyProcessedArtifacts);
+                    break;
+                case MUTABLE:
+                    this.addedArtifacts = addedArtifacts;
+                    this.excludedArtifacts = excludedArtifacts;
+                    this.ignoredArtifacts = ignoredArtifacts;
+                    this.artifactsWithError = artifactsWithError;
+                    this.modifiedArtifacts = modifiedArtifacts;
+                    this.allValidArtifacts = allValidArtifacts;
+                    this.notProcessedArtifacts = notProcessedArtifacts;
+                    this.alreadyProcessedArtifacts = alreadyProcessedArtifacts;
+                    break;
+                default:
+                    throw logAndReturn(new IllegalStateException(
+                            "unexpected MutableType")); //$NON-NLS-1$
+            }
             
         }
         

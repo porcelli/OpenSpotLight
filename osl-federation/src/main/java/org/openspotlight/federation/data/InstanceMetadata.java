@@ -82,6 +82,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openspotlight.common.util.Reflection.InheritanceType;
+import org.openspotlight.federation.data.util.ConfiguratonNodes;
 
 /**
  * This type guards the {@link ConfigurationNode} instance metadata, using the
@@ -655,6 +656,10 @@ public interface InstanceMetadata {
      * This visitor groups all children of a given type from the node that
      * accepted this visitor. This visitor should be used only in a one visit,
      * because it stores the found nodes inside an attribute.
+     * 
+     * The easier way is to use the static method
+     * {@link ConfiguratonNodes#findAllNodesOfType(ConfigurationNode, Class)}
+     * method.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
