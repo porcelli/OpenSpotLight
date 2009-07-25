@@ -47,90 +47,18 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.impl;
+package org.openspotlight.federation.data.processing;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-import net.jcip.annotations.ThreadSafe;
+import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.graph.SLGraphSession;
 
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata;
-import org.openspotlight.federation.data.StaticMetadata;
-
-/**
- * This node is to map excluded artifacts inside an artifact mapping in a ant
- * like way.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
- */
-@ThreadSafe
-@StaticMetadata(keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { ArtifactMapping.class })
-public class Excluded implements ConfigurationNode {
+public class JavaBundleProcessor implements BundleProcessor<StreamArtifact> {
     
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2338153689125625472L;
-    
-    private final InstanceMetadata instanceMetadata;
-    
-    /**
-     * Constructor to create an excluded node inside an artifact mapping.
-     * 
-     * @param name
-     * @param artifactMapping
-     */
-    public Excluded(final ArtifactMapping artifactMapping, final String name) {
-        this.instanceMetadata = createWithKeyProperty(this, artifactMapping,
-                name);
-        checkCondition("noExcluded", //$NON-NLS-1$
-                artifactMapping.getExcludedByName(name) == null);
-        artifactMapping.getInstanceMetadata().addChild(this);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final int compareTo(final ConfigurationNode o) {
-        return this.instanceMetadata.compare(this, o);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public final boolean equals(final Object obj) {
-        return this.instanceMetadata.equals(obj);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final InstanceMetadata getInstanceMetadata() {
-        return this.instanceMetadata;
-    }
-    
-    /**
-     * The name, in this case, is a unique identifier (with parent node) to this
-     * node.
-     * 
-     * @return the node name
-     */
-    public String getName() {
-        return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    public final int hashCode() {
-        return this.instanceMetadata.hashCode();
+    public void processArtifact(
+            final org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext<StreamArtifact> context,
+            final SLGraphSession graphSession) {
+        // TODO Auto-generated method stub
+        
     }
     
 }

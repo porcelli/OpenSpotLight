@@ -56,41 +56,44 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.processing.BundleProcessor;
 
 /**
- * This node is to map excluded artifacts inside an artifact mapping in a ant
- * like way.
+ * This {@link BundleProcessorType} describes all valid classes that can process
+ * this type of bundle. This should be done by configuration, so for
+ * "java bundles" for instance is possible to add a few processor types. This
+ * {@link BundleProcessorType} classes should implement the
+ * {@link BundleProcessor} interface.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @ThreadSafe
-@StaticMetadata(keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { ArtifactMapping.class })
-public class Excluded implements ConfigurationNode {
+@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "className", keyPropertyType = String.class, validParentTypes = { Bundle.class })
+public final class BundleProcessorType implements ConfigurationNode {
     
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -2338153689125625472L;
+    private static final String ACTIVE = "active"; //$NON-NLS-1$
     
     private final InstanceMetadata instanceMetadata;
     
+    static final long serialVersionUID = -3606246260530743008L;
+    
     /**
-     * Constructor to create an excluded node inside an artifact mapping.
+     * Creates a project within a other project.
      * 
-     * @param name
-     * @param artifactMapping
+     * @param project
+     * @param className
      */
-    public Excluded(final ArtifactMapping artifactMapping, final String name) {
-        this.instanceMetadata = createWithKeyProperty(this, artifactMapping,
-                name);
-        checkCondition("noExcluded", //$NON-NLS-1$
-                artifactMapping.getExcludedByName(name) == null);
-        artifactMapping.getInstanceMetadata().addChild(this);
+    public BundleProcessorType(final Project project, final String className) {
+        this.instanceMetadata = createWithKeyProperty(this, project, className);
+        checkCondition("noBundleProcessor", //$NON-NLS-1$
+                project.getInstanceMetadata().getChildByKeyValue(
+                        BundleProcessorType.class, className) == null);
+        project.getInstanceMetadata().addChild(this);
+        
     }
     
     /**
-     * 
      * {@inheritDoc}
      */
     public final int compareTo(final ConfigurationNode o) {
@@ -108,6 +111,13 @@ public class Excluded implements ConfigurationNode {
     
     /**
      * 
+     * @return active property
+     */
+    public final Boolean getActive() {
+        return this.instanceMetadata.getProperty(ACTIVE);
+    }
+    
+    /**
      * {@inheritDoc}
      */
     public final InstanceMetadata getInstanceMetadata() {
@@ -115,22 +125,21 @@ public class Excluded implements ConfigurationNode {
     }
     
     /**
-     * The name, in this case, is a unique identifier (with parent node) to this
-     * node.
+     * The class name for a valid bundle processor for this byndle type.
      * 
-     * @return the node name
+     * @return the class name
      */
     public String getName() {
         return (String) this.instanceMetadata.getKeyPropertyValue();
     }
     
     /**
+     * Sets the active property.
      * 
-     * {@inheritDoc}
+     * @param active
      */
-    @Override
-    public final int hashCode() {
-        return this.instanceMetadata.hashCode();
+    public final void setActive(final Boolean active) {
+        this.instanceMetadata.setProperty(ACTIVE, active);
     }
     
 }

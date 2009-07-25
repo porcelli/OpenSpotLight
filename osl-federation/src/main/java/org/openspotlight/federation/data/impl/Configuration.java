@@ -116,16 +116,6 @@ public final class Configuration implements ConfigurationNode {
     }
     
     /**
-     * Adds a new repository.
-     * 
-     * @param repository
-     *            to be added
-     */
-    public final void addRepository(final Repository repository) {
-        this.instanceMetadata.addChild(repository);
-    }
-    
-    /**
      * {@inheritDoc}
      */
     public final int compareTo(final ConfigurationNode o) {

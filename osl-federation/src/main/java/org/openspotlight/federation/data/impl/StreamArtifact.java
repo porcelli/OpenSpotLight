@@ -72,7 +72,8 @@ import org.openspotlight.federation.data.StaticMetadata;
         Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
         Included.class }, propertyNames = { "name", "dataSha1" }, propertyTypes = {
         String.class, String.class })
-public final class StreamArtifact implements ConfigurationNode, GeneratedNode {
+public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
+        Artifact {
     
     /**
 	 * 
@@ -92,10 +93,11 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode {
      * @param relativeName
      */
     public StreamArtifact(final Bundle bundle, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
+        this.instanceMetadata = createWithKeyProperty(this, bundle,
+                relativeName);
         checkCondition("noStreamArtifact", //$NON-NLS-1$
                 bundle.getStreamArtifactByName(relativeName) == null);
-        bundle.addStreamArtifact(this);
+        bundle.getInstanceMetadata().addChild(this);
     }
     
     /**
@@ -105,10 +107,11 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode {
      * @param relativeName
      */
     public StreamArtifact(final Project project, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(this, project, relativeName);
+        this.instanceMetadata = createWithKeyProperty(this, project,
+                relativeName);
         checkCondition("noStreamArtifact", //$NON-NLS-1$
                 project.getStreamArtifactByName(relativeName) == null);
-        project.addStreamArtifact(this);
+        project.getInstanceMetadata().addChild(this);
     }
     
     /**

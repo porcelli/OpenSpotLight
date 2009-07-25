@@ -132,7 +132,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 final String sha1 = getSha1SignatureEncodedAsBase64(content);
                 final InputStream is = new ByteArrayInputStream(content);
                 final StreamArtifact artifact = bundle
-                        .addArtifact(artifactName);
+                        .addStreamArtifact(artifactName);
                 artifact.setData(is);
                 artifact.setDataSha1(sha1);
                 loadCount++;

@@ -94,7 +94,7 @@ public final class Project implements ConfigurationNode {
         this.instanceMetadata = createWithKeyProperty(this, project, name);
         checkCondition("noProject", //$NON-NLS-1$
                 project.getProjectByName(name) == null);
-        project.addProject(this);
+        project.getInstanceMetadata().addChild(this);
         
     }
     
@@ -108,52 +108,7 @@ public final class Project implements ConfigurationNode {
         this.instanceMetadata = createWithKeyProperty(this, repository, name);
         checkCondition("noProject", //$NON-NLS-1$
                 repository.getProjectByName(name) == null);
-        repository.addProject(this);
-    }
-    
-    /**
-     * Adds an artifact mapping.
-     * 
-     * @param ArtifactMapping
-     */
-    public final void addArtifactMapping(final ArtifactMapping ArtifactMapping) {
-        this.instanceMetadata.addChild(ArtifactMapping);
-    }
-    
-    /**
-     * Adds a bundle.
-     * 
-     * @param bundle
-     */
-    public final void addBundle(final Bundle bundle) {
-        this.instanceMetadata.addChild(bundle);
-    }
-    
-    /**
-     * Adds a jcr artifact.
-     * 
-     * @param JcrArtifact
-     */
-    public final void addJcrArtifact(final JcrArtifact JcrArtifact) {
-        this.instanceMetadata.addChild(JcrArtifact);
-    }
-    
-    /**
-     * Adds a inner project.
-     * 
-     * @param Project
-     */
-    public final void addProject(final Project Project) {
-        this.instanceMetadata.addChild(Project);
-    }
-    
-    /**
-     * Adds an artifact.
-     * 
-     * @param Artifact
-     */
-    public final void addStreamArtifact(final StreamArtifact Artifact) {
-        this.instanceMetadata.addChild(Artifact);
+        repository.getInstanceMetadata().addChild(this);
     }
     
     /**

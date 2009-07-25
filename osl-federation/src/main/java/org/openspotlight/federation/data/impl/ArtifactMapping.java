@@ -93,7 +93,7 @@ public final class ArtifactMapping implements ConfigurationNode {
         this.instanceMetadata = createWithKeyProperty(this, bundle, relative);
         checkCondition("noArtifactMapping", //$NON-NLS-1$
                 bundle.getArtifactMappingByName(relative) == null);
-        bundle.addArtifactMapping(this);
+        bundle.getInstanceMetadata().addChild(this);
     }
     
     /**
@@ -106,26 +106,8 @@ public final class ArtifactMapping implements ConfigurationNode {
         this.instanceMetadata = createWithKeyProperty(this, project, relative);
         checkCondition("noArtifactMapping", //$NON-NLS-1$
                 project.getArtifactMappingByName(relative) == null);
-        project.addArtifactMapping(this);
+        project.getInstanceMetadata().addChild(this);
         
-    }
-    
-    /**
-     * adds a excluded inside this repository.
-     * 
-     * @param excluded
-     */
-    public final void addExcluded(final Excluded excluded) {
-        this.instanceMetadata.addChild(excluded);
-    }
-    
-    /**
-     * adds a included inside this repository.
-     * 
-     * @param included
-     */
-    public final void addIncluded(final Included included) {
-        this.instanceMetadata.addChild(included);
     }
     
     /**

@@ -73,8 +73,8 @@ import org.openspotlight.federation.data.StaticMetadata;
 @ThreadSafe
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
         Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
-        Project.class, StreamArtifact.class, JcrArtifact.class,
-        ArtifactMapping.class, Bundle.class })
+        BundleProcessorType.class, Project.class, StreamArtifact.class,
+        JcrArtifact.class, ArtifactMapping.class, Bundle.class })
 public class Bundle implements ConfigurationNode {
     
     /**
@@ -98,55 +98,29 @@ public class Bundle implements ConfigurationNode {
         this.instanceMetadata = createWithKeyProperty(this, project, name);
         checkCondition("noBundle", //$NON-NLS-1$
                 project.getBundleByName(name) == null);
-        project.addBundle(this);
+        project.getInstanceMetadata().addChild(this);
         
     }
     
     /**
-     * Adds an artifact by its name.
+     * Adds a new {@link StreamArtifact} to this bundle if there's no
+     * {@link StreamArtifact} with the artifactName passed as a param. If
+     * there's any {@link StreamArtifact} with this artifactName, this method
+     * just returns the existing one.
      * 
      * @param artifactName
-     * @return the new added artifact
-     * 
+     * @return a stream artifact
      */
-    public final StreamArtifact addArtifact(final String artifactName) {
-        return new StreamArtifact(this, artifactName);
-    }
-    
-    /**
-     * Adds an artifact mapping.
-     * 
-     * @param ArtifactMapping
-     */
-    public final void addArtifactMapping(final ArtifactMapping ArtifactMapping) {
-        this.instanceMetadata.addChild(ArtifactMapping);
-    }
-    
-    /**
-     * Adds a bundle.
-     * 
-     * @param bundle
-     */
-    public final void addBundle(final Bundle bundle) {
-        this.instanceMetadata.addChild(bundle);
-    }
-    
-    /**
-     * Adds a jcr artifact.
-     * 
-     * @param JcrArtifact
-     */
-    public final void addJcrArtifact(final JcrArtifact JcrArtifact) {
-        this.instanceMetadata.addChild(JcrArtifact);
-    }
-    
-    /**
-     * Adds an artifact.
-     * 
-     * @param Artifact
-     */
-    public final void addStreamArtifact(final StreamArtifact Artifact) {
-        this.instanceMetadata.addChild(Artifact);
+    public StreamArtifact addStreamArtifact(final String artifactName) {
+        final StreamArtifact streamArtifact = this
+                .getStreamArtifactByName(artifactName);
+        if (streamArtifact != null) {
+            return streamArtifact;
+        } else {
+            final StreamArtifact newStreamArtifact = new StreamArtifact(this,
+                    artifactName);
+            return newStreamArtifact;
+        }
     }
     
     /**

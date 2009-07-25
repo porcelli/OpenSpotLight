@@ -79,7 +79,8 @@ import org.openspotlight.federation.data.StaticMetadata;
         Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
         Included.class }, propertyNames = { "name", "dataSha1" }, propertyTypes = {
         String.class, String.class })
-public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
+public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
+        Artifact {
     
     /**
 	 * 
@@ -99,10 +100,11 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
      * @param relativeName
      */
     public JcrArtifact(final Bundle bundle, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
+        this.instanceMetadata = createWithKeyProperty(this, bundle,
+                relativeName);
         checkCondition("noJcrArtifact", //$NON-NLS-1$
                 bundle.getJcrArtifactByName(relativeName) == null);
-        bundle.addJcrArtifact(this);
+        bundle.getInstanceMetadata().addChild(this);
     }
     
     /**
@@ -112,10 +114,11 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode {
      * @param relativeName
      */
     public JcrArtifact(final Project project, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(this, project, relativeName);
+        this.instanceMetadata = createWithKeyProperty(this, project,
+                relativeName);
         checkCondition("noJcrArtifact", //$NON-NLS-1$
                 project.getJcrArtifactByName(relativeName) == null);
-        project.addJcrArtifact(this);
+        project.getInstanceMetadata().addChild(this);
     }
     
     /**

@@ -93,17 +93,8 @@ public final class Repository implements ConfigurationNode {
         this.instanceMetadata = createWithKeyProperty(this, configuration, name);
         checkCondition("noRepository", //$NON-NLS-1$
                 configuration.getRepositoryByName(name) == null);
-        configuration.addRepository(this);
+        configuration.getInstanceMetadata().addChild(this);
         
-    }
-    
-    /**
-     * adds a project inside this repository.
-     * 
-     * @param project
-     */
-    public final void addProject(final Project project) {
-        this.instanceMetadata.addChild(project);
     }
     
     /**

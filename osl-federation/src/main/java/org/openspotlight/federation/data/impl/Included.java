@@ -82,10 +82,11 @@ public class Included implements ConfigurationNode {
      * @param artifactMapping
      */
     public Included(final ArtifactMapping artifactMapping, final String name) {
-        this.instanceMetadata = createWithKeyProperty(this, artifactMapping, name);
+        this.instanceMetadata = createWithKeyProperty(this, artifactMapping,
+                name);
         checkCondition("noIncluded", //$NON-NLS-1$
                 artifactMapping.getIncludedByName(name) == null);
-        artifactMapping.addIncluded(this);
+        artifactMapping.getInstanceMetadata().addChild(this);
     }
     
     /**
