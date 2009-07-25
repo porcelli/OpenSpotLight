@@ -54,6 +54,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Collections.setOf;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.junit.Before;
@@ -63,8 +64,6 @@ import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.JavaBundle;
-import org.openspotlight.federation.data.impl.Project;
-import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.AbstractArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader;
 import org.openspotlight.federation.data.test.AbstractNodeTest;
@@ -82,6 +81,12 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
     
     protected Configuration configuration;
     
+    protected String REPOSITORY_NAME = "r-1";
+    
+    protected String PROJECT_NAME = "p-1,1";
+    
+    protected String BUNDLE_NAME = "b-1,1,1";
+    
     @Before
     public void createArtifactLoader() {
         this.artifactLoader = new AbstractArtifactLoader() {
@@ -90,7 +95,11 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
             protected Set<String> getAllArtifactNames(final Bundle bundle,
                     final ArtifactMapping mapping)
                     throws ConfigurationException {
-                return setOf("1", "2", "3", "4", "5");
+                if (bundle.getStreamArtifacts().size() == 0) {
+                    return setOf("1", "2", "3", "4");
+                } else {
+                    return Collections.emptySet();
+                }
             }
             
             @Override
@@ -98,6 +107,11 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
                     final ArtifactMapping mapping, final String artifactName)
                     throws Exception {
                 return artifactName.getBytes();
+            }
+            
+            @Override
+            protected int numberOfParallelThreads() {
+                return 4;
             }
             
         };
@@ -110,16 +124,12 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
     
     @Test
     public void shouldLoadArtifacts() throws Exception {
-        for (final Repository repository : this.configuration.getRepositories()) {
-            for (final Project project : repository.getProjects()) {
-                for (final Bundle bundle : project.getBundles()) {
-                    this.artifactLoader.loadArtifactsFromMappings(bundle);
-                    if (!(bundle instanceof JavaBundle)) {
-                        assertThat(bundle.getStreamArtifacts().size(),
-                                is(not(0)));
-                    }
-                }
-            }
+        final Bundle bundle = this.configuration.getRepositoryByName(
+                this.REPOSITORY_NAME).getProjectByName(this.PROJECT_NAME)
+                .getBundleByName(this.BUNDLE_NAME);
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        if (!(bundle instanceof JavaBundle)) {
+            assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
         }
     }
     

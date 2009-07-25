@@ -80,10 +80,10 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
     public void createConfiguration() throws Exception {
         this.configuration = new Configuration();
         final Repository repository = new Repository(this.configuration,
-                "Current source files");
+                this.REPOSITORY_NAME);
         repository.setNumberOfParallelThreads(4);
-        final Project project = new Project(repository, "current project");
-        final Bundle bundle = new Bundle(project, "java source");
+        final Project project = new Project(repository, this.PROJECT_NAME);
+        final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
         final String basePath = new File("../").getCanonicalPath() + "/";
         bundle.setInitialLookup(basePath);
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,

@@ -88,7 +88,6 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * 
  */
 public abstract class AbstractArtifactLoader implements ArtifactLoader {
-    
     /**
      * Worker class for loading artifacts
      * 
@@ -133,6 +132,19 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             return null;
         }
         
+    }
+    
+    /**
+     * Executor for this loader.
+     */
+    private final ExecutorService executor;
+    
+    /**
+     * Default constructor
+     */
+    public AbstractArtifactLoader() {
+        final int numberOfThreads = this.numberOfParallelThreads();
+        this.executor = Executors.newFixedThreadPool(numberOfThreads);
     }
     
     /**
@@ -205,7 +217,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         final AtomicInteger errorCounter = new AtomicInteger();
         final AtomicInteger loadCounter = new AtomicInteger();
-        
+        final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
         final Set<String> includedPatterns = new HashSet<String>();
         final Set<String> excludedPatterns = new HashSet<String>();
         int ignoreCount = 0;
@@ -224,12 +236,26 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             ignoreCount += innerResult.getIgnoredNames().size();
             
             this.splitWorkBetweenThreads(bundle, errorCounter, loadCounter,
-                    mapping, namesToProcess);
+                    mapping, namesToProcess, workers);
             
+        }
+        try {
+            this.executor.invokeAll(workers);
+            while (this.executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
+                this.wait();
+            }
+        } catch (final InterruptedException e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
         }
         return new ArtifactProcessingCount(loadCounter.get(), ignoreCount,
                 errorCounter.get());
     }
+    
+    /**
+     * 
+     * @return the best number of parallel threads for this artifact loader
+     */
+    protected abstract int numberOfParallelThreads();
     
     /**
      * This method splits all job between
@@ -246,8 +272,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     @SuppressWarnings("boxing")
     private void splitWorkBetweenThreads(final Bundle bundle,
             final AtomicInteger errorCounter, final AtomicInteger loadCounter,
-            final ArtifactMapping mapping, final Set<String> namesToProcess)
-            throws ConfigurationException {
+            final ArtifactMapping mapping, final Set<String> namesToProcess,
+            final List<Callable<Void>> workers) throws ConfigurationException {
         final int numberOfThreads = bundle.getRepository()
                 .getNumberOfParallelThreads();
         final int allNamesToProcessSize = namesToProcess.size();
@@ -269,23 +295,12 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             }
         }
         
-        final List<Callable<Void>> workers = new ArrayList<Callable<Void>>(
-                numberOfThreads);
         for (final Map.Entry<Integer, Set<String>> entry : listsForThreads
                 .entrySet()) {
             final Worker w = new Worker(bundle, errorCounter, loadCounter,
                     mapping, entry.getValue());
             workers.add(w);
         }
-        final ExecutorService executor = Executors
-                .newFixedThreadPool(numberOfThreads);
-        try {
-            executor.invokeAll(workers);
-            while (executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
-                this.wait();
-            }
-        } catch (final InterruptedException e) {
-            throw logAndReturnNew(e, ConfigurationException.class);
-        }
+        
     }
 }
