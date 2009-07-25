@@ -81,22 +81,24 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * without filtering this.
      * 
      * @param bundle
+     * @param mapping
      * @return
      * @throws ConfigurationException
      */
-    protected abstract Set<String> getAllArtifactNames(Bundle bundle)
-            throws ConfigurationException;
+    protected abstract Set<String> getAllArtifactNames(Bundle bundle,
+            ArtifactMapping mapping) throws ConfigurationException;
     
     /**
      * This method loads an artifact using its names
      * 
      * @param bundle
+     * @param mapping
      * @param artifactName
      * @return
      * @throws Exception
      */
-    protected abstract byte[] loadArtifact(Bundle bundle, String artifactName)
-            throws Exception;
+    protected abstract byte[] loadArtifact(Bundle bundle,
+            ArtifactMapping mapping, String artifactName) throws Exception;
     
     /**
      * Filter the included and excluded patterns and also creates each artifact
@@ -114,6 +116,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         int errorCount = 0;
         final Set<String> includedPatterns = new HashSet<String>();
         final Set<String> excludedPatterns = new HashSet<String>();
+        int ignoreCount = 0;
         for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
             for (final Included included : mapping.getIncludeds()) {
                 includedPatterns.add(included.getName());
@@ -121,26 +124,29 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             for (final Excluded excluded : mapping.getExcludeds()) {
                 excludedPatterns.add(excluded.getName());
             }
-        }
-        final Set<String> namesToFilter = this.getAllArtifactNames(bundle);
-        final FilterResult result = filterNamesByPattern(namesToFilter,
-                includedPatterns, excludedPatterns, false);
-        final Set<String> namesToProcess = result.getIncludedNames();
-        for (final String artifactName : namesToProcess) {
-            try {
-                final byte[] content = this.loadArtifact(bundle, artifactName);
-                final String sha1 = getSha1SignatureEncodedAsBase64(content);
-                final InputStream is = new ByteArrayInputStream(content);
-                final StreamArtifact artifact = bundle
-                        .addStreamArtifact(artifactName);
-                artifact.setData(is);
-                artifact.setDataSha1(sha1);
-                loadCount++;
-            } catch (final Exception e) {
-                errorCount++;
+            final Set<String> namesToFilter = this.getAllArtifactNames(bundle,
+                    mapping);
+            final FilterResult innerResult = filterNamesByPattern(
+                    namesToFilter, includedPatterns, excludedPatterns, false);
+            final Set<String> namesToProcess = innerResult.getIncludedNames();
+            ignoreCount += innerResult.getIgnoredNames().size();
+            for (final String artifactName : namesToProcess) {
+                try {
+                    final byte[] content = this.loadArtifact(bundle, mapping,
+                            artifactName);
+                    final String sha1 = getSha1SignatureEncodedAsBase64(content);
+                    final InputStream is = new ByteArrayInputStream(content);
+                    final StreamArtifact artifact = bundle
+                            .addStreamArtifact(artifactName);
+                    artifact.setData(is);
+                    artifact.setDataSha1(sha1);
+                    loadCount++;
+                } catch (final Exception e) {
+                    errorCount++;
+                }
             }
+            
         }
-        final int ignoreCount = result.getIgnoredNames().size();
         return new ArtifactProcessingCount(loadCount, ignoreCount, errorCount);
     }
 }

@@ -62,6 +62,7 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 
 /**
@@ -76,13 +77,14 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
      * Return all files from bundle.initialLookup directory.
      */
     @Override
-    protected Set<String> getAllArtifactNames(final Bundle bundle)
-            throws ConfigurationException {
+    protected Set<String> getAllArtifactNames(final Bundle bundle,
+            final ArtifactMapping mapping) throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
-        final String basePath = bundle.getInitialLookup();
         try {
-            final Set<String> allFiles = listFileNamesFrom(basePath);
-            return allFiles;
+            final String basePath = bundle.getInitialLookup()
+                    + mapping.getRelative();
+            final Set<String> filesFromThisMapping = listFileNamesFrom(basePath);
+            return filesFromThisMapping;
         } catch (final SLException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
@@ -92,11 +94,13 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
      * loads the content of a file found on bundle.initialLookup + artifactName
      */
     @Override
-    protected byte[] loadArtifact(final Bundle bundle, final String artifactName)
+    protected byte[] loadArtifact(final Bundle bundle,
+            final ArtifactMapping mapping, final String artifactName)
             throws Exception {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
-        final String fileName = bundle.getInitialLookup() + artifactName;
+        final String fileName = bundle.getInitialLookup()
+                + mapping.getRelative() + artifactName;
         final File file = new File(fileName);
         checkCondition("fileExists", file.exists()); //$NON-NLS-1$
         final FileInputStream fis = new FileInputStream(file);

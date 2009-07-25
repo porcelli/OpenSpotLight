@@ -187,6 +187,27 @@ public final class BundleProcessorManager {
         
     }
     
+    /**
+     * This method creates each {@link Callable} to call
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, GraphContext)}
+     * . It make a few copies because the decision to mark some artifact as
+     * ignored or processed should be done by each {@link BundleProcessor},
+     * independent of the other {@link BundleProcessor} involved.
+     * 
+     * @param graphContext
+     * @param bundle
+     * @param allValidArtifacts
+     * @param addedArtifacts
+     * @param excludedArtifacts
+     * @param modifiedArtifacts
+     * @param notProcessedArtifacts
+     * @param alreadyProcessedArtifacts
+     * @param ignoredArtifacts
+     * @param artifactsWithError
+     * @param processor
+     * @return a list of {@link Callable} processor action
+     * @throws BundleProcessingFatalException
+     */
     private List<BundleProcessorCallable> createProcessorActions(
             final GraphContext graphContext, final Bundle bundle,
             final Set<StreamArtifact> allValidArtifacts,
@@ -380,7 +401,6 @@ public final class BundleProcessorManager {
             }
             final ExecutorService executor = Executors
                     .newFixedThreadPool(numberOfParallelThreads);
-            
             executor.invokeAll(allProcessActions);
         } catch (final Exception e) {
             throw logAndReturnNew(e, BundleProcessingFatalException.class);

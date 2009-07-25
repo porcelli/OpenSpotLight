@@ -55,10 +55,12 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.tools.ant.types.selectors.SelectorUtils;
+import org.openspotlight.common.MutableType;
 
 /**
  * This class has the necessary logic to filter names using the apache ant
@@ -89,13 +91,55 @@ public class PatternMatcher {
         private final Set<String> excludedNames;
         private final Set<String> ignoredNames;
         
-        FilterResult(final Set<String> allNames,
+        /**
+         * Creates a empty filterResult
+         * 
+         * @param type
+         */
+        public FilterResult(final MutableType type) {
+            this(new HashSet<String>(), new HashSet<String>(),
+                    new HashSet<String>(), new HashSet<String>(), type);
+        }
+        
+        /**
+         * Immutable result
+         * 
+         * @param allNames
+         * @param includedNames
+         * @param excludedNames
+         * @param ignoredNames
+         */
+        public FilterResult(final Set<String> allNames,
                 final Set<String> includedNames,
                 final Set<String> excludedNames, final Set<String> ignoredNames) {
-            this.allNames = unmodifiableSet(allNames);
-            this.includedNames = unmodifiableSet(includedNames);
-            this.excludedNames = unmodifiableSet(excludedNames);
-            this.ignoredNames = unmodifiableSet(ignoredNames);
+            this(allNames, includedNames, excludedNames, ignoredNames,
+                    MutableType.IMMUTABLE);
+        }
+        
+        /**
+         * Mutability optional on this {@link Constructor}
+         * 
+         * @param allNames
+         * @param includedNames
+         * @param excludedNames
+         * @param ignoredNames
+         * @param type
+         */
+        public FilterResult(final Set<String> allNames,
+                final Set<String> includedNames,
+                final Set<String> excludedNames,
+                final Set<String> ignoredNames, final MutableType type) {
+            if (MutableType.IMMUTABLE.equals(type)) {
+                this.allNames = unmodifiableSet(allNames);
+                this.includedNames = unmodifiableSet(includedNames);
+                this.excludedNames = unmodifiableSet(excludedNames);
+                this.ignoredNames = unmodifiableSet(ignoredNames);
+            } else {
+                this.allNames = allNames;
+                this.includedNames = includedNames;
+                this.excludedNames = excludedNames;
+                this.ignoredNames = ignoredNames;
+            }
         }
         
         /**

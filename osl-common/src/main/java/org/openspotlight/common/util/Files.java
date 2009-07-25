@@ -186,7 +186,10 @@ public class Files {
         checkCondition("basePathExists", basePathAsFile.exists()); //$NON-NLS-1$
         checkCondition("basePathIsDirectory", basePathAsFile.isDirectory()); //$NON-NLS-1$
         try {
-            final String normalizedBasePath = getNormalizedFileName(basePathAsFile);
+            String normalizedBasePath = getNormalizedFileName(basePathAsFile);
+            if (!normalizedBasePath.endsWith("/")) { //$NON-NLS-1$
+                normalizedBasePath = normalizedBasePath + "/"; //$NON-NLS-1$
+            }
             final Set<String> result = new HashSet<String>();
             final File initial = new File(normalizedBasePath);
             listFileNamesFrom(result, normalizedBasePath, initial);

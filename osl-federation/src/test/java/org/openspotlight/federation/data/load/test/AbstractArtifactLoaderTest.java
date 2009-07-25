@@ -59,6 +59,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.JavaBundle;
@@ -86,14 +87,16 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
         this.artifactLoader = new AbstractArtifactLoader() {
             
             @Override
-            protected Set<String> getAllArtifactNames(final Bundle bundle)
+            protected Set<String> getAllArtifactNames(final Bundle bundle,
+                    final ArtifactMapping mapping)
                     throws ConfigurationException {
                 return setOf("1", "2", "3", "4", "5");
             }
             
             @Override
             protected byte[] loadArtifact(final Bundle bundle,
-                    final String artifactName) throws Exception {
+                    final ArtifactMapping mapping, final String artifactName)
+                    throws Exception {
                 return artifactName.getBytes();
             }
             
@@ -101,7 +104,7 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
     }
     
     @Before
-    public void createConfiguration() {
+    public void createConfiguration() throws Exception {
         this.configuration = this.createSampleData();
     }
     

@@ -49,6 +49,8 @@
 
 package org.openspotlight.federation.data.load.test;
 
+import java.io.File;
+
 import org.junit.Before;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
@@ -75,16 +77,17 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
     
     @Override
     @Before
-    public void createConfiguration() {
+    public void createConfiguration() throws Exception {
         this.configuration = new Configuration();
         final Repository repository = new Repository(this.configuration,
                 "Current source files");
         final Project project = new Project(repository, "current project");
         final Bundle bundle = new Bundle(project, "java source");
+        final String basePath = new File("../").getCanonicalPath() + "/";
+        bundle.setInitialLookup(basePath);
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-                "All java files");
-        bundle.setInitialLookup("src/main/java");
-        new Included(artifactMapping, "*.java");
+                "osl-federation/");
+        new Included(artifactMapping, "src/main/java/**/*.java");
     }
     
 }
