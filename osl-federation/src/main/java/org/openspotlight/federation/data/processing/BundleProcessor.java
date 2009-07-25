@@ -243,37 +243,6 @@ public interface BundleProcessor<T extends Artifact> {
     }
     
     /**
-     * This enum is the argument of method
-     * {@link BundleProcessor#processFinished(FinishStatus)}. This enum tells
-     * the {@link BundleProcessor} that it ended with some status.
-     * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * 
-     */
-    public static enum FinishStatus {
-        /**
-         * All artifacts was processed.
-         */
-        ALL_PROCESSED,
-        /**
-         * Some artifacts wasn't processed because of non fatal errors or
-         * optional ignoring.
-         */
-        SOME_PROCESSED,
-
-        /**
-         * No artifacts was processed at all because of non fatal errors or
-         * optional ignoring.
-         */
-        ANY_PROCESSED,
-
-        /**
-         * There was a fatal error.
-         */
-        FATAL_ERROR
-    }
-    
-    /**
      * Graph context to be possible to add or change Graph utility objects
      * without changing the bundle processing interface.
      * 
@@ -400,16 +369,6 @@ public interface BundleProcessor<T extends Artifact> {
             GraphContext graphContext)
             throws BundleProcessingNonFatalException,
             BundleProcessingFatalException;
-    
-    /**
-     * This method tells the {@link BundleProcessor} that all processing was
-     * done. This should be used to close resources and so on. It will have just
-     * one call for each {@link Bundle} processing.
-     * 
-     * @param status
-     *            of the processing
-     */
-    public void processFinished(FinishStatus status);
     
     /**
      * This method will be called once, before the threads creation to process

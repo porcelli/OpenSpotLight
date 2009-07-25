@@ -64,6 +64,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.ConfigurationNode;
@@ -351,7 +352,7 @@ public final class BundleProcessorManager {
      *             if a fatal error occurs.
      */
     @SuppressWarnings("boxing")
-    public synchronized void processConfiguration(final Repository repository,
+    public synchronized void processRepository(final Repository repository,
             final GraphContext graphContext)
             throws BundleProcessingFatalException {
         try {
@@ -368,7 +369,7 @@ public final class BundleProcessorManager {
                         .findConfiguredBundleProcessors(bundle);
                 
                 final Set<StreamArtifact> allValidArtifacts = findAllNodesOfType(
-                        repository, StreamArtifact.class);
+                        bundle, StreamArtifact.class);
                 final List<ItemChangeEvent<ConfigurationNode>> nodeChanges = bundle
                         .getInstanceMetadata().getSharedData()
                         .getNodeChangesSinceLastSave();
@@ -376,15 +377,14 @@ public final class BundleProcessorManager {
                 final Set<StreamArtifact> excludedArtifacts = new HashSet<StreamArtifact>();
                 final Set<StreamArtifact> modifiedArtifacts = new HashSet<StreamArtifact>();
                 final Set<StreamArtifact> notProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
-                notProcessedArtifacts.addAll(addedArtifacts);
-                notProcessedArtifacts.addAll(modifiedArtifacts);
                 final Set<StreamArtifact> alreadyProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
                 final Set<StreamArtifact> ignoredArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
                 final Set<StreamArtifact> artifactsWithError = new CopyOnWriteArraySet<StreamArtifact>();
-                
                 this.findArtifactsByChangeType(bundle, allValidArtifacts,
                         nodeChanges, addedArtifacts, excludedArtifacts,
                         modifiedArtifacts);
+                notProcessedArtifacts.addAll(addedArtifacts);
+                notProcessedArtifacts.addAll(modifiedArtifacts);
                 
                 for (final StreamArtifactBundleProcessor processor : processors) {
                     
@@ -402,6 +402,11 @@ public final class BundleProcessorManager {
             final ExecutorService executor = Executors
                     .newFixedThreadPool(numberOfParallelThreads);
             executor.invokeAll(allProcessActions);
+            
+            while (executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
+                this.wait();
+            }
+            
         } catch (final Exception e) {
             throw logAndReturnNew(e, BundleProcessingFatalException.class);
         }

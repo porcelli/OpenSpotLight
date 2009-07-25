@@ -281,7 +281,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 .newFixedThreadPool(numberOfThreads);
         try {
             executor.invokeAll(workers);
-            while (executor.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+            while (executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
                 this.wait();
             }
         } catch (final InterruptedException e) {

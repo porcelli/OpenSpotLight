@@ -49,10 +49,14 @@
 
 package org.openspotlight.federation.data.processing.test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
 import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
 import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Example class for bundle processor.
@@ -61,6 +65,13 @@ import org.openspotlight.federation.data.processing.StreamArtifactBundleProcesso
  * 
  */
 public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor {
+    
+    /**
+     * counter to use on test
+     */
+    public static AtomicInteger count = new AtomicInteger(0);
+    
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     /**
      * 
@@ -72,16 +83,9 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
             final GraphContext graphContext)
             throws BundleProcessingNonFatalException,
             BundleProcessingFatalException {
-        // TODO implement some stuff
+        this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
+        count.incrementAndGet();
         return ProcessingAction.ARTIFACT_PROCESSED;
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public void processFinished(final FinishStatus status) {
-        // nothing to do
     }
     
     /**

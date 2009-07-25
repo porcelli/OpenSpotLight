@@ -51,6 +51,7 @@ package org.openspotlight.federation.data.processing.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
 
 import java.io.File;
@@ -59,14 +60,18 @@ import java.util.Set;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.JavaBundle;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
+import org.openspotlight.federation.data.processing.BundleProcessorManager;
+import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
 
 @SuppressWarnings("all")
 public class StreamArtifactDogFoodingProcessing {
@@ -94,13 +99,20 @@ public class StreamArtifactDogFoodingProcessing {
                 oslCommonsArtifactMapping, "src/main/java/**/*.java");
         final Included oslCommonsIncludedJavaFilesForSrcTestJava = new Included(
                 oslCommonsArtifactMapping, "src/test/java/**/*.java");
-        
+        final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
+                oslCommonsJavaSourceBundle,
+                "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+        oslCommonProcessor.setActive(true);
         final Project oslFederationProject = new Project(oslRootProject,
                 "OSL Federation Library");
         oslFederationProject.setActive(true);
         final Bundle oslFederationJavaSourceBundle = new JavaBundle(
                 oslFederationProject, "java source for OSL Bundle");
         oslFederationJavaSourceBundle.setActive(true);
+        final BundleProcessorType oslFederationProcessor = new BundleProcessorType(
+                oslFederationJavaSourceBundle,
+                "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+        oslFederationProcessor.setActive(true);
         
         oslFederationJavaSourceBundle.setInitialLookup(basePath);
         final ArtifactMapping oslFederationArtifactMapping = new ArtifactMapping(
@@ -125,7 +137,10 @@ public class StreamArtifactDogFoodingProcessing {
                 .mkdirs();
         final Included oslGraphIncludedJavaFilesForSrcTestJava = new Included(
                 oslGraphArtifactMapping, "src/test/java/**/*.java");
-        
+        final BundleProcessorType oslGraphProcessor = new BundleProcessorType(
+                oslGraphJavaSourceBundle,
+                "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+        oslGraphProcessor.setActive(true);
         return configuration;
     }
     
@@ -153,8 +168,7 @@ public class StreamArtifactDogFoodingProcessing {
     }
     
     @Test
-    public void shouldLoadAndLogAllArtifactsFromOslSourceCode()
-            throws Exception {
+    public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
         final Configuration configuration = this
                 .loadAllFilesFromThisConfiguration(this
                         .createValidConfiguration());
@@ -164,4 +178,21 @@ public class StreamArtifactDogFoodingProcessing {
             assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
         }
     }
+    
+    @Test
+    public void shouldProcessAllValidOslSourceCode() throws Exception {
+        final Configuration configuration = this
+                .loadAllFilesFromThisConfiguration(this
+                        .createValidConfiguration());
+        
+        final BundleProcessorManager manager = new BundleProcessorManager();
+        final GraphContext graphContext = mock(GraphContext.class);
+        final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
+                StreamArtifact.class);
+        final Repository repository = configuration
+                .getRepositoryByName("OSL Project");
+        manager.processRepository(repository, graphContext);
+        assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
+    }
+    
 }

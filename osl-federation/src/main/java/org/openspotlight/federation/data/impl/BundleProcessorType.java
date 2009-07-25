@@ -81,15 +81,15 @@ public final class BundleProcessorType implements ConfigurationNode {
     /**
      * Creates a project within a other project.
      * 
-     * @param project
+     * @param bundle
      * @param className
      */
-    public BundleProcessorType(final Project project, final String className) {
-        this.instanceMetadata = createWithKeyProperty(this, project, className);
+    public BundleProcessorType(final Bundle bundle, final String className) {
+        this.instanceMetadata = createWithKeyProperty(this, bundle, className);
         checkCondition("noBundleProcessor", //$NON-NLS-1$
-                project.getInstanceMetadata().getChildByKeyValue(
+                bundle.getInstanceMetadata().getChildByKeyValue(
                         BundleProcessorType.class, className) == null);
-        project.getInstanceMetadata().addChild(this);
+        bundle.getInstanceMetadata().addChild(this);
         
     }
     
