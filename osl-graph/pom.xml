@@ -10,6 +10,26 @@
 		<artifactId>osl</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<properties>
+						<property>
+							<name>usedefaultlisteners</name>
+							<value>true</value> <!-- disabling default listeners is optional -->
+						</property>
+						<property>
+							<name>listener</name>
+							<value>org.openspotlight.graph.util.OrderedMethodInvocationInterceptor</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<!-- External dependencies -->
 		<dependency>
@@ -92,6 +112,7 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
+			<version>5.8</version>
 			<classifier>jdk15</classifier>
 		</dependency>
 		<dependency>
