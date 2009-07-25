@@ -75,13 +75,13 @@ import org.openspotlight.common.util.Files;
 @SuppressWarnings("all")
 public class FilesTest {
     
-    private static String LOWEST_PATH = "./target"; //$NON-NLS-1$
+    private static String LOWEST_PATH = "./target/test-data/FilesTest/"; //$NON-NLS-1$
     
-    private static String LOWER_PATH = LOWEST_PATH + "/resources/testData"; //$NON-NLS-1$
+    private static String LOWER_PATH = LOWEST_PATH + "resources/testData/"; //$NON-NLS-1$
     
-    private static String TEST_DIR = LOWER_PATH + "/SomeOtherDir/anotherDir"; //$NON-NLS-1$
+    private static String TEST_DIR = LOWER_PATH + "SomeOtherDir/anotherDir/"; //$NON-NLS-1$
     
-    private static String TEST_FILE = TEST_DIR + "/temp.txt"; //$NON-NLS-1$
+    private static String TEST_FILE = TEST_DIR + "temp.txt"; //$NON-NLS-1$
     
     private static String RELATIVE_PATH_FILE = removeBegginingFrom(LOWEST_PATH,
             TEST_FILE);
