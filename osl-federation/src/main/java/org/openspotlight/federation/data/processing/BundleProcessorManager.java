@@ -295,6 +295,16 @@ public final class BundleProcessorManager {
         }
     }
     
+    /**
+     * This method looks for a {@link BundleProcessor} inside the {@link Bundle}
+     * configuration.
+     * 
+     * @param bundle
+     * @return a set of {@link StreamArtifactBundleProcessor}
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     */
     private Set<StreamArtifactBundleProcessor> findConfiguredBundleProcessors(
             final Bundle bundle) throws InstantiationException,
             IllegalAccessException, ClassNotFoundException {
@@ -330,7 +340,9 @@ public final class BundleProcessorManager {
             final Set<Bundle> bundles = findAllNodesOfType(repository,
                     Bundle.class);
             for (final Bundle bundle : bundles) {
-                
+                if (!bundle.getActive()) {
+                    continue;
+                }
                 final Set<StreamArtifactBundleProcessor> processors = this
                         .findConfiguredBundleProcessors(bundle);
                 

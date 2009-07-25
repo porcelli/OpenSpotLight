@@ -147,12 +147,15 @@ public class Bundle implements ConfigurationNode {
      * 
      * @return all processor types names
      */
+    @SuppressWarnings("boxing")
     public Set<String> getAllProcessorTypeNames() {
         final Collection<BundleProcessorType> allProcessorTypes = this.instanceMetadata
                 .getChildrensOfType(BundleProcessorType.class);
         final Set<String> allTypeNames = new HashSet<String>();
         for (final BundleProcessorType type : allProcessorTypes) {
-            allTypeNames.add(type.getName());
+            if (type.getActive()) {
+                allTypeNames.add(type.getName());
+            }
         }
         return unmodifiableSet(allTypeNames);
     }
