@@ -52,7 +52,7 @@ package org.openspotlight.federation.data.processing.test;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
 import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
-import org.openspotlight.federation.data.processing.BundleProcessor;
+import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
 
 /**
  * Example class for bundle processor.
@@ -60,18 +60,40 @@ import org.openspotlight.federation.data.processing.BundleProcessor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class LogPrinterBundleProcessor implements
-        BundleProcessor<StreamArtifact> {
+public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor {
+    
     /**
      * 
      * {@inheritDoc}
      */
     public ProcessingAction processArtifact(
-            final BundleProcessingContext<StreamArtifact> context)
+            final StreamArtifact targetArtifact,
+            final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+            final GraphContext graphContext)
             throws BundleProcessingNonFatalException,
             BundleProcessingFatalException {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO implement some stuff
+        return ProcessingAction.ARTIFACT_PROCESSED;
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public void processFinished(
+            final org.openspotlight.federation.data.processing.BundleProcessor.FinishStatus status) {
+        // nothing to do
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public ProcessingStartAction startProcessing(
+            final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+            final GraphContext graphContext)
+            throws BundleProcessingFatalException {
+        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
     }
     
 }

@@ -53,7 +53,7 @@ import org.openspotlight.common.exception.SLException;
 
 /**
  * Exception to be thrown by
- * {@link BundleProcessor#processArtifact(org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext)}
+ * {@link BundleProcessor#processArtifact(org.openspotlight.federation.data.impl.Artifact, org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingGroup, org.openspotlight.federation.data.processing.BundleProcessor.GraphContext)}
  * method when there's an error on the artifact been processed. This exception
  * won't stop the bundle artifacts to be processed.
  * 

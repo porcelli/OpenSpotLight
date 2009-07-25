@@ -49,11 +49,21 @@
 
 package org.openspotlight.federation.data.processing;
 
+import static java.util.Collections.unmodifiableSet;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.graph.SLGraphSession;
 
 /**
  * The {@link BundleProcessorManager} is the class reposable to get an
@@ -77,12 +87,35 @@ public class BundleProcessorManager {
      * processing jobs for its {@link BundleProcessor configured processors}.
      * 
      * @param configuration
+     * @param graphSession
      * @throws BundleProcessingFatalException
      *             if a fatal error occurs.
      */
     public synchronized void processConfiguration(
-            final Configuration configuration)
+            final Configuration configuration, final SLGraphSession graphSession)
             throws BundleProcessingFatalException {
+        
+        final Set<StreamArtifact> addedArtifacts = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> excludedArtifacts = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> modifiedArtifacts = new HashSet<StreamArtifact>();
+        
+        final Set<StreamArtifact> allValidArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
+        final Set<StreamArtifact> notProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
+        final Set<StreamArtifact> alreadyProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
+        final Set<StreamArtifact> ignoredArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
+        final Set<StreamArtifact> artifactsWithError = new CopyOnWriteArraySet<StreamArtifact>();
+        
+        // immutable collections to be passed to each new BundleProcessingGroup
+        final Set<StreamArtifact> immutableAddedArtifacts = unmodifiableSet(addedArtifacts);
+        final Set<StreamArtifact> immutableExcludedArtifacts = unmodifiableSet(excludedArtifacts);
+        final Set<StreamArtifact> immutableModifiedArtifacts = unmodifiableSet(modifiedArtifacts);
+        final Set<StreamArtifact> immutableAllValidArtifacts = unmodifiableSet(allValidArtifacts);
+        final Set<StreamArtifact> immutableNotProcessedArtifacts = unmodifiableSet(notProcessedArtifacts);
+        final Set<StreamArtifact> immutableAlreadyProcessedArtifacts = unmodifiableSet(alreadyProcessedArtifacts);
+        final Set<StreamArtifact> immutableIgnoredArtifacts = unmodifiableSet(ignoredArtifacts);
+        final Set<StreamArtifact> immutableArtifactsWithError = unmodifiableSet(artifactsWithError);
+        
+        final ExecutorService executor = Executors.newFixedThreadPool(40);
         
     }
 }

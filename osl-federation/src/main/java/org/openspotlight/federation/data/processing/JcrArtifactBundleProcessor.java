@@ -49,59 +49,16 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.federation.data.impl.JcrArtifact;
 
 /**
- * Exception to be thrown by
- * {@link BundleProcessor#processArtifact(org.openspotlight.federation.data.impl.Artifact, org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingGroup, org.openspotlight.federation.data.processing.BundleProcessor.GraphContext)}
- * method when there's a fatal error on the artifact been processed.
- * 
- * This exception will stop all artifacts of this bundle to be processed.
+ * This interface marks the {@link BundleProcessor bundle processors} that will
+ * process {@link JcrArtifact Jcr artifacts}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class BundleProcessingFatalException extends SLException {
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 3198140100196283430L;
-    
-    /**
-     * Constructor as the same signature as the super constructor.
-     */
-    public BundleProcessingFatalException() {
-        super();
-    }
-    
-    /**
-     * Constructor as the same signature as the super constructor.
-     * 
-     * @param message
-     */
-    public BundleProcessingFatalException(final String message) {
-        super(message);
-    }
-    
-    /**
-     * Constructor as the same signature as the super constructor.
-     * 
-     * @param message
-     * @param cause
-     */
-    public BundleProcessingFatalException(final String message,
-            final Throwable cause) {
-        super(message, cause);
-    }
-    
-    /**
-     * Constructor as the same signature as the super constructor.
-     * 
-     * @param cause
-     */
-    public BundleProcessingFatalException(final Throwable cause) {
-        super(cause);
-    }
-    
+public interface JcrArtifactBundleProcessor extends
+        BundleProcessor<JcrArtifact> {
+    // marker interface
 }
