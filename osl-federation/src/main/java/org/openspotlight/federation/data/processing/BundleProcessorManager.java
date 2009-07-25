@@ -49,17 +49,40 @@
 
 package org.openspotlight.federation.data.processing;
 
+import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Repository;
 
 /**
+ * The {@link BundleProcessorManager} is the class reposable to get an
+ * {@link Configuration} and to process all {@link Artifact artifacts} on this
+ * {@link Configuration}. The {@link BundleProcessorManager} should get the
+ * {@link Bundle bundle's} {@link BundleProcessorType types} and find all the
+ * {@link BundleProcessor processors} for each {@link BundleProcessorType type}.
  * 
+ * After all {@link BundleProcessor processors} was found, the
+ * {@link BundleProcessorManager} should distribute the processing job in some
+ * threads obeying the {@link Repository#getNumberOfParallelThreads() number of
+ * threads} configured for this {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public class BundleProcessorManager {
+    
+    /**
+     * Start to process this {@link Configuration} and to distribute all the
+     * processing jobs for its {@link BundleProcessor configured processors}.
+     * 
+     * @param configuration
+     * @throws BundleProcessingFatalException
+     *             if a fatal error occurs.
+     */
     public synchronized void processConfiguration(
-            final Configuration configuration) {
+            final Configuration configuration)
+            throws BundleProcessingFatalException {
         
     }
 }

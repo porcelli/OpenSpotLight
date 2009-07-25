@@ -49,6 +49,8 @@
 
 package org.openspotlight.federation.data.processing;
 
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+
 import java.util.Set;
 
 import net.jcip.annotations.ThreadSafe;
@@ -125,6 +127,18 @@ public interface BundleProcessor<T extends Artifact> {
                 final Set<T> notProcessedArtifacts,
                 final Set<T> alreadyProcessedArtifacts,
                 final SLGraphSession graphSession) {
+            checkNotNull("bundle", bundle); //$NON-NLS-1$
+            checkNotNull("targetArtifact", targetArtifact); //$NON-NLS-1$
+            checkNotNull("addedArtifacts", addedArtifacts);//$NON-NLS-1$
+            checkNotNull("excludedArtifacts", excludedArtifacts);//$NON-NLS-1$
+            checkNotNull("ignoredArtifacts", ignoredArtifacts);//$NON-NLS-1$
+            checkNotNull("artifactsWithError", artifactsWithError);//$NON-NLS-1$
+            checkNotNull("modifiedArtifacts", modifiedArtifacts);//$NON-NLS-1$
+            checkNotNull("allValidArtifacts", allValidArtifacts);//$NON-NLS-1$
+            checkNotNull("notProcessedArtifacts", notProcessedArtifacts);//$NON-NLS-1$
+            checkNotNull("alreadyProcessedArtifacts", alreadyProcessedArtifacts);//$NON-NLS-1$
+            checkNotNull("graphSession", graphSession);//$NON-NLS-1$
+            
             this.bundle = bundle;
             this.targetArtifact = targetArtifact;
             this.addedArtifacts = addedArtifacts;
