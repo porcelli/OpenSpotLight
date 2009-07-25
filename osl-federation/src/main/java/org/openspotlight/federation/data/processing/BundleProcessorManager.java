@@ -49,16 +49,17 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.federation.data.impl.Configuration;
 
-public class JavaBundleProcessor implements BundleProcessor<StreamArtifact> {
-    
-    public void processArtifact(
-            final org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext<StreamArtifact> context,
-            final SLGraphSession graphSession) {
-        // TODO Auto-generated method stub
+/**
+ * 
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ */
+public class BundleProcessorManager {
+    public synchronized void processConfiguration(
+            final Configuration configuration) {
         
     }
-    
 }

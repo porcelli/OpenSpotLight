@@ -47,9 +47,12 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.processing;
+package org.openspotlight.federation.data.processing.test;
 
 import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
+import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
+import org.openspotlight.federation.data.processing.BundleProcessor;
 
 /**
  * Example class for bundle processor.
@@ -63,8 +66,8 @@ public class LogPrinterBundleProcessor implements
      * 
      * {@inheritDoc}
      */
-    public org.openspotlight.federation.data.processing.BundleProcessor.ProcessingAction processArtifact(
-            final org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext<StreamArtifact> context)
+    public ProcessingAction processArtifact(
+            final BundleProcessingContext<StreamArtifact> context)
             throws BundleProcessingNonFatalException,
             BundleProcessingFatalException {
         // TODO Auto-generated method stub

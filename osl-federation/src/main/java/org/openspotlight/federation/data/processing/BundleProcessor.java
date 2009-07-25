@@ -125,7 +125,6 @@ public interface BundleProcessor<T extends Artifact> {
                 final Set<T> notProcessedArtifacts,
                 final Set<T> alreadyProcessedArtifacts,
                 final SLGraphSession graphSession) {
-            super();
             this.bundle = bundle;
             this.targetArtifact = targetArtifact;
             this.addedArtifacts = addedArtifacts;
