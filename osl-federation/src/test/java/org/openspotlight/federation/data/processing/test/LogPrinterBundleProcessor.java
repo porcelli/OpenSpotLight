@@ -80,8 +80,7 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
      * 
      * {@inheritDoc}
      */
-    public void processFinished(
-            final org.openspotlight.federation.data.processing.BundleProcessor.FinishStatus status) {
+    public void processFinished(final FinishStatus status) {
         // nothing to do
     }
     
