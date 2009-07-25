@@ -81,6 +81,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         this.configuration = new Configuration();
         final Repository repository = new Repository(this.configuration,
                 "Current source files");
+        repository.setNumberOfParallelThreads(4);
         final Project project = new Project(repository, "current project");
         final Bundle bundle = new Bundle(project, "java source");
         final String basePath = new File("../").getCanonicalPath() + "/";

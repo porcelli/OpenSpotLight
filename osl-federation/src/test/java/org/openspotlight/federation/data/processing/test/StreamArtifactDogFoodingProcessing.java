@@ -76,6 +76,7 @@ public class StreamArtifactDogFoodingProcessing {
         final Configuration configuration = new Configuration();
         final Repository oslRepository = new Repository(configuration,
                 "OSL Project");
+        oslRepository.setNumberOfParallelThreads(4);
         oslRepository.setActive(true);
         final Project oslRootProject = new Project(oslRepository,
                 "OSL Root Project");
@@ -128,6 +129,20 @@ public class StreamArtifactDogFoodingProcessing {
         return configuration;
     }
     
+    private Configuration loadAllFilesFromThisConfiguration(
+            final Configuration configuration) throws Exception {
+        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
+                new FileSystemArtifactLoader());
+        final Set<Bundle> bundles = findAllNodesOfType(configuration,
+                Bundle.class);
+        for (final Bundle bundle : bundles) {
+            group.loadArtifactsFromMappings(bundle);
+            
+        }
+        return configuration;
+        
+    }
+    
     @Test
     public void shouldCreateValidXmlConfigurationForOslSourceCode()
             throws Exception {
@@ -140,17 +155,13 @@ public class StreamArtifactDogFoodingProcessing {
     @Test
     public void shouldLoadAndLogAllArtifactsFromOslSourceCode()
             throws Exception {
-        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
-                new FileSystemArtifactLoader());
-        final Configuration configuration = this.createValidConfiguration();
+        final Configuration configuration = this
+                .loadAllFilesFromThisConfiguration(this
+                        .createValidConfiguration());
         final Set<Bundle> bundles = findAllNodesOfType(configuration,
                 Bundle.class);
         for (final Bundle bundle : bundles) {
-            group.loadArtifactsFromMappings(bundle);
-            if (bundle instanceof JavaBundle) {
-                assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
-            }
+            assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
         }
-        
     }
 }

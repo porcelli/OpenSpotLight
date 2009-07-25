@@ -50,13 +50,24 @@
 package org.openspotlight.federation.data.load;
 
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
@@ -64,17 +75,65 @@ import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
+import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 
 /**
  * The AbstractArtifactLoader class is itself a {@link ArtifactLoader} that do
  * the common stuff such as filtering artifacts before processing them or
- * creating the sha-1 key for the content.
+ * creating the sha-1 key for the content. This is working now as a multi
+ * threaded artifact loader also.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public abstract class AbstractArtifactLoader implements ArtifactLoader {
+    
+    /**
+     * Worker class for loading artifacts
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    class Worker implements Callable<Void> {
+        final Bundle bundle;
+        final AtomicInteger errorCounter;
+        final AtomicInteger loadCounter;
+        final ArtifactMapping mapping;
+        final Set<String> namesToProcess;
+        
+        /**
+         * All parameters are mandatory
+         * 
+         * @param bundle
+         * @param errorCounter
+         * @param loadCounter
+         * @param mapping
+         * @param namesToProcess
+         */
+        public Worker(final Bundle bundle, final AtomicInteger errorCounter,
+                final AtomicInteger loadCounter, final ArtifactMapping mapping,
+                final Set<String> namesToProcess) {
+            super();
+            this.bundle = bundle;
+            this.errorCounter = errorCounter;
+            this.loadCounter = loadCounter;
+            this.mapping = mapping;
+            this.namesToProcess = namesToProcess;
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public Void call() throws Exception {
+            AbstractArtifactLoader.this.loadArtifact(this.bundle,
+                    this.errorCounter, this.loadCounter, this.mapping,
+                    this.namesToProcess);
+            return null;
+        }
+        
+    }
     
     /**
      * The implementation class needs to load all the possible artifact names
@@ -101,8 +160,40 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             ArtifactMapping mapping, String artifactName) throws Exception;
     
     /**
+     * Mehtod to be used by the {@link Worker}.
+     * 
+     * @param bundle
+     * @param errorCounter
+     * @param loadCounter
+     * @param mapping
+     * @param namesToProcess
+     */
+    void loadArtifact(final Bundle bundle, final AtomicInteger errorCounter,
+            final AtomicInteger loadCounter, final ArtifactMapping mapping,
+            final Set<String> namesToProcess) {
+        for (final String artifactName : namesToProcess) {
+            try {
+                final byte[] content = this.loadArtifact(bundle, mapping,
+                        artifactName);
+                final String sha1 = getSha1SignatureEncodedAsBase64(content);
+                final InputStream is = new ByteArrayInputStream(content);
+                final StreamArtifact artifact = bundle
+                        .addStreamArtifact(artifactName);
+                artifact.setData(is);
+                artifact.setDataSha1(sha1);
+                loadCounter.incrementAndGet();
+            } catch (final Exception e) {
+                errorCounter.incrementAndGet();
+            }
+        }
+    }
+    
+    /**
      * Filter the included and excluded patterns and also creates each artifact
-     * and calculates the sha-1 key for the content.
+     * and calculates the sha-1 key for the content. In this method we have also
+     * the logic for dividing the tasks between
+     * {@link Repository#getNumberOfParallelThreads() the number of parallel
+     * threads}.
      * 
      * @param bundle
      * @return a {@link ArtifactLoader.ArtifactProcessingCount} with statistical
@@ -112,8 +203,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     public ArtifactProcessingCount loadArtifactsFromMappings(final Bundle bundle)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
-        int loadCount = 0;
-        int errorCount = 0;
+        final AtomicInteger errorCounter = new AtomicInteger();
+        final AtomicInteger loadCounter = new AtomicInteger();
+        
         final Set<String> includedPatterns = new HashSet<String>();
         final Set<String> excludedPatterns = new HashSet<String>();
         int ignoreCount = 0;
@@ -130,23 +222,70 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                     namesToFilter, includedPatterns, excludedPatterns, false);
             final Set<String> namesToProcess = innerResult.getIncludedNames();
             ignoreCount += innerResult.getIgnoredNames().size();
-            for (final String artifactName : namesToProcess) {
-                try {
-                    final byte[] content = this.loadArtifact(bundle, mapping,
-                            artifactName);
-                    final String sha1 = getSha1SignatureEncodedAsBase64(content);
-                    final InputStream is = new ByteArrayInputStream(content);
-                    final StreamArtifact artifact = bundle
-                            .addStreamArtifact(artifactName);
-                    artifact.setData(is);
-                    artifact.setDataSha1(sha1);
-                    loadCount++;
-                } catch (final Exception e) {
-                    errorCount++;
-                }
-            }
+            
+            this.splitWorkBetweenThreads(bundle, errorCounter, loadCounter,
+                    mapping, namesToProcess);
             
         }
-        return new ArtifactProcessingCount(loadCount, ignoreCount, errorCount);
+        return new ArtifactProcessingCount(loadCounter.get(), ignoreCount,
+                errorCounter.get());
+    }
+    
+    /**
+     * This method splits all job between
+     * {@link Repository#getNumberOfParallelThreads() the number of parallel
+     * threads}.
+     * 
+     * @param bundle
+     * @param errorCounter
+     * @param loadCounter
+     * @param mapping
+     * @param namesToProcess
+     * @throws ConfigurationException
+     */
+    @SuppressWarnings("boxing")
+    private void splitWorkBetweenThreads(final Bundle bundle,
+            final AtomicInteger errorCounter, final AtomicInteger loadCounter,
+            final ArtifactMapping mapping, final Set<String> namesToProcess)
+            throws ConfigurationException {
+        final int numberOfThreads = bundle.getRepository()
+                .getNumberOfParallelThreads();
+        final int allNamesToProcessSize = namesToProcess.size();
+        final int numberOfNamesPerThread = allNamesToProcessSize
+                / numberOfThreads;
+        final Map<Integer, Set<String>> listsForThreads = new HashMap<Integer, Set<String>>();
+        final Stack<String> nameStack = new Stack<String>();
+        nameStack.addAll(namesToProcess);
+        for (int i = 0, last = numberOfThreads - 1; i < numberOfThreads; i++) {
+            final Set<String> names = new HashSet<String>();
+            listsForThreads.put(i, names);
+            for (int j = 0; j < numberOfNamesPerThread; j++) {
+                names.add(nameStack.pop());
+            }
+            if (i == last) {
+                while (!nameStack.isEmpty()) {
+                    names.add(nameStack.pop());
+                }
+            }
+        }
+        
+        final List<Callable<Void>> workers = new ArrayList<Callable<Void>>(
+                numberOfThreads);
+        for (final Map.Entry<Integer, Set<String>> entry : listsForThreads
+                .entrySet()) {
+            final Worker w = new Worker(bundle, errorCounter, loadCounter,
+                    mapping, entry.getValue());
+            workers.add(w);
+        }
+        final ExecutorService executor = Executors
+                .newFixedThreadPool(numberOfThreads);
+        try {
+            executor.invokeAll(workers);
+            while (executor.awaitTermination(100, TimeUnit.MILLISECONDS)) {
+                this.wait();
+            }
+        } catch (final InterruptedException e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
     }
 }
