@@ -49,10 +49,12 @@
 
 package org.openspotlight.federation.data.impl;
 
+import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.jcip.annotations.ThreadSafe;
@@ -137,6 +139,22 @@ public class Bundle implements ConfigurationNode {
      */
     public final Boolean getActive() {
         return this.instanceMetadata.getProperty(ACTIVE);
+    }
+    
+    /**
+     * To process this bundle, the processor type classes should be configured.
+     * This method groups all class names on a set and return this names.
+     * 
+     * @return all processor types names
+     */
+    public Set<String> getAllProcessorTypeNames() {
+        final Collection<BundleProcessorType> allProcessorTypes = this.instanceMetadata
+                .getChildrensOfType(BundleProcessorType.class);
+        final Set<String> allTypeNames = new HashSet<String>();
+        for (final BundleProcessorType type : allProcessorTypes) {
+            allTypeNames.add(type.getName());
+        }
+        return unmodifiableSet(allTypeNames);
     }
     
     /**
