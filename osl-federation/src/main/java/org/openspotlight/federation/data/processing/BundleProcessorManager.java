@@ -355,6 +355,9 @@ public final class BundleProcessorManager {
     public synchronized void processRepository(final Repository repository,
             final GraphContext graphContext)
             throws BundleProcessingFatalException {
+        checkNotNull("repository", repository); //$NON-NLS-1$
+        checkNotNull("graphContext", graphContext); //$NON-NLS-1$
+        
         try {
             final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
             final Integer numberOfParallelThreads = repository

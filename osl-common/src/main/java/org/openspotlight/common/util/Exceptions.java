@@ -81,6 +81,26 @@ public class Exceptions {
     }
     
     /**
+     * Just catch and log the exception.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     catchAndLog(e);
+     * }
+     * </pre>
+     * 
+     * @param message
+     * 
+     * @param exception
+     */
+    public static void catchAndLog(final String message,
+            final Exception exception) {
+        logger.error(message, exception);
+    }
+    
+    /**
      * Log the exception and return the same exception to be used in non void
      * methods.
      * 

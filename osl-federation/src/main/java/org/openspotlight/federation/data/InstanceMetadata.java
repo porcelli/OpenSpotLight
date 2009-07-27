@@ -70,6 +70,7 @@ import static org.openspotlight.common.util.Reflection.INHERITED_TYPES;
 import static org.openspotlight.common.util.Reflection.searchInheritanceType;
 import static org.openspotlight.common.util.Reflection.searchType;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -174,7 +175,7 @@ public interface InstanceMetadata {
             /**
              * Property map.
              */
-            private final Map<String, Serializable> properties = new HashMap<String, Serializable>();
+            private final Map<String, Object> properties = new HashMap<String, Object>();
             
             /**
              * Property map.
@@ -212,8 +213,7 @@ public interface InstanceMetadata {
                             new HashMap<Serializable, ConfigurationNode>());
                 }
                 final String[] propKeys = staticMetadata.propertyNames();
-                final Class<? extends Serializable>[] propValues = staticMetadata
-                        .propertyTypes();
+                final Class<?>[] propValues = staticMetadata.propertyTypes();
                 this.propertyTypes = map(ofKeys(propKeys),
                         andValues(propValues));
                 
@@ -434,7 +434,7 @@ public interface InstanceMetadata {
              * 
              * {@inheritDoc}
              */
-            public Map<String, Serializable> getProperties() {
+            public Map<String, Object> getProperties() {
                 return unmodifiableMap(this.properties);
                 
             }
@@ -470,6 +470,17 @@ public interface InstanceMetadata {
              * 
              * {@inheritDoc}
              */
+            public InputStream getStreamProperty(final String name) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                final InputStream value = (InputStream) this.properties
+                        .get(name);
+                return value;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
             @SuppressWarnings("unchecked")
             public <N> N getTransientProperty(final String name) {
                 checkNotEmpty("name", name); //$NON-NLS-1$
@@ -486,6 +497,22 @@ public interface InstanceMetadata {
                             .getKeyPropertyValue(), this.getDefaultParent());
                 }
                 return this.hashcode;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N extends ConfigurationNode> void removeAllChildrenOfType(
+                    final Class<N> type) {
+                checkNotNull("type", type); //$NON-NLS-1$
+                final InheritanceType inheritanceType = searchInheritanceType(
+                        type, this.staticMetadata.validChildrenTypes());
+                checkCondition(
+                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                final Class<?> correctType = searchType(type,
+                        this.staticMetadata.validChildrenTypes());
+                this.children.get(correctType).clear();
             }
             
             /**
@@ -563,6 +590,46 @@ public interface InstanceMetadata {
              * 
              * {@inheritDoc}
              */
+            public <N extends Serializable> void setPropertyIgnoringListener(
+                    final String name, final N value) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                checkCondition(
+                        "correctName", this.propertyTypes.containsKey(name)); //$NON-NLS-1$
+                if (value != null) {
+                    final InheritanceType inheritanceType = searchInheritanceType(
+                            value.getClass(), this.propertyTypes.get(name));
+                    checkCondition(
+                            "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                    
+                }
+                this.properties.put(name, value);
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public void setStreamProperty(final String name,
+                    final InputStream value) {
+                checkNotEmpty("name", name); //$NON-NLS-1$
+                checkCondition(
+                        "correctName", this.propertyTypes.containsKey(name)); //$NON-NLS-1$
+                if (value != null) {
+                    final InheritanceType inheritanceType = searchInheritanceType(
+                            value.getClass(), this.propertyTypes.get(name));
+                    checkCondition(
+                            "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                    
+                }
+                this.properties.put(name, value);
+                
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
             public <N> void setTransientProperty(final String name,
                     final N value) {
                 checkNotEmpty("name", name); //$NON-NLS-1$
@@ -583,7 +650,6 @@ public interface InstanceMetadata {
                 }
                 return this.description;
             }
-            
         }
         
         private static final Class<?>[] EMPTY_TYPE = new Class<?>[] { ConfigurationNode.class };
@@ -1342,11 +1408,11 @@ public interface InstanceMetadata {
      * 
      * @return the property map
      */
-    public Map<String, Serializable> getProperties();
+    public Map<String, Object> getProperties();
     
     /**
-     * This returns a property. This property has the hability to be saved on
-     * persist operations on configuration nodes.
+     * This returns a binary property. This property has the hability to be
+     * saved on persist operations on configuration nodes.
      * 
      * @param <N>
      *            type of a property that should be valid and
@@ -1373,6 +1439,15 @@ public interface InstanceMetadata {
     public StaticMetadata getStaticMetadata();
     
     /**
+     * This returns binary property.
+     * 
+     * @param name
+     *            of a valid property
+     * @return a property
+     */
+    public InputStream getStreamProperty(String name);
+    
+    /**
      * This property is a kind of property that will not be saved on save
      * operations. So, it doesn't have any restriction (such as must be
      * serializable).
@@ -1384,6 +1459,16 @@ public interface InstanceMetadata {
      * @return a transient property
      */
     public <N> N getTransientProperty(String name);
+    
+    /**
+     * Removes all children nodes of a given type from this object.
+     * 
+     * @param <N>
+     *            type of the child
+     * @param type
+     *            of child to be removed
+     */
+    <N extends ConfigurationNode> void removeAllChildrenOfType(Class<N> type);
     
     /**
      * Removes a child node from this object, wich should be its parent.
@@ -1419,6 +1504,30 @@ public interface InstanceMetadata {
      *            of the property
      */
     public <N extends Serializable> void setProperty(String name, N value);
+    
+    /**
+     * Sets a normal property, but dont notify the listener. See
+     * {@link #setProperty(String, Serializable)}.
+     * 
+     * @param <N>
+     *            type of the property that should be {@link Serializable}
+     * @param name
+     *            of the property
+     * @param value
+     *            of the property
+     */
+    public <N extends Serializable> void setPropertyIgnoringListener(
+            final String name, final N value);
+    
+    /**
+     * Sets a bynary property
+     * 
+     * @param name
+     *            of the property
+     * @param value
+     *            of the property
+     */
+    public void setStreamProperty(String name, InputStream value);
     
     /**
      * Sets a transient property. See {@link #getTransientProperty(String)}.

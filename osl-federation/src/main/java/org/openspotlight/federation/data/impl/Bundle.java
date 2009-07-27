@@ -76,7 +76,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
         Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
         BundleProcessorType.class, Project.class, StreamArtifact.class,
-        JcrArtifact.class, ArtifactMapping.class, Bundle.class })
+        JcrArtifact.class, ArtifactMapping.class })
 public class Bundle implements ConfigurationNode {
     
     /**
@@ -131,6 +131,15 @@ public class Bundle implements ConfigurationNode {
      */
     public final int compareTo(final ConfigurationNode o) {
         return this.instanceMetadata.compare(this, o);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
     }
     
     /**
@@ -319,6 +328,15 @@ public class Bundle implements ConfigurationNode {
      */
     public final Collection<StreamArtifact> getStreamArtifacts() {
         return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
     }
     
     /**

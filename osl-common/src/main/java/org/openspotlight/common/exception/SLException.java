@@ -1,6 +1,6 @@
 package org.openspotlight.common.exception;
 
-//FIXME replace with Vitor's implementation 
+//LATER_TASK replace with Vitor's implementation 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 

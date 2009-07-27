@@ -76,12 +76,12 @@ import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 public class JcrSessionConfigurationManagerTest extends
         AbstractConfigurationManagerTest {
     
-    public static final String TESTATA_PATH = "./src/test/resources/";
-    public static final String JACKRABBIT_DATA_PATH = "./target/testdata/jackrabbittest/";
+    public static final String TESDATA_PATH = "./src/test/resources/";
+    public static final String JACKRABBIT_DATA_PATH = "./target/test-data/JcrSessionConfigurationManagerTest/";
     public static final String REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH
             + "repository";
-    public static final String REPOSITORY_CONFIG_PATH = TESTATA_PATH
-            + "jackrabbitDerbyTestRepositoryConfig.xml";
+    public static final String REPOSITORY_CONFIG_PATH = TESDATA_PATH
+            + "configuration/JcrSessionConfigurationManagerTest/jackrabbit.xml";
     public static final String DERBY_SYSTEM_HOME = JACKRABBIT_DATA_PATH
             + "/derby";
     

@@ -49,21 +49,27 @@
 
 package org.openspotlight.federation.data.load;
 
+import static java.text.MessageFormat.format;
+import static java.util.Collections.emptySet;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Files.listFileNamesFrom;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Artifact loader that loads Artifact for file system.
@@ -73,16 +79,36 @@ import org.openspotlight.federation.data.impl.Bundle;
  */
 public class FileSystemArtifactLoader extends AbstractArtifactLoader {
     
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    
     /**
      * Return all files from bundle.initialLookup directory.
      */
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle,
-            final ArtifactMapping mapping) throws ConfigurationException {
+            final ArtifactMapping mapping,
+            final Map<String, Object> cachedInformation)
+            throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         try {
             final String basePath = bundle.getInitialLookup()
                     + mapping.getRelative();
+            boolean exists = false;
+            try {
+                exists = new File(basePath).exists();
+            } catch (final Exception e) {
+                exists = false;
+                catchAndLog(
+                        format(
+                                Messages
+                                        .getString("FileSystemArtifactLoader.ignoring"), basePath), e); //$NON-NLS-1$
+            }
+            if (!exists) {
+                this.logger.info(format(Messages
+                        .getString("FileSystemArtifactLoader.ignoring"), //$NON-NLS-1$
+                        basePath));
+                return emptySet();
+            }
             final Set<String> filesFromThisMapping = listFileNamesFrom(basePath);
             return filesFromThisMapping;
         } catch (final SLException e) {
@@ -95,9 +121,10 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
      */
     @Override
     protected byte[] loadArtifact(final Bundle bundle,
-            final ArtifactMapping mapping, final String artifactName)
-            throws Exception {
+            final ArtifactMapping mapping, final String artifactName,
+            final Map<String, Object> cachedInformation) throws Exception {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
+        checkNotNull("mapping", mapping); //$NON-NLS-1$
         checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
         final String fileName = bundle.getInitialLookup()
                 + mapping.getRelative() + artifactName;

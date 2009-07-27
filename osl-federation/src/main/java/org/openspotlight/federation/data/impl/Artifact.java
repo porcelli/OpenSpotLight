@@ -49,13 +49,45 @@
 
 package org.openspotlight.federation.data.impl;
 
+import org.openspotlight.federation.data.ConfigurationNode;
+
 /**
- * Just a marker interface to describe an artifact.
+ * Just a marker interface to describe an artifact, but also contaim some
+ * methods to identify this artifact in a unique way.
  * 
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public interface Artifact {
-    // marker interface
+public interface Artifact extends ConfigurationNode {
+    
+    /**
+     * Key properties to load an artifact in a unique way
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public static enum KeyProperties {
+        /**
+         * unique identifier (on jcr)
+         */
+        UUID,
+        /**
+         * version of the artifact. It is versionated inside the
+         * {@link Configuration}
+         */
+        version
+    }
+    
+    /**
+     * 
+     * @return the unique id for this node
+     */
+    public String getUUID();
+    
+    /**
+     * 
+     * @return the version name of this node.
+     */
+    public String getVersionName();
 }

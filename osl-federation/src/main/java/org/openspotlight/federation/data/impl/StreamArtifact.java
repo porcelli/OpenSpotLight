@@ -53,6 +53,7 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 
 import java.io.InputStream;
+import java.util.Collection;
 
 import net.jcip.annotations.ThreadSafe;
 
@@ -69,9 +70,11 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
-        Included.class }, propertyNames = { "name", "dataSha1" }, propertyTypes = {
-        String.class, String.class })
+        Bundle.class, Project.class }, validChildrenTypes = {
+        ArtifactLog.class, SyntaxInformation.class }, propertyNames = { "name",
+        "dataSha1", "UUID", "version", "data" }, propertyTypes = {
+        String.class, String.class, String.class, String.class,
+        InputStream.class })
 public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
         Artifact {
     
@@ -115,6 +118,36 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
     }
     
     /**
+     * Adds a new syntax information if this object does not contains one with
+     * the same parameters.
+     * 
+     * @param lineStart
+     * @param lineEnd
+     * @param columnStart
+     * @param columnEnd
+     * @param type
+     */
+    public void addSyntaxInformation(final Integer lineStart,
+            final Integer lineEnd, final Integer columnStart,
+            final Integer columnEnd, final SyntaxInformationType type) {
+        final String describedKey = SyntaxInformation.getDescribedKey(
+                lineStart, lineEnd, columnStart, columnEnd, type);
+        if (this.instanceMetadata.getChildByKeyValue(SyntaxInformation.class,
+                describedKey) == null) {
+            new SyntaxInformation(this, lineStart, lineEnd, columnStart,
+                    columnEnd, type);
+        }
+    }
+    
+    /**
+     * This method clear the syntax information of this {@link StreamArtifact}.
+     * 
+     */
+    public void clearSyntaxInformation() {
+        this.instanceMetadata.removeAllChildrenOfType(SyntaxInformation.class);
+    }
+    
+    /**
      * 
      * {@inheritDoc}
      */
@@ -124,10 +157,28 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
     
     /**
      * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
+    }
+    
+    /**
+     * 
+     * @return all syntax information of this {@link StreamArtifact}
+     */
+    public Collection<SyntaxInformation> getAllSyntaxInformation() {
+        return this.instanceMetadata
+                .getChildrensOfType(SyntaxInformation.class);
+    }
+    
+    /**
+     * 
      * @return a data stream for this artifact as a transient property
      */
     public InputStream getData() {
-        return this.instanceMetadata.getTransientProperty(DATA);
+        return this.instanceMetadata.getStreamProperty(DATA);
     }
     
     /**
@@ -155,12 +206,50 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
     }
     
     /**
+     * 
+     * {@inheritDoc}
+     */
+    public String getUUID() {
+        return this.instanceMetadata.getProperty(Artifact.KeyProperties.UUID
+                .toString());
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public String getVersionName() {
+        return this.instanceMetadata.getProperty(Artifact.KeyProperties.version
+                .toString());
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
+    }
+    
+    /**
+     * Creates a {@link ArtifactLog log object} inside this
+     * {@link StreamArtifact}
+     * 
+     * @param type
+     * @param message
+     */
+    public void log(final ArtifactLogType type, final String message) {
+        new ArtifactLog(this, type, message);
+    }
+    
+    /**
      * Sets a data stream for this artifact as a transient property.
      * 
      * @param data
      */
     public void setData(final InputStream data) {
-        this.instanceMetadata.setTransientProperty(DATA, data);
+        this.instanceMetadata.setStreamProperty(DATA, data);
     }
     
     /**

@@ -65,11 +65,9 @@ import org.openspotlight.federation.data.StaticMetadata;
  * A Jcr artifact is an artifact with hierarchical data. So, this artifact is
  * easily represented with Jcr structure instead of bytes to be parsed.
  * 
- * FIXME implement this
+ * TASK implement this
  * 
- * FIXME color information: for each line: enum type, start column, end column
- * 
- * FIXME DNA Federation - artifact loader
+ * LATER_TASK DNA Federation - artifact loader
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -77,8 +75,8 @@ import org.openspotlight.federation.data.StaticMetadata;
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
         Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
-        Included.class }, propertyNames = { "name", "dataSha1" }, propertyTypes = {
-        String.class, String.class })
+        Included.class }, propertyNames = { "name", "dataSha1", "version",
+        "UUID" }, propertyTypes = { String.class, String.class, String.class })
 public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
         Artifact {
     
@@ -131,6 +129,15 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
     
     /**
      * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
+    }
+    
+    /**
+     * 
      * @return a data stream for this artifact as a transient property
      */
     public InputStream getData() {
@@ -159,6 +166,33 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
      */
     public String getRelativeName() {
         return (String) this.instanceMetadata.getKeyPropertyValue();
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public String getUUID() {
+        return this.instanceMetadata.getProperty(Artifact.KeyProperties.UUID
+                .toString());
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public String getVersionName() {
+        return this.instanceMetadata.getProperty(Artifact.KeyProperties.version
+                .toString());
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
     }
     
     /**

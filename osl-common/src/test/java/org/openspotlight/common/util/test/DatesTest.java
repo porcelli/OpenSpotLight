@@ -53,7 +53,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Dates.dateFromString;
+import static org.openspotlight.common.util.Dates.dateTimeFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
+import static org.openspotlight.common.util.Dates.stringFromDateTime;
 
 import java.util.Date;
 
@@ -70,6 +72,22 @@ import org.openspotlight.common.util.Dates;
 public class DatesTest {
     
     @Test
+    public void shouldGetStringFromDate() {
+        assertThat(stringFromDate(new Date()), is(notNullValue()));
+    }
+    
+    @Test
+    public void shouldGetStringFromDateTime() {
+        assertThat(stringFromDateTime(new Date()), is(notNullValue()));
+    }
+    
+    @Test
+    public void shouldGetTheDateTimeWhenStringIsValid() {
+        assertThat(
+                dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
+    }
+    
+    @Test
     public void shouldGetTheDateWhenStringIsValid() {
         assertThat(dateFromString("2008-12-01"), is(notNullValue())); //$NON-NLS-1$
     }
@@ -77,11 +95,6 @@ public class DatesTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionGettingDateWithInvalidString() {
         dateFromString("Invalid string"); //$NON-NLS-1$
-    }
-    
-    @Test
-    public void shouldVerifyEquality() {
-        assertThat(stringFromDate(new Date()), is(notNullValue()));
     }
     
 }

@@ -69,7 +69,7 @@ public class XmlConfigurationManagerTest extends
     
     @Override
     protected ConfigurationManager createInstance() {
-        return new XmlConfigurationManager("./target/exampleConfigFile.xml");
+        return new XmlConfigurationManager("./target/test-data/XmlConfigurationManagerTest/exampleConfigFile.xml");
     }
     
 }

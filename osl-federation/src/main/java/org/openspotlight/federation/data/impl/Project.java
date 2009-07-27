@@ -121,6 +121,15 @@ public final class Project implements ConfigurationNode {
     
     /**
      * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals(final Object obj) {
+        return this.instanceMetadata.equals(obj);
+    }
+    
+    /**
+     * 
      * @return active property
      */
     public final Boolean getActive() {
@@ -297,6 +306,15 @@ public final class Project implements ConfigurationNode {
     public final StreamArtifact getStreamArtifactByName(final String name) {
         return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
                 name);
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
     }
     
     /**

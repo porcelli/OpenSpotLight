@@ -64,6 +64,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +101,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         final AtomicInteger loadCounter;
         final ArtifactMapping mapping;
         final Set<String> namesToProcess;
+        final Map<String, Object> cachedInformation;
         
         /**
          * All parameters are mandatory
@@ -109,16 +111,19 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param loadCounter
          * @param mapping
          * @param namesToProcess
+         * @param cachedInformation
          */
         public Worker(final Bundle bundle, final AtomicInteger errorCounter,
                 final AtomicInteger loadCounter, final ArtifactMapping mapping,
-                final Set<String> namesToProcess) {
+                final Set<String> namesToProcess,
+                final Map<String, Object> cachedInformation) {
             super();
             this.bundle = bundle;
             this.errorCounter = errorCounter;
             this.loadCounter = loadCounter;
             this.mapping = mapping;
             this.namesToProcess = namesToProcess;
+            this.cachedInformation = cachedInformation;
         }
         
         /**
@@ -128,7 +133,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         public Void call() throws Exception {
             AbstractArtifactLoader.this.loadArtifact(this.bundle,
                     this.errorCounter, this.loadCounter, this.mapping,
-                    this.namesToProcess);
+                    this.namesToProcess, this.cachedInformation);
             return null;
         }
         
@@ -153,11 +158,14 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * 
      * @param bundle
      * @param mapping
+     * @param cachedInformation
+     *            could be used for cache purposes
      * @return
      * @throws ConfigurationException
      */
     protected abstract Set<String> getAllArtifactNames(Bundle bundle,
-            ArtifactMapping mapping) throws ConfigurationException;
+            ArtifactMapping mapping, Map<String, Object> cachedInformation)
+            throws ConfigurationException;
     
     /**
      * This method loads an artifact using its names
@@ -165,11 +173,14 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @param bundle
      * @param mapping
      * @param artifactName
+     * @param cachedInformation
+     *            could be used for cache purposes
      * @return
      * @throws Exception
      */
     protected abstract byte[] loadArtifact(Bundle bundle,
-            ArtifactMapping mapping, String artifactName) throws Exception;
+            ArtifactMapping mapping, String artifactName,
+            Map<String, Object> cachedInformation) throws Exception;
     
     /**
      * Mehtod to be used by the {@link Worker}.
@@ -182,11 +193,12 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      */
     void loadArtifact(final Bundle bundle, final AtomicInteger errorCounter,
             final AtomicInteger loadCounter, final ArtifactMapping mapping,
-            final Set<String> namesToProcess) {
+            final Set<String> namesToProcess,
+            final Map<String, Object> cachedInformation) {
         for (final String artifactName : namesToProcess) {
             try {
                 final byte[] content = this.loadArtifact(bundle, mapping,
-                        artifactName);
+                        artifactName, cachedInformation);
                 final String sha1 = getSha1SignatureEncodedAsBase64(content);
                 final InputStream is = new ByteArrayInputStream(content);
                 final StreamArtifact artifact = bundle
@@ -215,8 +227,10 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     public ArtifactProcessingCount loadArtifactsFromMappings(final Bundle bundle)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
+        final Map<String, Object> cachedInformation = new ConcurrentHashMap<String, Object>();
         final AtomicInteger errorCounter = new AtomicInteger();
         final AtomicInteger loadCounter = new AtomicInteger();
+        
         final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
         final Set<String> includedPatterns = new HashSet<String>();
         final Set<String> excludedPatterns = new HashSet<String>();
@@ -229,14 +243,14 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 excludedPatterns.add(excluded.getName());
             }
             final Set<String> namesToFilter = this.getAllArtifactNames(bundle,
-                    mapping);
+                    mapping, cachedInformation);
             final FilterResult innerResult = filterNamesByPattern(
                     namesToFilter, includedPatterns, excludedPatterns, false);
             final Set<String> namesToProcess = innerResult.getIncludedNames();
             ignoreCount += innerResult.getIgnoredNames().size();
             
             this.splitWorkBetweenThreads(bundle, errorCounter, loadCounter,
-                    mapping, namesToProcess, workers);
+                    mapping, namesToProcess, workers, cachedInformation);
             
         }
         try {
@@ -273,7 +287,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     private void splitWorkBetweenThreads(final Bundle bundle,
             final AtomicInteger errorCounter, final AtomicInteger loadCounter,
             final ArtifactMapping mapping, final Set<String> namesToProcess,
-            final List<Callable<Void>> workers) throws ConfigurationException {
+            final List<Callable<Void>> workers,
+            final Map<String, Object> cachedInformation)
+            throws ConfigurationException {
         final int numberOfThreads = bundle.getRepository()
                 .getNumberOfParallelThreads();
         final int allNamesToProcessSize = namesToProcess.size();
@@ -298,7 +314,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         for (final Map.Entry<Integer, Set<String>> entry : listsForThreads
                 .entrySet()) {
             final Worker w = new Worker(bundle, errorCounter, loadCounter,
-                    mapping, entry.getValue());
+                    mapping, entry.getValue(), cachedInformation);
             workers.add(w);
         }
         

@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.load;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
@@ -61,9 +62,11 @@ import static org.openspotlight.common.util.Serialization.serializeToBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -88,7 +91,7 @@ import org.openspotlight.federation.data.impl.Configuration;
  * simple and easily readable xml file, since the xml exported from jcr was to
  * much dirty for using as a simple configuration.
  * 
- * FIXME implement node property
+ * LATER_TASK implement node property
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -108,6 +111,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
      * @param url
      */
     public XmlConfigurationManager(final String url) {
+        checkNotEmpty("url", url); //$NON-NLS-1$
         this.url = url;
     }
     
@@ -148,21 +152,25 @@ public class XmlConfigurationManager implements ConfigurationManager {
                             .getStaticMetadata().keyPropertyName(), convert(
                             key, String.class));
                 }
-                final Map<String, Serializable> properties = innerNode
+                final Map<String, Object> properties = innerNode
                         .getInstanceMetadata().getProperties();
                 final String[] propKeys = innerNode.getInstanceMetadata()
                         .getStaticMetadata().propertyNames();
-                final Class<? extends Serializable>[] propValues = innerNode
-                        .getInstanceMetadata().getStaticMetadata()
-                        .propertyTypes();
+                final Class<?>[] propValues = innerNode.getInstanceMetadata()
+                        .getStaticMetadata().propertyTypes();
                 final Map<String, Class<?>> propertyTypesMap = map(
                         ofKeys(propKeys), andValues(propValues));
-                for (final Map.Entry<String, Serializable> propertyEntry : properties
+                for (final Map.Entry<String, Object> propertyEntry : properties
                         .entrySet()) {
                     if (!propertyEntry.getKey().equals("")) { //$NON-NLS-1$
-                        this.setPropertyOnXml(newElement, propertyEntry
-                                .getKey(), propertyEntry.getValue(),
-                                propertyTypesMap.get(propertyEntry.getKey()));
+                        if (Serializable.class
+                                .isAssignableFrom(propertyTypesMap
+                                        .get(propertyEntry.getKey()))) {
+                            this.setPropertyOnXml(newElement, propertyEntry
+                                    .getKey(), (Serializable) propertyEntry
+                                    .getValue(), propertyTypesMap
+                                    .get(propertyEntry.getKey()));
+                        }
                     }
                 }
                 this.createEachXmlNode(newElement, innerNode);
@@ -188,7 +196,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
     
     @SuppressWarnings("unchecked")
     private void loopOnEachElement(final Element parentElement,
-            final ConfigurationNode parentNode) throws SLException {
+            final ConfigurationNode parentNode) throws Exception {
         for (final Iterator<Element> elements = parentElement.elementIterator(); elements
                 .hasNext();) {
             final Element nextElement = elements.next();
@@ -216,8 +224,8 @@ public class XmlConfigurationManager implements ConfigurationManager {
             }
             final String[] propKeys = newNode.getInstanceMetadata()
                     .getStaticMetadata().propertyNames();
-            final Class<? extends Serializable>[] propValues = newNode
-                    .getInstanceMetadata().getStaticMetadata().propertyTypes();
+            final Class<?>[] propValues = newNode.getInstanceMetadata()
+                    .getStaticMetadata().propertyTypes();
             final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys),
                     andValues(propValues));
             for (final Iterator<Attribute> properties = nextElement
@@ -241,6 +249,12 @@ public class XmlConfigurationManager implements ConfigurationManager {
     public void save(final Configuration configuration)
             throws ConfigurationException {
         try {
+            if (this.url.indexOf("/") != -1) { //$NON-NLS-1$
+                final String dir = this.url.substring(0, this.url
+                        .lastIndexOf("/")); //$NON-NLS-1$
+                new File(dir).mkdirs();
+            }
+            
             final Document document = DocumentFactory.getInstance()
                     .createDocument();
             final Element element = document.addElement("configuration"); //$NON-NLS-1$
@@ -260,7 +274,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
     
     private void setPropertyOnNode(final ConfigurationNode newNode,
             final String propertyName, final Class<?> propertyClass,
-            final String valueAsString) throws SLException {
+            final String valueAsString) throws Exception {
         if (valueAsString == null) {
             newNode.getInstanceMetadata().setProperty(propertyName, null);
         } else if (Boolean.class.equals(propertyClass)) {
@@ -287,6 +301,19 @@ public class XmlConfigurationManager implements ConfigurationManager {
         } else if (Date.class.equals(propertyClass)) {
             newNode.getInstanceMetadata().setProperty(propertyName,
                     dateFromString(valueAsString));
+        } else if (propertyClass.isEnum()) {
+            final Field[] flds = propertyClass.getDeclaredFields();
+            for (final Field f : flds) {
+                if (f.isEnumConstant()) {
+                    if (f.getName().equals(propertyName)) {
+                        final Serializable newValue = (Serializable) f
+                                .get(null);
+                        newNode.getInstanceMetadata().setProperty(propertyName,
+                                newValue);
+                        break;
+                    }
+                }
+            }
         } else {
             final Serializable value = readFromBase64(valueAsString);
             newNode.getInstanceMetadata().setProperty(propertyName, value);
@@ -316,6 +343,8 @@ public class XmlConfigurationManager implements ConfigurationManager {
             newElement.addAttribute(key, Float.toString((Float) value));
         } else if (Date.class.equals(propertyClass)) {
             newElement.addAttribute(key, stringFromDate((Date) value));
+        } else if (propertyClass.isEnum()) {
+            newElement.addAttribute(key, ((Enum<?>) value).name());
         } else {
             final String valueAsString = serializeToBase64(value);
             newElement.addAttribute(key, valueAsString);

@@ -133,12 +133,23 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- h2 for sql92 tests -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- 
 	      Databases and JDBC Drivers
 	    -->
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
+		</dependency>
+		<!-- xml easy manipulation -->
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
 		</dependency>
 	</dependencies>
 </project>

@@ -95,7 +95,7 @@ public class Equals {
      *         return true;
      *     if(!(o instanceof ThisClass))
      *         return false;
-     *     that = (ThisClass) o;
+     *     ThisClass that = (ThisClass) o;
      *     return eachEquality(of(this.attribute1,this.attribute2)
      *                     ,andOf(that.attribute1,that.attribute2));
      * }

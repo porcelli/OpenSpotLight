@@ -76,7 +76,7 @@ import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext
 @SuppressWarnings("all")
 public class StreamArtifactDogFoodingProcessing {
     
-    private Configuration createValidConfiguration() throws Exception {
+    private Configuration createOslValidConfiguration() throws Exception {
         final String basePath = new File("../").getCanonicalPath() + "/";
         final Configuration configuration = new Configuration();
         final Repository oslRepository = new Repository(configuration,
@@ -163,7 +163,7 @@ public class StreamArtifactDogFoodingProcessing {
             throws Exception {
         final XmlConfigurationManager configurationManager = new XmlConfigurationManager(
                 "./target/test-data/StreamArtifactDogFoodingProcessing/dogfooding-osl-configuration.xml");
-        final Configuration configuration = this.createValidConfiguration();
+        final Configuration configuration = this.createOslValidConfiguration();
         configurationManager.save(configuration);
     }
     
@@ -171,7 +171,7 @@ public class StreamArtifactDogFoodingProcessing {
     public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
         final Configuration configuration = this
                 .loadAllFilesFromThisConfiguration(this
-                        .createValidConfiguration());
+                        .createOslValidConfiguration());
         final Set<Bundle> bundles = findAllNodesOfType(configuration,
                 Bundle.class);
         for (final Bundle bundle : bundles) {
@@ -183,7 +183,7 @@ public class StreamArtifactDogFoodingProcessing {
     public void shouldProcessAllValidOslSourceCode() throws Exception {
         final Configuration configuration = this
                 .loadAllFilesFromThisConfiguration(this
-                        .createValidConfiguration());
+                        .createOslValidConfiguration());
         
         final BundleProcessorManager manager = new BundleProcessorManager();
         final GraphContext graphContext = mock(GraphContext.class);

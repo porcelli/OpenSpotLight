@@ -57,8 +57,6 @@ import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingSt
 /**
  * Class to create log artifacts inside JcrNodes
  * 
- * FIXME log:artifact->err->desc : store data on JCR
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
@@ -71,7 +69,7 @@ public class JcrLogger {
      */
     public static void log(final ProcessingAction action,
             final Artifact artifact) {
-        // FIXME implement log method
+        // LATER_TASK implement log method
     }
     
     /**
@@ -82,7 +80,7 @@ public class JcrLogger {
      */
     public static void log(final ProcessingStartAction action,
             final Bundle bundle) {
-        // FIXME implement log method
+        // LATER_TASK implement log method
     }
     
 }

@@ -95,7 +95,7 @@ public @interface StaticMetadata {
      * 
      * @return the property types
      */
-    public Class<? extends Serializable>[] propertyTypes() default Serializable.class;
+    public Class<?>[] propertyTypes() default Serializable.class;
     
     /**
      * All valid children types should be filled here. In case of no children,

@@ -64,8 +64,11 @@ import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
+import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -82,19 +85,25 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.jcr.version.Version;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.StaticMetadata;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
+import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
  * Configuration manager that stores and loads the configuration from a
  * JcrRepository.
  * 
- * FIXME implement node property
+ * LATER_TASK implement node property
+ * 
+ * TASK methods to get artifact metadata and also load resources by demand
+ * 
+ * TASK method to find a artifact
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -102,7 +111,6 @@ import org.openspotlight.federation.data.impl.Configuration;
 public class JcrSessionConfigurationManager implements ConfigurationManager {
     
     private static final String NS_DESCRIPTION = "www.openspotlight.org"; //$NON-NLS-1$
-    
     /**
      * JCR session
      */
@@ -181,11 +189,23 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 if (foundNode == null) {
                     foundNode = this.create(parentNode, nodePath,
                             keyPropertyName, keyPropertyValue, keyPropertyType);
+                    foundNode.addMixin("mix:referenceable"); //$NON-NLS-1$
+                    if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
+                        foundNode.addMixin("mix:versionable"); //$NON-NLS-1$
+                    }
+                } else {
+                    if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
+                        foundNode.checkout();
+                    }
                 }
                 return foundNode;
             } catch (final PathNotFoundException e) {
                 final Node newNode = this.create(parentNode, nodePath,
                         keyPropertyName, keyPropertyValue, keyPropertyType);
+                newNode.addMixin("mix:referenceable"); //$NON-NLS-1$
+                if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
+                    newNode.addMixin("mix:versionable"); //$NON-NLS-1$
+                }
                 return newNode;
             }
             
@@ -203,11 +223,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @throws Exception
      */
     @SuppressWarnings("boxing")
-    private Serializable getProperty(final Node jcrNode,
-            final String propertyName, final Class<?> propertyClass)
-            throws Exception {
+    private Object getProperty(final Node jcrNode, final String propertyName,
+            final Class<?> propertyClass) throws Exception {
         Property jcrProperty = null;
-        Serializable value = null;
+        Object value = null;
         try {
             jcrProperty = jcrNode.getProperty(propertyName);
         } catch (final Exception e) {
@@ -234,12 +253,29 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             if (jcrProperty.getString() != null) {
                 value = dateFromString(jcrProperty.getString());
             }
-        } else {
+        } else if (propertyClass.isEnum()) {
+            final Field[] flds = propertyClass.getDeclaredFields();
+            for (final Field f : flds) {
+                if (f.isEnumConstant()) {
+                    if (f.getName().equals(propertyName)) {
+                        value = f.get(null);
+                        break;
+                    }
+                }
+            }
+        } else if (InputStream.class.isAssignableFrom(propertyClass)) {
+            value = jcrProperty.getStream();
+        } else if (Serializable.class.isAssignableFrom(propertyClass)) {
             final String valueAsString = jcrProperty.getString();
             if (valueAsString != null) {
                 value = readFromBase64(valueAsString);
             }
+        } else {
+            throw new IllegalStateException(format(
+                    "Invalid class for property {0} : {1}", propertyName, //$NON-NLS-1$
+                    propertyClass));
         }
+        
         return value;
     }
     
@@ -275,6 +311,14 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final Configuration rootNode = new Configuration();
             this.load(rootJcrNode, rootNode, rootNode.getInstanceMetadata()
                     .getStaticMetadata());
+            final Set<Artifact> artifacts = findAllNodesOfType(rootNode,
+                    Artifact.class);
+            final String versionName = rootJcrNode.getBaseVersion().getName();
+            for (final Artifact a : artifacts) {
+                a.getInstanceMetadata().setPropertyIgnoringListener(
+                        Artifact.KeyProperties.version.toString(), versionName);
+            }
+            
             rootNode.getInstanceMetadata().getSharedData().markAsSaved();
             return rootNode;
         } catch (final Exception e) {
@@ -294,8 +338,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final StaticMetadata staticMetadata) throws Exception {
         final String[] propKeys = configurationNode.getInstanceMetadata()
                 .getStaticMetadata().propertyNames();
-        final Class<? extends Serializable>[] propValues = configurationNode
-                .getInstanceMetadata().getStaticMetadata().propertyTypes();
+        final Class<?>[] propValues = configurationNode.getInstanceMetadata()
+                .getStaticMetadata().propertyTypes();
         final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys),
                 andValues(propValues));
         this.loadProperties(jcrNode, configurationNode, propertyTypes,
@@ -326,12 +370,19 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     .getNodeClassFromName(child.getName());
             final StaticMetadata staticMetadata = this.classHelper
                     .getStaticMetadataFromClass(nodeClass);
-            final Serializable keyValue = this.getProperty(child, "osl:" //$NON-NLS-1$
-                    + staticMetadata.keyPropertyName(), staticMetadata
-                    .keyPropertyType());
+            final Serializable keyValue = (Serializable) this.getProperty(
+                    child, "osl:" //$NON-NLS-1$
+                            + staticMetadata.keyPropertyName(), staticMetadata
+                            .keyPropertyType());
             final String childNodeClassName = child.getName();
             final ConfigurationNode newNode = this.classHelper.createInstance(
                     keyValue, configurationNode, childNodeClassName);
+            if (Artifact.class.isAssignableFrom(nodeClass)) {
+                newNode.getInstanceMetadata()
+                        .setPropertyIgnoringListener(
+                                Artifact.KeyProperties.UUID.toString(),
+                                child.getUUID());
+            }
             this.load(child, newNode, staticMetadata);
         }
         
@@ -355,10 +406,17 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     continue;
                 }
                 final Class<?> propertyClass = propertyTypes.get(propertyName);
-                if (propertyClass != null) {
-                    final Serializable value = this.getProperty(jcrNode,
-                            propertyIdentifier, propertyClass);
+                if ((propertyClass != null)
+                        && Serializable.class.isAssignableFrom(propertyClass)) {
+                    final Serializable value = (Serializable) this.getProperty(
+                            jcrNode, propertyIdentifier, propertyClass);
                     configurationNode.getInstanceMetadata().setProperty(
+                            propertyName, value);
+                } else if ((propertyClass != null)
+                        && InputStream.class.isAssignableFrom(propertyClass)) {
+                    final InputStream value = (InputStream) this.getProperty(
+                            jcrNode, propertyIdentifier, propertyClass);
+                    configurationNode.getInstanceMetadata().setStreamProperty(
                             propertyName, value);
                 }
                 
@@ -447,8 +505,15 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                             .getRootNode());
                 }
             }
-            
             this.session.save();
+            final Version version = newJcrNode.checkin();
+            final String versionName = version.getName();
+            final Set<Artifact> artifacts = findAllNodesOfType(configuration,
+                    Artifact.class);
+            for (final Artifact a : artifacts) {
+                a.getInstanceMetadata().setPropertyIgnoringListener(
+                        Artifact.KeyProperties.version.toString(), versionName);
+            }
             configuration.getInstanceMetadata().getSharedData().markAsSaved();
         } catch (final Exception e) {
             logAndThrowNew(e, ConfigurationException.class);
@@ -481,6 +546,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                         newJcrNode, childNodeStr, staticMetadata
                                 .keyPropertyName(), key, staticMetadata
                                 .keyPropertyType());
+                if (Artifact.class.isAssignableFrom(nodeClass)) {
+                    childNode.getInstanceMetadata()
+                            .setPropertyIgnoringListener(
+                                    Artifact.KeyProperties.UUID.toString(),
+                                    newChildJcrNode.getUUID());
+                }
                 this.saveProperties(childNode, newChildJcrNode);
                 this.saveChilds(childNode, newChildJcrNode);
             }
@@ -489,14 +560,15 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     
     private void saveProperties(final ConfigurationNode configurationNode,
             final Node innerNewJcrNode) throws Exception {
-        final Map<String, Serializable> properties = configurationNode
+        final Map<String, Object> properties = configurationNode
                 .getInstanceMetadata().getProperties();
-        for (final Map.Entry<String, Serializable> entry : properties
-                .entrySet()) {
-            final Serializable value = entry.getValue();
-            final Class<?> clazz = value != null ? value.getClass() : null;
-            this.setProperty(innerNewJcrNode, DEFAULT_OSL_PREFIX + ":" //$NON-NLS-1$
-                    + entry.getKey(), clazz, entry.getValue());
+        for (final Map.Entry<String, Object> entry : properties.entrySet()) {
+            final Object value = entry.getValue();
+            if (value instanceof Serializable) {
+                final Class<?> clazz = value != null ? value.getClass() : null;
+                this.setProperty(innerNewJcrNode, DEFAULT_OSL_PREFIX + ":" //$NON-NLS-1$
+                        + entry.getKey(), clazz, entry.getValue());
+            }
         }
     }
     
@@ -511,8 +583,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      */
     @SuppressWarnings("boxing")
     private void setProperty(final Node jcrNode, final String propertyName,
-            final Class<?> propertyClass, final Serializable value)
-            throws Exception {
+            final Class<?> propertyClass, final Object value) throws Exception {
         if (value == null) {
             jcrNode.setProperty(propertyName, (String) null);
         } else if (Boolean.class.equals(propertyClass)) {
@@ -533,9 +604,17 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             jcrNode.setProperty(propertyName, (Float) value);
         } else if (Date.class.equals(propertyClass)) {
             jcrNode.setProperty(propertyName, stringFromDate((Date) value));
-        } else {
-            final String valueAsString = serializeToBase64(value);
+        } else if (propertyClass.isEnum()) {
+            jcrNode.setProperty(propertyName, ((Enum<?>) value).name());
+        } else if (InputStream.class.isAssignableFrom(propertyClass)) {
+            jcrNode.setProperty(propertyName, (InputStream) value);
+        } else if (Serializable.class.isAssignableFrom(propertyClass)) {
+            final String valueAsString = serializeToBase64((Serializable) value);
             jcrNode.setProperty(propertyName, valueAsString);
+        } else {
+            throw new IllegalStateException(format(
+                    "Invalid class for property {0} : {1}", propertyName, //$NON-NLS-1$
+                    propertyClass));
         }
     }
 }

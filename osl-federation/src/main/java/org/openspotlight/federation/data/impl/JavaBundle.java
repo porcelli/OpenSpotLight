@@ -62,7 +62,7 @@ import org.openspotlight.federation.data.StaticMetadata;
         "virtualMachineVersion" }, propertyTypes = { Boolean.class,
         String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
         Project.class, BundleProcessorType.class, StreamArtifact.class,
-        JcrArtifact.class, ArtifactMapping.class, Bundle.class })
+        JcrArtifact.class, ArtifactMapping.class })
 public class JavaBundle extends Bundle {
     
     /**

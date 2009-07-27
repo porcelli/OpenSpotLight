@@ -1,0 +1,86 @@
+<scripts>
+  <!-- Sample
+    <script>
+      <name>derby</name>
+      <customTypeCreationScripts>
+        <customType>
+          <sql>create custom</sql>
+        </customType>
+      </customTypeCreationScripts>
+      <tableCreationScript>create table</tableCreationScript>
+      <indexCreationScript>create index</indexCreationScript>
+      <triggerCreationScript>create trigger</triggerCreationScript>
+      <procedureCreationScript>create proc</procedureCreationScript>
+      <functionCreationScript>create function</functionCreationScript>
+      <viewCreationScript>create view</viewCreationScript>
+    </script>-->
+    <script>
+      <name>H2</name>
+      <tableCreationScript><![CDATA[
+        SELECT 
+            TABLE_CATALOG AS CATALOG, 
+            TABLE_SCHEMA AS SCHEMA, 
+            TABLE_NAME AS NAME, 
+            SQL, 
+            REMARKS 
+        FROM 
+            INFORMATION_SCHEMA.TABLES 
+        WHERE
+            TABLE_TYPE='TABLE'
+      ]]></tableCreationScript>
+      <indexCreationScript><![CDATA[
+        SELECT 
+            TABLE_CATALOG AS CATALOG, 
+            TABLE_SCHEMA AS SCHEMA, 
+            TABLE_NAME AS NAME, 
+            SQL, 
+            REMARKS 
+        FROM 
+            INFORMATION_SCHEMA.INDEXES
+      ]]></indexCreationScript>
+      <triggerCreationScript><![CDATA[
+        SELECT 
+            TRIGGER_CATALOG AS CATALOG, 
+            TRIGGER_SCHEMA AS SCHEMA, 
+            TRIGGER_NAME AS NAME, 
+            SQL AS SQL, 
+            REMARKS AS REMARKS 
+        FROM 
+            INFORMATION_SCHEMA.TRIGGERS
+      ]]></triggerCreationScript>
+      <procedureCreationScript><![CDATA[
+        select 
+            ALIAS_CATALOG as CATALOG, 
+            ALIAS_SCHEMA as SCHEMA, 
+            ALIAS_NAME as NAME, 
+            JAVA_CLASS || '.' || JAVA_METHOD as SQL, 
+            REMARKS
+        from 
+            INFORMATION_SCHEMA.FUNCTION_ALIASES 
+        where 
+            RETURNS_RESULT=1
+      ]]></procedureCreationScript>
+      <functionCreationScript><![CDATA[
+        select 
+            ALIAS_CATALOG as CATALOG, 
+            ALIAS_SCHEMA as SCHEMA, 
+            ALIAS_NAME as NAME, 
+            JAVA_CLASS || '.' || JAVA_METHOD as SQL, 
+            REMARKS
+        from 
+            INFORMATION_SCHEMA.FUNCTION_ALIASES 
+        where 
+            RETURNS_RESULT=1
+      ]]></functionCreationScript>
+      <viewCreationScript><![CDATA[
+        SELECT 
+            TABLE_CATALOG AS CATALOG, 
+            TABLE_SCHEMA AS SCHEMA, 
+            TABLE_NAME AS NAME, 
+            VIEW_DEFINITION AS SQL, 
+            REMARKS 
+        FROM
+            INFORMATION_SCHEMA.VIEWS
+      ]]></viewCreationScript>
+    </script>
+</scripts>

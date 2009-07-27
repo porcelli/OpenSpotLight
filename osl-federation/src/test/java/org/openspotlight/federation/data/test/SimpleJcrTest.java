@@ -73,14 +73,14 @@ import org.junit.Test;
 @SuppressWarnings("all")
 public class SimpleJcrTest {
     
-    public static final String TESTDATA_PATH = "./src/test/resources/";
-    public static final String JACKRABBIT_DATA_PATH = "./target/testdata/jackrabbittest/";
+    public static final String TESTDATA_PATH = "./src/test/resources/configuration/";
+    public static final String JACKRABBIT_DATA_PATH = "./target/test-data/SimpleJcrTest/";
     public static final String REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH
             + "repository";
     public static final String REPOSITORY_CONFIG_PATH = TESTDATA_PATH
-            + "jackrabbitDerbyTestRepositoryConfig.xml";
+            + "SimpleJcrTest/jackrabbit.xml";
     public static final String DERBY_SYSTEM_HOME = JACKRABBIT_DATA_PATH
-            + "/derby";
+            + "derby";
     
     private Session session;
     
@@ -115,8 +115,12 @@ public class SimpleJcrTest {
     
     @After
     public void shutdown() throws Exception {
-        this.session.logout();
-        this.repository.shutdown();
+        if (this.session != null) {
+            this.session.logout();
+        }
+        if (this.repository != null) {
+            this.repository.shutdown();
+        }
     }
     
 }
