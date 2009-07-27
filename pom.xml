@@ -231,6 +231,12 @@
 				<version>1.0-FCS</version>
 			</dependency>
 			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>5.8</version>
+				<classifier>jdk15</classifier>
+			</dependency>
+			<dependency>
 				<groupId>xdoclet</groupId>
 				<artifactId>xdoclet-xjavadoc</artifactId>
 				<version>1.2b2</version>
