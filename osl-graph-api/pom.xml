@@ -1,18 +1,22 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>openspotlight</artifactId>
-		<groupId>org.openspotlight</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 	<artifactId>osl-graph-api</artifactId>
 	<packaging>jar</packaging>
-	<name>SpotLight :: Graph</name>
-	<build />
+	<name>OpenSpotLight Graph Library</name>
+	<parent>
+		<groupId>org.openspotlight</groupId>
+		<artifactId>osl</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 	<dependencies>
 		<!-- External dependencies -->
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.qdox</groupId>
 			<artifactId>qdox</artifactId>
@@ -122,6 +126,11 @@
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
 			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-persistence-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
