@@ -72,7 +72,10 @@
 	<modules>
 		<module>osl-common</module>
 		<module>osl-federation</module>
+		<module>osl-graph-api</module>
 		<module>osl-graph</module>
+		<module>osl-persistence-api</module>
+		<module>osl-persistence</module>
 	</modules>
 	<build>
 		<plugins>
@@ -116,6 +119,17 @@
 				<artifactId>osl-graph</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-api</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-persistence-api</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
 			<!-- dna federation dependencies -->
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
