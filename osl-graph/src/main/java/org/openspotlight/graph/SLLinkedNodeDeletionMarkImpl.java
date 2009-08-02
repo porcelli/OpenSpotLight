@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.SLRuntimeException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * The Class SLLinkedNodeDeletionMarkImpl.

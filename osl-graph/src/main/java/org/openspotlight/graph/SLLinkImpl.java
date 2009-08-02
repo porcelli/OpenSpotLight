@@ -53,8 +53,8 @@ import java.text.Collator;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openspotlight.SLException;
-import org.openspotlight.SLRuntimeException;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;

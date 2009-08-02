@@ -58,13 +58,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.openspotlight.SLException;
-import org.openspotlight.SLRuntimeException;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.util.AbstractFactory;
 import org.openspotlight.graph.util.ProxyUtil;
 	
 /**
@@ -148,23 +148,36 @@ public class SLNodeImpl implements SLNode {
 	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.String)
 	 */
 	public SLNode addNode(String name) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
-		return addChildNode(SLNode.class, name, null, null);
+		return addChildNode(SLNode.class, name, SLPersistenceMode.NORMAL, null, null);
 	}
-
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String)
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
-		return addChildNode(clazz, name, null, null);
+		return addChildNode(clazz, name, SLPersistenceMode.NORMAL, null, null);
 	}
 	
-	//@Override
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLPersistenceMode)
+	 */
+	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLPersistenceMode persistenceMode) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+		return addChildNode(clazz, name, persistenceMode, null, null);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, java.util.Collection, java.util.Collection)
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
-		return addChildNode(clazz, name, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		return addChildNode(clazz, name, SLPersistenceMode.NORMAL, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLPersistenceMode, java.util.Collection, java.util.Collection)
+	 */
+	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLPersistenceMode persistenceMode, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+		return addChildNode(clazz, name, persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
 	}
 
 	//@Override
@@ -337,16 +350,16 @@ public class SLNodeImpl implements SLNode {
 	
 	//@Override
 	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLNode#addLineReference(int, int, int, int, int, java.lang.String, java.lang.String)
+	 * @see org.openspotlight.graph.SLNode#addLineReference(int, int, int, int, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public SLLineReference addLineReference(int startLine, int endLine, int startColumn, int endColumn, int lineType, String statement, String path) throws SLGraphSessionException {
+	public SLLineReference addLineReference(int startLine, int endLine, int startColumn, int endColumn, String statement, String artifactId, String artifactVersion) throws SLGraphSessionException {
 
 		try {
 			
 			StringBuilder lineReferenceKey = new StringBuilder()
 				.append(startLine).append('.').append(endLine).append('.')
 				.append(startColumn).append('.').append(endColumn).append('.')
-				.append(lineType).append(statement).append('.').append(path).append('.');
+				.append(statement).append(artifactId).append('.').append(artifactVersion).append('.');
 		
 			String propName = "lineRef." + lineReferenceKey.toString().hashCode();
 			SLLineReference lineRef = addNode(SLLineReference.class, propName);
@@ -355,9 +368,9 @@ public class SLNodeImpl implements SLNode {
 			lineRef.setEndLine(endLine);
 			lineRef.setStartColumn(startColumn);
 			lineRef.setEndColumn(endColumn);
-			lineRef.setLineType(lineType);
 			lineRef.setStatement(statement);
-			lineRef.setPath(path);
+			lineRef.setArtifactId(artifactId);
+			lineRef.setArtifactVersion(artifactVersion);
 			
 			return lineRef;
 		} 
@@ -456,6 +469,7 @@ public class SLNodeImpl implements SLNode {
 	 * 
 	 * @param clazz the clazz
 	 * @param name the name
+	 * @param persistenceMode the persistence mode
 	 * @param linkTypesForLinkDeletion the link types for link deletion
 	 * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
 	 * 
@@ -463,7 +477,7 @@ public class SLNodeImpl implements SLNode {
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	private <T extends SLNode> T addChildNode(Class<T> clazz, String name, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLGraphSessionException {
+	private <T extends SLNode> T addChildNode(Class<T> clazz, String name, SLPersistenceMode persistenceMode, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLGraphSessionException {
 		try {
 			Class<T> type = null;
 			SLPersistentNode pChildNode = getHierarchyChildNode(clazz, name);
@@ -478,7 +492,7 @@ public class SLNodeImpl implements SLNode {
 			String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
 			pChildNode.setProperty(String.class, typePropName, type.getName());
 			T nodeProxy = createNodeProxy(type, pChildNode);
-			eventPoster.post(new SLNodeEvent(SLNodeEvent.TYPE_NODE_ADDED, nodeProxy, pChildNode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion));
+			eventPoster.post(new SLNodeEvent(SLNodeEvent.TYPE_NODE_ADDED, nodeProxy, pChildNode, persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion));
 			return nodeProxy;
 		} 
 		catch (SLException e) {

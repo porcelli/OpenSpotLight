@@ -214,6 +214,21 @@ public class SLMetaLinkImpl implements SLMetaLink {
 			throw new SLGraphSessionException("Error on attempt to retrieve meta link property.", e);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetaLink#getDescription()
+	 */
+	public String getDescription() throws SLGraphSessionException {
+		try {
+			String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+			SLPersistentProperty<String> prop = SLCommonSupport.getProperty(metaLinkNode, String.class, propName);
+			return prop == null ? null : prop.getValue();
+		} 
+		catch (SLPersistentTreeSessionException e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve meta node description.", e);
+		}
+	}
+
 }
 
 

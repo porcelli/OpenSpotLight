@@ -48,9 +48,9 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.util.AbstractFactory;
 
 /**
  * The Class SLGraphImpl.

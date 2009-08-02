@@ -82,6 +82,9 @@ public class SLConsts {
 	/** The Constant PROPERTY_NAME_RENDER_HINT. */
 	static final String PROPERTY_NAME_RENDER_HINT = "renderHint";
 	
+	/** The Constant PROPERTY_NAME_DESCRIPTION. */
+	static final String PROPERTY_NAME_DESCRIPTION = "description";
+	
 	/** The Constant PROPERTY_NAME_META_NODE_ID. */
 	static final String PROPERTY_NAME_META_NODE_ID = "metaNodeID";
 	

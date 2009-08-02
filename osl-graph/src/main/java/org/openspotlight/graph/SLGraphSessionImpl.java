@@ -55,7 +55,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openspotlight.SLException;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.annotation.SLLinkAttribute;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
@@ -199,11 +199,15 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
+	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException {
+		return addLink(linkClass, source, target, bidirecional, SLPersistenceMode.NORMAL);
+	}
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLGraphSession#addLink(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, boolean)
 	 */
-	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException {
+	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional, SLPersistenceMode persistenceMode) throws SLGraphSessionException {
 
 		try  {
 
@@ -253,7 +257,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			
 			SLLink link = new SLLinkImpl(this, linkNode, eventPoster);
 			L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
-			eventPoster.post(new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode));
+			eventPoster.post(new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode, persistenceMode));
 			return linkProxy;
 		}
 		catch (SLException e) {

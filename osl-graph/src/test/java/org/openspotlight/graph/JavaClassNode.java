@@ -50,6 +50,7 @@ package org.openspotlight.graph;
 
 import java.util.Date;
 
+import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
@@ -64,6 +65,8 @@ import org.openspotlight.graph.annotation.SLRenderHints;
  * 
  * @author Vitor Hugo Chagas
  */
+
+@SLDescription("Java Class")
 @SLRenderHints({
 	@SLRenderHint(name="format", value="cube"),
 	@SLRenderHint(name="foreground", value="gold")

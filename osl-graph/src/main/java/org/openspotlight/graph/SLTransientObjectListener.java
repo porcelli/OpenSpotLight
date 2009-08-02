@@ -53,6 +53,9 @@ import java.util.Set;
 
 import org.openspotlight.graph.annotation.SLTransient;
 
+import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
+import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
+
 /**
  * The listener interface for receiving SLTransientObject events.
  * The class that is interested in processing a SLTransientObject
@@ -87,8 +90,17 @@ public class SLTransientObjectListener extends SLAbstractGraphSessionEventListen
 	 */
 	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {
 		SLLink link = event.getLink();
-		if (isTransient(link)) {
+		if (hasTransientAnnotation(link)) {
 			transientLinks.add(link);
+		}
+		else {
+			SLPersistenceMode mode = event.getPersistenceMode();
+			if (mode.equals(TRANSIENT)) {
+				transientLinks.add(link);				
+			}
+			else if (mode.equals(NORMAL)) {
+				transientLinks.remove(link);
+			}
 		}
 	}
 
@@ -98,8 +110,17 @@ public class SLTransientObjectListener extends SLAbstractGraphSessionEventListen
 	 */
 	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException {
 		SLNode node = event.getNode();
-		if (isTransient(node)) {
+		if (hasTransientAnnotation(node)) {
 			transientNodes.add(node);
+		}
+		else {
+			SLPersistenceMode mode = event.getPersistenceMode();
+			if (mode.equals(TRANSIENT)) {
+				transientNodes.add(node);				
+			}
+			else if (mode.equals(NORMAL)) {
+				transientNodes.remove(node);
+			}
 		}
 	}
 
@@ -117,14 +138,14 @@ public class SLTransientObjectListener extends SLAbstractGraphSessionEventListen
 	}
 	
 	/**
-	 * Checks if is transient.
+	 * Checks for transient annotation.
 	 * 
 	 * @param object the object
 	 * 
-	 * @return true, if is transient
+	 * @return true, if successful
 	 */
 	@SuppressWarnings("unchecked")
-	private boolean isTransient(Object object) {
+	private boolean hasTransientAnnotation(Object object) {
 		return object.getClass().getInterfaces()[0].getAnnotation(SLTransient.class) != null;
 	}
 }

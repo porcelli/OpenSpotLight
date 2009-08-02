@@ -52,7 +52,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.SLException;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -86,7 +87,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 		try {
 			
 			SLPersistentNode pNode = event.getPersistentNode();
-			Class<? extends SLNode> nodeType = event.getNode().getClass().getInterfaces()[0];
+			Class<? extends SLNode> nodeType = (Class<? extends SLNode>) event.getNode().getClass().getInterfaces()[0];
 			if (nodeType.equals(SLNode.class)) return;
 			String path = buildMetadataTypeNodePath(pNode);
 			SLPersistentTreeSession treeSession = pNode.getSession();
@@ -106,7 +107,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 			}
 			
 			addRenderHints(nodeType, pMetaNode);
-			
+			addDescription(nodeType, pMetaNode);
 		} 
 		catch (SLPersistentTreeSessionException e) {
 			throw new SLGraphSessionException("Error on attempt to add node metadata.", e);
@@ -126,7 +127,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 			SLNode[] sides = link.getSides();
 			SLNode source = sides[0];
 			SLNode target = sides[1];
-			Class<? extends SLLink> linkType = link.getClass().getInterfaces()[0];
+			Class<? extends SLLink> linkType = (Class<? extends SLLink>) link.getClass().getInterfaces()[0];
 			SLPersistentNode linkNode = event.getLinkNode();
 			SLPersistentTreeSession treeSession = linkNode.getSession();
 			
@@ -150,6 +151,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 			String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_META_NODE_ID);
 			linkNode.setProperty(String.class, propName, metaLinkNode.getID());
 			
+			addDescription(linkType, metaLinkNode);
 		} 
 		catch (SLException e) {
 			throw new SLGraphSessionException("Error on attempt to add meta link node.", e);
@@ -361,18 +363,32 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 		if (renderHints != null) {
 			SLRenderHint[] renderHintArr = renderHints.value();
 			for (SLRenderHint renderHint : renderHintArr) {
-				String renderHintPropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT + "." + renderHint.name());
-				SLPersistentProperty<String> renderHintProp = null;
-				try {
-					renderHintProp = pMetaNode.getProperty(String.class, renderHintPropName);	
-				} 
-				catch (SLPersistentPropertyNotFoundException e) {}
-				if (renderHintProp == null) {
-					pMetaNode.setProperty(String.class, renderHintPropName, renderHint.value());
+				String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT + "." + renderHint.name());
+				SLPersistentProperty<String> prop = SLCommonSupport.getProperty(pMetaNode, String.class, propName);
+				if (prop == null) {
+					pMetaNode.setProperty(String.class, propName, renderHint.value());
 				}
 			}
 		}
 	}
-
+	
+	/**
+	 * Adds the description.
+	 * 
+	 * @param type the type
+	 * @param pNode the node
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	private void addDescription(Class<?> type, SLPersistentNode pNode) throws SLPersistentTreeSessionException {
+		SLDescription description = type.getAnnotation(SLDescription.class);
+		if (description != null) {
+			String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+			SLPersistentProperty<String> prop = SLCommonSupport.getProperty(pNode, String.class, propName);
+			if (prop == null) {
+				pNode.setProperty(String.class, propName, description.value());
+			}
+		}
+	}
 }
 

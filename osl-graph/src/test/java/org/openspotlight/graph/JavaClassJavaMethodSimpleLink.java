@@ -52,6 +52,7 @@ import java.text.Collator;
 import java.util.Date;
 
 import org.openspotlight.graph.annotation.SLCollator;
+import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
 /**
@@ -59,6 +60,7 @@ import org.openspotlight.graph.annotation.SLProperty;
  * 
  * @author Vitor Hugo Chagas
  */
+@SLDescription("Java Class to Java Method Link")
 public interface JavaClassJavaMethodSimpleLink extends SLLink {
 	
 	/**

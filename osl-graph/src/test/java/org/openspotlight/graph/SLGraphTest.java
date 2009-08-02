@@ -48,10 +48,13 @@
  */
 package org.openspotlight.graph;
 
+
 import static org.openspotlight.graph.SLLink.DIRECTION_ANY;
 import static org.openspotlight.graph.SLLink.DIRECTION_BI;
 import static org.openspotlight.graph.SLLink.DIRECTION_UNI;
 import static org.openspotlight.graph.SLLink.DIRECTION_UNI_REVERSAL;
+import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
+import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
 
 import java.io.Serializable;
 import java.text.Collator;
@@ -65,9 +68,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.openspotlight.SLException;
-import org.openspotlight.graph.util.AbstractFactory;
-import org.openspotlight.graph.util.AbstractFactoryException;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.AbstractFactoryException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -1538,10 +1541,10 @@ public class SLGraphTest {
 	}
 	
 	/**
-	 * Test transient nodes.
+	 * Test transient nodes with annotation.
 	 */
 	@Test
-	public void testTransientNodes() {
+	public void testTransientNodesWithAnnotation() {
 		
 		try {
 
@@ -1557,10 +1560,12 @@ public class SLGraphTest {
 			
 			root1 = session.getContext(1L).getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
+			Assert.assertNotNull(javaClassNode1);
 			javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class, "javaMethodNode1");
+			Assert.assertNotNull(javaMethodNode1);
 			
-			Assert.assertNull(javaClassNode1.getNode(TransientNode.class, "javaClassNode1"));
-			Assert.assertNull(javaMethodNode1.getNode(TransientNode.class, "javaClassNode2"));
+			Assert.assertNull(javaClassNode1.getNode(TransientNode.class, "transNode1"));
+			Assert.assertNull(javaMethodNode1.getNode(TransientNode.class, "transNode2"));
 			
 		}
 		catch (SLException e) {
@@ -1568,12 +1573,47 @@ public class SLGraphTest {
 			Assert.fail();
 		}
 	}
-	
+
 	/**
-	 * Test transient links.
+	 * Test transient nodes without annotation.
 	 */
 	@Test
-	public void testTransientLinks() {
+	public void testTransientNodesWithoutAnnotation() {
+		
+		try {
+
+			SLNode root1 = session.createContext(1L).getRootNode();
+			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1", NORMAL);
+			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1", NORMAL);
+			
+			javaClassNode1.addNode(JavaClassNode.class, "transNode1", TRANSIENT);
+			javaMethodNode1.addNode(JavaMethodNode.class, "transNode2", TRANSIENT);
+			
+			// add transNode1 as NORMAL (not PERSISTENT anymore) ...
+			javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
+			
+			session.save();
+			session = graph.openSession();
+			
+			root1 = session.getContext(1L).getRootNode();
+			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
+			Assert.assertNotNull(javaClassNode1);
+			javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class, "javaMethodNode1");
+			Assert.assertNotNull(javaMethodNode1);
+			Assert.assertNotNull(javaClassNode1.getNode(JavaClassNode.class, "transNode1"));
+			Assert.assertNull(javaMethodNode1.getNode(TransientNode.class, "transNode2"));
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Test transient links with annotations.
+	 */
+	@Test
+	public void testTransientLinksWithAnnotations() {
 		
 		try {
 
@@ -1594,6 +1634,43 @@ public class SLGraphTest {
 			Collection<? extends SLLink> links = session.getUnidirectionalLinks(TransientLink.class, javaClassNode1, javaMethodNode1);
 			Assert.assertEquals(links.size(), 0);
 			
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	/**
+	 * Test transient links without annotations.
+	 */
+	@Test
+	public void testTransientLinksWithoutAnnotations() {
+		
+		try {
+
+			SLNode root1 = session.createContext(1L).getRootNode();
+			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
+			JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
+			JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
+			
+			session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false, TRANSIENT);
+			session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, TRANSIENT);
+			
+			// make previous transient link persistent now ...
+			session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, NORMAL);
+
+			session.save();
+			session = graph.openSession();
+			
+			root1 = session.getContext(1L).getRootNode();
+			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
+			javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
+			javaMethodNode2 = root1.getNode(JavaMethodNode.class, "javaMethodNode2");
+			Collection<? extends SLLink> links = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null);
+			Assert.assertEquals(links.size(), 1);
+			SLLink link = links.iterator().next();
+			Assert.assertEquals(link.getTarget(), javaMethodNode2);
 		}
 		catch (SLException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -1788,31 +1865,29 @@ public class SLGraphTest {
 			SLNode root1 = session.createContext(1L).getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			
-			SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, SLLineReference.LINE_TYPE_1, "Hello World!", "/tmp/anyfile.txt");
-			SLLineReference lineRef2 = javaClassNode1.addLineReference(71, 80, 35, 53, SLLineReference.LINE_TYPE_2, "Bye World!", "/tmp/anyfile.txt");
+			SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
+			SLLineReference lineRef2 = javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
 			
 			Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences();
 			Assert.assertNotNull(lineRefs);
 			Assert.assertEquals(lineRefs.size(), 2);
 			
 			for (SLLineReference lineRef : lineRefs) {
-				if (lineRef.getLineType() == SLLineReference.LINE_TYPE_1) {
+				if (lineRef.getArtifactId().equals("1")) {
 					Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
 					Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
 					Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
 					Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
-					Assert.assertEquals(lineRef1.getLineType(), new Integer(SLLineReference.LINE_TYPE_1));
 					Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
-					Assert.assertEquals(lineRef1.getPath(), "/tmp/anyfile.txt");
+					Assert.assertEquals(lineRef1.getArtifactVersion(), "1");
 				}
-				else if (lineRef.getLineType() == SLLineReference.LINE_TYPE_2) {
+				else if (lineRef.getArtifactId().equals("2")) {
 					Assert.assertEquals(lineRef2.getStartLine(), new Integer(71));
 					Assert.assertEquals(lineRef2.getEndLine(), new Integer(80));
 					Assert.assertEquals(lineRef2.getStartColumn(), new Integer(35));
 					Assert.assertEquals(lineRef2.getEndColumn(), new Integer(53));
-					Assert.assertEquals(lineRef2.getLineType(), new Integer(SLLineReference.LINE_TYPE_2));
 					Assert.assertEquals(lineRef2.getStatement(), "Bye World!");
-					Assert.assertEquals(lineRef2.getPath(), "/tmp/anyfile.txt");
+					Assert.assertEquals(lineRef2.getArtifactVersion(), "1");
 				}
 				else {
 					Assert.fail();
@@ -2401,6 +2476,48 @@ public class SLGraphTest {
 			Assert.fail();
 		}
 	}
+	
+	/**
+	 * Test meta node get description.
+	 */
+	@Test
+	public void testMetaNodeGetDescription() {
+		try {
+			SLNode root1 = session.createContext(1L).getRootNode();
+			root1.addNode(JavaClassNode.class, "javaClassNode1");
+			
+			SLMetadata metadata = session.getMetadata();
+			SLMetaNode metaNode = metadata.getMetaNode(JavaClassNode.class);
+			String description = metaNode.getDescription();
+			Assert.assertNotNull(description);
+			Assert.assertEquals(description, "Java Class");
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
+	@Test
+	public void testMetaLinkGetDescription() {
+		try {
+			SLNode root1 = session.createContext(1L).getRootNode();
+			JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
+			JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
+			session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
+			
+			SLMetadata metadata = session.getMetadata();
+			SLMetaLink metaLink = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLink.class).getMetalinks().iterator().next();
+			String description = metaLink.getDescription();
+			Assert.assertNotNull(description);
+			Assert.assertEquals(description, "Java Class to Java Method Link");
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
+
 
 	/**
 	 * Assert simple link.

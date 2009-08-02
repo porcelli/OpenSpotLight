@@ -51,7 +51,7 @@ package org.openspotlight.graph;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openspotlight.SLException;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;

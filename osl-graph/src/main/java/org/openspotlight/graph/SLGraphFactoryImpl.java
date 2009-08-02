@@ -51,14 +51,12 @@ package org.openspotlight.graph;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
-import org.openspotlight.graph.persistence.SLPersistentEventListener;
-import org.openspotlight.graph.persistence.SLPersistentEventListenerImpl;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.util.AbstractFactory;
 
 /**
  * The Class SLGraphFactoryImpl.
@@ -134,15 +132,6 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 	 */
 	<V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty) throws SLGraphFactoryException {
 		return new SLNodePropertyImpl<V>(node, persistentProperty);
-	}
-
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphFactory#getEventListener()
-	 */
-	SLPersistentEventListener getEventListener() {
-		return new SLPersistentEventListenerImpl();
-		
 	}
 }
 

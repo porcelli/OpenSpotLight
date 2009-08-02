@@ -54,7 +54,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openspotlight.SLException;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
@@ -222,6 +222,20 @@ public class SLMetaNodeImpl implements SLMetaNode {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetaNode#getDescription()
+	 */
+	public String getDescription() throws SLGraphSessionException {
+		try {
+			String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+			SLPersistentProperty<String> prop = SLCommonSupport.getProperty(pMetaNode, String.class, propName);
+			return prop == null ? null : prop.getValue();
+		} 
+		catch (SLPersistentTreeSessionException e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve meta node description.", e);
+		}
+	}
+
 	//@Override
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -239,6 +253,7 @@ public class SLMetaNodeImpl implements SLMetaNode {
 	public int hashCode() {
 		return pMetaNode.hashCode();
 	}
+
 }
 
 
