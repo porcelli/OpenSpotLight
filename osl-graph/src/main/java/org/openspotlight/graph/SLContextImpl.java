@@ -51,6 +51,7 @@ package org.openspotlight.graph;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 
+
 /**
  * The Class SLContextImpl.
  * 
