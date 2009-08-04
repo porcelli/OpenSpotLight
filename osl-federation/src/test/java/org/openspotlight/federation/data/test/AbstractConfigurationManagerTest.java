@@ -100,6 +100,12 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
         assertThat(anotherGroup.getRepositoryByName("r-1"), is(nullValue()));
     }
     
+    /**
+     * 
+     * @return default lazy type to use on tests
+     */
+    protected abstract LazyType getDefaultLazyType();
+    
     protected void saveTheConfiguration(final LazyType type) throws Exception {
         final Configuration configuration = this.createSampleData();
         final ConfigurationManager manager = this.createInstance();
@@ -120,7 +126,7 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
         
-        configuration = manager.load(LazyType.LAZY);
+        configuration = manager.load(this.getDefaultLazyType());
         final Set<Project> projects = manager.findNodesByKey(configuration,
                 Project.class, "ip-1,1");
         assertThat(projects.size(), is(not(0)));

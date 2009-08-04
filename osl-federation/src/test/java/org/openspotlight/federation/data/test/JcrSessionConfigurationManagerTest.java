@@ -103,6 +103,11 @@ public class JcrSessionConfigurationManagerTest extends
         return this.implementation;
     }
     
+    @Override
+    protected LazyType getDefaultLazyType() {
+        return LazyType.LAZY;
+    }
+    
     @Before
     public void initializeSomeConfiguration() throws Exception {
         delete(JACKRABBIT_DATA_PATH);

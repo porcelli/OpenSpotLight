@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.test;
 
+import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
 
@@ -69,7 +70,13 @@ public class XmlConfigurationManagerTest extends
     
     @Override
     protected ConfigurationManager createInstance() {
-        return new XmlConfigurationManager("./target/test-data/XmlConfigurationManagerTest/exampleConfigFile.xml");
+        return new XmlConfigurationManager(
+                "./target/test-data/XmlConfigurationManagerTest/exampleConfigFile.xml");
+    }
+    
+    @Override
+    protected LazyType getDefaultLazyType() {
+        return LazyType.NON_LAZY;
     }
     
 }

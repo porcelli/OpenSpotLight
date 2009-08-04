@@ -570,6 +570,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final ConfigurationNode root, final Class<T> nodeType, final K key)
             throws ConfigurationException {
         try {
+            checkNotNull("root", root); //$NON-NLS-1$
             checkNotNull("nodeType", nodeType); //$NON-NLS-1$
             checkNotNull("key", key); //$NON-NLS-1$
             checkCondition("sessionAlive", this.session.isLive()); //$NON-NLS-1$

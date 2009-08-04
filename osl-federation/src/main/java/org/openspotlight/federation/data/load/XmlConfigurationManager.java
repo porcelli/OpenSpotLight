@@ -62,6 +62,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
+import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -70,6 +71,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -177,6 +179,26 @@ public class XmlConfigurationManager implements ConfigurationManager {
                 this.createEachXmlNode(newElement, innerNode);
             }
         }
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public <T extends ConfigurationNode, K extends Serializable> Set<T> findNodesByKey(
+            final ConfigurationNode root, final Class<T> nodeType, final K key)
+            throws ConfigurationException {
+        checkNotNull("root", root); //$NON-NLS-1$
+        checkNotNull("nodeType", nodeType); //$NON-NLS-1$
+        checkNotNull("key", key); //$NON-NLS-1$
+        final Set<T> allNodesOfType = findAllNodesOfType(root, nodeType);
+        final Set<T> result = new HashSet<T>();
+        for (final T t : allNodesOfType) {
+            if (key.equals(t.getInstanceMetadata().getKeyPropertyValue())) {
+                result.add(t);
+            }
+        }
+        return result;
     }
     
     /**
