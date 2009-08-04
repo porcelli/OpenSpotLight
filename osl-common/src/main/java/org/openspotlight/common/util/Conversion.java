@@ -123,9 +123,11 @@ public class Conversion {
     @SuppressWarnings("unchecked")
     public static <E> E convert(final Object rawValue, final Class<E> targetType)
             throws SLException {
-        checkNotNull("rawValue", rawValue); //$NON-NLS-1$
         checkNotNull("targetType", targetType); //$NON-NLS-1$
         checkCondition("validTargetType", CONVERTERS.containsKey(targetType)); //$NON-NLS-1$
+        if (rawValue == null) {
+            return null;
+        }
         try {
             final Converter converter = CONVERTERS.get(targetType);
             final E converted = (E) converter.convert(targetType, rawValue);

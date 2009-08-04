@@ -891,6 +891,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                         node, nodePath, metadata.keyPropertyName(), node
                                 .getInstanceMetadata().getKeyPropertyValue(),
                         metadata.keyPropertyType());
+                if (node instanceof Artifact) {
+                    final Artifact a = (Artifact) node;
+                    a.getInstanceMetadata().setPropertyIgnoringListener(
+                            Artifact.KeyProperties.UUID.name(),
+                            newJcrNode.getUUID());
+                }
                 alreadySaved.put(node, newJcrNode);
                 this.saveProperties(node, newJcrNode);
             }
