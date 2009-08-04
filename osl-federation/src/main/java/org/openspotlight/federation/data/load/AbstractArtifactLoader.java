@@ -234,7 +234,6 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         final Map<String, Object> cachedInformation = new ConcurrentHashMap<String, Object>();
         final AtomicInteger errorCounter = new AtomicInteger();
         final AtomicInteger loadCounter = new AtomicInteger();
-        
         final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
         final Set<String> includedPatterns = new HashSet<String>();
         final Set<String> excludedPatterns = new HashSet<String>();
