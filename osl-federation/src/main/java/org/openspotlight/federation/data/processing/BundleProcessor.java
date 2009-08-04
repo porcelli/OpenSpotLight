@@ -86,6 +86,16 @@ import org.openspotlight.graph.SLGraphSession;
  * @param <T>
  *            Artifact type for this bundle processor
  * 
+ * 
+ *            FIXME startProcessingForArtifact
+ * 
+ *            FIXME finishProcessingForArtifact
+ * 
+ *            FIXME finishGlobalProcessing
+ * 
+ *            FIXME globalGraphSession
+ * 
+ *            FIXME invocationGraphSession
  */
 public interface BundleProcessor<T extends Artifact> {
     

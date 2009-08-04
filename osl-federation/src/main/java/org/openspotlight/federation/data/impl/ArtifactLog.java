@@ -131,7 +131,7 @@ public class ArtifactLog implements ConfigurationNode {
      * @param artifact
      * @param type
      * @param message
-     * @param detailedMessage 
+     * @param detailedMessage
      */
     public ArtifactLog(final Artifact artifact, final ArtifactLogType type,
             final String message, final String detailedMessage) {

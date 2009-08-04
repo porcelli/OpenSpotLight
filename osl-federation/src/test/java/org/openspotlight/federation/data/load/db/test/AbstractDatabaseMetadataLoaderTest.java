@@ -59,8 +59,8 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.db.BasicDatabaseMetadataLoader;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.TableDescription;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.ScriptDescription;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.TableDescription;
 
 @SuppressWarnings("all")
 public abstract class AbstractDatabaseMetadataLoaderTest extends

@@ -198,15 +198,6 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
-     * 
-     * @return all artifact names
-     */
-    public final Set<String> getStreamArtifactNames() {
-        return (Set<String>) this.instanceMetadata
-                .getKeyFromChildrenOfTypes(StreamArtifact.class);
-    }
-    
-    /**
      * Returns a bundle by its name
      * 
      * @param name
@@ -320,6 +311,15 @@ public class Bundle implements ConfigurationNode {
     public final StreamArtifact getStreamArtifactByName(final String name) {
         return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
                 name);
+    }
+    
+    /**
+     * 
+     * @return all artifact names
+     */
+    public final Set<String> getStreamArtifactNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeyFromChildrenOfTypes(StreamArtifact.class);
     }
     
     /**

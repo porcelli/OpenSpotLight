@@ -62,7 +62,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 
 /**
  * This is the root node of the configuration classes that contains the
- * following structure.
+ * following structure. FIXME re-make javadoc
  * 
  * This structure are used to pass the artifacts to the parser. All the classes
  * are thread save by default.
