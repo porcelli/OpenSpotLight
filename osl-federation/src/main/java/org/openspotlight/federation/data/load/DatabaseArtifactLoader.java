@@ -197,7 +197,7 @@ public class DatabaseArtifactLoader extends AbstractArtifactLoader {
                 TableArtifact table = (TableArtifact) bundle
                         .getCustomArtifactByName(name);
                 if (table == null) {
-                    table = new TableArtifact(bundle, name);
+                    table = new TableArtifact(bundle, desc.toString());
                 }
                 for (final String columnName : table.getColumnNames()) {
                     if (!desc.getColumns().containsKey(columnName)) {

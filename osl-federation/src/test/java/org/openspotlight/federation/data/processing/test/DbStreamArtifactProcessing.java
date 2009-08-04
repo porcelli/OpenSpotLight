@@ -131,7 +131,12 @@ public class DbStreamArtifactProcessing {
         final BundleProcessorType h2CommonProcessor = new BundleProcessorType(
                 h2Bundle,
                 "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+        final BundleProcessorType h2CustomProcessor = new BundleProcessorType(
+                h2Bundle,
+                "org.openspotlight.federation.data.processing.test.LogTableCustomArtifactProcessor");
+        
         h2CommonProcessor.setActive(true);
+        h2CustomProcessor.setActive(true);
         return configuration;
     }
     

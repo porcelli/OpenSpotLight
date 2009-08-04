@@ -66,8 +66,9 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Project.class }, propertyNames = { "UUID", "version" }, propertyTypes = {
-        String.class, String.class }, validChildrenTypes = Column.class)
+        Bundle.class, Project.class }, propertyNames = { "UUID", "version",
+        "tableName", "catalogName", "schemaName" }, propertyTypes = {
+        String.class, String.class, String.class, String.class, String.class }, validChildrenTypes = Column.class)
 public class TableArtifact extends CustomArtifact {
     /**
      * 
