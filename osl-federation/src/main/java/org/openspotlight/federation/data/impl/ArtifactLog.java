@@ -72,8 +72,9 @@ import org.openspotlight.federation.data.StaticMetadata;
  * 
  */
 @ThreadSafe
-@StaticMetadata(propertyNames = { "type", "message", "date" }, propertyTypes = {
-        ArtifactLog.ArtifactLogType.class, String.class, Date.class }, keyPropertyName = "describedMessage", keyPropertyType = String.class, validParentTypes = { Artifact.class })
+@StaticMetadata(propertyNames = { "type", "message", "date", "detailedMessage" }, propertyTypes = {
+        ArtifactLog.ArtifactLogType.class, String.class, Date.class,
+        String.class }, keyPropertyName = "describedMessage", keyPropertyType = String.class, validParentTypes = { Artifact.class })
 public class ArtifactLog implements ConfigurationNode {
     
     /**
@@ -122,27 +123,29 @@ public class ArtifactLog implements ConfigurationNode {
     
     private static final String DATE = "date"; //$NON-NLS-1$
     
+    private static final String DETAILED_MESSAGE = "detailedMessage"; //$NON-NLS-1$
+    
     /**
      * Default constructor for creating artifact log messages.
      * 
      * @param artifact
      * @param type
      * @param message
+     * @param detailedMessage 
      */
     public ArtifactLog(final Artifact artifact, final ArtifactLogType type,
-            final String message) {
+            final String message, final String detailedMessage) {
         final Date date = new Date();
         final String dateStr = stringFromDateTime(date);
-        final String detailedMessage = format(
-                "{0}   {1}   {2}", dateStr, type, message); //$NON-NLS-1$
-        this.instanceMetadata = createWithKeyProperty(this, artifact,
-                detailedMessage);
+        final String key = format("{0}   {1}   {2}", dateStr, type, message); //$NON-NLS-1$
+        this.instanceMetadata = createWithKeyProperty(this, artifact, key);
+        this.instanceMetadata.setProperty(DETAILED_MESSAGE, detailedMessage);
         this.instanceMetadata.setProperty(MESSAGE, message);
         this.instanceMetadata.setProperty(TYPE, type);
         this.instanceMetadata.setProperty(DATE, date);
         checkCondition("noLog", //$NON-NLS-1$
                 artifact.getInstanceMetadata().getChildByKeyValue(
-                        this.getClass(), detailedMessage) == null);
+                        this.getClass(), key) == null);
         artifact.getInstanceMetadata().addChild(this);
     }
     
@@ -195,6 +198,14 @@ public class ArtifactLog implements ConfigurationNode {
      */
     public Date getDate() {
         return this.instanceMetadata.getProperty(DATE);
+    }
+    
+    /**
+     * 
+     * @return the detailed message
+     */
+    public String getDetailedMessage() {
+        return this.instanceMetadata.getProperty(DETAILED_MESSAGE);
     }
     
     /**

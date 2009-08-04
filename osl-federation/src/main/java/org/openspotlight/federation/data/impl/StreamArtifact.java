@@ -246,9 +246,11 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
      * 
      * @param type
      * @param message
+     * @param detailedMessage
      */
-    public void log(final ArtifactLogType type, final String message) {
-        new ArtifactLog(this, type, message);
+    public void log(final ArtifactLogType type, final String message,
+            final String detailedMessage) {
+        new ArtifactLog(this, type, message, detailedMessage);
     }
     
     /**
