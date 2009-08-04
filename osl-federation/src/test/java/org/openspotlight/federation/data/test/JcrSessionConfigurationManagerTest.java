@@ -58,8 +58,8 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.jackrabbit.core.TransientRepository;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.impl.Bundle;
@@ -91,10 +91,33 @@ public class JcrSessionConfigurationManagerTest extends
             + "configuration/JcrSessionConfigurationManagerTest/jackrabbit.xml";
     public static final String DERBY_SYSTEM_HOME = JACKRABBIT_DATA_PATH
             + "/derby";
-    private Session session;
-    private TransientRepository repository;
+    private static Session session;
+    private static TransientRepository repository;
     
-    private ConfigurationManager implementation;
+    private static ConfigurationManager implementation;
+    
+    @BeforeClass
+    public static void initializeSomeConfiguration() throws Exception {
+        delete(JACKRABBIT_DATA_PATH);
+        System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
+        repository = new TransientRepository(REPOSITORY_CONFIG_PATH,
+                REPOSITORY_DIRECTORY_PATH);
+        final SimpleCredentials creds = new SimpleCredentials("jsmith",
+                "password".toCharArray());
+        session = repository.login(creds);
+        assertThat(session, is(notNullValue()));
+        implementation = new JcrSessionConfigurationManager(session);
+    }
+    
+    @AfterClass
+    public static void shutdown() throws Exception {
+        if (session != null) {
+            session.logout();
+        }
+        if (repository != null) {
+            repository.shutdown();
+        }
+    }
     
     @Override
     protected boolean assertAllData() {
@@ -103,25 +126,12 @@ public class JcrSessionConfigurationManagerTest extends
     
     @Override
     protected ConfigurationManager createInstance() {
-        return this.implementation;
+        return implementation;
     }
     
     @Override
     protected LazyType getDefaultLazyType() {
         return LazyType.LAZY;
-    }
-    
-    @Before
-    public void initializeSomeConfiguration() throws Exception {
-        delete(JACKRABBIT_DATA_PATH);
-        System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
-        this.repository = new TransientRepository(REPOSITORY_CONFIG_PATH,
-                REPOSITORY_DIRECTORY_PATH);
-        final SimpleCredentials creds = new SimpleCredentials("jsmith",
-                "password".toCharArray());
-        this.session = this.repository.login(creds);
-        assertThat(this.session, is(notNullValue()));
-        this.implementation = new JcrSessionConfigurationManager(this.session);
     }
     
     @Test
@@ -151,16 +161,6 @@ public class JcrSessionConfigurationManagerTest extends
     @Test
     public void shouldSaveTheConfigurationWithLazyType() throws Exception {
         this.saveTheConfiguration(LazyType.LAZY);
-    }
-    
-    @After
-    public void shutdown() throws Exception {
-        if (this.session != null) {
-            this.session.logout();
-        }
-        if (this.repository != null) {
-            this.repository.shutdown();
-        }
     }
     
 }

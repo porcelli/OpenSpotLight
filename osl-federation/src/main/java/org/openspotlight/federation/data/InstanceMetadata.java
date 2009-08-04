@@ -270,7 +270,7 @@ public interface InstanceMetadata {
              * {@inheritDoc}
              */
             public <N extends ConfigurationNode> void addChild(final N child) {
-                addChild(child, false);
+                addChild(child, true);
             }
             
             private <N extends ConfigurationNode> void addChild(final N child,
@@ -286,13 +286,13 @@ public interface InstanceMetadata {
                 if (this.children.get(correctType).containsValue(child)) {
                     return;
                 }
+                final ConfigurationNode oldNode = getChildByKeyValue(child
+                        .getClass(), child.getInstanceMetadata()
+                        .getKeyPropertyValue());
                 this.children.get(correctType).put(
                         child.getInstanceMetadata().getKeyPropertyValue(),
                         child);
                 if (fireEvent) {
-                    final ConfigurationNode oldNode = getChildByKeyValue(child
-                            .getClass(), child.getInstanceMetadata()
-                            .getKeyPropertyValue());
                     this.sharedData.fireNodeChange(oldNode, child);
                 }
                 
@@ -304,7 +304,7 @@ public interface InstanceMetadata {
              */
             public <N extends ConfigurationNode> void addChildIgnoringListener(
                     final N child) {
-                addChild(child, true);
+                addChild(child, false);
             }
             
             /**
