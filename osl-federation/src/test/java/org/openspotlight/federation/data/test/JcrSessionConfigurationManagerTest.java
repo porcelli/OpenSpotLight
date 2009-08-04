@@ -62,6 +62,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
+import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 
@@ -125,6 +128,24 @@ public class JcrSessionConfigurationManagerTest extends
     public void shouldDeleteNodesFromTheConfigurationWithLazyType()
             throws Exception {
         this.deleteNodesFromTheConfiguration(LazyType.LAZY);
+    }
+    
+    @Test
+    public void shouldFindArtifactByUuid() throws Exception {
+        final Configuration configuration = this.createSampleData();
+        final JcrSessionConfigurationManager manager = (JcrSessionConfigurationManager) this
+                .createInstance();
+        final Bundle bundle = configuration.getRepositoryByName("r-1")
+                .getProjectByName("p-1,1").getBundleByName("b-1,1,1");
+        final TableArtifact artifact = new TableArtifact(bundle,
+                "CATALOG_NAME/SCHEMA_NAME/TABLE/TABLE_NAME");
+        manager.save(configuration);
+        final TableArtifact found = manager.findArtifactByUuidAndVersion(
+                configuration, TableArtifact.class, artifact.getUUID(),
+                artifact.getVersionName());
+        assertThat(found, is(notNullValue()));
+        assertThat(found.getTableName(), is("TABLE_NAME"));
+        
     }
     
     @Test

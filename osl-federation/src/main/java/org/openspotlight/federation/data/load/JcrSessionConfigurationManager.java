@@ -80,6 +80,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -110,8 +112,6 @@ import org.openspotlight.federation.data.impl.Configuration;
  * JcrRepository.
  * 
  * LATER_TASK implement node property
- * 
- * FIXME method to find a artifact
  * 
  * FIXME save only using dirty artifacts (ordering by parent number desc and
  * also dirty flags
@@ -562,6 +562,85 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
     
+    private <T> void fillResultForEachItem(final ConfigurationNode root,
+            final Node node, final Class<T> nodeType, final Set<T> result)
+            throws RepositoryException, ItemNotFoundException,
+            AccessDeniedException, ConfigurationException, Exception {
+        final Stack<Node> nodeStack = new Stack<Node>();
+        Node n = node;
+        while (n.getDepth() != 1) {
+            nodeStack.push(n);
+            n = n.getParent();
+        }
+        ConfigurationNode lastParent = root;
+        lookingForChildrenInsideJcr: while (!nodeStack.isEmpty()) {
+            n = nodeStack.pop();
+            final String name = n.getName();
+            if (!name.startsWith(DEFAULT_OSL_PREFIX)) {
+                continue lookingForChildrenInsideJcr;
+            }
+            final Class<? extends ConfigurationNode> childType = classHelper
+                    .getNodeClassFromName(name);
+            if (childType.equals(root.getClass())) {
+                continue lookingForChildrenInsideJcr;
+            }
+            final StaticMetadata childStaticMetadata = classHelper
+                    .getStaticMetadataFromClass(childType);
+            final String childKeyPropertyName = DEFAULT_OSL_PREFIX + ":" //$NON-NLS-1$
+                    + childStaticMetadata.keyPropertyName();
+            final Class<? extends Serializable> propertyClass = childStaticMetadata
+                    .keyPropertyType();
+            final Serializable keyProperty = getProperty(n,
+                    childKeyPropertyName, propertyClass);
+            final Set<? extends ConfigurationNode> children = findAllNodesOfType(
+                    lastParent, childType);
+            lookingForParent: for (final ConfigurationNode child : children) {
+                if (child.getInstanceMetadata().getKeyPropertyValue().equals(
+                        keyProperty)) {
+                    lastParent = child;
+                    break lookingForParent;
+                }
+            }
+            if (nodeStack.size() == 0) {
+                result.add(nodeType.cast(lastParent));
+            }
+        }
+    }
+    
+    /**
+     * Finds an artifact by its given unique data. This method is not on
+     * {@link ConfigurationManager} class because it use unique data related by
+     * jcr.
+     * 
+     * 
+     * @param <T>
+     * @param <K>
+     * @param root
+     * @param nodeType
+     * @param uuid
+     * @param version
+     * @return an artifact by the given uuid
+     * @throws ConfigurationException
+     */
+    public <T extends Artifact, K extends Serializable> T findArtifactByUuidAndVersion(
+            final ConfigurationNode root, final Class<T> nodeType,
+            final String uuid, final String version)
+            throws ConfigurationException {
+        try {
+            final Set<T> result = new HashSet<T>();
+            final Node node = this.session.getNodeByUUID(uuid);
+            this.fillResultForEachItem(root, node, nodeType, result);
+            if (result.size() > 0) {
+                return result.iterator().next();
+            } else {
+                return null;
+            }
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
+        
+    }
+    
     /**
      * 
      * {@inheritDoc}
@@ -586,47 +665,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     .createQuery(pathToFind, Query.XPATH);
             final QueryResult queryResult = query.execute();
             final NodeIterator nodes = queryResult.getNodes();
-            final Stack<Node> nodeStack = new Stack<Node>();
             while (nodes.hasNext()) {
-                Node n = nodes.nextNode();
-                while (n.getDepth() != 1) {
-                    nodeStack.push(n);
-                    n = n.getParent();
-                }
-                ConfigurationNode lastParent = root;
-                lookingForChildrenInsideJcr: while (!nodeStack.isEmpty()) {
-                    n = nodeStack.pop();
-                    final String name = n.getName();
-                    if (!name.startsWith(DEFAULT_OSL_PREFIX)) {
-                        continue lookingForChildrenInsideJcr;
-                    }
-                    final Class<? extends ConfigurationNode> childType = classHelper
-                            .getNodeClassFromName(name);
-                    if (childType.equals(root.getClass())) {
-                        continue lookingForChildrenInsideJcr;
-                    }
-                    final StaticMetadata childStaticMetadata = classHelper
-                            .getStaticMetadataFromClass(childType);
-                    final String childKeyPropertyName = DEFAULT_OSL_PREFIX
-                            + ":" //$NON-NLS-1$
-                            + childStaticMetadata.keyPropertyName();
-                    final Class<? extends Serializable> propertyClass = childStaticMetadata
-                            .keyPropertyType();
-                    final Serializable keyProperty = getProperty(n,
-                            childKeyPropertyName, propertyClass);
-                    final Set<? extends ConfigurationNode> children = findAllNodesOfType(
-                            lastParent, childType);
-                    lookingForParent: for (final ConfigurationNode child : children) {
-                        if (child.getInstanceMetadata().getKeyPropertyValue()
-                                .equals(keyProperty)) {
-                            lastParent = child;
-                            break lookingForParent;
-                        }
-                    }
-                    if (nodeStack.size() == 0) {
-                        result.add(nodeType.cast(lastParent));
-                    }
-                }
+                final Node n = nodes.nextNode();
+                this.fillResultForEachItem(root, n, nodeType, result);
             }
             return result;
         } catch (final Exception e) {
