@@ -1217,7 +1217,9 @@ public interface InstanceMetadata {
             
             synchronized (this) {
                 this.nodeChangeCache.add(changeEvent);
-                this.dirtyNodes.add(changeEvent.getNewItem());
+                if (changeEvent.getNewItem() != null) {
+                    this.dirtyNodes.add(changeEvent.getNewItem());
+                }
                 this.dirtyFlag.set(true);
             }
             for (final ItemEventListener<ConfigurationNode> listener : this.nodeListeners) {

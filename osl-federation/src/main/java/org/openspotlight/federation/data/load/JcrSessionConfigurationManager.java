@@ -93,7 +93,6 @@ import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
-import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 import javax.jcr.version.Version;
@@ -131,7 +130,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    private static class JcrDataLoader implements DataLoader {
+    private class JcrDataLoader implements DataLoader {
         
         /**
          * Value from a cache map to control lazy loading.
@@ -139,7 +138,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
          * @author Luiz Fernando Teston - feu.teston@caravelatech.com
          * 
          */
-        private static class LazyStatus {
+        private class LazyStatus {
             private boolean propertiesLoaded = false;
             private boolean childrenLoaded = false;
             private final Node jcrNode;
@@ -175,30 +174,29 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         
         private final Map<ConfigurationNode, LazyStatus> lazyCache = new HashMap<ConfigurationNode, LazyStatus>();
         
+        @SuppressWarnings("hiding")
+        private final Session session;
+        
         /**
          * Constructor to initialize the lazy loading for this two corresponding
          * root nodes.
          * 
          * @param configurationNode
          * @param jcrNode
+         * @throws RepositoryException
          */
         public JcrDataLoader(final ConfigurationNode configurationNode,
-                final Node jcrNode) {
+                final Node jcrNode) throws RepositoryException {
+            this.session = jcrNode.getSession();
             this.lazyCache.put(configurationNode, new LazyStatus(jcrNode));
         }
         
         private LazyStatus createLazyStatus(final ConfigurationNode targetNode)
                 throws Exception {
             LazyStatus lazyCacheForTarget;
-            final Node jcrNodeForParent = this.lazyCache.get(
-                    targetNode.getInstanceMetadata().getDefaultParent())
-                    .getJcrNode();
-            final String nodeName = classHelper.getNameFromNodeClass(targetNode
-                    .getClass());
-            final Node jcrNodeForTarget = findNode(jcrNodeForParent, nodeName,
-                    targetNode.getInstanceMetadata().getStaticMetadata()
-                            .keyPropertyName(), targetNode
-                            .getInstanceMetadata().getKeyPropertyValue());
+            final String xpath = XpathSupport.getCompleteXpathFor(targetNode);
+            final Node jcrNodeForTarget = JcrSupport.findUnique(this.session,
+                    xpath);
             lazyCacheForTarget = new LazyStatus(jcrNodeForTarget);
             this.lazyCache.put(targetNode, lazyCacheForTarget);
             return lazyCacheForTarget;
@@ -275,6 +273,62 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
     
     /**
+     * Class with some helper methods to use on Jcr stuff.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    private static class JcrSupport {
+        
+        /**
+         * Find all nodes by using a xpath query
+         * 
+         * 
+         * @param session
+         * @param xpath
+         * @return a node iterator
+         * @throws Exception
+         */
+        public static NodeIterator findAll(final Session session,
+                final String xpath) throws Exception {
+            final Query query = session.getWorkspace().getQueryManager()
+                    .createQuery(xpath, Query.XPATH);
+            final QueryResult result = query.execute();
+            final NodeIterator nodes = result.getNodes();
+            return nodes;
+        }
+        
+        /**
+         * Find a node using a xpath query.
+         * 
+         * @param session
+         * @param xpath
+         * @return null when no items found, or the jcr item instead
+         * @throws Exception
+         *             if more than one item was found, or if anything wrong
+         *             happened
+         */
+        public static Node findUnique(final Session session, final String xpath)
+                throws Exception {
+            final Query query = session.getWorkspace().getQueryManager()
+                    .createQuery(xpath, Query.XPATH);
+            final QueryResult result = query.execute();
+            final NodeIterator nodes = result.getNodes();
+            Node foundNode = null;
+            if (nodes.hasNext()) {
+                foundNode = nodes.nextNode();
+            } else {
+                return null;
+            }
+            if (nodes.hasNext()) {
+                logAndThrow(new IllegalStateException(
+                        "XPath with more than one result: " + xpath)); //$NON-NLS-1$
+            }
+            return foundNode;
+        }
+    }
+    
+    /**
      * This helper class can create xpath to find the {@link Node Jcr Node}
      * corresponding to a unique {@link ConfigurationNode}
      * 
@@ -331,31 +385,6 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
     
     private static final String NS_DESCRIPTION = "www.openspotlight.org"; //$NON-NLS-1$
-    
-    static Node findNode(final Node parentNode, final String nodePath,
-            final String keyPropertyName, final Serializable keyPropertyValue)
-            throws RepositoryException, InvalidQueryException,
-            PathNotFoundException {
-        Node foundNode = null;
-        final Session internalSession = parentNode.getSession();
-        if ((keyPropertyName != null) && !"".equals(keyPropertyName)) { //$NON-NLS-1$
-            assert keyPropertyValue != null;
-            final String pathToFind = format(
-                    "/{0}/{1}[@osl:{2}=''{3}'']", //$NON-NLS-1$
-                    parentNode.getPath(), nodePath, keyPropertyName,
-                    keyPropertyValue);
-            final Query query = internalSession.getWorkspace()
-                    .getQueryManager().createQuery(pathToFind, Query.XPATH);
-            final QueryResult result = query.execute();
-            final NodeIterator nodes = result.getNodes();
-            if (nodes.hasNext()) {
-                foundNode = nodes.nextNode();
-            }
-        } else {
-            foundNode = parentNode.getNode(nodePath);
-        }
-        return foundNode;
-    }
     
     /**
      * Loads the newly created node and also it's properties and it's children
@@ -569,6 +598,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             this.setProperty(newNode, "osl:" + keyPropertyName, //$NON-NLS-1$
                     keyPropertyType, keyPropertyValue);
         }
+        newNode.addMixin("mix:referenceable"); //$NON-NLS-1$
+        if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
+            newNode.addMixin("mix:versionable"); //$NON-NLS-1$
+        }
         return newNode;
         
     }
@@ -576,42 +609,33 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     /**
      * Method to create nodes on jcr only when necessary.
      * 
-     * @param parentNode
+     * @param parentJcrNode
      * @param nodePath
      * @return
      * @throws ConfigurationException
      */
-    private Node createIfDontExists(final Node parentNode,
-            final String nodePath, final String keyPropertyName,
-            final Serializable keyPropertyValue,
+    private Node createIfDontExists(final Node parentJcrNode,
+            final ConfigurationNode currentNode, final String nodePath,
+            final String keyPropertyName, final Serializable keyPropertyValue,
             final Class<? extends Serializable> keyPropertyType)
             throws ConfigurationException {
-        checkNotNull("parentNode", parentNode); //$NON-NLS-1$
+        checkNotNull("parentJcrNode", parentJcrNode); //$NON-NLS-1$
         checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
         try {
             try {
-                Node foundNode = findNode(parentNode, nodePath,
-                        keyPropertyName, keyPropertyValue);
+                final String xpath = XpathSupport
+                        .getCompleteXpathFor(currentNode);
+                Node foundNode = JcrSupport.findUnique(this.session, xpath);
                 if (foundNode == null) {
-                    foundNode = this.create(parentNode, nodePath,
+                    foundNode = this.create(parentJcrNode, nodePath,
                             keyPropertyName, keyPropertyValue, keyPropertyType);
-                    foundNode.addMixin("mix:referenceable"); //$NON-NLS-1$
-                    if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
-                        foundNode.addMixin("mix:versionable"); //$NON-NLS-1$
-                    }
-                } else {
-                    if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
-                        foundNode.checkout();
-                    }
+                    
                 }
                 return foundNode;
             } catch (final PathNotFoundException e) {
-                final Node newNode = this.create(parentNode, nodePath,
+                final Node newNode = this.create(parentJcrNode, nodePath,
                         keyPropertyName, keyPropertyValue, keyPropertyType);
-                newNode.addMixin("mix:referenceable"); //$NON-NLS-1$
-                if (nodePath.equals("osl:configuration")) { //$NON-NLS-1$
-                    newNode.addMixin("mix:versionable"); //$NON-NLS-1$
-                }
+                
                 return newNode;
             }
             
@@ -719,10 +743,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final String nodePath = classHelper.getNameFromNodeClass(nodeType);
             final String pathToFind = format("//*/{0}[@osl:{1}=''{2}'']", //$NON-NLS-1$
                     nodePath, keyPropertyName, key);
-            final Query query = this.session.getWorkspace().getQueryManager()
-                    .createQuery(pathToFind, Query.XPATH);
-            final QueryResult queryResult = query.execute();
-            final NodeIterator nodes = queryResult.getNodes();
+            final NodeIterator nodes = JcrSupport.findAll(this.session,
+                    pathToFind);
             while (nodes.hasNext()) {
                 final Node n = nodes.nextNode();
                 this.fillResultForEachItem(root, n, nodeType, result);
@@ -806,36 +828,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         return hasFound;
     }
     
-    private void removeNode(final ConfigurationNode oldItem, final Node rootNode)
-            throws Exception {
+    private void removeNode(final ConfigurationNode oldItem) throws Exception {
         assert oldItem != null;
-        assert rootNode != null;
-        final StringBuilder path = new StringBuilder();
-        ConfigurationNode currentItem = oldItem;
-        while (currentItem != null) {
-            path.insert(0, classHelper.getNameFromNodeClass(currentItem
-                    .getClass()));
-            path.insert(0, '/');
-            currentItem = currentItem.getInstanceMetadata().getDefaultParent();
-        }
-        path.insert(0, '/');
-        if (!"".equals(oldItem.getInstanceMetadata().getStaticMetadata() //$NON-NLS-1$
-                .keyPropertyName())) {
-            path.append(format("[@osl:{0}=''{1}'']", oldItem //$NON-NLS-1$
-                    .getInstanceMetadata().getStaticMetadata()
-                    .keyPropertyName(), oldItem.getInstanceMetadata()
-                    .getKeyPropertyValue()));
-        }
-        
-        final String pathToFind = path.toString();
-        final Query query = this.session.getWorkspace().getQueryManager()
-                .createQuery(pathToFind, Query.XPATH);
-        final QueryResult result = query.execute();
-        final NodeIterator nodes = result.getNodes();
-        if (nodes.hasNext()) {
-            final Node foundNode = nodes.nextNode();
-            foundNode.remove();
-        }
+        final String pathToFind = XpathSupport.getCompleteXpathFor(oldItem);
+        final Node node = JcrSupport.findUnique(this.session, pathToFind);
+        node.remove();
     }
     
     /**
@@ -856,6 +853,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             
             final Map<ConfigurationNode, Node> alreadySaved = new HashMap<ConfigurationNode, Node>();
             for (final ConfigurationNode node : dirtyNodesAsArray) {
+                if (alreadySaved.containsKey(node)) {
+                    continue;
+                }
                 final ConfigurationNode parentNode = node.getInstanceMetadata()
                         .getDefaultParent();
                 Node parentJcrNode = null;
@@ -866,24 +866,16 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     if (parentJcrNode == null) {
                         final String pathToFind = XpathSupport
                                 .getCompleteXpathFor(parentNode);
-                        final Query query = this.session.getWorkspace()
-                                .getQueryManager().createQuery(pathToFind,
-                                        Query.XPATH);
-                        final QueryResult result = query.execute();
-                        final NodeIterator nodes = result.getNodes();
-                        if (nodes.hasNext()) {
-                            parentJcrNode = nodes.nextNode();
-                        } else {
+                        parentJcrNode = JcrSupport.findUnique(this.session,
+                                pathToFind);
+                        if (parentJcrNode == null) {
                             logAndThrow(new IllegalStateException(
                                     "Dirty node without parent")); //$NON-NLS-1$
-                        }
-                        if (nodes.hasNext()) {
-                            logAndThrow(new IllegalStateException(
-                                    "Dirty node with more than one parent already saved on jcr")); //$NON-NLS-1$
                         }
                     }
                     
                 }
+                
                 if (parentJcrNode == null) {
                     logAndThrow(new IllegalStateException(
                             "Dirty node without parent")); //$NON-NLS-1$
@@ -896,7 +888,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                         .getNameFromNodeClass(node.getClass());
                 
                 final Node newJcrNode = this.createIfDontExists(parentJcrNode,
-                        nodePath, metadata.keyPropertyName(), node
+                        node, nodePath, metadata.keyPropertyName(), node
                                 .getInstanceMetadata().getKeyPropertyValue(),
                         metadata.keyPropertyType());
                 alreadySaved.put(node, newJcrNode);
@@ -909,8 +901,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             
             for (final ItemChangeEvent<ConfigurationNode> event : lastChanges) {
                 if (ItemChangeType.EXCLUDED.equals(event.getType())) {
-                    this.removeNode(event.getOldItem(), this.session
-                            .getRootNode());
+                    this.removeNode(event.getOldItem());
                 }
             }
             this.session.save();
@@ -921,6 +912,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     .getNode(configurationPath);
             
             final Version version = configurationJcrNode.checkin();
+            configurationJcrNode.checkout();
             final String versionName = version.getName();
             final Set<Artifact> artifacts = findAllNodesOfType(configuration,
                     Artifact.class);
