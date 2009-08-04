@@ -62,31 +62,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 
 /**
  * This is the root node of the configuration classes that contains the
- * following structure. FIXME re-make javadoc
- * 
- * <pre>
- * &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
- * &lt;configuration&gt;
- * 	&lt;repository name=&quot;development&quot; active=&quot;true&quot;
- * 		numberOfParallelThreads=&quot;15&quot;&gt;
- * 		&lt;project name=&quot;Open SpotLight&quot; active=&quot;true&quot;&gt;
- * 			&lt;bundle name=&quot;Java sources&quot; active=&quot;true&quot; type=&quot;fileSystem&quot;
- * 				initialLookup=&quot;/usr/src/osl&quot;&gt;
- * 				&lt;artifact
- * 					name=&quot;/usr/src/osl/src/main/java/org/openspotligth/Example.java&quot;
- * 					dataSha1=&quot;sha1&quot; /&gt;
- * 				&lt;artifact
- * 					name=&quot;/usr/src/osl/src/main/java/org/openspotligth/AnotherOneExample.java&quot;
- * 					dataSha1=&quot;sha1&quot; /&gt;
- * 				&lt;artifactMapping name=&quot;all java files&quot; active=&quot;true&quot;
- * 					included=&quot;/src/main/java/ **.java&quot; /&gt;
- * 				&lt;artifactMapping name=&quot;no older types&quot; active=&quot;true&quot;
- * 					excluded=&quot;** / *.asm&quot; /&gt;
- * 			&lt;/bundle&gt;
- * 		&lt;/project&gt;
- * 	&lt;/repository&gt;
- * &lt;/configuration&gt;
- * </pre>
+ * following structure.
  * 
  * This structure are used to pass the artifacts to the parser. All the classes
  * are thread save by default.

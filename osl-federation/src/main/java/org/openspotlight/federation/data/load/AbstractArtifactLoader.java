@@ -87,7 +87,17 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * creating the sha-1 key for the content. This is working now as a multi
  * threaded artifact loader also.
  * 
- * FIXME javadoc cache map
+ * There's a {@link Map} with {@link String} keys and {@link Object} values
+ * passed as an argument on the methods
+ * {@link #getAllArtifactNames(Bundle, ArtifactMapping, Map)} and
+ * {@link #loadArtifact(Bundle, ArtifactMapping, String, Map)}. This {@link Map}
+ * is used to get a more "functional" approach when loading artifacts. To do a
+ * loading in a thread safe way, it's secure to do not use instance variables.
+ * So this {@link Map} is shared in a single invocation of the loading methods.
+ * Its safe to put anything in this cache. An example: To get all the artifact
+ * names should have a massive IO and should be better to get all content. So,
+ * its just to fill the cache and use it later on the
+ * {@link #loadArtifact(Bundle, ArtifactMapping, String, Map)} method.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 

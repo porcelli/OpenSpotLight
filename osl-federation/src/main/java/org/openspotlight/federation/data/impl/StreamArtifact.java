@@ -69,10 +69,6 @@ import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformatio
  * 
  * LATER_TASK Do not replicate same artifacts
  * 
- * TASK Identify by uuid and version for logging
- * 
- * TASK message and detailed message plus enum for bundle errors
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
