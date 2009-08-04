@@ -51,9 +51,6 @@ package org.openspotlight.federation.data.impl;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-
-import java.io.InputStream;
-
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.ConfigurationNode;
@@ -62,10 +59,8 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * A Jcr artifact is an artifact with hierarchical data. So, this artifact is
+ * A Custom artifact is an artifact with hierarchical data. So, this artifact is
  * easily represented with Jcr structure instead of bytes to be parsed.
- * 
- * TASK implement this
  * 
  * LATER_TASK DNA Federation - artifact loader
  * 
@@ -74,20 +69,15 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Project.class }, validChildrenTypes = { Excluded.class,
-        Included.class }, propertyNames = { "name", "dataSha1", "version",
-        "UUID" }, propertyTypes = { String.class, String.class, String.class })
-public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
+        Bundle.class, Project.class }, propertyNames = { "UUID", "version" }, propertyTypes = {
+        String.class, String.class })
+public class CustomArtifact implements ConfigurationNode, GeneratedNode,
         Artifact {
     
     /**
 	 * 
 	 */
     private static final long serialVersionUID = -889016915372708085L;
-    
-    private static final String DATA = "data"; //$NON-NLS-1$
-    
-    private static final String DATA_SHA1 = "dataSha1"; //$NON-NLS-1$
     
     private final InstanceMetadata instanceMetadata;
     
@@ -97,11 +87,11 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
      * @param bundle
      * @param relativeName
      */
-    public JcrArtifact(final Bundle bundle, final String relativeName) {
+    public CustomArtifact(final Bundle bundle, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(this, bundle,
                 relativeName);
-        checkCondition("noJcrArtifact", //$NON-NLS-1$
-                bundle.getJcrArtifactByName(relativeName) == null);
+        checkCondition("noCustomArtifact", //$NON-NLS-1$
+                bundle.getCustomArtifactByName(relativeName) == null);
         bundle.getInstanceMetadata().addChild(this);
     }
     
@@ -111,11 +101,11 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
      * @param project
      * @param relativeName
      */
-    public JcrArtifact(final Project project, final String relativeName) {
+    public CustomArtifact(final Project project, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(this, project,
                 relativeName);
-        checkCondition("noJcrArtifact", //$NON-NLS-1$
-                project.getJcrArtifactByName(relativeName) == null);
+        checkCondition("noCustomArtifact", //$NON-NLS-1$
+                project.getCustomArtifactByName(relativeName) == null);
         project.getInstanceMetadata().addChild(this);
     }
     
@@ -134,22 +124,6 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
     @Override
     public final boolean equals(final Object obj) {
         return this.instanceMetadata.equals(obj);
-    }
-    
-    /**
-     * 
-     * @return a data stream for this artifact as a transient property
-     */
-    public InputStream getData() {
-        return this.instanceMetadata.getTransientProperty(DATA);
-    }
-    
-    /**
-     * 
-     * @return a valid signature for this data
-     */
-    public String getDataSha1() {
-        return this.instanceMetadata.getProperty(DATA_SHA1);
     }
     
     /**
@@ -193,24 +167,6 @@ public final class JcrArtifact implements ConfigurationNode, GeneratedNode,
     @Override
     public final int hashCode() {
         return this.instanceMetadata.hashCode();
-    }
-    
-    /**
-     * Sets a data stream for this artifact as a transient property.
-     * 
-     * @param data
-     */
-    public void setData(final InputStream data) {
-        this.instanceMetadata.setTransientProperty(DATA, data);
-    }
-    
-    /**
-     * Sets a valid signature for this data
-     * 
-     * @param dataSha1
-     */
-    public void setDataSha1(final String dataSha1) {
-        this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
     }
     
 }

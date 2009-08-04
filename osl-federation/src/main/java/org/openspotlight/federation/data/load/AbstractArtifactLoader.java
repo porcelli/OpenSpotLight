@@ -74,6 +74,7 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Repository;
@@ -85,6 +86,8 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * creating the sha-1 key for the content. This is working now as a multi
  * threaded artifact loader also.
  * 
+ * FIXME javadoc cache map
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
@@ -95,7 +98,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    class Worker implements Callable<Void> {
+    private final class Worker implements Callable<Void> {
         final Bundle bundle;
         final AtomicInteger errorCounter;
         final AtomicInteger loadCounter;
@@ -142,14 +145,13 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     /**
      * Executor for this loader.
      */
-    private final ExecutorService executor;
+    private ExecutorService executor;
     
     /**
      * Default constructor
      */
     public AbstractArtifactLoader() {
-        final int numberOfThreads = this.numberOfParallelThreads();
-        this.executor = Executors.newFixedThreadPool(numberOfThreads);
+        //
     }
     
     /**
@@ -216,7 +218,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * Filter the included and excluded patterns and also creates each artifact
      * and calculates the sha-1 key for the content. In this method we have also
      * the logic for dividing the tasks between
-     * {@link Repository#getNumberOfParallelThreads() the number of parallel
+     * {@link Configuration#getNumberOfParallelThreads() the number of parallel
      * threads}.
      * 
      * @param bundle
@@ -224,6 +226,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      *         data
      * @throws ConfigurationException
      */
+    @SuppressWarnings("boxing")
     public ArtifactProcessingCount loadArtifactsFromMappings(final Bundle bundle)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
@@ -247,6 +250,13 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             final FilterResult innerResult = filterNamesByPattern(
                     namesToFilter, includedPatterns, excludedPatterns, false);
             final Set<String> namesToProcess = innerResult.getIncludedNames();
+            for (final String name : bundle.getArtifactNames()) {
+                if (!namesToProcess.contains(name)) {
+                    final StreamArtifact artifactToDelete = bundle
+                            .getStreamArtifactByName(name);
+                    bundle.removeStreamArtifact(artifactToDelete);
+                }
+            }
             ignoreCount += innerResult.getIgnoredNames().size();
             
             this.splitWorkBetweenThreads(bundle, errorCounter, loadCounter,
@@ -254,6 +264,11 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             
         }
         try {
+            if (this.executor == null) {
+                this.executor = Executors.newFixedThreadPool(bundle
+                        .getRepository().getConfiguration()
+                        .getNumberOfParallelThreads());
+            }
             this.executor.invokeAll(workers);
             while (this.executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
                 this.wait();
@@ -264,12 +279,6 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         return new ArtifactProcessingCount(loadCounter.get(), ignoreCount,
                 errorCounter.get());
     }
-    
-    /**
-     * 
-     * @return the best number of parallel threads for this artifact loader
-     */
-    protected abstract int numberOfParallelThreads();
     
     /**
      * This method splits all job between
@@ -290,7 +299,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             final List<Callable<Void>> workers,
             final Map<String, Object> cachedInformation)
             throws ConfigurationException {
-        final int numberOfThreads = bundle.getRepository()
+        final int numberOfThreads = bundle.getRepository().getConfiguration()
                 .getNumberOfParallelThreads();
         final int allNamesToProcessSize = namesToProcess.size();
         final int numberOfNamesPerThread = allNamesToProcessSize

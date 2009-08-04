@@ -62,7 +62,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 
 /**
  * This is the root node of the configuration classes that contains the
- * following structure.
+ * following structure. FIXME re-make javadoc
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -98,7 +98,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
-@StaticMetadata(validChildrenTypes = Repository.class)
+@StaticMetadata(validChildrenTypes = Repository.class, propertyNames = "numberOfParallelThreads", propertyTypes = Integer.class)
 public final class Configuration implements ConfigurationNode {
     
     /**
@@ -107,6 +107,8 @@ public final class Configuration implements ConfigurationNode {
     private static final long serialVersionUID = -5615522050633506216L;
     
     private final InstanceMetadata instanceMetadata;
+    
+    private static final String NUMBER_OF_PARALLEL_THREADS = "numberOfParallelThreads"; //$NON-NLS-1$
     
     /**
      * Default constructor
@@ -136,6 +138,14 @@ public final class Configuration implements ConfigurationNode {
      */
     public final InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
+    }
+    
+    /**
+     * 
+     * @return the number of parallel threads for this repository processing
+     */
+    public final Integer getNumberOfParallelThreads() {
+        return this.instanceMetadata.getProperty(NUMBER_OF_PARALLEL_THREADS);
     }
     
     /**
@@ -181,6 +191,17 @@ public final class Configuration implements ConfigurationNode {
      */
     public final void removeRepository(final Repository repository) {
         this.instanceMetadata.removeChild(repository);
+    }
+    
+    /**
+     * Sets the number of parallel threads.
+     * 
+     * @param numberOfParallelThreads
+     */
+    public final void setNumberOfParallelThreads(
+            final Integer numberOfParallelThreads) {
+        this.instanceMetadata.setProperty(NUMBER_OF_PARALLEL_THREADS,
+                numberOfParallelThreads);
     }
     
     /**

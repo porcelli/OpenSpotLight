@@ -54,6 +54,9 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.db.BasicDatabaseMetadataLoader;
@@ -88,6 +91,28 @@ public abstract class AbstractDatabaseMetadataLoaderTest extends
                 this.getDefaultType(), this.connection);
         final ScriptDescription[] result = loader.loadIndexScripts();
         assertThat(result.length, is(not(0)));
+    }
+    
+    @Test
+    public void shouldLoadJdbcMetadata() throws Exception {
+        final ResultSet rs = this.connection.getMetaData().getColumns(null,
+                "*", "*", "*");
+        final ResultSetMetaData rsMd = rs.getMetaData();
+        final int columnSize = rsMd.getColumnCount();
+        for (int i = 1; i <= columnSize; i++) {
+            if (i == 1) {
+                System.out.print(rsMd.getColumnName(i));
+                System.out.print(";");
+            }
+        }
+        while (rs.next()) {
+            for (int i = 1; i <= columnSize; i++) {
+                if (i == 1) {
+                    System.out.print(rs.getString(i));
+                    System.out.print(";");
+                }
+            }
+        }
     }
     
     @Test

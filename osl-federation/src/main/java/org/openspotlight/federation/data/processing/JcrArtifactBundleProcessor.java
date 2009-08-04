@@ -49,16 +49,16 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.federation.data.impl.JcrArtifact;
+import org.openspotlight.federation.data.impl.CustomArtifact;
 
 /**
  * This interface marks the {@link BundleProcessor bundle processors} that will
- * process {@link JcrArtifact Jcr artifacts}.
+ * process {@link CustomArtifact Jcr artifacts}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public interface JcrArtifactBundleProcessor extends
-        BundleProcessor<JcrArtifact> {
+        BundleProcessor<CustomArtifact> {
     // marker interface
 }

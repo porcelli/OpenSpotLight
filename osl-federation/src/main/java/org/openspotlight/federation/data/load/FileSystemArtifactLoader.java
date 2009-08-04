@@ -140,13 +140,4 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
         return content;
     }
     
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    protected int numberOfParallelThreads() {
-        return 4; // not so much because of the hard drive io
-    }
-    
 }

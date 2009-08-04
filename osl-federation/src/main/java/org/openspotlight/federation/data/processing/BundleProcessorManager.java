@@ -90,8 +90,8 @@ import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingSt
  * 
  * After all {@link BundleProcessor processors} was found, the
  * {@link BundleProcessorManager} should distribute the processing job in some
- * threads obeying the {@link Repository#getNumberOfParallelThreads() number of
- * threads} configured for this {@link Repository}.
+ * threads obeying the {@link Configuration#getNumberOfParallelThreads() number
+ * of threads} configured for this {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -187,6 +187,11 @@ public final class BundleProcessorManager {
         }
         
     }
+    
+    /**
+     * thread pool.
+     */
+    private ExecutorService executor;
     
     /**
      * This method creates each {@link Callable} to call
@@ -361,7 +366,7 @@ public final class BundleProcessorManager {
         try {
             final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
             final Integer numberOfParallelThreads = repository
-                    .getNumberOfParallelThreads();
+                    .getConfiguration().getNumberOfParallelThreads();
             final Set<Bundle> bundles = findAllNodesOfType(repository,
                     Bundle.class);
             for (final Bundle bundle : bundles) {
@@ -402,11 +407,13 @@ public final class BundleProcessorManager {
                     allProcessActions.addAll(processActions);
                 }
             }
-            final ExecutorService executor = Executors
-                    .newFixedThreadPool(numberOfParallelThreads);
-            executor.invokeAll(allProcessActions);
+            if (this.executor == null) {
+                this.executor = Executors
+                        .newFixedThreadPool(numberOfParallelThreads);
+            }
+            this.executor.invokeAll(allProcessActions);
             
-            while (executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
+            while (this.executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
                 this.wait();
             }
             

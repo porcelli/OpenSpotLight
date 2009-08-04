@@ -61,9 +61,19 @@ import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.ArtifactLog.ArtifactLogType;
+import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformationType;
 
 /**
  * A stream artifact is a artifact that can be readen as byte stream.
+ * 
+ * LATER_TASK Do not replicate same artifacts
+ * 
+ * TASK Identify by uuid and version for logging
+ * 
+ * TASK all artifacts should have getUUID and getVersionName
+ * 
+ * TASK message and detailed message plus enum for bundle errors
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 

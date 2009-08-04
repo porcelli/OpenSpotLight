@@ -88,7 +88,7 @@ public class NodeTest {
         assertThat(repository, is(notNullValue()));
         assertThat(repository.getActive(), is(true));
         assertThat(repository.getConfiguration(), is(configuration));
-        assertThat(repository.getNumberOfParallelThreads(), is(1));
+        assertThat(configuration.getNumberOfParallelThreads(), is(1));
         assertThat(repository.getProjects().size(), is(not(0)));
         assertThat(repository.getProjectNames().size(), is(not(0)));
         
@@ -144,11 +144,12 @@ public class NodeTest {
         final int[] numbers = new int[] { 1, 2, 3, 4, 5 };
         
         final Configuration configuration = new Configuration();
+        configuration.setNumberOfParallelThreads(1);
+        
         for (final int i : numbers) {
             final Repository repository = new Repository(configuration, "r-"
                     + i);
             repository.setActive(true);
-            repository.setNumberOfParallelThreads(1);
             for (final int j : numbers) {
                 final Project project = new Project(repository, "p-" + i + ","
                         + j);

@@ -323,7 +323,6 @@ public abstract class AbstractDatabaseTest {
         
         this.assertTriggerWorks();
         this.connection.commit();
-        
     }
     
     @After

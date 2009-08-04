@@ -81,7 +81,7 @@ public class StreamArtifactDogFoodingProcessing {
         final Configuration configuration = new Configuration();
         final Repository oslRepository = new Repository(configuration,
                 "OSL Project");
-        oslRepository.setNumberOfParallelThreads(4);
+        configuration.setNumberOfParallelThreads(4);
         oslRepository.setActive(true);
         final Project oslRootProject = new Project(oslRepository,
                 "OSL Root Project");

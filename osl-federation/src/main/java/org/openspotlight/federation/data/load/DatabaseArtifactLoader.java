@@ -166,13 +166,4 @@ public class DatabaseArtifactLoader extends AbstractArtifactLoader {
         return new byte[0];
     }
     
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    protected int numberOfParallelThreads() {
-        return 1; // just a few selects ;-)
-    }
-    
 }

@@ -69,7 +69,7 @@ import org.openspotlight.federation.data.load.db.DatabaseType;
         String.class, String.class, String.class, String.class,
         DatabaseType.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
         BundleProcessorType.class, Project.class, StreamArtifact.class,
-        JcrArtifact.class, ArtifactMapping.class })
+        CustomArtifact.class, ArtifactMapping.class })
 public class DbBundle extends Bundle {
     
     /**

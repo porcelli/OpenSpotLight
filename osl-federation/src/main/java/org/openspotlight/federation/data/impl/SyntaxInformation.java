@@ -76,18 +76,57 @@ import org.openspotlight.federation.data.StaticMetadata;
 @ThreadSafe
 @StaticMetadata(propertyNames = { "lineStart", "lineEnd", "columnStart",
         "columnEnd", "type" }, propertyTypes = { Integer.class, Integer.class,
-        Integer.class, Integer.class, SyntaxInformationType.class }, keyPropertyName = "describedKey", keyPropertyType = String.class, validParentTypes = { Artifact.class })
+        Integer.class, Integer.class,
+        SyntaxInformation.SyntaxInformationType.class }, keyPropertyName = "describedKey", keyPropertyType = String.class, validParentTypes = { Artifact.class })
 public class SyntaxInformation implements ConfigurationNode {
+    
+    /**
+     * Enum to guard syntax information type.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public enum SyntaxInformationType {
+        /**
+         * Comment or multi line comment.
+         */
+        COMMENT,
+        /**
+         * Reserved keyword.
+         */
+        RESERVED,
+        /**
+         * Number literal.
+         */
+        NUMBER_LITERAL,
+        /**
+         * String literal.
+         */
+        STRING_LITERAL,
+        /**
+         * Variable identifier.
+         */
+        IDENTIFIER,
+        /**
+         * Symbol, such as +, -, /, ...
+         */
+        SYMBOL,
+        /**
+         * Hidden information on source code, such as form information on VB
+         * code.
+         */
+        HIDDEN
+    }
     
     /**
      * 
      */
     private static final long serialVersionUID = 1092283780730455977L;
-    
     private static final String LINE_START = "lineStart"; //$NON-NLS-1$
     private static final String LINE_END = "lineEnd"; //$NON-NLS-1$
     private static final String COLUMN_START = "columnStart"; //$NON-NLS-1$
     private static final String COLUMN_END = "columnEnd"; //$NON-NLS-1$
+    
     private static final String TYPE = "type"; //$NON-NLS-1$
     
     /**

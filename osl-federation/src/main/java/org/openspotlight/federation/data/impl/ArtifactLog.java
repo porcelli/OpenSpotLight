@@ -73,8 +73,41 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(propertyNames = { "type", "message", "date" }, propertyTypes = {
-        ArtifactLogType.class, String.class, Date.class }, keyPropertyName = "describedMessage", keyPropertyType = String.class, validParentTypes = { Artifact.class })
+        ArtifactLog.ArtifactLogType.class, String.class, Date.class }, keyPropertyName = "describedMessage", keyPropertyType = String.class, validParentTypes = { Artifact.class })
 public class ArtifactLog implements ConfigurationNode {
+    
+    /**
+     * Acceptable types for artifact logging.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public static enum ArtifactLogType {
+        /**
+         * info
+         */
+        INFO,
+        /**
+         * warn
+         */
+        WARN,
+        /**
+         * error
+         */
+        ERROR,
+        /**
+         * fatal
+         */
+        FATAL,
+        /**
+         * Simple message
+         */
+        MESSAGE1,
+        /**
+         * Debug information
+         */
+        DEBUG
+    }
     
     /**
 	 * 

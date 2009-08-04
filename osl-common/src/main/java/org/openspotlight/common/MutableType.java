@@ -54,6 +54,21 @@ package org.openspotlight.common;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
+ *         TODO The bundle classpath should not be available on SLQL context
+ * 
+ *         TODO Group wheres (parentesis)
+ * 
+ *         TIP by link use () as output
+ * 
+ *         TODO think about xpath
+ * 
+ *         TODO think about types
+ * 
+ *         TIP think about where from targets
+ * 
+ *         TODO think about keep result
+ * 
+ *         TODO think about x times
  */
 public enum MutableType {
     /**

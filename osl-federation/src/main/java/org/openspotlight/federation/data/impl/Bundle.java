@@ -76,7 +76,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
         Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
         BundleProcessorType.class, Project.class, StreamArtifact.class,
-        JcrArtifact.class, ArtifactMapping.class })
+        CustomArtifact.class, ArtifactMapping.class })
 public class Bundle implements ConfigurationNode {
     
     /**
@@ -234,6 +234,32 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
+     * Returns a custom artifact by its name.
+     * 
+     * @param name
+     * @return a custom artifact
+     */
+    public final CustomArtifact getCustomArtifactByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(CustomArtifact.class,
+                name);
+    }
+    
+    /**
+     * @return all custom artifact names
+     */
+    public final Set<String> getCustomArtifactNames() {
+        return (Set<String>) this.instanceMetadata
+                .getKeysFromChildrenOfType(CustomArtifact.class);
+    }
+    
+    /**
+     * @return all custom artifacts
+     */
+    public final Collection<CustomArtifact> getCustomArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(CustomArtifact.class);
+    }
+    
+    /**
      * 
      * @return the initial lookup property.
      */
@@ -247,32 +273,6 @@ public class Bundle implements ConfigurationNode {
      */
     public final InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
-    }
-    
-    /**
-     * Returns a jcr artifact by its name.
-     * 
-     * @param name
-     * @return a jcr artifact
-     */
-    public final JcrArtifact getJcrArtifactByName(final String name) {
-        return this.instanceMetadata
-                .getChildByKeyValue(JcrArtifact.class, name);
-    }
-    
-    /**
-     * @return all jcr artifact names
-     */
-    public final Set<String> getJcrArtifactNames() {
-        return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(JcrArtifact.class);
-    }
-    
-    /**
-     * @return all jcr artifacts
-     */
-    public final Collection<JcrArtifact> getJcrArtifacts() {
-        return this.instanceMetadata.getChildrensOfType(JcrArtifact.class);
     }
     
     /**
@@ -340,15 +340,6 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
-     * Removes an artifact.
-     * 
-     * @param Artifact
-     */
-    public final void removeArtifact(final StreamArtifact Artifact) {
-        this.instanceMetadata.removeChild(Artifact);
-    }
-    
-    /**
      * Removes a artifact mapping.
      * 
      * @param ArtifactMapping
@@ -368,12 +359,12 @@ public class Bundle implements ConfigurationNode {
     }
     
     /**
-     * Removes a Jcr Artifact.
+     * Removes a Custom Artifact.
      * 
-     * @param JcrArtifact
+     * @param CustomArtifact
      */
-    public final void removeJcrArtifact(final JcrArtifact JcrArtifact) {
-        this.instanceMetadata.removeChild(JcrArtifact);
+    public final void removeCustomArtifact(final CustomArtifact CustomArtifact) {
+        this.instanceMetadata.removeChild(CustomArtifact);
     }
     
     /**
@@ -383,6 +374,15 @@ public class Bundle implements ConfigurationNode {
      */
     public final void removeProject(final Project Project) {
         this.instanceMetadata.removeChild(Project);
+    }
+    
+    /**
+     * Removes an artifact.
+     * 
+     * @param Artifact
+     */
+    public final void removeStreamArtifact(final StreamArtifact Artifact) {
+        this.instanceMetadata.removeChild(Artifact);
     }
     
     /**

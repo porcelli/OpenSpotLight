@@ -101,7 +101,7 @@ public class DbStreamArtifactProcessing {
         final Configuration configuration = new Configuration();
         final Repository h2Repository = new Repository(configuration,
                 "H2 Repository");
-        h2Repository.setNumberOfParallelThreads(4);
+        configuration.setNumberOfParallelThreads(4);
         h2Repository.setActive(true);
         final Project h2Project = new Project(h2Repository, "h2 Project");
         h2Project.setActive(true);

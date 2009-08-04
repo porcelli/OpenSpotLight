@@ -178,12 +178,12 @@ public class AbstractNodeTest extends NodeTest {
         this.lastPropertyChange = null;
         repository.setActive(false);
         assertThat(this.lastPropertyChange, is(nullValue()));
-        repository.setNumberOfParallelThreads(null);
+        configuration.setNumberOfParallelThreads(null);
         assertThat(this.lastPropertyChange.getType(),
                 is(ItemChangeType.EXCLUDED));
         assertThat(this.lastPropertyChange.getNewItem().getPropertyValue(),
                 is(nullValue()));
-        repository.setNumberOfParallelThreads(1);
+        configuration.setNumberOfParallelThreads(1);
         assertThat(this.lastPropertyChange.getType(), is(ItemChangeType.ADDED));
         assertThat((Integer) this.lastPropertyChange.getNewItem()
                 .getPropertyValue(), is(1));

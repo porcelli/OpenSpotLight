@@ -71,11 +71,8 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
-@StaticMetadata(propertyNames = { "active", "numberOfParallelThreads" }, propertyTypes = {
-        Boolean.class, Integer.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = Configuration.class, validChildrenTypes = Project.class)
+@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = Configuration.class, validChildrenTypes = Project.class)
 public final class Repository implements ConfigurationNode {
-    
-    private static final String NUMBER_OF_PARALLEL_THREADS = "numberOfParallelThreads"; //$NON-NLS-1$
     
     private static final String ACTIVE = "active"; //$NON-NLS-1$
     
@@ -147,14 +144,6 @@ public final class Repository implements ConfigurationNode {
     
     /**
      * 
-     * @return the number of parallel threads for this repository processing
-     */
-    public final Integer getNumberOfParallelThreads() {
-        return this.instanceMetadata.getProperty(NUMBER_OF_PARALLEL_THREADS);
-    }
-    
-    /**
-     * 
      * @param name
      * @return a project by its name
      */
@@ -204,17 +193,6 @@ public final class Repository implements ConfigurationNode {
      */
     public final void setActive(final Boolean active) {
         this.instanceMetadata.setProperty(ACTIVE, active);
-    }
-    
-    /**
-     * Sets the number of parallel threads.
-     * 
-     * @param numberOfParallelThreads
-     */
-    public final void setNumberOfParallelThreads(
-            final Integer numberOfParallelThreads) {
-        this.instanceMetadata.setProperty(NUMBER_OF_PARALLEL_THREADS,
-                numberOfParallelThreads);
     }
     
     /**

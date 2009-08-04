@@ -112,11 +112,6 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
                 return artifactName.getBytes();
             }
             
-            @Override
-            protected int numberOfParallelThreads() {
-                return 4;
-            }
-            
         };
     }
     
