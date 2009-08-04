@@ -58,6 +58,10 @@ import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.data.impl.Column;
+import org.openspotlight.federation.data.impl.TableArtifact;
+import org.openspotlight.federation.data.impl.Column.ColumnType;
+import org.openspotlight.federation.data.impl.Column.Nullable;
 import org.openspotlight.federation.data.load.ArtifactLoader;
 
 /**
@@ -69,6 +73,85 @@ import org.openspotlight.federation.data.load.ArtifactLoader;
  * 
  */
 public interface DatabaseMetadataLoader {
+    
+    /**
+     * Class with column description to fill the {@link TableArtifact} and
+     * {@link Column} on federation metadata.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public static final class ColumnDescription {
+        private final String catalog;
+        private final String schema;
+        private final String tableName;
+        private final String columnName;
+        private final ColumnType type;
+        private final Nullable nullable;
+        private final Integer columnSize;
+        private final Integer decimalSize;
+        private final int hashCode;
+        
+        /**
+         * Constructor to fnalize all final fields.
+         * 
+         * @param catalog
+         * @param schema
+         * @param tableName
+         * @param columnName
+         * @param type
+         * @param nullable
+         * @param columnSize
+         * @param decimalSize
+         */
+        public ColumnDescription(final String catalog, final String schema,
+                final String tableName, final String columnName,
+                final ColumnType type, final Nullable nullable,
+                final Integer columnSize, final Integer decimalSize) {
+            super();
+            this.catalog = catalog;
+            this.schema = schema;
+            this.tableName = tableName;
+            this.columnName = columnName;
+            this.type = type;
+            this.nullable = nullable;
+            this.columnSize = columnSize;
+            this.decimalSize = decimalSize;
+            this.hashCode = hashOf(catalog, schema, tableName, columnName,
+                    type, nullable, columnSize, decimalSize);
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof ColumnDescription)) {
+                return false;
+            }
+            final ColumnDescription that = (ColumnDescription) o;
+            return eachEquality(of(this.catalog, this.schema, this.tableName,
+                    this.columnName, this.type, this.nullable, this.columnSize,
+                    this.decimalSize), andOf(that.catalog, that.schema,
+                    that.tableName, that.columnName, that.type, that.nullable,
+                    that.columnSize, that.decimalSize));
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            return this.hashCode;
+        }
+        
+    }
     
     /**
      * Valid column names to be used on a Metadata select statement. For
@@ -301,10 +384,13 @@ public interface DatabaseMetadataLoader {
      * 
      * This method will load all table hierarchy metadata
      * 
+     * @return the loaded metadata from tables and columns
+     * 
      * @throws ConfigurationException
      * 
      */
-    public abstract void loadTableMetadata() throws ConfigurationException;
+    public abstract ColumnDescription[] loadTableMetadata()
+            throws ConfigurationException;
     
     /**
      * 

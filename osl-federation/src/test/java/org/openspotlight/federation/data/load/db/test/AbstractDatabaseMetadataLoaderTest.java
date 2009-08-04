@@ -54,14 +54,12 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.db.BasicDatabaseMetadataLoader;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.ColumnDescription;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.ScriptDescription;
 
 @SuppressWarnings("all")
@@ -95,24 +93,10 @@ public abstract class AbstractDatabaseMetadataLoaderTest extends
     
     @Test
     public void shouldLoadJdbcMetadata() throws Exception {
-        final ResultSet rs = this.connection.getMetaData().getColumns(null,
-                "*", "*", "*");
-        final ResultSetMetaData rsMd = rs.getMetaData();
-        final int columnSize = rsMd.getColumnCount();
-        for (int i = 1; i <= columnSize; i++) {
-            if (i == 1) {
-                System.out.print(rsMd.getColumnName(i));
-                System.out.print(";");
-            }
-        }
-        while (rs.next()) {
-            for (int i = 1; i <= columnSize; i++) {
-                if (i == 1) {
-                    System.out.print(rs.getString(i));
-                    System.out.print(";");
-                }
-            }
-        }
+        final DatabaseMetadataLoader loader = new BasicDatabaseMetadataLoader(
+                this.getDefaultType(), this.connection);
+        final ColumnDescription[] result = loader.loadTableMetadata();
+        assertThat(result.length, is(not(0)));
     }
     
     @Test

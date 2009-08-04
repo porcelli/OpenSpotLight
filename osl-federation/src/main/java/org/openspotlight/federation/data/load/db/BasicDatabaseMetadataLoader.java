@@ -55,6 +55,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -64,6 +65,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.data.impl.Column.ColumnType;
+import org.openspotlight.federation.data.impl.Column.Nullable;
 
 /**
  * Abstract class to be used as a base for database artifact loader
@@ -243,8 +246,36 @@ public class BasicDatabaseMetadataLoader implements DatabaseMetadataLoader {
      * 
      * {@inheritDoc}
      */
-    public void loadTableMetadata() throws ConfigurationException {
-        // TASK create the structure for table metadata
+    @SuppressWarnings("boxing")
+    public ColumnDescription[] loadTableMetadata()
+            throws ConfigurationException {
+        try {
+            final DatabaseMetaData metadata = this.connection.getMetaData();
+            final ResultSet rs = metadata.getColumns(null, null, null, null);
+            final List<ColumnDescription> tableMetadata = new ArrayList<ColumnDescription>(
+                    rs.getFetchSize());
+            while (rs.next()) {
+                final String catalog = rs.getString("TABLE_CAT"); //$NON-NLS-1$
+                final String schema = rs.getString("TABLE_SCHEM"); //$NON-NLS-1$
+                final String tableName = rs.getString("TABLE_NAME"); //$NON-NLS-1$
+                final String columnName = rs.getString("COLUMN_NAME"); //$NON-NLS-1$
+                final ColumnType type = ColumnType.getTypeByInt(rs
+                        .getInt("DATA_TYPE")); //$NON-NLS-1$
+                final Nullable nullable = Nullable.getNullableByInt(rs
+                        .getInt("NULLABLE")); //$NON-NLS-1$
+                final Integer columnSize = rs.getInt("COLUMN_SIZE"); //$NON-NLS-1$
+                final Integer decimalSize = rs.getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
+                final ColumnDescription desc = new ColumnDescription(catalog,
+                        schema, tableName, columnName, type, nullable,
+                        columnSize, decimalSize);
+                tableMetadata.add(desc);
+            }
+            final ColumnDescription[] result = tableMetadata
+                    .toArray(new ColumnDescription[tableMetadata.size()]);
+            return result;
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
     }
     
     /**

@@ -51,7 +51,10 @@ package org.openspotlight.federation.data.impl;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 
+import java.sql.DatabaseMetaData;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.jcip.annotations.ThreadSafe;
 
@@ -67,8 +70,9 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { TableArtifact.class }, propertyNames = {
-        "type", "nullable" }, propertyTypes = { Column.ColumnType.class,
-        Column.Nullable.class })
+        "type", "nullable", "columnSize", "decimalSize" }, propertyTypes = {
+        Column.ColumnType.class, Column.Nullable.class, Integer.class,
+        Integer.class })
 public class Column implements ConfigurationNode {
     
     /**
@@ -77,6 +81,7 @@ public class Column implements ConfigurationNode {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
+    @SuppressWarnings("boxing")
     public static enum ColumnType {
         
         /**
@@ -200,6 +205,26 @@ public class Column implements ConfigurationNode {
          */
         BOOLEAN(Types.BOOLEAN);
         
+        /**
+         * Internal cache
+         */
+        private static final Map<Integer, ColumnType> typesCache = new HashMap<Integer, ColumnType>();
+        static {
+            for (final ColumnType t : values()) {
+                typesCache.put(t.getSqlTypeValue(), t);
+            }
+        }
+        
+        /**
+         * Static factory method
+         * 
+         * @param sqlType
+         * @return the correct column type by sql int constant
+         */
+        public static ColumnType getTypeByInt(final int sqlType) {
+            return typesCache.get(sqlType);
+        }
+        
         private final int sqlTypeValue;
         
         private ColumnType(final int sqlTypeValue) {
@@ -217,25 +242,68 @@ public class Column implements ConfigurationNode {
     }
     
     /**
-     * SQL nullable type.
+     * SQL nullable type. The int values came from {@link DatabaseMetaData}
+     * javadoc. Theres some constant fields to describe nullability, but it
+     * wasn't exported.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
+    @SuppressWarnings("boxing")
     public static enum Nullable {
-        /**
-         * Can be null.
-         */
-        NULL,
+        
         /**
          * Can not be null.
          */
-        NOT_NULL,
+        NOT_NULL(0),
+        /**
+         * Can be null.
+         */
+        NULL(1),
         /**
          * Wasn't possible to find if it is nullable or not
          */
-        DONT_KNOW
+        DONT_KNOW(2);
+        
+        /**
+         * Internal cache
+         */
+        private static final Map<Integer, Nullable> nullableCache = new HashMap<Integer, Nullable>();
+        static {
+            for (final Nullable n : values()) {
+                nullableCache.put(n.getSqlTypeValue(), n);
+            }
+        }
+        
+        /**
+         * Static factory method
+         * 
+         * @param sqlType
+         * @return the correct column type by sql int constant
+         */
+        public static Nullable getNullableByInt(final int sqlType) {
+            return nullableCache.get(sqlType);
+        }
+        
+        private final int sqlTypeValue;
+        
+        private Nullable(final int sqlTypeValue) {
+            this.sqlTypeValue = sqlTypeValue;
+        }
+        
+        /**
+         * 
+         * @return the int value equivalent to {@link Types} constants
+         */
+        public int getSqlTypeValue() {
+            return this.sqlTypeValue;
+        }
+        
     }
+    
+    private static final String COLUMN_SIZE = "columnSize"; //$NON-NLS-1$
+    
+    private static final String DECIMAL_SIZE = "decimalSize"; //$NON-NLS-1$
     
     /**
      * 
@@ -280,6 +348,22 @@ public class Column implements ConfigurationNode {
     
     /**
      * 
+     * @return the column size
+     */
+    public Integer getColumnSize() {
+        return this.instanceMetadata.getProperty(COLUMN_SIZE);
+    }
+    
+    /**
+     * 
+     * @return the decimal size
+     */
+    public Integer getDecimalSize() {
+        return this.instanceMetadata.getProperty(DECIMAL_SIZE);
+    }
+    
+    /**
+     * 
      * {@inheritDoc}
      */
     public InstanceMetadata getInstanceMetadata() {
@@ -317,6 +401,26 @@ public class Column implements ConfigurationNode {
     @Override
     public final int hashCode() {
         return this.instanceMetadata.hashCode();
+    }
+    
+    /**
+     * 
+     * Sets the column size.
+     * 
+     * @param columnSize
+     */
+    public void setColumnSize(final Integer columnSize) {
+        this.instanceMetadata.setProperty(COLUMN_SIZE, columnSize);
+    }
+    
+    /**
+     * Sets the decimal size.
+     * 
+     * @param decimalSize
+     */
+    public void setDecimalSize(final Integer decimalSize) {
+        this.instanceMetadata.setProperty(DECIMAL_SIZE, decimalSize);
+        
     }
     
     /**
