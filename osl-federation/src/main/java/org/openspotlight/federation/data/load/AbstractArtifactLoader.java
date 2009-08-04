@@ -251,7 +251,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             final FilterResult innerResult = filterNamesByPattern(
                     namesToFilter, includedPatterns, excludedPatterns, false);
             final Set<String> namesToProcess = innerResult.getIncludedNames();
-            for (final String name : bundle.getStreamArtifactNames()) {
+            final Set<String> names = new HashSet<String>(bundle
+                    .getStreamArtifactNames());
+            for (final String name : names) {
                 if (!namesToProcess.contains(name)) {
                     final StreamArtifact artifactToDelete = bundle
                             .getStreamArtifactByName(name);

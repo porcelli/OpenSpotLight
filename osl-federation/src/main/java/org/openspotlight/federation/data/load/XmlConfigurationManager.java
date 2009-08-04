@@ -121,7 +121,25 @@ public class XmlConfigurationManager implements ConfigurationManager {
         if (configurationNode instanceof GeneratedNode) {
             return;
         }
-        
+        final Map<String, Object> properties = configurationNode
+                .getInstanceMetadata().getProperties();
+        final String[] propKeys = configurationNode.getInstanceMetadata()
+                .getStaticMetadata().propertyNames();
+        final Class<?>[] propValues = configurationNode.getInstanceMetadata()
+                .getStaticMetadata().propertyTypes();
+        final Map<String, Class<?>> propertyTypesMap = map(ofKeys(propKeys),
+                andValues(propValues));
+        for (final Map.Entry<String, Object> propertyEntry : properties
+                .entrySet()) {
+            if (!propertyEntry.getKey().equals("")) { //$NON-NLS-1$
+                if (Serializable.class.isAssignableFrom(propertyTypesMap
+                        .get(propertyEntry.getKey()))) {
+                    this.setPropertyOnXml(element, propertyEntry.getKey(),
+                            (Serializable) propertyEntry.getValue(),
+                            propertyTypesMap.get(propertyEntry.getKey()));
+                }
+            }
+        }
         for (final Class<? extends ConfigurationNode> configuredChildClass : configurationNode
                 .getInstanceMetadata().getStaticMetadata().validChildrenTypes()) {
             if (configuredChildClass.equals(ConfigurationNode.class)) {
@@ -152,27 +170,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
                             .getStaticMetadata().keyPropertyName(), convert(
                             key, String.class));
                 }
-                final Map<String, Object> properties = innerNode
-                        .getInstanceMetadata().getProperties();
-                final String[] propKeys = innerNode.getInstanceMetadata()
-                        .getStaticMetadata().propertyNames();
-                final Class<?>[] propValues = innerNode.getInstanceMetadata()
-                        .getStaticMetadata().propertyTypes();
-                final Map<String, Class<?>> propertyTypesMap = map(
-                        ofKeys(propKeys), andValues(propValues));
-                for (final Map.Entry<String, Object> propertyEntry : properties
-                        .entrySet()) {
-                    if (!propertyEntry.getKey().equals("")) { //$NON-NLS-1$
-                        if (Serializable.class
-                                .isAssignableFrom(propertyTypesMap
-                                        .get(propertyEntry.getKey()))) {
-                            this.setPropertyOnXml(newElement, propertyEntry
-                                    .getKey(), (Serializable) propertyEntry
-                                    .getValue(), propertyTypesMap
-                                    .get(propertyEntry.getKey()));
-                        }
-                    }
-                }
+                
                 this.createEachXmlNode(newElement, innerNode);
             }
         }
@@ -197,6 +195,27 @@ public class XmlConfigurationManager implements ConfigurationManager {
     @SuppressWarnings("unchecked")
     private void loopOnEachElement(final Element parentElement,
             final ConfigurationNode parentNode) throws Exception {
+        final String[] propKeys = parentNode.getInstanceMetadata()
+                .getStaticMetadata().propertyNames();
+        final Class<?>[] propValues = parentNode.getInstanceMetadata()
+                .getStaticMetadata().propertyTypes();
+        final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys),
+                andValues(propValues));
+        final StaticMetadata parentStaticMetadata = this.classHelper
+                .getStaticMetadataFromClass(parentNode.getClass());
+        final String parentKeyProperty = parentStaticMetadata.keyPropertyName();
+        for (final Iterator<Attribute> properties = parentElement
+                .attributeIterator(); properties.hasNext();) {
+            
+            final Attribute nextProperty = properties.next();
+            final String propertyName = nextProperty.getName();
+            if (parentKeyProperty.equals(propertyName)) {
+                continue;
+            }
+            final String valueAsString = nextProperty.getStringValue();
+            this.setPropertyOnNode(parentNode, propertyName, propertyTypes
+                    .get(propertyName), valueAsString);
+        }
         for (final Iterator<Element> elements = parentElement.elementIterator(); elements
                 .hasNext();) {
             final Element nextElement = elements.next();
@@ -222,23 +241,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
                 newNode = this.classHelper.createInstance(null, parentNode,
                         "osl:" + nodeClassName); //$NON-NLS-1$
             }
-            final String[] propKeys = newNode.getInstanceMetadata()
-                    .getStaticMetadata().propertyNames();
-            final Class<?>[] propValues = newNode.getInstanceMetadata()
-                    .getStaticMetadata().propertyTypes();
-            final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys),
-                    andValues(propValues));
-            for (final Iterator<Attribute> properties = nextElement
-                    .attributeIterator(); properties.hasNext();) {
-                final Attribute nextProperty = properties.next();
-                final String propertyName = nextProperty.getName();
-                if (keyProperty.equals(propertyName)) {
-                    continue;
-                }
-                final String valueAsString = nextProperty.getStringValue();
-                this.setPropertyOnNode(newNode, propertyName, propertyTypes
-                        .get(propertyName), valueAsString);
-            }
+            
             this.loopOnEachElement(nextElement, newNode);
         }
     }

@@ -79,6 +79,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -170,22 +171,22 @@ public interface InstanceMetadata {
              * Children node map that contains the children classes and a map
              * with its entries.
              */
-            private final Map<Class<?>, Map<Serializable, ConfigurationNode>> children = new HashMap<Class<?>, Map<Serializable, ConfigurationNode>>();
+            private final Map<Class<?>, Map<Serializable, ConfigurationNode>> children = new ConcurrentHashMap<Class<?>, Map<Serializable, ConfigurationNode>>();
             
             /**
              * Property map.
              */
-            private final Map<String, Object> properties = new HashMap<String, Object>();
+            private final Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
             
             /**
              * Property map.
              */
-            private final Map<Class<? extends ConfigurationNode>, ConfigurationNode> nodeProperties = new HashMap<Class<? extends ConfigurationNode>, ConfigurationNode>();
+            private final Map<Class<? extends ConfigurationNode>, ConfigurationNode> nodeProperties = new ConcurrentHashMap<Class<? extends ConfigurationNode>, ConfigurationNode>();
             
             /**
              * Transient property map. This properties won't be saved.
              */
-            private final Map<String, Object> transientProperties = new HashMap<String, Object>();
+            private final Map<String, Object> transientProperties = new ConcurrentHashMap<String, Object>();
             
             /**
              * Constructor with mandatory fields.
@@ -579,7 +580,11 @@ public interface InstanceMetadata {
                 }
                 final N oldValue = (N) getProperty(name);
                 if (!eachEquality(oldValue, value)) {
-                    this.properties.put(name, value);
+                    if (value != null) {
+                        this.properties.put(name, value);
+                    } else {
+                        this.properties.remove(name);
+                    }
                     this.sharedData.firePropertyChange(this.getOwner(), name,
                             oldValue, value);
                 }

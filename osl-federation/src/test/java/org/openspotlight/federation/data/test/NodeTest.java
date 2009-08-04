@@ -141,7 +141,7 @@ public class NodeTest {
     
     public Configuration createSampleData() {
         
-        final int[] numbers = new int[] { 1, 2, 3, 4, 5 };
+        final int[] numbers = new int[] { 1, 2 };
         
         final Configuration configuration = new Configuration();
         configuration.setNumberOfParallelThreads(1);
