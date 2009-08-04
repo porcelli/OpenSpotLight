@@ -61,6 +61,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -247,12 +248,11 @@ public class BasicDatabaseMetadataLoader implements DatabaseMetadataLoader {
      * {@inheritDoc}
      */
     @SuppressWarnings("boxing")
-    public ColumnDescription[] loadTableMetadata()
-            throws ConfigurationException {
+    public TableDescription[] loadTableMetadata() throws ConfigurationException {
         try {
             final DatabaseMetaData metadata = this.connection.getMetaData();
             final ResultSet rs = metadata.getColumns(null, null, null, null);
-            final List<ColumnDescription> tableMetadata = new ArrayList<ColumnDescription>(
+            final Map<String, TableDescription> tableMetadata = new HashMap<String, TableDescription>(
                     rs.getFetchSize());
             while (rs.next()) {
                 final String catalog = rs.getString("TABLE_CAT"); //$NON-NLS-1$
@@ -265,13 +265,21 @@ public class BasicDatabaseMetadataLoader implements DatabaseMetadataLoader {
                         .getInt("NULLABLE")); //$NON-NLS-1$
                 final Integer columnSize = rs.getInt("COLUMN_SIZE"); //$NON-NLS-1$
                 final Integer decimalSize = rs.getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
-                final ColumnDescription desc = new ColumnDescription(catalog,
-                        schema, tableName, columnName, type, nullable,
-                        columnSize, decimalSize);
-                tableMetadata.add(desc);
+                TableDescription desc = new TableDescription(catalog, schema,
+                        tableName);
+                if (tableMetadata.containsKey(desc.toString())) {
+                    desc = tableMetadata.get(desc.toString());
+                } else {
+                    tableMetadata.put(desc.toString(), desc);
+                }
+                if (!desc.getColumns().containsKey(columnName)) {
+                    final ColumnDescription colDesc = new ColumnDescription(
+                            columnName, type, nullable, columnSize, decimalSize);
+                    desc.addColumn(colDesc);
+                }
             }
-            final ColumnDescription[] result = tableMetadata
-                    .toArray(new ColumnDescription[tableMetadata.size()]);
+            final TableDescription[] result = tableMetadata.values().toArray(
+                    new TableDescription[tableMetadata.size()]);
             return result;
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);

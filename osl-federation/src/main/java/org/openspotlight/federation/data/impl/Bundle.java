@@ -201,7 +201,7 @@ public class Bundle implements ConfigurationNode {
      * 
      * @return all artifact names
      */
-    public final Set<String> getArtifactNames() {
+    public final Set<String> getStreamArtifactNames() {
         return (Set<String>) this.instanceMetadata
                 .getKeysFromChildrenOfType(StreamArtifact.class);
     }

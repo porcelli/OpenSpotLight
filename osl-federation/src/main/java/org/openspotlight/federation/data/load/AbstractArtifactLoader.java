@@ -75,6 +75,7 @@ import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Repository;
@@ -250,11 +251,18 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
             final FilterResult innerResult = filterNamesByPattern(
                     namesToFilter, includedPatterns, excludedPatterns, false);
             final Set<String> namesToProcess = innerResult.getIncludedNames();
-            for (final String name : bundle.getArtifactNames()) {
+            for (final String name : bundle.getStreamArtifactNames()) {
                 if (!namesToProcess.contains(name)) {
                     final StreamArtifact artifactToDelete = bundle
                             .getStreamArtifactByName(name);
                     bundle.removeStreamArtifact(artifactToDelete);
+                }
+            }
+            for (final String name : bundle.getCustomArtifactNames()) {
+                if (!namesToProcess.contains(name)) {
+                    final CustomArtifact artifactToDelete = bundle
+                            .getCustomArtifactByName(name);
+                    bundle.removeCustomArtifact(artifactToDelete);
                 }
             }
             ignoreCount += innerResult.getIgnoredNames().size();

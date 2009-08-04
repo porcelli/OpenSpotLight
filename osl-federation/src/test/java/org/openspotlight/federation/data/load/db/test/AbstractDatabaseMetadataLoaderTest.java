@@ -59,7 +59,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.db.BasicDatabaseMetadataLoader;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.ColumnDescription;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.TableDescription;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.ScriptDescription;
 
 @SuppressWarnings("all")
@@ -95,7 +95,7 @@ public abstract class AbstractDatabaseMetadataLoaderTest extends
     public void shouldLoadJdbcMetadata() throws Exception {
         final DatabaseMetadataLoader loader = new BasicDatabaseMetadataLoader(
                 this.getDefaultType(), this.connection);
-        final ColumnDescription[] result = loader.loadTableMetadata();
+        final TableDescription[] result = loader.loadTableMetadata();
         assertThat(result.length, is(not(0)));
     }
     

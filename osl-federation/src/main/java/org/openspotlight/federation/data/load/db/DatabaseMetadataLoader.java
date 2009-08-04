@@ -57,6 +57,9 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Column;
 import org.openspotlight.federation.data.impl.TableArtifact;
@@ -75,50 +78,43 @@ import org.openspotlight.federation.data.load.ArtifactLoader;
 public interface DatabaseMetadataLoader {
     
     /**
-     * Class with column description to fill the {@link TableArtifact} and
-     * {@link Column} on federation metadata.
+     * {@link ColumnDescription} to be used to create new {@link Column column
+     * metadata}.
+     * 
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
     public static final class ColumnDescription {
-        private final String catalog;
-        private final String schema;
-        private final String tableName;
+        
         private final String columnName;
+        
         private final ColumnType type;
+        
         private final Nullable nullable;
         private final Integer columnSize;
         private final Integer decimalSize;
         private final int hashCode;
         
         /**
-         * Constructor to fnalize all final fields.
+         * Constructor to fill all final fields.
          * 
-         * @param catalog
-         * @param schema
-         * @param tableName
          * @param columnName
          * @param type
          * @param nullable
          * @param columnSize
          * @param decimalSize
          */
-        public ColumnDescription(final String catalog, final String schema,
-                final String tableName, final String columnName,
+        public ColumnDescription(final String columnName,
                 final ColumnType type, final Nullable nullable,
                 final Integer columnSize, final Integer decimalSize) {
-            super();
-            this.catalog = catalog;
-            this.schema = schema;
-            this.tableName = tableName;
             this.columnName = columnName;
             this.type = type;
             this.nullable = nullable;
             this.columnSize = columnSize;
             this.decimalSize = decimalSize;
-            this.hashCode = hashOf(catalog, schema, tableName, columnName,
-                    type, nullable, columnSize, decimalSize);
+            this.hashCode = hashOf(columnName, type, nullable, columnSize,
+                    decimalSize);
         }
         
         /**
@@ -135,11 +131,50 @@ public interface DatabaseMetadataLoader {
                 return false;
             }
             final ColumnDescription that = (ColumnDescription) o;
-            return eachEquality(of(this.catalog, this.schema, this.tableName,
-                    this.columnName, this.type, this.nullable, this.columnSize,
-                    this.decimalSize), andOf(that.catalog, that.schema,
-                    that.tableName, that.columnName, that.type, that.nullable,
-                    that.columnSize, that.decimalSize));
+            return eachEquality(of(this.columnName, this.type, this.nullable,
+                    this.columnSize, this.decimalSize),
+                    andOf(that.columnName, that.type, that.nullable,
+                            that.columnSize, that.decimalSize));
+        }
+        
+        /**
+         * 
+         * @return the column name
+         */
+        public String getColumnName() {
+            return this.columnName;
+        }
+        
+        /**
+         * 
+         * @return the column size
+         */
+        public Integer getColumnSize() {
+            return this.columnSize;
+        }
+        
+        /**
+         * 
+         * @return the decimal size
+         */
+        public Integer getDecimalSize() {
+            return this.decimalSize;
+        }
+        
+        /**
+         * 
+         * @return the nullable
+         */
+        public Nullable getNullable() {
+            return this.nullable;
+        }
+        
+        /**
+         * 
+         * @return the type
+         */
+        public ColumnType getType() {
+            return this.type;
         }
         
         /**
@@ -349,6 +384,121 @@ public interface DatabaseMetadataLoader {
     }
     
     /**
+     * Class with column description to fill the {@link TableArtifact} and
+     * {@link Column} on federation metadata.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public static final class TableDescription {
+        private final String catalog;
+        private final String schema;
+        private final String tableName;
+        private final int hashCode;
+        
+        private volatile String description = null;
+        
+        private final Map<String, ColumnDescription> columns = new HashMap<String, ColumnDescription>();
+        
+        /**
+         * Constructor to fnalize all final fields.
+         * 
+         * @param catalog
+         * @param schema
+         * @param tableName
+         */
+        public TableDescription(final String catalog, final String schema,
+                final String tableName) {
+            super();
+            this.catalog = catalog;
+            this.schema = schema;
+            this.tableName = tableName;
+            this.hashCode = hashOf(catalog, schema, tableName);
+        }
+        
+        /**
+         * Adds a new column to the internal column map
+         * 
+         * @param d
+         */
+        public void addColumn(final ColumnDescription d) {
+            this.columns.put(d.getColumnName(), d);
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof TableDescription)) {
+                return false;
+            }
+            final TableDescription that = (TableDescription) o;
+            return eachEquality(of(this.catalog, this.schema, this.tableName),
+                    andOf(that.catalog, that.schema, that.tableName));
+        }
+        
+        /**
+         * 
+         * @return the catalog
+         */
+        public String getCatalog() {
+            return this.catalog;
+        }
+        
+        /**
+         * 
+         * @return the column map
+         */
+        public Map<String, ColumnDescription> getColumns() {
+            return this.columns;
+        }
+        
+        /**
+         * 
+         * @return the schema
+         */
+        public String getSchema() {
+            return this.schema;
+        }
+        
+        /**
+         * 
+         * @return the table name
+         */
+        public String getTableName() {
+            return this.tableName;
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        @Override
+        public int hashCode() {
+            return this.hashCode;
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            if (this.description == null) {
+                this.description = format("{0}/{1}/{2}/{3}", this.catalog, //$NON-NLS-1$
+                        this.schema, ScriptType.TABLE, this.tableName);
+            }
+            return this.description;
+        }
+        
+    }
+    
+    /**
      * 
      * @return description of all types on that database
      * @throws ConfigurationException
@@ -389,7 +539,7 @@ public interface DatabaseMetadataLoader {
      * @throws ConfigurationException
      * 
      */
-    public abstract ColumnDescription[] loadTableMetadata()
+    public abstract TableDescription[] loadTableMetadata()
             throws ConfigurationException;
     
     /**
