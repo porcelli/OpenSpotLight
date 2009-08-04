@@ -58,7 +58,7 @@ import org.openspotlight.federation.data.impl.CustomArtifact;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public interface JcrArtifactBundleProcessor extends
+public interface CustomArtifactBundleProcessor extends
         BundleProcessor<CustomArtifact> {
     // marker interface
 }

@@ -50,9 +50,14 @@
 package org.openspotlight.federation.data.processing;
 
 import static java.util.Collections.emptyList;
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.HashCodes.hashOf;
 import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
 import static org.openspotlight.federation.data.util.JcrLogger.log;
 
@@ -74,6 +79,7 @@ import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingGroup;
@@ -106,15 +112,15 @@ public final class BundleProcessorManager {
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
-    private static class BundleProcessorCallable implements
+    private static class BundleProcessorCallable<T extends Artifact> implements
             Callable<ProcessingAction> {
         
-        private final BundleProcessor<StreamArtifact> bundleProcessor;
+        private final BundleProcessor<T> bundleProcessor;
         
-        private final StreamArtifact targetArtifact;
+        private final T targetArtifact;
         private final GraphContext graphContext;
-        private final BundleProcessingGroup<StreamArtifact> immutableProcessingGroup;
-        private final BundleProcessingGroup<StreamArtifact> mutableProcessingGroup;
+        private final BundleProcessingGroup<T> immutableProcessingGroup;
+        private final BundleProcessingGroup<T> mutableProcessingGroup;
         
         /**
          * Constructor to initialize final mandatory fields.
@@ -126,11 +132,10 @@ public final class BundleProcessorManager {
          * @param mutableProcessingGroup
          */
         public BundleProcessorCallable(
-                final BundleProcessor<StreamArtifact> bundleProcessor,
-                final StreamArtifact targetArtifact,
-                final GraphContext graphContext,
-                final BundleProcessingGroup<StreamArtifact> immutableProcessingGroup,
-                final BundleProcessingGroup<StreamArtifact> mutableProcessingGroup) {
+                final BundleProcessor<T> bundleProcessor,
+                final T targetArtifact, final GraphContext graphContext,
+                final BundleProcessingGroup<T> immutableProcessingGroup,
+                final BundleProcessingGroup<T> mutableProcessingGroup) {
             checkNotNull("bundleProcessor", bundleProcessor); //$NON-NLS-1$
             checkNotNull("targetArtifact", targetArtifact); //$NON-NLS-1$
             checkNotNull("graphContext", graphContext); //$NON-NLS-1$
@@ -189,6 +194,81 @@ public final class BundleProcessorManager {
     }
     
     /**
+     * This class is used to identify a processor by its artifact type. The
+     * processor type must have only interfaces.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * @param <T>
+     *            target artifact type
+     */
+    private static class MappedProcessor<T extends Artifact> {
+        private final Class<T> artifactType;
+        private final Class<? extends BundleProcessor<T>> processorType;
+        private final int hashcode;
+        
+        public MappedProcessor(final Class<T> artifactType,
+                final Class<? extends BundleProcessor<T>> processorType) {
+            checkNotNull("artifactType", artifactType); //$NON-NLS-1$
+            checkNotNull("processorType", processorType); //$NON-NLS-1$
+            checkCondition(
+                    "processorTypeIsInterface", processorType.isInterface()); //$NON-NLS-1$
+            
+            this.artifactType = artifactType;
+            this.processorType = processorType;
+            this.hashcode = hashOf(artifactType, processorType);
+        }
+        
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof MappedProcessor)) {
+                return false;
+            }
+            final MappedProcessor that = (MappedProcessor) o;
+            return eachEquality(of(this.artifactType, this.processorType),
+                    andOf(that.artifactType, that.processorType));
+        }
+        
+        /**
+         * 
+         * @return the target artifact type
+         */
+        public Class<T> getArtifactType() {
+            return this.artifactType;
+        }
+        
+        /**
+         * 
+         * @return bundle processor type for given artifact
+         */
+        public Class<? extends BundleProcessor<T>> getProcessorType() {
+            return this.processorType;
+        }
+        
+        @Override
+        public int hashCode() {
+            return this.hashcode;
+        }
+    }
+    
+    private static final Set<MappedProcessor<? extends Artifact>> processorRegistry = new HashSet<MappedProcessor<? extends Artifact>>();
+    
+    /**
+     * Here all maped processors are added to the processor regristry static
+     * attribute.
+     */
+    static {
+        processorRegistry.add(new MappedProcessor<StreamArtifact>(
+                StreamArtifact.class, StreamArtifactBundleProcessor.class));
+        processorRegistry.add(new MappedProcessor<CustomArtifact>(
+                CustomArtifact.class, CustomArtifactBundleProcessor.class));
+    }
+    
+    /**
      * thread pool.
      */
     private ExecutorService executor;
@@ -214,42 +294,40 @@ public final class BundleProcessorManager {
      * @return a list of {@link Callable} processor action
      * @throws BundleProcessingFatalException
      */
-    private List<BundleProcessorCallable> createProcessorActions(
+    @SuppressWarnings("unchecked")
+    private <T extends Artifact> List<BundleProcessorCallable<T>> createProcessorActions(
             final GraphContext graphContext, final Bundle bundle,
-            final Set<StreamArtifact> allValidArtifacts,
-            final Set<StreamArtifact> addedArtifacts,
-            final Set<StreamArtifact> excludedArtifacts,
-            final Set<StreamArtifact> modifiedArtifacts,
-            final Set<StreamArtifact> notProcessedArtifacts,
-            final Set<StreamArtifact> alreadyProcessedArtifacts,
-            final Set<StreamArtifact> ignoredArtifacts,
-            final Set<StreamArtifact> artifactsWithError,
-            final StreamArtifactBundleProcessor processor)
+            final Set<T> allValidArtifacts, final Set<T> addedArtifacts,
+            final Set<T> excludedArtifacts, final Set<T> modifiedArtifacts,
+            final Set<T> notProcessedArtifacts,
+            final Set<T> alreadyProcessedArtifacts,
+            final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
+            final BundleProcessor<T> processor)
             throws BundleProcessingFatalException {
-        final Set<StreamArtifact> copyOfaddedArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfaddedArtifacts = new CopyOnWriteArraySet<T>(
                 addedArtifacts);
-        final Set<StreamArtifact> copyOfexcludedArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfexcludedArtifacts = new CopyOnWriteArraySet<T>(
                 excludedArtifacts);
-        final Set<StreamArtifact> copyOfignoredArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfignoredArtifacts = new CopyOnWriteArraySet<T>(
                 ignoredArtifacts);
-        final Set<StreamArtifact> copyOfartifactsWithError = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfartifactsWithError = new CopyOnWriteArraySet<T>(
                 artifactsWithError);
-        final Set<StreamArtifact> copyOfmodifiedArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfmodifiedArtifacts = new CopyOnWriteArraySet<T>(
                 modifiedArtifacts);
-        final Set<StreamArtifact> copyOfallValidArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfallValidArtifacts = new CopyOnWriteArraySet<T>(
                 allValidArtifacts);
-        final Set<StreamArtifact> copyOfnotProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfnotProcessedArtifacts = new CopyOnWriteArraySet<T>(
                 notProcessedArtifacts);
-        final Set<StreamArtifact> copyOfalreadyProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>(
+        final Set<T> copyOfalreadyProcessedArtifacts = new CopyOnWriteArraySet<T>(
                 alreadyProcessedArtifacts);
         
-        final BundleProcessingGroup<StreamArtifact> mutableGroup = new BundleProcessingGroup<StreamArtifact>(
+        final BundleProcessingGroup<T> mutableGroup = new BundleProcessingGroup<T>(
                 bundle, copyOfaddedArtifacts, copyOfexcludedArtifacts,
                 copyOfignoredArtifacts, copyOfartifactsWithError,
                 copyOfmodifiedArtifacts, copyOfallValidArtifacts,
                 copyOfnotProcessedArtifacts, copyOfalreadyProcessedArtifacts,
                 MutableType.MUTABLE);
-        final BundleProcessingGroup<StreamArtifact> immutableGroup = new BundleProcessingGroup<StreamArtifact>(
+        final BundleProcessingGroup<T> immutableGroup = new BundleProcessingGroup<T>(
                 bundle, copyOfaddedArtifacts, copyOfexcludedArtifacts,
                 copyOfignoredArtifacts, copyOfartifactsWithError,
                 copyOfmodifiedArtifacts, copyOfallValidArtifacts,
@@ -274,9 +352,9 @@ public final class BundleProcessorManager {
                         "Unexpected return type for startProcessing")); //$NON-NLS-1$
                 
         }
-        final List<BundleProcessorCallable> processActions = new ArrayList<BundleProcessorCallable>(
+        final List<BundleProcessorCallable<T>> processActions = new ArrayList<BundleProcessorCallable<T>>(
                 copyOfnotProcessedArtifacts.size());
-        for (final StreamArtifact targetArtifact : copyOfnotProcessedArtifacts) {
+        for (final T targetArtifact : copyOfnotProcessedArtifacts) {
             processActions
                     .add(new BundleProcessorCallable(processor, targetArtifact,
                             graphContext, mutableGroup, immutableGroup));
@@ -295,27 +373,26 @@ public final class BundleProcessorManager {
      * @param excludedArtifacts
      * @param modifiedArtifacts
      */
-    private void findArtifactsByChangeType(final Bundle bundle,
-            final Set<StreamArtifact> allValidArtifacts,
+    @SuppressWarnings("unchecked")
+    private <T extends Artifact> void findArtifactsByChangeType(
+            final Bundle bundle, final Set<T> allValidArtifacts,
             final List<ItemChangeEvent<ConfigurationNode>> nodeChanges,
-            final Set<StreamArtifact> addedArtifacts,
-            final Set<StreamArtifact> excludedArtifacts,
-            final Set<StreamArtifact> modifiedArtifacts) {
+            final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
+            final Set<T> modifiedArtifacts) {
         for (final ItemChangeEvent<ConfigurationNode> change : nodeChanges) {
             if ((change.getNewItem() != null)
                     && allValidArtifacts.contains(change.getNewItem())) {
                 if (ItemChangeType.ADDED.equals(change.getType())) {
-                    addedArtifacts.add((StreamArtifact) change.getNewItem());
+                    addedArtifacts.add((T) change.getNewItem());
                 } else if (ItemChangeType.CHANGED.equals(change.getType())) {
-                    modifiedArtifacts.add((StreamArtifact) change.getNewItem());
+                    modifiedArtifacts.add((T) change.getNewItem());
                 }
             } else {
                 if (ItemChangeType.EXCLUDED.equals(change.getType())
                         && bundle.equals(change.getOldItem()
                                 .getInstanceMetadata().getDefaultParent())) {
-                    if (change.getOldItem() instanceof StreamArtifact) {
-                        excludedArtifacts.add((StreamArtifact) change
-                                .getOldItem());
+                    if (change.getOldItem() instanceof Artifact) {
+                        excludedArtifacts.add((T) change.getOldItem());
                     }
                 }
             }
@@ -327,24 +404,76 @@ public final class BundleProcessorManager {
      * configuration.
      * 
      * @param bundle
-     * @return a set of {@link StreamArtifactBundleProcessor}
+     * @return a set of {@link BundleProcessor}
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws ClassNotFoundException
      */
-    private Set<StreamArtifactBundleProcessor> findConfiguredBundleProcessors(
+    private Set<BundleProcessor<?>> findConfiguredBundleProcessors(
             final Bundle bundle) throws InstantiationException,
             IllegalAccessException, ClassNotFoundException {
         final Set<String> typeNames = bundle.getAllProcessorTypeNames();
-        final Set<StreamArtifactBundleProcessor> processors = new HashSet<StreamArtifactBundleProcessor>();
+        final Set<BundleProcessor<?>> processors = new HashSet<BundleProcessor<?>>();
         for (final String type : typeNames) {
             final BundleProcessor<?> processor = (BundleProcessor<?>) Class
                     .forName(type).newInstance();
-            if (processor instanceof StreamArtifactBundleProcessor) {
-                processors.add((StreamArtifactBundleProcessor) processor);
-            }
+            processors.add(processor);
         }
         return processors;
+    }
+    
+    /**
+     * This method will look on static attribute {@link #processorRegistry} to
+     * map the processor interfaces and artifact types. After that mapping, it
+     * will group all processing actions depending of the type, to be processed
+     * later.
+     * 
+     * @param <T>
+     *            artifact type
+     * @param mappedProcessor
+     * @param allProcessActions
+     * @param bundle
+     * @param graphContext
+     * @param processors
+     * @throws BundleProcessingFatalException
+     */
+    @SuppressWarnings("unchecked")
+    private <T extends Artifact> void groupProcessingActionsByArtifactType(
+            final MappedProcessor<T> mappedProcessor,
+            final List<Callable<ProcessingAction>> allProcessActions,
+            final Bundle bundle, final GraphContext graphContext,
+            final Set<BundleProcessor<?>> processors)
+            throws BundleProcessingFatalException {
+        
+        final Set<T> allValidArtifacts = findAllNodesOfType(bundle,
+                mappedProcessor.getArtifactType());
+        final List<ItemChangeEvent<ConfigurationNode>> nodeChanges = bundle
+                .getInstanceMetadata().getSharedData()
+                .getNodeChangesSinceLastSave();
+        final Set<T> addedArtifacts = new HashSet<T>();
+        final Set<T> excludedArtifacts = new HashSet<T>();
+        final Set<T> modifiedArtifacts = new HashSet<T>();
+        final Set<T> notProcessedArtifacts = new CopyOnWriteArraySet<T>();
+        final Set<T> alreadyProcessedArtifacts = new CopyOnWriteArraySet<T>();
+        final Set<T> ignoredArtifacts = new CopyOnWriteArraySet<T>();
+        final Set<T> artifactsWithError = new CopyOnWriteArraySet<T>();
+        this.findArtifactsByChangeType(bundle, allValidArtifacts, nodeChanges,
+                addedArtifacts, excludedArtifacts, modifiedArtifacts);
+        notProcessedArtifacts.addAll(addedArtifacts);
+        notProcessedArtifacts.addAll(modifiedArtifacts);
+        for (final BundleProcessor<?> processor : processors) {
+            if (mappedProcessor.getProcessorType().isInstance(processor)) {
+                final List<BundleProcessorCallable<T>> processActions = this
+                        .createProcessorActions(graphContext, bundle,
+                                allValidArtifacts, addedArtifacts,
+                                excludedArtifacts, modifiedArtifacts,
+                                notProcessedArtifacts,
+                                alreadyProcessedArtifacts, ignoredArtifacts,
+                                artifactsWithError,
+                                (BundleProcessor<T>) processor);
+                allProcessActions.addAll(processActions);
+            }
+        }
     }
     
     /**
@@ -365,49 +494,26 @@ public final class BundleProcessorManager {
         
         try {
             final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
-            final Integer numberOfParallelThreads = repository
-                    .getConfiguration().getNumberOfParallelThreads();
             final Set<Bundle> bundles = findAllNodesOfType(repository,
                     Bundle.class);
             for (final Bundle bundle : bundles) {
                 if (!bundle.getActive()) {
                     continue;
                 }
-                final Set<StreamArtifactBundleProcessor> processors = this
+                
+                final Set<BundleProcessor<?>> processors = this
                         .findConfiguredBundleProcessors(bundle);
-                
-                final Set<StreamArtifact> allValidArtifacts = findAllNodesOfType(
-                        bundle, StreamArtifact.class);
-                final List<ItemChangeEvent<ConfigurationNode>> nodeChanges = bundle
-                        .getInstanceMetadata().getSharedData()
-                        .getNodeChangesSinceLastSave();
-                final Set<StreamArtifact> addedArtifacts = new HashSet<StreamArtifact>();
-                final Set<StreamArtifact> excludedArtifacts = new HashSet<StreamArtifact>();
-                final Set<StreamArtifact> modifiedArtifacts = new HashSet<StreamArtifact>();
-                final Set<StreamArtifact> notProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
-                final Set<StreamArtifact> alreadyProcessedArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
-                final Set<StreamArtifact> ignoredArtifacts = new CopyOnWriteArraySet<StreamArtifact>();
-                final Set<StreamArtifact> artifactsWithError = new CopyOnWriteArraySet<StreamArtifact>();
-                this.findArtifactsByChangeType(bundle, allValidArtifacts,
-                        nodeChanges, addedArtifacts, excludedArtifacts,
-                        modifiedArtifacts);
-                notProcessedArtifacts.addAll(addedArtifacts);
-                notProcessedArtifacts.addAll(modifiedArtifacts);
-                
-                for (final StreamArtifactBundleProcessor processor : processors) {
-                    
-                    final List<BundleProcessorCallable> processActions = this
-                            .createProcessorActions(graphContext, bundle,
-                                    allValidArtifacts, addedArtifacts,
-                                    excludedArtifacts, modifiedArtifacts,
-                                    notProcessedArtifacts,
-                                    alreadyProcessedArtifacts,
-                                    ignoredArtifacts, artifactsWithError,
-                                    processor);
-                    allProcessActions.addAll(processActions);
+                for (final MappedProcessor<? extends Artifact> mappedProcessor : processorRegistry) {
+                    this
+                            .groupProcessingActionsByArtifactType(
+                                    mappedProcessor, allProcessActions, bundle,
+                                    graphContext, processors);
                 }
             }
+            
             if (this.executor == null) {
+                final Integer numberOfParallelThreads = repository
+                        .getConfiguration().getNumberOfParallelThreads();
                 this.executor = Executors
                         .newFixedThreadPool(numberOfParallelThreads);
             }
