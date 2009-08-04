@@ -133,7 +133,7 @@ public class TableArtifact extends CustomArtifact {
     @SuppressWarnings("unchecked")
     public final Set<String> getColumnNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Column.class);
+                .getKeyFromChildrenOfTypes(Column.class);
     }
     
     /**

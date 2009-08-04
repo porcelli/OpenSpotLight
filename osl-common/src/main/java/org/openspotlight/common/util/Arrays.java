@@ -50,6 +50,7 @@ package org.openspotlight.common.util;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.util.HashMap;
@@ -95,6 +96,25 @@ public class Arrays {
      */
     public static <T> T[] andValues(final T... array) {
         return array;
+    }
+    
+    /**
+     * Simple method to see if an element is inside a array.
+     * 
+     * @param <T>
+     * @param target
+     * @param toSearch
+     * @return if target is equals some array element.
+     */
+    public static <T> boolean contains(final T target, final T[] toSearch) {
+        checkNotNull("target", target); //$NON-NLS-1$
+        checkNotNull("toSearch", toSearch); //$NON-NLS-1$
+        for (final T t : toSearch) {
+            if (target.equals(t)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

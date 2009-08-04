@@ -60,6 +60,8 @@ import javax.jcr.SimpleCredentials;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 
@@ -77,16 +79,16 @@ public class JcrSessionConfigurationManagerTest extends
         AbstractConfigurationManagerTest {
     
     public static final String TESDATA_PATH = "./src/test/resources/";
+    
     public static final String JACKRABBIT_DATA_PATH = "./target/test-data/JcrSessionConfigurationManagerTest/";
+    
     public static final String REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH
             + "repository";
     public static final String REPOSITORY_CONFIG_PATH = TESDATA_PATH
             + "configuration/JcrSessionConfigurationManagerTest/jackrabbit.xml";
     public static final String DERBY_SYSTEM_HOME = JACKRABBIT_DATA_PATH
             + "/derby";
-    
     private Session session;
-    
     private TransientRepository repository;
     
     private ConfigurationManager implementation;
@@ -112,6 +114,17 @@ public class JcrSessionConfigurationManagerTest extends
         this.session = this.repository.login(creds);
         assertThat(this.session, is(notNullValue()));
         this.implementation = new JcrSessionConfigurationManager(this.session);
+    }
+    
+    @Test
+    public void shouldDeleteNodesFromTheConfigurationWithLazyType()
+            throws Exception {
+        this.deleteNodesFromTheConfiguration(LazyType.LAZY);
+    }
+    
+    @Test
+    public void shouldSaveTheConfigurationWithLazyType() throws Exception {
+        this.saveTheConfiguration(LazyType.LAZY);
     }
     
     @After

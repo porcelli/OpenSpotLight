@@ -153,7 +153,7 @@ public final class Project implements ConfigurationNode {
      */
     public final Set<String> getArtifactMappingNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(ArtifactMapping.class);
+                .getKeyFromChildrenOfTypes(ArtifactMapping.class);
     }
     
     /**
@@ -170,7 +170,7 @@ public final class Project implements ConfigurationNode {
      */
     public final Set<String> getArtifactNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(StreamArtifact.class);
+                .getKeyFromChildrenOfTypes(StreamArtifact.class);
     }
     
     /**
@@ -197,7 +197,7 @@ public final class Project implements ConfigurationNode {
      */
     public final Set<String> getBundleNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Bundle.class);
+                .getKeyFromChildrenOfTypes(Bundle.class);
     }
     
     /**
@@ -224,7 +224,7 @@ public final class Project implements ConfigurationNode {
      */
     public final Set<String> getCustomArtifactNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(CustomArtifact.class);
+                .getKeyFromChildrenOfTypes(CustomArtifact.class);
     }
     
     /**
@@ -268,7 +268,7 @@ public final class Project implements ConfigurationNode {
      */
     public final Set<String> getProjectNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Project.class);
+                .getKeyFromChildrenOfTypes(Project.class);
     }
     
     /**

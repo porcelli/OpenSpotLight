@@ -52,7 +52,9 @@ package org.openspotlight.federation.data.load;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
@@ -79,6 +81,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.ConfigurationNode;
@@ -150,7 +153,7 @@ public class XmlConfigurationManager implements ConfigurationManager {
             }
             
             final Set<Serializable> keys = (Set<Serializable>) configurationNode
-                    .getInstanceMetadata().getKeysFromChildrenOfType(
+                    .getInstanceMetadata().getKeyFromChildrenOfTypes(
                             configuredChildClass);
             for (final Serializable key : keys) {
                 final ConfigurationNode innerNode = configurationNode
@@ -179,7 +182,10 @@ public class XmlConfigurationManager implements ConfigurationManager {
     /**
      * {@inheritDoc}
      */
-    public Configuration load() throws ConfigurationException {
+    public Configuration load(final LazyType type)
+            throws ConfigurationException {
+        checkNotNull("type", type); //$NON-NLS-1$
+        checkCondition("typeEqualsLazy", LazyType.NON_LAZY.equals(type)); //$NON-NLS-1$
         try {
             final Document document = this.reader.read(this.url);
             final Element root = document.getRootElement();

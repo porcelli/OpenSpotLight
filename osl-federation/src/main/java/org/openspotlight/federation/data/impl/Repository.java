@@ -157,7 +157,7 @@ public final class Repository implements ConfigurationNode {
      */
     public final Set<String> getProjectNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Project.class);
+                .getKeyFromChildrenOfTypes(Project.class);
     }
     
     /**

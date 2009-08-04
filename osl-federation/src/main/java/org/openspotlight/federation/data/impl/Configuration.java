@@ -172,7 +172,7 @@ public final class Configuration implements ConfigurationNode {
      */
     public final Set<String> getRepositoryNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Repository.class);
+                .getKeyFromChildrenOfTypes(Repository.class);
     }
     
     /**

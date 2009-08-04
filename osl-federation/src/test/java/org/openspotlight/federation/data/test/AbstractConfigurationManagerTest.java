@@ -54,6 +54,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
@@ -79,8 +80,8 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
      */
     protected abstract ConfigurationManager createInstance();
     
-    @Test
-    public void shouldDeleteNodesFromTheConfiguration() throws Exception {
+    protected void deleteNodesFromTheConfiguration(final LazyType type)
+            throws Exception {
         final Configuration configuration = this.createSampleData();
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
@@ -89,18 +90,27 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
         manager.save(configuration);
         assertThat(configuration.getRepositoryByName("r-1"), is(nullValue()));
         
-        final Configuration anotherGroup = manager.load();
+        final Configuration anotherGroup = manager.load(type);
         
         assertThat(anotherGroup.getRepositoryByName("r-1"), is(nullValue()));
     }
     
-    @Test
-    public void shouldSaveTheConfiguration() throws Exception {
+    protected void saveTheConfiguration(final LazyType type) throws Exception {
         final Configuration configuration = this.createSampleData();
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
-        final Configuration anotherGroup = manager.load();
+        final Configuration anotherGroup = manager.load(type);
         this.assertTheSameInitialDataOnSomeNodes(anotherGroup, this
                 .assertAllData());
+    }
+    
+    @Test
+    public final void shouldDeleteNodesFromTheConfiguration() throws Exception {
+        this.deleteNodesFromTheConfiguration(LazyType.NON_LAZY);
+    }
+    
+    @Test
+    public final void shouldSaveTheConfiguration() throws Exception {
+        this.saveTheConfiguration(LazyType.NON_LAZY);
     }
 }

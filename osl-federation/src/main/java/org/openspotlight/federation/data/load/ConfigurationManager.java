@@ -63,6 +63,7 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.StaticMetadata;
@@ -273,10 +274,13 @@ public interface ConfigurationManager {
      * Loads the current group from configuration, marking the configuration as
      * saved.
      * 
+     * @param lazyType
+     *            to determine the loading behavior
+     * 
      * @return a fresh configuration
      * @throws ConfigurationException
      */
-    Configuration load() throws ConfigurationException;
+    Configuration load(LazyType lazyType) throws ConfigurationException;
     
     /**
      * Saves the group on a persistent layer marking the current configuration

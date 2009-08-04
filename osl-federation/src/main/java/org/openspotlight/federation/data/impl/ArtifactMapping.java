@@ -141,7 +141,7 @@ public final class ArtifactMapping implements ConfigurationNode {
      */
     public final Set<String> getExcludedNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Excluded.class);
+                .getKeyFromChildrenOfTypes(Excluded.class);
     }
     
     /**
@@ -167,7 +167,7 @@ public final class ArtifactMapping implements ConfigurationNode {
      */
     public final Set<String> getIncludedNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeysFromChildrenOfType(Included.class);
+                .getKeyFromChildrenOfTypes(Included.class);
     }
     
     /**

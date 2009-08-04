@@ -56,6 +56,7 @@ import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.andValues;
+import static org.openspotlight.common.util.Arrays.contains;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Arrays.ofKeys;
@@ -108,6 +109,34 @@ public interface InstanceMetadata {
          * @param node
          */
         public void visitNode(ConfigurationNode node);
+    }
+    
+    /**
+     * This interface has some methods to provide optional lazy loading.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    public static interface DataLoader {
+        
+        /**
+         * Load all properties from the given node. Should not repeat the heavy
+         * operations when requested to load some children that is already
+         * loaded.
+         * 
+         * @param targetNode
+         */
+        public void loadChildren(ConfigurationNode targetNode);
+        
+        /**
+         * Load all properties from the given node. Should not repeat the heavy
+         * operations when requested to load some children that is already
+         * loaded.
+         * 
+         * @param targetNode
+         */
+        public void loadProperties(ConfigurationNode targetNode);
+        
     }
     
     /**
@@ -313,6 +342,7 @@ public interface InstanceMetadata {
                     final Class<N> type, final Serializable key) {
                 checkNotNull("type", type); //$NON-NLS-1$
                 checkNotNull("key", key); //$NON-NLS-1$
+                this.sharedData.loadChildren(getOwner());
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
                 checkCondition(
@@ -330,6 +360,7 @@ public interface InstanceMetadata {
             public <N extends ConfigurationNode> Collection<N> getChildrensOfType(
                     final Class<N> type) {
                 checkNotNull("type", type); //$NON-NLS-1$
+                this.sharedData.loadChildren(getOwner());
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
                 checkCondition(
@@ -356,17 +387,10 @@ public interface InstanceMetadata {
              * 
              * {@inheritDoc}
              */
-            public Serializable getKeyPropertyValue() {
-                return this.keyPropertyValue;
-            }
-            
-            /**
-             * 
-             * {@inheritDoc}
-             */
-            public Set<? extends Serializable> getKeysFromChildrenOfType(
+            public Set<? extends Serializable> getKeyFromChildrenOfTypes(
                     final Class<? extends ConfigurationNode> type) {
                 checkNotNull("type", type); //$NON-NLS-1$
+                this.sharedData.loadChildren(getOwner());
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
                 checkCondition(
@@ -378,6 +402,14 @@ public interface InstanceMetadata {
                         .get(correctType);
                 final Set<Serializable> childrenNames = childrenMap.keySet();
                 return unmodifiableSet(childrenNames);
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public Serializable getKeyPropertyValue() {
+                return this.keyPropertyValue;
             }
             
             /**
@@ -436,6 +468,7 @@ public interface InstanceMetadata {
              * {@inheritDoc}
              */
             public Map<String, Object> getProperties() {
+                this.sharedData.loadProperties(getOwner());
                 return unmodifiableMap(this.properties);
                 
             }
@@ -447,6 +480,9 @@ public interface InstanceMetadata {
             @SuppressWarnings("unchecked")
             public <N extends Serializable> N getProperty(final String name) {
                 checkNotEmpty("name", name); //$NON-NLS-1$
+                checkCondition("validName", contains(name, this.staticMetadata //$NON-NLS-1$
+                        .propertyNames()));
+                this.sharedData.loadProperties(getOwner());
                 final N value = (N) this.properties.get(name);
                 return value;
             }
@@ -494,7 +530,7 @@ public interface InstanceMetadata {
             @Override
             public final int hashCode() {
                 if (this.hashcode == 0) {
-                    this.hashcode = hashOf(this.getClass(), this
+                    this.hashcode = hashOf(this.getOwner().getClass(), this
                             .getKeyPropertyValue(), this.getDefaultParent());
                 }
                 return this.hashcode;
@@ -650,7 +686,7 @@ public interface InstanceMetadata {
                 if (this.description == null) {
                     this.description = format(
                             Messages
-                                    .getString("InstanceMetadata.configurationNodeToString"), getClass() //$NON-NLS-1$
+                                    .getString("InstanceMetadata.configurationNodeToString"), getOwner().getClass() //$NON-NLS-1$
                                     .getName(), getKeyPropertyValue());
                 }
                 return this.description;
@@ -1082,7 +1118,8 @@ public interface InstanceMetadata {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    public static class SharedData {
+    public static class SharedData implements DataLoader {
+        
         /**
          * dirty flag for all nodes of the current graph.
          */
@@ -1111,6 +1148,8 @@ public interface InstanceMetadata {
          * nodes of the current graph.
          */
         private final List<ItemChangeEvent<ConfigurationNode>> nodeChangeCache = new CopyOnWriteArrayList<ItemChangeEvent<ConfigurationNode>>();
+        
+        private DataLoader loader = null;
         
         /**
          * Adds an event listener for node changes.
@@ -1247,6 +1286,29 @@ public interface InstanceMetadata {
         }
         
         /**
+         * 
+         * {@inheritDoc}
+         */
+        public void loadChildren(final ConfigurationNode targetNode) {
+            
+            if (this.loader != null) {
+                this.loader.loadChildren(targetNode);
+            }
+            
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void loadProperties(final ConfigurationNode targetNode) {
+            
+            if (this.loader != null) {
+                this.loader.loadProperties(targetNode);
+            }
+        }
+        
+        /**
          * Sets true on the dirty flag.
          */
         public final void markAsDirty() {
@@ -1282,6 +1344,17 @@ public interface InstanceMetadata {
         public final void removePropertyListener(
                 final ItemEventListener<PropertyValue> listener) {
             this.propertyListeners.remove(listener);
+        }
+        
+        /**
+         * Sets a data loader on a node for lazy evaluation purposes.
+         * 
+         * @param loader
+         */
+        public void setDataLoader(final DataLoader loader) {
+            checkNotNull("loader", loader); //$NON-NLS-1$
+            checkCondition("loaderNotTheSame", loader != this); //$NON-NLS-1$
+            this.loader = loader;
         }
         
     }
@@ -1348,6 +1421,16 @@ public interface InstanceMetadata {
     public ConfigurationNode getDefaultParent();
     
     /**
+     * Returns a set of all keys for a given type, since multiple types needs to
+     * have a key property.
+     * 
+     * @param childClass
+     * @return key for each child of a given type
+     */
+    public Set<? extends Serializable> getKeyFromChildrenOfTypes(
+            Class<? extends ConfigurationNode> childClass);
+    
+    /**
      * Some nodes are using in multiple times inside a node. For this nodes to
      * be uniquely identified there is the key property name on static metadata
      * and key property value on dynamic metadata.
@@ -1355,16 +1438,6 @@ public interface InstanceMetadata {
      * @return the key property value
      */
     public Serializable getKeyPropertyValue();
-    
-    /**
-     * Returns a set of all keys for a given type, since multiple types needs to
-     * have a key property.
-     * 
-     * @param childClass
-     * @return key for each child of a given type
-     */
-    public Set<? extends Serializable> getKeysFromChildrenOfType(
-            Class<? extends ConfigurationNode> childClass);
     
     /**
      * The node properties are properties to store single node types inside a

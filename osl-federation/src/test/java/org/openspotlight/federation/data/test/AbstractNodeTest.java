@@ -128,6 +128,12 @@ public class AbstractNodeTest extends NodeTest {
         assertThat(rep.equals(rep1), is(false));
         assertThat(rep.hashCode(), is(not(rep1.hashCode())));
         assertThat(rep.compareTo(rep1), is(not(0)));
+        
+        final Configuration anotherConfiguration = new Configuration();
+        final Repository anotherRep = new Repository(anotherConfiguration, "a");
+        assertThat(anotherRep.equals(rep), is(true));
+        assertThat(anotherRep.hashCode(), is(rep.hashCode()));
+        
     }
     
     @Test
