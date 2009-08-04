@@ -49,12 +49,12 @@
 
 package org.openspotlight.federation.data.processing;
 
-import static java.util.Collections.emptyList;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
@@ -71,6 +71,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.openspotlight.common.LazyType;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
@@ -86,6 +87,8 @@ import org.openspotlight.federation.data.processing.BundleProcessor.BundleProces
 import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingAction;
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingStartAction;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphSession;
 
 /**
  * The {@link BundleProcessorManager} is the class reposable to get an
@@ -116,7 +119,7 @@ public final class BundleProcessorManager {
             Callable<ProcessingAction> {
         
         private final BundleProcessor<T> bundleProcessor;
-        
+        private final BundleProcessorWithCallback<T> callBack;
         private final T targetArtifact;
         private final GraphContext graphContext;
         private final BundleProcessingGroup<T> immutableProcessingGroup;
@@ -146,6 +149,11 @@ public final class BundleProcessorManager {
             this.graphContext = graphContext;
             this.immutableProcessingGroup = immutableProcessingGroup;
             this.mutableProcessingGroup = mutableProcessingGroup;
+            if (this.bundleProcessor instanceof BundleProcessorWithCallback) {
+                this.callBack = (BundleProcessorWithCallback<T>) this.bundleProcessor;
+            } else {
+                this.callBack = null;
+            }
         }
         
         /**
@@ -161,11 +169,17 @@ public final class BundleProcessorManager {
          *             if anything goes wrong
          */
         public ProcessingAction call() throws Exception {
+            if (this.callBack != null) {
+                this.graphContext.processStarted();
+                this.callBack.artifactProcessingStarted(this.targetArtifact,
+                        this.immutableProcessingGroup, this.graphContext);
+            }
             ProcessingAction ret;
             try {
                 ret = this.bundleProcessor.processArtifact(this.targetArtifact,
                         this.immutableProcessingGroup, this.graphContext);
             } catch (final Exception e) {
+                catchAndLog(e);
                 ret = ProcessingAction.ERROR_PROCESSING_ARTIFACT;
             }
             if (ret == null) {
@@ -188,7 +202,94 @@ public final class BundleProcessorManager {
                             this.targetArtifact);
                     break;
             }
+            if (this.callBack != null) {
+                this.callBack.artifactProcessingFinalized(this.targetArtifact,
+                        this.immutableProcessingGroup, this.graphContext, ret);
+                this.graphContext.processFinished();
+            }
+            
             return ret;
+        }
+        
+    }
+    
+    /**
+     * This class groups the necessary data for processing each artifact and
+     * also the {@link FinalizationContext} for each bundle.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * @param <T>
+     */
+    private static class CreateProcessorActionsResult<T extends Artifact> {
+        private final List<BundleProcessorCallable<T>> processorCallables;
+        FinalizationContext<T> finalizationContext;
+        
+        public CreateProcessorActionsResult(
+                final List<BundleProcessorCallable<T>> processorCallables,
+                final FinalizationContext<T> finalizationContext) {
+            super();
+            this.processorCallables = processorCallables;
+            this.finalizationContext = finalizationContext;
+        }
+        
+        public FinalizationContext<T> getFinalizationContext() {
+            return this.finalizationContext;
+        }
+        
+        public List<BundleProcessorCallable<T>> getProcessorCallables() {
+            return this.processorCallables;
+        }
+        
+    }
+    
+    /**
+     * Some necessary data for finalization callback methods.
+     * 
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     * @param <T>
+     *            Artifact type
+     */
+    private static class FinalizationContext<T extends Artifact> {
+        private final GraphContext graphContext;
+        private final BundleProcessingGroup<T> bundleProcessingGroup;
+        private final BundleProcessor<T> processor;
+        
+        public FinalizationContext(final GraphContext graphContext,
+                final BundleProcessingGroup<T> bundleProcessingGroup,
+                final BundleProcessor<T> processor) {
+            checkNotNull("graphContext", graphContext); //$NON-NLS-1$
+            checkNotNull("bundleProcessingGroup", bundleProcessingGroup); //$NON-NLS-1$
+            checkNotNull("processor", processor); //$NON-NLS-1$
+            this.graphContext = graphContext;
+            this.bundleProcessingGroup = bundleProcessingGroup;
+            this.processor = processor;
+        }
+        
+        /**
+         * 
+         * @return the bundle processing group
+         */
+        public BundleProcessingGroup<T> getBundleProcessingGroup() {
+            return this.bundleProcessingGroup;
+        }
+        
+        /**
+         * 
+         * @return the global graph context
+         */
+        public GraphContext getGraphContext() {
+            return this.graphContext;
+        }
+        
+        /**
+         * 
+         * @return the bundle processor
+         */
+        public BundleProcessor<T> getProcessor() {
+            return this.processor;
         }
         
     }
@@ -255,112 +356,18 @@ public final class BundleProcessorManager {
         }
     }
     
-    private static final Set<MappedProcessor<? extends Artifact>> processorRegistry = new HashSet<MappedProcessor<? extends Artifact>>();
+    private static final Set<MappedProcessor<? extends Artifact>> processorRegistry;
     
     /**
      * Here all maped processors are added to the processor regristry static
      * attribute.
      */
     static {
+        processorRegistry = new HashSet<MappedProcessor<? extends Artifact>>();
         processorRegistry.add(new MappedProcessor<StreamArtifact>(
                 StreamArtifact.class, StreamArtifactBundleProcessor.class));
         processorRegistry.add(new MappedProcessor<CustomArtifact>(
                 CustomArtifact.class, CustomArtifactBundleProcessor.class));
-    }
-    
-    /**
-     * thread pool.
-     */
-    private ExecutorService executor;
-    
-    /**
-     * This method creates each {@link Callable} to call
-     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, GraphContext)}
-     * . It make a few copies because the decision to mark some artifact as
-     * ignored or processed should be done by each {@link BundleProcessor},
-     * independent of the other {@link BundleProcessor} involved.
-     * 
-     * @param graphContext
-     * @param bundle
-     * @param allValidArtifacts
-     * @param addedArtifacts
-     * @param excludedArtifacts
-     * @param modifiedArtifacts
-     * @param notProcessedArtifacts
-     * @param alreadyProcessedArtifacts
-     * @param ignoredArtifacts
-     * @param artifactsWithError
-     * @param processor
-     * @return a list of {@link Callable} processor action
-     * @throws BundleProcessingFatalException
-     */
-    @SuppressWarnings("unchecked")
-    private <T extends Artifact> List<BundleProcessorCallable<T>> createProcessorActions(
-            final GraphContext graphContext, final Bundle bundle,
-            final Set<T> allValidArtifacts, final Set<T> addedArtifacts,
-            final Set<T> excludedArtifacts, final Set<T> modifiedArtifacts,
-            final Set<T> notProcessedArtifacts,
-            final Set<T> alreadyProcessedArtifacts,
-            final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
-            final BundleProcessor<T> processor)
-            throws BundleProcessingFatalException {
-        final Set<T> copyOfaddedArtifacts = new CopyOnWriteArraySet<T>(
-                addedArtifacts);
-        final Set<T> copyOfexcludedArtifacts = new CopyOnWriteArraySet<T>(
-                excludedArtifacts);
-        final Set<T> copyOfignoredArtifacts = new CopyOnWriteArraySet<T>(
-                ignoredArtifacts);
-        final Set<T> copyOfartifactsWithError = new CopyOnWriteArraySet<T>(
-                artifactsWithError);
-        final Set<T> copyOfmodifiedArtifacts = new CopyOnWriteArraySet<T>(
-                modifiedArtifacts);
-        final Set<T> copyOfallValidArtifacts = new CopyOnWriteArraySet<T>(
-                allValidArtifacts);
-        final Set<T> copyOfnotProcessedArtifacts = new CopyOnWriteArraySet<T>(
-                notProcessedArtifacts);
-        final Set<T> copyOfalreadyProcessedArtifacts = new CopyOnWriteArraySet<T>(
-                alreadyProcessedArtifacts);
-        
-        final BundleProcessingGroup<T> mutableGroup = new BundleProcessingGroup<T>(
-                bundle, copyOfaddedArtifacts, copyOfexcludedArtifacts,
-                copyOfignoredArtifacts, copyOfartifactsWithError,
-                copyOfmodifiedArtifacts, copyOfallValidArtifacts,
-                copyOfnotProcessedArtifacts, copyOfalreadyProcessedArtifacts,
-                MutableType.MUTABLE);
-        final BundleProcessingGroup<T> immutableGroup = new BundleProcessingGroup<T>(
-                bundle, copyOfaddedArtifacts, copyOfexcludedArtifacts,
-                copyOfignoredArtifacts, copyOfartifactsWithError,
-                copyOfmodifiedArtifacts, copyOfallValidArtifacts,
-                copyOfnotProcessedArtifacts, copyOfalreadyProcessedArtifacts,
-                MutableType.IMMUTABLE);
-        final ProcessingStartAction start = processor.startProcessing(
-                immutableGroup, graphContext);
-        switch (start) {
-            case ALL_PROCESSING_ALREADY_DONE:
-            case IGNORE_ALL:
-            case FATAL_ERROR_ON_START_PROCESSING:
-                log(start, bundle);
-                return emptyList();
-            case PROCESS_ALL_AGAIN:
-                copyOfnotProcessedArtifacts.clear();
-                copyOfnotProcessedArtifacts.addAll(allValidArtifacts);
-                break;
-            case PROCESS_EACH_ONE_NEW:
-                break;
-            default:
-                throw logAndReturn(new IllegalStateException(
-                        "Unexpected return type for startProcessing")); //$NON-NLS-1$
-                
-        }
-        final List<BundleProcessorCallable<T>> processActions = new ArrayList<BundleProcessorCallable<T>>(
-                copyOfnotProcessedArtifacts.size());
-        for (final T targetArtifact : copyOfnotProcessedArtifacts) {
-            processActions
-                    .add(new BundleProcessorCallable(processor, targetArtifact,
-                            graphContext, mutableGroup, immutableGroup));
-        }
-        return processActions;
-        
     }
     
     /**
@@ -374,7 +381,7 @@ public final class BundleProcessorManager {
      * @param modifiedArtifacts
      */
     @SuppressWarnings("unchecked")
-    private <T extends Artifact> void findArtifactsByChangeType(
+    private static <T extends Artifact> void findArtifactsByChangeType(
             final Bundle bundle, final Set<T> allValidArtifacts,
             final List<ItemChangeEvent<ConfigurationNode>> nodeChanges,
             final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
@@ -409,7 +416,7 @@ public final class BundleProcessorManager {
      * @throws IllegalAccessException
      * @throws ClassNotFoundException
      */
-    private Set<BundleProcessor<?>> findConfiguredBundleProcessors(
+    private static Set<BundleProcessor<?>> findConfiguredBundleProcessors(
             final Bundle bundle) throws InstantiationException,
             IllegalAccessException, ClassNotFoundException {
         final Set<String> typeNames = bundle.getAllProcessorTypeNames();
@@ -420,6 +427,134 @@ public final class BundleProcessorManager {
             processors.add(processor);
         }
         return processors;
+    }
+    
+    /**
+     * To create {@link SLGraphSession sessions} when needed.
+     */
+    private SLGraph graph;
+    
+    /**
+     * thread pool.
+     */
+    private ExecutorService executor;
+    
+    private static final CreateProcessorActionsResult<Artifact> emptyResult = new CreateProcessorActionsResult<Artifact>(
+            new ArrayList<BundleProcessorCallable<Artifact>>(0), null);
+    
+    /**
+     * Constructor to finalize graph sessions
+     * 
+     * @param graph
+     */
+    public BundleProcessorManager(final SLGraph graph) {
+        checkNotNull("graph", graph); //$NON-NLS-1$
+        this.graph = graph;
+    }
+    
+    /**
+     * This method creates each {@link Callable} to call
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, GraphContext)}
+     * . It make a few copies because the decision to mark some artifact as
+     * ignored or processed should be done by each {@link BundleProcessor},
+     * independent of the other {@link BundleProcessor} involved.
+     * 
+     * @param bundle
+     * @param allValidArtifacts
+     * @param addedArtifacts
+     * @param excludedArtifacts
+     * @param modifiedArtifacts
+     * @param notProcessedArtifacts
+     * @param alreadyProcessedArtifacts
+     * @param ignoredArtifacts
+     * @param artifactsWithError
+     * @param processor
+     * @return a list of {@link Callable} processor action
+     * @throws BundleProcessingFatalException
+     */
+    @SuppressWarnings("unchecked")
+    private <T extends Artifact> CreateProcessorActionsResult<T> createProcessorActions(
+            final Bundle bundle, final Set<T> allValidArtifacts,
+            final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
+            final Set<T> modifiedArtifacts, final Set<T> notProcessedArtifacts,
+            final Set<T> alreadyProcessedArtifacts,
+            final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
+            final BundleProcessor<T> processor)
+            throws BundleProcessingFatalException {
+        try {
+            final Set<T> copyOfaddedArtifacts = new CopyOnWriteArraySet<T>(
+                    addedArtifacts);
+            final Set<T> copyOfexcludedArtifacts = new CopyOnWriteArraySet<T>(
+                    excludedArtifacts);
+            final Set<T> copyOfignoredArtifacts = new CopyOnWriteArraySet<T>(
+                    ignoredArtifacts);
+            final Set<T> copyOfartifactsWithError = new CopyOnWriteArraySet<T>(
+                    artifactsWithError);
+            final Set<T> copyOfmodifiedArtifacts = new CopyOnWriteArraySet<T>(
+                    modifiedArtifacts);
+            final Set<T> copyOfallValidArtifacts = new CopyOnWriteArraySet<T>(
+                    allValidArtifacts);
+            final Set<T> copyOfnotProcessedArtifacts = new CopyOnWriteArraySet<T>(
+                    notProcessedArtifacts);
+            final Set<T> copyOfalreadyProcessedArtifacts = new CopyOnWriteArraySet<T>(
+                    alreadyProcessedArtifacts);
+            
+            final BundleProcessingGroup<T> mutableGroup = new BundleProcessingGroup<T>(
+                    bundle, copyOfaddedArtifacts, copyOfexcludedArtifacts,
+                    copyOfignoredArtifacts, copyOfartifactsWithError,
+                    copyOfmodifiedArtifacts, copyOfallValidArtifacts,
+                    copyOfnotProcessedArtifacts,
+                    copyOfalreadyProcessedArtifacts, MutableType.MUTABLE);
+            final BundleProcessingGroup<T> immutableGroup = new BundleProcessingGroup<T>(
+                    bundle, copyOfaddedArtifacts, copyOfexcludedArtifacts,
+                    copyOfignoredArtifacts, copyOfartifactsWithError,
+                    copyOfmodifiedArtifacts, copyOfallValidArtifacts,
+                    copyOfnotProcessedArtifacts,
+                    copyOfalreadyProcessedArtifacts, MutableType.IMMUTABLE);
+            final GraphContext startingGraphContext = new GraphContext(
+                    this.graph, LazyType.LAZY);
+            startingGraphContext.processStarted();
+            final ProcessingStartAction start = processor
+                    .globalProcessingStarted(mutableGroup, startingGraphContext);
+            switch (start) {
+                case ALL_PROCESSING_ALREADY_DONE:
+                case IGNORE_ALL:
+                case FATAL_ERROR_ON_START_PROCESSING:
+                    processor.globalProcessingFinalized(immutableGroup,
+                            startingGraphContext);
+                    log(start, bundle);
+                    return (CreateProcessorActionsResult<T>) emptyResult;
+                case PROCESS_ALL_AGAIN:
+                    copyOfnotProcessedArtifacts.clear();
+                    copyOfnotProcessedArtifacts.addAll(allValidArtifacts);
+                    break;
+                case PROCESS_EACH_ONE_NEW:
+                case PROCESS_CUSTOMIZED_LIST:
+                    break;
+                default:
+                    throw logAndReturn(new IllegalStateException(
+                            "Unexpected return type for startProcessing")); //$NON-NLS-1$
+                    
+            }
+            final List<BundleProcessorCallable<T>> processActions = new ArrayList<BundleProcessorCallable<T>>(
+                    copyOfnotProcessedArtifacts.size());
+            for (final T targetArtifact : copyOfnotProcessedArtifacts) {
+                final GraphContext graphContext = processor instanceof BundleProcessorWithCallback ? new GraphContext(
+                        this.graph, LazyType.LAZY)
+                        : startingGraphContext;
+                processActions.add(new BundleProcessorCallable(processor,
+                        targetArtifact, graphContext, mutableGroup,
+                        immutableGroup));
+            }
+            final FinalizationContext<T> finalizationContext = new FinalizationContext<T>(
+                    startingGraphContext, immutableGroup, processor);
+            final CreateProcessorActionsResult<T> result = new CreateProcessorActionsResult<T>(
+                    processActions, finalizationContext);
+            return result;
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, BundleProcessingFatalException.class);
+        }
+        
     }
     
     /**
@@ -441,8 +576,8 @@ public final class BundleProcessorManager {
     private <T extends Artifact> void groupProcessingActionsByArtifactType(
             final MappedProcessor<T> mappedProcessor,
             final List<Callable<ProcessingAction>> allProcessActions,
-            final Bundle bundle, final GraphContext graphContext,
-            final Set<BundleProcessor<?>> processors)
+            final List<FinalizationContext<? extends Artifact>> finalizationContexts,
+            final Bundle bundle, final Set<BundleProcessor<?>> processors)
             throws BundleProcessingFatalException {
         
         final Set<T> allValidArtifacts = findAllNodesOfType(bundle,
@@ -457,21 +592,21 @@ public final class BundleProcessorManager {
         final Set<T> alreadyProcessedArtifacts = new CopyOnWriteArraySet<T>();
         final Set<T> ignoredArtifacts = new CopyOnWriteArraySet<T>();
         final Set<T> artifactsWithError = new CopyOnWriteArraySet<T>();
-        this.findArtifactsByChangeType(bundle, allValidArtifacts, nodeChanges,
+        findArtifactsByChangeType(bundle, allValidArtifacts, nodeChanges,
                 addedArtifacts, excludedArtifacts, modifiedArtifacts);
         notProcessedArtifacts.addAll(addedArtifacts);
         notProcessedArtifacts.addAll(modifiedArtifacts);
         for (final BundleProcessor<?> processor : processors) {
             if (mappedProcessor.getProcessorType().isInstance(processor)) {
-                final List<BundleProcessorCallable<T>> processActions = this
-                        .createProcessorActions(graphContext, bundle,
-                                allValidArtifacts, addedArtifacts,
-                                excludedArtifacts, modifiedArtifacts,
-                                notProcessedArtifacts,
+                final CreateProcessorActionsResult<T> result = this
+                        .createProcessorActions(bundle, allValidArtifacts,
+                                addedArtifacts, excludedArtifacts,
+                                modifiedArtifacts, notProcessedArtifacts,
                                 alreadyProcessedArtifacts, ignoredArtifacts,
                                 artifactsWithError,
                                 (BundleProcessor<T>) processor);
-                allProcessActions.addAll(processActions);
+                allProcessActions.addAll(result.getProcessorCallables());
+                finalizationContexts.add(result.getFinalizationContext());
             }
         }
     }
@@ -481,33 +616,33 @@ public final class BundleProcessorManager {
      * processing jobs for its {@link BundleProcessor configured processors}.
      * 
      * @param repository
-     * @param graphContext
      * @throws BundleProcessingFatalException
      *             if a fatal error occurs.
      */
     @SuppressWarnings("boxing")
-    public synchronized void processRepository(final Repository repository,
-            final GraphContext graphContext)
+    public synchronized void processRepository(final Repository repository)
             throws BundleProcessingFatalException {
         checkNotNull("repository", repository); //$NON-NLS-1$
-        checkNotNull("graphContext", graphContext); //$NON-NLS-1$
+        checkNotNull("graph", this.graph); //$NON-NLS-1$
         
         try {
+            
             final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
             final Set<Bundle> bundles = findAllNodesOfType(repository,
                     Bundle.class);
+            final List<FinalizationContext<? extends Artifact>> finalizationContexts = new ArrayList<FinalizationContext<? extends Artifact>>(
+                    bundles.size());
             for (final Bundle bundle : bundles) {
                 if (!bundle.getActive()) {
                     continue;
                 }
                 
-                final Set<BundleProcessor<?>> processors = this
+                final Set<BundleProcessor<?>> processors = BundleProcessorManager
                         .findConfiguredBundleProcessors(bundle);
                 for (final MappedProcessor<? extends Artifact> mappedProcessor : processorRegistry) {
-                    this
-                            .groupProcessingActionsByArtifactType(
-                                    mappedProcessor, allProcessActions, bundle,
-                                    graphContext, processors);
+                    this.groupProcessingActionsByArtifactType(mappedProcessor,
+                            allProcessActions, finalizationContexts, bundle,
+                            processors);
                 }
             }
             
@@ -522,9 +657,24 @@ public final class BundleProcessorManager {
             while (this.executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
                 this.wait();
             }
-            
+            for (final FinalizationContext<? extends Artifact> context : finalizationContexts) {
+                context.getProcessor().globalProcessingFinalized(
+                        context.getBundleProcessingGroup(),
+                        context.getGraphContext());
+                context.getGraphContext().processFinished();
+            }
         } catch (final Exception e) {
             throw logAndReturnNew(e, BundleProcessingFatalException.class);
         }
+    }
+    
+    /**
+     * This method replaces the current internal instance of {@link SLGraph}.
+     * 
+     * @param newGraph
+     */
+    public synchronized void replaceGraph(final SLGraph newGraph) {
+        checkNotNull("newGraph", newGraph); //$NON-NLS-1$
+        this.graph = newGraph;
     }
 }

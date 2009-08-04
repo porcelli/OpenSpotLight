@@ -47,67 +47,22 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.processing.test;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
-import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
-import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.openspotlight.common;
 
 /**
- * Example class for bundle processor.
+ * Enum for describing lazy behavior.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor {
-    
+public enum LazyType {
     /**
-     * counter to use on test
+     * Should behave in a lazy way.
      */
-    public static AtomicInteger count = new AtomicInteger(0);
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
+    LAZY,
     /**
-     * 
-     * {@inheritDoc}
+     * Should not behave in a lazy way.
      */
-    public void globalProcessingFinalized(
-            final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-            final GraphContext graphContext) {
-        // nothing to do here
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final ProcessingStartAction globalProcessingStarted(
-            final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
-            throws BundleProcessingFatalException {
-        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public ProcessingAction processArtifact(
-            final StreamArtifact targetArtifact,
-            final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
-            throws BundleProcessingNonFatalException,
-            BundleProcessingFatalException {
-        this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
-        count.incrementAndGet();
-        return ProcessingAction.ARTIFACT_PROCESSED;
-    }
+    NON_LAZY
     
 }

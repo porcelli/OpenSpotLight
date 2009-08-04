@@ -57,10 +57,13 @@ import java.util.Set;
 
 import net.jcip.annotations.ThreadSafe;
 
+import org.openspotlight.common.LazyType;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 
 /**
@@ -83,16 +86,6 @@ import org.openspotlight.graph.SLGraphSession;
  * @param <T>
  *            Artifact type for this bundle processor
  * 
- * 
- *            FIXME startProcessingForArtifact
- * 
- *            FIXME finishProcessingForArtifact
- * 
- *            FIXME finishGlobalProcessing
- * 
- *            FIXME globalGraphSession
- * 
- *            FIXME invocationGraphSession
  */
 public interface BundleProcessor<T extends Artifact> {
     
@@ -262,25 +255,106 @@ public interface BundleProcessor<T extends Artifact> {
     @ThreadSafe
     public static class GraphContext {
         
-        private final SLGraphSession graphSession;
+        private final GraphContext parentGraphContext;
+        
+        private SLGraphSession graphSession;
+        
+        private final SLGraph graph;
         
         /**
          * Constructor with final mandatory fields.
          * 
-         * @param graphSession
+         * @param graph
+         * @param lazy
+         * @throws SLGraphException
+         * 
          */
-        public GraphContext(final SLGraphSession graphSession) {
-            checkNotNull("graphSession", graphSession); //$NON-NLS-1$
-            this.graphSession = graphSession;
+        public GraphContext(final SLGraph graph, final LazyType lazy)
+                throws SLGraphException {
+            checkNotNull("graph", graph); //$NON-NLS-1$
+            checkNotNull("lazy", lazy); //$NON-NLS-1$
+            this.graph = graph;
+            this.parentGraphContext = null;
+            if (LazyType.NON_LAZY.equals(lazy)) {
+                openSession();
+            }
+        }
+        
+        /**
+         * Constructor with final mandatory fields to create {@link Artifact}
+         * unique {@link GraphContext} instances.
+         * 
+         * @param graph
+         * @param lazy
+         * @param parent
+         * @throws SLGraphException
+         * 
+         */
+        public GraphContext(final SLGraph graph, final LazyType lazy,
+                final GraphContext parent) throws SLGraphException {
+            checkNotNull("graph", graph); //$NON-NLS-1$
+            checkNotNull("lazy", lazy); //$NON-NLS-1$
+            checkNotNull("parent", parent); //$NON-NLS-1$
+            this.graph = graph;
+            if (LazyType.NON_LAZY.equals(lazy)) {
+                openSession();
+            }
+            this.parentGraphContext = parent;
         }
         
         /**
          * 
          * @return the graph session
+         * @throws SLGraphException
          */
-        public SLGraphSession getGraphSession() {
+        public SLGraphSession getGlobalGraphSession() throws SLGraphException {
+            if (this.parentGraphContext == null) {
+                return getLocalGraphSession();
+            } else {
+                return this.parentGraphContext.getLocalGraphSession();
+            }
+            
+        }
+        
+        /**
+         * 
+         * @return the graph session
+         * @throws SLGraphException
+         */
+        public SLGraphSession getLocalGraphSession() throws SLGraphException {
+            if (this.graphSession == null) {
+                openSession();
+            }
             return this.graphSession;
         }
+        
+        /**
+         * Opens the session.
+         * 
+         * @throws SLGraphException
+         */
+        private synchronized void openSession() throws SLGraphException {
+            if (this.graphSession == null) {
+                this.graphSession = this.graph.openSession();
+            }
+        }
+        
+        /**
+         * Callback method to be used by {@link BundleProcessor}. Do not use
+         * this.
+         */
+        public void processFinished() {
+            //
+        }
+        
+        /**
+         * Callback method to be used by {@link BundleProcessor}. Do not use
+         * this.
+         */
+        public void processStarted() {
+            //
+        }
+        
     }
     
     /**
@@ -314,7 +388,7 @@ public interface BundleProcessor<T extends Artifact> {
     
     /**
      * This enum is the return type of
-     * {@link BundleProcessor#startProcessing(BundleProcessingGroup, GraphContext)}
+     * {@link BundleProcessor#globalProcessingStarted(BundleProcessingGroup, GraphContext)}
      * method. Depending of the return value, is possible to change the behavior
      * of artifact processing for this execution. The common behavior should be
      * returning {@link #PROCESS_EACH_ONE_NEW}.
@@ -325,7 +399,7 @@ public interface BundleProcessor<T extends Artifact> {
     public static enum ProcessingStartAction {
         /**
          * This should be the normal return for
-         * {@link BundleProcessor#startProcessing(BundleProcessingGroup, GraphContext)}
+         * {@link BundleProcessor#globalProcessingStarted(BundleProcessingGroup, GraphContext)}
          * . This constant tells the {@link BundleProcessor} to process all the
          * added artifact ou modified artifact. This artifacts are called new,
          * because they wasn't present on previous runnings.
@@ -354,10 +428,47 @@ public interface BundleProcessor<T extends Artifact> {
          * process all artifacts and return this constant value and the
          * {@link BundleProcessor} will know that everything is ok.
          */
-        ALL_PROCESSING_ALREADY_DONE
-        
-        // FIXME new attribute for processing
+        ALL_PROCESSING_ALREADY_DONE,
+
+        /**
+         * This constant tells the {@link BundleProcessor} to use the contents
+         * of
+         * {@link BundleProcessor.BundleProcessingGroup#getNotProcessedArtifacts()}
+         * as a input to be processed on the each item phase.
+         */
+        PROCESS_CUSTOMIZED_LIST
     }
+    
+    /**
+     * Callback method to inform that all the processing finalized.
+     * 
+     * @param bundleProcessingGroup
+     * @param graphContext
+     */
+    public void globalProcessingFinalized(
+            BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+            GraphContext graphContext);
+    
+    /**
+     * This method will be called once, before the threads creation to process
+     * all the artifacts. This return is very important, because with this is
+     * possible to change the behavior of this {@link BundleProcessor} execution
+     * for its {@link Bundle}. Take a look on the {@link ProcessingStartAction}
+     * documentation. The common behavior should be returning
+     * {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
+     * 
+     * @param bundleProcessingGroup
+     *            with lists of all processed attributes and so on
+     * @param graphContext
+     *            with all convenient object for graph manipulation
+     * @return {@link ProcessingStartAction} to set the behavior of the
+     *         {@link BundleProcessor}
+     * @throws BundleProcessingFatalException
+     *             if a fatal error has happened
+     */
+    public ProcessingStartAction globalProcessingStarted(
+            BundleProcessingGroup<T> bundleProcessingGroup,
+            GraphContext graphContext) throws BundleProcessingFatalException;
     
     /**
      * Method to process a target artifact. This method should be called a lot
@@ -382,24 +493,4 @@ public interface BundleProcessor<T extends Artifact> {
             throws BundleProcessingNonFatalException,
             BundleProcessingFatalException;
     
-    /**
-     * This method will be called once, before the threads creation to process
-     * all the artifacts. This return is very important, because with this is
-     * possible to change the behavior of this {@link BundleProcessor} execution
-     * for its {@link Bundle}. Take a look on the {@link ProcessingStartAction}
-     * documentation. The common behavior should be returning
-     * {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
-     * 
-     * @param bundleProcessingGroup
-     *            with lists of all processed attributes and so on
-     * @param graphContext
-     *            with all convenient object for graph manipulation
-     * @return {@link ProcessingStartAction} to set the behavior of the
-     *         {@link BundleProcessor}
-     * @throws BundleProcessingFatalException
-     *             if a fatal error has happened
-     */
-    public ProcessingStartAction startProcessing(
-            BundleProcessingGroup<T> bundleProcessingGroup,
-            GraphContext graphContext) throws BundleProcessingFatalException;
 }

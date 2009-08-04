@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.processing.test;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
 
 import java.io.File;
@@ -72,6 +73,8 @@ import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphSession;
 
 @SuppressWarnings("all")
 public class StreamArtifactDogFoodingProcessing {
@@ -184,14 +187,17 @@ public class StreamArtifactDogFoodingProcessing {
         final Configuration configuration = this
                 .loadAllFilesFromThisConfiguration(this
                         .createOslValidConfiguration());
+        final SLGraph graph = mock(SLGraph.class);
+        final SLGraphSession session = mock(SLGraphSession.class);
+        when(graph.openSession()).thenReturn(session);
         
-        final BundleProcessorManager manager = new BundleProcessorManager();
+        final BundleProcessorManager manager = new BundleProcessorManager(graph);
         final GraphContext graphContext = mock(GraphContext.class);
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
                 StreamArtifact.class);
         final Repository repository = configuration
                 .getRepositoryByName("OSL Project");
-        manager.processRepository(repository, graphContext);
+        manager.processRepository(repository);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }
     

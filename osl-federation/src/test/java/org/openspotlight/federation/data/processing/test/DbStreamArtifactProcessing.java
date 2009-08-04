@@ -52,6 +52,7 @@ package org.openspotlight.federation.data.processing.test;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
 
 import java.util.Set;
@@ -74,7 +75,8 @@ import org.openspotlight.federation.data.load.XmlConfigurationManager;
 import org.openspotlight.federation.data.load.db.DatabaseType;
 import org.openspotlight.federation.data.load.db.test.H2DatabaseTest;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
-import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphSession;
 
 @SuppressWarnings("all")
 public class DbStreamArtifactProcessing {
@@ -173,14 +175,16 @@ public class DbStreamArtifactProcessing {
         final Configuration configuration = this
                 .loadAllArtifactsFromThisConfiguration(this
                         .createDbConfiguration());
+        final SLGraph graph = mock(SLGraph.class);
+        final SLGraphSession session = mock(SLGraphSession.class);
+        when(graph.openSession()).thenReturn(session);
         
-        final BundleProcessorManager manager = new BundleProcessorManager();
-        final GraphContext graphContext = mock(GraphContext.class);
+        final BundleProcessorManager manager = new BundleProcessorManager(graph);
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
                 StreamArtifact.class);
         final Repository repository = configuration
                 .getRepositoryByName("H2 Repository");
-        manager.processRepository(repository, graphContext);
+        manager.processRepository(repository);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }
     

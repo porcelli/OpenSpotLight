@@ -72,8 +72,6 @@ import org.openspotlight.federation.data.impl.Bundle;
  * 
  * The Artifact loader has the responsibility to resolve each mapping.
  * 
- * TASK create db artifact loader structure for tables using jcr
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
