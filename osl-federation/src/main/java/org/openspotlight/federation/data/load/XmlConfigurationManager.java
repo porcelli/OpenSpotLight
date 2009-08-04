@@ -62,7 +62,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
-import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
+import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

@@ -58,7 +58,7 @@ import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
-import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
+import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 import static org.openspotlight.federation.data.util.JcrLogger.log;
 
 import java.util.ArrayList;

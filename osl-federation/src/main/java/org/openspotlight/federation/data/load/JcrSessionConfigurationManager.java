@@ -50,12 +50,14 @@
 package org.openspotlight.federation.data.load;
 
 import static java.text.MessageFormat.format;
+import static java.util.Arrays.sort;
 import static org.openspotlight.common.util.Arrays.andValues;
 import static org.openspotlight.common.util.Arrays.map;
 import static org.openspotlight.common.util.Arrays.ofKeys;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
 import static org.openspotlight.common.util.Exceptions.catchAndLog;
@@ -65,7 +67,7 @@ import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
-import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
+import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -106,16 +108,13 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.util.ParentNumberComparator;
 
 /**
  * Configuration manager that stores and loads the configuration from a
  * JcrRepository.
  * 
  * LATER_TASK implement node property
- * 
- * FIXME dirty listeners refactor (to make it simple)
- * 
- * FIXME save only using dirty artifacts (ordering by parent number desc)
  * 
  * FIXME tests for db changes and filesystem changes (after dirty listeners)
  * 
@@ -273,6 +272,62 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
         }
         
+    }
+    
+    /**
+     * This helper class can create xpath to find the {@link Node Jcr Node}
+     * corresponding to a unique {@link ConfigurationNode}
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    private static class XpathSupport {
+        
+        /**
+         * Fill the string buffer at the beginning using the node data.
+         * 
+         * @param xpath
+         * @param node
+         * @throws Exception
+         *             on conversion errors
+         */
+        private static void fillXpathFromNode(final StringBuilder xpath,
+                final ConfigurationNode node) throws Exception {
+            final String nodePath = classHelper.getNameFromNodeClass(node
+                    .getClass());
+            final StaticMetadata metadata = node.getInstanceMetadata()
+                    .getStaticMetadata();
+            final String keyPropertyName = metadata.keyPropertyName();
+            final String keyPropertyValueAsString = convert(node
+                    .getInstanceMetadata().getKeyPropertyValue(), String.class);
+            if ("".equals(keyPropertyName) || (keyPropertyName == null)) { //$NON-NLS-1$
+                xpath.insert(0, format("/{0}", nodePath));//$NON-NLS-1$
+            } else {
+                xpath.insert(0, format("/{0}[@osl:{1}=''{2}'']", //$NON-NLS-1$
+                        nodePath, keyPropertyName, keyPropertyValueAsString));
+            }
+            
+        }
+        
+        /**
+         * 
+         * @param node
+         * @return a complete filled xpath based on node data and also its
+         *         parent's data.
+         * @throws Exception
+         */
+        static String getCompleteXpathFor(final ConfigurationNode node)
+                throws Exception {
+            ConfigurationNode c = node;
+            final StringBuilder xpath = new StringBuilder();
+            while (c != null) {
+                fillXpathFromNode(xpath, c);
+                c = c.getInstanceMetadata().getDefaultParent();
+            }
+            xpath.insert(0, '/');
+            return xpath.toString();
+            
+        }
     }
     
     private static final String NS_DESCRIPTION = "www.openspotlight.org"; //$NON-NLS-1$
@@ -510,7 +565,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         checkNotNull("parentNode", parentNode); //$NON-NLS-1$
         checkNotEmpty("nodePath", nodePath); //$NON-NLS-1$
         final Node newNode = parentNode.addNode(nodePath);
-        if (keyPropertyName != null) {
+        if ((keyPropertyName != null) && !"".equals(keyPropertyName)) { //$NON-NLS-1$
             this.setProperty(newNode, "osl:" + keyPropertyName, //$NON-NLS-1$
                     keyPropertyType, keyPropertyValue);
         }
@@ -790,17 +845,63 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             throws ConfigurationException {
         checkNotNull("group", configuration); //$NON-NLS-1$
         checkCondition("sessionAlive", this.session.isLive()); //$NON-NLS-1$
-        final ConfigurationNode node = configuration;
+        
         try {
-            final String nodeStr = JcrSessionConfigurationManager.classHelper
-                    .getNameFromNodeClass(node.getClass());
             
-            final Node newJcrNode = this.createIfDontExists(this.session
-                    .getRootNode(), nodeStr, null, null, null);
-            this.saveProperties(node, newJcrNode);
-            final Set<ConfigurationNode> saveNodes = new HashSet<ConfigurationNode>();
-            saveNodes.add(node);
-            this.saveChilds(saveNodes, node, newJcrNode);
+            final ConfigurationNode[] dirtyNodesAsArray = configuration
+                    .getInstanceMetadata().getSharedData().getDirtyNodes()
+                    .toArray(new ConfigurationNode[0]);
+            
+            sort(dirtyNodesAsArray, new ParentNumberComparator());
+            
+            final Map<ConfigurationNode, Node> alreadySaved = new HashMap<ConfigurationNode, Node>();
+            for (final ConfigurationNode node : dirtyNodesAsArray) {
+                final ConfigurationNode parentNode = node.getInstanceMetadata()
+                        .getDefaultParent();
+                Node parentJcrNode = null;
+                if (parentNode == null) {
+                    parentJcrNode = this.session.getRootNode();
+                } else {
+                    parentJcrNode = alreadySaved.get(parentNode);
+                    if (parentJcrNode == null) {
+                        final String pathToFind = XpathSupport
+                                .getCompleteXpathFor(parentNode);
+                        final Query query = this.session.getWorkspace()
+                                .getQueryManager().createQuery(pathToFind,
+                                        Query.XPATH);
+                        final QueryResult result = query.execute();
+                        final NodeIterator nodes = result.getNodes();
+                        if (nodes.hasNext()) {
+                            parentJcrNode = nodes.nextNode();
+                        } else {
+                            logAndThrow(new IllegalStateException(
+                                    "Dirty node without parent")); //$NON-NLS-1$
+                        }
+                        if (nodes.hasNext()) {
+                            logAndThrow(new IllegalStateException(
+                                    "Dirty node with more than one parent already saved on jcr")); //$NON-NLS-1$
+                        }
+                    }
+                    
+                }
+                if (parentJcrNode == null) {
+                    logAndThrow(new IllegalStateException(
+                            "Dirty node without parent")); //$NON-NLS-1$
+                }
+                
+                final StaticMetadata metadata = node.getInstanceMetadata()
+                        .getStaticMetadata();
+                
+                final String nodePath = JcrSessionConfigurationManager.classHelper
+                        .getNameFromNodeClass(node.getClass());
+                
+                final Node newJcrNode = this.createIfDontExists(parentJcrNode,
+                        nodePath, metadata.keyPropertyName(), node
+                                .getInstanceMetadata().getKeyPropertyValue(),
+                        metadata.keyPropertyType());
+                alreadySaved.put(node, newJcrNode);
+                this.saveProperties(node, newJcrNode);
+            }
             
             final List<ItemChangeEvent<ConfigurationNode>> lastChanges = configuration
                     .getInstanceMetadata().getSharedData()
@@ -813,7 +914,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 }
             }
             this.session.save();
-            final Version version = newJcrNode.checkin();
+            
+            final String configurationPath = classHelper
+                    .getNameFromNodeClass(Configuration.class);
+            final Node configurationJcrNode = this.session.getRootNode()
+                    .getNode(configurationPath);
+            
+            final Version version = configurationJcrNode.checkin();
             final String versionName = version.getName();
             final Set<Artifact> artifacts = findAllNodesOfType(configuration,
                     Artifact.class);
@@ -824,49 +931,6 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             configuration.getInstanceMetadata().getSharedData().markAsSaved();
         } catch (final Exception e) {
             logAndThrowNew(e, ConfigurationException.class);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void saveChilds(final Set<ConfigurationNode> savedNodes,
-            final ConfigurationNode node, final Node newJcrNode)
-            throws ConfigurationException, Exception {
-        for (final Class<? extends ConfigurationNode> configuredChildClass : node
-                .getInstanceMetadata().getStaticMetadata().validChildrenTypes()) {
-            if (configuredChildClass.equals(ConfigurationNode.class)) {
-                continue;
-            }
-            final Set<Serializable> childKeys = (Set<Serializable>) node
-                    .getInstanceMetadata().getKeyFromChildrenOfTypes(
-                            configuredChildClass);
-            
-            savingChildren: for (final Serializable key : childKeys) {
-                final ConfigurationNode childNode = node.getInstanceMetadata()
-                        .getChildByKeyValue(configuredChildClass, key);
-                if (savedNodes.contains(childNode)) {
-                    continue savingChildren;
-                }
-                final Class<? extends ConfigurationNode> nodeClass = childNode
-                        .getClass();
-                final String childNodeStr = JcrSessionConfigurationManager.classHelper
-                        .getNameFromNodeClass(nodeClass);
-                final StaticMetadata staticMetadata = JcrSessionConfigurationManager.classHelper
-                        .getStaticMetadataFromClass(nodeClass);
-                
-                final Node newChildJcrNode = this.createIfDontExists(
-                        newJcrNode, childNodeStr, staticMetadata
-                                .keyPropertyName(), key, staticMetadata
-                                .keyPropertyType());
-                if (Artifact.class.isAssignableFrom(nodeClass)) {
-                    childNode.getInstanceMetadata()
-                            .setPropertyIgnoringListener(
-                                    Artifact.KeyProperties.UUID.toString(),
-                                    newChildJcrNode.getUUID());
-                }
-                this.saveProperties(childNode, newChildJcrNode);
-                savedNodes.add(childNode);
-                this.saveChilds(savedNodes, childNode, newChildJcrNode);
-            }
         }
     }
     

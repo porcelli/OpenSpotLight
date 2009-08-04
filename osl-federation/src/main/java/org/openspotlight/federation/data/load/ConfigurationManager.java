@@ -281,7 +281,7 @@ public interface ConfigurationManager {
      * <b>Warning:</b> Do not use a abstract type, such as {@link Artifact} or
      * so on, because, it will use the class name to create the query. If you
      * need to find all kinds of a abstract type, use the non lazy static method
-     * {@link org.openspotlight.federation.data.util.ConfiguratonNodes#findAllNodesOfType}
+     * {@link org.openspotlight.federation.data.util.ConfigurationNodes#findAllNodesOfType}
      * 
      * @param <T>
      *            node type

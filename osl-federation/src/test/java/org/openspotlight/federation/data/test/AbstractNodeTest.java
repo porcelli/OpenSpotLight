@@ -195,13 +195,9 @@ public class AbstractNodeTest extends NodeTest {
                 .getPropertyValue(), is(1));
         assertThat(configuration.getInstanceMetadata().getSharedData()
                 .isDirty(), is(true));
-        assertThat(repository.getInstanceMetadata().getSharedData()
-                .getPropertyChangesSinceLastSave().size(), is(3));
         configuration.getInstanceMetadata().getSharedData().markAsSaved();
         assertThat(repository.getInstanceMetadata().getSharedData().isDirty(),
                 is(false));
-        assertThat(repository.getInstanceMetadata().getSharedData()
-                .getPropertyChangesSinceLastSave().size(), is(0));
     }
     
 }

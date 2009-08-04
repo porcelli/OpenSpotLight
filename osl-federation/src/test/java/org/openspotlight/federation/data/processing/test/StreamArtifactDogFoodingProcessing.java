@@ -53,7 +53,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.openspotlight.federation.data.util.ConfiguratonNodes.findAllNodesOfType;
+import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.File;
 import java.util.Set;
