@@ -886,7 +886,7 @@ public interface InstanceMetadata {
         public ItemChangeEvent(final ItemChangeType type, final T oldItem,
                 final T newItem) {
             checkNotNull("type", type); //$NON-NLS-1$
-            checkCondition("atLeastOneNonNull", (oldItem != null)
+            checkCondition("atLeastOneNonNull", (oldItem != null) //$NON-NLS-1$
                     || (newItem != null));
             this.type = type;
             this.oldItem = oldItem;

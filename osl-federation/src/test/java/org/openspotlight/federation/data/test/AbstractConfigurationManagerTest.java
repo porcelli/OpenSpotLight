@@ -50,13 +50,18 @@
 package org.openspotlight.federation.data.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+
+import java.util.Set;
 
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 
 /**
@@ -107,6 +112,21 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
     @Test
     public final void shouldDeleteNodesFromTheConfiguration() throws Exception {
         this.deleteNodesFromTheConfiguration(LazyType.NON_LAZY);
+    }
+    
+    @Test
+    public void shouldFindChildrenNodes() throws Exception {
+        Configuration configuration = this.createSampleData();
+        final ConfigurationManager manager = this.createInstance();
+        manager.save(configuration);
+        
+        configuration = manager.load(LazyType.LAZY);
+        final Set<Project> projects = manager.findNodesByKey(configuration,
+                Project.class, "ip-1,1");
+        assertThat(projects.size(), is(not(0)));
+        final Set<Repository> repositories = manager.findNodesByKey(
+                configuration, Repository.class, "invalidKey");
+        assertThat(repositories.size(), is(0));
     }
     
     @Test

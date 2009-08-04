@@ -61,12 +61,14 @@ import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
@@ -269,6 +271,34 @@ public interface ConfigurationManager {
      * The default OpenSpotlight prefix used on Jcr.
      */
     public static final String DEFAULT_OSL_PREFIX = "osl"; //$NON-NLS-1$
+    
+    /**
+     * Search a node using its internal key value. Note that a note have a
+     * unique combination of key and parent. If any nodes has the same keys,
+     * same types and different parents, it will return more than one result.
+     * So, its possible to choose the correct node by comparing the parent.
+     * 
+     * <b>Warning:</b> Do not use a abstract type, such as {@link Artifact} or
+     * so on, because, it will use the class name to create the query. If you
+     * need to find all kinds of a abstract type, use the non lazy static method
+     * {@link org.openspotlight.federation.data.util.ConfiguratonNodes#findAllNodesOfType}
+     * 
+     * @param <T>
+     *            node type
+     * @param <K>
+     *            key type
+     * @param root
+     * @param nodeType
+     *            node type class
+     * @param key
+     *            value
+     * @return a set of nodes
+     * @throws ConfigurationException
+     *             if anything wrong happens
+     */
+    public <T extends ConfigurationNode, K extends Serializable> Set<T> findNodesByKey(
+            ConfigurationNode root, Class<T> nodeType, K key)
+            throws ConfigurationException;
     
     /**
      * Loads the current group from configuration, marking the configuration as

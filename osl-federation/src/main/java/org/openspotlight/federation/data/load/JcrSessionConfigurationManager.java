@@ -77,6 +77,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jcr.NamespaceRegistry;
@@ -320,7 +321,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
     
     static void loadChildrenNodes(final Node jcrNode,
-            final ConfigurationNode configurationNode, final LazyType lazyType)
+            final ConfigurationNode parentNode, final LazyType lazyType)
             throws PathNotFoundException, RepositoryException,
             ConfigurationException, Exception {
         NodeIterator children;
@@ -334,30 +335,21 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             return;
         }
         while (children.hasNext()) {
-            final Node child = children.nextNode();
-            if (!child.getName().startsWith("osl:")) { //$NON-NLS-1$
+            final Node jcrChild = children.nextNode();
+            if (!jcrChild.getName().startsWith("osl:")) { //$NON-NLS-1$
                 continue;
             }
             final Class<ConfigurationNode> nodeClass = classHelper
-                    .getNodeClassFromName(child.getName());
+                    .getNodeClassFromName(jcrChild.getName());
             final StaticMetadata staticMetadata = classHelper
                     .getStaticMetadataFromClass(nodeClass);
-            final Serializable keyValue = (Serializable) getProperty(child,
-                    "osl:" //$NON-NLS-1$
-                            + staticMetadata.keyPropertyName(), staticMetadata
-                            .keyPropertyType());
-            final String childNodeClassName = child.getName();
-            final ConfigurationNode newNode = classHelper.createInstance(
-                    keyValue, configurationNode, childNodeClassName);
-            if (Artifact.class.isAssignableFrom(nodeClass)) {
-                newNode.getInstanceMetadata()
-                        .setPropertyIgnoringListener(
-                                Artifact.KeyProperties.UUID.toString(),
-                                child.getUUID());
-            }
+            final ConfigurationNode newNode = loadOneChild(parentNode,
+                    jcrChild, staticMetadata, nodeClass);
+            
             if (LazyType.NON_LAZY.equals(lazyType)) {
-                loadChildrenAndProperties(child, newNode, staticMetadata);
+                loadChildrenAndProperties(jcrChild, newNode, staticMetadata);
             }
+            
         }
         
     }
@@ -399,6 +391,24 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         
     }
     
+    private static ConfigurationNode loadOneChild(
+            final ConfigurationNode parentNode, final Node jcrChild,
+            final StaticMetadata staticMetadataForChild,
+            final Class<? extends ConfigurationNode> childNodeClass)
+            throws Exception {
+        final Serializable keyValue = getProperty(jcrChild, "osl:" //$NON-NLS-1$
+                + staticMetadataForChild.keyPropertyName(),
+                staticMetadataForChild.keyPropertyType());
+        final String childNodeClassName = jcrChild.getName();
+        final ConfigurationNode newNode = classHelper.createInstance(keyValue,
+                parentNode, childNodeClassName);
+        if (Artifact.class.isAssignableFrom(childNodeClass)) {
+            newNode.getInstanceMetadata().setPropertyIgnoringListener(
+                    Artifact.KeyProperties.UUID.toString(), jcrChild.getUUID());
+        }
+        return newNode;
+    }
+    
     /**
      * JCR session
      */
@@ -416,8 +426,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @return
      * @throws Exception
      */
-    @SuppressWarnings("boxing")
-    private static Object getProperty(final Node jcrNode,
+    @SuppressWarnings( { "boxing", "unchecked" })
+    private static <T> T getProperty(final Node jcrNode,
             final String propertyName, final Class<?> propertyClass)
             throws Exception {
         Property jcrProperty = null;
@@ -471,7 +481,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                     propertyClass));
         }
         
-        return value;
+        return (T) value;
     }
     
     /**
@@ -547,6 +557,77 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 return newNode;
             }
             
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public <T extends ConfigurationNode, K extends Serializable> Set<T> findNodesByKey(
+            final ConfigurationNode root, final Class<T> nodeType, final K key)
+            throws ConfigurationException {
+        try {
+            checkNotNull("nodeType", nodeType); //$NON-NLS-1$
+            checkNotNull("key", key); //$NON-NLS-1$
+            checkCondition("sessionAlive", this.session.isLive()); //$NON-NLS-1$
+            final Set<T> result = new HashSet<T>();
+            final StaticMetadata metadata = nodeType
+                    .getAnnotation(StaticMetadata.class);
+            final String keyPropertyName = metadata.keyPropertyName();
+            
+            final String nodePath = classHelper.getNameFromNodeClass(nodeType);
+            final String pathToFind = format("//*/{0}[@osl:{1}=''{2}'']", //$NON-NLS-1$
+                    nodePath, keyPropertyName, key);
+            final Query query = this.session.getWorkspace().getQueryManager()
+                    .createQuery(pathToFind, Query.XPATH);
+            final QueryResult queryResult = query.execute();
+            final NodeIterator nodes = queryResult.getNodes();
+            final Stack<Node> nodeStack = new Stack<Node>();
+            while (nodes.hasNext()) {
+                Node n = nodes.nextNode();
+                while (n.getDepth() != 1) {
+                    nodeStack.push(n);
+                    n = n.getParent();
+                }
+                ConfigurationNode lastParent = root;
+                lookingForChildrenInsideJcr: while (!nodeStack.isEmpty()) {
+                    n = nodeStack.pop();
+                    final String name = n.getName();
+                    if (!name.startsWith(DEFAULT_OSL_PREFIX)) {
+                        continue lookingForChildrenInsideJcr;
+                    }
+                    final Class<? extends ConfigurationNode> childType = classHelper
+                            .getNodeClassFromName(name);
+                    if (childType.equals(root.getClass())) {
+                        continue lookingForChildrenInsideJcr;
+                    }
+                    final StaticMetadata childStaticMetadata = classHelper
+                            .getStaticMetadataFromClass(childType);
+                    final String childKeyPropertyName = DEFAULT_OSL_PREFIX
+                            + ":" //$NON-NLS-1$
+                            + childStaticMetadata.keyPropertyName();
+                    final Class<? extends Serializable> propertyClass = childStaticMetadata
+                            .keyPropertyType();
+                    final Serializable keyProperty = getProperty(n,
+                            childKeyPropertyName, propertyClass);
+                    final Set<? extends ConfigurationNode> children = findAllNodesOfType(
+                            lastParent, childType);
+                    lookingForParent: for (final ConfigurationNode child : children) {
+                        if (child.getInstanceMetadata().getKeyPropertyValue()
+                                .equals(keyProperty)) {
+                            lastParent = child;
+                            break lookingForParent;
+                        }
+                    }
+                    if (nodeStack.size() == 0) {
+                        result.add(nodeType.cast(lastParent));
+                    }
+                }
+            }
+            return result;
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
