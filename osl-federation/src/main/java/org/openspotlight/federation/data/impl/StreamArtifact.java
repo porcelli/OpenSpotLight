@@ -71,8 +71,6 @@ import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformatio
  * 
  * TASK Identify by uuid and version for logging
  * 
- * TASK all artifacts should have getUUID and getVersionName
- * 
  * TASK message and detailed message plus enum for bundle errors
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com

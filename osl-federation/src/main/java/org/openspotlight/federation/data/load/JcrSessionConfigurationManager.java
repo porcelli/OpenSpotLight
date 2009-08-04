@@ -110,9 +110,10 @@ import org.openspotlight.federation.data.impl.Configuration;
  * 
  * LATER_TASK implement node property
  * 
- * TASK methods to get artifact metadata and also load resources by demand
+ * FIXME method to find a artifact
  * 
- * TASK method to find a artifact
+ * FIXME save only using dirty artifacts (ordering by parent number desc and
+ * also dirty flags
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -383,8 +384,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                         && Serializable.class.isAssignableFrom(propertyClass)) {
                     final Serializable value = (Serializable) getProperty(
                             jcrNode, propertyIdentifier, propertyClass);
-                    configurationNode.getInstanceMetadata().setProperty(
-                            propertyName, value);
+                    configurationNode.getInstanceMetadata()
+                            .setPropertyIgnoringListener(propertyName, value);
                 } else if ((propertyClass != null)
                         && InputStream.class.isAssignableFrom(propertyClass)) {
                     final InputStream value = (InputStream) getProperty(

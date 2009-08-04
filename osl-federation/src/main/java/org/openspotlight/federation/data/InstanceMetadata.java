@@ -270,6 +270,11 @@ public interface InstanceMetadata {
              * {@inheritDoc}
              */
             public <N extends ConfigurationNode> void addChild(final N child) {
+                addChild(child, false);
+            }
+            
+            private <N extends ConfigurationNode> void addChild(final N child,
+                    final boolean fireEvent) {
                 checkNotNull("child", child); //$NON-NLS-1$
                 final InheritanceType inheritanceType = searchInheritanceType(
                         child.getClass(), this.staticMetadata
@@ -281,14 +286,25 @@ public interface InstanceMetadata {
                 if (this.children.get(correctType).containsValue(child)) {
                     return;
                 }
-                final ConfigurationNode oldNode = getChildByKeyValue(child
-                        .getClass(), child.getInstanceMetadata()
-                        .getKeyPropertyValue());
                 this.children.get(correctType).put(
                         child.getInstanceMetadata().getKeyPropertyValue(),
                         child);
-                this.sharedData.fireNodeChange(oldNode, child);
+                if (fireEvent) {
+                    final ConfigurationNode oldNode = getChildByKeyValue(child
+                            .getClass(), child.getInstanceMetadata()
+                            .getKeyPropertyValue());
+                    this.sharedData.fireNodeChange(oldNode, child);
+                }
                 
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public <N extends ConfigurationNode> void addChildIgnoringListener(
+                    final N child) {
+                addChild(child, true);
             }
             
             /**
@@ -341,12 +357,12 @@ public interface InstanceMetadata {
             public <N extends ConfigurationNode> N getChildByKeyValue(
                     final Class<N> type, final Serializable key) {
                 checkNotNull("type", type); //$NON-NLS-1$
-                checkNotNull("key", key); //$NON-NLS-1$
+                checkNotNull("key", key);
                 this.sharedData.loadChildren(getOwner());
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<?> correctType = searchType(type,
                         this.staticMetadata.validChildrenTypes());
                 return (N) this.children.get(correctType).get(key);
@@ -359,12 +375,12 @@ public interface InstanceMetadata {
             @SuppressWarnings("unchecked")
             public <N extends ConfigurationNode> Collection<N> getChildrensOfType(
                     final Class<N> type) {
-                checkNotNull("type", type); //$NON-NLS-1$
+                checkNotNull("type", type);
                 this.sharedData.loadChildren(getOwner());
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<?> correctType = searchType(type,
                         this.staticMetadata.validChildrenTypes());
                 
@@ -389,12 +405,12 @@ public interface InstanceMetadata {
              */
             public Set<? extends Serializable> getKeyFromChildrenOfTypes(
                     final Class<? extends ConfigurationNode> type) {
-                checkNotNull("type", type); //$NON-NLS-1$
+                checkNotNull("type", type);
                 this.sharedData.loadChildren(getOwner());
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<?> correctType = searchType(type,
                         this.staticMetadata.validChildrenTypes());
                 
@@ -427,11 +443,11 @@ public interface InstanceMetadata {
             @SuppressWarnings("unchecked")
             public <N extends ConfigurationNode> N getNodeProperty(
                     final Class<N> type) {
-                checkNotNull("type", type); //$NON-NLS-1$
+                checkNotNull("type", type);
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<?> correctType = searchType(type,
                         this.staticMetadata.validChildrenTypes());
                 
@@ -454,11 +470,11 @@ public interface InstanceMetadata {
              */
             public <N extends ConfigurationNode> N getParent(
                     final Class<N> parentType) {
-                checkNotNull("parentType", parentType); //$NON-NLS-1$
+                checkNotNull("parentType", parentType);
                 final InheritanceType inheritanceType = searchInheritanceType(
                         parentType, this.staticMetadata.validParentTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 
                 return parentType.cast(this.parent);
             }
@@ -480,7 +496,7 @@ public interface InstanceMetadata {
             @SuppressWarnings("unchecked")
             public <N extends Serializable> N getProperty(final String name) {
                 checkNotEmpty("name", name); //$NON-NLS-1$
-                checkCondition("validName", contains(name, this.staticMetadata //$NON-NLS-1$
+                checkCondition("validName", contains(name, this.staticMetadata
                         .propertyNames()));
                 this.sharedData.loadProperties(getOwner());
                 final N value = (N) this.properties.get(name);
@@ -508,7 +524,7 @@ public interface InstanceMetadata {
              * {@inheritDoc}
              */
             public InputStream getStreamProperty(final String name) {
-                checkNotEmpty("name", name); //$NON-NLS-1$
+                checkNotEmpty("name", name);
                 final InputStream value = (InputStream) this.properties
                         .get(name);
                 return value;
@@ -520,7 +536,7 @@ public interface InstanceMetadata {
              */
             @SuppressWarnings("unchecked")
             public <N> N getTransientProperty(final String name) {
-                checkNotEmpty("name", name); //$NON-NLS-1$
+                checkNotEmpty("name", name);
                 return (N) this.transientProperties.get(name);
             }
             
@@ -542,11 +558,11 @@ public interface InstanceMetadata {
              */
             public <N extends ConfigurationNode> void removeAllChildrenOfType(
                     final Class<N> type) {
-                checkNotNull("type", type); //$NON-NLS-1$
+                checkNotNull("type", type);
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<?> correctType = searchType(type,
                         this.staticMetadata.validChildrenTypes());
                 this.children.get(correctType).clear();
@@ -557,12 +573,12 @@ public interface InstanceMetadata {
              * {@inheritDoc}
              */
             public <N extends ConfigurationNode> void removeChild(final N child) {
-                checkNotNull("child", child); //$NON-NLS-1$
+                checkNotNull("child", child);
                 final InheritanceType inheritanceType = searchInheritanceType(
                         child.getClass(), this.staticMetadata
                                 .validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<?> correctType = searchType(child.getClass(),
                         this.staticMetadata.validChildrenTypes());
                 if (!this.children.get(correctType).containsValue(child)) {
@@ -581,11 +597,11 @@ public interface InstanceMetadata {
             @SuppressWarnings("unchecked")
             public <N extends ConfigurationNode> void setNodeProperty(
                     final Class<N> type, final N value) {
-                checkNotNull("type", type); //$NON-NLS-1$
+                checkNotNull("type", type);
                 final InheritanceType inheritanceType = searchInheritanceType(
                         type, this.staticMetadata.validChildrenTypes());
-                checkCondition(
-                        "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                checkCondition("correctClass", INHERITED_TYPES
+                        .contains(inheritanceType));
                 final Class<? extends ConfigurationNode> correctType = (Class<? extends ConfigurationNode>) searchType(
                         type, this.staticMetadata.validChildrenTypes());
                 final String name = correctType.getSimpleName();
@@ -604,14 +620,14 @@ public interface InstanceMetadata {
             @SuppressWarnings("unchecked")
             public <N extends Serializable> void setProperty(final String name,
                     final N value) {
-                checkNotEmpty("name", name); //$NON-NLS-1$
-                checkCondition(
-                        "correctName", this.propertyTypes.containsKey(name)); //$NON-NLS-1$
+                checkNotEmpty("name", name);
+                checkCondition("correctName", this.propertyTypes
+                        .containsKey(name));
                 if (value != null) {
                     final InheritanceType inheritanceType = searchInheritanceType(
                             value.getClass(), this.propertyTypes.get(name));
-                    checkCondition(
-                            "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                    checkCondition("correctClass", INHERITED_TYPES
+                            .contains(inheritanceType));
                     
                 }
                 final N oldValue = (N) getProperty(name);
@@ -633,14 +649,14 @@ public interface InstanceMetadata {
              */
             public <N extends Serializable> void setPropertyIgnoringListener(
                     final String name, final N value) {
-                checkNotEmpty("name", name); //$NON-NLS-1$
-                checkCondition(
-                        "correctName", this.propertyTypes.containsKey(name)); //$NON-NLS-1$
+                checkNotEmpty("name", name);
+                checkCondition("correctName", this.propertyTypes
+                        .containsKey(name));
                 if (value != null) {
                     final InheritanceType inheritanceType = searchInheritanceType(
                             value.getClass(), this.propertyTypes.get(name));
-                    checkCondition(
-                            "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                    checkCondition("correctClass", INHERITED_TYPES
+                            .contains(inheritanceType));
                     
                 }
                 this.properties.put(name, value);
@@ -653,14 +669,14 @@ public interface InstanceMetadata {
              */
             public void setStreamProperty(final String name,
                     final InputStream value) {
-                checkNotEmpty("name", name); //$NON-NLS-1$
-                checkCondition(
-                        "correctName", this.propertyTypes.containsKey(name)); //$NON-NLS-1$
+                checkNotEmpty("name", name);
+                checkCondition("correctName", this.propertyTypes
+                        .containsKey(name));
                 if (value != null) {
                     final InheritanceType inheritanceType = searchInheritanceType(
                             value.getClass(), this.propertyTypes.get(name));
-                    checkCondition(
-                            "correctClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+                    checkCondition("correctClass", INHERITED_TYPES
+                            .contains(inheritanceType));
                     
                 }
                 this.properties.put(name, value);
@@ -673,7 +689,7 @@ public interface InstanceMetadata {
              */
             public <N> void setTransientProperty(final String name,
                     final N value) {
-                checkNotEmpty("name", name); //$NON-NLS-1$
+                checkNotEmpty("name", name);
                 this.transientProperties.put(name, value);
                 
             }
@@ -702,10 +718,10 @@ public interface InstanceMetadata {
          * @return a new root dynamic metadata
          */
         public static InstanceMetadata createRoot(final ConfigurationNode owner) {
-            checkNotNull("owner", owner); //$NON-NLS-1$
+            checkNotNull("owner", owner);
             final StaticMetadata staticMetadata = owner.getClass()
                     .getAnnotation(StaticMetadata.class);
-            checkCondition("hasStaticMetadataAnnotation", //$NON-NLS-1$
+            checkCondition("hasStaticMetadataAnnotation",
                     staticMetadata != null);
             checkCondition("ownerIsRoot", Arrays.equals(staticMetadata //$NON-NLS-1$
                     .validParentTypes(), EMPTY_TYPE));
@@ -732,11 +748,11 @@ public interface InstanceMetadata {
                 final ConfigurationNode owner,
                 final ConfigurationNode parentNode, final K keyPropertyValue) {
             checkNotNull("owner", owner); //$NON-NLS-1$
-            checkNotNull("parentNode", parentNode); //$NON-NLS-1$
-            checkNotNull("keyPropertyValue", keyPropertyValue); //$NON-NLS-1$
+            checkNotNull("parentNode", parentNode);
+            checkNotNull("keyPropertyValue", keyPropertyValue);
             final StaticMetadata staticMetadata = owner.getClass()
                     .getAnnotation(StaticMetadata.class);
-            checkCondition("hasStaticMetadataAnnotation", //$NON-NLS-1$
+            checkCondition("hasStaticMetadataAnnotation",
                     staticMetadata != null);
             checkCondition("ownerIsNotRoot", !staticMetadata //$NON-NLS-1$
                     .validParentTypes().equals(ConfigurationNode.class));
@@ -745,8 +761,8 @@ public interface InstanceMetadata {
                             .isInstance(keyPropertyValue));
             final InheritanceType inheritanceType = searchInheritanceType(
                     parentNode.getClass(), staticMetadata.validParentTypes());
-            checkCondition(
-                    "correctRootClass", INHERITED_TYPES.contains(inheritanceType)); //$NON-NLS-1$
+            checkCondition("correctRootClass", INHERITED_TYPES
+                    .contains(inheritanceType));
             
             final BasicInstanceMetadata newInstanceMetadata = new BasicInstanceMetadata(
                     staticMetadata, parentNode.getInstanceMetadata()
@@ -870,7 +886,7 @@ public interface InstanceMetadata {
         public ItemChangeEvent(final ItemChangeType type, final T oldItem,
                 final T newItem) {
             checkNotNull("type", type); //$NON-NLS-1$
-            checkCondition("atLeastOneNonNull", (oldItem != null) //$NON-NLS-1$
+            checkCondition("atLeastOneNonNull", (oldItem != null)
                     || (newItem != null));
             this.type = type;
             this.oldItem = oldItem;
@@ -1030,14 +1046,14 @@ public interface InstanceMetadata {
         public PropertyValue(final String propertyName,
                 final Serializable propertyValue, final ConfigurationNode owner) {
             checkNotEmpty("propertyName", propertyName); //$NON-NLS-1$
-            checkNotNull("owner", owner); //$NON-NLS-1$
+            checkNotNull("owner", owner);
             this.propertyName = propertyName;
             this.propertyValue = propertyValue;
             this.owner = owner;
             this.hashcode = hashOf(propertyName, propertyValue, owner);
-            this.toString = format(
-                    Messages.getString("InstanceMetadata.propertyToString"), propertyName, //$NON-NLS-1$
-                    propertyValue);
+            this.toString = format(Messages
+                    .getString("InstanceMetadata.propertyToString"),
+                    propertyName, propertyValue);
         }
         
         /**
@@ -1229,7 +1245,7 @@ public interface InstanceMetadata {
         public void firePropertyChange(final ConfigurationNode owner,
                 final String propertyName, final Serializable oldValue,
                 final Serializable newValue) {
-            checkNotEmpty("propertyName", propertyName); //$NON-NLS-1$
+            checkNotEmpty("propertyName", propertyName);
             if (eachEquality(oldValue, newValue)) {
                 return; // no changes at all
             }
@@ -1353,7 +1369,7 @@ public interface InstanceMetadata {
          */
         public void setDataLoader(final DataLoader loader) {
             checkNotNull("loader", loader); //$NON-NLS-1$
-            checkCondition("loaderNotTheSame", loader != this); //$NON-NLS-1$
+            checkCondition("loaderNotTheSame", loader != this);
             this.loader = loader;
         }
         
@@ -1379,6 +1395,16 @@ public interface InstanceMetadata {
      * @param child
      */
     public <N extends ConfigurationNode> void addChild(N child);
+    
+    /**
+     * Adds a child witch should be used as a set of childs. It must have a key
+     * property. It also would not fire any listener events.
+     * 
+     * @param <N>
+     *            child type
+     * @param child
+     */
+    public <N extends ConfigurationNode> void addChildIgnoringListener(N child);
     
     /**
      * To be used on {@link Comparable} interface
