@@ -113,8 +113,11 @@ import org.openspotlight.federation.data.impl.Configuration;
  * 
  * LATER_TASK implement node property
  * 
- * FIXME save only using dirty artifacts (ordering by parent number desc and
- * also dirty flags
+ * FIXME dirty listeners refactor (to make it simple)
+ * 
+ * FIXME save only using dirty artifacts (ordering by parent number desc)
+ * 
+ * FIXME tests for db changes and filesystem changes (after dirty listeners)
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
