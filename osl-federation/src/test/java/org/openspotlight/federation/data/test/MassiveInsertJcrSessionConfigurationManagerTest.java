@@ -128,40 +128,6 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
         }
     }
     
-    // public void shouldInsertLinkData() throws Exception {
-    // final InputStream is =
-    // getResourceFromClassPath("/data/GraphWithMassiveDataTest/linkData.csv");
-    // assertThat(is, is(notNullValue()));
-    // final BufferedReader reader = new BufferedReader(new InputStreamReader(
-    // is));
-    // String line = null;
-    // boolean first = true;
-    // int count = 0;
-    // while ((count++ != 100000) && ((line = reader.readLine()) != null)) {
-    // if (first) {
-    // first = false;
-    // continue;
-    // }
-    // try {
-    // final StringTokenizer tok = new StringTokenizer(line, ";");
-    // final String type = tok.nextToken().replaceAll(" ", "")
-    // .replaceAll("\\.", "").replaceAll("-", "");
-    // final String firstNodeName = tok.nextToken();
-    // final String secondNodeName = tok.nextToken();
-    // final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
-    // .forName("org.openspotlight.graph.link." + type
-    // + "Link");
-    // this.session.addLink(clazz, this.rootNode
-    // .getNode(firstNodeName), this.rootNode
-    // .getNode(secondNodeName), false);
-    // System.out.println("link ok: " + line);
-    // } catch (final Exception e) {
-    // System.err.println("node: " + e.getMessage() + ": " + line);
-    // e.printStackTrace();
-    // }
-    // }
-    // }
-    
     public void shouldInsertNodeData() throws Exception {
         
         final Configuration configuration = new Configuration();
@@ -180,7 +146,7 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
         int err = 0;
         int ok = 0;
         try {
-            while ((count++ != 200000) && ((line = reader.readLine()) != null)) {
+            while ((count++ != 40000) && ((line = reader.readLine()) != null)) {
                 
                 if (first) {
                     first = false;
@@ -222,7 +188,10 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
                         if (parent == null) {
                             Assert.fail();
                         }
-                        node = new Project(parent, key);
+                        node = parent.getProjectByName(key);
+                        if (node == null) {
+                            node = new Project(parent, key);
+                        }
                         handleMap.put(handle, node);
                     }
                     ok++;
