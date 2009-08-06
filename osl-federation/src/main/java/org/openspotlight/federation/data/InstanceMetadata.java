@@ -86,6 +86,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openspotlight.common.util.Reflection.InheritanceType;
+import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
 
 /**
@@ -156,6 +157,8 @@ public interface InstanceMetadata {
          * 
          */
         private static class BasicInstanceMetadata implements InstanceMetadata {
+            
+            private String savedUniqueId;
             
             /**
              * Name and type map for properties.
@@ -508,6 +511,14 @@ public interface InstanceMetadata {
              * 
              * {@inheritDoc}
              */
+            public String getSavedUniqueId() {
+                return this.savedUniqueId;
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
             public SharedData getSharedData() {
                 return this.sharedData;
             }
@@ -671,6 +682,21 @@ public interface InstanceMetadata {
                 }
                 this.properties.put(name, value);
                 
+            }
+            
+            /**
+             * 
+             * {@inheritDoc}
+             */
+            public synchronized void setSavedUniqueId(final String savedUniqueId) {
+                checkNotNull("savedUniqueId", savedUniqueId); //$NON-NLS-1$
+                if (this.savedUniqueId != null) {
+                    if (!this.savedUniqueId.equals(savedUniqueId)) {
+                        throw new IllegalStateException(
+                                "trying to set a unique node id for the second time"); //$NON-NLS-1$
+                    }
+                }
+                this.savedUniqueId = savedUniqueId;
             }
             
             /**
@@ -1566,6 +1592,14 @@ public interface InstanceMetadata {
     public <N extends Serializable> N getProperty(String name);
     
     /**
+     * Returns this node unique identifier after its saving, or null if it
+     * wasn't saved yet.
+     * 
+     * @return a unique id for this node
+     */
+    public String getSavedUniqueId();
+    
+    /**
      * This is the {@link SharedData} object. This is used to share the
      * listeners infrastructure between all nodes on this graph.
      * 
@@ -1666,6 +1700,16 @@ public interface InstanceMetadata {
      */
     public <N extends Serializable> void setPropertyIgnoringListener(
             final String name, final N value);
+    
+    /**
+     * Sets the unique id. This method should be used only by
+     * {@link ConfigurationManager managers}.
+     * 
+     * @param id
+     * @throws IllegalStateException
+     *             if someone try to set its id for a second tyme.
+     */
+    public void setSavedUniqueId(String id);
     
     /**
      * Sets a bynary property

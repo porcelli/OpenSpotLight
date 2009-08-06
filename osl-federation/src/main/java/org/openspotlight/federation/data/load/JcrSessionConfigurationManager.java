@@ -500,6 +500,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             newNode.getInstanceMetadata().setPropertyIgnoringListener(
                     Artifact.KeyProperties.UUID.toString(), jcrChild.getUUID());
         }
+        newNode.getInstanceMetadata().setSavedUniqueId(jcrChild.getUUID());
         return newNode;
     }
     
@@ -697,7 +698,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
     
     /**
-     * Finds an artifact by its given unique data. This method is not on
+     * Finds a node by its given unique data. This method is not on
      * {@link ConfigurationManager} class because it use unique data related by
      * jcr.
      * 
@@ -711,7 +712,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @return an artifact by the given uuid
      * @throws ConfigurationException
      */
-    public <T extends Artifact, K extends Serializable> T findArtifactByUuidAndVersion(
+    public <T extends ConfigurationNode, K extends Serializable> T findNodeByUuidAndVersion(
             final ConfigurationNode root, final Class<T> nodeType,
             final String uuid, final String version)
             throws ConfigurationException {
@@ -904,6 +905,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                             Artifact.KeyProperties.UUID.name(),
                             newJcrNode.getUUID());
                 }
+                node.getInstanceMetadata().setSavedUniqueId(
+                        newJcrNode.getUUID());
                 alreadySaved.put(node, newJcrNode);
                 this.saveProperties(node, newJcrNode);
             }
