@@ -1218,7 +1218,8 @@ public interface InstanceMetadata {
             
             synchronized (this) {
                 this.nodeChangeCache.add(changeEvent);
-                if (changeEvent.getNewItem() != null) {
+                if ((changeEvent.getNewItem() != null)
+                        && !this.dirtyNodes.contains(changeEvent.getNewItem())) {
                     this.dirtyNodes.add(changeEvent.getNewItem());
                 }
                 this.dirtyFlag.set(true);
@@ -1270,7 +1271,10 @@ public interface InstanceMetadata {
             for (final ItemEventListener<PropertyValue> listener : this.propertyListeners) {
                 listener.changeEventHappened(changeEvent);
             }
-            fireNodeChange(owner, owner);// to fire node change of type changed.
+            if (!this.dirtyNodes.contains(owner)) {
+                fireNodeChange(owner, owner);// to fire node change of type
+                // changed.
+            }
             
         }
         

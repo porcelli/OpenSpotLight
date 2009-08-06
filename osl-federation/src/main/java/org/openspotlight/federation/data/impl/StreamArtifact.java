@@ -267,4 +267,13 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
         this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.instanceMetadata.toString();
+    }
+    
 }

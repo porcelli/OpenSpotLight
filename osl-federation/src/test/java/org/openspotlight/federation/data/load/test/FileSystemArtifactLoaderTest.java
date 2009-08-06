@@ -49,15 +49,25 @@
 
 package org.openspotlight.federation.data.load.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
+import java.io.FileOutputStream;
 
 import org.junit.Before;
+import org.junit.Test;
+import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
+import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
+import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 
 /**
@@ -89,6 +99,105 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
                 "osl-federation/");
         new Included(artifactMapping, "src/main/java/**/*.java");
+    }
+    
+    public Bundle createConfigurationForChangeListen() throws Exception {
+        this.configuration = new Configuration();
+        final Repository repository = new Repository(this.configuration,
+                "Local target folder");
+        this.configuration.setNumberOfParallelThreads(4);
+        final Project project = new Project(repository, "Osl Federation");
+        final Bundle bundle = new Bundle(project, "Target folder");
+        final String basePath = new File("../").getCanonicalPath() + "/";
+        bundle.setInitialLookup(basePath);
+        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
+                "osl-federation/");
+        new Included(artifactMapping,
+                "target/test-data/FileSystemArtifactLoaderTest/*");
+        return bundle;
+    }
+    
+    @Test
+    public void shouldListenChanges() throws Exception {
+        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        final File textFile = new File(
+                "target/test-data/FileSystemArtifactLoaderTest/willBeChanged");
+        FileOutputStream fos = new FileOutputStream(textFile);
+        fos.write("new text content".getBytes());
+        fos.flush();
+        fos.close();
+        
+        final Bundle bundle = this.createConfigurationForChangeListen();
+        final SharedData sharedData = bundle.getInstanceMetadata()
+                .getSharedData();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
+        
+        fos = new FileOutputStream(textFile);
+        fos.write("changed text content".getBytes());
+        fos.flush();
+        fos.close();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
+                is(ItemChangeType.CHANGED));
+        textFile.delete();
+    }
+    
+    @Test
+    public void shouldListenExclusions() throws Exception {
+        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        final File textFile = new File(
+                "target/test-data/FileSystemArtifactLoaderTest/willBeExcluded");
+        final FileOutputStream fos = new FileOutputStream(textFile);
+        fos.write("new text content".getBytes());
+        fos.flush();
+        fos.close();
+        
+        final Bundle bundle = this.createConfigurationForChangeListen();
+        final SharedData sharedData = bundle.getInstanceMetadata()
+                .getSharedData();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
+        
+        assertThat(textFile.delete(), is(true));
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        
+        assertThat(sharedData.getDirtyNodes().size(), is(0));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
+                is(ItemChangeType.EXCLUDED));
+    }
+    
+    @Test
+    public void shouldListenInclusions() throws Exception {
+        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        final File textFile = new File(
+                "target/test-data/FileSystemArtifactLoaderTest/newTextFile");
+        final FileOutputStream fos = new FileOutputStream(textFile);
+        fos.write("new text content".getBytes());
+        fos.flush();
+        fos.close();
+        
+        final Bundle bundle = this.createConfigurationForChangeListen();
+        final SharedData sharedData = bundle.getInstanceMetadata()
+                .getSharedData();
+        sharedData.markAsSaved();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        final StreamArtifact sa = (StreamArtifact) sharedData.getDirtyNodes()
+                .iterator().next();
+        
+        for (final ItemChangeEvent<ConfigurationNode> change : sharedData
+                .getNodeChangesSinceLastSave()) {
+            System.out.println(change.getType() + " " + change.getNewItem());
+        }
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
+                is(ItemChangeType.ADDED));
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        
     }
     
 }
