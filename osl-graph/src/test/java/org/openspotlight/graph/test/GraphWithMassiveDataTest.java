@@ -69,6 +69,7 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLPersistenceMode;
+import org.openspotlight.graph.node.CobolCopyDataNode;
 
 /**
  * This test just import example data into the GraphSession.
@@ -81,6 +82,17 @@ public class GraphWithMassiveDataTest {
     
     private SLNode rootNode;
     private SLGraphSession session;
+    
+    @Test
+    public void findTwoNodes() throws Exception {
+        final CobolCopyDataNode parent = this.rootNode.addNode(
+                CobolCopyDataNode.class, "n1");
+        final CobolCopyDataNode child = parent.addNode(CobolCopyDataNode.class,
+                "n1");
+        final String id = parent.getID();
+        final SLNode n = this.session.getNodeByID(id);
+        n.toString();
+    }
     
     @Before
     public void setup() throws Exception {
@@ -183,9 +195,9 @@ public class GraphWithMassiveDataTest {
         
     }
     
-    @Test
+    // @Test
     public void shouldInsertNodesAndLinks() throws Exception {
-        this.shouldInsertNodeData();
+        // this.shouldInsertNodeData();
         // this.shouldInsertLinkData();
     }
     
