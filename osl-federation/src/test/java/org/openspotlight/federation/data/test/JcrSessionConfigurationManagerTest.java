@@ -166,7 +166,7 @@ public class JcrSessionConfigurationManagerTest extends
         final TableArtifact artifact = new TableArtifact(bundle,
                 "CATALOG_NAME/SCHEMA_NAME/TABLE/TABLE_NAME");
         manager.save(configuration);
-        final TableArtifact found = manager.findArtifactByUuidAndVersion(
+        final TableArtifact found = manager.findNodeByUuidAndVersion(
                 configuration, TableArtifact.class, artifact.getUUID(),
                 artifact.getVersionName());
         assertThat(found, is(notNullValue()));
