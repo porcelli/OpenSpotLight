@@ -527,7 +527,7 @@ public class SLGraphTest {
 			Assert.assertEquals(value, "8");
 		}
 		catch (SLGraphSessionException e) {
-			LOGGER.error(e);
+			LOGGER.error(e.getMessage(), e);
 			Assert.fail();
 		}
 	}
@@ -2498,6 +2498,9 @@ public class SLGraphTest {
 		}
 	}
 
+	/**
+	 * Test meta link get description.
+	 */
 	@Test
 	public void testMetaLinkGetDescription() {
 		try {
@@ -2517,7 +2520,25 @@ public class SLGraphTest {
 			Assert.fail();
 		}
 	}
-
+	
+	/**
+	 * Test add and get node with strange chars on name.
+	 */
+	@Test
+	public void testAddAndGetNodeWithStrangeCharsOnName() {
+		try {
+			SLNode root1 = session.createContext(1L).getRootNode();
+			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
+			Assert.assertNotNull(javaClassNode1);
+			JavaClassNode javaClassNode2 = root1.getNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
+			Assert.assertNotNull(javaClassNode2);
+			Assert.assertEquals(javaClassNode1, javaClassNode2);
+		} 
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+			Assert.fail();
+		}
+	}
 
 	/**
 	 * Assert simple link.
