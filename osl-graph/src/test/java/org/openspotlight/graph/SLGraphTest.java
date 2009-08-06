@@ -2539,6 +2539,7 @@ public class SLGraphTest {
 			Assert.fail();
 		}
 	}
+	
 
 	/**
 	 * Assert simple link.
