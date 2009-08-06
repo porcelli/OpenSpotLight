@@ -806,6 +806,8 @@ public interface InstanceMetadata {
         
         private boolean valid = true;
         
+        private final Serializable key;
+        
         private final Set<T> foundNodes = new HashSet<T>();
         
         /**
@@ -814,8 +816,23 @@ public interface InstanceMetadata {
          * @param newTypeClass
          */
         public FindAllNodesVisitor(final Class<T> newTypeClass) {
+            checkNotNull("newTypeClass", newTypeClass); //$NON-NLS-1$
             this.typeClass = newTypeClass;
-            
+            this.key = null;
+        }
+        
+        /**
+         * Constructor with target type class to be found.
+         * 
+         * @param newTypeClass
+         * @param key
+         */
+        public FindAllNodesVisitor(final Class<T> newTypeClass,
+                final Serializable key) {
+            checkNotNull("newTypeClass", newTypeClass); //$NON-NLS-1$
+            checkNotNull("key", key); //$NON-NLS-1$
+            this.typeClass = newTypeClass;
+            this.key = key;
         }
         
         /**
@@ -838,7 +855,14 @@ public interface InstanceMetadata {
                 throw logAndReturn(new IllegalStateException());
             }
             if (this.typeClass.isInstance(node)) {
-                this.foundNodes.add((T) node);
+                if (this.key == null) {
+                    this.foundNodes.add((T) node);
+                } else {
+                    if (this.key.equals(node.getInstanceMetadata()
+                            .getKeyPropertyValue())) {
+                        this.foundNodes.add((T) node);
+                    }
+                }
             }
         }
         

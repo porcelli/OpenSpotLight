@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.util;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.openspotlight.federation.data.ConfigurationNode;
@@ -76,6 +77,27 @@ public final class ConfigurationNodes {
             final ConfigurationNode node, final Class<N> type) {
         final FindAllNodesVisitor<N> allNodesVisitor = new FindAllNodesVisitor<N>(
                 type);
+        node.getInstanceMetadata().accept(allNodesVisitor);
+        final Set<N> foundNodes = allNodesVisitor.getFoundNodesAndInvalidate();
+        return foundNodes;
+    }
+    
+    /**
+     * This static method uses the {@link FindAllNodesVisitor} to look for all
+     * nodes of a type inside a {@link ConfigurationNode}.
+     * 
+     * @param <N>
+     *            type of {@link ConfigurationNode} to find
+     * @param node
+     * @param type
+     * @param key
+     * @return all children {@link ConfigurationNode configuration nodes}
+     */
+    public static final <N extends ConfigurationNode> Set<N> findAllNodesOfTypeWithKey(
+            final ConfigurationNode node, final Class<N> type,
+            final Serializable key) {
+        final FindAllNodesVisitor<N> allNodesVisitor = new FindAllNodesVisitor<N>(
+                type, key);
         node.getInstanceMetadata().accept(allNodesVisitor);
         final Set<N> foundNodes = allNodesVisitor.getFoundNodesAndInvalidate();
         return foundNodes;
