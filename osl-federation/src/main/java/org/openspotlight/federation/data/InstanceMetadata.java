@@ -761,8 +761,9 @@ public interface InstanceMetadata {
                     staticMetadata != null);
             checkCondition("ownerIsRoot", Arrays.equals(staticMetadata //$NON-NLS-1$
                     .validParentTypes(), EMPTY_TYPE));
-            return new BasicInstanceMetadata(staticMetadata, new SharedData(),
-                    null, null, owner);
+            final BasicInstanceMetadata metadata = new BasicInstanceMetadata(
+                    staticMetadata, new SharedData(), null, null, owner);
+            return metadata;
             
         }
         

@@ -50,20 +50,16 @@
 package org.openspotlight.federation.data.test;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfTypeWithKey;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
-import static org.openspotlight.federation.data.processing.test.StreamArtifactDogFoodingProcessing.loadAllFilesFromThisConfiguration;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.jcr.Session;
@@ -71,20 +67,14 @@ import javax.jcr.SimpleCredentials;
 
 import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLPersistenceMode;
 
 /**
  * Test class to see if the Jcr configuration is working ok. This test was based
@@ -174,65 +164,80 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
     
     public void shouldInsertNodeData() throws Exception {
         
+        final Configuration configuration = new Configuration();
+        final Repository repository = new Repository(configuration,
+                "repository");
+        final Project rootProject = new Project(repository, "root");
+        
         final InputStream is = getResourceFromClassPath("/data/MassiveInsertJcrSessionConfigurationManagerTest/nodeData.csv");
         assertThat(is, is(notNullValue()));
+        final Map<String, Project> handleMap = new HashMap<String, Project>();
         final BufferedReader reader = new BufferedReader(new InputStreamReader(
                 is));
         String line = null;
         boolean first = true;
         int count = 0;
-        
-        final Configuration configuration = new Configuration();
-        final Repository repository = new Repository(configuration,"repository");
-        final Project rootProject = new Project(repository,"rootProject");
-        while ((count++ != 2000) && ((line = reader.readLine()) != null)) {
+        int err = 0;
+        int ok = 0;
+        try {
+            while ((count++ != 200000) && ((line = reader.readLine()) != null)) {
+                
+                if (first) {
+                    first = false;
+                    continue;
+                }
+                
+                try {
+                    
+                    final StringTokenizer tok = new StringTokenizer(line, "|");
+                    final String t1 = tok.nextToken();
+                    final String t2 = tok.nextToken();
+                    final String t3 = tok.nextToken();
+                    final String t4 = tok.nextToken();
+                    
+                    final String t5;
+                    if (tok.hasMoreTokens()) {
+                        t5 = tok.nextToken();
+                    } else {
+                        t5 = null;
+                    }
+                    
+                    final String handle = t1;
+                    final String parentHandle = t5 == null ? null : t2;
+                    final String key = t5 == null ? t2 : t3;
+                    final String caption = t5 == null ? t3 : t4;
+                    final String type = (t5 == null ? t4 : t5).replaceAll(" ",
+                            "").replaceAll("\\.", "").replaceAll("-", "");
+                    
+                    Project node;
+                    if ((parentHandle == null)
+                            || parentHandle.trim().equals("")) {
+                        node = rootProject.getProjectByName(key);
+                        if (node == null) {
+                            node = new Project(rootProject, key);
+                        }
+                        handleMap.put(handle, node);
+                    } else {
+                        final Project parent = handleMap.get(parentHandle);
+                        if (parent == null) {
+                            Assert.fail();
+                        }
+                        node = new Project(parent, key);
+                        handleMap.put(handle, node);
+                    }
+                    ok++;
+                } catch (final Exception e) {
+                    System.err.println("node: " + e.getMessage() + ": " + line);
+                    err++;
+                }
+            }
+            this.implementation.save(configuration);
+        } finally {
+            System.out.println("count " + count);
+            System.out.println("err   " + err);
+            System.out.println("ok    " + ok);
             
-            if (first) {
-                first = false;
-                continue;
-            }
-            try {
-                final StringTokenizer tok = new StringTokenizer(line, ";");
-                final String t1 = tok.nextToken();
-                final String t2 = tok.nextToken();
-                final String t3 = tok.nextToken();
-                
-                final String t4;
-                if (tok.hasMoreTokens()) {
-                    t4 = tok.nextToken();
-                } else {
-                    t4 = null;
-                }
-                
-                final String key = t1;
-                final String parentKey = t4 == null ? null : t2;
-                final String type = (t4 == null ? t2 : t3).replaceAll(" ", "")
-                        .replaceAll("\\.", "").replaceAll("-", "");
-                final String caption = t4 == null ? t3 : t4;
-                
-                final Class<? extends SLNode> clazz = (Class<? extends SLNode>) Class
-                        .forName("org.openspotlight.graph.node." + type
-                                + "Node");
-                final Project node;
-                if ((parentKey != null) && !"".equals(parentKey)) {
-                    
-                    node = new Project(rootProject,)
-                } else {
-                    (Set<Project)> allProjects = findAllNodesOfTypeWithKey(configuration,Project.class,parentKey);
-                    
-                    final SLNode parent = this.session.getNodeByID(parentKey);
-                    node = parent.addNode(clazz, key,
-                            SLPersistenceMode.TRANSIENT);
-                }
-                clazz.getMethod("setCaption", String.class).invoke(node,
-                        caption);
-                // System.out.println("node ok: " + line);
-            } catch (final Exception e) {
-                System.err.println("node: " + e.getMessage() + ": " + line);
-                e.printStackTrace();
-            }
         }
-        System.out.println(count);
         
     }
     

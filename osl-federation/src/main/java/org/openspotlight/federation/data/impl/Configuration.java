@@ -91,6 +91,8 @@ public final class Configuration implements ConfigurationNode {
      */
     public Configuration() {
         this.instanceMetadata = createRoot(this);
+        this.instanceMetadata.getSharedData().fireNodeChange(null, this);
+        
     }
     
     /**
