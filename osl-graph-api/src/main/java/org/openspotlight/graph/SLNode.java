@@ -103,7 +103,19 @@ public interface SLNode extends Comparable<SLNode> {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public SLNode addNode(String name) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
-
+	
+	/**
+	 * Adds the node.
+	 * 
+	 * @param name the name
+	 * @param encoder the encoder
+	 * 
+	 * @return the sL node
+	 * 
+	 * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLNode addNode(String name, SLEncoder encoder) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
 	
 	/**
 	 * Adds the node.
@@ -117,6 +129,20 @@ public interface SLNode extends Comparable<SLNode> {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
+	
+	/**
+	 * Adds the node.
+	 * 
+	 * @param clazz the clazz
+	 * @param name the name
+	 * @param encoder the encoder
+	 * 
+	 * @return the t
+	 * 
+	 * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLEncoder encoder) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
 
 	/**
 	 * Adds the node.
@@ -131,6 +157,22 @@ public interface SLNode extends Comparable<SLNode> {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLPersistenceMode persistenceMode) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
+	
+	
+	/**
+	 * Adds the node.
+	 * 
+	 * @param clazz the clazz
+	 * @param name the name
+	 * @param encoder the encoder
+	 * @param persistenceMode the persistence mode
+	 * 
+	 * @return the t
+	 * 
+	 * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLEncoder encoder, SLPersistenceMode persistenceMode) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
 
 	/**
 	 * Adds the node.
@@ -163,6 +205,40 @@ public interface SLNode extends Comparable<SLNode> {
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLPersistenceMode persistenceMode, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
 	
+	
+	/**
+	 * Adds the node.
+	 * 
+	 * @param clazz the clazz
+	 * @param name the name
+	 * @param encoder the encoder
+	 * @param linkTypesForLinkDeletion the link types for link deletion
+	 * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
+	 * 
+	 * @return the t
+	 * 
+	 * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLEncoder encoder, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
+	
+	/**
+	 * Adds the node.
+	 * 
+	 * @param clazz the clazz
+	 * @param name the name
+	 * @param encoder the encoder
+	 * @param persistenceMode the persistence mode
+	 * @param linkTypesForLinkDeletion the link types for link deletion
+	 * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
+	 * 
+	 * @return the t
+	 * 
+	 * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public <T extends SLNode> T addNode(Class<T> clazz, String name, SLEncoder encoder, SLPersistenceMode persistenceMode, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
+	
 	/**
 	 * Removes the.
 	 * 
@@ -194,6 +270,20 @@ public interface SLNode extends Comparable<SLNode> {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public <T extends SLNode> T getNode(Class<T> clazz, String name) throws SLInvalidNodeTypeException, SLGraphSessionException;
+	
+	/**
+	 * Gets the node.
+	 * 
+	 * @param clazz the clazz
+	 * @param name the name
+	 * @param encoder the encoder
+	 * 
+	 * @return the node
+	 * 
+	 * @throws SLInvalidNodeTypeException the SL invalid node type exception
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public <T extends SLNode> T getNode(Class<T> clazz, String name, SLEncoder encoder) throws SLInvalidNodeTypeException, SLGraphSessionException;
 	
 	/**
 	 * Gets the nodes.
@@ -277,7 +367,6 @@ public interface SLNode extends Comparable<SLNode> {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public Set<SLNodeProperty<Serializable>> getProperties() throws SLGraphSessionException;
-	
 	
 	/**
 	 * Adds the line reference.
