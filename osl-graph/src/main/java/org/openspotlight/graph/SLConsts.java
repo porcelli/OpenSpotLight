@@ -100,6 +100,9 @@ public class SLConsts {
 	/** The Constant PROPERTY_NAME_TYPE. */
 	static final String PROPERTY_NAME_TYPE = "node.type";
 	
+	/** The Constant pROPERTY_NAME_DECODED_NAME. */
+	static final String PROPERTY_NAME_DECODED_NAME = "decodedName";
+	
 	/** The Constant PROPERTY_NAME_A_NODE_ID. */
 	static final String PROPERTY_NAME_A_NODE_ID = "aNodeID";
 	

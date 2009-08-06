@@ -79,6 +79,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	/** The event poster. */
 	private SLGraphSessionEventPoster eventPoster;
 	
+	/** The encoder. */
+	private SLEncoder encoder;
+	
+	/** The encoder factory. */
+	private SLEncoderFactory encoderFactory;
+	
 	/**
 	 * Instantiates a new sL graph session impl.
 	 * 
@@ -91,8 +97,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		listeners.add(new SLTransientObjectListener());
 		listeners.add(new SLMetadataListener());
 		this.eventPoster = new SLGraphSessionEventPosterImpl(listeners);
+		this.encoderFactory = new SLEncoderFactoryImpl();
+		this.encoder = encoderFactory.getUUIDEncoder();
 	}
- 	
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLGraphSession#createContext(java.lang.Long)
@@ -181,12 +189,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			String[] names = pNode.getPath().substring(1).split("/");
 			Long contextID = new Long(names[INDEX_CONTEXT_ID]);
 			SLContext context = getContext(contextID);
+			SLEncoder fakeEncoder = getEncoderFactory().getFakeEncoder();
 			for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
 				if (node == null) {
-					node = context.getRootNode().getNode(names[i]);
+					node = context.getRootNode().getNode(SLNode.class, names[i], fakeEncoder);
 				}
 				else {
-					node = node.getNode(names[i]);
+					node = node.getNode(SLNode.class, names[i], fakeEncoder);
 				}
 			}
 			return node;
@@ -199,6 +208,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#addLink(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, boolean)
+	 */
 	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException {
 		return addLink(linkClass, source, target, bidirecional, SLPersistenceMode.NORMAL);
 	}
@@ -613,7 +625,26 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return new SLMetadataImpl(treeSession);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getDefaultEncoder()
+	 */
+	public SLEncoder getDefaultEncoder() throws SLGraphSessionException {
+		return encoder;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#setDefaultEncoder(org.openspotlight.graph.SLEncoder)
+	 */
+	public void setDefaultEncoder(SLEncoder encoder) throws SLGraphSessionException {
+		this.encoder = encoder;
+	}
 	
+	public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException {
+		return encoderFactory;
+	}
+
+
 	/**
 	 * Adds the link node.
 	 * 

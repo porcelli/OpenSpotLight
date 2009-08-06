@@ -141,7 +141,9 @@ public class SLLinkImpl implements SLLink {
 	 */
 	public SLNode[] getSides() throws SLGraphSessionException {
 		try {
-			return new SLNode[] {getANode(), getBNode()};
+			SLNode a = getANode();
+			SLNode b = getBNode();
+			return new SLNode[] {a, b};
 		}
 		catch (SLException e) {
 			throw new SLGraphSessionException("Error on attempt to retrieve link sides.", e);

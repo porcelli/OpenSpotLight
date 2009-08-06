@@ -46,95 +46,22 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.util;
+package org.openspotlight.graph;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkInvocationHandler;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeInvocationHandler;
+import java.util.UUID;
 
 /**
- * The Class ProxyUtil.
+ * The Class SLUUIDEncoder.
  * 
  * @author Vitor Hugo Chagas
  */
-public class ProxyUtil {
-
-	/**
-	 * Creates the proxy.
-	 * 
-	 * @param iClass the i class
-	 * @param target the target
-	 * 
-	 * @return the t
-	 */
-	public static <T> T createProxy(Class<T> iClass, Object target) {
-		InvocationHandler handler = new SimpleInvocationHandler(target);
-		return iClass.cast(Proxy.newProxyInstance(iClass.getClassLoader(), new Class<?>[] {iClass}, handler));
-	}
+public class SLUUIDEncoder implements SLEncoder {
 	
-	/**
-	 * Creates the proxy.
-	 * 
-	 * @param iClass the i class
-	 * @param handler the handler
-	 * 
-	 * @return the t
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLEncoder#encode(java.lang.String)
 	 */
-	public static <T> T createProxy(Class<T> iClass, InvocationHandler handler) {
-		return iClass.cast(Proxy.newProxyInstance(iClass.getClassLoader(), new Class<?>[] {iClass}, handler));
-	}
-	
-	/**
-	 * Creates the link proxy.
-	 * 
-	 * @param linkType the link type
-	 * @param link the link
-	 * 
-	 * @return the t
-	 */
-	public static <T extends SLLink> T createLinkProxy(Class<T> linkType, SLLink link) {
-		InvocationHandler handler = new SLLinkInvocationHandler(link);
-		return linkType.cast(Proxy.newProxyInstance(linkType.getClassLoader(), new Class<?>[] {linkType}, handler));
-	}
-
-	/**
-	 * Creates the node proxy.
-	 * 
-	 * @param nodeType the node type
-	 * @param node the node
-	 * 
-	 * @return the t
-	 */
-	public static <T extends SLNode> T createNodeProxy(Class<T> nodeType, SLNode node) {
-		InvocationHandler handler = new SLNodeInvocationHandler(node);
-		return nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
-	}
-
-	/**
-	 * Gets the link from proxy.
-	 * 
-	 * @param proxy the proxy
-	 * 
-	 * @return the link from proxy
-	 */
-	public static SLLink getLinkFromProxy(Object proxy) {
-		SLLinkInvocationHandler handler = (SLLinkInvocationHandler) Proxy.getInvocationHandler(proxy);
-		return handler.getLink();
-	}
-	
-	/**
-	 * Gets the node from proxy.
-	 * 
-	 * @param proxy the proxy
-	 * 
-	 * @return the node from proxy
-	 */
-	public static SLNode getNodeFromProxy(Object proxy) {
-		SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy.getInvocationHandler(proxy);
-		return handler.getNode();
+	public String encode(String value) {
+		UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
+		return uuid.toString().replace('-', '.');
 	}
 }
