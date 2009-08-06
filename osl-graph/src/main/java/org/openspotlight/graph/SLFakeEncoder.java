@@ -48,75 +48,13 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.util.ProxyUtil;
+public class SLFakeEncoder implements SLEncoder {
 
-
-/**
- * The Class SLContextImpl.
- * 
- * @author Vitor Hugo Chagas
- */
-public class SLContextImpl implements SLContext {
-
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/** The session. */
-	private SLGraphSession session;
-	
-	/** The root node. */
-	private SLNode rootNode;
-	
-	/**
-	 * Instantiates a new sL context impl.
-	 * 
-	 * @param session the session
-	 * @param contextRootPersistentNode the context root persistent node
-	 * @param eventPoster the event poster
-	 */
-	public SLContextImpl(SLGraphSession session, SLPersistentNode contextRootPersistentNode, SLGraphSessionEventPoster eventPoster) {
-		this.session = session;
-		this.rootNode = new SLNodeImpl(this, null, contextRootPersistentNode, eventPoster);
-	}
-
-	//@Override
 	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLContext#getSession()
+	 * @see org.openspotlight.graph.SLEncoder#encode(java.lang.String)
 	 */
-	public SLGraphSession getSession() {
-		return session;
+	public String encode(String value) {
+		return value;
 	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLContext#getID()
-	 */
-	public Long getID() throws SLGraphSessionException {
-		return new Long(rootNode.getName());
-	}
-
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLContext#getRootNode()
-	 */
-	public SLNode getRootNode() throws SLGraphSessionException {
-		return ProxyUtil.createNodeProxy(SLNode.class, rootNode);
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		try {
-			if (obj == null) return false;
-			SLContext context = (SLContext) obj;
-			return getID().equals(context.getID());
-		}
-		catch (SLGraphSessionException e) {
-			throw new SLRuntimeException("Error on attempt to execute SLContextImpl.equals() method.", e);
-		}
-	}
 }

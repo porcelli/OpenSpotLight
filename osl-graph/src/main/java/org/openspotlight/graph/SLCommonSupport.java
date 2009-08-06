@@ -58,13 +58,58 @@ import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLCommonSupport.
  * 
  * @author Vitor Hugo Chagas
  */
 public class SLCommonSupport {
+	
+	/**
+	 * Gets the user node name.
+	 * 
+	 * @param pNode the node
+	 * 
+	 * @return the user node name
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static String getUserNodeName(SLPersistentNode pNode) throws SLPersistentTreeSessionException {
+		String decodedName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
+		return decodedName == null ? pNode.getName() : decodedName;
+	}
+	
+	/**
+	 * Sets the internal property.
+	 * 
+	 * @param pNode the node
+	 * @param propName the prop name
+	 * @param value the value
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static void setInternalProperty(SLPersistentNode pNode, String propName, String value) throws SLPersistentTreeSessionException {
+		String internalPropName = toInternalPropertyName(propName);
+		pNode.setProperty(String.class, internalPropName, value);
+	}
+	
+	/**
+	 * Gets the internal property as string.
+	 * 
+	 * @param pNode the node
+	 * @param propName the prop name
+	 * 
+	 * @return the internal property as string
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static String getInternalPropertyAsString(SLPersistentNode pNode, String propName) throws SLPersistentTreeSessionException {
+		String value = null;
+		String internalPropName = toInternalPropertyName(propName);
+		SLPersistentProperty<String> prop = getProperty(pNode, String.class, internalPropName);
+		if (prop != null) value = prop.getValue();
+		return value;
+	}
 	
 	/**
 	 * Gets the name in id form.
