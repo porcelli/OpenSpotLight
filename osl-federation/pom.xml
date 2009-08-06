@@ -5,7 +5,7 @@
 	<groupId>org.openspotlight</groupId>
 	<artifactId>osl-federation</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenSpotLight Federation Core</name>
+	<name>OpenSpotLight Federation Core </name>
 	<url>http://caravelatech.com</url>
 	<parent>
 		<groupId>org.openspotlight</groupId>
