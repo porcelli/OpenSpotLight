@@ -526,6 +526,7 @@ public interface InstanceMetadata {
              */
             public InputStream getStreamProperty(final String name) {
                 checkNotEmpty("name", name);//$NON-NLS-1$
+                this.sharedData.loadProperties(getOwner());
                 final InputStream value = (InputStream) this.properties
                         .get(name);
                 return value;

@@ -53,6 +53,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDbConfiguration;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.Set;
@@ -60,19 +61,13 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.DatabaseArtifactLoader;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
-import org.openspotlight.federation.data.load.db.DatabaseType;
 import org.openspotlight.federation.data.load.db.test.H2DatabaseTest;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.graph.SLGraph;
@@ -99,47 +94,6 @@ public class DbStreamArtifactProcessing {
         
     }
     
-    private Configuration createDbConfiguration() throws Exception {
-        final Configuration configuration = new Configuration();
-        final Repository h2Repository = new Repository(configuration,
-                "H2 Repository");
-        configuration.setNumberOfParallelThreads(4);
-        h2Repository.setActive(true);
-        final Project h2Project = new Project(h2Repository, "h2 Project");
-        h2Project.setActive(true);
-        final DbBundle h2Bundle = new DbBundle(h2Project, "H2 Connection");
-        h2Bundle.setActive(true);
-        h2Bundle.setUser("sa");
-        h2Bundle.setType(DatabaseType.H2);
-        h2Bundle
-                .setInitialLookup("jdbc:h2:./target/test-data/DbStreamArtifactProcessing/h2/db");
-        h2Bundle.setDriverClass("org.h2.Driver");
-        final ArtifactMapping h2ArtifactMapping = new ArtifactMapping(h2Bundle,
-                "DB/PUBLIC/");
-        final Included h2IncludedTrigger = new Included(h2ArtifactMapping,
-                "trigger/*");
-        final Included h2IncludedProcedure = new Included(h2ArtifactMapping,
-                "procedure/*");
-        final Included h2IncludedTable = new Included(h2ArtifactMapping,
-                "table/*");
-        final Included h2IncludedFunction = new Included(h2ArtifactMapping,
-                "function/*");
-        final Included h2IncludedView = new Included(h2ArtifactMapping,
-                "view/*");
-        final Included h2IncludedIndex = new Included(h2ArtifactMapping,
-                "index/*");
-        final BundleProcessorType h2CommonProcessor = new BundleProcessorType(
-                h2Bundle,
-                "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-        final BundleProcessorType h2CustomProcessor = new BundleProcessorType(
-                h2Bundle,
-                "org.openspotlight.federation.data.processing.test.LogTableCustomArtifactProcessor");
-        
-        h2CommonProcessor.setActive(true);
-        h2CustomProcessor.setActive(true);
-        return configuration;
-    }
-    
     private Configuration loadAllArtifactsFromThisConfiguration(
             final Configuration configuration) throws Exception {
         final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
@@ -159,15 +113,14 @@ public class DbStreamArtifactProcessing {
             throws Exception {
         final XmlConfigurationManager configurationManager = new XmlConfigurationManager(
                 "./target/test-data/DbStreamArtifactProcessing/h2-configuration.xml");
-        final Configuration configuration = this.createDbConfiguration();
+        final Configuration configuration = createDbConfiguration();
         configurationManager.save(configuration);
     }
     
     @Test
     public void shouldLoadAllArtifactsFromh2SourceCode() throws Exception {
         final Configuration configuration = this
-                .loadAllArtifactsFromThisConfiguration(this
-                        .createDbConfiguration());
+                .loadAllArtifactsFromThisConfiguration(createDbConfiguration());
         final Set<Bundle> bundles = findAllNodesOfType(configuration,
                 Bundle.class);
         for (final Bundle bundle : bundles) {
@@ -178,8 +131,7 @@ public class DbStreamArtifactProcessing {
     @Test
     public void shouldProcessAllValidh2SourceCode() throws Exception {
         final Configuration configuration = this
-                .loadAllArtifactsFromThisConfiguration(this
-                        .createDbConfiguration());
+                .loadAllArtifactsFromThisConfiguration(createDbConfiguration());
         final SLGraph graph = mock(SLGraph.class);
         final SLGraphSession session = mock(SLGraphSession.class);
         when(graph.openSession()).thenReturn(session);

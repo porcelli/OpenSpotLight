@@ -435,6 +435,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             
             if (LazyType.NON_LAZY.equals(lazyType)) {
                 loadChildrenAndProperties(jcrChild, newNode, staticMetadata);
+            } else {
+                final String[] propKeys = staticMetadata.propertyNames();
+                final Class<?>[] propValues = staticMetadata.propertyTypes();
+                final Map<String, Class<?>> propertyTypes = map(
+                        ofKeys(propKeys), andValues(propValues));
+                loadNodeProperties(jcrNode, newNode, propertyTypes,
+                        staticMetadata.keyPropertyName());
             }
             
         }
@@ -938,11 +945,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 .getInstanceMetadata().getProperties();
         for (final Map.Entry<String, Object> entry : properties.entrySet()) {
             final Object value = entry.getValue();
-            if (value instanceof Serializable) {
-                final Class<?> clazz = value != null ? value.getClass() : null;
-                this.setProperty(innerNewJcrNode, DEFAULT_OSL_PREFIX + ":" //$NON-NLS-1$
-                        + entry.getKey(), clazz, entry.getValue());
-            }
+            final Class<?> clazz = value != null ? value.getClass() : null;
+            this.setProperty(innerNewJcrNode, DEFAULT_OSL_PREFIX + ":" //$NON-NLS-1$
+                    + entry.getKey(), clazz, entry.getValue());
         }
     }
     

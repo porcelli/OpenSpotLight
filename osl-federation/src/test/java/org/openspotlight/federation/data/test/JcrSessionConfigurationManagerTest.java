@@ -50,9 +50,15 @@
 package org.openspotlight.federation.data.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
+import static org.openspotlight.federation.data.processing.test.StreamArtifactDogFoodingProcessing.loadAllFilesFromThisConfiguration;
+import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
+
+import java.util.Set;
 
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
@@ -64,6 +70,7 @@ import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
@@ -96,6 +103,8 @@ public class JcrSessionConfigurationManagerTest extends
     
     private static ConfigurationManager implementation;
     
+    private static Configuration configuration;
+    
     @BeforeClass
     public static void initializeSomeConfiguration() throws Exception {
         delete(JACKRABBIT_DATA_PATH);
@@ -107,6 +116,13 @@ public class JcrSessionConfigurationManagerTest extends
         session = repository.login(creds);
         assertThat(session, is(notNullValue()));
         implementation = new JcrSessionConfigurationManager(session);
+    }
+    
+    @BeforeClass
+    public static void loadSourceCodeIntoValidConfiguration() throws Exception {
+        configuration = createOslValidConfiguration();
+        configuration = loadAllFilesFromThisConfiguration(configuration);
+        
     }
     
     @AfterClass
@@ -156,6 +172,33 @@ public class JcrSessionConfigurationManagerTest extends
         assertThat(found, is(notNullValue()));
         assertThat(found.getTableName(), is("TABLE_NAME"));
         
+    }
+    
+    @Test
+    public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyLoad()
+            throws Exception {
+        this
+                .shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(LazyType.LAZY);
+    }
+    
+    public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(
+            final LazyType type) throws Exception {
+        final ConfigurationManager configurationManager = this.createInstance();
+        configurationManager.save(configuration);
+        final Configuration loadedConfiguration = configurationManager
+                .load(type);
+        final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(
+                loadedConfiguration, StreamArtifact.class);
+        assertThat(loadedArtifacts.iterator().next().getData(),
+                is(notNullValue()));
+        assertThat(loadedArtifacts.size(), is(not(0)));
+    }
+    
+    @Test
+    public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithNonLazyLoad()
+            throws Exception {
+        this
+                .shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(LazyType.NON_LAZY);
     }
     
     @Test

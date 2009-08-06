@@ -178,7 +178,8 @@ public class NodeTest {
                     for (final int m : numbers) {
                         final StreamArtifact Artifact = new StreamArtifact(
                                 bundle, "r-" + i + "," + j + "," + k + "," + m);
-                        Artifact.setData(new ByteArrayInputStream(new byte[0]));
+                        Artifact.setData(new ByteArrayInputStream("new example"
+                                .getBytes()));
                         Artifact.setDataSha1("sha1");
                     }
                 }
