@@ -57,6 +57,8 @@ import static org.openspotlight.common.util.ClassPathResource.getResourceFromCla
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.junit.After;
@@ -138,7 +140,7 @@ public class GraphWithMassiveDataTest {
     }
     
     public void shouldInsertNodeData() throws Exception {
-        
+        final Map<String, String> handleMap = new HashMap<String, String>();
         final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/nodeData.csv");
         assertThat(is, is(notNullValue()));
         final BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -157,28 +159,33 @@ public class GraphWithMassiveDataTest {
                 final String t1 = tok.nextToken();
                 final String t2 = tok.nextToken();
                 final String t3 = tok.nextToken();
+                final String t4 = tok.nextToken();
                 
-                final String t4;
+                final String t5;
                 if (tok.hasMoreTokens()) {
-                    t4 = tok.nextToken();
+                    t5 = tok.nextToken();
                 } else {
-                    t4 = null;
+                    t5 = null;
                 }
                 
-                final String key = t1;
-                final String parentKey = t4 == null ? null : t2;
-                final String type = (t4 == null ? t2 : t3).replaceAll(" ", "")
+                final String handle = t1;
+                final String parentHandle = t5 == null ? null : t2;
+                final String key = t5 == null ? t2 : t3;
+                final String caption = t5 == null ? t3 : t4;
+                final String type = (t5 == null ? t4 : t5).replaceAll(" ", "")
                         .replaceAll("\\.", "").replaceAll("-", "");
-                final String caption = t4 == null ? t3 : t4;
                 
                 final Class<? extends SLNode> clazz = (Class<? extends SLNode>) Class
                         .forName("org.openspotlight.graph.node." + type
                                 + "Node");
+                
                 final SLNode node;
                 if ((type != null) && !"".equals(type)) {
                     node = this.rootNode.addNode(clazz, key,
                             SLPersistenceMode.TRANSIENT);
+                    handleMap.put(handle, node.getID());
                 } else {
+                    final String parentKey = handleMap.get(parentHandle);
                     final SLNode parent = this.session.getNodeByID(parentKey);
                     node = parent.addNode(clazz, key,
                             SLPersistenceMode.TRANSIENT);
