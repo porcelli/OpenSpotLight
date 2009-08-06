@@ -447,4 +447,28 @@ public interface SLGraphSession {
 	 */
 	public SLMetadata getMetadata() throws SLGraphSessionException;
 	
+	/**
+	 * Sets the default encoder.
+	 * 
+	 * @param encoder the new default encoder
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public void setDefaultEncoder(SLEncoder encoder) throws SLGraphSessionException;
+	
+	/**
+	 * Gets the default encoder.
+	 * 
+	 * @return the default encoder
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLEncoder getDefaultEncoder() throws SLGraphSessionException;
+	
+	/**
+	 * @return
+	 * @throws SLGraphSessionException
+	 */
+	public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException;
+	
 }
