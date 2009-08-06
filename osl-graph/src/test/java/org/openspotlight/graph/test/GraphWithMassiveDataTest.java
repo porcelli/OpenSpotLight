@@ -62,6 +62,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
@@ -70,8 +71,6 @@ import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLPersistenceMode;
-import org.openspotlight.graph.node.CobolCopyDataNode;
 
 /**
  * This test just import example data into the GraphSession.
@@ -85,17 +84,6 @@ public class GraphWithMassiveDataTest {
     private SLNode rootNode;
     private SLGraphSession session;
     
-    @Test
-    public void findTwoNodes() throws Exception {
-        final CobolCopyDataNode parent = this.rootNode.addNode(
-                CobolCopyDataNode.class, "n1");
-        final CobolCopyDataNode child = parent.addNode(CobolCopyDataNode.class,
-                "n1");
-        final String id = parent.getID();
-        final SLNode n = this.session.getNodeByID(id);
-        n.toString();
-    }
-    
     @Before
     public void setup() throws Exception {
         final SLGraphFactory factory = AbstractFactory
@@ -106,41 +94,54 @@ public class GraphWithMassiveDataTest {
         
     }
     
-    public void shouldInsertLinkData() throws Exception {
-        final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/linkData.csv");
-        assertThat(is, is(notNullValue()));
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                is));
-        String line = null;
-        boolean first = true;
+    public void shouldInsertLinkData(final Map<String, SLNode> handleMap)
+            throws Exception {
         int count = 0;
-        while ((count++ != 100000) && ((line = reader.readLine()) != null)) {
-            if (first) {
-                first = false;
-                continue;
+        int err = 0;
+        int ok = 0;
+        
+        try {
+            final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/linkData.csv");
+            assertThat(is, is(notNullValue()));
+            final BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(is));
+            String line = null;
+            boolean first = true;
+            while ((count++ != 100000) && ((line = reader.readLine()) != null)) {
+                if (first) {
+                    first = false;
+                    continue;
+                }
+                try {
+                    final StringTokenizer tok = new StringTokenizer(line, "|");
+                    final String handleA = tok.nextToken();
+                    final String handleB = tok.nextToken();
+                    final String type = tok.nextToken().replaceAll(" ", "")
+                            .replaceAll("\\.", "").replaceAll("-", "");
+                    
+                    final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
+                            .forName("org.openspotlight.graph.link." + type
+                                    + "Link");
+                    this.session.addLink(clazz, handleMap.get(handleA),
+                            handleMap.get(handleB), false);
+                    ok++;
+                    
+                } catch (final Exception e) {
+                    System.err.println("node: " + e.getMessage() + ": " + line);
+                    err++;
+                }
             }
-            try {
-                final StringTokenizer tok = new StringTokenizer(line, ";");
-                final String type = tok.nextToken().replaceAll(" ", "")
-                        .replaceAll("\\.", "").replaceAll("-", "");
-                final String firstNodeName = tok.nextToken();
-                final String secondNodeName = tok.nextToken();
-                final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
-                        .forName("org.openspotlight.graph.link." + type
-                                + "Link");
-                this.session.addLink(clazz, this.rootNode
-                        .getNode(firstNodeName), this.rootNode
-                        .getNode(secondNodeName), false);
-                System.out.println("link ok: " + line);
-            } catch (final Exception e) {
-                System.err.println("node: " + e.getMessage() + ": " + line);
-                e.printStackTrace();
-            }
+        } finally {
+            System.out.println("count " + count);
+            System.out.println("err   " + err);
+            System.out.println("ok    " + ok);
+            
         }
     }
     
     public void shouldInsertNodeData() throws Exception {
-        final Map<String, String> handleMap = new HashMap<String, String>();
+        
+        final Map<String, SLNode> handleMap = new HashMap<String, SLNode>();
         final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/nodeData.csv");
         assertThat(is, is(notNullValue()));
         final BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -148,64 +149,71 @@ public class GraphWithMassiveDataTest {
         String line = null;
         boolean first = true;
         int count = 0;
-        while ((count++ != 2000) && ((line = reader.readLine()) != null)) {
+        int err = 0;
+        int ok = 0;
+        try {
+            while ((count++ != 40000) && ((line = reader.readLine()) != null)) {
+                
+                if (first) {
+                    first = false;
+                    continue;
+                }
+                
+                try {
+                    
+                    final StringTokenizer tok = new StringTokenizer(line, "|");
+                    final String t1 = tok.nextToken();
+                    final String t2 = tok.nextToken();
+                    final String t3 = tok.nextToken();
+                    final String t4 = tok.nextToken();
+                    
+                    final String t5;
+                    if (tok.hasMoreTokens()) {
+                        t5 = tok.nextToken();
+                    } else {
+                        t5 = null;
+                    }
+                    
+                    final String handle = t1;
+                    final String parentHandle = t5 == null ? null : t2;
+                    final String key = t5 == null ? t2 : t3;
+                    final String caption = t5 == null ? t3 : t4;
+                    final String type = (t5 == null ? t4 : t5).replaceAll(" ",
+                            "").replaceAll("\\.", "").replaceAll("-", "");
+                    
+                    SLNode node;
+                    if ((parentHandle == null)
+                            || parentHandle.trim().equals("")) {
+                        node = this.rootNode.addNode(caption);
+                        
+                    } else {
+                        final SLNode parent = handleMap.get(parentHandle);
+                        if (parent == null) {
+                            Assert.fail();
+                        }
+                        node = parent.addNode(caption);
+                    }
+                    handleMap.put(handle, node);
+                    ok++;
+                    
+                } catch (final Exception e) {
+                    System.err.println("node: " + e.getMessage() + ": " + line);
+                    err++;
+                }
+            }
+        } finally {
+            System.out.println("count " + count);
+            System.out.println("err   " + err);
+            System.out.println("ok    " + ok);
             
-            if (first) {
-                first = false;
-                continue;
-            }
-            try {
-                final StringTokenizer tok = new StringTokenizer(line, ";");
-                final String t1 = tok.nextToken();
-                final String t2 = tok.nextToken();
-                final String t3 = tok.nextToken();
-                final String t4 = tok.nextToken();
-                
-                final String t5;
-                if (tok.hasMoreTokens()) {
-                    t5 = tok.nextToken();
-                } else {
-                    t5 = null;
-                }
-                
-                final String handle = t1;
-                final String parentHandle = t5 == null ? null : t2;
-                final String key = t5 == null ? t2 : t3;
-                final String caption = t5 == null ? t3 : t4;
-                final String type = (t5 == null ? t4 : t5).replaceAll(" ", "")
-                        .replaceAll("\\.", "").replaceAll("-", "");
-                
-                final Class<? extends SLNode> clazz = (Class<? extends SLNode>) Class
-                        .forName("org.openspotlight.graph.node." + type
-                                + "Node");
-                
-                final SLNode node;
-                if ((type != null) && !"".equals(type)) {
-                    node = this.rootNode.addNode(clazz, key,
-                            SLPersistenceMode.TRANSIENT);
-                    handleMap.put(handle, node.getID());
-                } else {
-                    final String parentKey = handleMap.get(parentHandle);
-                    final SLNode parent = this.session.getNodeByID(parentKey);
-                    node = parent.addNode(clazz, key,
-                            SLPersistenceMode.TRANSIENT);
-                }
-                clazz.getMethod("setCaption", String.class).invoke(node,
-                        caption);
-                // System.out.println("node ok: " + line);
-            } catch (final Exception e) {
-                System.err.println("node: " + e.getMessage() + ": " + line);
-                e.printStackTrace();
-            }
         }
-        System.out.println(count);
+        this.shouldInsertLinkData(handleMap);
         
     }
     
-    // @Test
+    @Test
     public void shouldInsertNodesAndLinks() throws Exception {
-        // this.shouldInsertNodeData();
-        // this.shouldInsertLinkData();
+        this.shouldInsertNodeData();
     }
     
     @After
