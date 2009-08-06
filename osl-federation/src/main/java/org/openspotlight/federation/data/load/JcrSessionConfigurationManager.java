@@ -853,8 +853,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         
         try {
             
-            final ConfigurationNode[] dirtyNodesAsArray = configuration
-                    .getInstanceMetadata().getSharedData().getDirtyNodes()
+            final Set<ConfigurationNode> dirtyNodes = configuration
+                    .getInstanceMetadata().getSharedData().getDirtyNodes();
+            
+            final ConfigurationNode[] dirtyNodesAsArray = dirtyNodes
                     .toArray(new ConfigurationNode[0]);
             
             sort(dirtyNodesAsArray, new ParentNumberComparator());
@@ -869,9 +871,15 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 Node parentJcrNode = null;
                 if (parentNode == null) {
                     parentJcrNode = this.session.getRootNode();
-                } else {
-                    parentJcrNode = alreadySaved.get(parentNode);
-                    if (parentJcrNode == null) {
+                } else if (parentNode != null) {
+                    if (dirtyNodes.contains(parentNode)) {
+                        
+                        parentJcrNode = alreadySaved.get(parentNode);
+                        if (parentJcrNode == null) {
+                            logAndThrow(new IllegalStateException(
+                                    "Dirty node without dirty parent")); //$NON-NLS-1$
+                        }
+                    } else {
                         final String pathToFind = XpathSupport
                                 .getCompleteXpathFor(parentNode);
                         parentJcrNode = JcrSupport.findUnique(this.session,
@@ -881,12 +889,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                                     "Dirty node without parent")); //$NON-NLS-1$
                         }
                     }
-                    
                 }
-                
                 if (parentJcrNode == null) {
                     logAndThrow(new IllegalStateException(
-                            "Dirty node without parent")); //$NON-NLS-1$
+                            "Parent for dirty node not found")); //$NON-NLS-1$
                 }
                 
                 final StaticMetadata metadata = node.getInstanceMetadata()

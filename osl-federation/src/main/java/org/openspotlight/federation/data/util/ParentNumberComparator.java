@@ -76,7 +76,7 @@ public class ParentNumberComparator implements Comparator<ConfigurationNode> {
     }
     
     private int countParentsFrom(final ConfigurationNode n) {
-        ConfigurationNode c = n;
+        ConfigurationNode c = n.getInstanceMetadata().getDefaultParent();
         int i = 0;
         while (c != null) {
             i++;
