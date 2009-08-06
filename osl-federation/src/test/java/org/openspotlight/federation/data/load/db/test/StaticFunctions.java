@@ -70,6 +70,17 @@ public class StaticFunctions {
      * @param i1
      * @param i2
      */
+    public static void anotherFlagProcedure(final int i1, final int i2) {
+        procedureCalled = true;
+    }
+    
+    /**
+     * This dummy method just set a flag to true. H2 doesn't support out
+     * parameters.
+     * 
+     * @param i1
+     * @param i2
+     */
     public static void flagProcedure(final int i1, final int i2) {
         procedureCalled = true;
     }
