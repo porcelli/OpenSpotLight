@@ -49,6 +49,7 @@
 
 package org.openspotlight.federation.data.load.db;
 
+import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.io.InputStream;
@@ -136,16 +137,8 @@ public enum DatabaseMetadataScriptManager {
             xstream.addImplicitCollection(DatabaseMetadataScripts.class,
                     "scripts"); //$NON-NLS-1$
             xstream.alias("customType", CustomTypeScript.class); //$NON-NLS-1$
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(DATABASE_METADATA_SCRIPT_LOCATION);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                        .getResourceAsStream(DATABASE_METADATA_SCRIPT_LOCATION);
-            }
-            if (stream == null) {
-                stream = this.getClass().getResourceAsStream(
-                        DATABASE_METADATA_SCRIPT_LOCATION);
-            }
+            final InputStream stream = getResourceFromClassPath(DATABASE_METADATA_SCRIPT_LOCATION);
+            
             this.scripts = (DatabaseMetadataScripts) xstream.fromXML(stream);
             this.scripts.setImmutable();
         } catch (final Exception e) {
