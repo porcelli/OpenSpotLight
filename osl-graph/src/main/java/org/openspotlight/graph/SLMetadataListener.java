@@ -50,9 +50,9 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.annotation.SLDescription;
@@ -79,7 +79,9 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  */
 public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
     
-    private final Set<Class<? extends SLLink>> sessionLinkCache = new HashSet<Class<? extends SLLink>>();
+    private final Set<Class<? extends SLLink>> sessionLinkTypeCache = new CopyOnWriteArraySet<Class<? extends SLLink>>();
+    
+    private final Set<Class<? extends SLNode>> sessionNodeTypeCache = new CopyOnWriteArraySet<Class<? extends SLNode>>();
     
     /**
      * Adds the description.
@@ -342,7 +344,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
             final SLLink link = event.getLink();
             final Class<? extends SLLink> linkType = link.getClass()
                     .getInterfaces()[0];
-            if (this.sessionLinkCache.contains(linkType)) {
+            if (this.sessionLinkTypeCache.contains(linkType)) {
                 return;
             }
             final SLNode[] sides = link.getSides();
@@ -378,7 +380,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
             linkNode.setProperty(String.class, propName, metaLinkNode.getID());
             
             this.addDescription(linkType, metaLinkNode);
-            this.sessionLinkCache.add(linkType);
+            this.sessionLinkTypeCache.add(linkType);
         } catch (final SLException e) {
             throw new SLGraphSessionException(
                     "Error on attempt to add meta link node.", e);
@@ -437,6 +439,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
             final SLPersistentNode pNode = event.getPersistentNode();
             final Class<? extends SLNode> nodeType = event.getNode().getClass()
                     .getInterfaces()[0];
+            if (this.sessionNodeTypeCache.contains(nodeType)) {
+                return;
+            }
             if (nodeType.equals(SLNode.class)) {
                 return;
             }
@@ -453,14 +458,22 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                 } else {
                     parentTypeNode = treeSession.getNodeByPath(parentPath);
                 }
-                pMetaNode = parentTypeNode.addNode(nodeType.getName());
-                final String idPropName = SLCommonSupport
-                        .toInternalPropertyName(SLConsts.PROPERTY_NAME_META_NODE_ID);
-                pNode.setProperty(String.class, idPropName, pMetaNode.getID());
+                if (parentTypeNode != null) {
+                    pMetaNode = parentTypeNode.addNode(nodeType.getName());
+                    // FIXME sometimes the parentTypeNode is null
+                    final String idPropName = SLCommonSupport
+                            .toInternalPropertyName(SLConsts.PROPERTY_NAME_META_NODE_ID);
+                    pNode.setProperty(String.class, idPropName, pMetaNode
+                            .getID());
+                }
+                
             }
-            
-            this.addRenderHints(nodeType, pMetaNode);
-            this.addDescription(nodeType, pMetaNode);
+            if (pMetaNode != null) {
+                // FIXME sometimes the parentTypeNode is null
+                this.addRenderHints(nodeType, pMetaNode);
+                this.addDescription(nodeType, pMetaNode);
+            }
+            this.sessionNodeTypeCache.add(nodeType);
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLGraphSessionException(
                     "Error on attempt to add node metadata.", e);
@@ -500,5 +513,14 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
             throw new SLGraphSessionException(
                     "Error on attempt to set meta node property.", e);
         }
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public void sessionCleaned() {
+        this.sessionLinkTypeCache.clear();
+        this.sessionNodeTypeCache.clear();
     }
 }
