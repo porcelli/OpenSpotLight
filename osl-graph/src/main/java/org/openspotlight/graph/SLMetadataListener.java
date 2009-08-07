@@ -506,8 +506,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                 final SLPersistentTreeSession session = pNode.getSession();
                 final SLPersistentNode metaNode = session
                         .getNodeByID(metaNodeIDProp.getValue());
-                metaNode.setProperty(String.class, pProperty.getName(),
-                        pProperty.getValue().getClass().getName());
+                final String propertyName = pProperty.getName();
+                metaNode.setProperty(String.class, propertyName, pProperty
+                        .getValue().getClass().getName());
             }
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLGraphSessionException(
