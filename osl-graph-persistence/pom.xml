@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>osl-graph-persistence</artifactId>
 	<packaging>jar</packaging>
-	<name>SpotLight :: Graph</name>
+	<name>OpenSpotLight Persistence Library</name>
 	<build />
 	<dependencies>
 		<dependency>

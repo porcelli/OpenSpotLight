@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>osl-graph-persistence-api</artifactId>
 	<packaging>jar</packaging>
-	<name>SpotLight :: Graph</name>
+	<name>OpenSpotLight Persistence Api</name>
 	<build />
 	<dependencies>
 		<!-- External dependencies -->

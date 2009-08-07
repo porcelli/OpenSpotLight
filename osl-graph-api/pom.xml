@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>osl-graph-api</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenSpotLight Graph Library</name>
+	<name>OpenSpotLight Graph Api</name>
 	<parent>
 		<groupId>org.openspotlight</groupId>
 		<artifactId>osl</artifactId>

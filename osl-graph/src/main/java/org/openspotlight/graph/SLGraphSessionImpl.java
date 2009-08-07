@@ -889,5 +889,3 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			|| (!returnSubTypes && nodeClass.equals(node.getClass().getInterfaces()[0]));
 	}
  }
-
-
