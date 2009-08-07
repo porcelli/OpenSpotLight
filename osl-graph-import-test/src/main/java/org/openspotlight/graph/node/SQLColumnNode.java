@@ -79,6 +79,74 @@ public interface SQLColumnNode extends SLNode {
      * @throws SLGraphSessionException the SL graph session exception
      */
     public void setCaption(String caption) throws SLGraphSessionException;
+    
+    
+    
+    
+    
+    /**
+     * Gets the intProperty.
+     * 
+     * @return the intProperty
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public int getIntProperty() throws SLGraphSessionException;
+    
+    /**
+     * Sets the intProperty.
+     * 
+     * @param intProperty the new intProperty
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setIntProperty(int intProperty) throws SLGraphSessionException;
+    
+    
+    
+    
+    /**
+     * Gets the floatProperty.
+     * 
+     * @return the floatProperty
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public float getFloatProperty() throws SLGraphSessionException;
+    
+    /**
+     * Sets the floatProperty.
+     * 
+     * @param floatProperty the new floatProperty
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setFloatProperty(float floatProperty) throws SLGraphSessionException;
+    
+    
+    
+    
+    /**
+     * Gets the booleanProperty.
+     * 
+     * @return the booleanProperty
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public boolean getBooleanProperty() throws SLGraphSessionException;
+    
+    /**
+     * Sets the booleanProperty.
+     * 
+     * @param booleanProperty the new booleanProperty
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setBooleanProperty(boolean booleanProperty) throws SLGraphSessionException;
+    
 }
 
         

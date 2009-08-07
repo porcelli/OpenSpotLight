@@ -166,4 +166,12 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
         // unmark the added node (if it's present in the set) ...
         this.nodesForDeletion.remove(node);
     }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    public void sessionCleaned() {
+        // 
+    }
 }

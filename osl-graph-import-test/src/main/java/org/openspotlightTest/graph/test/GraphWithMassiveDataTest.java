@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import org.openspotlight.graph.SLGraph;
@@ -86,6 +87,8 @@ public class GraphWithMassiveDataTest {
         final long spent = end - start;
         g.logger.info("Spent time " + spent + " milliseconds");
     }
+    
+    private final Random random = new Random();
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private SLNode rootNode;
@@ -132,7 +135,7 @@ public class GraphWithMassiveDataTest {
                     ok++;
                     
                 } catch (final Exception e) {
-                    this.logger.error("error on node: " + e.getMessage() + ": "
+                    this.logger.error("error on link: " + e.getMessage() + ": "
                             + line, e);
                     err++;
                 }
@@ -187,17 +190,34 @@ public class GraphWithMassiveDataTest {
                             "").replaceAll("\\.", "").replaceAll("-", "");
                     
                     SLNode node;
+                    
+                    final Class<? extends SLNode> clazz = (Class<? extends SLNode>) Class
+                            .forName("org.openspotlight.graph.node." + type
+                                    + "Node");
+                    
                     if ((parentHandle == null)
                             || parentHandle.trim().equals("")) {
-                        node = this.rootNode.addNode(caption);
+                        node = this.rootNode.addNode(clazz, key);
                         
                     } else {
                         final SLNode parent = handleMap.get(parentHandle);
                         if (parent == null) {
                             throw new Exception("no parent");
                         }
-                        node = parent.addNode(caption);
+                        node = parent.addNode(clazz, key);
                     }
+                    final int randomInt = this.random.nextInt(100);
+                    final float randomFloat = this.random.nextFloat();
+                    final boolean randomBoolean = this.random.nextBoolean();
+                    
+                    clazz.getMethod("setIntProperty", int.class).invoke(node,
+                            randomInt);
+                    clazz.getMethod("setBooleanProperty", boolean.class)
+                            .invoke(node, randomBoolean);
+                    clazz.getMethod("setFloatProperty", float.class).invoke(
+                            node, randomFloat);
+                    clazz.getMethod("setCaption", String.class).invoke(node,
+                            caption);
                     handleMap.put(handle, node);
                     ok++;
                     
@@ -216,5 +236,4 @@ public class GraphWithMassiveDataTest {
         this.shouldInsertLinkData(handleMap);
         
     }
-    
 }
