@@ -70,6 +70,29 @@ import javax.jcr.RepositoryException;
  * 
  */
 public final class JcrNodeVisitor implements ItemVisitor {
+
+    /**
+     * Creates an {@link ItemVisitor} to visit the nodes with no level limit.
+     * 
+     * 
+     * @param visitor
+     * @return a jcr item visitor with the {@link NodeVisitor} inside
+     */
+    public static ItemVisitor withVisitor(NodeVisitor visitor){
+        return new JcrNodeVisitor(visitor);
+    }
+
+    /**
+     * 
+     * Creates an {@link ItemVisitor} to visit the nodes with a level limit.
+     * 
+     * @param visitor
+     * @param limit
+     * @return a jcr item visitor with the {@link NodeVisitor} inside 
+     */
+    public static ItemVisitor withVisitorAndLevelLimmit(NodeVisitor visitor, int limit){
+        return new JcrNodeVisitor(visitor,limit);
+    }
     
     /**
      * Internal class to store the current level and to do also minor checkings
@@ -132,8 +155,9 @@ public final class JcrNodeVisitor implements ItemVisitor {
          * The {@link JcrNodeVisitor} will do all the job.
          * 
          * @param n
+         * @throws RepositoryException
          */
-        public void visiting(Node n);
+        public void visiting(Node n) throws RepositoryException;
     }
     
     /**
@@ -205,7 +229,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * 
      * @param visitor
      */
-    public JcrNodeVisitor(final NodeVisitor visitor) {
+    private JcrNodeVisitor(final NodeVisitor visitor) {
         checkNotNull("visitor", visitor); //$NON-NLS-1$
         this.maxLevels = null;
         this.visitor = visitor;
@@ -217,7 +241,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * @param visitor
      * @param maxLevels
      */
-    public JcrNodeVisitor(final NodeVisitor visitor, final int maxLevels) {
+    private JcrNodeVisitor(final NodeVisitor visitor, final int maxLevels) {
         checkNotNull("visitor", visitor); //$NON-NLS-1$
         checkCondition("validMaxLevel", maxLevels > 0); //$NON-NLS-1$
         this.maxLevels = Integer.valueOf(maxLevels);

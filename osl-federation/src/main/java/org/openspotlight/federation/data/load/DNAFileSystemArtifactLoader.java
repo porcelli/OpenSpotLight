@@ -50,6 +50,7 @@
 package org.openspotlight.federation.data.load;
 
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.federation.data.util.JcrNodeVisitor.withVisitor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -58,10 +59,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -72,6 +70,7 @@ import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System
@@ -89,7 +88,7 @@ public class DnaFileSystemArtifactLoader extends
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    protected static final class FillNamesVisitor implements ItemVisitor {
+    protected static final class FillNamesVisitor implements NodeVisitor {
         final Set<String> names;
         
         /**
@@ -105,23 +104,8 @@ public class DnaFileSystemArtifactLoader extends
          * 
          * {@inheritDoc}
          */
-        public void visit(final Node node) throws RepositoryException {
-            this.names.add(node.getPath());
-            if (node.hasNodes()) {
-                final NodeIterator nodeIter = node.getNodes();
-                while (nodeIter.hasNext()) {
-                    nodeIter.nextNode().accept(this);
-                    // FIXME change this: possible stack overflow
-                }
-            }
-        }
-        
-        /**
-         * 
-         * {@inheritDoc}
-         */
-        public void visit(final Property property) throws RepositoryException {
-            // nothing to do here
+        public void visiting(final Node n) throws RepositoryException {
+            this.names.add(n.getPath());
         }
         
     }
@@ -227,8 +211,8 @@ public class DnaFileSystemArtifactLoader extends
             final Session session = context.getSessionForMapping(mapping
                     .getRelative());
             final Set<String> names = new HashSet<String>();
-            
-            session.getRootNode().accept(new FillNamesVisitor(names));
+            session.getRootNode().accept(
+                    withVisitor(new FillNamesVisitor(names)));
             return names;
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
