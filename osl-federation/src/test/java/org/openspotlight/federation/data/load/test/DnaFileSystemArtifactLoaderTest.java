@@ -91,7 +91,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         this.configuration = new Configuration();
         final Repository repository = new Repository(this.configuration,
                 this.REPOSITORY_NAME);
-        this.configuration.setNumberOfParallelThreads(1);// FIXME change to 4
+        this.configuration.setNumberOfParallelThreads(4);
         final Project project = new Project(repository, this.PROJECT_NAME);
         final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
         final String basePath = new File("../osl-federation/")
@@ -117,7 +117,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         bundle.setInitialLookup(basePath);
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
                 "aFolder/");
-        new Included(artifactMapping, "*");
+        new Included(artifactMapping, "*.txt");
         return bundle;
     }
     
@@ -126,7 +126,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
                 .mkdirs();
         final File textFile = new File(
-                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeChanged");
+                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeChanged.txt");
         FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
@@ -156,7 +156,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
                 .mkdirs();
         final File textFile = new File(
-                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeExcluded");
+                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeExcluded.txt");
         final FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
@@ -182,7 +182,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
                 .mkdirs();
         final File textFile = new File(
-                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/newTextFile");
+                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/newTextFile.txt");
         final FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
