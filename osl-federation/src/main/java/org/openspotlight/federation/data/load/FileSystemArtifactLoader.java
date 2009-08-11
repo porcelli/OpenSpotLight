@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class FileSystemArtifactLoader extends AbstractArtifactLoader<Void> {
+public class FileSystemArtifactLoader extends AbstractArtifactLoader {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
@@ -85,7 +85,8 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader<Void> {
      */
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle,
-            final ArtifactMapping mapping, final Void cachedInformation)
+            final ArtifactMapping mapping,
+            final GlobalExecutionContext globalContext)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         try {
@@ -120,7 +121,8 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader<Void> {
     @Override
     protected byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
-            final Void cachedInformation) throws Exception {
+            final GlobalExecutionContext globalContext,
+            final ThreadExecutionContext localContext) throws Exception {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         checkNotNull("mapping", mapping); //$NON-NLS-1$
         checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$

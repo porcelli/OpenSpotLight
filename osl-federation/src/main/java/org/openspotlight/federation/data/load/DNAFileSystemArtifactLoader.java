@@ -80,8 +80,7 @@ import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DnaFileSystemArtifactLoader extends
-        AbstractArtifactLoader<DnaFileSystemArtifactLoader.LoadingContext> {
+public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
     
     /**
      * JCR visitor to fill all valid artifact names
@@ -202,7 +201,7 @@ public class DnaFileSystemArtifactLoader extends
      * {@inheritDoc}
      */
     @Override
-    protected LoadingContext createCachedInformation() {
+    protected LoadingContext createGlobalExecutionContext() {
         return new LoadingContext();
     }
     
@@ -251,9 +250,11 @@ public class DnaFileSystemArtifactLoader extends
                 }
                 return baos.toByteArray();
             } catch (final Exception e) {
-                final PropertyIterator it = content.getProperties();
-                while (it.hasNext()) {
-                    System.out.println(it.nextProperty().getName());
+                if (content.hasProperties()) {
+                    final PropertyIterator it = content.getProperties();
+                    while (it.hasNext()) {
+                        System.out.println(it.nextProperty().getName());
+                    }
                 }
                 throw e;
             }
