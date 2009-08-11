@@ -91,15 +91,17 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * 
  * There's a {@link Map} with {@link String} keys and {@link Object} values
  * passed as an argument on the methods
- * {@link #getAllArtifactNames(Bundle, ArtifactMapping, Map)} and
- * {@link #loadArtifact(Bundle, ArtifactMapping, String, Map)}. This {@link Map}
- * is used to get a more "functional" approach when loading artifacts. To do a
- * loading in a thread safe way, it's secure to do not use instance variables.
- * So this {@link Map} is shared in a single invocation of the loading methods.
- * Its safe to put anything in this cache. An example: To get all the artifact
- * names should have a massive IO and should be better to get all content. So,
- * its just to fill the cache and use it later on the
- * {@link #loadArtifact(Bundle, ArtifactMapping, String, Map)} method.
+ * {@link #getAllArtifactNames(Bundle, ArtifactMapping, GlobalExecutionContext)}
+ * and
+ * {@link #loadArtifact(Bundle, ArtifactMapping, String, GlobalExecutionContext, ThreadExecutionContext)}
+ * . This {@link Map} is used to get a more "functional" approach when loading
+ * artifacts. To do a loading in a thread safe way, it's secure to do not use
+ * instance variables. So this {@link Map} is shared in a single invocation of
+ * the loading methods. Its safe to put anything in this cache. An example: To
+ * get all the artifact names should have a massive IO and should be better to
+ * get all content. So, its just to fill the cache and use it later on the
+ * {@link #loadArtifact(Bundle, ArtifactMapping, String, GlobalExecutionContext, ThreadExecutionContext)}
+ * method.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
@@ -408,12 +410,11 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * 
      * @param bundle
      * @param mapping
-     * @param cachedInformation
-     *            could be used for cache purposes
-     * @return
+     * @param context
+     * @return all artifact names
      * @throws ConfigurationException
      */
-    protected abstract Set<String> getAllArtifactNames(Bundle bundle,
+    public abstract Set<String> getAllArtifactNames(Bundle bundle,
             ArtifactMapping mapping, GlobalExecutionContext context)
             throws ConfigurationException;
     
@@ -430,9 +431,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @return the bytes from a given artifact name
      * @throws Exception
      */
-    protected abstract byte[] loadArtifact(Bundle bundle,
-            ArtifactMapping mapping, String artifactName,
-            GlobalExecutionContext globalContext,
+    public abstract byte[] loadArtifact(Bundle bundle, ArtifactMapping mapping,
+            String artifactName, GlobalExecutionContext globalContext,
             ThreadExecutionContext localContext) throws Exception;
     
     /**

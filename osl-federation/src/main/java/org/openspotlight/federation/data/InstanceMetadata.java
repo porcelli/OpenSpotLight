@@ -1066,8 +1066,7 @@ public interface InstanceMetadata {
      * 
      * Its used on property listener methods such as
      * {@link SharedData#addPropertyListener(ItemEventListener)},
-     * {@link SharedData#removePropertyListener(ItemEventListener)} and
-     * {@link SharedData#getPropertyChangesSinceLastSave()}
+     * {@link SharedData#removePropertyListener(ItemEventListener)}
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 

@@ -291,7 +291,7 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
      * {@inheritDoc}
      */
     @Override
-    protected Set<String> getAllArtifactNames(final Bundle bundle,
+    public Set<String> getAllArtifactNames(final Bundle bundle,
             final ArtifactMapping mapping, final GlobalExecutionContext context)
             throws ConfigurationException {
         
@@ -314,7 +314,7 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
      * {@inheritDoc}
      */
     @Override
-    protected byte[] loadArtifact(final Bundle bundle,
+    public byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
             final GlobalExecutionContext globalContext,
             final ThreadExecutionContext localContext) throws Exception {
