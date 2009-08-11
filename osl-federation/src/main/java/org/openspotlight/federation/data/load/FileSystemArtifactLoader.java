@@ -84,7 +84,7 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
      * Return all files from bundle.initialLookup directory.
      */
     @Override
-    protected Set<String> getAllArtifactNames(final Bundle bundle,
+    public Set<String> getAllArtifactNames(final Bundle bundle,
             final ArtifactMapping mapping,
             final GlobalExecutionContext globalContext)
             throws ConfigurationException {
@@ -119,7 +119,7 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
      * loads the content of a file found on bundle.initialLookup + artifactName
      */
     @Override
-    protected byte[] loadArtifact(final Bundle bundle,
+    public byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
             final GlobalExecutionContext globalContext,
             final ThreadExecutionContext localContext) throws Exception {

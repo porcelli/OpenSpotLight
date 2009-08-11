@@ -151,7 +151,7 @@ public class DatabaseArtifactLoader extends AbstractArtifactLoader {
      * Return all scripts from the database, and fills a cache for later use.
      */
     @Override
-    protected Set<String> getAllArtifactNames(final Bundle bundle,
+    public Set<String> getAllArtifactNames(final Bundle bundle,
             final ArtifactMapping mapping, final GlobalExecutionContext context)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
@@ -225,7 +225,7 @@ public class DatabaseArtifactLoader extends AbstractArtifactLoader {
      * loads the content of a named script using the cache filled before
      */
     @Override
-    protected byte[] loadArtifact(final Bundle bundle,
+    public byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
             final GlobalExecutionContext globalContext,
             final ThreadExecutionContext localContext) throws Exception {
