@@ -6,7 +6,7 @@ package org.openspotlight.common.exception;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class ConfigurationException extends SLException {
+public class ConfigurationException extends SLRuntimeException {
     
     /**
 	 * 
