@@ -64,7 +64,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -100,9 +99,15 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * {@link #loadArtifact(Bundle, ArtifactMapping, String, Map)} method.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * @param <C>
+ *            cache type to use on a artifact loader execution. If is not needed
+ *            to use cached information for each artifact loading run, just use
+ *            void here and ignore all cached information arguments on loader
+ *            methods. Otherwise put here some thread safe object, because it
+ *            will have concurrent access.
  * 
  */
-public abstract class AbstractArtifactLoader implements ArtifactLoader {
+public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
     /**
      * Worker class for loading artifacts
      * 
@@ -115,7 +120,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         final AtomicInteger loadCounter;
         final ArtifactMapping mapping;
         final Set<String> namesToProcess;
-        final Map<String, Object> cachedInformation;
+        final C cachedInformation;
         
         /**
          * All parameters are mandatory
@@ -129,8 +134,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          */
         public Worker(final Bundle bundle, final AtomicInteger errorCounter,
                 final AtomicInteger loadCounter, final ArtifactMapping mapping,
-                final Set<String> namesToProcess,
-                final Map<String, Object> cachedInformation) {
+                final Set<String> namesToProcess, final C cachedInformation) {
             super();
             this.bundle = bundle;
             this.errorCounter = errorCounter;
@@ -166,8 +170,20 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     }
     
     /**
+     * If is needed to use cached information, overwrite this method to create
+     * some useful instance.
+     * 
+     * 
+     * @return the cached information
+     */
+    protected C createCachedInformation() {
+        return null;
+    }
+    
+    /**
      * The implementation class needs to load all the possible artifact names
-     * without filtering this.
+     * without filtering this.This method is "mono threaded", so it's not
+     * dangerous to do something non multi-threaded here.
      * 
      * @param bundle
      * @param mapping
@@ -177,11 +193,12 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @throws ConfigurationException
      */
     protected abstract Set<String> getAllArtifactNames(Bundle bundle,
-            ArtifactMapping mapping, Map<String, Object> cachedInformation)
+            ArtifactMapping mapping, C cachedInformation)
             throws ConfigurationException;
     
     /**
-     * This method loads an artifact using its names
+     * This method loads an artifact using its names. This method will be called
+     * by multiple threads.
      * 
      * @param bundle
      * @param mapping
@@ -192,8 +209,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @throws Exception
      */
     protected abstract byte[] loadArtifact(Bundle bundle,
-            ArtifactMapping mapping, String artifactName,
-            Map<String, Object> cachedInformation) throws Exception;
+            ArtifactMapping mapping, String artifactName, C cachedInformation)
+            throws Exception;
     
     /**
      * Mehtod to be used by the {@link Worker}.
@@ -204,10 +221,10 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @param mapping
      * @param namesToProcess
      */
-    void loadArtifact(final Bundle bundle, final AtomicInteger errorCounter,
-            final AtomicInteger loadCounter, final ArtifactMapping mapping,
-            final Set<String> namesToProcess,
-            final Map<String, Object> cachedInformation) {
+    final void loadArtifact(final Bundle bundle,
+            final AtomicInteger errorCounter, final AtomicInteger loadCounter,
+            final ArtifactMapping mapping, final Set<String> namesToProcess,
+            final C cachedInformation) {
         for (final String artifactName : namesToProcess) {
             try {
                 final byte[] content = this.loadArtifact(bundle, mapping,
@@ -238,10 +255,10 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @throws ConfigurationException
      */
     @SuppressWarnings("boxing")
-    public ArtifactProcessingCount loadArtifactsFromMappings(final Bundle bundle)
-            throws ConfigurationException {
+    public final ArtifactProcessingCount loadArtifactsFromMappings(
+            final Bundle bundle) throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
-        final Map<String, Object> cachedInformation = new ConcurrentHashMap<String, Object>();
+        final C cachedInformation = this.createCachedInformation();
         final AtomicInteger errorCounter = new AtomicInteger();
         final AtomicInteger loadCounter = new AtomicInteger();
         final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
@@ -315,8 +332,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     private void splitWorkBetweenThreads(final Bundle bundle,
             final AtomicInteger errorCounter, final AtomicInteger loadCounter,
             final ArtifactMapping mapping, final Set<String> namesToProcess,
-            final List<Callable<Void>> workers,
-            final Map<String, Object> cachedInformation)
+            final List<Callable<Void>> workers, final C cachedInformation)
             throws ConfigurationException {
         final int numberOfThreads = bundle.getRepository().getConfiguration()
                 .getNumberOfParallelThreads();
