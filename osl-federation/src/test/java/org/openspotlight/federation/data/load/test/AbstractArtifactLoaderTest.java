@@ -55,7 +55,6 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Collections.setOf;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -90,12 +89,11 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
     
     @Before
     public void createArtifactLoader() {
-        this.artifactLoader = new AbstractArtifactLoader() {
+        this.artifactLoader = new AbstractArtifactLoader<Void>() {
             
             @Override
             protected Set<String> getAllArtifactNames(final Bundle bundle,
-                    final ArtifactMapping mapping,
-                    final Map<String, Object> cachedInformation)
+                    final ArtifactMapping mapping, final Void cachedInformation)
                     throws ConfigurationException {
                 if (bundle.getStreamArtifacts().size() == 0) {
                     return setOf("1", "2", "3", "4");
@@ -107,8 +105,7 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
             @Override
             protected byte[] loadArtifact(final Bundle bundle,
                     final ArtifactMapping mapping, final String artifactName,
-                    final Map<String, Object> cachedInformation)
-                    throws Exception {
+                    final Void cachedInformation) throws Exception {
                 return artifactName.getBytes();
             }
             

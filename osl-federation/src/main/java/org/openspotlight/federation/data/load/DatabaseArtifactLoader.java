@@ -62,8 +62,9 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
@@ -82,148 +83,189 @@ import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.TableDes
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DatabaseArtifactLoader extends AbstractArtifactLoader {
+public class DatabaseArtifactLoader extends
+        AbstractArtifactLoader<DatabaseArtifactLoader.CachedInformation> {
+    
+    /**
+     * Cached information for databases. As is needed to retrieve names from
+     * each
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    protected static class CachedInformation {
+        private final Map<String, DetailedInformation> detailedInformationMap = new ConcurrentHashMap<String, DetailedInformation>();
+        private final Set<String> artifactNames = new CopyOnWriteArraySet<String>();
+        
+        public Set<String> getArtifactNames() {
+            return this.artifactNames;
+        }
+        
+        public DetailedInformation getInformationForMapping(
+                final String mappingName) {
+            DetailedInformation information = this.detailedInformationMap
+                    .get(mappingName);
+            if (information == null) {
+                information = new DetailedInformation();
+                this.detailedInformationMap.put(mappingName, information);
+            }
+            return information;
+            
+        }
+        
+    }
+    
+    protected static class DetailedInformation {
+        private final Map<String, TableDescription> tables = new ConcurrentHashMap<String, TableDescription>();
+        private final Map<String, ScriptDescription> scripts = new ConcurrentHashMap<String, ScriptDescription>();
+        
+        public Map<String, ScriptDescription> getScripts() {
+            return this.scripts;
+        }
+        
+        public Map<String, TableDescription> getTables() {
+            return this.tables;
+        }
+        
+    }
+    
+    @Override
+    protected CachedInformation createCachedInformation() {
+        return new CachedInformation();
+    }
     
     /**
      * Return all scripts from the database, and fills a cache for later use.
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle,
             final ArtifactMapping mapping,
-            final Map<String, Object> cachedInformation)
+            final CachedInformation cachedInformation)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         if (!(bundle instanceof DbBundle)) {
             return emptySet();
         }
-        if (cachedInformation.size() == 0) {
-            Connection connection = null;
-            try {
-                final DbBundle dbBundle = (DbBundle) bundle;
-                forName(dbBundle.getDriverClass());
-                if (dbBundle.getUser() == null) {
-                    connection = getConnection(dbBundle.getInitialLookup());
-                } else {
-                    connection = getConnection(dbBundle.getInitialLookup(),
-                            dbBundle.getUser(), dbBundle.getPassword());
-                }
+        Connection connection = null;
+        try {
+            final DbBundle dbBundle = (DbBundle) bundle;
+            forName(dbBundle.getDriverClass());
+            if (dbBundle.getUser() == null) {
+                connection = getConnection(dbBundle.getInitialLookup());
+            } else {
+                connection = getConnection(dbBundle.getInitialLookup(),
+                        dbBundle.getUser(), dbBundle.getPassword());
+            }
+            
+            final DatabaseMetadataLoader loader = new BasicDatabaseMetadataLoader(
+                    dbBundle.getType(), connection);
+            final ScriptDescription[] allTypes = loader.loadAllTypes();
+            final TableDescription[] tableMetadata = loader.loadTableMetadata();
+            final Map<String, TableDescription> tableMetadataMap = new HashMap<String, TableDescription>(
+                    tableMetadata.length);
+            for (final TableDescription d : tableMetadata) {
+                tableMetadataMap.put(d.toString(), d);
+            }
+            for (final ArtifactMapping innerMapping : bundle
+                    .getArtifactMappings()) {
+                final DetailedInformation information = cachedInformation
+                        .getInformationForMapping(innerMapping.getRelative());
                 
-                final DatabaseMetadataLoader loader = new BasicDatabaseMetadataLoader(
-                        dbBundle.getType(), connection);
-                final ScriptDescription[] allTypes = loader.loadAllTypes();
-                final TableDescription[] tableMetadata = loader
-                        .loadTableMetadata();
-                final Map<String, TableDescription> tableMetadataMap = new HashMap<String, TableDescription>(
-                        tableMetadata.length);
-                for (final TableDescription d : tableMetadata) {
-                    tableMetadataMap.put(d.toString(), d);
-                }
-                for (final ArtifactMapping innerMapping : bundle
-                        .getArtifactMappings()) {
-                    final Map<String, Pair<ScriptDescription, TableDescription>> artifactMappingInformation = new HashMap<String, Pair<ScriptDescription, TableDescription>>();
-                    cachedInformation.put(innerMapping.getRelative(),
-                            artifactMappingInformation);
-                    for (final ScriptDescription desc : allTypes) {
-                        final TableDescription columnDesc = tableMetadataMap
-                                .get(desc.toString());
-                        final Pair<ScriptDescription, TableDescription> pair = new Pair<ScriptDescription, TableDescription>(
-                                desc, columnDesc);
-                        tableMetadataMap.remove(desc.toString());
-                        artifactMappingInformation.put(removeBegginingFrom(
-                                innerMapping.getRelative(), desc.toString()),
-                                pair);
-                    }
-                    for (final Map.Entry<String, TableDescription> entry : tableMetadataMap
-                            .entrySet()) {
-                        if (entry.getKey().startsWith(
-                                innerMapping.getRelative())) {
-                            final Pair<ScriptDescription, TableDescription> pair = new Pair<ScriptDescription, TableDescription>(
-                                    null, entry.getValue());
-                            artifactMappingInformation.put(
-                                    removeBegginingFrom(innerMapping
-                                            .getRelative(), entry.getKey()),
-                                    pair);
-                        }
+                for (final ScriptDescription desc : allTypes) {
+                    if (desc.toString().startsWith(innerMapping.getRelative())) {
+                        final String name = removeBegginingFrom(innerMapping
+                                .getRelative(), desc.toString());
+                        information.getScripts().put(name, desc);
+                        cachedInformation.getArtifactNames().add(name);
+                        
                     }
                 }
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            } finally {
-                if (connection != null) {
-                    try {
-                        if (!connection.isClosed()) {
-                            connection.close();
-                        }
-                    } catch (final Exception e2) {
-                        catchAndLog(e2);
+                for (final Map.Entry<String, TableDescription> entry : tableMetadataMap
+                        .entrySet()) {
+                    if (entry.getKey().startsWith(innerMapping.getRelative())) {
+                        final String name = removeBegginingFrom(innerMapping
+                                .getRelative(), entry.getKey());
+                        information.getTables().put(name, entry.getValue());
+                        cachedInformation.getArtifactNames().add(name);
                     }
                 }
             }
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        } finally {
+            if (connection != null) {
+                try {
+                    if (!connection.isClosed()) {
+                        connection.close();
+                    }
+                } catch (final Exception e2) {
+                    catchAndLog(e2);
+                }
+            }
         }
-        final Map<String, Pair<ScriptDescription, ColumnDescription>> artifactMappingInformation = (Map<String, Pair<ScriptDescription, ColumnDescription>>) cachedInformation
-                .get(mapping.getRelative());
-        if (artifactMappingInformation != null) {
-            return artifactMappingInformation.keySet();
-        }
-        return emptySet();
+        
+        return cachedInformation.getArtifactNames();
         
     }
     
     /**
      * loads the content of a named script using the cache filled before
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
-            final Map<String, Object> cachedInformation) throws Exception {
+            final CachedInformation cachedInformation) throws Exception {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         checkNotNull("mapping", mapping); //$NON-NLS-1$
         checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
         if (!(bundle instanceof DbBundle)) {
             return new byte[0];
         }
-        final Map<String, Pair<ScriptDescription, TableDescription>> artifactMappingInformation = (Map<String, Pair<ScriptDescription, TableDescription>>) cachedInformation
-                .get(mapping.getRelative());
-        if (artifactMappingInformation != null) {
-            final Pair<ScriptDescription, TableDescription> pair = artifactMappingInformation
-                    .get(artifactName);
-            
-            if (pair.getK2() != null) {
-                final TableDescription desc = pair.getK2();
-                final String name = removeBegginingFrom(mapping.getRelative(),
-                        desc.toString());
-                TableArtifact table = (TableArtifact) bundle
-                        .getCustomArtifactByName(name);
-                if (table == null) {
-                    table = new TableArtifact(bundle, desc.toString());
-                }
-                for (final String columnName : table.getColumnNames()) {
-                    if (!desc.getColumns().containsKey(columnName)) {
-                        final Column column = table.getColumnByName(columnName);
-                        table.removeColumn(column);
-                    }
-                }
-                for (final ColumnDescription colDesc : desc.getColumns()
-                        .values()) {
-                    Column column = table.getColumnByName(colDesc
-                            .getColumnName());
-                    if (column == null) {
-                        column = new Column(table, colDesc.getColumnName());
-                    }
-                    column.setColumnSize(colDesc.getColumnSize());
-                    column.setDecimalSize(colDesc.getDecimalSize());
-                    column.setNullable(colDesc.getNullable());
-                    column.setType(colDesc.getType());
-                }
-            }
-            if (pair.getK1() != null) {
-                return pair.getK1().getSql().getBytes();
-            }
-            
-        }
-        return new byte[0];
+        final DetailedInformation information = cachedInformation
+                .getInformationForMapping(mapping.getRelative());
         
+        final TableDescription tableDescription = information.getTables().get(
+                artifactName);
+        if (tableDescription != null) {
+            this.loadTableArtifact(bundle, mapping, tableDescription);
+        }
+        final ScriptDescription scriptDescription = information.getScripts()
+                .get(artifactName);
+        if (scriptDescription == null) {
+            return new byte[0];
+        } else {
+            return scriptDescription.getSql().getBytes();
+        }
+        
+    }
+    
+    private void loadTableArtifact(final Bundle bundle,
+            final ArtifactMapping mapping,
+            final TableDescription tableDescription) {
+        final String name = removeBegginingFrom(mapping.getRelative(),
+                tableDescription.toString());
+        TableArtifact table = (TableArtifact) bundle
+                .getCustomArtifactByName(name);
+        if (table == null) {
+            table = new TableArtifact(bundle, tableDescription.toString());
+        }
+        for (final String columnName : table.getColumnNames()) {
+            if (!tableDescription.getColumns().containsKey(columnName)) {
+                final Column column = table.getColumnByName(columnName);
+                table.removeColumn(column);
+            }
+        }
+        
+        for (final ColumnDescription colDesc : tableDescription.getColumns()
+                .values()) {
+            Column column = table.getColumnByName(colDesc.getColumnName());
+            if (column == null) {
+                column = new Column(table, colDesc.getColumnName());
+            }
+            column.setColumnSize(colDesc.getColumnSize());
+            column.setDecimalSize(colDesc.getDecimalSize());
+            column.setNullable(colDesc.getNullable());
+            column.setType(colDesc.getType());
+        }
     }
 }

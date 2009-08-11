@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class FileSystemArtifactLoader extends AbstractArtifactLoader<Void> {
+public class DNAFileSystemArtifactLoader extends AbstractArtifactLoader<Void> {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
