@@ -105,6 +105,7 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * 
  * 
  */
+@SuppressWarnings("synthetic-access")
 public abstract class AbstractArtifactLoader implements ArtifactLoader {
     
     /**
@@ -207,7 +208,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * {@inheritDoc}
          */
         public void threadExecutionAboutToStart(final Bundle bundle,
-                final ArtifactMapping mapping) {
+                final ArtifactMapping mapping,
+                final GlobalExecutionContext globalExecutionContext) {
             // nothign to do here
         }
         
@@ -216,7 +218,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * {@inheritDoc}
          */
         public void threadExecutionFinished(final Bundle bundle,
-                final ArtifactMapping mapping) {
+                final ArtifactMapping mapping,
+                final GlobalExecutionContext globalExecutionContext) {
             // nothign to do here
         }
     }
@@ -278,18 +281,22 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * 
          * @param bundle
          * @param mapping
+         * @param globalContext
          */
         public void threadExecutionAboutToStart(final Bundle bundle,
-                final ArtifactMapping mapping);
+                final ArtifactMapping mapping,
+                GlobalExecutionContext globalContext);
         
         /**
          * This thread just ended its execution.
          * 
          * @param bundle
          * @param mapping
+         * @param globalContext
          */
         public void threadExecutionFinished(final Bundle bundle,
-                final ArtifactMapping mapping);
+                final ArtifactMapping mapping,
+                GlobalExecutionContext globalContext);
         
     }
     
@@ -348,9 +355,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         
     }
     
-    private static final ThreadExecutionContext DEFAULT_THREAD_CONTEXT = new DefaultThreadExecutionContext();;
+    private static final ThreadExecutionContext DEFAULT_THREAD_CONTEXT = new DefaultThreadExecutionContext();
     
-    private static final GlobalExecutionContext DEFAULT_GLOBAL_CONTEXT = new DefaultGlobalExecutionContext();;
+    private static final GlobalExecutionContext DEFAULT_GLOBAL_CONTEXT = new DefaultGlobalExecutionContext();
     
     private static final ArtifactErrorHandler DEFAULT_ERROR_HANDLER = new DefaultErrorHandler();
     
@@ -537,7 +544,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         final ThreadExecutionContext localContext = this
                 .createThreadExecutionContext();
         
-        localContext.threadExecutionAboutToStart(bundle, mapping);
+        localContext
+                .threadExecutionAboutToStart(bundle, mapping, globalContext);
         try {
             for (final String artifactName : namesToProcess) {
                 try {
@@ -557,7 +565,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                 }
             }
         } finally {
-            localContext.threadExecutionFinished(bundle, mapping);
+            localContext
+                    .threadExecutionFinished(bundle, mapping, globalContext);
         }
     }
     
