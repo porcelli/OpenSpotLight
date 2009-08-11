@@ -70,6 +70,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.jcip.annotations.NotThreadSafe;
+import net.jcip.annotations.ThreadSafe;
+
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
@@ -78,7 +81,6 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 
 /**
@@ -100,15 +102,197 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * {@link #loadArtifact(Bundle, ArtifactMapping, String, Map)} method.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * @param <C>
- *            cache type to use on a artifact loader execution. If is not needed
- *            to use cached information for each artifact loading run, just use
- *            void here and ignore all cached information arguments on loader
- *            methods. Otherwise put here some thread safe object, because it
- *            will have concurrent access.
+ * 
  * 
  */
-public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
+public abstract class AbstractArtifactLoader implements ArtifactLoader {
+    
+    /**
+     * Return type for method
+     * {@link AbstractArtifactLoader#createErrorHandler()}. This class will
+     * receive callbacks on each error during the artifact loading process.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    protected interface ArtifactErrorHandler {
+        
+        /**
+         * An fatal error happened and the artifact processing was interrupted.
+         * 
+         * @param bundle
+         * @param e
+         */
+        public void fatalErrorHappened(final Bundle bundle, Exception e);
+        
+        /**
+         * An erro processing one artifact just happened, but it will not stop
+         * the artifact processing.
+         * 
+         * @param <E>
+         * @param bundle
+         * @param mapping
+         * @param nameToProcess
+         * @param exception
+         */
+        public <E extends Exception> void handleError(final Bundle bundle,
+                final ArtifactMapping mapping, final String nameToProcess,
+                E exception);
+    }
+    
+    /**
+     * An {@link ArtifactErrorHandler} just to log the errors.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    private final static class DefaultErrorHandler implements
+            ArtifactErrorHandler {
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void fatalErrorHappened(final Bundle bundle, final Exception e) {
+            catchAndLog(e);
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public <E extends Exception> void handleError(final Bundle bundle,
+                final ArtifactMapping mapping, final String nameToProcess,
+                final E exception) {
+            catchAndLog(exception);
+        }
+        
+    }
+    
+    /**
+     * A {@link GlobalExecutionContext} to serve as a default implementation.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    private final static class DefaultGlobalExecutionContext implements
+            GlobalExecutionContext {
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void globalExecutionAboutToStart(final Bundle bundle) {
+            // nothign to do here
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void globalExecutionFinished(final Bundle bundle) {
+            // nothign to do here
+            
+        }
+    }
+    
+    /**
+     * A {@link ThreadExecutionContext} to serve as a default implementation.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    private final static class DefaultThreadExecutionContext implements
+            ThreadExecutionContext {
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void threadExecutionAboutToStart(final Bundle bundle,
+                final ArtifactMapping mapping) {
+            // nothign to do here
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void threadExecutionFinished(final Bundle bundle,
+                final ArtifactMapping mapping) {
+            // nothign to do here
+        }
+    }
+    
+    /**
+     * Durring the artifact processing, there cold exists some resources to
+     * initialize durring the global processing phases. A single instance of
+     * this class will be created and it will be shared by all threads and calls
+     * during the artifact loading process.
+     * 
+     * This interface is the return type of method
+     * {@link AbstractArtifactLoader#createGlobalExecutionContext()}
+     * 
+     * If single thread resources initialization is needed, use the
+     * {@link ThreadExecutionContext} instead.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    @NotThreadSafe
+    protected static interface GlobalExecutionContext {
+        /**
+         * This method will be called when the artifact processing is about to
+         * start.
+         * 
+         * @param bundle
+         */
+        public void globalExecutionAboutToStart(final Bundle bundle);
+        
+        /**
+         * This method will be called when all artifacts are processed.
+         * 
+         * @param bundle
+         */
+        public void globalExecutionFinished(final Bundle bundle);
+        
+    }
+    
+    /**
+     * Durring the artifact processing, there cold exists some resources to
+     * initialize durring the starting and stopping phases of a single thread. A
+     * single instance of this class will be created for each thread and it
+     * won't be shared by all threads. The same {@link ThreadExecutionContext}
+     * will be shared by various artifact loading invocation on a single thread.
+     * 
+     * This interface is the return type of method
+     * {@link AbstractArtifactLoader#createThreadExecutionContext()}
+     * 
+     * If global resources initialization is needed, use the
+     * {@link GlobalExecutionContext} instead.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    @ThreadSafe
+    protected static interface ThreadExecutionContext {
+        /**
+         * This thread will start its execution.
+         * 
+         * @param bundle
+         * @param mapping
+         */
+        public void threadExecutionAboutToStart(final Bundle bundle,
+                final ArtifactMapping mapping);
+        
+        /**
+         * This thread just ended its execution.
+         * 
+         * @param bundle
+         * @param mapping
+         */
+        public void threadExecutionFinished(final Bundle bundle,
+                final ArtifactMapping mapping);
+        
+    }
+    
     /**
      * Worker class for loading artifacts
      * 
@@ -121,28 +305,33 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
         final AtomicInteger loadCounter;
         final ArtifactMapping mapping;
         final Set<String> namesToProcess;
-        final C cachedInformation;
+        final GlobalExecutionContext globalContext;
+        final ArtifactErrorHandler errorHandler;
         
         /**
-         * All parameters are mandatory
+         * Constructor to initialize all final and mandatory fields.
          * 
          * @param bundle
          * @param errorCounter
          * @param loadCounter
          * @param mapping
          * @param namesToProcess
-         * @param cachedInformation
+         * @param globalContext
+         * @param errorHandler
          */
         public Worker(final Bundle bundle, final AtomicInteger errorCounter,
                 final AtomicInteger loadCounter, final ArtifactMapping mapping,
-                final Set<String> namesToProcess, final C cachedInformation) {
+                final Set<String> namesToProcess,
+                final GlobalExecutionContext globalContext,
+                final ArtifactErrorHandler errorHandler) {
             super();
             this.bundle = bundle;
             this.errorCounter = errorCounter;
             this.loadCounter = loadCounter;
             this.mapping = mapping;
             this.namesToProcess = namesToProcess;
-            this.cachedInformation = cachedInformation;
+            this.globalContext = globalContext;
+            this.errorHandler = errorHandler;
         }
         
         /**
@@ -150,18 +339,20 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
          * {@inheritDoc}
          */
         public Void call() throws Exception {
-            AbstractArtifactLoader.this.loadArtifact(this.bundle,
+            
+            AbstractArtifactLoader.this.loadArtifactsOfNames(this.bundle,
                     this.errorCounter, this.loadCounter, this.mapping,
-                    this.namesToProcess, this.cachedInformation);
+                    this.namesToProcess, this.globalContext, this.errorHandler);
             return null;
         }
         
     }
     
-    /**
-     * Executor for this loader.
-     */
-    private ExecutorService executor;
+    private static final ThreadExecutionContext DEFAULT_THREAD_CONTEXT = new DefaultThreadExecutionContext();;
+    
+    private static final GlobalExecutionContext DEFAULT_GLOBAL_CONTEXT = new DefaultGlobalExecutionContext();;
+    
+    private static final ArtifactErrorHandler DEFAULT_ERROR_HANDLER = new DefaultErrorHandler();
     
     /**
      * Default constructor
@@ -171,14 +362,36 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
     }
     
     /**
-     * If is needed to use cached information, overwrite this method to create
-     * some useful instance.
+     * Overwrite this method to create a custom {@link ArtifactErrorHandler} to
+     * be used on a {@link AbstractArtifactLoader} extended class.
      * 
      * 
-     * @return the cached information
+     * @return an {@link ArtifactErrorHandler}
      */
-    protected C createCachedInformation() {
-        return null;
+    protected ArtifactErrorHandler createErrorHandler() {
+        return DEFAULT_ERROR_HANDLER;
+    }
+    
+    /**
+     * Overwrite this method to create a custom {@link GlobalExecutionContext}
+     * to be used on a {@link AbstractArtifactLoader} extended class.
+     * 
+     * 
+     * @return an {@link ArtifactErrorHandler}
+     */
+    protected GlobalExecutionContext createGlobalExecutionContext() {
+        return DEFAULT_GLOBAL_CONTEXT;
+    }
+    
+    /**
+     * Overwrite this method to create a custom {@link ThreadExecutionContext}
+     * to be used on a {@link AbstractArtifactLoader} extended class.
+     * 
+     * 
+     * @return an {@link ArtifactErrorHandler}
+     */
+    protected ThreadExecutionContext createThreadExecutionContext() {
+        return DEFAULT_THREAD_CONTEXT;
     }
     
     /**
@@ -194,56 +407,26 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
      * @throws ConfigurationException
      */
     protected abstract Set<String> getAllArtifactNames(Bundle bundle,
-            ArtifactMapping mapping, C cachedInformation)
+            ArtifactMapping mapping, GlobalExecutionContext context)
             throws ConfigurationException;
     
     /**
-     * This method loads an artifact using its names. This method will be called
-     * by multiple threads.
+     * This method should do the loading processing itself. It will be done on a
+     * multi threaded execution. This will be called in a lazy way.
+     * 
      * 
      * @param bundle
      * @param mapping
      * @param artifactName
-     * @param cachedInformation
-     *            could be used for cache purposes
-     * @return
+     * @param globalContext
+     * @param localContext
+     * @return the bytes from a given artifact name
      * @throws Exception
      */
     protected abstract byte[] loadArtifact(Bundle bundle,
-            ArtifactMapping mapping, String artifactName, C cachedInformation)
-            throws Exception;
-    
-    /**
-     * Mehtod to be used by the {@link Worker}.
-     * 
-     * @param bundle
-     * @param errorCounter
-     * @param loadCounter
-     * @param mapping
-     * @param namesToProcess
-     */
-    final void loadArtifact(final Bundle bundle,
-            final AtomicInteger errorCounter, final AtomicInteger loadCounter,
-            final ArtifactMapping mapping, final Set<String> namesToProcess,
-            final C cachedInformation) {
-        for (final String artifactName : namesToProcess) {
-            try {
-                final byte[] content = this.loadArtifact(bundle, mapping,
-                        artifactName, cachedInformation);
-                final String sha1 = getSha1SignatureEncodedAsBase64(content);
-                final InputStream is = new ByteArrayInputStream(content);
-                final StreamArtifact artifact = bundle
-                        .addStreamArtifact(artifactName);
-                artifact.setData(is);
-                artifact.setDataSha1(sha1);
-                loadCounter.incrementAndGet();
-            } catch (final Exception e) {
-                catchAndLog(e);
-                // FIXME create an error handler
-                errorCounter.incrementAndGet();
-            }
-        }
-    }
+            ArtifactMapping mapping, String artifactName,
+            GlobalExecutionContext globalContext,
+            ThreadExecutionContext localContext) throws Exception;
     
     /**
      * Filter the included and excluded patterns and also creates each artifact
@@ -260,101 +443,147 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
     @SuppressWarnings("boxing")
     public final ArtifactProcessingCount loadArtifactsFromMappings(
             final Bundle bundle) throws ConfigurationException {
+        
         checkNotNull("bundle", bundle); //$NON-NLS-1$
-        final C cachedInformation = this.createCachedInformation();
-        this.loadingStarted(bundle, cachedInformation);
+        final ArtifactErrorHandler errorHandler = this.createErrorHandler();
+        final GlobalExecutionContext globalContext = this
+                .createGlobalExecutionContext();
         final AtomicInteger errorCounter = new AtomicInteger();
         final AtomicInteger loadCounter = new AtomicInteger();
-        final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
-        final Set<String> includedPatterns = new HashSet<String>();
-        final Set<String> excludedPatterns = new HashSet<String>();
         int ignoreCount = 0;
-        for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
-            for (final Included included : mapping.getIncludeds()) {
-                includedPatterns.add(included.getName());
-            }
-            for (final Excluded excluded : mapping.getExcludeds()) {
-                excludedPatterns.add(excluded.getName());
-            }
-            final Set<String> namesToFilter = this.getAllArtifactNames(bundle,
-                    mapping, cachedInformation);
-            final FilterResult innerResult = filterNamesByPattern(
-                    namesToFilter, includedPatterns, excludedPatterns, false);
-            final Set<String> namesToProcess = innerResult.getIncludedNames();
-            final Set<String> names = new HashSet<String>(bundle
-                    .getStreamArtifactNames());
-            for (final String name : names) {
-                if (!namesToProcess.contains(name)) {
-                    final StreamArtifact artifactToDelete = bundle
-                            .getStreamArtifactByName(name);
-                    bundle.removeStreamArtifact(artifactToDelete);
-                }
-            }
-            for (final String name : bundle.getCustomArtifactNames()) {
-                if (!namesToProcess.contains(name)) {
-                    final CustomArtifact artifactToDelete = bundle
-                            .getCustomArtifactByName(name);
-                    bundle.removeCustomArtifact(artifactToDelete);
-                }
-            }
-            ignoreCount += innerResult.getIgnoredNames().size();
-            
-            this.splitWorkBetweenThreads(bundle, errorCounter, loadCounter,
-                    mapping, namesToProcess, workers, cachedInformation);
-            
-        }
+        
         try {
-            if (this.executor == null) {
-                this.executor = Executors.newFixedThreadPool(bundle
-                        .getRepository().getConfiguration()
-                        .getNumberOfParallelThreads());
+            globalContext.globalExecutionAboutToStart(bundle);
+            final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
+            final Set<String> includedPatterns = new HashSet<String>();
+            final Set<String> excludedPatterns = new HashSet<String>();
+            for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
+                for (final Included included : mapping.getIncludeds()) {
+                    includedPatterns.add(included.getName());
+                }
+                for (final Excluded excluded : mapping.getExcludeds()) {
+                    excludedPatterns.add(excluded.getName());
+                }
+                final Set<String> namesToFilter = this.getAllArtifactNames(
+                        bundle, mapping, globalContext);
+                final FilterResult innerResult = filterNamesByPattern(
+                        namesToFilter, includedPatterns, excludedPatterns,
+                        false);
+                final Set<String> namesToProcess = innerResult
+                        .getIncludedNames();
+                final Set<String> names = new HashSet<String>(bundle
+                        .getStreamArtifactNames());
+                for (final String name : names) {
+                    if (!namesToProcess.contains(name)) {
+                        final StreamArtifact artifactToDelete = bundle
+                                .getStreamArtifactByName(name);
+                        bundle.removeStreamArtifact(artifactToDelete);
+                    }
+                }
+                for (final String name : bundle.getCustomArtifactNames()) {
+                    if (!namesToProcess.contains(name)) {
+                        final CustomArtifact artifactToDelete = bundle
+                                .getCustomArtifactByName(name);
+                        bundle.removeCustomArtifact(artifactToDelete);
+                    }
+                }
+                ignoreCount += innerResult.getIgnoredNames().size();
+                
+                this.splitWorkBetweenThreads(bundle, errorCounter, loadCounter,
+                        mapping, namesToProcess, workers, globalContext,
+                        errorHandler);
+                
             }
-            this.executor.invokeAll(workers);
-            while (this.executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
-                this.wait();
+            try {
+                final ExecutorService executor = Executors
+                        .newFixedThreadPool(bundle.getRepository()
+                                .getConfiguration()
+                                .getNumberOfParallelThreads());
+                
+                executor.invokeAll(workers);
+                while (executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
+                    this.wait();
+                }
+                executor.shutdown();
+            } catch (final Exception e) {
+                errorHandler.fatalErrorHappened(bundle, e);
+                throw logAndReturnNew(e, ConfigurationException.class);
             }
-            this.executor.shutdown();
-            this.executor = null;
-            this.loadingStopped(bundle, cachedInformation);
-        } catch (final InterruptedException e) {
-            throw logAndReturnNew(e, ConfigurationException.class);
+            
+        } finally {
+            globalContext.globalExecutionFinished(bundle);
         }
         return new ArtifactProcessingCount(loadCounter.get(), ignoreCount,
                 errorCounter.get());
     }
     
     /**
-     * Callback method called at the beggining of loading process.
-     */
-    protected void loadingStarted(final Bundle bundle, final C cachedInformation)
-            throws ConfigurationException {
-        // callback method
-    }
-    
-    /**
-     * Callback method called at the end of loading process.
-     */
-    protected void loadingStopped(final Bundle bundle, final C cachedInformation) {
-        // callback method
-    }
-    
-    /**
-     * This method splits all job between
-     * {@link Repository#getNumberOfParallelThreads() the number of parallel
-     * threads}.
+     * This method will be called by multi threads to load all artifacts of the
+     * given names.
      * 
      * @param bundle
      * @param errorCounter
      * @param loadCounter
      * @param mapping
      * @param namesToProcess
+     * @param globalContext
+     * @param errorHandler
+     */
+    final void loadArtifactsOfNames(final Bundle bundle,
+            final AtomicInteger errorCounter, final AtomicInteger loadCounter,
+            final ArtifactMapping mapping, final Set<String> namesToProcess,
+            final GlobalExecutionContext globalContext,
+            final ArtifactErrorHandler errorHandler) {
+        final ThreadExecutionContext localContext = this
+                .createThreadExecutionContext();
+        
+        localContext.threadExecutionAboutToStart(bundle, mapping);
+        try {
+            for (final String artifactName : namesToProcess) {
+                try {
+                    
+                    final byte[] content = this.loadArtifact(bundle, mapping,
+                            artifactName, globalContext, localContext);
+                    final String sha1 = getSha1SignatureEncodedAsBase64(content);
+                    final InputStream is = new ByteArrayInputStream(content);
+                    final StreamArtifact artifact = bundle
+                            .addStreamArtifact(artifactName);
+                    artifact.setData(is);
+                    artifact.setDataSha1(sha1);
+                    loadCounter.incrementAndGet();
+                } catch (final Exception e) {
+                    errorHandler.handleError(bundle, mapping, artifactName, e);
+                    errorCounter.incrementAndGet();
+                }
+            }
+        } finally {
+            localContext.threadExecutionFinished(bundle, mapping);
+        }
+    }
+    
+    /**
+     * Here all work of loading artifacts that needs to be done will be shared
+     * by the configured number of threads. This method also will split the
+     * threads without mixing diferent {@link ArtifactMapping artifact mappings}
+     * .
+     * 
+     * @param bundle
+     * @param errorCounter
+     * @param loadCounter
+     * @param mapping
+     * @param namesToProcess
+     * @param workers
+     * @param globalContext
+     * @param errorHandler
      * @throws ConfigurationException
      */
     @SuppressWarnings("boxing")
     private void splitWorkBetweenThreads(final Bundle bundle,
             final AtomicInteger errorCounter, final AtomicInteger loadCounter,
             final ArtifactMapping mapping, final Set<String> namesToProcess,
-            final List<Callable<Void>> workers, final C cachedInformation)
+            final List<Callable<Void>> workers,
+            final GlobalExecutionContext globalContext,
+            final ArtifactErrorHandler errorHandler)
             throws ConfigurationException {
         final int numberOfThreads = bundle.getRepository().getConfiguration()
                 .getNumberOfParallelThreads();
@@ -380,7 +609,7 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
         for (final Map.Entry<Integer, Set<String>> entry : listsForThreads
                 .entrySet()) {
             final Worker w = new Worker(bundle, errorCounter, loadCounter,
-                    mapping, entry.getValue(), cachedInformation);
+                    mapping, entry.getValue(), globalContext, errorHandler);
             workers.add(w);
         }
         

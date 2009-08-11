@@ -83,8 +83,7 @@ import org.openspotlight.federation.data.load.db.DatabaseMetadataLoader.TableDes
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DatabaseArtifactLoader extends
-        AbstractArtifactLoader<DatabaseArtifactLoader.CachedInformation> {
+public class DatabaseArtifactLoader extends AbstractArtifactLoader {
     
     /**
      * Cached information for databases. As is needed to retrieve names from
@@ -93,7 +92,7 @@ public class DatabaseArtifactLoader extends
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      */
-    protected static class CachedInformation {
+    protected static class CachedInformation implements GlobalExecutionContext {
         private final Map<String, DetailedInformation> detailedInformationMap = new ConcurrentHashMap<String, DetailedInformation>();
         private final Set<String> artifactNames = new CopyOnWriteArraySet<String>();
         
@@ -113,6 +112,16 @@ public class DatabaseArtifactLoader extends
             
         }
         
+        public void globalExecutionAboutToStart(final Bundle bundle) {
+            // nothing to do here
+            
+        }
+        
+        public void globalExecutionFinished(final Bundle bundle) {
+            // nothing to do here
+            
+        }
+        
     }
     
     protected static class DetailedInformation {
@@ -129,8 +138,12 @@ public class DatabaseArtifactLoader extends
         
     }
     
+    /**
+     * 
+     * {@inheritDoc}
+     */
     @Override
-    protected CachedInformation createCachedInformation() {
+    protected GlobalExecutionContext createGlobalExecutionContext() {
         return new CachedInformation();
     }
     
@@ -139,13 +152,13 @@ public class DatabaseArtifactLoader extends
      */
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle,
-            final ArtifactMapping mapping,
-            final CachedInformation cachedInformation)
+            final ArtifactMapping mapping, final GlobalExecutionContext context)
             throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         if (!(bundle instanceof DbBundle)) {
             return emptySet();
         }
+        final CachedInformation cachedInformation = (CachedInformation) context;
         Connection connection = null;
         try {
             final DbBundle dbBundle = (DbBundle) bundle;
@@ -214,13 +227,16 @@ public class DatabaseArtifactLoader extends
     @Override
     protected byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
-            final CachedInformation cachedInformation) throws Exception {
+            final GlobalExecutionContext globalContext,
+            final ThreadExecutionContext localContext) throws Exception {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         checkNotNull("mapping", mapping); //$NON-NLS-1$
         checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
         if (!(bundle instanceof DbBundle)) {
             return new byte[0];
         }
+        final CachedInformation cachedInformation = (CachedInformation) globalContext;
+        
         final DetailedInformation information = cachedInformation
                 .getInformationForMapping(mapping.getRelative());
         

@@ -89,11 +89,12 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
     
     @Before
     public void createArtifactLoader() {
-        this.artifactLoader = new AbstractArtifactLoader<Void>() {
+        this.artifactLoader = new AbstractArtifactLoader() {
             
             @Override
             protected Set<String> getAllArtifactNames(final Bundle bundle,
-                    final ArtifactMapping mapping, final Void cachedInformation)
+                    final ArtifactMapping mapping,
+                    final GlobalExecutionContext context)
                     throws ConfigurationException {
                 if (bundle.getStreamArtifacts().size() == 0) {
                     return setOf("1", "2", "3", "4");
@@ -105,7 +106,8 @@ public class AbstractArtifactLoaderTest extends AbstractNodeTest {
             @Override
             protected byte[] loadArtifact(final Bundle bundle,
                     final ArtifactMapping mapping, final String artifactName,
-                    final Void cachedInformation) throws Exception {
+                    final GlobalExecutionContext context,
+                    final ThreadExecutionContext localContext) throws Exception {
                 return artifactName.getBytes();
             }
             
