@@ -60,6 +60,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jcr.Node;
+import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -105,7 +106,13 @@ public class DnaFileSystemArtifactLoader extends
          * {@inheritDoc}
          */
         public void visiting(final Node n) throws RepositoryException {
-            this.names.add(n.getPath());
+            String path = n.getPath();
+            if (path.startsWith("/")) { //$NON-NLS-1$
+                path = path.substring(1);
+            }
+            if (!path.equals("")) { //$NON-NLS-1$
+                this.names.add(path);
+            }
         }
         
     }
@@ -207,10 +214,10 @@ public class DnaFileSystemArtifactLoader extends
     protected Set<String> getAllArtifactNames(final Bundle bundle,
             final ArtifactMapping mapping, final LoadingContext context)
             throws ConfigurationException {
+        final Set<String> names = new HashSet<String>();
         try {
             final Session session = context.getSessionForMapping(mapping
                     .getRelative());
-            final Set<String> names = new HashSet<String>();
             session.getRootNode().accept(
                     withVisitor(new FillNamesVisitor(names)));
             return names;
@@ -231,13 +238,25 @@ public class DnaFileSystemArtifactLoader extends
             final Session session = context.getSessionForMapping(mapping
                     .getRelative());
             final Node node = session.getRootNode().getNode(artifactName);
-            final InputStream is = node.getProperty("").getStream(); //$NON-NLS-1$
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int available;
-            while ((available = is.read()) != 0) {
-                baos.write(available);
+            
+            final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
+            try {
+                final InputStream is = content
+                        .getProperty("jcr:data").getStream(); //$NON-NLS-1$
+                
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                int available;
+                while ((available = is.read()) != 0) {
+                    baos.write(available);
+                }
+                return baos.toByteArray();
+            } catch (final Exception e) {
+                final PropertyIterator it = content.getProperties();
+                while (it.hasNext()) {
+                    System.out.println(it.nextProperty().getName());
+                }
+                throw e;
             }
-            return baos.toByteArray();
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }

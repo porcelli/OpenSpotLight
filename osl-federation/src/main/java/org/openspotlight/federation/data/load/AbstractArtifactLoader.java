@@ -50,6 +50,7 @@
 package org.openspotlight.federation.data.load;
 
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
@@ -237,6 +238,8 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
                 artifact.setDataSha1(sha1);
                 loadCounter.incrementAndGet();
             } catch (final Exception e) {
+                catchAndLog(e);
+                // FIXME create an error handler
                 errorCounter.incrementAndGet();
             }
         }
