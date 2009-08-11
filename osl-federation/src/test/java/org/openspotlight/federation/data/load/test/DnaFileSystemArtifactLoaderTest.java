@@ -56,7 +56,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
@@ -92,7 +91,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         this.configuration = new Configuration();
         final Repository repository = new Repository(this.configuration,
                 this.REPOSITORY_NAME);
-        this.configuration.setNumberOfParallelThreads(4);
+        this.configuration.setNumberOfParallelThreads(1);// FIXME change to 4
         final Project project = new Project(repository, this.PROJECT_NAME);
         final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
         final String basePath = new File("../osl-federation/")
@@ -111,21 +110,23 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         this.configuration.setNumberOfParallelThreads(4);
         final Project project = new Project(repository, "Osl Federation");
         final Bundle bundle = new Bundle(project, "Target folder");
-        final String basePath = new File("../").getCanonicalPath() + "/";
+        final String basePath = new File(
+                "../osl-federation/target/test-data/DnaFileSystemArtifactLoaderTest/")
+                .getCanonicalPath()
+                + "/";
         bundle.setInitialLookup(basePath);
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-                "osl-federation/");
-        new Included(artifactMapping,
-                "target/test-data/FileSystemArtifactLoaderTest/*");
+                "aFolder/");
+        new Included(artifactMapping, "*");
         return bundle;
     }
     
-    @Ignore
     @Test
     public void shouldListenChanges() throws Exception {
-        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
+                .mkdirs();
         final File textFile = new File(
-                "target/test-data/FileSystemArtifactLoaderTest/willBeChanged");
+                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeChanged");
         FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
@@ -150,12 +151,12 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         textFile.delete();
     }
     
-    @Ignore
     @Test
     public void shouldListenExclusions() throws Exception {
-        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
+                .mkdirs();
         final File textFile = new File(
-                "target/test-data/FileSystemArtifactLoaderTest/willBeExcluded");
+                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeExcluded");
         final FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
@@ -176,12 +177,12 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
                 is(ItemChangeType.EXCLUDED));
     }
     
-    @Ignore
     @Test
     public void shouldListenInclusions() throws Exception {
-        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
+                .mkdirs();
         final File textFile = new File(
-                "target/test-data/FileSystemArtifactLoaderTest/newTextFile");
+                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/newTextFile");
         final FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
