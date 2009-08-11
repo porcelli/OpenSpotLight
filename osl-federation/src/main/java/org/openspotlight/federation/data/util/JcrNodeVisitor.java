@@ -51,9 +51,10 @@ package org.openspotlight.federation.data.util;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
@@ -69,29 +70,48 @@ import javax.jcr.RepositoryException;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("synthetic-access")
 public final class JcrNodeVisitor implements ItemVisitor {
-
+    
     /**
-     * Creates an {@link ItemVisitor} to visit the nodes with no level limit.
+     * Just do not handle any error and re-throw it.
      * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
-     * @param visitor
-     * @return a jcr item visitor with the {@link NodeVisitor} inside
      */
-    public static ItemVisitor withVisitor(NodeVisitor visitor){
-        return new JcrNodeVisitor(visitor);
+    private static class DoNothingErrorHandler implements ErrorHandler {
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public <E extends Exception> void handleError(final Node nodeWithError,
+                final E exception) throws E {
+            throw logAndReturn(exception);
+        }
+        
     }
-
+    
     /**
+     * Error handler for node visiting
      * 
-     * Creates an {@link ItemVisitor} to visit the nodes with a level limit.
      * 
-     * @param visitor
-     * @param limit
-     * @return a jcr item visitor with the {@link NodeVisitor} inside 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
      */
-    public static ItemVisitor withVisitorAndLevelLimmit(NodeVisitor visitor, int limit){
-        return new JcrNodeVisitor(visitor,limit);
+    public static interface ErrorHandler {
+        
+        /**
+         * Method to handle error during {@link NodeVisitor#visiting(Node)}
+         * method call.
+         * 
+         * @param <E>
+         * @param nodeWithError
+         * @param exception
+         * @throws E
+         */
+        public <E extends Exception> void handleError(Node nodeWithError,
+                E exception) throws E;
     }
     
     /**
@@ -175,65 +195,134 @@ public final class JcrNodeVisitor implements ItemVisitor {
          * @param n
          * @param currenctlyAddedNodes
          * @param state
-         * @throws RepositoryException
+         * @throws Exception
          */
         private static void fillChildren(final Node n,
                 final LinkedList<Node> currenctlyAddedNodes,
-                final IntegerState state) throws RepositoryException {
-            if (state.canIncrement()) {
-                if (n.hasNodes()) {
-                    state.increment();
-                    final NodeIterator nodeIterator = n.getNodes();
-                    while (nodeIterator.hasNext()) {
-                        currenctlyAddedNodes.add(nodeIterator.nextNode());
+                final IntegerState state, final ErrorHandler handler,
+                final NodeVisitor visitor) throws Exception {
+            try {
+                if (state.canIncrement()) {
+                    if (n.hasNodes()) {
+                        state.increment();
+                        final NodeIterator nodeIterator = n.getNodes();
+                        while (nodeIterator.hasNext()) {
+                            try {
+                                final Node newNode = nodeIterator.nextNode();
+                                currenctlyAddedNodes.add(newNode);
+                                visitor.visiting(newNode);
+                            } catch (final Exception e) {
+                                handler.handleError(n, e);
+                            }
+                        }
                     }
                 }
+            } catch (final Exception e) {
+                handler.handleError(n, e);
             }
         }
         
         /**
-         * It will add children nodes until the current level is equal the max
+         * It will visit children nodes until the current level is equal the max
          * levels.
          * 
          * @param n
-         * @param queueToAdd
+         * @param visitor
          * @param maxLevels
-         * @throws RepositoryException
+         * @param handler
+         * @throws Exception
          */
-        public static void fillQueue(final Node n, final List<Node> queueToAdd,
-                final Integer maxLevels) throws RepositoryException {
+        public static void fillQueue(final Node n, final NodeVisitor visitor,
+                final Integer maxLevels, final ErrorHandler handler)
+                throws Exception {
             final IntegerState state = new IntegerState(maxLevels);
-            queueToAdd.add(n);
+            visitor.visiting(n);
             state.increment();
             final LinkedList<Node> currenctlyAddedNodes = new LinkedList<Node>();
-            fillChildren(n, currenctlyAddedNodes, state);
+            fillChildren(n, currenctlyAddedNodes, state, handler, visitor);
             while (currenctlyAddedNodes.size() != 0) {
-                queueToAdd.addAll(currenctlyAddedNodes);
                 final LinkedList<Node> toIterate = new LinkedList<Node>(
                         currenctlyAddedNodes);
                 currenctlyAddedNodes.clear();
                 for (final Node current : toIterate) {
-                    fillChildren(current, currenctlyAddedNodes, state);
+                    fillChildren(current, currenctlyAddedNodes, state, handler,
+                            visitor);
                 }
             }
+            
         }
         
     }
+    
+    /**
+     * Creates an {@link ItemVisitor} to visit the nodes with no level limit.
+     * 
+     * 
+     * @param visitor
+     * @return a jcr item visitor with the {@link NodeVisitor} inside
+     */
+    public static ItemVisitor withVisitor(final NodeVisitor visitor) {
+        checkNotNull("visitor", visitor); //$NON-NLS-1$
+        return new JcrNodeVisitor(visitor, null, null);
+    }
+    
+    /**
+     * Creates an {@link ItemVisitor} to visit the nodes with no level limit.
+     * 
+     * 
+     * @param visitor
+     * @param handler
+     * @return a jcr item visitor with the {@link NodeVisitor} inside
+     */
+    public static ItemVisitor withVisitorAndErrorHandler(
+            final NodeVisitor visitor, final ErrorHandler handler) {
+        
+        checkNotNull("visitor", visitor); //$NON-NLS-1$
+        checkNotNull("handler", handler); //$NON-NLS-1$
+        return new JcrNodeVisitor(visitor, null, handler);
+    }
+    
+    /**
+     * 
+     * Creates an {@link ItemVisitor} to visit the nodes with a level limit.
+     * 
+     * @param visitor
+     * @param limit
+     * @return a jcr item visitor with the {@link NodeVisitor} inside
+     */
+    public static ItemVisitor withVisitorAndLevelLimmit(
+            final NodeVisitor visitor, final int limit) {
+        checkNotNull("visitor", visitor); //$NON-NLS-1$
+        checkCondition("validMaxLevel", limit > 0); //$NON-NLS-1$
+        return new JcrNodeVisitor(visitor, Integer.valueOf(limit), null);
+    }
+    
+    /**
+     * 
+     * Creates an {@link ItemVisitor} to visit the nodes with a level limit and
+     * a {@link ErrorHandler} to handle internal errors.
+     * 
+     * @param visitor
+     * @param limit
+     * @param handler
+     * @return a jcr item visitor with the {@link NodeVisitor} inside
+     */
+    public static ItemVisitor withVisitorLevelLimmitAndErrorHandler(
+            final NodeVisitor visitor, final int limit,
+            final ErrorHandler handler) {
+        checkNotNull("visitor", visitor); //$NON-NLS-1$
+        checkNotNull("handler", handler); //$NON-NLS-1$
+        checkCondition("validMaxLevel", limit > 0); //$NON-NLS-1$
+        return new JcrNodeVisitor(visitor, Integer.valueOf(limit), handler);
+    }
+    
+    private final ErrorHandler errorHandler;
     
     private final NodeVisitor visitor;
     
     private final Integer maxLevels;
     
-    /**
-     * Creates a {@link JcrNodeVisitor} with infinite max levels.
-     * 
-     * @param visitor
-     */
-    private JcrNodeVisitor(final NodeVisitor visitor) {
-        checkNotNull("visitor", visitor); //$NON-NLS-1$
-        this.maxLevels = null;
-        this.visitor = visitor;
-    }
+    private static final ErrorHandler DEFAULT_HANDLER = new DoNothingErrorHandler();
     
     /**
      * Creates a {@link JcrNodeVisitor} with max levels.
@@ -241,10 +330,10 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * @param visitor
      * @param maxLevels
      */
-    private JcrNodeVisitor(final NodeVisitor visitor, final int maxLevels) {
-        checkNotNull("visitor", visitor); //$NON-NLS-1$
-        checkCondition("validMaxLevel", maxLevels > 0); //$NON-NLS-1$
-        this.maxLevels = Integer.valueOf(maxLevels);
+    private JcrNodeVisitor(final NodeVisitor visitor, final Integer maxLevels,
+            final ErrorHandler handler) {
+        this.errorHandler = handler != null ? handler : DEFAULT_HANDLER;
+        this.maxLevels = maxLevels;
         this.visitor = visitor;
     }
     
@@ -253,11 +342,11 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * {@inheritDoc}
      */
     public void visit(final Node node) throws RepositoryException {
-        final LinkedList<Node> queue = new LinkedList<Node>();
-        VisitorSupport.fillQueue(node, queue, this.maxLevels);
-        while (queue.size() > 0) {
-            final Node n = queue.removeFirst();
-            this.visitor.visiting(n);
+        try {
+            VisitorSupport.fillQueue(node, this.visitor, this.maxLevels,
+                    this.errorHandler);
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, RepositoryException.class);
         }
     }
     
