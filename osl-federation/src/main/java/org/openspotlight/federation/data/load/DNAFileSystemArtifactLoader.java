@@ -117,22 +117,40 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
     }
     
     /**
-     * This {@link LoadingContext} will store all JCR data needed during the
-     * processing, and after the processing it will shutdown all necessary
-     * resources.
+     * This {@link GlobalDnaResourceContext} will store all JCR data needed
+     * during the processing, and after the processing it will shutdown all
+     * necessary resources.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * 
      *         FIXME starts only one configuration to improve performance
      * 
      */
-    protected static final class LoadingContext {
+    protected static final class GlobalDnaResourceContext implements
+            GlobalExecutionContext {
         private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
         private static final String repositoryName = "repository"; //$NON-NLS-1$
         
         private final Map<String, Session> mappingSessions = new ConcurrentHashMap<String, Session>();
         
         private final Map<String, JcrEngine> mappingEngines = new ConcurrentHashMap<String, JcrEngine>();
+        
+        /**
+         * Creates a new {@link Session jcr session}. The client class is
+         * responsible to close this session when it finish its work.
+         * 
+         * @param name
+         * @return a new and fresh {@link Session}
+         * @throws Exception
+         */
+        public Session createSessionForMapping(final String name)
+                throws Exception {
+            final JcrEngine engine = this.mappingEngines.get(name);
+            final Session session = engine.getRepository(repositoryName).login(
+                    new SecurityContextCredentials(
+                            DefaultSecurityContext.READ_ONLY));
+            return session;
+        }
         
         /**
          * 
@@ -153,13 +171,36 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
         }
         
         /**
+         * 
+         * {@inheritDoc}
+         */
+        public void globalExecutionAboutToStart(final Bundle bundle) {
+            final String initialLookup = bundle.getInitialLookup();
+            final String[] relativePaths = bundle.getArtifactMappingNames()
+                    .toArray(new String[0]);
+            try {
+                this.setup(initialLookup, relativePaths);
+            } catch (final Exception e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            }
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void globalExecutionFinished(final Bundle bundle) {
+            this.shutdown();
+        }
+        
+        /**
          * Setups all necessary resources.
          * 
          * @param rootPath
          * @param relativePaths
          * @throws Exception
          */
-        public void setup(final String rootPath, final String... relativePaths)
+        private void setup(final String rootPath, final String... relativePaths)
                 throws Exception {
             
             for (final String relative : relativePaths) {
@@ -196,13 +237,53 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
         }
     }
     
+    protected static final class SingleThreadDnaResourceContext implements
+            ThreadExecutionContext {
+        
+        private Session session;
+        
+        public Session getSession() {
+            return this.session;
+        }
+        
+        public void threadExecutionAboutToStart(final Bundle bundle,
+                final ArtifactMapping mapping,
+                final GlobalExecutionContext globalContext) {
+            final GlobalDnaResourceContext context = (GlobalDnaResourceContext) globalContext;
+            
+            try {
+                this.session = context.getSessionForMapping(mapping
+                        .getRelative());
+            } catch (final Exception e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            }
+            
+        }
+        
+        public void threadExecutionFinished(final Bundle bundle,
+                final ArtifactMapping mapping,
+                final GlobalExecutionContext globalContext) {
+            this.session.logout();
+        }
+        
+    }
+    
     /**
      * 
      * {@inheritDoc}
      */
     @Override
-    protected LoadingContext createGlobalExecutionContext() {
-        return new LoadingContext();
+    protected GlobalDnaResourceContext createGlobalExecutionContext() {
+        return new GlobalDnaResourceContext();
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    protected ThreadExecutionContext createThreadExecutionContext() {
+        return new SingleThreadDnaResourceContext();
     }
     
     /**
@@ -211,12 +292,15 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
      */
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle,
-            final ArtifactMapping mapping, final LoadingContext context)
+            final ArtifactMapping mapping, final GlobalExecutionContext context)
             throws ConfigurationException {
+        
         final Set<String> names = new HashSet<String>();
         try {
-            final Session session = context.getSessionForMapping(mapping
-                    .getRelative());
+            
+            final GlobalDnaResourceContext globalDnaResourceContext = (GlobalDnaResourceContext) context;
+            final Session session = globalDnaResourceContext
+                    .getSessionForMapping(mapping.getRelative());
             session.getRootNode().accept(
                     withVisitor(new FillNamesVisitor(names)));
             return names;
@@ -232,10 +316,11 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
     @Override
     protected byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
-            final LoadingContext context) throws Exception {
+            final GlobalExecutionContext globalContext,
+            final ThreadExecutionContext localContext) throws Exception {
         try {
-            final Session session = context.getSessionForMapping(mapping
-                    .getRelative());
+            final SingleThreadDnaResourceContext context = (SingleThreadDnaResourceContext) localContext;
+            final Session session = context.getSession();
             final Node node = session.getRootNode().getNode(artifactName);
             
             final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
@@ -261,35 +346,6 @@ public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadingStarted(final Bundle bundle,
-            final LoadingContext context) throws ConfigurationException {
-        
-        final String initialLookup = bundle.getInitialLookup();
-        final String[] relativePaths = bundle.getArtifactMappingNames()
-                .toArray(new String[0]);
-        try {
-            context.setup(initialLookup, relativePaths);
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, ConfigurationException.class);
-        }
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadingStopped(final Bundle bundle,
-            final LoadingContext context) {
-        context.shutdown();
-        
     }
     
 }
