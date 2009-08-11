@@ -259,6 +259,7 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
             final Bundle bundle) throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         final C cachedInformation = this.createCachedInformation();
+        this.loadingStarted(bundle, cachedInformation);
         final AtomicInteger errorCounter = new AtomicInteger();
         final AtomicInteger loadCounter = new AtomicInteger();
         final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
@@ -309,11 +310,29 @@ public abstract class AbstractArtifactLoader<C> implements ArtifactLoader {
             while (this.executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
                 this.wait();
             }
+            this.executor.shutdown();
+            this.executor = null;
+            this.loadingStopped(bundle, cachedInformation);
         } catch (final InterruptedException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
         return new ArtifactProcessingCount(loadCounter.get(), ignoreCount,
                 errorCounter.get());
+    }
+    
+    /**
+     * Callback method called at the beggining of loading process.
+     */
+    protected void loadingStarted(final Bundle bundle, final C cachedInformation)
+            throws ConfigurationException {
+        // callback method
+    }
+    
+    /**
+     * Callback method called at the end of loading process.
+     */
+    protected void loadingStopped(final Bundle bundle, final C cachedInformation) {
+        // callback method
     }
     
     /**

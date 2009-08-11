@@ -49,93 +49,243 @@
 
 package org.openspotlight.federation.data.load;
 
-import static java.text.MessageFormat.format;
-import static java.util.Collections.emptySet;
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Files.listFileNamesFrom;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.jcr.ItemVisitor;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.jboss.dna.connector.filesystem.FileSystemSource;
+import org.jboss.dna.jcr.JcrConfiguration;
+import org.jboss.dna.jcr.JcrEngine;
+import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Artifact loader that loads Artifact for file system.
+ * Artifact loader that loads Artifact for file system using DNA File System
+ * Connector.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DNAFileSystemArtifactLoader extends AbstractArtifactLoader<Void> {
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class DnaFileSystemArtifactLoader extends
+        AbstractArtifactLoader<DnaFileSystemArtifactLoader.LoadingContext> {
     
     /**
-     * Return all files from bundle.initialLookup directory.
+     * JCR visitor to fill all valid artifact names
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     */
+    protected static final class FillNamesVisitor implements ItemVisitor {
+        final Set<String> names;
+        
+        /**
+         * Constructor to initialize final fields
+         * 
+         * @param names
+         */
+        FillNamesVisitor(final Set<String> names) {
+            this.names = names;
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void visit(final Node node) throws RepositoryException {
+            this.names.add(node.getPath());
+            if (node.hasNodes()) {
+                final NodeIterator nodeIter = node.getNodes();
+                while (nodeIter.hasNext()) {
+                    nodeIter.nextNode().accept(this);
+                    // FIXME change this: possible stack overflow
+                }
+            }
+        }
+        
+        /**
+         * 
+         * {@inheritDoc}
+         */
+        public void visit(final Property property) throws RepositoryException {
+            // nothing to do here
+        }
+        
+    }
+    
+    /**
+     * This {@link LoadingContext} will store all JCR data needed during the
+     * processing, and after the processing it will shutdown all necessary
+     * resources.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * 
+     *         FIXME starts only one configuration to improve performance
+     * 
+     */
+    protected static final class LoadingContext {
+        private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
+        private static final String repositoryName = "repository"; //$NON-NLS-1$
+        
+        private final Map<String, Session> mappingSessions = new ConcurrentHashMap<String, Session>();
+        
+        private final Map<String, JcrEngine> mappingEngines = new ConcurrentHashMap<String, JcrEngine>();
+        
+        /**
+         * 
+         * @param name
+         * @return the jcr session
+         * @throws Exception
+         */
+        public Session getSessionForMapping(final String name) throws Exception {
+            Session session = this.mappingSessions.get(name);
+            if (session == null) {
+                final JcrEngine engine = this.mappingEngines.get(name);
+                session = engine.getRepository(repositoryName).login(
+                        new SecurityContextCredentials(
+                                DefaultSecurityContext.READ_ONLY));
+                this.mappingSessions.put(name, session);
+            }
+            return session;
+        }
+        
+        /**
+         * Setups all necessary resources.
+         * 
+         * @param rootPath
+         * @param relativePaths
+         * @throws Exception
+         */
+        public void setup(final String rootPath, final String... relativePaths)
+                throws Exception {
+            
+            for (final String relative : relativePaths) {
+                
+                final JcrConfiguration configuration = new JcrConfiguration();
+                configuration.repositorySource(repositorySource).usingClass(
+                        FileSystemSource.class).setProperty(
+                        "workspaceRootPath", rootPath).setProperty( //$NON-NLS-1$ 
+                        "creatingWorkspacesAllowed", true).setProperty( //$NON-NLS-1$
+                        "defaultWorkspaceName", relative); //$NON-NLS-1$
+                
+                configuration.repository(repositoryName).setSource(
+                        repositorySource);
+                configuration.save();
+                final JcrEngine engine = configuration.build();
+                engine.start();
+                this.mappingEngines.put(relative, engine);
+                
+            }
+        }
+        
+        /**
+         * Finalizes all necessary resources
+         */
+        public void shutdown() {
+            for (final Map.Entry<String, JcrEngine> entry : this.mappingEngines
+                    .entrySet()) {
+                entry.getValue().shutdown();
+            }
+            for (final Map.Entry<String, Session> entry : this.mappingSessions
+                    .entrySet()) {
+                entry.getValue().logout();
+            }
+        }
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    protected LoadingContext createCachedInformation() {
+        return new LoadingContext();
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
      */
     @Override
     protected Set<String> getAllArtifactNames(final Bundle bundle,
-            final ArtifactMapping mapping, final Void cachedInformation)
+            final ArtifactMapping mapping, final LoadingContext context)
             throws ConfigurationException {
-        checkNotNull("bundle", bundle); //$NON-NLS-1$
         try {
-            final String basePath = bundle.getInitialLookup()
-                    + mapping.getRelative();
-            boolean exists = false;
-            try {
-                exists = new File(basePath).exists();
-            } catch (final Exception e) {
-                exists = false;
-                catchAndLog(
-                        format(
-                                Messages
-                                        .getString("FileSystemArtifactLoader.ignoring"), basePath), e); //$NON-NLS-1$
-            }
-            if (!exists) {
-                this.logger.info(format(Messages
-                        .getString("FileSystemArtifactLoader.ignoring"), //$NON-NLS-1$
-                        basePath));
-                return emptySet();
-            }
-            final Set<String> filesFromThisMapping = listFileNamesFrom(basePath);
-            return filesFromThisMapping;
-        } catch (final SLException e) {
+            final Session session = context.getSessionForMapping(mapping
+                    .getRelative());
+            final Set<String> names = new HashSet<String>();
+            
+            session.getRootNode().accept(new FillNamesVisitor(names));
+            return names;
+        } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
     }
     
     /**
-     * loads the content of a file found on bundle.initialLookup + artifactName
+     * 
+     * {@inheritDoc}
      */
     @Override
     protected byte[] loadArtifact(final Bundle bundle,
             final ArtifactMapping mapping, final String artifactName,
-            final Void cachedInformation) throws Exception {
-        checkNotNull("bundle", bundle); //$NON-NLS-1$
-        checkNotNull("mapping", mapping); //$NON-NLS-1$
-        checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
-        final String fileName = bundle.getInitialLookup()
-                + mapping.getRelative() + artifactName;
-        final File file = new File(fileName);
-        checkCondition("fileExists", file.exists()); //$NON-NLS-1$
-        final FileInputStream fis = new FileInputStream(file);
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while (fis.available() > 0) {
-            baos.write(fis.read());
+            final LoadingContext context) throws Exception {
+        try {
+            final Session session = context.getSessionForMapping(mapping
+                    .getRelative());
+            final Node node = session.getRootNode().getNode(artifactName);
+            final InputStream is = node.getProperty("").getStream(); //$NON-NLS-1$
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int available;
+            while ((available = is.read()) != 0) {
+                baos.write(available);
+            }
+            return baos.toByteArray();
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
         }
-        final byte[] content = baos.toByteArray();
-        fis.close();
-        return content;
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadingStarted(final Bundle bundle,
+            final LoadingContext context) throws ConfigurationException {
+        
+        final String initialLookup = bundle.getInitialLookup();
+        final String[] relativePaths = bundle.getArtifactMappingNames()
+                .toArray(new String[0]);
+        try {
+            context.setup(initialLookup, relativePaths);
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
+    }
+    
+    /**
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadingStopped(final Bundle bundle,
+            final LoadingContext context) {
+        context.shutdown();
+        
     }
     
 }
