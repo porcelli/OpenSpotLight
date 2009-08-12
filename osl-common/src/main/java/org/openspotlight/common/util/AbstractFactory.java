@@ -54,6 +54,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.openspotlight.common.exception.AbstractFactoryException;
+
 /**
  * A factory for creating Abstract objects.
  */

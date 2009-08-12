@@ -54,9 +54,15 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,18 +70,19 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
- * Helper class to deal with multiple files
+ * Helper class to deal with multiple files.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * @author Vitor Hugo Chagas
  */
 public class Files {
     
     /**
-     * Delete multiple files
+     * Delete multiple files.
      * 
-     * @param path
-     * @throws SLException
+     * @param path the path
+     * 
+     * @throws SLException the SL exception
      */
     public static void delete(final File path) throws SLException {
         checkNotNull("path", path); //$NON-NLS-1$
@@ -94,10 +101,11 @@ public class Files {
     }
     
     /**
-     * Delete multiple files
+     * Delete multiple files.
      * 
-     * @param path
-     * @throws SLException
+     * @param path the path
+     * 
+     * @throws SLException the SL exception
      */
     public static void delete(final String path) throws SLException {
         checkNotEmpty("path", path); //$NON-NLS-1$
@@ -106,10 +114,11 @@ public class Files {
     }
     
     /**
-     * Deletes directory in a recursive way, first excluding its contents
+     * Deletes directory in a recursive way, first excluding its contents.
      * 
-     * @param dir
-     * @throws Exception
+     * @param dir the dir
+     * 
+     * @throws Exception the exception
      */
     private static void deleteDir(final File dir) throws Exception {
         checkNotNull("dir", dir); //$NON-NLS-1$
@@ -124,11 +133,11 @@ public class Files {
     }
     
     /**
-     * Delete a file itself
+     * Delete a file itself.
      * 
-     * @param file
-     * @throws Exception
-     */
+     * @param file the file
+     * 
+     * @throws Exception      */
     private static void deleteFile(final File file) {
         checkNotNull("file", file); //$NON-NLS-1$
         file.delete();
@@ -137,7 +146,8 @@ public class Files {
     /**
      * Returns the normalized path (in a unix like way).
      * 
-     * @param f
+     * @param f the f
+     * 
      * @return a normalized file name
      */
     public static String getNormalizedFileName(final File f) {
@@ -151,10 +161,11 @@ public class Files {
     /**
      * Execute the file listing using recursion to fill the file name set.
      * 
-     * @param setOfFiles
-     * @param basePath
-     * @param file
-     * @throws Exception
+     * @param setOfFiles the set of files
+     * @param basePath the base path
+     * @param file the file
+     * 
+     * @throws Exception the exception
      */
     private static void listFileNamesFrom(final Set<String> setOfFiles,
             final String basePath, final File file) throws Exception {
@@ -175,9 +186,11 @@ public class Files {
      * Returns a relative path list from an initial directory, or the file path
      * itself if the initialPath is a file.
      * 
-     * @param basePath
+     * @param basePath the base path
+     * 
      * @return a relative path list
-     * @throws SLException
+     * 
+     * @throws SLException the SL exception
      */
     public static Set<String> listFileNamesFrom(final String basePath)
             throws SLException {
@@ -202,9 +215,11 @@ public class Files {
     /**
      * Reads an streams content and writes it on a byte array.
      * 
-     * @param inputStream
+     * @param inputStream the input stream
+     * 
      * @return the stream content as bytes
-     * @throws SLException
+     * 
+     * @throws SLException the SL exception
      */
     public static byte[] readBytesFromStream(final InputStream inputStream)
             throws SLException {
@@ -220,9 +235,41 @@ public class Files {
             throw logAndReturnNew(e, SLException.class);
         }
     }
+
+    /**
+     * Reads text file lines.
+     * 
+     * @param inputStream
+     * @return
+     * @throws SLException
+     */
+    public static Collection<String> readLines(InputStream inputStream) throws SLException {
+    	checkNotNull("inputStream", inputStream);
+    	Collection<String> lines = new ArrayList<String>();
+    	FileReader fileReader = null;
+    	BufferedReader reader = null;
+    	try {
+    		String line = null;
+			reader = new BufferedReader(new InputStreamReader(inputStream));
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} 
+    	catch (IOException e) {
+    		throw logAndReturnNew(e, SLException.class);
+		}
+    	finally {
+			try {
+				if (reader != null) reader.close();
+				if (fileReader != null) fileReader.close();
+			} 
+			catch (IOException e) {}
+    	}
+    	return lines;
+    }
     
     /**
-     * Should not be instantiated
+     * Should not be instantiated.
      */
     private Files() {
         throw new IllegalStateException(Messages

@@ -52,19 +52,59 @@ package org.openspotlight.common.util;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
+import java.lang.reflect.Field;
+
+import org.openspotlight.common.exception.SLRuntimeException;
+
 /**
- * Helper class to build equals methods in a secure and concise way
+ * Helper class to build equals methods in a secure and concise way.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * @author Vitor Hugo Chagas
  */
 public class Equals {
+
+	/**
+	 * Each equality.
+	 * 
+	 * @param thisObjectType the this object type
+	 * @param thisObject the this object
+	 * @param thatObject the that object
+	 * @param fieldName the field name
+	 * 
+	 * @return true, if successful
+	 */
+	public static <T> boolean eachEquality(Class<T> thisObjectType, T thisObject, Object thatObject, String fieldName) {
+		boolean status = false;
+		Assertions.checkNotNull("this object type", thisObjectType);
+		Assertions.checkNotNull("this object", thisObject);
+		if (thatObject != null && thisObjectType.isInstance(thatObject)) {
+			Field field = null;
+			try {
+				field = thisObjectType.getField(fieldName);
+				field.setAccessible(true);
+				Object value1 = field.get(thisObject);
+				Object value2 = field.get(thatObject);
+				status = value1 == value2 || value1.equals(value2);
+			} 
+			catch (Exception e) {
+				throw new SLRuntimeException("Error on attempt to perform " + thisObjectType.getName() + " equality operation.", e);
+			}
+			finally {
+				if (field != null) {
+					field.setAccessible(false);
+				}
+			}
+		}
+		return status;
+	}
     
     /**
      * Method that call equals in a null pointer safe way.
      * 
-     * @param o1
-     * @param o2
+     * @param o1 the o1
+     * @param o2 the o2
+     * 
      * @return true if the two object are equal
      */
     public static boolean eachEquality(final Object o1, final Object o2) {
@@ -91,19 +131,20 @@ public class Equals {
      * //...
      * 
      * public void equals(Object o){
-     *     if(o==this)
-     *         return true;
-     *     if(!(o instanceof ThisClass))
-     *         return false;
-     *     ThisClass that = (ThisClass) o;
-     *     return eachEquality(of(this.attribute1,this.attribute2)
-     *                     ,andOf(that.attribute1,that.attribute2));
+     * if(o==this)
+     * return true;
+     * if(!(o instanceof ThisClass))
+     * return false;
+     * ThisClass that = (ThisClass) o;
+     * return eachEquality(of(this.attribute1,this.attribute2)
+     * ,andOf(that.attribute1,that.attribute2));
      * }
      * 
      * </pre>
      * 
-     * @param of
-     * @param andOf
+     * @param of the of
+     * @param andOf the and of
+     * 
      * @return true if all objects are equal
      */
     public static boolean eachEquality(final Object[] of, final Object[] andOf) {
@@ -124,7 +165,7 @@ public class Equals {
     }
     
     /**
-     * Should not be instantiated
+     * Should not be instantiated.
      */
     private Equals() {
         logAndThrow(new IllegalStateException(Messages

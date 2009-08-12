@@ -56,6 +56,8 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import org.openspotlight.common.exception.SerializationUtilException;
+
 /**
  * The Class SerializationUtil.
  * 
