@@ -50,6 +50,8 @@ package org.openspotlight.graph;
 
 import java.util.Collection;
 
+import org.openspotlight.graph.query.SLQuery;
+
 /**
  * The Interface SLGraphSession.
  * 
@@ -470,5 +472,13 @@ public interface SLGraphSession {
 	 * @throws SLGraphSessionException
 	 */
 	public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException;
-	
+
+	/**
+	 * Creates the query.
+	 * 
+	 * @return the sL query
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLQuery createQuery() throws SLGraphSessionException;
 }

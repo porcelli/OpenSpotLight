@@ -62,7 +62,7 @@ public interface SLMetaRenderHint extends SLMetaElement {
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNode getMetaNode() throws SLGraphSessionException;
+	public SLMetaNodeType getMetaNode() throws SLGraphSessionException;
 	
 	/**
 	 * Gets the name.

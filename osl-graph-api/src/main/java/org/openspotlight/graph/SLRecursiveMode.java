@@ -48,40 +48,14 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
 /**
- * The Interface SLMetaNodeProperty.
+ * The Enum SLRecursiveMode.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaNodeProperty extends SLMetaElement {
+public enum SLRecursiveMode {
 	
-	/**
-	 * Gets the meta node.
-	 * 
-	 * @return the meta node
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaNodeType getMetaNode() throws SLGraphSessionException;
+	NOT_RECURSIVE,
 	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getName() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Class<? extends Serializable> getType() throws SLGraphSessionException;
-
+	RECURSIVE
 }
