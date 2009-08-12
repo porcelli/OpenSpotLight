@@ -46,45 +46,44 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.common.util;
+package org.openspotlight.common.exception;
 
-import org.openspotlight.common.exception.SLException;
 
 /**
- * The Class JCRUtilException.
+ * The Class SerializationUtilException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class JCRUtilException extends SLException {
-
+public class SerializationUtilException extends SLException {
+	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Instantiates a new jCR util exception.
+	 * Instantiates a new serialization util exception.
 	 * 
 	 * @param message the message
 	 */
-	public JCRUtilException(String message) {
+	public SerializationUtilException(String message) {
 		super(message);
 	}
 
 	/**
-	 * Instantiates a new jCR util exception.
+	 * Instantiates a new serialization util exception.
 	 * 
 	 * @param cause the cause
 	 */
-	public JCRUtilException(Throwable cause) {
+	public SerializationUtilException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * Instantiates a new jCR util exception.
+	 * Instantiates a new serialization util exception.
 	 * 
 	 * @param message the message
 	 * @param cause the cause
 	 */
-	public JCRUtilException(String message, Throwable cause) {
+	public SerializationUtilException(String message, Throwable cause) {
 		super(message, cause);
 	}
 }

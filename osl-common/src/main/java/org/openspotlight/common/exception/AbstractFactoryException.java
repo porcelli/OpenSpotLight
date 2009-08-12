@@ -46,94 +46,44 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.common.exception;
 
-import java.util.Collection;
 
 /**
- * The Interface SLMetaNode.
+ * The Class AbstractFactoryException.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaNode extends SLMetaElement {
+public class AbstractFactoryException extends SLException {
 	
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Class<? extends SLNode> getType() throws SLGraphSessionException;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Gets the meta properties.
+	 * Instantiates a new abstract factory exception.
 	 * 
-	 * @return the meta properties
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @param message the message
+	 * @param cause the cause
 	 */
-	public Collection<SLMetaNodeProperty> getMetaProperties() throws SLGraphSessionException;
+	public AbstractFactoryException(String message, Throwable cause) {
+		super(message, cause);
+	}
 	
 	/**
-	 * Gets the meta property.
+	 * Instantiates a new abstract factory exception.
 	 * 
-	 * @param name the name
-	 * 
-	 * @return the meta property
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @param message the message
 	 */
-	public SLMetaNodeProperty getMetaProperty(String name) throws SLGraphSessionException;
+	public AbstractFactoryException(String message) {
+		super(message);
+	}
 	
 	/**
-	 * Gets the meta node.
+	 * Instantiates a new abstract factory exception.
 	 * 
-	 * @param nodeClass the node class
-	 * 
-	 * @return the meta node
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @param cause the cause
 	 */
-	public SLMetaNode getMetaNode(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the meta nodes.
-	 * 
-	 * @return the meta nodes
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLMetaNode> getMetaNodes() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the meta render hint.
-	 * 
-	 * @param name the name
-	 * 
-	 * @return the meta render hint
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaRenderHint getMetaRenderHint(String name) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the meta render hints.
-	 * 
-	 * @return the meta render hints
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLMetaRenderHint> getMetaRenderHints() throws SLGraphSessionException;
-	
-	
-	/**
-	 * Gets the description.
-	 * 
-	 * @return the description
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getDescription() throws SLGraphSessionException;
+	public AbstractFactoryException(Throwable cause) {
+		super(cause);
+	}
 }
-

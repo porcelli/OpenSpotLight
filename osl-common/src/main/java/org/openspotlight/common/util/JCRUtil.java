@@ -58,6 +58,8 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 
+import org.openspotlight.common.exception.JCRUtilException;
+
 
 /**
  * The Class JCRUtil.

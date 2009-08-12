@@ -46,45 +46,44 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.common.util;
+package org.openspotlight.common.exception;
 
-import org.openspotlight.common.exception.SLException;
 
 /**
- * The Class AbstractFactoryException.
+ * The Class JCRUtilException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class AbstractFactoryException extends SLException {
-	
+public class JCRUtilException extends SLException {
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Instantiates a new abstract factory exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public AbstractFactoryException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	/**
-	 * Instantiates a new abstract factory exception.
+	 * Instantiates a new jCR util exception.
 	 * 
 	 * @param message the message
 	 */
-	public AbstractFactoryException(String message) {
+	public JCRUtilException(String message) {
 		super(message);
 	}
-	
+
 	/**
-	 * Instantiates a new abstract factory exception.
+	 * Instantiates a new jCR util exception.
 	 * 
 	 * @param cause the cause
 	 */
-	public AbstractFactoryException(Throwable cause) {
+	public JCRUtilException(Throwable cause) {
 		super(cause);
+	}
+
+	/**
+	 * Instantiates a new jCR util exception.
+	 * 
+	 * @param message the message
+	 * @param cause the cause
+	 */
+	public JCRUtilException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

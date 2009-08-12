@@ -122,7 +122,7 @@ public class GraphWithMassiveDataTest {
                     final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
                             .forName("org.openspotlight.graph.link." + type
                                     + "Link");
-                    this.session.addLink(clazz, handleMap.get(handleA),
+                    SLLink link = this.session.addLink(clazz, handleMap.get(handleA),
                             handleMap.get(handleB), false);
                     ok++;
                     
