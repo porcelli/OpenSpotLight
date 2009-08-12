@@ -57,14 +57,26 @@ import java.util.Collection;
  */
 public interface SLMetadata {
 
+	
 	/**
-	 * Gets the meta nodes.
+	 * Gets the meta nodes types.
 	 * 
-	 * @return the meta nodes
+	 * @return the meta nodes types
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public Collection<SLMetaNode> getMetaNodes() throws SLGraphSessionException;
+	public Collection<SLMetaNodeType> getMetaNodesTypes() throws SLGraphSessionException;
+	
+	/**
+	 * Gets the meta nodes types.
+	 * 
+	 * @param recursiveMode the recursive mode
+	 * 
+	 * @return the meta nodes types
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public Collection<SLMetaNodeType> getMetaNodesTypes(SLRecursiveMode recursiveMode) throws SLGraphSessionException;
 	
 	/**
 	 * Gets the meta node.
@@ -75,7 +87,7 @@ public interface SLMetadata {
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNode getMetaNode(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
+	public SLMetaNodeType findMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
 	
 	/**
 	 * Gets the meta link type.

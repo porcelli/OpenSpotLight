@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.util.AbstractFactoryException;
+import org.openspotlight.common.exception.AbstractFactoryException;
 
 /**
  * The Class SLGraphFactoryException.
