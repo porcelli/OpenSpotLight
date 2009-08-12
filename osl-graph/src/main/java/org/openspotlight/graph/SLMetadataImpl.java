@@ -48,10 +48,14 @@
  */
 package org.openspotlight.graph;
 
+import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
+import static org.openspotlight.graph.SLRecursiveMode.NOT_RECURSIVE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
@@ -80,14 +84,16 @@ public class SLMetadataImpl implements SLMetadata {
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLMetadata#getMetaNode(java.lang.Class)
 	 */
-	public SLMetaNode getMetaNode(Class<? extends SLNode> nodeClass) throws SLGraphSessionException {
+	public SLMetaNodeType findMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException {
 		try {
-			SLPersistentQuery query = treeSession.createQuery("//osl/metadata/types/" + nodeClass.getName(), SLPersistentQuery.TYPE_XPATH);
+			StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
+			StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", nodeClass.getName(), "']");
+			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
 			SLPersistentQueryResult result = query.execute();
-			SLMetaNode metaNode = null;
+			SLMetaNodeType metaNode = null;
 			if (result.getRowCount() == 1) {
 				SLPersistentNode pMetaNode = result.getNodes().iterator().next();
-				metaNode = new SLMetaNodeImpl(this, pMetaNode);
+				metaNode = new SLMetaNodeTypeImpl(this, pMetaNode);
 			}
 			return metaNode;
 		}
@@ -95,19 +101,29 @@ public class SLMetadataImpl implements SLMetadata {
 			throw new SLGraphSessionException("Error on attempt to retrieve meta node.", e);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetadata#getMetaNodesTypes()
+	 */
+	public Collection<SLMetaNodeType> getMetaNodesTypes() throws SLGraphSessionException {
+		return getMetaNodesTypes(NOT_RECURSIVE);
+	}
 
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLMetadata#getMetaNodes()
 	 */
-	public Collection<SLMetaNode> getMetaNodes() throws SLGraphSessionException {
+	public Collection<SLMetaNodeType> getMetaNodesTypes(SLRecursiveMode recursiveMode) throws SLGraphSessionException {
 		try {
-			Collection<SLMetaNode> metaNodes = new ArrayList<SLMetaNode>();
-			SLPersistentQuery query = treeSession.createQuery("//osl/metadata/types/*", SLPersistentQuery.TYPE_XPATH);
+			Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
+			StringBuilder statement = new StringBuilder("//osl/metadata/types");
+			if (recursiveMode.equals(RECURSIVE)) statement.append("//*");
+			else statement.append("/*");
+			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
 			SLPersistentQueryResult result = query.execute();
 			Collection<SLPersistentNode> pNodes = result.getNodes();
 			for (SLPersistentNode pNode : pNodes) {
-				SLMetaNode metaNode = new SLMetaNodeImpl(this, pNode);
+				SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(this, pNode);
 				metaNodes.add(metaNode);
 			}
 			return metaNodes;
@@ -145,8 +161,7 @@ public class SLMetadataImpl implements SLMetadata {
 	public Collection<SLMetaLinkType> getMetaLinkTypes() throws SLGraphSessionException {
 		try {
 			Collection<SLMetaLinkType> metaLinkTypes = new ArrayList<SLMetaLinkType>();
-			StringBuilder statement = new StringBuilder();
-			statement.append("//osl/metadata/links/*");
+			StringBuilder statement = new StringBuilder("//osl/metadata/links/*");
 			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
 			SLPersistentQueryResult result = query.execute();
 			Collection<SLPersistentNode> linkTypeNodes = result.getNodes();

@@ -115,6 +115,9 @@ public class SLConsts {
 	/** The Constant PROPERTY_NAME_LINK_COUNT. */
 	static final String PROPERTY_NAME_LINK_COUNT = "linkCount";
 	
+	/** The Constant PROPERTY_NAME_NODE_TYPE. */
+	static final String PROPERTY_NAME_NODE_TYPE = "nodeType";
+	
 	/** The Constant PROPERTY_NAME_A_CLASS_NAME. */
 	static final String PROPERTY_NAME_A_CLASS_NAME = "aClassName";
 	
@@ -126,5 +129,5 @@ public class SLConsts {
 	
 	/** The Constant PROPERTY_PREFIX_USER. */
 	static final String PROPERTY_PREFIX_USER = "user";
-	//static final String PROPERTY_SUFFIX_VALUE = "value";
+	
 }
