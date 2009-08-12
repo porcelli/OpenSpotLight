@@ -68,7 +68,7 @@ import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Project;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.load.DnaFileSystemArtifactLoader;
+import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
 
 /**
  * Test for class {@link DnaFileSystemArtifactLoader}
@@ -82,7 +82,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
     @Override
     @Before
     public void createArtifactLoader() {
-        this.artifactLoader = new DnaFileSystemArtifactLoader();
+        this.artifactLoader = new DNAFileSystemArtifactLoader();
     }
     
     @Override
