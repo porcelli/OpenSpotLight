@@ -112,6 +112,19 @@ public class SLCommonSupport {
 	}
 	
 	/**
+	 * Gets the node type name.
+	 * 
+	 * @param pNode the node
+	 * 
+	 * @return the node type name
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static String getNodeTypeName(SLPersistentNode pNode) throws SLPersistentTreeSessionException {
+		return SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
+	}
+	
+	/**
 	 * Gets the name in id form.
 	 * 
 	 * @param node the node

@@ -61,7 +61,7 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 public class SLMetaRenderHintImpl implements SLMetaRenderHint {
 
 	/** The meta node. */
-	private SLMetaNode metaNode;
+	private SLMetaNodeType metaNode;
 	
 	/** The property. */
 	private SLPersistentProperty<Serializable> property;
@@ -72,7 +72,7 @@ public class SLMetaRenderHintImpl implements SLMetaRenderHint {
 	 * @param metaNode the meta node
 	 * @param property the property
 	 */
-	SLMetaRenderHintImpl(SLMetaNode metaNode, SLPersistentProperty<Serializable> property) {
+	SLMetaRenderHintImpl(SLMetaNodeType metaNode, SLPersistentProperty<Serializable> property) {
 		this.metaNode = metaNode;
 		this.property = property;
 	}
@@ -87,7 +87,7 @@ public class SLMetaRenderHintImpl implements SLMetaRenderHint {
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLMetaRenderHint#getMetaNode()
 	 */
-	public SLMetaNode getMetaNode() throws SLGraphSessionException {
+	public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
 		return metaNode;
 	}
 

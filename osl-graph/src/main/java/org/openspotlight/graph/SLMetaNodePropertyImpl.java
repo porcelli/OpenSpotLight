@@ -64,7 +64,7 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 	private SLMetadata metadata;
 	
 	/** The meta node. */
-	private SLMetaNode metaNode;
+	private SLMetaNodeType metaNode;
 	
 	/** The p property. */
 	private SLPersistentProperty<Serializable> pProperty;
@@ -76,7 +76,7 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 	 * @param metaNode the meta node
 	 * @param pProperty the property
 	 */
-	SLMetaNodePropertyImpl(SLMetadata metadata, SLMetaNode metaNode, SLPersistentProperty<Serializable> pProperty) {
+	SLMetaNodePropertyImpl(SLMetadata metadata, SLMetaNodeType metaNode, SLPersistentProperty<Serializable> pProperty) {
 		this.metadata = metadata;
 		this.metaNode = metaNode;
 		this.pProperty = pProperty;
@@ -94,7 +94,7 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLMetaNodeProperty#getMetaNode()
 	 */
-	public SLMetaNode getMetaNode() throws SLGraphSessionException {
+	public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
 		return metaNode;
 	}
 
