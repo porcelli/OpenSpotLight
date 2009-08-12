@@ -80,7 +80,7 @@ import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DnaFileSystemArtifactLoader extends AbstractArtifactLoader {
+public class DNAFileSystemArtifactLoader extends AbstractArtifactLoader {
     
     /**
      * JCR visitor to fill all valid artifact names
