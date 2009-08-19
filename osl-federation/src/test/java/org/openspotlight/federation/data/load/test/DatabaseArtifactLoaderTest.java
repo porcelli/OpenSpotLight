@@ -97,9 +97,10 @@ public class DatabaseArtifactLoaderTest {
     @Test
     public void shouldListenChangesOnStreams() throws Exception {
         
-        final DbBundle bundle = (DbBundle) createDbConfiguration()
-                .getRepositoryByName("H2 Repository").getProjectByName(
-                        "h2 Project").getBundleByName("H2 Connection");
+        final DbBundle bundle = (DbBundle) createDbConfiguration(
+                "DatabaseArtifactLoaderTest").getRepositoryByName(
+                "H2 Repository").getProjectByName("h2 Project")
+                .getBundleByName("H2 Connection");
         bundle
                 .setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db");
         final SharedData sharedData = bundle.getInstanceMetadata()
@@ -139,9 +140,10 @@ public class DatabaseArtifactLoaderTest {
     
     @Test
     public void shouldListenExclusionsOnStreams() throws Exception {
-        final DbBundle bundle = (DbBundle) createDbConfiguration()
-                .getRepositoryByName("H2 Repository").getProjectByName(
-                        "h2 Project").getBundleByName("H2 Connection");
+        final DbBundle bundle = (DbBundle) createDbConfiguration(
+                "DatabaseArtifactLoaderTest").getRepositoryByName(
+                "H2 Repository").getProjectByName("h2 Project")
+                .getBundleByName("H2 Connection");
         bundle
                 .setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db");
         final SharedData sharedData = bundle.getInstanceMetadata()
@@ -177,9 +179,10 @@ public class DatabaseArtifactLoaderTest {
     
     @Test
     public void shouldListenInclusionsOnStreams() throws Exception {
-        final DbBundle bundle = (DbBundle) createDbConfiguration()
-                .getRepositoryByName("H2 Repository").getProjectByName(
-                        "h2 Project").getBundleByName("H2 Connection");
+        final DbBundle bundle = (DbBundle) createDbConfiguration(
+                "DatabaseArtifactLoaderTest").getRepositoryByName(
+                "H2 Repository").getProjectByName("h2 Project")
+                .getBundleByName("H2 Connection");
         bundle
                 .setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         

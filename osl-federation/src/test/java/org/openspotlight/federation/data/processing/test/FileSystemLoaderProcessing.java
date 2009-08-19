@@ -72,7 +72,7 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
 @SuppressWarnings("all")
-public class StreamArtifactDogFoodingProcessing {
+public class FileSystemLoaderProcessing {
     
     public static Configuration loadAllFilesFromThisConfiguration(
             final Configuration configuration) throws Exception {
@@ -92,15 +92,15 @@ public class StreamArtifactDogFoodingProcessing {
     public void shouldCreateValidXmlConfigurationForOslSourceCode()
             throws Exception {
         final XmlConfigurationManager configurationManager = new XmlConfigurationManager(
-                "./target/test-data/StreamArtifactDogFoodingProcessing/dogfooding-osl-configuration.xml");
-        final Configuration configuration = createOslValidConfiguration();
+                "./target/test-data/FileSystemLoaderProcessing/dogfooding-osl-configuration.xml");
+        final Configuration configuration = createOslValidConfiguration("FileSystemLoaderProcessing");
         configurationManager.save(configuration);
     }
     
     @Test
     public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
         final Configuration configuration = this
-                .loadAllFilesFromThisConfiguration(createOslValidConfiguration());
+                .loadAllFilesFromThisConfiguration(createOslValidConfiguration("FileSystemLoaderProcessing"));
         final Set<Bundle> bundles = findAllNodesOfType(configuration,
                 Bundle.class);
         for (final Bundle bundle : bundles) {
@@ -111,7 +111,7 @@ public class StreamArtifactDogFoodingProcessing {
     @Test
     public void shouldProcessAllValidOslSourceCode() throws Exception {
         final Configuration configuration = this
-                .loadAllFilesFromThisConfiguration(createOslValidConfiguration());
+                .loadAllFilesFromThisConfiguration(createOslValidConfiguration("FileSystemLoaderProcessing"));
         final SLGraph graph = mock(SLGraph.class);
         final SLGraphSession session = mock(SLGraphSession.class);
         when(graph.openSession()).thenReturn(session);

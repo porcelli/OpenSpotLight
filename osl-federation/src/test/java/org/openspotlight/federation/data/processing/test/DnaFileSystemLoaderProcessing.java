@@ -53,74 +53,56 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDbConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidDnaFileConnectorConfiguration;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.Set;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
-import org.openspotlight.federation.data.load.DatabaseArtifactLoader;
+import org.openspotlight.federation.data.load.DnaFileSystemArtifactLoader;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
-import org.openspotlight.federation.data.load.db.test.H2DatabaseTest;
+import org.openspotlight.federation.data.load.ArtifactLoader.ArtifactProcessingCount;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
+import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
 @SuppressWarnings("all")
-public class DbStreamArtifactProcessing {
+public class DnaFileSystemLoaderProcessing {
     
-    @BeforeClass
-    public static void setupH2() throws Exception {
-        Files.delete("./target/test-data/DbStreamArtifactProcessing/h2/");
-        final H2DatabaseTest dbTest = new H2DatabaseTest() {
-            
-            @Override
-            protected String getUrl() {
-                return "jdbc:h2:./target/test-data/DbStreamArtifactProcessing/h2/db";
-            }
-            
-        };
-        dbTest.createConnection();
-        dbTest.loadConfig();
-        dbTest.shouldPrepareItems();
-        dbTest.closeConnection();
-        
-    }
-    
-    private Configuration loadAllArtifactsFromThisConfiguration(
+    public static Configuration loadAllFilesFromThisConfiguration(
             final Configuration configuration) throws Exception {
         final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
-                new DatabaseArtifactLoader());
+                new DnaFileSystemArtifactLoader());
         final Set<Bundle> bundles = findAllNodesOfType(configuration,
                 Bundle.class);
         for (final Bundle bundle : bundles) {
-            group.loadArtifactsFromMappings(bundle);
-            
+            final ArtifactProcessingCount count = group
+                    .loadArtifactsFromMappings(bundle);
+            assertThat(count.getErrorCount(), is(0L));
         }
         return configuration;
         
     }
     
     @Test
-    public void shouldCreateValidXmlConfigurationForh2SourceCode()
+    public void shouldCreateValidXmlConfigurationForOslSourceCode()
             throws Exception {
         final XmlConfigurationManager configurationManager = new XmlConfigurationManager(
-                "./target/test-data/DbStreamArtifactProcessing/h2-configuration.xml");
-        final Configuration configuration = createDbConfiguration("DbStreamArtifactProcessing");
+                "./target/test-data/DnaFileSystemLoaderProcessing/dna-file-example-osl-configuration.xml");
+        final Configuration configuration = createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing");
         configurationManager.save(configuration);
     }
     
     @Test
-    public void shouldLoadAllArtifactsFromh2SourceCode() throws Exception {
+    public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
         final Configuration configuration = this
-                .loadAllArtifactsFromThisConfiguration(createDbConfiguration("DbStreamArtifactProcessing"));
+                .loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
         final Set<Bundle> bundles = findAllNodesOfType(configuration,
                 Bundle.class);
         for (final Bundle bundle : bundles) {
@@ -129,18 +111,19 @@ public class DbStreamArtifactProcessing {
     }
     
     @Test
-    public void shouldProcessAllValidh2SourceCode() throws Exception {
+    public void shouldProcessAllValidOslSourceCode() throws Exception {
         final Configuration configuration = this
-                .loadAllArtifactsFromThisConfiguration(createDbConfiguration("DbStreamArtifactProcessing"));
+                .loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
         final SLGraph graph = mock(SLGraph.class);
         final SLGraphSession session = mock(SLGraphSession.class);
         when(graph.openSession()).thenReturn(session);
         
         final BundleProcessorManager manager = new BundleProcessorManager(graph);
+        final GraphContext graphContext = mock(GraphContext.class);
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
                 StreamArtifact.class);
         final Repository repository = configuration
-                .getRepositoryByName("H2 Repository");
+                .getRepositoryByName("OSL Project");
         manager.processRepository(repository);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }
