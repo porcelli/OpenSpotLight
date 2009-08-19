@@ -55,7 +55,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
-import static org.openspotlight.federation.data.processing.test.StreamArtifactDogFoodingProcessing.loadAllFilesFromThisConfiguration;
+import static org.openspotlight.federation.data.processing.test.FileSystemLoaderProcessing.loadAllFilesFromThisConfiguration;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.Set;
@@ -120,7 +120,7 @@ public class JcrSessionConfigurationManagerTest extends
     
     @BeforeClass
     public static void loadSourceCodeIntoValidConfiguration() throws Exception {
-        configuration = createOslValidConfiguration();
+        configuration = createOslValidConfiguration("JcrSessionConfigurationManagerTest");
         configuration = loadAllFilesFromThisConfiguration(configuration);
         
     }
