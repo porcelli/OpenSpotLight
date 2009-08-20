@@ -440,14 +440,13 @@ public interface SLGraphSession {
 	 */
 	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target, int directionType) throws SLGraphSessionException;
 
+	
 	/**
 	 * Gets the metadata.
 	 * 
 	 * @return the metadata
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetadata getMetadata() throws SLGraphSessionException;
+	public SLMetadata getMetadata();
 	
 	/**
 	 * Sets the default encoder.
@@ -468,8 +467,11 @@ public interface SLGraphSession {
 	public SLEncoder getDefaultEncoder() throws SLGraphSessionException;
 	
 	/**
-	 * @return
-	 * @throws SLGraphSessionException
+	 * Gets the encoder factory.
+	 * 
+	 * @return the encoder factory
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException;
 

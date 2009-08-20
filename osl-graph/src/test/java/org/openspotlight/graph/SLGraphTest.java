@@ -395,7 +395,7 @@ public class SLGraphTest {
 	@BeforeClass
 	public void init() throws AbstractFactoryException {
 		final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-		this.graph = factory.createGraph();
+		this.graph = factory.createTempGraph(true);
 	}
 
 	/**

@@ -393,6 +393,15 @@ public interface SLNode extends Comparable<SLNode> {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public Collection<SLLineReference> getLineReferences() throws SLGraphSessionException;
+	
+	/**
+	 * Gets the type name.
+	 * 
+	 * @return the type name
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public String getTypeName() throws SLGraphSessionException;
 }
 
 

@@ -58,15 +58,58 @@ import org.openspotlight.graph.SLGraphSessionException;
 public interface SLQuery {
 	
 	/**
-	 * Select.
+	 * The Enum SortMode.
 	 * 
-	 * @return the sL select
+	 * @author Vitor Hugo Chagas
+	 */
+	public static enum SortMode {
+		
+		/** The SORTED. */
+		SORTED,
+		
+		/** The NO t_ sorted. */
+		NOT_SORTED
+	}
+	
+	/**
+	 * Select by node type.
+	 * 
+	 * @return the sL select by node type
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLSelectStatement select() throws SLGraphSessionException;
+	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException;
 	
+	/**
+	 * Select by link type.
+	 * 
+	 * @return the sL select by link type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException;
 	
+	/**
+	 * Execute.
+	 * 
+	 * @return the sL query result
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
 	public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	
+	/**
+	 * Execute.
+	 * 
+	 * @param sortMode the sort mode
+	 * @param showSLQL the show slql
+	 * 
+	 * @return the sL query result
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLQueryResult execute(SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLGraphSessionException;
 }
 

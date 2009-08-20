@@ -48,30 +48,54 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.common.util.StringBuilderUtil;
+
 /**
  * The Enum SLRelationalOperatorType.
  * 
  * @author Vitor Hugo Chagas
  */
-public enum SLConditionalOperatorType {
+public enum SLConditionalOperatorType implements SLOperatorType {
 	
+	/** The AND. */
 	AND ("AND"),
 	
+	/** The OR. */
 	OR ("OR");
 	
+	/** The symbol. */
 	private String symbol;
 	
+	/**
+	 * Instantiates a new sL conditional operator type.
+	 * 
+	 * @param symbol the symbol
+	 */
 	SLConditionalOperatorType(String symbol) {
 		this.symbol = symbol;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#symbol()
+	 */
 	public String symbol() {
 		return symbol;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
 	@Override
 	public String toString() {
 		return symbol;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#xPathExpression(java.lang.Object, java.lang.Object)
+	 */
+	public String xPathExpression(Object leftOperand, Object rightOperand) {
+		StringBuilder buffer = new StringBuilder();
+		StringBuilderUtil.append(buffer, leftOperand, ' ', symbol.toLowerCase(), ' ', rightOperand);
+		return buffer.toString();
+	}
 }

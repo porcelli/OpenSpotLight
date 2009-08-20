@@ -88,11 +88,25 @@ public class SLCommonSupport {
 	 * 
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
 	 */
-	public static void setInternalProperty(SLPersistentNode pNode, String propName, String value) throws SLPersistentTreeSessionException {
+	public static void setInternalStringProperty(SLPersistentNode pNode, String propName, String value) throws SLPersistentTreeSessionException {
 		String internalPropName = toInternalPropertyName(propName);
 		pNode.setProperty(String.class, internalPropName, value);
 	}
-	
+
+	/**
+	 * Sets the internal integer property.
+	 * 
+	 * @param pNode the node
+	 * @param propName the prop name
+	 * @param value the value
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static void setInternalIntegerProperty(SLPersistentNode pNode, String propName, Integer value) throws SLPersistentTreeSessionException {
+		String internalPropName = toInternalPropertyName(propName);
+		pNode.setProperty(Integer.class, internalPropName, value);
+	}
+
 	/**
 	 * Gets the internal property as string.
 	 * 
@@ -107,6 +121,24 @@ public class SLCommonSupport {
 		String value = null;
 		String internalPropName = toInternalPropertyName(propName);
 		SLPersistentProperty<String> prop = getProperty(pNode, String.class, internalPropName);
+		if (prop != null) value = prop.getValue();
+		return value;
+	}
+	
+	/**
+	 * Gets the internal property as integer.
+	 * 
+	 * @param pNode the node
+	 * @param propName the prop name
+	 * 
+	 * @return the internal property as integer
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static Integer getInternalPropertyAsInteger(SLPersistentNode pNode, String propName) throws SLPersistentTreeSessionException {
+		Integer value = null;
+		String internalPropName = toInternalPropertyName(propName);
+		SLPersistentProperty<Integer> prop = getProperty(pNode, Integer.class, internalPropName);
 		if (prop != null) value = prop.getValue();
 		return value;
 	}

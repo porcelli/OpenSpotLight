@@ -63,6 +63,6 @@ public enum LazyType {
     /**
      * Should not behave in a lazy way.
      */
-    NON_LAZY
+    EAGER
     
 }

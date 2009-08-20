@@ -273,6 +273,19 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
 		}
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetaNodeType#getTypeName()
+	 */
+	public String getTypeName() throws SLGraphSessionException {
+		try {
+			return this.pMetaNode.getName();
+		}
+		catch (final Exception e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve node type name.", e);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLMetaNodeType#getParent()
 	 */
@@ -303,6 +316,9 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
 		return this.pMetaNode.hashCode();
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		try {

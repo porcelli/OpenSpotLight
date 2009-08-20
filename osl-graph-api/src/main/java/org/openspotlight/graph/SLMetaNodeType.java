@@ -65,6 +65,16 @@ public interface SLMetaNodeType extends SLMetaElement {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public Class<? extends SLNode> getType() throws SLGraphSessionException;
+	
+	
+	/**
+	 * Gets the type name.
+	 * 
+	 * @return the type name
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public String getTypeName() throws SLGraphSessionException;
 
 	/**
 	 * Gets the meta properties.
