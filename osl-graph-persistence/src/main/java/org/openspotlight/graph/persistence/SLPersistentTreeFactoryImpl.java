@@ -69,9 +69,11 @@ public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.persistence.SLPersistentTreeFactory#createPersistentTree()
 	 */
-	public SLPersistentTree createPersistentTree() throws SLPersistentTreeFactoryException {
+	public SLPersistentTree createTempPersistentTree(boolean removeExistent) throws SLPersistentTreeFactoryException {
 		try {
-			deleteDir(new File("/tmp/repository"));
+			if (removeExistent) {
+				deleteDir(new File("/tmp/repository"));
+			}
 			Credentials credentials = new SimpleCredentials("username", "password".toCharArray());
 			RepositoryConfig config = RepositoryConfig.create(new File(".", "src/main/resources/repository.xml").getAbsolutePath(), "/tmp/repository");
 			Repository repo = RepositoryImpl.create(config);

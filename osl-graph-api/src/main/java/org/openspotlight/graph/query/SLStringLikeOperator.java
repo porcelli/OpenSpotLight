@@ -48,29 +48,63 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.common.util.StringBuilderUtil;
+
 /**
  * The Enum SLStringLikeOperator.
  * 
  * @author Vitor Hugo Chagas
  */
-public enum SLStringLikeOperator {
+public enum SLStringLikeOperator implements SLOperatorType {
 	
-	STARTS_WITH ("<*"),
+	/** The START s_ with. */
+	STARTS_WITH ("..*"),
 	
-	ENDS_WITH ("*>"),
+	/** The END s_ with. */
+	ENDS_WITH ("*.."),
 	
+	/** The CONTAINS. */
 	CONTAINS ("<*>");
 	
+	/** The symbol. */
 	String symbol;
 	
+	/**
+	 * Instantiates a new sL string like operator.
+	 * 
+	 * @param symbol the symbol
+	 */
 	SLStringLikeOperator(String symbol) {
 		this.symbol = symbol;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#symbol()
+	 */
 	public String symbol() {
 		return symbol;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#xPathExpression(java.lang.Object, java.lang.Object)
+	 */
+	public String xPathExpression(Object leftOperand, Object rightOperand) {
+		StringBuilder buffer = new StringBuilder();
+		if (symbol.equals(STARTS_WITH.symbol())) {
+			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '", rightOperand, "%')");	
+		}
+		else if (symbol.equals(ENDS_WITH.symbol())) {
+			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "')");
+		}
+		else if (symbol.equals(CONTAINS.symbol())) {
+			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "%')");
+		}
+		return buffer.toString();
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
 	@Override
 	public String toString() {
 		return symbol;

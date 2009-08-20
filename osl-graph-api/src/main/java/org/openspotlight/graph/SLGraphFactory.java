@@ -63,11 +63,13 @@ public abstract class SLGraphFactory extends AbstractFactory {
 	/**
 	 * Creates a new SLGraph object.
 	 * 
+	 * @param removeExistent the remove existent
+	 * 
 	 * @return the SL graph
 	 * 
 	 * @throws SLGraphFactoryException the SL graph factory exception
 	 */
-	public abstract SLGraph createGraph() throws SLGraphFactoryException;
+	public abstract SLGraph createTempGraph(boolean removeExistent) throws SLGraphFactoryException;
 	
 
 	/**

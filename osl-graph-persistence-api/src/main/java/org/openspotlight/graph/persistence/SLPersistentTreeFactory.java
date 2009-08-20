@@ -54,13 +54,16 @@ import org.openspotlight.common.util.AbstractFactory;
  * A factory for creating SLPersistentTree objects.
  */
 public abstract class SLPersistentTreeFactory extends AbstractFactory {
+
 	
 	/**
 	 * Creates a new SLPersistentTree object.
+	 * 
+	 * @param removeExistent the remove existent
 	 * 
 	 * @return the SL persistent tree
 	 * 
 	 * @throws SLPersistentTreeFactoryException the SL persistent tree factory exception
 	 */
-	public abstract SLPersistentTree createPersistentTree() throws SLPersistentTreeFactoryException;
+	public abstract SLPersistentTree createTempPersistentTree(boolean removeExistent) throws SLPersistentTreeFactoryException;
 }

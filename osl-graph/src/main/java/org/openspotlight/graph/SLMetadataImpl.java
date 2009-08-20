@@ -79,15 +79,21 @@ public class SLMetadataImpl implements SLMetadata {
 	public SLMetadataImpl(SLPersistentTreeSession treeSession) {
 		this.treeSession = treeSession;
 	}
-
-	//@Override
+	
 	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLMetadata#getMetaNode(java.lang.Class)
+	 * @see org.openspotlight.graph.SLMetadata#findMetaNodeType(java.lang.Class)
 	 */
 	public SLMetaNodeType findMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException {
+		return findMetaNodeType(nodeClass.getName());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetadata#findMetaNodeType(java.lang.String)
+	 */
+	public SLMetaNodeType findMetaNodeType(String typeName) throws SLGraphSessionException {
 		try {
 			StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
-			StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", nodeClass.getName(), "']");
+			StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
 			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
 			SLPersistentQueryResult result = query.execute();
 			SLMetaNodeType metaNode = null;

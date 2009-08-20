@@ -65,6 +65,7 @@ import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLQuery;
+import org.openspotlight.graph.query.SLQueryImpl;
 import org.openspotlight.graph.util.ProxyUtil;
 
 /**
@@ -102,6 +103,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		this.encoder = this.encoderFactory.getUUIDEncoder();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#addLink(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, boolean)
+	 */
 	public <L extends SLLink> L addLink(final Class<L> linkClass, final SLNode source, final SLNode target, final boolean bidirecional) throws SLGraphSessionException {
 		return this.addLink(linkClass, source, target, bidirecional, SLPersistenceMode.NORMAL);
 	}
@@ -158,7 +162,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			}
 
 			if (status) {
-				linkNode = this.addLinkNode(pairKeyNode, direction);
+				linkNode = this.addLinkNode(pairKeyNode, linkClass, source, target, direction);
 			}
 
 			final SLLink link = new SLLinkImpl(this, linkNode, this.eventPoster);
@@ -175,17 +179,27 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * Adds the link node.
 	 * 
 	 * @param pairKeyNode the pair key node
+	 * @param source the source
+	 * @param target the target
 	 * @param direction the direction
 	 * 
 	 * @return the sL persistent node
 	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 *             exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 * @throws SLGraphSessionException 
 	 */
-	private SLPersistentNode addLinkNode(final SLPersistentNode pairKeyNode, final int direction) throws SLPersistentTreeSessionException {
+	@SuppressWarnings("unchecked")
+	private SLPersistentNode addLinkNode(final SLPersistentNode pairKeyNode, Class<? extends SLLink> linkType, SLNode source, SLNode target, final int direction) throws SLPersistentTreeSessionException, SLGraphSessionException {
 		final long linkCount = this.incLinkCount(pairKeyNode);
 		final String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
 		final SLPersistentNode linkNode = pairKeyNode.addNode(name);
+		Class<? extends SLNode> sourceType = source.getClass().getInterfaces()[0];
+		Class<? extends SLNode> targetType = target.getClass().getInterfaces()[0];
+		SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_ID, source.getID());
+		SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_ID, target.getID());
+		SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH, linkType.getName().hashCode());
+		SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH, sourceType.getName().hashCode());
+		SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH, targetType.getName().hashCode());
 		linkNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT, linkCount);
 		linkNode.setProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION, direction);
 		return linkNode;
@@ -308,7 +322,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * @return the sL persistent node
 	 * 
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 *             exception
+	 * exception
 	 */
 	private SLPersistentNode findUniqueLinkNode(final SLPersistentNode pairKeyNode) throws SLPersistentTreeSessionException {
 		return pairKeyNode.getNodes().isEmpty() ? null : pairKeyNode.getNodes().iterator().next();
@@ -439,6 +453,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#getEncoderFactory()
+	 */
 	public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException {
 		return this.encoderFactory;
 	}
@@ -477,7 +494,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * @return the link node by direction
 	 * 
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 *             exception
+	 * exception
 	 */
 	private SLPersistentNode getLinkNodeByDirection(final SLPersistentNode pairKeyNode, final int direction) throws SLPersistentTreeSessionException {
 		SLPersistentNode linkNode = null;
@@ -660,7 +677,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * 
 	 * @see org.openspotlight.graph.SLGraphSession#getMetadata()
 	 */
-	public SLMetadata getMetadata() throws SLGraphSessionException {
+	public SLMetadata getMetadata() {
 		return new SLMetadataImpl(this.treeSession);
 	}
 
@@ -953,7 +970,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * @return the long
 	 * 
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 *             exception
+	 * exception
 	 */
 	private long incLinkCount(final SLPersistentNode linkKeyPairNode) throws SLPersistentTreeSessionException {
 		final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
@@ -1002,8 +1019,11 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		this.encoder = encoder;
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSession#createQuery()
+	 */
 	public SLQuery createQuery() throws SLGraphSessionException {
-		// TODO Auto-generated method stub
-		return null;
+		return new SLQueryImpl(this, treeSession);
 	}
 }

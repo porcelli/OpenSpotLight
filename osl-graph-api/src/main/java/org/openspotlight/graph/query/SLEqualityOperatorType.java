@@ -48,30 +48,57 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.common.util.Strings;
+
+
 /**
  * The Enum SLEqualityOperatorType.
  * 
  * @author Vitor Hugo Chagas
  */
-public enum SLEqualityOperatorType {
+public enum SLEqualityOperatorType implements SLOperatorType {
 	
-	EQUAL ("=="),
+	/** The EQUAL. */
+	EQUAL ("="),
 	
+	/** The NO t_ equal. */
 	NOT_EQUAL ("!=");
 	
+	/** The symbol. */
 	private String symbol;
 	
+	/**
+	 * Instantiates a new sL equality operator type.
+	 * 
+	 * @param symbol the symbol
+	 */
 	SLEqualityOperatorType(String symbol) {
 		this.symbol = symbol;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#symbol()
+	 */
 	public String symbol() {
 		return symbol;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
 	@Override
 	public String toString() {
 		return symbol;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#xPathExpression(java.lang.Object, java.lang.Object)
+	 */
+	public String xPathExpression(Object leftOperand, Object rightOperand) {
+		StringBuilder buffer = new StringBuilder();
+		StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));
+		return buffer.toString();
 	}
 
 }

@@ -98,36 +98,51 @@ public class SLConsts {
 	static final String PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL = "allowsChangeToBidirecional";
 	
 	/** The Constant PROPERTY_NAME_TYPE. */
-	static final String PROPERTY_NAME_TYPE = "node.type";
+	public static final String PROPERTY_NAME_TYPE = "node.type";
 	
 	/** The Constant pROPERTY_NAME_DECODED_NAME. */
-	static final String PROPERTY_NAME_DECODED_NAME = "decodedName";
+	public static final String PROPERTY_NAME_DECODED_NAME = "decodedName";
 	
 	/** The Constant PROPERTY_NAME_A_NODE_ID. */
-	static final String PROPERTY_NAME_A_NODE_ID = "aNodeID";
+	public static final String PROPERTY_NAME_A_NODE_ID = "aNodeID";
 	
 	/** The Constant PROPERTY_NAME_B_NODE_ID. */
-	static final String PROPERTY_NAME_B_NODE_ID = "bNodeID";
+	public static final String PROPERTY_NAME_B_NODE_ID = "bNodeID";
 	
 	/** The Constant PROPERTY_NAME_DIRECTION. */
-	static final String PROPERTY_NAME_DIRECTION = "direction";
+	public static final String PROPERTY_NAME_DIRECTION = "direction";
 	
 	/** The Constant PROPERTY_NAME_LINK_COUNT. */
-	static final String PROPERTY_NAME_LINK_COUNT = "linkCount";
+	public static final String PROPERTY_NAME_LINK_COUNT = "linkCount";
 	
 	/** The Constant PROPERTY_NAME_NODE_TYPE. */
-	static final String PROPERTY_NAME_NODE_TYPE = "nodeType";
+	public static final String PROPERTY_NAME_NODE_TYPE = "nodeType";
 	
 	/** The Constant PROPERTY_NAME_A_CLASS_NAME. */
-	static final String PROPERTY_NAME_A_CLASS_NAME = "aClassName";
+	public static final String PROPERTY_NAME_A_CLASS_NAME = "aClassName";
 	
 	/** The Constant PROPERTY_NAME_B_CLASS_NAME. */
-	static final String PROPERTY_NAME_B_CLASS_NAME = "bClassName";
+	public static final String PROPERTY_NAME_B_CLASS_NAME = "bClassName";
+	
+	/** The Constant PROPERTY_NAME_SOURCE_ID. */
+	public static final String PROPERTY_NAME_SOURCE_ID = "sourceID";
+	
+	/** The Constant PROPERTY_NAME_TARGET_ID. */
+	public static final String PROPERTY_NAME_TARGET_ID = "targetID";
+	
+	/** The Constant PROPERTY_NAME_SOURCE_TYPE. */
+	public static final String PROPERTY_NAME_SOURCE_TYPE_HASH = "sourceTypeHash";
+	
+	/** The Constant PROPERTY_NAME_TARGET_TYPE. */
+	public static final String PROPERTY_NAME_TARGET_TYPE_HASH = "targetTypeHash";
+	
+	/** The Constant PROPERTY_NAME_LINK_TYPE_HASH. */
+	public static final String PROPERTY_NAME_LINK_TYPE_HASH = "linkTypeHash";
 	
 	/** The Constant PROPERTY_PREFIX_INTERNAL. */
-	static final String PROPERTY_PREFIX_INTERNAL = "internal";
+	public static final String PROPERTY_PREFIX_INTERNAL = "internal";
 	
 	/** The Constant PROPERTY_PREFIX_USER. */
-	static final String PROPERTY_PREFIX_USER = "user";
+	public static final String PROPERTY_PREFIX_USER = "user";
 	
 }

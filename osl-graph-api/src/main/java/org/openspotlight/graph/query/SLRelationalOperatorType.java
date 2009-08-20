@@ -48,28 +48,59 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.common.util.Strings;
+
 /**
  * The Enum SLRelationalOperatorType.
  * 
  * @author Vitor Hugo Chagas
  */
-public enum SLRelationalOperatorType {
+public enum SLRelationalOperatorType implements SLOperatorType {
 	
+	/** The GREATE r_ than. */
 	GREATER_THAN (">"),
+	
+	/** The LESSE r_ than. */
 	LESSER_THAN ("<"),
+	
+	/** The GREATE r_ o r_ equa l_ than. */
 	GREATER_OR_EQUAL_THAN (">="),
+	
+	/** The LESSE r_ o r_ equa l_ than. */
 	LESSER_OR_EQUAL_THAN ("<=");
 	
+	/** The symbol. */
 	private String symbol;
 	
+	/**
+	 * Instantiates a new sL relational operator type.
+	 * 
+	 * @param symbol the symbol
+	 */
 	SLRelationalOperatorType(String symbol) {
 		this.symbol = symbol;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#symbol()
+	 */
 	public String symbol() {
 		return symbol;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLOperatorType#xPathExpression(java.lang.Object, java.lang.Object)
+	 */
+	public String xPathExpression(Object leftOperand, Object rightOperand) { 
+		StringBuilder buffer = new StringBuilder();
+		StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));
+		return buffer.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
 	@Override
 	public String toString() {
 		return symbol;

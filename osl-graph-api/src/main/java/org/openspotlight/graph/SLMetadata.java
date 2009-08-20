@@ -89,6 +89,18 @@ public interface SLMetadata {
 	 */
 	public SLMetaNodeType findMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
 	
+	
+	/**
+	 * Find meta node type.
+	 * 
+	 * @param typeName the type name
+	 * 
+	 * @return the sL meta node type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLMetaNodeType findMetaNodeType(String typeName) throws SLGraphSessionException;
+	
 	/**
 	 * Gets the meta link type.
 	 * 

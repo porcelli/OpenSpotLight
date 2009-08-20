@@ -120,7 +120,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 						jcrSession.getRootNode().addNode("osl");
 					}
 					else {
-						rootNode.restore(versionNumbers.last().toString(), true);
+						//rootNode.restore(versionNumbers.last().toString(), true);
 					}
 				}
 				rootNode.checkout();
@@ -148,6 +148,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		try {
 			rootNode.save();
 			rootNode.checkin();
+			jcrSession.save();
 			jcrSession.logout();
 		}
 		catch (RepositoryException e) {

@@ -71,11 +71,19 @@
 	</pluginRepositories>
 	<modules>
 		<module>osl-common</module>
-		<module>osl-federation</module>
 		<module>osl-graph-api</module>
 		<module>osl-graph</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
+		<module>osl-federation/osl-federation-core</module>
+		<module>osl-federation/osl-federation-configuration-example</module>
+		<module>osl-federation/manager/osl-federation-xml-manager</module>
+		<module>osl-federation/manager/osl-federation-jcr-manager</module>
+		<module>osl-federation/loader/osl-federation-database-loader</module>
+		<module>osl-federation/loader/osl-federation-dna-core-loader</module>
+		<module>osl-federation/loader/osl-federation-dna-filesystem-loader</module>
+		<module>osl-federation/loader/osl-federation-filesystem-loader</module>
+		<module>osl-federation/osl-federation-stress-test</module>
 	</modules>
 	<build>
 		<plugins>
@@ -107,32 +115,32 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-common</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-federation</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph-api</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph-persistence-api</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph-persistence</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${pom.version}</version>
 			</dependency>
 
 			<!-- dna federation dependencies -->

@@ -49,7 +49,7 @@
 package org.openspotlight.graph;
 
 import static org.openspotlight.graph.SLCommonSupport.getInternalPropertyAsString;
-import static org.openspotlight.graph.SLCommonSupport.setInternalProperty;
+import static org.openspotlight.graph.SLCommonSupport.setInternalStringProperty;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -448,6 +448,15 @@ public class SLNodeImpl implements SLNode {
 		}
 	}
 	
+	public String getTypeName() throws SLGraphSessionException {
+		try {
+			return SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
+		}
+		catch (SLPersistentTreeSessionException e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve node type name.", e);
+		}
+	}
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -536,13 +545,13 @@ public class SLNodeImpl implements SLNode {
 			if (pChildNode == null) {
 				type = clazz;
 				pChildNode = pNode.addNode(encodedName);
-				setInternalProperty(pChildNode, SLConsts.PROPERTY_NAME_DECODED_NAME, name);
+				setInternalStringProperty(pChildNode, SLConsts.PROPERTY_NAME_DECODED_NAME, name);
 			}
 			else {
 				Class<? extends SLNode> nodeType = getNodeType(pChildNode);
 				type = getLessGenericNodeType(clazz, nodeType);
 			}
-			setInternalProperty(pChildNode, SLConsts.PROPERTY_NAME_TYPE, type.getName());
+			setInternalStringProperty(pChildNode, SLConsts.PROPERTY_NAME_TYPE, type.getName());
 			T nodeProxy = createNodeProxy(type, pChildNode);
 			eventPoster.post(new SLNodeEvent(SLNodeEvent.TYPE_NODE_ADDED, nodeProxy, pChildNode, persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion));
 			return nodeProxy;

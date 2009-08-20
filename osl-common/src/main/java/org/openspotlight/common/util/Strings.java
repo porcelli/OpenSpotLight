@@ -58,14 +58,14 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
  * Helper class with convenient String methods.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class Strings {
     
     /**
-     * Converts the first character to lower case
+     * Converts the first character to lower case.
      * 
-     * @param toBeCorrected
+     * @param toBeCorrected the to be corrected
+     * 
      * @return a string that starts with lower case
      */
     public static String firstLetterToLowerCase(final String toBeCorrected) {
@@ -82,9 +82,10 @@ public class Strings {
     }
     
     /**
-     * Converts the first character to upper case
+     * Converts the first character to upper case.
      * 
-     * @param toBeCorrected
+     * @param toBeCorrected the to be corrected
+     * 
      * @return a string that starts with capital letter
      */
     public static String firstLetterToUpperCase(final String toBeCorrected) {
@@ -103,8 +104,9 @@ public class Strings {
     /**
      * removes an starting string for a bigger string that starts with it.
      * 
-     * @param beginning
-     * @param toBeCorrected
+     * @param beginning the beginning
+     * @param toBeCorrected the to be corrected
+     * 
      * @return the string without the beggining
      */
     public static String removeBegginingFrom(final String beginning,
@@ -116,12 +118,23 @@ public class Strings {
         return toBeCorrected.substring(beginning.length());
     }
     
+	
     /**
-     * Should not be instantiated
+     * Quote.
+     * 
+     * @param value the value
+     * 
+     * @return the string
+     */
+    public static String quote(Object value) {
+    	return value instanceof String ? "'" + value + "'" : "" + value;
+    }
+    
+    /**
+     * Should not be instantiated.
      */
     private Strings() {
         logAndThrow(new IllegalStateException(Messages
                 .getString("invalidConstructor"))); //$NON-NLS-1$
     }
-    
 }

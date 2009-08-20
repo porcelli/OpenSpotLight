@@ -88,7 +88,7 @@ public class GraphWithMassiveDataTest {
     public void setup() throws Exception {
         final SLGraphFactory factory = AbstractFactory
                 .getDefaultInstance(SLGraphFactory.class);
-        final SLGraph graph = factory.createGraph();
+        final SLGraph graph = factory.createTempGraph(true);
         this.session = graph.openSession();
         this.rootNode = this.session.createContext(1L).getRootNode();
         
