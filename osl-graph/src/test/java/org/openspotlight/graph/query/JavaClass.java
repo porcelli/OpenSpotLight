@@ -57,4 +57,5 @@ public interface JavaClass extends JavaType {
 	// comment from mybranch
 	// new line comment from mybranch
 	// third line
+	// 4 line
 }
