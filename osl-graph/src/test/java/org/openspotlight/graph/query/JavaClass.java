@@ -54,5 +54,13 @@ package org.openspotlight.graph.query;
  * @author Vitor Hugo Chagas
  */
 public interface JavaClass extends JavaType {
-
+	
+	
+	// comment from mybranch
+	// new line comment from mybranch
+	
+	
+	
+	
+	
 }
