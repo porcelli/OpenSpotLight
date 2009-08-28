@@ -128,15 +128,12 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 			typesNotFiltered.addAll(hierarchyTypeNames);
 			}
 
-	 		StringBuilder filterStatement = new StringBuilder();
-	 		
 	 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/contexts//*");
 	 		Statement rootStatement = statementBuilder.getRootStatement();
 	 		
 	 		if (whereStatementInfo != null) {
 	 	 		List<SLWhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
 	 			if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
-	 				filterStatement.append('(');
 	 				Map<String, SLWhereTypeInfo> whereTypeInfoMap = getWhereTypeInfoMap();
 	 				List<SLWhereTypeInfo> list = new ArrayList<SLWhereTypeInfo>(whereTypeInfoMap.values());
 	 				for (int i = 0; i < list.size(); i++) {
@@ -193,7 +190,6 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 		}
 	}
 	
-	
 	/**
 	 * Gets the where type info map.
 	 * 
@@ -228,7 +224,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 				conditionStatement = statement.openBracket();
 			}
 			else {
-				conditionStatement = statement.operator(conditionInfo.getConditionalOperator()).openBracket();
+				conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
 			}
 			
 			if (conditionInfo.getInnerStatementInfo() == null) {
@@ -242,7 +238,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 							Condition idCondition;
 							if (j == 0) idCondition = idStatement.condition();
 							else idCondition = idStatement.operator(OR).condition();
-							idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(pNodeWrapper.getId());
+							idCondition.leftOperand("jcr:uuid").operator(EQUAL, conditionInfo.isRelationalNotOperator()).rightOperand(pNodeWrapper.getId());
 						}
 						idStatement.closeBracket();
 					}
