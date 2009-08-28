@@ -136,6 +136,9 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 					if (i == 0) statement = rootStatement.openBracket();
 					else statement = rootStatement.operator(OR).openBracket();
 					
+					String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
+					statement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(byLinkInfo.getName().hashCode());
+					
 					SLLinkTypeStatementInfo linkTypeStatementInfo = getLinkTypeStatementInfo(byLinkInfo.getName());
 					if (linkTypeStatementInfo != null) {
 						Statement byLinkTypeStatement = statement.operator(AND).openBracket();
@@ -143,7 +146,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 						byLinkTypeStatement.closeBracket();
 					}
 					
-					Statement typeStatement = statement.getConditionCount() == 0 ? statement.openBracket() : statement.operator(AND).openBracket();;
+					Statement typeStatement = statement.operator(AND).openBracket();;
 					SLSideType side = byLinkInfo.getSide();
 					
 					if (side.equals(SLSideType.A_SIDE) || side.equals(SLSideType.B_SIDE)) {
