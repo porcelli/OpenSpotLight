@@ -53,6 +53,7 @@ import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeI
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SLWhereByLinkTypeImpl.
  * 
@@ -287,10 +288,18 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				}
 				
 				/* (non-Javadoc)
+				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#not()
+				 */
+				public Property not() {
+					conditionInfo.setRelationalNotOperator(true);
+					return this;
+				}
+				
+				/* (non-Javadoc)
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#lesserThan()
 				 */
 				public Operator lesserThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.LESSER_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -298,7 +307,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#greaterThan()
 				 */
 				public Operator greaterThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.GREATER_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -306,15 +315,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#equalsTo()
 				 */
 				public Operator equalsTo() {
-					conditionInfo.setOperator(SLEqualityOperatorType.EQUAL);
-					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-				}
-				
-				/* (non-Javadoc)
-				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#notEqualsTo()
-				 */
-				public Operator notEqualsTo() {
-					conditionInfo.setOperator(SLEqualityOperatorType.NOT_EQUAL);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.EQUAL);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -322,7 +323,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#lesserOrEqualThan()
 				 */
 				public Operator lesserOrEqualThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -330,7 +331,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#greaterOrEqualThan()
 				 */
 				public Operator greaterOrEqualThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -338,7 +339,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#contains()
 				 */
 				public Operator contains() {
-					conditionInfo.setOperator(SLStringLikeOperator.CONTAINS);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.CONTAINS);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -346,7 +347,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#startsWith()
 				 */
 				public Operator startsWith() {
-					conditionInfo.setOperator(SLStringLikeOperator.STARTS_WITH);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.STARTS_WITH);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -354,7 +355,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 				 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#endsWith()
 				 */
 				public Operator endsWith() {
-					conditionInfo.setOperator(SLStringLikeOperator.ENDS_WITH);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.ENDS_WITH);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				

@@ -58,6 +58,9 @@ import org.openspotlight.common.util.Strings;
  */
 public enum SLRelationalOperatorType implements SLOperatorType {
 	
+	/** The EQUAL. */
+	EQUAL ("="),
+	
 	/** The GREATE r_ than. */
 	GREATER_THAN (">"),
 	
@@ -68,7 +71,16 @@ public enum SLRelationalOperatorType implements SLOperatorType {
 	GREATER_OR_EQUAL_THAN (">="),
 	
 	/** The LESSE r_ o r_ equa l_ than. */
-	LESSER_OR_EQUAL_THAN ("<=");
+	LESSER_OR_EQUAL_THAN ("<="),
+	
+	/** The START s_ with. */
+	STARTS_WITH ("..*"),
+	
+	/** The END s_ with. */
+	ENDS_WITH ("*.."),
+	
+	/** The CONTAINS. */
+	CONTAINS ("<*>");
 	
 	/** The symbol. */
 	private String symbol;
@@ -92,9 +104,24 @@ public enum SLRelationalOperatorType implements SLOperatorType {
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.query.SLOperatorType#xPathExpression(java.lang.Object, java.lang.Object)
 	 */
-	public String xPathExpression(Object leftOperand, Object rightOperand) { 
+	public String xPathExpression(Object leftOperand, Object rightOperand, boolean applyNot) {
 		StringBuilder buffer = new StringBuilder();
-		StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));
+		if (this.equals(STARTS_WITH)) {
+			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '", rightOperand, "%')");
+		}
+		else if (this.equals(ENDS_WITH)) {
+			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "')");
+		}
+		else if (this.equals(CONTAINS)) {
+			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "%')");
+		}
+		else {
+			StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));	
+		}
+		if (applyNot) {
+			buffer.insert(0, "not(");
+			buffer.append(')');
+		}
 		return buffer.toString();
 	}
 

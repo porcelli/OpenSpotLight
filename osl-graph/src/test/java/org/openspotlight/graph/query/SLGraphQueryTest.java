@@ -2262,15 +2262,12 @@ public class SLGraphQueryTest {
 			
 			query
 				.selectByNodeType()
-					.type(JavaType.class.getName()).subTypes()
+					.type(JavaInterface.class.getName())
 				.selectEnd()
 
 				.where()
-					.type(JavaType.class.getName()).subTypes()
-						.each().property("caption").startsWith().value("java.util")
-					.typeEnd()
-					.type(JavaInterface.class.getName())
-						.each().property("caption").contains().value("List")
+					.type(JavaInterface.class.getName()).subTypes()
+						.each().property("caption").not().contains().value("Set")
 					.typeEnd()
 				.whereEnd();
 

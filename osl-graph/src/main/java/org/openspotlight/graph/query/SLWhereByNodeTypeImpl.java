@@ -326,12 +326,20 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 					this.conditionInfo = conditionInfo;
 					this.outerEach = outerEach;
 				}
-				
+
+				/* (non-Javadoc)
+				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#not()
+				 */
+				public Property not() {
+					conditionInfo.setRelationalNotOperator(true);
+					return this;
+				}
+
 				/* (non-Javadoc)
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#lesserThan()
 				 */
 				public Operator lesserThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.LESSER_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -339,7 +347,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#greaterThan()
 				 */
 				public Operator greaterThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.GREATER_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -347,15 +355,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#equalsTo()
 				 */
 				public Operator equalsTo() {
-					conditionInfo.setOperator(SLEqualityOperatorType.EQUAL);
-					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
-				}
-				
-				/* (non-Javadoc)
-				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#notEqualsTo()
-				 */
-				public Operator notEqualsTo() {
-					conditionInfo.setOperator(SLEqualityOperatorType.NOT_EQUAL);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.EQUAL);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -363,7 +363,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#lesserOrEqualThan()
 				 */
 				public Operator lesserOrEqualThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -371,7 +371,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#greaterOrEqualThan()
 				 */
 				public Operator greaterOrEqualThan() {
-					conditionInfo.setOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -379,7 +379,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#contains()
 				 */
 				public Operator contains() {
-					conditionInfo.setOperator(SLStringLikeOperator.CONTAINS);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.CONTAINS);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -387,7 +387,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#startsWith()
 				 */
 				public Operator startsWith() {
-					conditionInfo.setOperator(SLStringLikeOperator.STARTS_WITH);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.STARTS_WITH);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
@@ -395,7 +395,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 				 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#endsWith()
 				 */
 				public Operator endsWith() {
-					conditionInfo.setOperator(SLStringLikeOperator.ENDS_WITH);
+					conditionInfo.setRelationalOperator(SLRelationalOperatorType.ENDS_WITH);
 					return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
 				}
 				
