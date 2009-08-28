@@ -58,9 +58,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.query.SLConditionalOperatorType;
-import org.openspotlight.graph.query.SLOperatorType;
+import org.openspotlight.graph.query.SLRelationalOperatorType;
 import org.openspotlight.graph.query.SLSideType;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SLWhereByLinkTypeInfo.
  * 
@@ -383,8 +384,8 @@ public class SLWhereByLinkTypeInfo {
 				/** The type info. */
 				private SLWhereLinkTypeInfo typeInfo;
 				
-				/** The operator. */
-				private SLOperatorType operator;
+				/** The relational operator. */
+				private SLRelationalOperatorType relationalOperator;
 				
 				/** The conditional operator. */
 				private SLConditionalOperatorType conditionalOperator;
@@ -409,6 +410,9 @@ public class SLWhereByLinkTypeInfo {
 				
 				/** The closed. */
 				private boolean closed; 
+				
+				/** The relational not operator. */
+				private boolean relationalNotOperator;
 
 				/**
 				 * Instantiates a new sL condition info.
@@ -540,21 +544,21 @@ public class SLWhereByLinkTypeInfo {
 				}
 
 				/**
-				 * Gets the operator.
+				 * Gets the relational operator.
 				 * 
-				 * @return the operator
+				 * @return the relational operator
 				 */
-				public SLOperatorType getOperator() {
-					return operator;
+				public SLRelationalOperatorType getRelationalOperator() {
+					return relationalOperator;
 				}
 
 				/**
-				 * Sets the operator.
+				 * Sets the relational operator.
 				 * 
-				 * @param operator the new operator
+				 * @param operator the new relational operator
 				 */
-				public void setOperator(SLOperatorType operator) {
-					this.operator = operator;
+				public void setRelationalOperator(SLRelationalOperatorType operator) {
+					this.relationalOperator = operator;
 				}
 
 				/**
@@ -621,10 +625,10 @@ public class SLWhereByLinkTypeInfo {
 					
 					StringBuilder buffer = new StringBuilder();
 					appendIfNotNull(buffer, conditionalOperator, conditionalOperator, ' ');
-					appendIfNotNull(buffer, operator, '"', typeName, "\" ");
+					appendIfNotNull(buffer, relationalOperator, '"', typeName, "\" ");
 					appendIfNotNull(buffer, propertyName,  "property \"", propertyName, "\" ");
 					appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");
-					appendIfNotNull(buffer, operator, operator);
+					appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
 					if (value != null) {
 						if (value instanceof Number) {
 							appendIfNotNull(buffer, value, ' ', value);		
@@ -634,6 +638,24 @@ public class SLWhereByLinkTypeInfo {
 						}
 					}
 					return buffer.toString();
+				}
+
+				/**
+				 * Checks if is relational not operator.
+				 * 
+				 * @return true, if is relational not operator
+				 */
+				public boolean isRelationalNotOperator() {
+					return relationalNotOperator;
+				}
+
+				/**
+				 * Sets the relational not operator.
+				 * 
+				 * @param relationalNotOperator the new relational not operator
+				 */
+				public void setRelationalNotOperator(boolean relationalNotOperator) {
+					this.relationalNotOperator = relationalNotOperator;
 				}
 			}
 		}

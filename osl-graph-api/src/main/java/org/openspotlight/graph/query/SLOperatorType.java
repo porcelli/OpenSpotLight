@@ -61,15 +61,5 @@ public interface SLOperatorType {
 	 * @return the string
 	 */
 	public String symbol();
-	
-	/**
-	 * X path expression.
-	 * 
-	 * @param leftOperand the left operand
-	 * @param rightOperand the right operand
-	 * 
-	 * @return the string
-	 */
-	public String xPathExpression(Object leftOperand, Object rightOperand);
 
 }

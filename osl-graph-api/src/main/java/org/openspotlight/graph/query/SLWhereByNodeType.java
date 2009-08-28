@@ -49,6 +49,7 @@
 package org.openspotlight.graph.query;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface SLWhereByNodeType.
  * 
@@ -170,6 +171,13 @@ public interface SLWhereByNodeType extends SLStatement {
 			public static interface Property {
 				
 				/**
+				 * Not.
+				 * 
+				 * @return the property
+				 */
+				public Property not();
+				
+				/**
 				 * Lesser than.
 				 * 
 				 * @return the operator
@@ -189,13 +197,6 @@ public interface SLWhereByNodeType extends SLStatement {
 				 * @return the operator
 				 */
 				public Operator equalsTo();
-				
-				/**
-				 * Not equals to.
-				 * 
-				 * @return the operator
-				 */
-				public Operator notEqualsTo();
 				
 				/**
 				 * Lesser or equal than.

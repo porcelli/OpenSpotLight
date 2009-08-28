@@ -301,8 +301,8 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 				String linkTypeName = linkTypeInfo.getName();
 				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
 				
-				SLOperatorType operator = conditionInfo.getOperator();
-				String expression = operator.xPathExpression(propertyName, conditionInfo.getValue());
+				SLRelationalOperatorType operator = conditionInfo.getRelationalOperator();
+				String expression = operator.xPathExpression(propertyName, conditionInfo.getValue(), conditionInfo.isRelationalNotOperator());
 
 				append(statement, toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH), " = ", linkTypeName.hashCode());
 				append(statement, " and ", expression);

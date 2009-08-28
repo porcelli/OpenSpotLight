@@ -234,8 +234,8 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 			if (conditionInfo.getInnerStatementInfo() == null) {
 				statement.append('(');
 				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-				SLOperatorType operator = conditionInfo.getOperator();
-				String expression = operator.xPathExpression(propertyName, conditionInfo.getValue());
+				SLRelationalOperatorType relationalOperator = conditionInfo.getRelationalOperator();
+				String expression = relationalOperator.xPathExpression(propertyName, conditionInfo.getValue(), conditionInfo.isRelationalNotOperator());
 				StringBuilder filterStatement = new StringBuilder(); 
 				if (commandDO.getPreviousNodeWrappers() != null) {
 					List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);

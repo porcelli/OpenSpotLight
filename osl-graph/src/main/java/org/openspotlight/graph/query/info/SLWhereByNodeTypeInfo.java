@@ -59,9 +59,10 @@ import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.query.SLConditionalOperatorType;
-import org.openspotlight.graph.query.SLOperatorType;
+import org.openspotlight.graph.query.SLRelationalOperatorType;
 import org.openspotlight.graph.query.SLSideType;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SLWhereByNodeTypeInfo.
  * 
@@ -212,6 +213,9 @@ public class SLWhereByNodeTypeInfo {
 			this.typeStatementInfo = whereStatementInfo;
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
 		@Override
 		public int hashCode() {
 			return HashCodes.hashOf(name);
@@ -405,13 +409,21 @@ public class SLWhereByNodeTypeInfo {
 			 * 
 			 * @author Vitor Hugo Chagas
 			 */
+			/**
+			 * @author vitorchagas
+			 *
+			 */
+			/**
+			 * @author vitorchagas
+			 *
+			 */
 			public static class SLConditionInfo {
 
 				/** The type info. */
 				private SLWhereTypeInfo typeInfo;
 				
 				/** The operator. */
-				private SLOperatorType operator;
+				private SLRelationalOperatorType relationalOperator;
 				
 				/** The conditional operator. */
 				private SLConditionalOperatorType conditionalOperator;
@@ -435,7 +447,10 @@ public class SLWhereByNodeTypeInfo {
 				private Object value;
 				
 				/** The closed. */
-				private boolean closed; 
+				private boolean closed;
+				
+				/** The relational not operator. */
+				private boolean relationalNotOperator;
 
 				/**
 				 * Instantiates a new sL condition info.
@@ -567,21 +582,21 @@ public class SLWhereByNodeTypeInfo {
 				}
 
 				/**
-				 * Gets the operator.
+				 * Gets the relational operator.
 				 * 
-				 * @return the operator
+				 * @return the relational operator
 				 */
-				public SLOperatorType getOperator() {
-					return operator;
+				public SLRelationalOperatorType getRelationalOperator() {
+					return relationalOperator;
 				}
 
 				/**
-				 * Sets the operator.
+				 * Sets the relational operator.
 				 * 
-				 * @param operator the new operator
+				 * @param relationalOperator the new relational operator
 				 */
-				public void setOperator(SLOperatorType operator) {
-					this.operator = operator;
+				public void setRelationalOperator(SLRelationalOperatorType relationalOperator) {
+					this.relationalOperator = relationalOperator;
 				}
 
 				/**
@@ -649,10 +664,10 @@ public class SLWhereByNodeTypeInfo {
 					
 					StringBuilder buffer = new StringBuilder();
 					appendIfNotNull(buffer, conditionalOperator, conditionalOperator, ' ');
-					appendIfNotNull(buffer, operator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
+					appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
 					appendIfNotNull(buffer, propertyName,  "property \"", propertyName, "\" ");
 					appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");
-					appendIfNotNull(buffer, operator, operator);
+					appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
 					if (value != null) {
 						if (value instanceof Number) {
 							appendIfNotNull(buffer, value, ' ', value);		
@@ -662,6 +677,24 @@ public class SLWhereByNodeTypeInfo {
 						}
 					}
 					return buffer.toString();
+				}
+
+				/**
+				 * Checks if is relational not operator.
+				 * 
+				 * @return true, if is relational not operator
+				 */
+				public boolean isRelationalNotOperator() {
+					return relationalNotOperator;
+				}
+
+				/**
+				 * Sets the relational not operator.
+				 * 
+				 * @param relationalNotOperator the new relational not operator
+				 */
+				public void setRelationalNotOperator(boolean relationalNotOperator) {
+					this.relationalNotOperator = relationalNotOperator;
 				}
 
 			}
