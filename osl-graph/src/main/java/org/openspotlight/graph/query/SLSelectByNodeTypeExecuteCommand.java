@@ -51,6 +51,7 @@ package org.openspotlight.graph.query;
 import static org.openspotlight.common.util.StringBuilderUtil.append;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,10 +72,15 @@ import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SLSelectByNodeTypeExecuteCommand.
  * 
  * @author Vitor Hugo Chagas
+ */
+/**
+ * @author vitorchagas
+ *
  */
 public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	
@@ -128,13 +134,12 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 	 		List<SLWhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
 	 			if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
 	 				filterStatement.append('(');
-	 				for (int i = 0; i < whereTypeInfoList.size(); i++) {
-	 					if (i > 0) filterStatement.append(" or ");
-	 					SLWhereTypeInfo whereTypeInfo = whereTypeInfoList.get(i);
-	 					filterByWhereStatement(filterStatement, whereTypeInfo.getTypeStatementInfo());
-	 					List<String> hierarchyTypeNames = SLSelectCommandSupport.getHierarchyTypeNames(commandDO.getMetadata(), whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
-	 					typesNotFiltered.removeAll(hierarchyTypeNames);
-	 				}
+	 				Map<String, SLWhereTypeInfo> whereTypeInfoMap = getWhereTypeInfoMap();
+	 				for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoMap.values()) {
+	 					if (filterStatement.length() > 1) filterStatement.append(" or ");
+	 					filterByWhereStatement(filterStatement, whereTypeInfo.getName(), whereTypeInfo.getTypeStatementInfo());
+	 					typesNotFiltered.remove(whereTypeInfo.getName());
+					}
 	 				filterStatement.append(')');
 	 				statement.append(filterStatement);
 	 			}
@@ -179,19 +184,46 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 		}
 	}
 	
+	
+	/**
+	 * Gets the where type info map.
+	 * 
+	 * @return the where type info map
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private Map<String, SLWhereTypeInfo> getWhereTypeInfoMap() throws SLGraphSessionException {
+		Map<String, SLWhereTypeInfo> map = new HashMap<String, SLWhereTypeInfo>();
+		List<SLWhereTypeInfo> list = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
+		for (SLWhereTypeInfo whereTypeInfo : list) {
+			List<String> typeNames = SLSelectCommandSupport.getHierarchyTypeNames(commandDO.getMetadata(), whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+			for (String typeName : typeNames) {
+				if (!map.containsKey(typeName)) {
+					SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
+					typeInfo.setTypeStatementInfo(whereTypeInfo.getTypeStatementInfo());
+					map.put(typeName, typeInfo);
+				}
+			}
+		}
+		return map;
+	}
+	
+	
 	/**
 	 * Filter by where statement.
 	 * 
 	 * @param statement the statement
+	 * @param typeName the type name
 	 * @param typeStatementInfo the type statement info
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
 	 */
-	private void filterByWhereStatement(StringBuilder statement, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
+	private void filterByWhereStatement(StringBuilder statement, String typeName, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
 		
 		String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
 		List<SLConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
+
 		for (SLConditionInfo conditionInfo : conditionInfoList) {
 
 			SLConditionalOperatorType conditionalOperator = conditionInfo.getConditionalOperator();
@@ -201,43 +233,35 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 			
 			if (conditionInfo.getInnerStatementInfo() == null) {
 				statement.append('(');
-				SLWhereTypeInfo typeInfo = conditionInfo.getTypeInfo();
-				List<String> hierarchyTypeNames = SLSelectCommandSupport.getHierarchyTypeNames(commandDO.getMetadata(), typeInfo.getName(), typeInfo.isSubTypes());
-				for (int i = 0; i < hierarchyTypeNames.size(); i++) {
-					String typeName = hierarchyTypeNames.get(i);
-					String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-					
-					SLOperatorType operator = conditionInfo.getOperator();
-					String expression = operator.xPathExpression(propertyName, conditionInfo.getValue());
-
-					StringBuilder filterStatement = new StringBuilder(); 
-					if (commandDO.getPreviousNodeWrappers() != null) {
-						List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
-						if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
-							filterStatement.append('(');
-							for (int j = 0; j < pNodeWrappers.size(); j++) {
-								PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
-								if (j > 0) filterStatement.append(" or ");
-								append(filterStatement, "jcr:uuid = ", Strings.quote(pNodeWrapper.getId()));
-							}
-							filterStatement.append(')');
+				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
+				SLOperatorType operator = conditionInfo.getOperator();
+				String expression = operator.xPathExpression(propertyName, conditionInfo.getValue());
+				StringBuilder filterStatement = new StringBuilder(); 
+				if (commandDO.getPreviousNodeWrappers() != null) {
+					List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
+					if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
+						filterStatement.append('(');
+						for (int j = 0; j < pNodeWrappers.size(); j++) {
+							PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
+							if (j > 0) filterStatement.append(" or ");
+							append(filterStatement, "jcr:uuid = ", Strings.quote(pNodeWrapper.getId()));
 						}
+						filterStatement.append(')');
 					}
-					else {
-						append(filterStatement, typePropName, " = ", Strings.quote(typeName));
-					}
-					
-					if (filterStatement.length() > 0) {
-						if (i > 0) statement.append(" or ");
-						statement.append('(');
-						append(statement, filterStatement, " and ", expression);
-						statement.append(')');
-					}
+				}
+				else {
+					append(filterStatement, typePropName, " = ", Strings.quote(typeName));
+				}
+				
+				if (filterStatement.length() > 0) {
+					statement.append('(');
+					append(statement, filterStatement, " and ", expression);
+					statement.append(')');
 				}
 				statement.append(')');
 			}
 			else {
-				filterByWhereStatement(statement, conditionInfo.getInnerStatementInfo());
+				filterByWhereStatement(statement, typeName, conditionInfo.getInnerStatementInfo());
 			}
 		}
 	}

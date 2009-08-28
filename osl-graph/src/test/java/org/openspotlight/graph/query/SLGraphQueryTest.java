@@ -2254,6 +2254,35 @@ public class SLGraphQueryTest {
 		}
 	}
 
+	@Test
+	public void test() {
+		try {
+
+			SLQuery query = session.createQuery();
+			
+			query
+				.selectByNodeType()
+					.type(JavaType.class.getName()).subTypes()
+				.selectEnd()
+
+				.where()
+					.type(JavaType.class.getName()).subTypes()
+						.each().property("caption").startsWith().value("java.util")
+					.typeEnd()
+					.type(JavaInterface.class.getName())
+						.each().property("caption").contains().value("List")
+					.typeEnd()
+				.whereEnd();
+
+			SLQueryResult result = query.execute(sortMode, printInfo);
+			Collection<SLNode> nodes = result.getNodes();
+			printResult(nodes);
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+	
 	/**
 	 * The main method.
 	 * 

@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.query.SLConditionalOperatorType;
 import org.openspotlight.graph.query.SLOperatorType;
@@ -209,6 +210,11 @@ public class SLWhereByNodeTypeInfo {
 		 */
 		public void setTypeStatementInfo(SLTypeStatementInfo whereStatementInfo) {
 			this.typeStatementInfo = whereStatementInfo;
+		}
+		
+		@Override
+		public int hashCode() {
+			return HashCodes.hashOf(name);
 		}
 		
 		/**
