@@ -396,6 +396,9 @@ public class SLWhereByLinkTypeInfo {
 				/** The outer statement info. */
 				private SLLinkTypeStatementInfo outerStatementInfo;
 				
+				/** The conditional not operator. */
+				private boolean conditionalNotOperator;
+				
 				/** The side. */
 				private SLSideType side;
 				
@@ -656,6 +659,24 @@ public class SLWhereByLinkTypeInfo {
 				 */
 				public void setRelationalNotOperator(boolean relationalNotOperator) {
 					this.relationalNotOperator = relationalNotOperator;
+				}
+
+				/**
+				 * Checks if is conditional not operator.
+				 * 
+				 * @return true, if is conditional not operator
+				 */
+				public boolean isConditionalNotOperator() {
+					return conditionalNotOperator;
+				}
+
+				/**
+				 * Sets the conditional not operator.
+				 * 
+				 * @param conditionalNotOperator the new conditional not operator
+				 */
+				public void setConditionalNotOperator(boolean conditionalNotOperator) {
+					this.conditionalNotOperator = conditionalNotOperator;
 				}
 			}
 		}

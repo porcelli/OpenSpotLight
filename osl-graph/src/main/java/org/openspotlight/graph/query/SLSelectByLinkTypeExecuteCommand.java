@@ -48,8 +48,10 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.common.util.StringBuilderUtil.append;
 import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +60,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraphSessionException;
@@ -66,6 +67,8 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
+import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
@@ -75,6 +78,7 @@ import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeI
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SLSelectByLinkTypeExecuteCommand.
  * 
@@ -120,68 +124,79 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 					typeNames.addAll(hierarchyTypeNames);
 				}
 				
-				StringBuilder statement = new StringBuilder("//osl/links/*//*");
-				statement.append('[');
-
+		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/contexts//*");
+		 		Statement rootStatement = statementBuilder.getRootStatement();
+		 		
 				List<SLSelectByLinkInfo> byLinkInfoList = selectInfo.getByLinkInfoList();
 				for (int i = 0; i < byLinkInfoList.size(); i++) {
-
-					if (i > 0) statement.append(" or ");
-					statement.append('(');
+					
 					SLSelectByLinkInfo byLinkInfo = byLinkInfoList.get(i);
-					append(statement, toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH), " = ", byLinkInfo.getName().hashCode());
+					
+					Statement statement;
+					if (i == 0) statement = rootStatement.openBracket();
+					else statement = rootStatement.operator(OR).openBracket();
 					
 					SLLinkTypeStatementInfo linkTypeStatementInfo = getLinkTypeStatementInfo(byLinkInfo.getName());
 					if (linkTypeStatementInfo != null) {
-						append(statement, " and (");
-						filterByWhereStatement(statement, linkTypeStatementInfo);
-						append(statement, ')');
+						Statement byLinkTypeStatement = statement.operator(AND).openBracket();
+						filterByWhereStatement(byLinkTypeStatement, linkTypeStatementInfo);
+						byLinkTypeStatement.closeBracket();
 					}
 					
 					SLSideType side = byLinkInfo.getSide();
-					append(statement, " and ");
 					
 					if (side.equals(SLSideType.A_SIDE) || side.equals(SLSideType.B_SIDE)) {
+						Statement typeStatement = null;
 						String typeHashPropName = toInternalPropertyName(side.equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH : SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH);
-						String idPropName = toInternalPropertyName(side.equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_TARGET_ID : SLConsts.PROPERTY_NAME_SOURCE_ID); 
-						statement.append("(");
+						String idPropName = toInternalPropertyName(side.equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_TARGET_ID : SLConsts.PROPERTY_NAME_SOURCE_ID);
+						typeStatement = statement.operator(AND).openBracket();
 						for (int j = 0; j < typeNames.size(); j++) {
-							if (j > 0) statement.append(" or ");
+							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							String typeName = typeNames.get(j);
-							append(statement, typeHashPropName, " = ", typeName.hashCode());
+							condition.leftOperand(typeHashPropName).operator(EQUAL).rightOperand(typeName.hashCode());
 						}
-						statement.append(") and (");
+						typeStatement.closeBracket();
+						typeStatement = statement.operator(AND).openBracket();
 						for (int j = 0; j < inputNodeWrappers.size(); j++) {
-							if (j > 0) statement.append(" or ");
+							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							PNodeWrapper pNodeWrapper = inputNodeWrappers.get(j);
-							append(statement, idPropName, " = ", Strings.quote(pNodeWrapper.getId()));
+							condition.leftOperand(idPropName).operator(EQUAL).rightOperand(pNodeWrapper.getId());
 						}
-						statement.append(')');
+						typeStatement.closeBracket();
 					}
 					else {
-						String operator = side.equals(SLSideType.ANY_SIDE) ? " or " : " and ";
-						statement.append("(");
+						Statement typeStatement = null;
+						SLConditionalOperatorType operator = side.equals(SLSideType.ANY_SIDE) ? OR : AND;
+						typeStatement = statement.operator(AND).openBracket();
 						for (int j = 0; j < typeNames.size(); j++) {
-							if (j > 0) statement.append(" or ");
+							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							String typeName = typeNames.get(j);
-							append(statement, '(', toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH), " = ", typeName.hashCode(), 
-								operator, toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH), " = ", typeName.hashCode(), ')');
+							String sourceTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH);
+							String targetTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH);
+							condition.leftOperand(sourceTypeHashPropName).operator(EQUAL).rightOperand(typeName.hashCode())
+								.operator(operator).condition().leftOperand(targetTypeHashPropName).operator(EQUAL).rightOperand(typeName.hashCode());
 						}
-						statement.append(") and (");
+						typeStatement.closeBracket();
+						typeStatement = statement.operator(AND).openBracket();
 						for (int j = 0; j < inputNodeWrappers.size(); j++) {
-							if (j > 0) statement.append(" or ");
+							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							PNodeWrapper pNodeWrapper = inputNodeWrappers.get(j);
-							append(statement, '(', toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_ID), " = ", Strings.quote(pNodeWrapper.getId()), 
-								operator, toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_ID), " = ", Strings.quote(pNodeWrapper.getId()), ')');
+							String sourceIdPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_ID);
+							String targetIdPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_ID);
+							condition.leftOperand(sourceIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getId())
+								.operator(operator).condition().leftOperand(targetIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getId());
 						}
-						statement.append(')');
+						typeStatement.closeBracket();
 					}
-					statement.append(')');
+					statement.closeBracket();
 				}
-				statement.append(']');
-				
+		 		
 				SLPersistentTreeSession treeSession = commandDO.getTreeSession();
-				SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
+				String xpath = statementBuilder.getXPath();
+				
+				System.out.println(xpath);
+				
+				SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
 				Collection<PLinkNodeWrapper> pLinkNodeWrappers = SLSelectCommandSupport.wrapLinkNodes(query.execute().getNodes());
 				
 				if (!pLinkNodeWrappers.isEmpty()) {
@@ -284,35 +299,34 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
 	 */
-	private void filterByWhereStatement(StringBuilder statement, SLLinkTypeStatementInfo linkTypeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
+	private void filterByWhereStatement(Statement statement, SLLinkTypeStatementInfo linkTypeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
 		
 		List<SLConditionInfo> conditionInfoList = linkTypeStatementInfo.getConditionInfoList();
 		for (SLConditionInfo conditionInfo : conditionInfoList) {
-
-			SLConditionalOperatorType conditionalOperator = conditionInfo.getConditionalOperator();
-			if (conditionalOperator != null) {
-				append(statement, ' ', conditionalOperator.symbol().toLowerCase(), ' ');
+			
+			Statement conditionStatement;
+			if (conditionInfo.getConditionalOperator() == null) {
+				conditionStatement = statement.openBracket();
+			}
+			else {
+				conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
 			}
 			
 			if (conditionInfo.getInnerStatementInfo() == null) {
-				statement.append('(');
-
+				
 				SLWhereLinkTypeInfo linkTypeInfo = conditionInfo.getTypeInfo();
 				String linkTypeName = linkTypeInfo.getName();
 				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
 				
-				SLRelationalOperatorType operator = conditionInfo.getRelationalOperator();
-				String expression = operator.xPathExpression(propertyName, conditionInfo.getValue(), conditionInfo.isRelationalNotOperator());
+				String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH); 
+				conditionStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(linkTypeName.hashCode())
+					.operator(AND).condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator()).rightOperand(conditionInfo.getValue());
 
-				append(statement, toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH), " = ", linkTypeName.hashCode());
-				append(statement, " and ", expression);
-					
-				statement.append(')');
 			}
 			else {
-				filterByWhereStatement(statement, conditionInfo.getInnerStatementInfo());
+				filterByWhereStatement(conditionStatement, conditionInfo.getInnerStatementInfo());
 			}
+			conditionStatement.closeBracket();
 		}
 	}
-	
 }

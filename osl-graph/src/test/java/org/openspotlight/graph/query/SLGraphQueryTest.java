@@ -2268,7 +2268,7 @@ public class SLGraphQueryTest {
 				.where()
 					.type(JavaInterface.class.getName())
 						.each().property("caption").not().contains().value("Set")
-						.and().not().each().property("caption").endsWith().value("List")
+						.or().not().each().property("caption").contains().value("List")
 					.typeEnd()
 				.whereEnd();
 
