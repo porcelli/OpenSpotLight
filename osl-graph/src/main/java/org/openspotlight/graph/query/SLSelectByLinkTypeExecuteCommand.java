@@ -124,7 +124,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 					typeNames.addAll(hierarchyTypeNames);
 				}
 				
-		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/contexts//*");
+		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/links/*//*");
 		 		Statement rootStatement = statementBuilder.getRootStatement();
 		 		
 				List<SLSelectByLinkInfo> byLinkInfoList = selectInfo.getByLinkInfoList();
@@ -193,9 +193,6 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 		 		
 				SLPersistentTreeSession treeSession = commandDO.getTreeSession();
 				String xpath = statementBuilder.getXPath();
-				
-				System.out.println(xpath);
-				
 				SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
 				Collection<PLinkNodeWrapper> pLinkNodeWrappers = SLSelectCommandSupport.wrapLinkNodes(query.execute().getNodes());
 				
