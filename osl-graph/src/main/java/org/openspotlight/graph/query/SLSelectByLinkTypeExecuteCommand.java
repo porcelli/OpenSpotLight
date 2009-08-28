@@ -143,13 +143,12 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 						byLinkTypeStatement.closeBracket();
 					}
 					
+					Statement typeStatement = statement.getConditionCount() == 0 ? statement.openBracket() : statement.operator(AND).openBracket();;
 					SLSideType side = byLinkInfo.getSide();
 					
 					if (side.equals(SLSideType.A_SIDE) || side.equals(SLSideType.B_SIDE)) {
-						Statement typeStatement = null;
 						String typeHashPropName = toInternalPropertyName(side.equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH : SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH);
 						String idPropName = toInternalPropertyName(side.equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_TARGET_ID : SLConsts.PROPERTY_NAME_SOURCE_ID);
-						typeStatement = statement.operator(AND).openBracket();
 						for (int j = 0; j < typeNames.size(); j++) {
 							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							String typeName = typeNames.get(j);
@@ -165,9 +164,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 						typeStatement.closeBracket();
 					}
 					else {
-						Statement typeStatement = null;
 						SLConditionalOperatorType operator = side.equals(SLSideType.ANY_SIDE) ? OR : AND;
-						typeStatement = statement.operator(AND).openBracket();
 						for (int j = 0; j < typeNames.size(); j++) {
 							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							String typeName = typeNames.get(j);
