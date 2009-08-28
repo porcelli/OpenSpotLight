@@ -48,7 +48,9 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.common.util.StringBuilderUtil.append;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +59,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraphSessionException;
@@ -65,6 +66,8 @@ import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
+import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
@@ -117,7 +120,6 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 			
 			List<SLSelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
 			String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-			StringBuilder statement = new StringBuilder("//osl/contexts//*");
 			SLWhereByNodeTypeInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
 
 			List<String> typesNotFiltered = new ArrayList<String>();
@@ -126,44 +128,51 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 			typesNotFiltered.addAll(hierarchyTypeNames);
 			}
 
-	 		statement.append('['); 
-	 		
 	 		StringBuilder filterStatement = new StringBuilder();
+	 		
+	 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/contexts//*");
+	 		Statement rootStatement = statementBuilder.getRootStatement();
+	 		
 	 		if (whereStatementInfo != null) {
 	 	 		List<SLWhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
 	 			if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
 	 				filterStatement.append('(');
 	 				Map<String, SLWhereTypeInfo> whereTypeInfoMap = getWhereTypeInfoMap();
-	 				for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoMap.values()) {
-	 					if (filterStatement.length() > 1) filterStatement.append(" or ");
-	 					append(filterStatement, '(', typePropName, " = ", Strings.quote(whereTypeInfo.getName()), " and (");
-	 					filterByWhereStatement(filterStatement, whereTypeInfo.getName(), whereTypeInfo.getTypeStatementInfo());
-	 					append(filterStatement, ')');
-	 					typesNotFiltered.remove(whereTypeInfo.getName());
+	 				List<SLWhereTypeInfo> list = new ArrayList<SLWhereTypeInfo>(whereTypeInfoMap.values());
+	 				for (int i = 0; i < list.size(); i++) {
+	 					SLWhereTypeInfo typeInfo = list.get(i);
+	 					Statement typeStatement;
+	 					if (i > 0) typeStatement = rootStatement.operator(OR).openBracket();
+	 					else typeStatement = rootStatement.openBracket(); 
+	 					Statement typeFilterStatement = typeStatement.condition()
+	 						.leftOperand(typePropName).operator(EQUAL).rightOperand(typeInfo.getName())
+	 						.operator(AND).openBracket();
+	 					filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
+	 					typeFilterStatement.closeBracket();
+	 					typeStatement.closeBracket();
+	 					typesNotFiltered.remove(typeInfo.getName());
 					}
-	 				filterStatement.append(')');
-	 				statement.append(filterStatement);
 	 			}
 	 		}
 	 		
 	 		if (commandDO.getPreviousNodeWrappers() == null) {
-	 			if (!typesNotFiltered.isEmpty()) {
-	 				if (filterStatement.length() > 0) {
-	 					statement.append(" or ");
+ 				for (int i = 0; i < typesNotFiltered.size(); i++) {
+	 				Condition condition;
+	 				if (rootStatement.getConditionCount() == 0) {
+	 					condition = rootStatement.condition();
 	 				}
-	 				for (int i = 0; i < typesNotFiltered.size(); i++) {
-	 					if (i > 0) statement.append(" or ");
-	 					String typeName = typesNotFiltered.get(i);
-	 					append(statement, typePropName, " = ", Strings.quote(typeName));
+	 				else {
+	 					condition = rootStatement.operator(OR).condition();
 	 				}
-	 			}
+	 				condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typesNotFiltered.get(i));
+ 				}
 	 		}
 	 		
-			statement.append(']');
-			statement.append(" order by @").append(typePropName);
+	 		statementBuilder.setOrderBy(typePropName);
 
 			SLPersistentTreeSession treeSession = commandDO.getTreeSession();
-			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
+			String xpath = statementBuilder.getXPath();
+			SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
 			SLPersistentQueryResult result = query.execute();
 			
 			Set<PNodeWrapper> pNodeWrappers = SLSelectCommandSupport.wrapNodes(result.getNodes());
@@ -171,7 +180,6 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 			
 			if (commandDO.getPreviousNodeWrappers() != null) {
 				for (int i = 0; i < typesNotFiltered.size(); i++) {
-					if (i > 0) statement.append(" or ");
 					String typeName = typesNotFiltered.get(i);
 					List<PNodeWrapper> typeNodeWrappers = nodeWrapperListMap.get(typeName);
 					if (typeNodeWrappers != null) {
@@ -209,68 +217,53 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 		return map;
 	}
 	
-	
-	/**
-	 * Filter by where statement.
-	 * 
-	 * @param statement the statement
-	 * @param typeName the type name
-	 * @param typeStatementInfo the type statement info
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	private void filterByWhereStatement(StringBuilder statement, String typeName, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
+	private void filterByWhereStatement(Statement statement, String typeName, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
 		
 		List<SLConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
 		
 		for (SLConditionInfo conditionInfo : conditionInfoList) {
-			
-			StringBuilder conditionStatement = new StringBuilder();
 
-			SLConditionalOperatorType conditionalOperator = conditionInfo.getConditionalOperator();
-			if (conditionalOperator != null) {
-				append(conditionStatement, ' ', conditionalOperator.symbol().toLowerCase(), ' ');
+			Statement conditionStatement;
+			if (conditionInfo.getConditionalOperator() == null) {
+				conditionStatement = statement.openBracket();
 			}
-			
-			if (conditionInfo.isConditionalNotOperator()) {
-				append(conditionStatement, "not(");
+			else {
+				conditionStatement = statement.operator(conditionInfo.getConditionalOperator()).openBracket();
 			}
 			
 			if (conditionInfo.getInnerStatementInfo() == null) {
-				//conditionStatement.append('(');
-				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-				SLRelationalOperatorType relationalOperator = conditionInfo.getRelationalOperator();
-				String expression = relationalOperator.xPathExpression(propertyName, conditionInfo.getValue(), conditionInfo.isRelationalNotOperator());
-				 
+				Statement idStatement = null;
 				if (commandDO.getPreviousNodeWrappers() != null) {
 					List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
 					if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
-						conditionStatement.append('(');
+						idStatement = conditionStatement.openBracket();
 						for (int j = 0; j < pNodeWrappers.size(); j++) {
 							PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
-							if (j > 0) conditionStatement.append(" or ");
-							append(conditionStatement, "jcr:uuid = ", Strings.quote(pNodeWrapper.getId()));
+							Condition idCondition;
+							if (j == 0) idCondition = idStatement.condition();
+							else idCondition = idStatement.operator(OR).condition();
+							idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(pNodeWrapper.getId());
 						}
-						conditionStatement.append(')');
+						idStatement.closeBracket();
 					}
 				}
-				
-				append(conditionStatement, expression);
-				
-				//conditionStatement.append(')');
+				Condition condition;
+				if (idStatement == null) {
+					condition = conditionStatement.condition();
+				}
+				else {
+					condition = conditionStatement.operator(AND).condition();
+				}
+				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
+				condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator()).rightOperand(conditionInfo.getValue());
 			}
 			else {
 				filterByWhereStatement(conditionStatement, typeName, conditionInfo.getInnerStatementInfo());
 			}
 			
-			if (conditionInfo.isConditionalNotOperator()) {
-				append(conditionStatement, ')');
-			}
-			
-			append(statement, conditionStatement);
+			conditionStatement.closeBracket();
 		}
-		
-		append(statement, ')');
 	}
 }
+
+

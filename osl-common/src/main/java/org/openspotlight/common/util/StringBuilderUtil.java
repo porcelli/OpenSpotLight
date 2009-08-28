@@ -61,6 +61,7 @@ public class StringBuilderUtil {
 	 * 
 	 * @param buffer the buffer
 	 * @param value the value
+	 * @param values the values
 	 * 
 	 * @return true, if successful
 	 */
@@ -74,7 +75,7 @@ public class StringBuilderUtil {
 		}
 		return buffer;
 	}
-	
+
 	/**
 	 * Append value if not null.
 	 * 
