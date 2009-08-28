@@ -73,8 +73,7 @@ import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
 import org.openspotlight.graph.util.ProxyUtil;
 
-import com.sun.xml.bind.v2.TODO;
-
+// TODO: Auto-generated Javadoc
 /**
  * The Class SLQueryImpl.
  * 
@@ -162,7 +161,9 @@ public class SLQueryImpl implements SLQuery {
 						command.execute();
 						selectNodeWrappers = commandDO.getNodeWrappers();
 						if (selectNodeWrappers.isEmpty()) {
-							commandDO.getPreviousNodeWrappers().clear();
+							if (commandDO.getPreviousNodeWrappers() != null) {
+								commandDO.getPreviousNodeWrappers().clear();	
+							}
 							break;
 						}
 						if (selectInfo.isKeepResult()) {
@@ -402,6 +403,7 @@ class PNodeWrapper {
 		}
 	}
 }
+
 
 class PLinkNodeWrapper {
 	

@@ -451,6 +451,9 @@ public class SLWhereByNodeTypeInfo {
 				
 				/** The relational not operator. */
 				private boolean relationalNotOperator;
+				
+				/** The conditional not operator. */
+				private boolean conditionalNotOperator;
 
 				/**
 				 * Instantiates a new sL condition info.
@@ -695,6 +698,24 @@ public class SLWhereByNodeTypeInfo {
 				 */
 				public void setRelationalNotOperator(boolean relationalNotOperator) {
 					this.relationalNotOperator = relationalNotOperator;
+				}
+
+				/**
+				 * Checks if is conditional not operator.
+				 * 
+				 * @return true, if is conditional not operator
+				 */
+				public boolean isConditionalNotOperator() {
+					return conditionalNotOperator;
+				}
+
+				/**
+				 * Sets the conditional not operator.
+				 * 
+				 * @param conditionalNotOperator the new conditional not operator
+				 */
+				public void setConditionalNotOperator(boolean conditionalNotOperator) {
+					this.conditionalNotOperator = conditionalNotOperator;
 				}
 
 			}
