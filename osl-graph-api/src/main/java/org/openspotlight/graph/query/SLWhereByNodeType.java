@@ -337,6 +337,13 @@ public interface SLWhereByNodeType extends SLStatement {
 						public static interface RelationalOperator {
 							
 							/**
+							 * Not.
+							 * 
+							 * @return the relational operator
+							 */
+							public RelationalOperator not();
+							
+							/**
 							 * Comma.
 							 * 
 							 * @return the sL where by node type

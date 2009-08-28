@@ -577,6 +577,14 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 								this.whereStatement = whereStatement;
 								this.conditionInfo = conditionInfo;
 							}
+							
+							/* (non-Javadoc)
+							 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property.Operator.Value.RelationalOperator#not()
+							 */
+							public RelationalOperator not() {
+								conditionInfo.setConditionalNotOperator(true);
+								return this;
+							}
 
 							/* (non-Javadoc)
 							 * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property.Operator.Value.RelationalOperator#comma()

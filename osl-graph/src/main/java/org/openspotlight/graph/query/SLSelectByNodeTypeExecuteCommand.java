@@ -72,7 +72,6 @@ import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLSelectByNodeTypeExecuteCommand.
  * 
@@ -137,7 +136,9 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 				Map<String, SLWhereTypeInfo> whereTypeInfoMap = getWhereTypeInfoMap();
 	 				for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoMap.values()) {
 	 					if (filterStatement.length() > 1) filterStatement.append(" or ");
+	 					append(filterStatement, '(', typePropName, " = ", Strings.quote(whereTypeInfo.getName()), " and (");
 	 					filterByWhereStatement(filterStatement, whereTypeInfo.getName(), whereTypeInfo.getTypeStatementInfo());
+	 					append(filterStatement, ')');
 	 					typesNotFiltered.remove(whereTypeInfo.getName());
 					}
 	 				filterStatement.append(')');
@@ -157,7 +158,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 				}
 	 			}
 	 		}
-	 			
+	 		
 			statement.append(']');
 			statement.append(" order by @").append(typePropName);
 
@@ -221,48 +222,55 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 */
 	private void filterByWhereStatement(StringBuilder statement, String typeName, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
 		
-		String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
 		List<SLConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
-
+		
 		for (SLConditionInfo conditionInfo : conditionInfoList) {
+			
+			StringBuilder conditionStatement = new StringBuilder();
 
 			SLConditionalOperatorType conditionalOperator = conditionInfo.getConditionalOperator();
 			if (conditionalOperator != null) {
-				append(statement, ' ', conditionalOperator.symbol().toLowerCase(), ' ');
+				append(conditionStatement, ' ', conditionalOperator.symbol().toLowerCase(), ' ');
+			}
+			
+			if (conditionInfo.isConditionalNotOperator()) {
+				append(conditionStatement, "not(");
 			}
 			
 			if (conditionInfo.getInnerStatementInfo() == null) {
-				statement.append('(');
+				//conditionStatement.append('(');
 				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
 				SLRelationalOperatorType relationalOperator = conditionInfo.getRelationalOperator();
 				String expression = relationalOperator.xPathExpression(propertyName, conditionInfo.getValue(), conditionInfo.isRelationalNotOperator());
-				StringBuilder filterStatement = new StringBuilder(); 
+				 
 				if (commandDO.getPreviousNodeWrappers() != null) {
 					List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
 					if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
-						filterStatement.append('(');
+						conditionStatement.append('(');
 						for (int j = 0; j < pNodeWrappers.size(); j++) {
 							PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
-							if (j > 0) filterStatement.append(" or ");
-							append(filterStatement, "jcr:uuid = ", Strings.quote(pNodeWrapper.getId()));
+							if (j > 0) conditionStatement.append(" or ");
+							append(conditionStatement, "jcr:uuid = ", Strings.quote(pNodeWrapper.getId()));
 						}
-						filterStatement.append(')');
+						conditionStatement.append(')');
 					}
 				}
-				else {
-					append(filterStatement, typePropName, " = ", Strings.quote(typeName));
-				}
 				
-				if (filterStatement.length() > 0) {
-					statement.append('(');
-					append(statement, filterStatement, " and ", expression);
-					statement.append(')');
-				}
-				statement.append(')');
+				append(conditionStatement, expression);
+				
+				//conditionStatement.append(')');
 			}
 			else {
-				filterByWhereStatement(statement, typeName, conditionInfo.getInnerStatementInfo());
+				filterByWhereStatement(conditionStatement, typeName, conditionInfo.getInnerStatementInfo());
 			}
+			
+			if (conditionInfo.isConditionalNotOperator()) {
+				append(conditionStatement, ')');
+			}
+			
+			append(statement, conditionStatement);
 		}
+		
+		append(statement, ')');
 	}
 }
