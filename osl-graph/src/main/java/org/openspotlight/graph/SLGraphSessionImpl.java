@@ -193,8 +193,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		final long linkCount = this.incLinkCount(pairKeyNode);
 		final String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
 		final SLPersistentNode linkNode = pairKeyNode.addNode(name);
-		Class<? extends SLNode> sourceType = source.getClass().getInterfaces()[0];
-		Class<? extends SLNode> targetType = target.getClass().getInterfaces()[0];
+		Class<? extends SLNode> sourceType = (Class<? extends SLNode>) source.getClass().getInterfaces()[0];
+		Class<? extends SLNode> targetType = (Class<? extends SLNode>) target.getClass().getInterfaces()[0];
 		SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_ID, source.getID());
 		SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_ID, target.getID());
 		SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH, linkType.getName().hashCode());

@@ -278,7 +278,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 		try {
 			final SLLink link = event.getLink();
-			final Class<? extends SLLink> linkType = link.getClass().getInterfaces()[0];
+			final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link.getClass().getInterfaces()[0];
 			
 			final SLNode[] sides = link.getSides();
 			final SLNode source = sides[0];
@@ -331,7 +331,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 			SLLinkProperty<? extends Serializable> linkProperty = event.getProperty();
 			
 			SLLink link = linkProperty.getLink();
-			final Class<? extends SLLink> linkType = link.getClass().getInterfaces()[0];
+			final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link.getClass().getInterfaces()[0];
 			final SLNode[] sides = link.getSides();
 			final SLNode source = sides[0];
 			final SLNode target = sides[1];
@@ -388,7 +388,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 			final SLPersistentNode pNode = event.getPersistentNode();
 			String typeName = SLCommonSupport.getNodeTypeName(pNode);
 			
-			final Class<? extends SLNode> nodeType = event.getNode().getClass().getInterfaces()[0];
+			final Class<? extends SLNode> nodeType = (Class<? extends SLNode>) event.getNode().getClass().getInterfaces()[0];
 			if (nodeType.equals(SLNode.class) || this.metaNodeTypeCache.get(typeName) != null) {
 				return;
 			}
@@ -486,7 +486,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	@SuppressWarnings("unchecked")
 	private void addNodeTypeInHierarchy(List<Class<? extends SLNode>> nodeTypes, Class<? extends SLNode> nodeType) {
 		nodeTypes.add(0, nodeType);
-		Class<? extends SLNode> superNodeType = nodeType.getInterfaces()[0];
+		Class<? extends SLNode> superNodeType = (Class<? extends SLNode>) nodeType.getInterfaces()[0];
 		if (superNodeType != null && !superNodeType.equals(SLNode.class)) {
 			addNodeTypeInHierarchy(nodeTypes, superNodeType);
 		}

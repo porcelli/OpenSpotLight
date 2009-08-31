@@ -137,7 +137,7 @@ public class SLGraphQueryTest {
 	@BeforeClass
 	public void init() throws SLException {
 		SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-		graph = factory.createTempGraph(false);
+		graph = factory.createTempGraph(true);
 		session = graph.openSession();
 	}
 	

@@ -11,6 +11,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<build>
+	
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -49,11 +50,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
