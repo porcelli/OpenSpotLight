@@ -1,0 +1,32 @@
+<script>
+	<scriptType>TABLE</scriptType>
+	<database>DB2</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create table $name$ (
+		$detail:{$it.colname$  $it.typename$ $if(it.is_nullable)$ null $else$ not null $endif$ $if(it.default)$ default $it.data_default$ $endif$};separator=", "$
+	)]]></template>
+
+	<dataSelect><![CDATA[
+		select distinct
+		    tabschema as schema_name,
+		    tabname as name ,
+		    '' as catalog_name
+		from SYSCAT.TABLES
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select 
+		    colname, 
+		    typename, 
+		    default, 
+		    case nulls 
+		        when 'Y' then 'true' 
+		        else 'false' end 
+		    as is_nullable 
+		from 
+		    syscat.COLUMNS
+		where
+		    tabschema = '$schema_name$' and
+		    tabname = '$name$'
+	 ]]></templatesSelect>
+</script>

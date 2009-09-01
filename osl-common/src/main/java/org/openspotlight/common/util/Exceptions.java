@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de GovernanÔøΩa de TI de CÔøΩdigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribuiÔøΩÔøΩo de direito autoral declarada e atribuÔøΩda pelo autor.
+ * Todas as contribuiÔøΩÔøΩes de terceiros estÔøΩo distribuÔøΩdas sob licenÔøΩa da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa ÔøΩ software livre; vocÔøΩ pode redistribuÔøΩ-lo e/ou modificÔøΩ-lo sob os 
+ * termos da LicenÔøΩa PÔøΩblica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa ÔøΩ distribuÔøΩdo na expectativa de que seja ÔøΩtil, porÔøΩm, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implÔøΩcita de COMERCIABILIDADE OU ADEQUAÔøΩÔøΩO A UMA
+ * FINALIDADE ESPECÔøΩFICA. Consulte a LicenÔøΩa PÔøΩblica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * VocÔøΩ deve ter recebido uma cÔøΩpia da LicenÔøΩa PÔøΩblica Geral Menor do GNU junto com este
+ * programa; se nÔøΩo, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
@@ -99,7 +99,7 @@ public class Exceptions {
             final Exception exception) {
         logger.error(message, exception);
     }
-    
+
     /**
      * Log the exception and return the same exception to be used in non void
      * methods.
@@ -118,6 +118,28 @@ public class Exceptions {
      */
     public static <E extends Throwable> E logAndReturn(final E exception) {
         logger.error(exception.getMessage(), exception);
+        return exception;
+    }
+
+    /**
+     * Log the exception and return the same exception to be used in non void
+     * methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     throw logAndReturn(e);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param exception
+     * @return the same exception
+     */
+    public static <E extends Throwable> E logAndReturn(final String message, final E exception) {
+    	logger.error(message);
+    	logger.error(exception.getMessage(), exception);
         return exception;
     }
     

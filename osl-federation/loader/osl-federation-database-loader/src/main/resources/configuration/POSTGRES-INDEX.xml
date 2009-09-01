@@ -1,0 +1,22 @@
+<script>
+	<scriptType>INDEX</scriptType>
+	<database>POSTGRES</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+        select 
+            null as catalog_name, 
+            schemaname as schema_name, 
+            indexname as name
+        from 
+            pg_indexes
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+        select 
+            indexdef as sql_content
+        from 
+            pg_indexes
+        where
+            schemaname = '$schema_name$' and
+            indexname = '$name$'
+         ]]></contentSelect>
+</script>

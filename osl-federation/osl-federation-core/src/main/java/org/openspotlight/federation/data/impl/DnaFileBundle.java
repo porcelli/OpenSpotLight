@@ -62,8 +62,8 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
-        Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
-        BundleProcessorType.class, Project.class, StreamArtifact.class,
+        Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
+        BundleProcessorType.class, Group.class, StreamArtifact.class,
         CustomArtifact.class, ArtifactMapping.class })
 public class DnaFileBundle extends Bundle {
     
@@ -78,7 +78,7 @@ public class DnaFileBundle extends Bundle {
      * @param project
      * @param name
      */
-    public DnaFileBundle(final Project project, final String name) {
+    public DnaFileBundle(final Group project, final String name) {
         super(project, name);
     }
     

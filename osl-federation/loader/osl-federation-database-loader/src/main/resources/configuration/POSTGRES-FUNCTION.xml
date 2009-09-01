@@ -1,0 +1,28 @@
+<script>
+	<scriptType>FUNCTION</scriptType>
+	<database>POSTGRES</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+		    specific_catalog as catalog_name,
+		    specific_schema as schema_name,
+		    routine_name as name 
+		from 
+		    information_schema.routines
+		where 
+		    type_udt_name !='trigger' and 
+		    specific_schema not in ('pg_catalog', 'information_schema')
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select 
+		    routine_definition
+		from 
+		    information_schema.routines
+		where 
+		    type_udt_name !='trigger' and 
+		    specific_schema not in ('pg_catalog', 'information_schema') and
+		    specific_catalog ='$catalog_name$' and
+		    specific_schema ='$schema_name$' and
+		    routine_name ='$name$'
+         ]]></contentSelect>
+</script>

@@ -1,0 +1,33 @@
+<script>
+	<scriptType>CONSTRAINT</scriptType>
+	<database>ORACLE</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create constraint $name$ on $detail.table_name$ (
+		$detail:{$it.search_condition$};separator=", "$
+	)]]></template>
+	<contentSelect><![CDATA[
+	SELECT 
+	    DBMS_METADATA.GET_DDL('CONSTRAINT', '$name$','$schema_name$') 
+	FROM 
+	    dual
+    ]]></contentSelect>
+	<dataSelect><![CDATA[
+		select distinct
+		    owner as schema_name, 
+		    constraint_name as name, 
+		    null as catalog_name 
+		from 
+		    all_constraints
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select
+		     table_name,
+		     search_condition
+		from 
+		    all_constraints
+		where
+		    owner = '$schema_name$' and
+		    constraint_name = '$name$' 
+ ]]></templatesSelect>
+</script>

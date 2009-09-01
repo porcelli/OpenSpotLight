@@ -1,7 +1,7 @@
 package org.openspotlight.federation.data.load.db.test;
 
 import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDbConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 import java.sql.Connection;
 import java.util.EnumSet;
@@ -24,9 +24,9 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createDbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
+		Configuration configuration = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
 		return (DbBundle) configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
-				.getProjectByName("h2 Project") //$NON-NLS-1$
+				.getProjectByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
 	}
 

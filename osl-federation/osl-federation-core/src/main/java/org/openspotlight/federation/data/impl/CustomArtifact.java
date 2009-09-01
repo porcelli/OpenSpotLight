@@ -69,7 +69,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Project.class }, propertyNames = { "UUID", "version" }, propertyTypes = {
+        Bundle.class, Group.class }, propertyNames = { "UUID", "version" }, propertyTypes = {
         String.class, String.class })
 public class CustomArtifact implements ConfigurationNode, GeneratedNode,
         Artifact {
@@ -101,7 +101,7 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode,
      * @param project
      * @param relativeName
      */
-    public CustomArtifact(final Project project, final String relativeName) {
+    public CustomArtifact(final Group project, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(this, project,
                 relativeName);
         checkCondition("noCustomArtifact", //$NON-NLS-1$

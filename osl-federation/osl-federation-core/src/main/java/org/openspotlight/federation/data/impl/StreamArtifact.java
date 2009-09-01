@@ -74,7 +74,7 @@ import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformatio
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Project.class }, validChildrenTypes = {
+        Bundle.class, Group.class }, validChildrenTypes = {
         ArtifactLog.class, SyntaxInformation.class }, propertyNames = { "name",
         "dataSha1", "UUID", "version", "data" }, propertyTypes = {
         String.class, String.class, String.class, String.class,
@@ -113,7 +113,7 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode,
      * @param project
      * @param relativeName
      */
-    public StreamArtifact(final Project project, final String relativeName) {
+    public StreamArtifact(final Group project, final String relativeName) {
         this.instanceMetadata = createWithKeyProperty(this, project,
                 relativeName);
         checkCondition("noStreamArtifact", //$NON-NLS-1$

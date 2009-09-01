@@ -60,7 +60,7 @@ import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 
@@ -127,8 +127,8 @@ public abstract class AbstractConfigurationManagerTest extends NodeTest {
         manager.save(configuration);
         
         configuration = manager.load(this.getDefaultLazyType());
-        final Set<Project> projects = manager.findNodesByKey(configuration,
-                Project.class, "ip-1,1");
+        final Set<Group> projects = manager.findNodesByKey(configuration,
+                Group.class, "ip-1,1");
         assertThat(projects.size(), is(not(0)));
         final Set<Repository> repositories = manager.findNodesByKey(
                 configuration, Repository.class, "invalidKey");

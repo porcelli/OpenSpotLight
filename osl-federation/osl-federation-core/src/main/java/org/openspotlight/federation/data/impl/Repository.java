@@ -71,7 +71,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
-@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = Configuration.class, validChildrenTypes = Project.class)
+@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = Configuration.class, validChildrenTypes = Group.class)
 public final class Repository implements ConfigurationNode {
     
     private static final String ACTIVE = "active"; //$NON-NLS-1$
@@ -147,8 +147,8 @@ public final class Repository implements ConfigurationNode {
      * @param name
      * @return a project by its name
      */
-    public final Project getProjectByName(final String name) {
-        return this.instanceMetadata.getChildByKeyValue(Project.class, name);
+    public final Group getProjectByName(final String name) {
+        return this.instanceMetadata.getChildByKeyValue(Group.class, name);
     }
     
     /**
@@ -157,15 +157,15 @@ public final class Repository implements ConfigurationNode {
      */
     public final Set<String> getProjectNames() {
         return (Set<String>) this.instanceMetadata
-                .getKeyFromChildrenOfTypes(Project.class);
+                .getKeyFromChildrenOfTypes(Group.class);
     }
     
     /**
      * 
      * @return all projects inside this repository
      */
-    public final Collection<Project> getProjects() {
-        return this.instanceMetadata.getChildrensOfType(Project.class);
+    public final Collection<Group> getProjects() {
+        return this.instanceMetadata.getChildrensOfType(Group.class);
     }
     
     /**
@@ -182,7 +182,7 @@ public final class Repository implements ConfigurationNode {
      * 
      * @param project
      */
-    public final void removeProject(final Project project) {
+    public final void removeProject(final Group project) {
         this.instanceMetadata.removeChild(project);
     }
     

@@ -1,0 +1,24 @@
+<script>
+	<scriptType>FUNCTION</scriptType>
+	<database>SQL_SERVER</database>
+	<preferedType>SQL</preferedType>
+	<contentSelect><![CDATA[
+	       select 
+            routine_definition as sql_content 
+        from 
+            information_schema.routines
+        where routine_type='FUNCTION' and
+            routine_schema = '$schema_name$' and 
+            routine_catalog = '$catalog_name$' and 
+            routine_name = '$name$'
+	]]></contentSelect>
+	<dataSelect><![CDATA[
+       select 
+            routine_catalog as catalog_name, 
+            routine_schema as schema_name, 
+            routine_name as name
+        from 
+            information_schema.routines
+        where routine_type='FUNCTION'      
+        ]]></dataSelect>
+</script>

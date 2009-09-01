@@ -54,7 +54,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDbConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.sql.Connection;
@@ -81,10 +81,10 @@ public class DbStreamArtifactProcessing {
 	@BeforeClass
 	public static void setupH2() throws Exception {
 		Files.delete("./target/test-data/DbStreamArtifactProcessing/h2/");
-		Configuration configuration = createDbConfiguration("DbStreamArtifactProcessing");
+		Configuration configuration = createH2DbConfiguration("DbStreamArtifactProcessing");
 		DbBundle bundle = (DbBundle) configuration.getRepositoryByName(
 				"H2 Repository") //$NON-NLS-1$
-				.getProjectByName("h2 Project") //$NON-NLS-1$
+				.getProjectByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
 		Connection conn = createConnection(bundle);
 		try {
@@ -114,7 +114,7 @@ public class DbStreamArtifactProcessing {
 	@Test
 	public void shouldLoadAllArtifactsFromh2SourceCode() throws Exception {
 		final Configuration configuration = this
-				.loadAllArtifactsFromThisConfiguration(createDbConfiguration("DbStreamArtifactProcessing"));
+				.loadAllArtifactsFromThisConfiguration(createH2DbConfiguration("DbStreamArtifactProcessing"));
 		final Set<Bundle> bundles = findAllNodesOfType(configuration,
 				Bundle.class);
 		for (final Bundle bundle : bundles) {
@@ -125,7 +125,7 @@ public class DbStreamArtifactProcessing {
 	@Test
 	public void shouldProcessAllValidh2SourceCode() throws Exception {
 		final Configuration configuration = this
-				.loadAllArtifactsFromThisConfiguration(createDbConfiguration("DbStreamArtifactProcessing"));
+				.loadAllArtifactsFromThisConfiguration(createH2DbConfiguration("DbStreamArtifactProcessing"));
 		final SLGraph graph = mock(SLGraph.class);
 		final SLGraphSession session = mock(SLGraphSession.class);
 		when(graph.openSession()).thenReturn(session);

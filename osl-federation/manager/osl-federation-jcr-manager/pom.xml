@@ -9,9 +9,9 @@
 	<url>http://caravelatech.com</url>
 	<parent>
 		<groupId>org.openspotlight</groupId>
-		<artifactId>osl</artifactId>
+		<artifactId>osl-federation</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../../..</relativePath>
+		<relativePath>../..</relativePath>
 	</parent>
 	<developers>
 		<developer>
@@ -96,7 +96,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-core</artifactId>
+			<artifactId>osl-federation-processor-core</artifactId>
 			<version>${pom.version}</version>
 			<scope>compile</scope>
 		</dependency>

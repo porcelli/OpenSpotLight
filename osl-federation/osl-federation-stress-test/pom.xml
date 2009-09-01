@@ -9,8 +9,9 @@
 	<url>http://caravelatech.com</url>
 	<parent>
 		<groupId>org.openspotlight</groupId>
-		<artifactId>osl</artifactId>
+		<artifactId>osl-federation</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../</relativePath>
 	</parent>
 	<developers>
 		<developer>
@@ -42,6 +43,22 @@
 		<url>http://www.caravelatech.com/</url>
 	</organization>
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-core</artifactId>
+			<!-- Exclude these since they are included in JDK 1.5 -->
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>xerces</groupId>
+					<artifactId>xercesImpl</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -85,6 +102,12 @@
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-dna-core-loader</artifactId>
+			<version>${pom.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-federation-processor-core</artifactId>
 			<version>${pom.version}</version>
 			<scope>compile</scope>
 		</dependency>

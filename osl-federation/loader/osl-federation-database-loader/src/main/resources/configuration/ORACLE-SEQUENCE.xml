@@ -1,0 +1,32 @@
+<script>
+	<scriptType>SEQUENCE</scriptType>
+	<database>ORACLE</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create sequence $name$ starting on '$detail.min_value$' ending on '$detail.max_value$' incremented by '$detail.increment_by$']]></template>
+	<contentSelect><![CDATA[
+	SELECT 
+	    DBMS_METADATA.GET_DDL('SEQUENCE', '$name$','$schema_name$') 
+	FROM 
+	    dual
+    ]]></contentSelect>
+	<dataSelect><![CDATA[
+        select 
+		    sequence_owner as schema_name, 
+		    null as catalog_name, 
+		    sequence_name as name 
+		from 
+		    all_sequences
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+        select 
+            min_value, 
+            max_value, 
+            increment_by
+		from 
+		    all_sequences
+		where
+			sequence_owner = '$schema_name$' and 
+		    sequence_name = '$name$' 
+ ]]></templatesSelect>
+</script>

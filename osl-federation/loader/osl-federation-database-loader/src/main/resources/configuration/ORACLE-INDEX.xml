@@ -1,0 +1,32 @@
+<script>
+	<scriptType>INDEX</scriptType>
+	<database>ORACLE</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create index $name$ on table $table_name$ (
+		$detail:{$it.column_name$} ;separator=", "$
+	)]]></template>
+	<contentSelect><![CDATA[
+	SELECT 
+	    DBMS_METADATA.GET_DDL('INDEX', '$name$','$schema_name$') 
+	FROM 
+	    dual
+    ]]></contentSelect>
+	<dataSelect><![CDATA[
+		select 
+		    null as catalog_name, 
+		    index_name as name, 
+		    table_owner as schema_name
+		from 
+		    all_indexes
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select 
+			column_name , table_name
+		from 
+			all_ind_columns
+		where
+			index_name = '$name$' and
+		    table_owner = '$schema_name$' 
+ ]]></templatesSelect>
+</script>

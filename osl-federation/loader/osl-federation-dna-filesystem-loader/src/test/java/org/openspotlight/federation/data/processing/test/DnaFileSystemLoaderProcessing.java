@@ -65,6 +65,7 @@ import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
+import org.openspotlight.federation.data.load.DnaArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader.ArtifactProcessingCount;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
@@ -113,7 +114,7 @@ public class DnaFileSystemLoaderProcessing {
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
                 StreamArtifact.class);
         final Repository repository = configuration
-                .getRepositoryByName("OSL Project");
+                .getRepositoryByName("OSL Group");
         manager.processRepository(repository);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }

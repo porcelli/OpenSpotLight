@@ -1,0 +1,29 @@
+<script>
+	<scriptType>TABLE</scriptType>
+	<database>SQL_SERVER</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create table $name$ (
+		$detail:{$it.column_name$  $it.data_type$ $if(it.nullable)$ null $else$ not null $endif$ $if(it.column_default)$ default $it.column_default$ $endif$};separator=", "$
+	)]]></template>
+	<dataSelect><![CDATA[
+        select 
+			table_name as  name, 
+			table_catalog as catalog_name, 
+			table_schema as schema_name 
+		from 
+			information_schema.tables
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select 
+			column_name, 
+            column_default, 
+            case is_nullable when 'YES' then 'true' else 'false' end as nullable, 
+            data_type
+		from 
+			information_schema.columns 
+		where table_name='$name$' 
+		  and table_schema='$schema_name$'
+		  and table_catalog='$catalog_name$'
+ ]]></templatesSelect>
+</script>

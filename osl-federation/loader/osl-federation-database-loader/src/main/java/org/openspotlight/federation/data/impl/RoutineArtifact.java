@@ -70,7 +70,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-		Bundle.class, Project.class }, propertyNames = { "UUID", "version",
+		Bundle.class, Group.class }, propertyNames = { "UUID", "version",
 		"routineName", "catalogName", "schemaName", "type" }, propertyTypes = {
 		String.class, String.class, String.class, String.class, String.class,
 		RoutineArtifact.RoutineType.class }, validChildrenTypes = RoutineParameter.class)
@@ -169,7 +169,7 @@ public class RoutineArtifact extends CustomArtifact {
 	 * @param project
 	 * @param relativeName
 	 */
-	public RoutineArtifact(final Project project, final String relativeName) {
+	public RoutineArtifact(final Group project, final String relativeName) {
 		super(project, relativeName);
 		this.instanceMetadata = super.getInstanceMetadata();
 		this.loadProperties();

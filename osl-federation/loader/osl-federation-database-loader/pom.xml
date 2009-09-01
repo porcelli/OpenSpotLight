@@ -9,9 +9,9 @@
 	<url>http://caravelatech.com</url>
 	<parent>
 		<groupId>org.openspotlight</groupId>
-		<artifactId>osl</artifactId>
+		<artifactId>osl-federation</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../../..</relativePath>
+		<relativePath>../..</relativePath>
 	</parent>
 	<developers>
 		<developer>
@@ -43,7 +43,7 @@
 		<url>http://www.caravelatech.com/</url>
 	</organization>
 	<dependencies>
-        <!-- Test dependencies -->
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
@@ -65,12 +65,9 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- 
-	      Databases and JDBC Drivers
-	    -->
 		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
+			<groupId>antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
 		</dependency>
 		<!-- xml easy manipulation -->
 		<dependency>
@@ -90,4 +87,50 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>runDatabaseVendorTests</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<id>withDatabaseVendorTests</id>
+			<dependencies>
+				<!-- 
+			      Databases and JDBC Drivers
+			    -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc5</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>net.sourceforge.jtds</groupId>
+					<artifactId>jtds</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm</groupId>
+					<artifactId>db2jcc</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.ibm</groupId>
+					<artifactId>db2jcc_license_cu</artifactId>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 </project>

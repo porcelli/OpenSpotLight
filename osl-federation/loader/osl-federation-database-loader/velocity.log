@@ -1,0 +1,7 @@
+2009-08-24 08:51:19,896 - ResourceManager : unable to find resource '/test-data/SimpleVelocityTest/test.vtl' in any resource loader.
+2009-08-24 08:51:19,896 - ResourceManager : unable to find resource '/test-data/SimpleVelocityTest/test.vtl' in any resource loader.
+2009-08-24 08:51:44,886 - ResourceManager : unable to find resource '/data/SimpleVelocityTest/test.vtl' in any resource loader.
+2009-08-24 08:51:44,886 - ResourceManager : unable to find resource '/data/SimpleVelocityTest/test.vtl' in any resource loader.
+2009-08-24 08:53:10,715 - ResourceManager : unable to find resource 'data/SimpleVelocityTest/test.vm' in any resource loader.
+2009-08-24 08:53:10,715 - ResourceManager : unable to find resource 'data/SimpleVelocityTest/test.vm' in any resource loader.
+2009-08-24 08:57:30,225 - ResourceManager : unable to find resource 'test.vm' in any resource loader.

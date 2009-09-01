@@ -1,0 +1,22 @@
+<script>
+	<scriptType>TRIGGER</scriptType>
+	<database>ORACLE</database>
+	<preferedType>SQL</preferedType>
+	<contentSelect><![CDATA[
+        select 
+            trigger_body
+		from 
+		    all_triggers
+		where
+		    table_owner = '$schema_name$' and 
+		    trigger_name = '$name$' 
+    ]]></contentSelect>
+	<dataSelect><![CDATA[
+        select 
+		    table_owner as schema_name, 
+		    null as catalog_name, 
+		    trigger_name as name 
+		from 
+		    all_triggers
+      ]]></dataSelect>
+</script>

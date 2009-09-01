@@ -1,0 +1,24 @@
+<script>
+	<scriptType>INDEX</scriptType>
+	<database>DB2</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create index $name$ on $detail.tabname$ ( $detail.colnames$ )
+	]]></template>
+
+	<dataSelect><![CDATA[
+		select 
+			indschema as schema_name, 
+			indname as name, 
+			'' as catalog_name 
+		from syscat.INDEXES
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select 
+			tabname, colnames 
+		from syscat.indexes 
+		where
+		    indschema = '$schema_name$' and
+		    indname = '$name$'
+	 ]]></templatesSelect>
+</script>

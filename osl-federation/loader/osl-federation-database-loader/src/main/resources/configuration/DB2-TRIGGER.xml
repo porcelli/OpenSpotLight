@@ -1,0 +1,19 @@
+<script>
+	<scriptType>TRIGGER</scriptType>
+	<database>DB2</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+			trigschema as schema_name, 
+			trigname as name, 
+			'' as catalog_name 
+		from syscat.TRIGGERS
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select text
+		from syscat.TRIGGERS
+		where
+			trigschema = '$schema_name$' and
+			trigname  = '$name$'
+   	 ]]></contentSelect>
+</script>

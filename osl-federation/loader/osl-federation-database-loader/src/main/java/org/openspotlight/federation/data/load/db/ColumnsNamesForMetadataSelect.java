@@ -13,26 +13,26 @@ public enum ColumnsNamesForMetadataSelect {
 	 * The script itself. Should not be returned on data select, but is
 	 * mandatory on content select.
 	 */
-	SQL_CONTENT,
+	sql_content,
 	/**
 	 * The script catalog. Should be returned on data select, but not on
 	 * content select.
 	 */
-	CATALOG_NAME,
+	catalog_name,
 	/**
 	 * The script schema. Should be returned on data select, but not on
 	 * content select.
 	 */
-	SCHEMA_NAME,
+	schema_name,
 	/**
 	 * The script name inside database. Should be returned on data select,
 	 * but not on content select.
 	 */
-	NAME,
+	name,
 	/**
 	 * Any aditional information for the script. Should be returned on data
 	 * select, but not on content select.
 	 */
-	REMARKS
+	remarks
 
 }

@@ -53,14 +53,14 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScripts;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,24 +80,17 @@ public class DatabaseMetadataScriptManagerTest {
 	private String createSample() {
 		final XStream xstream = new XStream();
 		xstream.omitField(DatabaseMetadataScript.class, "immutable");
-		xstream.omitField(DatabaseMetadataScripts.class, "immutable");
-		xstream.alias("scripts", DatabaseMetadataScripts.class); //$NON-NLS-1$
 		xstream.alias("script", DatabaseMetadataScript.class); //$NON-NLS-1$
-		final DatabaseMetadataScripts scripts = new DatabaseMetadataScripts();
-		scripts.setScripts(new ArrayList<DatabaseMetadataScript>());
 		final DatabaseMetadataScript script = new DatabaseMetadataScript();
 		script.setContentSelect("select text from table");
+		script.setPreferedType(PreferedType.SQL);
 		script.setDataSelect("select * from data");
+		script
+				.setTemplatesSelect("select sysdate from dual where $dummy$ = 'X'");
+		script.setTemplate("create table $dummy$ ");
 		script.setDatabase(DatabaseType.ORACLE);
 		script.setScriptType(ScriptType.TABLE);
-		final DatabaseMetadataScript script1 = new DatabaseMetadataScript();
-		script1.setContentSelect("select text from table");
-		script1.setDataSelect("select * from data");
-		script1.setDatabase(DatabaseType.DB2);
-		script1.setScriptType(ScriptType.FUNCTION);
-		scripts.getScripts().add(script);
-		scripts.getScripts().add(script1);
-		return xstream.toXML(scripts);
+		return xstream.toXML(script);
 	}
 
 	@Test
@@ -110,6 +103,21 @@ public class DatabaseMetadataScriptManagerTest {
 	@Test
 	public void shouldLogValidXmlFromXStream() {
 		System.out.println("valid xml config script: \n" + this.createSample());
+	}
+
+	@Test
+	public void shouldReplaceTemplateInACorrectWay() throws Exception {
+		DatabaseMetadataScript tableScript = DatabaseMetadataScriptManager.INSTANCE
+				.getScript(DatabaseType.MYSQL, ScriptType.TABLE);
+		StringTemplate template = new StringTemplate(tableScript.getTemplate(),
+				DefaultTemplateLexer.class);
+		template.setAttribute("name", "example_table");
+		for (int i = 0; i < 10; i++) {
+			template.setAttribute("detail.{column_name,column_type,is_null}",
+					"column" + i, "type" + i, "isNull" + i);
+		}
+		String result = template.toString();
+		assertThat(result, is(notNullValue()));
 	}
 
 }

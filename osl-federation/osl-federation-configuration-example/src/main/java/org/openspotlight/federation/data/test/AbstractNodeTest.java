@@ -63,7 +63,7 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
 import org.openspotlight.federation.data.InstanceMetadata.PropertyValue;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 
 /**
@@ -140,9 +140,9 @@ public class AbstractNodeTest extends NodeTest {
     public void shouldListenChangesOnNodes() throws Exception {
         final Configuration configuration = this.createGroupWithListeners();
         final Repository repository = configuration.getRepositoryByName("r-1");
-        final Project newProject = new Project(repository, "newProject");
+        final Group newProject = new Group(repository, "newProject");
         assertThat(this.lastNodeChange.getType(), is(ItemChangeType.ADDED));
-        assertThat((Project) this.lastNodeChange.getNewItem(), is(newProject));
+        assertThat((Group) this.lastNodeChange.getNewItem(), is(newProject));
         assertThat(this.lastNodeChange.getOldItem(), is(nullValue()));
         this.lastNodeChange = null;
         assertThat(this.lastNodeChange, is(nullValue()));
@@ -151,7 +151,7 @@ public class AbstractNodeTest extends NodeTest {
         repository.removeProject(newProject);
         assertThat(this.lastNodeChange.getType(), is(ItemChangeType.EXCLUDED));
         assertThat(this.lastNodeChange.getNewItem(), is(nullValue()));
-        assertThat((Project) this.lastNodeChange.getOldItem(), is(newProject));
+        assertThat((Group) this.lastNodeChange.getOldItem(), is(newProject));
         assertThat(configuration.getInstanceMetadata().getSharedData()
                 .isDirty(), is(true));
         assertThat(repository.getInstanceMetadata().getSharedData()

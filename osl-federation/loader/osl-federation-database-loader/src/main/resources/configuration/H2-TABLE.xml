@@ -1,0 +1,26 @@
+<script>
+	<scriptType>TABLE</scriptType>
+	<database>H2</database>
+	<preferedType>SQL</preferedType>
+	<contentSelect><![CDATA[
+        select  
+			sql as sql_content
+        from 
+            information_schema.tables 
+        where 
+            table_catalog = '$catalog_name$' and
+            table_schema = '$schema_name$'  and
+            table_name = '$name$'  
+      ]]></contentSelect>
+	<dataSelect><![CDATA[
+        select 
+            table_catalog as catalog_name, 
+            table_schema as schema_name, 
+            table_name as name, 
+            remarks 
+        from 
+            information_schema.tables 
+        where 
+            table_type='TABLE'
+      ]]></dataSelect>
+</script>

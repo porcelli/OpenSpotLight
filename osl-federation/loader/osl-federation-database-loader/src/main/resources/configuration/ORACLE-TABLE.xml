@@ -1,0 +1,38 @@
+<script>
+	<scriptType>TABLE</scriptType>
+	<database>ORACLE</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	create table $name$ (
+		$detail:{$it.column_name$  $it.data_type$ $if(it.is_nullable)$ null $else$ not null $endif$ $if(it.data_default)$ default $it.data_default$ $endif$};separator=", "$
+	)]]></template>
+	<contentSelect><![CDATA[
+	SELECT 
+	    DBMS_METADATA.GET_DDL('TABLE', '$name$','$schema_name$') 
+	FROM 
+	    dual
+    ]]></contentSelect>
+	<dataSelect><![CDATA[
+        select 
+		    owner as schema_name, 
+		    null as catalog_name, 
+		    table_name as name 
+		from 
+		    all_tables
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select 
+		    column_name, 
+		    data_type,  
+		    data_default,
+		    case nullable 
+		        when 'Y' then 'true' 
+		        else 'false' 
+		    end as is_nullable 
+		from 
+		    all_tab_columns
+		where
+		    table_name = '$name$'
+		and owner = '$schema_name$'
+ ]]></templatesSelect>
+</script>

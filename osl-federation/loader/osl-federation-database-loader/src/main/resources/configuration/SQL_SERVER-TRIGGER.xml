@@ -1,0 +1,24 @@
+<script>
+	<scriptType>TRIGGER</scriptType>
+	<database>SQL_SERVER</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+			tbl.table_catalog as catalog_name, 
+			tbl.table_schema as schema_name, 
+			t.name as name
+		from 
+			sys.triggers t, 
+			sysobjects parent,
+			INFORMATION_SCHEMA.tables tbl
+		where t.parent_id = parent.id and tbl.table_name = parent.name
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		SELECT text 
+		FROM sysobjects o , syscomments c 
+		where  
+			o.name = '$name$' 
+			and o.type = 'TR' 
+			and o.id = c.id
+ ]]></contentSelect>
+</script>
