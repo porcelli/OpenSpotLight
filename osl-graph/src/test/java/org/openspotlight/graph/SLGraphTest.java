@@ -57,13 +57,11 @@ import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
 import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 
 import java.io.Serializable;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
