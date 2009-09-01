@@ -1,0 +1,22 @@
+<script>
+	<scriptType>CONSTRAINT</scriptType>
+	<database>SQL_SERVER</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+		    constraint_catalog as catalog_name, 
+		    constraint_schema as schema_name, 
+		    constraint_name as name
+		from 
+		    INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select 
+			CHECK_CLAUSE
+		from 
+			INFORMATION_SCHEMA.CHECK_CONSTRAINTS 
+		where constraint_name='$name$' 
+		  and constraint_schema='$schema_name$'
+		  and constraint_catalog='$catalog_name$'
+ ]]></contentSelect>
+</script>

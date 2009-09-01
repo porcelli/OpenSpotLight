@@ -76,7 +76,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.JavaBundle;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.util.JcrNodeVisitor;

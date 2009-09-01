@@ -1,0 +1,19 @@
+<script>
+	<scriptType>FUNCTION</scriptType>
+	<database>DB2</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+			funcschema as schema_name, 
+			funcname as name, 
+			'' as catalog_name 
+		from syscat.FUNCTIONS
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select body
+		from syscat.FUNCTIONS
+		where
+			funcschema = '$schema_name$' and
+			funcname  = '$name$'
+   	 ]]></contentSelect>
+</script>

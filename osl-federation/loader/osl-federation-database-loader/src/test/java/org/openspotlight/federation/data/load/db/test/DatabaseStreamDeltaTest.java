@@ -54,7 +54,7 @@ import static java.sql.DriverManager.getConnection;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDbConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 import java.sql.Connection;
 import java.util.Set;
@@ -99,9 +99,9 @@ public class DatabaseStreamDeltaTest {
 	@Test
 	public void shouldListenChangesOnStreams() throws Exception {
 
-		final DbBundle bundle = (DbBundle) createDbConfiguration(
+		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Project")
+				"H2 Repository").getProjectByName("h2 Group")
 				.getBundleByName("H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db");
@@ -150,9 +150,9 @@ public class DatabaseStreamDeltaTest {
 
 	@Test
 	public void shouldListenExclusionsOnStreams() throws Exception {
-		final DbBundle bundle = (DbBundle) createDbConfiguration(
+		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Project")
+				"H2 Repository").getProjectByName("h2 Group")
 				.getBundleByName("H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db");
@@ -194,9 +194,9 @@ public class DatabaseStreamDeltaTest {
 
 	@Test
 	public void shouldListenInclusionsOnStreams() throws Exception {
-		final DbBundle bundle = (DbBundle) createDbConfiguration(
+		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Project")
+				"H2 Repository").getProjectByName("h2 Group")
 				.getBundleByName("H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");

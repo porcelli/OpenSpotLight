@@ -1,0 +1,28 @@
+<script>
+	<scriptType>FUNCTION</scriptType>
+	<database>ORACLE</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[$detail:{$it.text$
+}$]]></template>
+	<templatesSelect><![CDATA[
+         select text
+        from 
+            all_source
+        where
+            type='FUNCTION' and
+            owner = '$schema_name$' and 
+            name = '$name$' 
+        order by 
+            line
+    ]]></templatesSelect>
+	<dataSelect><![CDATA[
+         select distinct
+            null as catalog_name, 
+            owner as schema_name, 
+            name as name
+        from 
+            all_source
+        where
+            type='FUNCTION'
+      ]]></dataSelect>
+</script>

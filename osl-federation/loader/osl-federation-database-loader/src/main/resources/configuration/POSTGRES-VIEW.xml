@@ -1,0 +1,22 @@
+<script>
+	<scriptType>VIEW</scriptType>
+	<database>POSTGRES</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+         select 
+            null as catalog_name, 
+            schemaname as schema_name, 
+            viewname as name
+         from 
+            pg_views
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+ 		select 
+            definition
+        from 
+            pg_views
+        where
+            schemaname = '$schema_name$' and 
+            viewname = '$name$'
+         ]]></contentSelect>
+</script>

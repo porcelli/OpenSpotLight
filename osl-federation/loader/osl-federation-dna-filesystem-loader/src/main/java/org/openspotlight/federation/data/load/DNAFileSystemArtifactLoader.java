@@ -49,29 +49,10 @@
 
 package org.openspotlight.federation.data.load;
 
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.federation.data.util.JcrNodeVisitor.withVisitor;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
 import org.jboss.dna.connector.filesystem.FileSystemSource;
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.jcr.JcrEngine;
-import org.jboss.dna.jcr.SecurityContextCredentials;
-import org.openspotlight.common.exception.ConfigurationException;
+import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System
@@ -80,265 +61,27 @@ import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DNAFileSystemArtifactLoader extends AbstractArtifactLoader {
-    
-    /**
-     * JCR visitor to fill all valid artifact names
-     * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * 
-     */
-    protected static final class FillNamesVisitor implements NodeVisitor {
-        final Set<String> names;
-        
-        /**
-         * Constructor to initialize final fields
-         * 
-         * @param names
-         */
-        FillNamesVisitor(final Set<String> names) {
-            this.names = names;
-        }
-        
-        /**
-         * 
-         * {@inheritDoc}
-         */
-        public void visiting(final Node n) throws RepositoryException {
-            String path = n.getPath();
-            if (path.startsWith("/")) { //$NON-NLS-1$
-                path = path.substring(1);
-            }
-            if (!path.equals("")) { //$NON-NLS-1$
-                this.names.add(path);
-            }
-        }
-        
-    }
-    
-    /**
-     * This {@link GlobalDnaResourceContext} will store all JCR data needed
-     * during the processing, and after the processing it will shutdown all
-     * necessary resources.
-     * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * 
-     *         FIXME starts only one configuration to improve performance
-     * 
-     */
-    protected static final class GlobalDnaResourceContext extends
-            DefaultGlobalExecutionContext {
-    	
-    	
-        private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
-        private static final String repositoryName = "repository"; //$NON-NLS-1$
-        
-        private final Map<String, Session> mappingSessions = new ConcurrentHashMap<String, Session>();
-        
-        private final Map<String, JcrEngine> mappingEngines = new ConcurrentHashMap<String, JcrEngine>();
-        
+public class DNAFileSystemArtifactLoader extends DnaArtifactLoader {
 
-        /**
-         * 
-         * {@inheritDoc}
-         */
-        public Set<String> getAllArtifactNames(final Bundle bundle,
-                final ArtifactMapping mapping)
-                throws ConfigurationException {
-            
-            final Set<String> names = new HashSet<String>();
-            try {
-                
-                final Session session = getSessionForMapping(mapping.getRelative());
-                session.getRootNode().accept(
-                        withVisitor(new FillNamesVisitor(names)));
-                return names;
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
-        
-        
-        /**
-         * Creates a new {@link Session jcr session}. The client class is
-         * responsible to close this session when it finish its work.
-         * 
-         * @param name
-         * @return a new and fresh {@link Session}
-         * @throws Exception
-         */
-        public Session createSessionForMapping(final String name)
-                throws Exception {
-            final JcrEngine engine = this.mappingEngines.get(name);
-            final Session session = engine.getRepository(repositoryName).login(
-                    new SecurityContextCredentials(
-                            DefaultSecurityContext.READ_ONLY));
-            return session;
-        }
-        
-        /**
-         * 
-         * @param name
-         * @return the jcr session
-         * @throws Exception
-         */
-        public Session getSessionForMapping(final String name) throws Exception {
-            Session session = this.mappingSessions.get(name);
-            if (session == null) {
-                final JcrEngine engine = this.mappingEngines.get(name);
-                session = engine.getRepository(repositoryName).login(
-                        new SecurityContextCredentials(
-                                DefaultSecurityContext.READ_ONLY));
-                this.mappingSessions.put(name, session);
-            }
-            return session;
-        }
-        
-        /**
-         * 
-         * {@inheritDoc}
-         */
-        @Override
-		public void globalExecutionAboutToStart(final Bundle bundle) {
-            final String initialLookup = bundle.getInitialLookup();
-            final String[] relativePaths = bundle.getArtifactMappingNames()
-                    .toArray(new String[0]);
-            try {
-                this.setup(initialLookup, relativePaths);
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
-        
-        /**
-         * 
-         * {@inheritDoc}
-         */
-        @Override
-		public void globalExecutionFinished(final Bundle bundle) {
-            this.shutdown();
-        }
-        
-        /**
-         * Setups all necessary resources.
-         * 
-         * @param rootPath
-         * @param relativePaths
-         * @throws Exception
-         */
-        private void setup(final String rootPath, final String... relativePaths)
-                throws Exception {
-            
-            for (final String relative : relativePaths) {
-                
-                final JcrConfiguration configuration = new JcrConfiguration();
-                configuration.repositorySource(repositorySource).usingClass(
-                        FileSystemSource.class).setProperty(
-                        "workspaceRootPath", rootPath).setProperty( //$NON-NLS-1$ 
-                        "creatingWorkspacesAllowed", true).setProperty( //$NON-NLS-1$
-                        "defaultWorkspaceName", relative); //$NON-NLS-1$
-                
-                configuration.repository(repositoryName).setSource(
-                        repositorySource);
-                configuration.save();
-                final JcrEngine engine = configuration.build();
-                engine.start();
-                this.mappingEngines.put(relative, engine);
-                
-            }
-        }
-        
-        /**
-         * Finalizes all necessary resources
-         */
-        public void shutdown() {
-            for (final Map.Entry<String, JcrEngine> entry : this.mappingEngines
-                    .entrySet()) {
-                entry.getValue().shutdown();
-            }
-            for (final Map.Entry<String, Session> entry : this.mappingSessions
-                    .entrySet()) {
-                entry.getValue().logout();
-            }
-        }
-    }
-    
-    protected static final class SingleThreadDnaResourceContext extends
-            DefaultThreadExecutionContext {
-        
-        private Session session;
-        
-        public Session getSession() {
-            return this.session;
-        }
-        
-        /**
-         * 
-         * {@inheritDoc}
-         */
-        public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
-                final ArtifactMapping mapping, final String artifactName,
-                final GlobalExecutionContext globalContext) throws Exception {
-            try {
-                final Node node = getSession().getRootNode().getNode(artifactName);
-                
-                final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
-                final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
-                final InputStream is = value.getStream();
-                
-                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                int available;
-                while ((available = is.read()) != -1) {
-                    baos.write(available);
-                }
-                return baos.toByteArray();
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
-        
-        @Override
-		public void threadExecutionAboutToStart(final Bundle bundle,
-                final ArtifactMapping mapping,
-                final GlobalExecutionContext globalContext) {
-            final GlobalDnaResourceContext context = (GlobalDnaResourceContext) globalContext;
-            
-            try {
-                this.session = context.getSessionForMapping(mapping
-                        .getRelative());
-            } catch (final Exception e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
-            
-        }
-        
-        @Override
-		public void threadExecutionFinished(final Bundle bundle,
-                final ArtifactMapping mapping,
-                final GlobalExecutionContext globalContext) {
-            this.session.logout();
-        }
-        
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    protected GlobalDnaResourceContext createGlobalExecutionContext() {
-        return new GlobalDnaResourceContext();
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    @Override
-    protected ThreadExecutionContext createThreadExecutionContext() {
-        return new SingleThreadDnaResourceContext();
-    }
-    
-    
-    
+	protected static final class DnaFileExecutionContext extends
+			GlobalDnaResourceContext {
+
+		@Override
+		protected void configureWithBundle(
+				RepositorySourceDefinition<?> sourceDefinition, Bundle bundle,
+				ArtifactMapping relative) {
+			sourceDefinition
+					.usingClass(FileSystemSource.class)
+					.setProperty("workspaceRootPath", bundle.getInitialLookup()).setProperty( //$NON-NLS-1$ 
+							"creatingWorkspacesAllowed", true).setProperty( //$NON-NLS-1$
+							"defaultWorkspaceName", relative.getRelative()); //$NON-NLS-1$			
+		}
+
+	}
+
+	@Override
+	protected GlobalExecutionContext createGlobalExecutionContext() {
+		return new DnaFileExecutionContext();
+	}
+
 }

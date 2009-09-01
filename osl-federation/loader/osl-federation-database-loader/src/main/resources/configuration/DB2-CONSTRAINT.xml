@@ -1,0 +1,26 @@
+<script>
+	<scriptType>CONSTRAINT</scriptType>
+	<database>DB2</database>
+	<preferedType>TEMPLATE</preferedType>
+	<dataSelect><![CDATA[
+		select 
+			constname as name, 
+			tabschema as schema_name, 
+			'' as catalog_name 
+		from 
+			syscat.CHECKS
+      ]]></dataSelect>
+    <template><![CDATA[
+	create constraint $name$ on $detail.tabname$ check $detail.text$
+	]]></template>
+	<templatesSelect><![CDATA[
+		select 
+			text , 
+			tabname
+		from 
+			syscat.checks 
+		where
+			constname ='$name$' 
+		and tabschema='$schema_name$'
+   	 ]]></templatesSelect>
+</script>

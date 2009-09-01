@@ -75,15 +75,7 @@
 		<module>osl-graph</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
-		<module>osl-federation/osl-federation-core</module>
-		<module>osl-federation/osl-federation-configuration-example</module>
-		<module>osl-federation/manager/osl-federation-xml-manager</module>
-		<module>osl-federation/manager/osl-federation-jcr-manager</module>
-		<module>osl-federation/loader/osl-federation-database-loader</module>
-		<module>osl-federation/loader/osl-federation-dna-core-loader</module>
-		<module>osl-federation/loader/osl-federation-dna-filesystem-loader</module>
-		<module>osl-federation/loader/osl-federation-filesystem-loader</module>
-		<module>osl-federation/osl-federation-stress-test</module>
+		<module>osl-federation</module>
 	</modules>
 	<build>
 		<plugins>
@@ -147,6 +139,12 @@
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-connector-filesystem</artifactId>
+				<version>0.6-SNAPSHOT</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.dna</groupId>
+				<artifactId>dna-connector-svn</artifactId>
 				<version>0.6-SNAPSHOT</version>
 				<scope>compile</scope>
 			</dependency>
@@ -410,11 +408,60 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>antlr</groupId>
+				<artifactId>stringtemplate</artifactId>
+				<version>2.3b6</version>
+			</dependency>
 			<!-- Databases and JDBC Drivers -->
+			<dependency>
+				<groupId>net.sourceforge.jtds</groupId>
+				<artifactId>jtds</artifactId>
+				<version>1.2.2</version>
+			</dependency>
+			<!-- Maven command to install artifact: -->
+			<!--
+				mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc5
+				-Dversion=11.1.0 -Dpackaging=jar -Dfile=ojdbc5.jar
+			-->
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>ojdbc5</artifactId>
+				<version>11.1.0</version>
+			</dependency>
+			<!--
+				mvn install:install-file -DgroupId=com.ibm -DartifactId=db2jcc
+				-Dversion=9.7 -Dpackaging=jar -Dfile=db2jcc.jar
+			-->
+			<dependency>
+				<groupId>com.ibm</groupId>
+				<artifactId>db2jcc</artifactId>
+				<version>9.7</version>
+			</dependency>
+			<!--
+				mvn install:install-file -DgroupId=com.ibm
+				-DartifactId=db2jcc_license_cu -Dversion=9.7 -Dpackaging=jar
+				-Dfile=db2jcc_license_cu.jar
+			-->
+			<dependency>
+				<groupId>com.ibm</groupId>
+				<artifactId>db2jcc_license_cu</artifactId>
+				<version>9.7</version>
+			</dependency>
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.6</version>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.derby</groupId>
 				<artifactId>derby</artifactId>
 				<version>10.2.1.6</version>
+			</dependency>
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>8.3-603.jdbc3</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

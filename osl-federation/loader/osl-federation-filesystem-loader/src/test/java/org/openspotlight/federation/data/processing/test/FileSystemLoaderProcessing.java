@@ -113,7 +113,7 @@ public class FileSystemLoaderProcessing {
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
                 StreamArtifact.class);
         final Repository repository = configuration
-                .getRepositoryByName("OSL Project");
+                .getRepositoryByName("OSL Group");
         manager.processRepository(repository);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }

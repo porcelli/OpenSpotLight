@@ -60,11 +60,18 @@ import org.openspotlight.federation.data.impl.DatabaseType;
  */
 public final class DatabaseMetadataScript {
 
+	public static enum PreferedType {
+		TEMPLATE, SQL
+	}
+
+	private PreferedType preferedType;
 	private boolean immutable = false;
 	private ScriptType scriptType;
 	private DatabaseType database;
 	private String contentSelect;
 	private String dataSelect;
+	private String template;
+	private String templatesSelect;
 
 	public ScriptType getScriptType() {
 		return this.scriptType;
@@ -114,6 +121,30 @@ public final class DatabaseMetadataScript {
 		if (!this.immutable) {
 			this.immutable = true;
 		}
+	}
+
+	public PreferedType getPreferedType() {
+		return this.preferedType;
+	}
+
+	public void setPreferedType(PreferedType preferedType) {
+		this.preferedType = preferedType;
+	}
+
+	public String getTemplate() {
+		return this.template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
+	public String getTemplatesSelect() {
+		return this.templatesSelect;
+	}
+
+	public void setTemplatesSelect(String templatesSelect) {
+		this.templatesSelect = templatesSelect;
 	}
 
 }

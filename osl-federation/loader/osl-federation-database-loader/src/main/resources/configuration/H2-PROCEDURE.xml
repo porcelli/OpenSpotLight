@@ -1,0 +1,27 @@
+<script>
+	<scriptType>PROCEDURE</scriptType>
+	<database>H2</database>
+	<preferedType>SQL</preferedType>
+	<contentSelect><![CDATA[
+        select  
+            java_class || '.' || java_method as sql_content
+        from 
+            information_schema.function_aliases 
+        where 
+            returns_result=1 and 
+            alias_catalog = '$catalog_name$' and
+            alias_schema = '$schema_name$'  and
+            alias_name = '$name$'  
+      ]]></contentSelect>
+	<dataSelect><![CDATA[
+        select 
+            alias_catalog as catalog_name, 
+            alias_schema as schema_name, 
+            alias_name as name, 
+            remarks
+        from 
+            information_schema.function_aliases 
+        where 
+            returns_result=1
+      ]]></dataSelect>
+</script>

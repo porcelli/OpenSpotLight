@@ -1,76 +1,4 @@
-<scripts>
-		
-		<viewCreationScript><![CDATA[
-        SELECT 
-            TABLE_CATALOG AS CATALOG_NAME, 
-            TABLE_SCHEMA AS SCHEMA_NAME, 
-            TABLE_NAME AS NAME, 
-            VIEW_DEFINITION AS SQL_CONTENT, 
-            REMARKS 
-        FROM
-            INFORMATION_SCHEMA.VIEWS
-      ]]></viewCreationScript>
-	</script>
-	<script>
-		<name>MYSQL</name>
-		<!-- tableCreationScript></tableCreationScript -->
-		<!-- indexCreationScript></indexCreationScript -->
-		<!-- sequenceCreationScript>create table</sequenceCreationScript -->
-		<triggerCreationScript><![CDATA[
-        SELECT 
-            TRIGGER_CATALOG AS CATALOG_NAME, 
-            TRIGGER_SCHEMA AS SCHEMA_NAME, 
-            TRIGGER_NAME AS NAME, 
-            CONCAT(ACTION_STATEMENT, '/* ', ACTION_TIMING, ' ', EVENT_MANIPULATION, ' */') AS SQL_CONTENT, 
-            NULL AS REMARKS 
-        FROM 
-            INFORMATION_SCHEMA.TRIGGERS
-      ]]></triggerCreationScript>
-		<procedureCreationScript><![CDATA[
-       SELECT 
-            ROUTINE_CATALOG AS CATALOG_NAME, 
-            ROUTINE_SCHEMA AS SCHEMA_NAME, 
-            ROUTINE_NAME AS NAME, 
-            ROUTINE_DEFINITION AS SQL_CONTENT, 
-            null AS REMARKS
-        FROM 
-            INFORMATION_SCHEMA.ROUTINES
-        WHERE ROUTINE_TYPE='PROCEDURE'
-      ]]></procedureCreationScript>
-		<functionCreationScript><![CDATA[
-       SELECT 
-            ROUTINE_CATALOG AS CATALOG_NAME, 
-            ROUTINE_SCHEMA AS SCHEMA_NAME, 
-            ROUTINE_NAME AS NAME, 
-            ROUTINE_DEFINITION AS SQL_CONTENT, 
-            null AS REMARKS 
-        FROM 
-            INFORMATION_SCHEMA.ROUTINES
-        WHERE ROUTINE_TYPE='FUNCTION'
-      ]]></functionCreationScript>
-		<viewCreationScript><![CDATA[
-        SELECT 
-            TABLE_CATALOG AS CATALOG_NAME, 
-            TABLE_SCHEMA AS SCHEMA_NAME, 
-            TABLE_NAME AS NAME, 
-            VIEW_DEFINITION AS SQL_CONTENT, 
-            null AS REMARKS 
-        FROM 
-            INFORMATION_SCHEMA.VIEWS
-      ]]></viewCreationScript>
-		<tableCreationScript><![CDATA[
-      SELECT 
-TABLE_CATALOG AS CATALOG_NAME, 
-            TABLE_SCHEMA AS SCHEMA_NAME, 
-            TABLE_NAME AS NAME, 
-            NULL AS REMARKS 
-FROM INFORMATION_SCHEMA.TABLES
 
-SHOW CREATE TABLE TEST1 ;
-      ]]></tableCreationScript>
-      
-      
-	</script>
 	<script>
 		<name>POSTGRES</name>
 		<!-- tableCreationScript></tableCreationScript -->
@@ -80,28 +8,27 @@ SHOW CREATE TABLE TEST1 ;
             NULL AS CATALOG_NAME, 
             SCHEMANAME AS SCHEMA_NAME, 
             INDEXNAME AS NAME, 
-            INDEXDEF AS SQL_CONTENT, 
-            NULL AS REMARKS 
+            INDEXDEF AS SQL_CONTENT
         FROM 
             PG_INDEXES
       ]]></indexCreationScript>
-		<triggerCreationScript><![CDATA[
-        SELECT 
-            TRIGGER_CATALOG AS CATALOG_NAME, 
-            TRIGGER_SCHEMA AS SCHEMA_NAME, 
-            TRIGGER_NAME AS NAME, 
-            ACTION_STATEMENT || '/* ' || CONDITION_TIMING || ' ' || EVENT_MANIPULATION || '*/' AS SQL_CONTENT, 
-            NULL AS REMARKS 
+      	<viewCreationScript><![CDATA[
+         SELECT 
+            NULL AS CATALOG_NAME, 
+            SCHEMANAME AS SCHEMA_NAME, 
+            VIEWNAME AS NAME, 
+            DEFINITION AS SQL_CONTENT
         FROM 
-            INFORMATION_SCHEMA.TRIGGERS
-      ]]></triggerCreationScript>
+            PG_VIEWS
+
+      ]]></viewCreationScript>
+      
 		<procedureCreationScript><![CDATA[
         SELECT 
             NULL AS CATALOG_NAME, 
             NULL AS SCHEMA_NAME, 
             PRONAME AS NAME, 
-            PROSRC AS SQL_CONTENT, 
-            NULL AS REMARKS 
+            PROSRC AS SQL_CONTENT
         FROM 
             PG_PROC
       ]]></procedureCreationScript>
@@ -110,138 +37,8 @@ SHOW CREATE TABLE TEST1 ;
             NULL AS CATALOG_NAME, 
             NULL AS SCHEMA_NAME, 
             PRONAME AS NAME, 
-            PROSRC AS SQL_CONTENT, 
-            NULL AS REMARKS 
+            PROSRC AS SQL_CONTENT
         FROM 
             PG_PROC
       ]]></functionCreationScript>
-		<viewCreationScript><![CDATA[
-         SELECT 
-            NULL AS CATALOG_NAME, 
-            SCHEMANAME AS SCHEMA_NAME, 
-            VIEWNAME AS NAME, 
-            DEFINITION AS SQL_CONTENT, 
-            NULL AS REMARKS 
-        FROM 
-            PG_VIEWS
-
-      ]]></viewCreationScript>
-	</script>
-	<script>
-		<name>ORACLE</name>
-		<triggerCreationScript><![CDATA[
-         SELECT 
-            NULL AS CATALOG_NAME, 
-            TABLE_OWNER AS SCHEMA_NAME, 
-            TRIGGER_NAME AS NAME, 
-            TRIGGER_BODY AS SQL_CONTENT, 
-            DESCRIPTION AS REMARKS 
-        FROM 
-            ALL_TRIGGERS
-      ]]></triggerCreationScript>
-		<procedureCreationScript><![CDATA[
-         SELECT 
-            NULL AS CATALOG_NAME, 
-            OWNER AS SCHEMA_NAME, 
-            NAME AS NAME, 
-            TEXT AS SQL_CONTENT, 
-            NULL AS REMARKS 
-        FROM 
-            ALL_SOURCE
-        WHERE
-            TYPE='PROCEDURE'
-      ]]></procedureCreationScript>
-      <functionCreationScript><![CDATA[
-         SELECT 
-            NULL AS CATALOG_NAME, 
-            OWNER AS SCHEMA_NAME, 
-            NAME AS NAME, 
-            TEXT AS SQL_CONTENT, 
-            NULL AS REMARKS 
-        FROM 
-            ALL_SOURCE
-        WHERE
-            TYPE='FUNCTION'
-      ]]></functionCreationScript>
-      <packageCreationScript><![CDATA[
-         SELECT 
-            NULL AS CATALOG_NAME, 
-            OWNER AS SCHEMA_NAME, 
-            NAME AS NAME, 
-            TEXT AS SQL_CONTENT, 
-            NULL AS REMARKS 
-        FROM 
-            ALL_SOURCE
-        WHERE
-            TYPE='PACKAGE BODY'
-      ]]></packageCreationScript>
-      <viewCreationScript><![CDATA[
-         SELECT 
-            NULL AS CATALOG_NAME, 
-            OWNER AS SCHEMA_NAME, 
-            VIEW_NAME AS NAME, 
-            TEXT AS SQL_CONTENT, 
-            NULL AS REMARKS 
-        FROM 
-            ALL_VIEWS
-      ]]></viewCreationScript>
-      <tableCreationScript><![CDATA[
-      SELECT 
-        NULL AS CATALOG_NAME, 
-        A.OWNER AS SCHEMA_NAME, 
-        U.TABLE_NAME AS NAME, 
-      	DBMS_METADATA.GET_DDL('TABLE',U.TABLE_NAME) AS SQL_CONTENT,
-        NULL AS REMARKS
-      FROM USER_TABLES U,
-           ALL_TABLES A 
-      WHERE 
-           U.TABLE_NAME = A.TABLE_NAME
-   	  ]]></tableCreationScript>
-   	  <indexCreationScript><![CDATA[
-      SELECT 
-        NULL AS CATALOG_NAME, 
-        A.OWNER AS SCHEMA_NAME, 
-        U.INDEX_NAME AS NAME, 
-      	DBMS_METADATA.GET_DDL('INDEX',U.INDEX_NAME) AS SQL_CONTENT,
-        NULL AS REMARKS
-      FROM USER_INDEXES U,
-           ALL_INDEXES A 
-      WHERE 
-           U.INDEX_NAME = A.INDEX_NAME
-   	  ]]></indexCreationScript>
-   	  <sequenceCreationScript><![CDATA[
-      SELECT 
-        NULL AS CATALOG_NAME, 
-        A.SEQUENCE_OWNER AS SCHEMA_NAME, 
-        U.SEQUENCE_NAME AS NAME, 
-      	DBMS_METADATA.GET_DDL('SEQUENCE',U.SEQUENCE_NAME) AS SQL_CONTENT,
-        NULL AS REMARKS
-      FROM USER_SEQUENCES U,
-           ALL_SEQUENCES A 
-      WHERE 
-           U.SEQUENCE_NAME = A.SEQUENCE_NAME
-   	  ]]></sequenceCreationScript>
-   	  <tablespaceCreationScript><![CDATA[
-      SELECT 
-        NULL AS CATALOG_NAME, 
-        NULL AS SCHEMA_NAME, 
-        U.TABLESPACE_NAME AS NAME, 
-      	DBMS_METADATA.GET_DDL('TABLESPACE',U.TABLESPACE_NAME) AS SQL_CONTENT,
-        NULL AS REMARKS
-      FROM USER_TABLESPACES U
-       ]]></tablespaceCreationScript>
-   	  <constraintCreationScript><![CDATA[
-      SELECT 
-        NULL AS CATALOG_NAME, 
-        A.OWNER AS SCHEMA_NAME, 
-        U.CONSTRAINT_NAME AS NAME, 
-      	DBMS_METADATA.GET_DDL('CONSTRAINT',U.CONSTRAINT_NAME) AS SQL_CONTENT,
-        NULL AS REMARKS
-      FROM USER_CONSTRAINTS U,
-           ALL_CONSTRAINTS A 
-      WHERE 
-           U.CONSTRAINT_NAME = A.CONSTRAINT_NAME
-       ]]></constraintCreationScript>
-   	  
-   	  </script>
-</scripts>
+	

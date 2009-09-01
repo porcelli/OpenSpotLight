@@ -60,8 +60,8 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @StaticMetadata(propertyNames = { "active", "initialLookup",
         "virtualMachineVersion" }, propertyTypes = { Boolean.class,
-        String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
-        Project.class, BundleProcessorType.class, StreamArtifact.class,
+        String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
+        Group.class, BundleProcessorType.class, StreamArtifact.class,
         CustomArtifact.class, ArtifactMapping.class })
 public class JavaBundle extends Bundle {
     
@@ -80,7 +80,7 @@ public class JavaBundle extends Bundle {
      * @param project
      * @param name
      */
-    public JavaBundle(final Project project, final String name) {
+    public JavaBundle(final Group project, final String name) {
         super(project, name);
         this.instanceMetadata = super.getInstanceMetadata();
     }

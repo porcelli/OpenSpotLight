@@ -1,6 +1,7 @@
 package org.openspotlight.federation.data.load.db.test;
 
 import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Files.delete;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -8,9 +9,16 @@ import static org.junit.Assert.fail;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.DatabaseType;
@@ -18,6 +26,8 @@ import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This test is intended to be used to test scripts to retrieve stream artifacts
@@ -30,6 +40,13 @@ import org.openspotlight.federation.data.load.db.ScriptType;
  * 
  */
 public abstract class DatabaseStreamTest {
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Before
+	public void cleanFiles() throws Exception {
+		delete("./target/test-data/" + getClass().getSimpleName() + "/");
+	}
 
 	/**
 	 * Here a valid configuration to connect on the target database should be
@@ -48,7 +65,9 @@ public abstract class DatabaseStreamTest {
 	 * @param conn
 	 * @throws Exception
 	 */
-	protected abstract void fillDatabase(Connection conn) throws Exception;
+	protected void fillDatabase(Connection conn) throws Exception {
+		//
+	}
 
 	/**
 	 * Here's an option to reset all filled data on the database.
@@ -75,6 +94,23 @@ public abstract class DatabaseStreamTest {
 	@SuppressWarnings("boxing")
 	@Test
 	public void shouldLoadAllValidTypes() throws Exception {
+		if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
+			if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
+				validateAllTypes();
+			} else {
+				logger
+						.warn(format(
+								"Ignoring test {0} because system property {1} isn't set to true.",
+								getClass().getSimpleName(),
+								"runDatabaseVendorTests"));
+			}
+		} else {
+			validateAllTypes();
+		}
+
+	}
+
+	private void validateAllTypes() throws Exception {
 		DbBundle bundle = createValidConfigurationWithMappings();
 		Connection conn = createConnection(bundle);
 		fillDatabase(conn);
@@ -82,8 +118,14 @@ public abstract class DatabaseStreamTest {
 			conn.close();
 		DatabaseStreamLoader loader = new DatabaseStreamLoader();
 		loader.loadArtifactsFromMappings(bundle);
+		conn = createConnection(bundle);
+		resetDatabase(conn);
+		if (!conn.isClosed())
+			conn.close();
+
 		Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(bundle,
 				StreamArtifact.class);
+		Set<String> failMessages = new HashSet<String>();
 		lookingTypes: for (ScriptType typeToAssert : typesToAssert()) {
 			for (StreamArtifact streamArtifact : loadedArtifacts) {
 				String relativeName = streamArtifact.getRelativeName();
@@ -95,14 +137,31 @@ public abstract class DatabaseStreamTest {
 					continue lookingTypes;
 				}
 			}
-			fail(format("Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
+			failMessages.add(format(
+					"Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
 					typeToAssert, loadedArtifacts));
-
 		}
-		conn = createConnection(bundle);
-		resetDatabase(conn);
-		if (!conn.isClosed())
-			conn.close();
+		if (!failMessages.isEmpty()) {
+			fail(failMessages.toString());
+		}
+		for (StreamArtifact loaded : loadedArtifacts) {
+			String name = "./target/test-data/" + getClass().getSimpleName()
+					+ "/" + loaded.getRelativeName();
+			String dirName = name.substring(0, name.lastIndexOf('/'));
+			new File(dirName).mkdirs();
+			OutputStream fos = new BufferedOutputStream(new FileOutputStream(
+					name + ".sql"));
+			InputStream is = loaded.getData();
+			while (true) {
+				int data = is.read();
+				if (data == -1) {
+					break;
+				}
+				fos.write(data);
+			}
+			fos.flush();
+			fos.close();
+		}
 
 	}
 

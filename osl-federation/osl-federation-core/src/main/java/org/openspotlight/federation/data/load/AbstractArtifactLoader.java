@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de GovernanÔøΩa de TI de CÔøΩdigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribuiÔøΩÔøΩo de direito autoral declarada e atribuÔøΩda pelo autor.
+ * Todas as contribuiÔøΩÔøΩes de terceiros estÔøΩo distribuÔøΩdas sob licenÔøΩa da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa ÔøΩ software livre; vocÔøΩ pode redistribuÔøΩ-lo e/ou modificÔøΩ-lo sob os 
+ * termos da LicenÔøΩa PÔøΩblica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa ÔøΩ distribuÔøΩdo na expectativa de que seja ÔøΩtil, porÔøΩm, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implÔøΩcita de COMERCIABILIDADE OU ADEQUAÔøΩÔøΩO A UMA
+ * FINALIDADE ESPECÔøΩFICA. Consulte a LicenÔøΩa PÔøΩblica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * VocÔøΩ deve ter recebido uma cÔøΩpia da LicenÔøΩa PÔøΩblica Geral Menor do GNU junto com este
+ * programa; se nÔøΩo, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
@@ -51,6 +51,7 @@ package org.openspotlight.federation.data.load;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
@@ -326,9 +327,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 		 * @return the bytes from a given artifact name
 		 * @throws Exception
 		 */
-		public byte[] loadArtifactOrReturnNullToIgnore(Bundle bundle, ArtifactMapping mapping,
-				String artifactName, GlobalExecutionContext globalContext)
-				throws Exception;
+		public byte[] loadArtifactOrReturnNullToIgnore(Bundle bundle,
+				ArtifactMapping mapping, String artifactName,
+				GlobalExecutionContext globalContext) throws Exception;
 
 		/**
 		 * This thread just ended its execution.
@@ -463,9 +464,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 		try {
 			globalContext.globalExecutionAboutToStart(bundle);
 			final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
-			final Set<String> includedPatterns = new HashSet<String>();
-			final Set<String> excludedPatterns = new HashSet<String>();
 			for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
+				final Set<String> includedPatterns = new HashSet<String>();
+				final Set<String> excludedPatterns = new HashSet<String>();
 				for (final Included included : mapping.getIncludeds()) {
 					includedPatterns.add(included.getName());
 				}
@@ -482,7 +483,10 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 				final Set<String> names = new HashSet<String>(bundle
 						.getStreamArtifactNames());
 				for (final String name : names) {
-					if (!namesToProcess.contains(name)) {
+					String newName = name.startsWith(mapping.getRelative()) ? removeBegginingFrom(
+							mapping.getRelative(), name)
+							: name;
+					if (!namesToProcess.contains(newName)) {
 						final StreamArtifact artifactToDelete = bundle
 								.getStreamArtifactByName(name);
 						bundle.removeStreamArtifact(artifactToDelete);
@@ -558,14 +562,16 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 			for (final String artifactName : namesToProcess) {
 				try {
 
-					final byte[] content = localContext.loadArtifactOrReturnNullToIgnore(bundle,
-							mapping, artifactName, globalContext);
+					final byte[] content = localContext
+							.loadArtifactOrReturnNullToIgnore(bundle, mapping,
+									artifactName, globalContext);
 					if (content == null)
 						continue;
 					final String sha1 = getSha1SignatureEncodedAsBase64(content);
 					final InputStream is = new ByteArrayInputStream(content);
 					final StreamArtifact artifact = bundle
-							.addStreamArtifact(artifactName);
+							.addStreamArtifact(mapping.getRelative()
+									+ artifactName);
 					artifact.setData(is);
 					artifact.setDataSha1(sha1);
 					loadCounter.incrementAndGet();

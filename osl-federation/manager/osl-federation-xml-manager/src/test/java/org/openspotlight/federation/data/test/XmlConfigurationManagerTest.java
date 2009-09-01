@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.test;
 
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDbConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidDnaFileConnectorConfiguration;
 
@@ -95,7 +95,7 @@ public class XmlConfigurationManagerTest extends
 
 	@Test
 	public void shouldCreateDbConfiguration() throws Exception {
-		Configuration configuration = createDbConfiguration("XmlConfigurationManagerTest");
+		Configuration configuration = createH2DbConfiguration("XmlConfigurationManagerTest");
 		new XmlConfigurationManager(
 				"./target/test-data/XmlConfigurationManagerTest/validDbConfiguration.xml")
 				.save(configuration);

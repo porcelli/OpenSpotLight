@@ -1,0 +1,21 @@
+<script>
+	<scriptType>VIEW</scriptType>
+	<database>ORACLE</database>
+	<preferedType>SQL</preferedType>
+	<contentSelect><![CDATA[
+         select text
+        from 
+            all_views
+        where
+            owner = '$schema_name$' and 
+            view_name = '$name$' 
+    ]]></contentSelect>
+	<dataSelect><![CDATA[
+         select distinct
+            null as catalog_name, 
+            owner as schema_name, 
+            view_name as name
+        from 
+            all_views
+      ]]></dataSelect>
+</script>

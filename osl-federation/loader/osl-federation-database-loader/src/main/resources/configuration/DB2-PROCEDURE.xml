@@ -1,0 +1,19 @@
+<script>
+	<scriptType>PROCEDURE</scriptType>
+	<database>DB2</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+			procschema as schema_name, 
+			procname as name, 
+			'' as catalog_name 
+		from syscat.PROCEDURES
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select text
+		from syscat.PROCEDURES
+		where
+			procschema = '$schema_name$' and
+			procname  = '$name$'
+   	 ]]></contentSelect>
+</script>

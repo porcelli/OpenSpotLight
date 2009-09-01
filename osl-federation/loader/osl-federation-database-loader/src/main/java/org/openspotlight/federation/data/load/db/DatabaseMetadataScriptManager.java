@@ -49,15 +49,24 @@
 
 package org.openspotlight.federation.data.load.db;
 
+import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
+import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.DatabaseType;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -84,12 +93,36 @@ public enum DatabaseMetadataScriptManager {
 	 */
 	INSTANCE;
 
-	/**
-	 * {@link DatabaseMetadataScript} cache.
-	 */
-	private DatabaseMetadataScripts scripts = null;
+	private Map<MapKey, DatabaseMetadataScript> scriptMap = new HashMap<MapKey, DatabaseMetadataScript>();
 
-	private static final String DATABASE_METADATA_SCRIPT_LOCATION = "/configuration/databaseMetadataScripts.xml"; //$NON-NLS-1$
+	private static class MapKey {
+		private final DatabaseType databaseType;
+		private final ScriptType scriptType;
+		private final int hashCode;
+
+		public MapKey(DatabaseType databaseType, ScriptType scriptType) {
+			this.databaseType = databaseType;
+			this.scriptType = scriptType;
+			this.hashCode = hashOf(databaseType, scriptType);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.hashCode;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof MapKey))
+				return false;
+			MapKey that = (MapKey) o;
+			return eachEquality(of(this.databaseType, this.scriptType), andOf(
+					that.databaseType, that.scriptType));
+		}
+
+	}
 
 	/**
 	 * Load the {@link DatabaseMetadataScripts} if needed and return the loaded
@@ -101,11 +134,19 @@ public enum DatabaseMetadataScriptManager {
 	 *         that db and type
 	 */
 	public DatabaseMetadataScript getScript(DatabaseType databaseType,
-			ScriptType scriptType) throws ConfigurationException {
-		if (this.scripts == null) {
-			this.reloadScripts();
+			ScriptType scriptType) {
+		if (this.scriptMap.size() == 0)
+			reloadScripts();
+		DatabaseMetadataScript script = this.scriptMap.get(new MapKey(
+				databaseType, scriptType));
+		DatabaseType internalType = databaseType;
+		while (script == null) {
+			internalType = internalType.getParent();
+			if (internalType == null)
+				return null;
+			script = this.scriptMap.get(new MapKey(internalType, scriptType));
 		}
-		return this.scripts.getScript(databaseType, scriptType);
+		return script;
 	}
 
 	/**
@@ -116,17 +157,53 @@ public enum DatabaseMetadataScriptManager {
 	 */
 	public synchronized void reloadScripts() throws ConfigurationException {
 		try {
+			this.scriptMap.clear();
 			final XStream xstream = new XStream();
-			xstream.alias("scripts", DatabaseMetadataScripts.class); //$NON-NLS-1$
 			xstream.alias("script", DatabaseMetadataScript.class); //$NON-NLS-1$
-			xstream.addImplicitCollection(DatabaseMetadataScripts.class,
-					"scripts"); //$NON-NLS-1$
 			xstream.omitField(DatabaseMetadataScript.class, "immutable"); //$NON-NLS-1$
-			xstream.omitField(DatabaseMetadataScripts.class, "immutable"); //$NON-NLS-1$
-			final InputStream stream = getResourceFromClassPath(DATABASE_METADATA_SCRIPT_LOCATION);
+			for (ScriptType scriptType : ScriptType.values()) {
+				for (DatabaseType databaseType : DatabaseType.values()) {
+					String fileName = format("/configuration/{0}-{1}.xml",
+							databaseType, scriptType);
+					final InputStream stream = getResourceFromClassPath(fileName);
+					if (stream == null)
+						continue;
+					DatabaseMetadataScript newScript = (DatabaseMetadataScript) xstream
+							.fromXML(stream);
+					if (!databaseType.equals(newScript.getDatabase())) {
+						logAndReturn(new IllegalStateException(format(
+								"Wrong database on {0}", fileName)));
+					}
+					if (!scriptType.equals(newScript.getScriptType())) {
+						logAndReturn(new IllegalStateException(format(
+								"Wrong scriptType on {0}", fileName)));
+					}
+					if (newScript.getPreferedType() == null) {
+						logAndReturn(new IllegalStateException(format(
+								"No preferedType on {0}", fileName)));
+					}
+					if (PreferedType.SQL.equals(newScript.getPreferedType())
+							&& (newScript.getContentSelect() == null || newScript
+									.getDataSelect() == null)) {
+						logAndReturn(new IllegalStateException(
+								format(
+										"PreferedType SQL but no selects for content or data on {0}",
+										fileName)));
+					}
+					if (PreferedType.TEMPLATE.equals(newScript
+							.getPreferedType())
+							&& (newScript.getTemplate() == null || newScript
+									.getTemplatesSelect() == null)) {
+						logAndReturn(new IllegalStateException(
+								format(
+										"PreferedType TEMPLATE but no select for template or missing template itself on {0}",
+										fileName)));
+					}
 
-			this.scripts = (DatabaseMetadataScripts) xstream.fromXML(stream);
-			this.scripts.setImmutable();
+					this.scriptMap.put(new MapKey(newScript.getDatabase(),
+							newScript.getScriptType()), newScript);
+				}
+			}
 		} catch (final Exception e) {
 			throw logAndReturnNew(e, ConfigurationException.class);
 		}

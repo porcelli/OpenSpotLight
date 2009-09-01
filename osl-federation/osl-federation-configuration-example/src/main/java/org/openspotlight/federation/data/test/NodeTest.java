@@ -63,7 +63,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.JavaBundle;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 
@@ -92,13 +92,13 @@ public class NodeTest {
         assertThat(repository.getProjects().size(), is(not(0)));
         assertThat(repository.getProjectNames().size(), is(not(0)));
         
-        final Project project = repository.getProjectByName("p-1,1");
+        final Group project = repository.getProjectByName("p-1,1");
         assertThat(project.getActive(), is(true));
         assertThat(project.getRepository(), is(repository));
         assertThat(project.getBundleNames().size(), is(not(0)));
         assertThat(project.getBundles().size(), is(not(0)));
         
-        final Project innerProject = project.getProjectByName("ip-1,1");
+        final Group innerProject = project.getProjectByName("ip-1,1");
         assertThat(innerProject.getActive(), is(true));
         assertThat(innerProject.getRepository(), is(repository));
         assertThat(innerProject.getBundleNames().size(), is(0));
@@ -151,10 +151,10 @@ public class NodeTest {
                     + i);
             repository.setActive(true);
             for (final int j : numbers) {
-                final Project project = new Project(repository, "p-" + i + ","
+                final Group project = new Group(repository, "p-" + i + ","
                         + j);
                 project.setActive(true);
-                final Project innerProject = new Project(project, "ip-" + i
+                final Group innerProject = new Group(project, "ip-" + i
                         + "," + j);
                 innerProject.setActive(true);
                 for (final int k : numbers) {

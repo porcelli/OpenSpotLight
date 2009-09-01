@@ -61,7 +61,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Project.class }, propertyNames = { "UUID", "version",
+        Bundle.class, Group.class }, propertyNames = { "UUID", "version",
         "tableName", "catalogName", "schemaName" }, propertyTypes = {
         String.class, String.class, String.class, String.class, String.class }, validChildrenTypes = Column.class)
 public class ViewArtifact extends TableArtifact{
@@ -92,7 +92,7 @@ public class ViewArtifact extends TableArtifact{
      * @param project
      * @param relativeName
      */
-    public ViewArtifact(final Project project, final String relativeName) {
+    public ViewArtifact(final Group project, final String relativeName) {
         super(project, relativeName);
         
     }

@@ -74,8 +74,8 @@ import org.openspotlight.federation.data.StaticMetadata;
 @SuppressWarnings("unchecked")
 @ThreadSafe
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
-        Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
-        BundleProcessorType.class, Project.class, StreamArtifact.class,
+        Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
+        BundleProcessorType.class, Group.class, StreamArtifact.class,
         CustomArtifact.class, ArtifactMapping.class })
 public class Bundle implements ConfigurationNode {
     
@@ -96,7 +96,7 @@ public class Bundle implements ConfigurationNode {
      * @param project
      * @param name
      */
-    public Bundle(final Project project, final String name) {
+    public Bundle(final Group project, final String name) {
         this.instanceMetadata = createWithKeyProperty(this, project, name);
         checkCondition("noBundle", //$NON-NLS-1$
                 project.getBundleByName(name) == null);
@@ -278,8 +278,8 @@ public class Bundle implements ConfigurationNode {
      * 
      * @return the parent project
      */
-    public Project getProject() {
-        return (Project) this.instanceMetadata.getDefaultParent();
+    public Group getProject() {
+        return (Group) this.instanceMetadata.getDefaultParent();
     }
     
     /**
@@ -293,8 +293,8 @@ public class Bundle implements ConfigurationNode {
                 .getDefaultParent();
         if (parent instanceof Repository) {
             return (Repository) parent;
-        } else if (parent instanceof Project) {
-            final Project proj = (Project) parent;
+        } else if (parent instanceof Group) {
+            final Group proj = (Group) parent;
             return proj.getRepository();
         }
         return null;
@@ -368,9 +368,9 @@ public class Bundle implements ConfigurationNode {
     /**
      * Removes a project.
      * 
-     * @param Project
+     * @param Group
      */
-    public final void removeProject(final Project Project) {
+    public final void removeProject(final Group Project) {
         this.instanceMetadata.removeChild(Project);
     }
     

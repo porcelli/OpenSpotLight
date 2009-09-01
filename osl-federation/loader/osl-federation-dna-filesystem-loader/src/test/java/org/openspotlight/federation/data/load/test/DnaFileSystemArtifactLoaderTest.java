@@ -65,10 +65,11 @@ import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
+import org.openspotlight.federation.data.load.DnaArtifactLoader;
 
 /**
  * Test for class {@link DnaFileSystemArtifactLoader}
@@ -92,7 +93,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         final Repository repository = new Repository(this.configuration,
                 this.REPOSITORY_NAME);
         this.configuration.setNumberOfParallelThreads(4);
-        final Project project = new Project(repository, this.PROJECT_NAME);
+        final Group project = new Group(repository, this.PROJECT_NAME);
         final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
         final String basePath = new File("../osl-federation-dna-filesystem-loader/")
                 .getCanonicalPath()
@@ -108,7 +109,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         final Repository repository = new Repository(this.configuration,
                 "Local target folder");
         this.configuration.setNumberOfParallelThreads(4);
-        final Project project = new Project(repository, "Osl Federation");
+        final Group project = new Group(repository, "Osl Federation");
         final Bundle bundle = new Bundle(project, "Target folder");
         final String basePath = new File(
                 "../osl-federation-dna-filesystem-loader/target/test-data/DnaFileSystemArtifactLoaderTest/")

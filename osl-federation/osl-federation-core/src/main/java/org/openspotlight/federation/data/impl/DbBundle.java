@@ -66,8 +66,8 @@ import org.openspotlight.federation.data.StaticMetadata;
 @StaticMetadata(propertyNames = { "active", "initialLookup", "driverClass",
         "user", "password", "type", "maxConnections" }, propertyTypes = { Boolean.class,
         String.class, String.class, String.class, String.class,
-        DatabaseType.class, Integer.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Project.class }, validChildrenTypes = {
-        BundleProcessorType.class, Project.class, StreamArtifact.class,
+        DatabaseType.class, Integer.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
+        BundleProcessorType.class, Group.class, StreamArtifact.class,
         CustomArtifact.class, ArtifactMapping.class })
 public class DbBundle extends Bundle {
     
@@ -94,7 +94,7 @@ public class DbBundle extends Bundle {
      * @param project
      * @param name
      */
-    public DbBundle(final Project project, final String name) {
+    public DbBundle(final Group project, final String name) {
         super(project, name);
         this.instanceMetadata = super.getInstanceMetadata();
     }

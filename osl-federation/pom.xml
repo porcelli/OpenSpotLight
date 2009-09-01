@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openspotlight</groupId>
+	<artifactId>osl-federation</artifactId>
+	<packaging>pom</packaging>
+	<name>OpenSpotLight Federation</name>
+	<url>http://caravelatech.com</url>
+	<parent>
+		<groupId>org.openspotlight</groupId>
+		<artifactId>osl</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../</relativePath>
+	</parent>
+	<developers>
+		<developer>
+			<name>Alexandre Porcelli</name>
+			<email>porcelli@caravelatech.com.br</email>
+		</developer>
+		<developer>
+			<name>Luiz Fernando Teston</name>
+			<email>feu.teston@caravelatech.com</email>
+		</developer>
+		<developer>
+			<name>Vitor Hugo Chagas</name>
+			<email>vitorhugo@caravelatech.com</email>
+		</developer>
+		<developer>
+			<name>Vinicius Carvalho</name>
+			<email>vinicius@caravelatech.com.br</email>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<organization>
+		<name>Caravela</name>
+		<url>http://www.caravelatech.com/</url>
+	</organization>
+	<modules>
+		<module>osl-federation-core</module>
+		<module>osl-federation-processor-core</module>
+		<module>osl-federation-configuration-example</module>
+		<module>manager/osl-federation-xml-manager</module>
+		<module>manager/osl-federation-jcr-manager</module>
+		<module>loader/osl-federation-database-loader</module>
+		<module>loader/osl-federation-dna-core-loader</module>
+		<module>loader/osl-federation-dna-filesystem-loader</module>
+		<module>loader/osl-federation-dna-svn-loader</module>
+		<module>loader/osl-federation-filesystem-loader</module>
+		<module>osl-federation-stress-test</module>
+	</modules>
+</project>

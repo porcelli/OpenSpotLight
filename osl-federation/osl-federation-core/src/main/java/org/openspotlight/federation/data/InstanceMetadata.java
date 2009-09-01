@@ -73,6 +73,7 @@ import static org.openspotlight.common.util.Reflection.searchType;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -823,15 +824,15 @@ public interface InstanceMetadata {
 		 */
 		public static InstanceMetadata createRoot(final ConfigurationNode owner) {
 			checkNotNull("owner", owner);//$NON-NLS-1$
-			checkCondition("hasStaticMetadataAnnotation",//$NON-NLS-1$
-					owner.getClass()
-							.getAnnotation(StaticMetadata.class) != null);
+			checkCondition(
+					"hasStaticMetadataAnnotation",//$NON-NLS-1$
+					owner.getClass().getAnnotation(StaticMetadata.class) != null);
 			checkCondition("ownerIsRoot", Arrays.equals(owner.getClass() //$NON-NLS-1$
-					.getAnnotation(StaticMetadata.class)
-					.validParentTypes(), EMPTY_TYPE));
+					.getAnnotation(StaticMetadata.class).validParentTypes(),
+					EMPTY_TYPE));
 			final BasicInstanceMetadata metadata = new BasicInstanceMetadata(
-					owner.getClass()
-							.getAnnotation(StaticMetadata.class), new SharedData(), null, null, owner);
+					owner.getClass().getAnnotation(StaticMetadata.class),
+					new SharedData(), null, null, owner);
 			return metadata;
 
 		}
@@ -1085,6 +1086,20 @@ public interface InstanceMetadata {
 			return this.hashcode;
 		}
 
+		private volatile String description = null;
+
+		@Override
+		public String toString() {
+			String result = description;
+			if (result == null) {
+				result = format(
+						"ItemChange type {0} with old item {1} and new item {2}",
+						this.type, this.oldItem, this.newItem);
+				description = result;
+			}
+			return result;
+		}
+
 	}
 
 	/**
@@ -1266,6 +1281,116 @@ public interface InstanceMetadata {
 	public static class SharedData implements DataLoader {
 
 		/**
+		 * Handle class for finding the correct situation to notify each type of
+		 * listener.
+		 * <ul>
+		 * <li>Simple listeners</li>
+		 * <li>Listeners for a given type</li>
+		 * <li>Listeners for a given parent</li>
+		 * </ul>
+		 * 
+		 * @author feu
+		 * 
+		 */
+		private static class ListenerHandle {
+
+			/**
+			 * Constructor for simple listener.
+			 * 
+			 * @param listener
+			 */
+			public ListenerHandle(ItemEventListener<ConfigurationNode> listener) {
+				this.listener = listener;
+				this.type = null;
+				this.parent = null;
+			}
+
+			/**
+			 * Constructor for listeners for a given type.
+			 * 
+			 * @param listener
+			 * @param type
+			 */
+			public ListenerHandle(
+					ItemEventListener<ConfigurationNode> listener,
+					Class<? extends ConfigurationNode> type) {
+				this.listener = listener;
+				this.type = type;
+				this.parent = null;
+			}
+
+			/**
+			 * Constructor for listeners for a given parent.
+			 * 
+			 * @param listener
+			 * @param parent
+			 */
+			public ListenerHandle(
+					ItemEventListener<ConfigurationNode> listener,
+					ConfigurationNode parent) {
+				this.listener = listener;
+				this.type = null;
+				this.parent = parent;
+			}
+
+			/**
+			 * 
+			 * @param changeEvent
+			 * 
+			 * @return true if this event should notify its listener
+			 */
+			public boolean shouldAccept(
+					ItemChangeEvent<ConfigurationNode> changeEvent) {
+				if (type == null && parent == null) {
+					return true;
+				} else if (type != null) {
+					ConfigurationNode target = getTargetItem(changeEvent);
+					if (type.isInstance(target)) {
+						return true;
+					}
+				} else if (parent != null) {
+					ConfigurationNode target = getTargetItem(changeEvent);
+					while (target != null) {
+						if (target.equals(parent)) {
+							return true;
+						}
+						target = target.getInstanceMetadata()
+								.getDefaultParent();
+
+					}
+				}
+				return false;
+			}
+
+			/**
+			 * 
+			 * @param changeEvent
+			 * @return the target item inside the {@link ItemChangeEvent}
+			 */
+			private ConfigurationNode getTargetItem(
+					ItemChangeEvent<ConfigurationNode> changeEvent) {
+				if (changeEvent.getNewItem() != null) {
+					return changeEvent.getNewItem();
+				} else if (changeEvent.getOldItem() != null) {
+					return changeEvent.getOldItem();
+				} else {
+					throw logAndReturn(new IllegalStateException(
+							"Invalid change with null target"));
+				}
+
+			}
+
+			public ItemEventListener<ConfigurationNode> getListener() {
+				return listener;
+			}
+
+			private final ItemEventListener<ConfigurationNode> listener;
+			private final Class<? extends ConfigurationNode> type;
+			private final ConfigurationNode parent;
+
+		}
+
+		/**
 		 * dirty flag for all nodes of the current graph.
 		 */
 		private final AtomicBoolean dirtyFlag = new AtomicBoolean(false);
@@ -1275,7 +1400,7 @@ public interface InstanceMetadata {
 		/**
 		 * All the node listeners for all nodes of the current graph.
 		 */
-		private final List<ItemEventListener<ConfigurationNode>> nodeListeners = new CopyOnWriteArrayList<ItemEventListener<ConfigurationNode>>();
+		private final List<ListenerHandle> nodeListeners = new CopyOnWriteArrayList<ListenerHandle>();
 
 		/**
 		 * All the property listeners for all nodes of the current graph.
@@ -1297,7 +1422,31 @@ public interface InstanceMetadata {
 		 */
 		public final void addNodeListener(
 				final ItemEventListener<ConfigurationNode> listener) {
-			this.nodeListeners.add(listener);
+			this.nodeListeners.add(new ListenerHandle(listener));
+		}
+
+		/**
+		 * Adds an event listener for node changes of a given type.
+		 * 
+		 * @param listener
+		 * @param type
+		 */
+		public final void addNodeListenerForAGivenType(
+				final ItemEventListener<ConfigurationNode> listener,
+				Class<? extends ConfigurationNode> type) {
+			this.nodeListeners.add(new ListenerHandle(listener, type));
+		}
+
+		/**
+		 * Adds an event listener for node changes of a given type.
+		 * 
+		 * @param listener
+		 * @param parent
+		 */
+		public final void addNodeListenerForAGivenParent(
+				final ItemEventListener<ConfigurationNode> listener,
+				ConfigurationNode parent) {
+			this.nodeListeners.add(new ListenerHandle(listener, parent));
 		}
 
 		/**
@@ -1343,8 +1492,10 @@ public interface InstanceMetadata {
 				}
 				this.dirtyFlag.set(true);
 			}
-			for (final ItemEventListener<ConfigurationNode> listener : this.nodeListeners) {
-				listener.changeEventHappened(changeEvent);
+			for (final ListenerHandle handle : this.nodeListeners) {
+				if (handle.shouldAccept(changeEvent)) {
+					handle.getListener().changeEventHappened(changeEvent);
+				}
 			}
 		}
 
@@ -1482,7 +1633,15 @@ public interface InstanceMetadata {
 		 */
 		public final void removeNodeListener(
 				final ItemEventListener<ConfigurationNode> listener) {
-			this.nodeListeners.remove(listener);
+			List<ListenerHandle> toRemove = new ArrayList<ListenerHandle>();
+			for (ListenerHandle handle : nodeListeners) {
+				if (handle.getListener().equals(listener)) {
+					toRemove.add(handle);
+				}
+			}
+			if (toRemove.size() > 0) {
+				this.nodeListeners.removeAll(toRemove);
+			}
 		}
 
 		/**

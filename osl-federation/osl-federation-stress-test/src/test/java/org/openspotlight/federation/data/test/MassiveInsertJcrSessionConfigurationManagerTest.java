@@ -71,7 +71,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
@@ -133,11 +133,11 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
         final Configuration configuration = new Configuration();
         final Repository repository = new Repository(configuration,
                 "repository");
-        final Project rootProject = new Project(repository, "root");
+        final Group rootProject = new Group(repository, "root");
         
         final InputStream is = getResourceFromClassPath("/data/MassiveInsertJcrSessionConfigurationManagerTest/nodeData.csv");
         assertThat(is, is(notNullValue()));
-        final Map<String, Project> handleMap = new HashMap<String, Project>();
+        final Map<String, Group> handleMap = new HashMap<String, Group>();
         final BufferedReader reader = new BufferedReader(new InputStreamReader(
                 is));
         String line = null;
@@ -175,22 +175,22 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
                     final String type = (t5 == null ? t4 : t5).replaceAll(" ",
                             "").replaceAll("\\.", "").replaceAll("-", "");
                     
-                    Project node;
+                    Group node;
                     if ((parentHandle == null)
                             || parentHandle.trim().equals("")) {
                         node = rootProject.getProjectByName(key);
                         if (node == null) {
-                            node = new Project(rootProject, key);
+                            node = new Group(rootProject, key);
                         }
                         handleMap.put(handle, node);
                     } else {
-                        final Project parent = handleMap.get(parentHandle);
+                        final Group parent = handleMap.get(parentHandle);
                         if (parent == null) {
                             Assert.fail();
                         }
                         node = parent.getProjectByName(key);
                         if (node == null) {
-                            node = new Project(parent, key);
+                            node = new Group(parent, key);
                         }
                         handleMap.put(handle, node);
                     }

@@ -56,7 +56,6 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.processing.BundleProcessor;
 
 /**
  * This {@link BundleProcessorType} describes all valid classes that can process

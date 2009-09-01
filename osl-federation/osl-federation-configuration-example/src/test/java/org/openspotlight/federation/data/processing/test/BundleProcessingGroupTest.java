@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Project;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
@@ -27,7 +27,7 @@ public class BundleProcessingGroupTest {
 		configuration.setNumberOfParallelThreads(Integer.valueOf(4));
 		Repository repository = new Repository(configuration, "repository");
 		repository.setActive(Boolean.TRUE);
-		Project project = new Project(repository, "project");
+		Group project = new Group(repository, "project");
 		project.setActive(Boolean.TRUE);
 		Bundle bundle = new Bundle(project, "bundle");
 		bundle.setActive(Boolean.TRUE);

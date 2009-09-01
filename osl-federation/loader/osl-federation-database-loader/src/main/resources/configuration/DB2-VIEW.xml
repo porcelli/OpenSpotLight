@@ -1,0 +1,19 @@
+<script>
+	<scriptType>VIEW</scriptType>
+	<database>DB2</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+		select 
+			viewschema as schema_name, 
+			viewname as name, 
+			'' as catalog_name 
+		from syscat.VIEWS
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select text
+		from syscat.VIEWS
+		where
+			viewschema = '$schema_name$' and
+			viewname  = '$name$'
+   	 ]]></contentSelect>
+</script>
