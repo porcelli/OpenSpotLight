@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>osl-graph</artifactId>
-	<packaging>jar</packaging>
-	<name>OpenSpotLight Graph Library</name>
 	<parent>
 		<groupId>org.openspotlight</groupId>
 		<artifactId>osl</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 	</parent>
+
+	<artifactId>osl-graph</artifactId>
+	<packaging>jar</packaging>
+	<name>OpenSpotLight Graph Library</name>
+
 	<build>
-	
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -31,22 +33,22 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<dependencies>
+		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-persistence</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- External dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -143,7 +145,6 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

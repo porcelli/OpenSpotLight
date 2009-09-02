@@ -1,47 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.openspotlight</groupId>
-	<artifactId>osl-federation</artifactId>
-	<packaging>pom</packaging>
-	<name>OpenSpotLight Federation</name>
-	<url>http://caravelatech.com</url>
 	<parent>
 		<groupId>org.openspotlight</groupId>
 		<artifactId>osl</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../</relativePath>
+		<version>0.0.4-SNAPSHOT</version>
 	</parent>
-	<developers>
-		<developer>
-			<name>Alexandre Porcelli</name>
-			<email>porcelli@caravelatech.com.br</email>
-		</developer>
-		<developer>
-			<name>Luiz Fernando Teston</name>
-			<email>feu.teston@caravelatech.com</email>
-		</developer>
-		<developer>
-			<name>Vitor Hugo Chagas</name>
-			<email>vitorhugo@caravelatech.com</email>
-		</developer>
-		<developer>
-			<name>Vinicius Carvalho</name>
-			<email>vinicius@caravelatech.com.br</email>
-		</developer>
-	</developers>
-	<licenses>
-		<license>
-			<name>GNU Lesser General Public License</name>
-			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<organization>
-		<name>Caravela</name>
-		<url>http://www.caravelatech.com/</url>
-	</organization>
+
+	<artifactId>osl-federation</artifactId>
+	<packaging>pom</packaging>
+	<name>OpenSpotLight Federation</name>
+
 	<modules>
 		<module>osl-federation-core</module>
 		<module>osl-federation-processor-core</module>
@@ -55,4 +26,55 @@
 		<module>loader/osl-federation-filesystem-loader</module>
 		<module>osl-federation-stress-test</module>
 	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-processor-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-xml-manager</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-jcr-manager</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-database-loader</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-dna-core-loader</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-dna-filesystem-loader</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-filesystem-loader</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-configuration-example</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 </project>

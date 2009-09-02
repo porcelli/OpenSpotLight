@@ -1,17 +1,24 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.openspotlight</groupId>
 		<artifactId>osl</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 	</parent>
+
 	<artifactId>osl-graph-persistence-api</artifactId>
 	<packaging>jar</packaging>
 	<name>OpenSpotLight Persistence Api</name>
-	<build />
+
 	<dependencies>
+		<!-- Internal dependencies -->
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+		</dependency>
 		<!-- External dependencies -->
 		<dependency>
 			<groupId>com.thoughtworks.qdox</groupId>
@@ -102,15 +109,10 @@
 		<dependency>
 			<groupId>antlr</groupId>
 			<artifactId>antlr</artifactId>
-			<version>3.0b5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
 		</dependency>
 	</dependencies>
 </project>
