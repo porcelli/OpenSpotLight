@@ -69,51 +69,53 @@ import org.openspotlight.federation.data.impl.Repository;
  * @author feu
  * 
  */
+@SuppressWarnings("all")
 public class SharedDataListenerTest {
 
 	private static class CustomNodeListener implements
 			ItemEventListener<ConfigurationNode> {
 
-		public void changeEventHappened(ItemChangeEvent<ConfigurationNode> event) {
-			ConfigurationNode target = event.getNewItem() != null ? event
+		private final List<ConfigurationNode> nodesChanged = new ArrayList<ConfigurationNode>();
+
+		public void changeEventHappened(
+				final ItemChangeEvent<ConfigurationNode> event) {
+			final ConfigurationNode target = event.getNewItem() != null ? event
 					.getNewItem() : event.getOldItem();
-			nodesChanged.add(target);
+			this.nodesChanged.add(target);
 
 		}
-
-		private List<ConfigurationNode> nodesChanged = new ArrayList<ConfigurationNode>();
 
 		public List<ConfigurationNode> getNodesChanged() {
-			return nodesChanged;
+			return this.nodesChanged;
 		}
+
+	}
+
+	@Test
+	public void shouldListenChangesForAGivenParent() throws Exception {
+		final CustomNodeListener listener = new CustomNodeListener();
+		final Configuration configuration = new Configuration();
+		final Repository repo1 = new Repository(configuration, "repo1");
+		final Repository repo2 = new Repository(configuration, "repo2");
+		configuration.getInstanceMetadata().getSharedData()
+				.addNodeListenerForAGivenParent(listener, repo2);
+		new Group(repo1, "group1");
+		final Group group2 = new Group(repo2, "group2");
+		assertThat(listener.getNodesChanged().size(), is(1));
+		assertThat((Group) listener.getNodesChanged().get(0), is(group2));
 
 	}
 
 	@Test
 	public void shouldListenChangesForAGivenType() throws Exception {
-		CustomNodeListener listener = new CustomNodeListener();
-		Configuration configuration = new Configuration();
+		final CustomNodeListener listener = new CustomNodeListener();
+		final Configuration configuration = new Configuration();
 		configuration.getInstanceMetadata().getSharedData()
 				.addNodeListenerForAGivenType(listener, Group.class);
-		Repository repo = new Repository(configuration, "repo");
-		Group group = new Group(repo, "group");
+		final Repository repo = new Repository(configuration, "repo");
+		final Group group = new Group(repo, "group");
 		assertThat(listener.getNodesChanged().size(), is(1));
 		assertThat((Group) listener.getNodesChanged().get(0), is(group));
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenParent() throws Exception {
-		CustomNodeListener listener = new CustomNodeListener();
-		Configuration configuration = new Configuration();
-		Repository repo1 = new Repository(configuration, "repo1");
-		Repository repo2 = new Repository(configuration, "repo2");
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenParent(listener, repo2);
-		new Group(repo1, "group1");
-		Group group2 = new Group(repo2, "group2");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group2));
-
 	}
 
 }

@@ -1,3 +1,52 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governan�a de TI de C�digo Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribui��o de direito autoral declarada e atribu�da pelo autor.
+ * Todas as contribui��es de terceiros est�o distribu�das sob licen�a da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa � software livre; voc� pode redistribu�-lo e/ou modific�-lo sob os 
+ * termos da Licen�a P�blica Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa � distribu�do na expectativa de que seja �til, por�m, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia impl�cita de COMERCIABILIDADE OU ADEQUA��O A UMA
+ * FINALIDADE ESPEC�FICA. Consulte a Licen�a P�blica Geral Menor do GNU para mais detalhes.  
+ * 
+ * Voc� deve ter recebido uma c�pia da Licen�a P�blica Geral Menor do GNU junto com este
+ * programa; se n�o, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
+
 package org.openspotlight.federation.data.util;
 
 import java.util.HashSet;
@@ -16,42 +65,61 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
 public class AggregateNodesListener implements
 		ItemEventListener<ConfigurationNode> {
 
-	public Set<ConfigurationNode> getInsertedNodes() {
-		return insertedNodes;
+	private final Set<ConfigurationNode> changedNodes = new HashSet<ConfigurationNode>();
+
+	private final Set<ConfigurationNode> insertedNodes = new HashSet<ConfigurationNode>();
+
+	private final Set<ConfigurationNode> removedNodes = new HashSet<ConfigurationNode>();
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void changeEventHappened(
+			final ItemChangeEvent<ConfigurationNode> event) {
+		switch (event.getType()) {
+		case ADDED:
+			this.insertedNodes.add(event.getNewItem());
+			break;
+		case CHANGED:
+			this.changedNodes.add(event.getNewItem());
+			break;
+		case EXCLUDED:
+			this.removedNodes.add(event.getOldItem());
+			break;
+		}
+
 	}
 
-	public Set<ConfigurationNode> getChangedNodes() {
-		return changedNodes;
-	}
-
-	public Set<ConfigurationNode> getRemovedNodes() {
-		return removedNodes;
-	}
-
-	public void clearData(){
+	/**
+	 * Clear all internal sets of changes.
+	 */
+	public void clearData() {
 		this.insertedNodes.clear();
 		this.changedNodes.clear();
 		this.removedNodes.clear();
 	}
-	
-	private final Set<ConfigurationNode> insertedNodes = new HashSet<ConfigurationNode>();
 
-	private final Set<ConfigurationNode> changedNodes = new HashSet<ConfigurationNode>();
+	/**
+	 * 
+	 * @return the changed (updated) nodes
+	 */
+	public Set<ConfigurationNode> getChangedNodes() {
+		return this.changedNodes;
+	}
 
-	private final Set<ConfigurationNode> removedNodes = new HashSet<ConfigurationNode>();
+	/**
+	 * 
+	 * @return the inserted nodes
+	 */
+	public Set<ConfigurationNode> getInsertedNodes() {
+		return this.insertedNodes;
+	}
 
-	public void changeEventHappened(ItemChangeEvent<ConfigurationNode> event) {
-		switch (event.getType()) {
-		case ADDED:
-			insertedNodes.add(event.getNewItem());
-			break;
-		case CHANGED:
-			changedNodes.add(event.getNewItem());
-			break;
-		case EXCLUDED:
-			removedNodes.add(event.getOldItem());
-			break;
-		}
-
+	/**
+	 * 
+	 * @return the removed nodes
+	 */
+	public Set<ConfigurationNode> getRemovedNodes() {
+		return this.removedNodes;
 	}
 }

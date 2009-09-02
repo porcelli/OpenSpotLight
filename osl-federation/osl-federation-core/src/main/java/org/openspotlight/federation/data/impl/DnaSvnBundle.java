@@ -68,9 +68,14 @@ import org.openspotlight.federation.data.StaticMetadata;
 		CustomArtifact.class, ArtifactMapping.class })
 public class DnaSvnBundle extends Bundle {
 
-	private static final String USER = "user"; //$NON-NLS-1$
-
 	private static final String PASSWORD = "password"; //$NON-NLS-1$
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6055285487792875923L;
+
+	private static final String USER = "user"; //$NON-NLS-1$
 
 	private final InstanceMetadata instanceMetadata;
 

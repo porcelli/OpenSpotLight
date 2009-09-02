@@ -51,11 +51,11 @@ package org.openspotlight.federation.data.load;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -168,17 +168,6 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 			GlobalExecutionContext {
 
 		/**
-		 * Overwrite this method to change the thread pool size
-		 * 
-		 * @param bundle
-		 * @return the thread pool size
-		 */
-		public Integer withThreadPoolSize(Bundle bundle) {
-			return bundle.getRepository().getConfiguration()
-					.getNumberOfParallelThreads();
-		}
-
-		/**
 		 * 
 		 * {@inheritDoc}
 		 */
@@ -193,6 +182,17 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 		public void globalExecutionFinished(final Bundle bundle) {
 			// nothign to do here
 
+		}
+
+		/**
+		 * Overwrite this method to change the thread pool size
+		 * 
+		 * @param bundle
+		 * @return the thread pool size
+		 */
+		public Integer withThreadPoolSize(final Bundle bundle) {
+			return bundle.getRepository().getConfiguration()
+					.getNumberOfParallelThreads();
 		}
 	}
 
@@ -258,14 +258,6 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 				ArtifactMapping mapping) throws ConfigurationException;
 
 		/**
-		 * Overwrite this method to change the thread pool size
-		 * 
-		 * @param bundle
-		 * @return
-		 */
-		public Integer withThreadPoolSize(Bundle bundle);
-
-		/**
 		 * This method will be called when the artifact processing is about to
 		 * start.
 		 * 
@@ -279,6 +271,14 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 		 * @param bundle
 		 */
 		public void globalExecutionFinished(final Bundle bundle);
+
+		/**
+		 * Overwrite this method to change the thread pool size
+		 * 
+		 * @param bundle
+		 * @return the thread pool size
+		 */
+		public Integer withThreadPoolSize(Bundle bundle);
 
 	}
 
@@ -301,17 +301,6 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 	@ThreadSafe
 	protected static interface ThreadExecutionContext {
 		/**
-		 * This thread will start its execution.
-		 * 
-		 * @param bundle
-		 * @param mapping
-		 * @param globalContext
-		 */
-		public void threadExecutionAboutToStart(final Bundle bundle,
-				final ArtifactMapping mapping,
-				GlobalExecutionContext globalContext);
-
-		/**
 		 * This method should do the loading processing itself. It will be done
 		 * on a multi threaded execution. This will be called in a lazy way.
 		 * 
@@ -330,6 +319,17 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 		public byte[] loadArtifactOrReturnNullToIgnore(Bundle bundle,
 				ArtifactMapping mapping, String artifactName,
 				GlobalExecutionContext globalContext) throws Exception;
+
+		/**
+		 * This thread will start its execution.
+		 * 
+		 * @param bundle
+		 * @param mapping
+		 * @param globalContext
+		 */
+		public void threadExecutionAboutToStart(final Bundle bundle,
+				final ArtifactMapping mapping,
+				GlobalExecutionContext globalContext);
 
 		/**
 		 * This thread just ended its execution.
@@ -353,11 +353,11 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 	private final class Worker implements Callable<Void> {
 		final Bundle bundle;
 		final AtomicInteger errorCounter;
+		final ArtifactErrorHandler errorHandler;
+		final GlobalExecutionContext globalContext;
 		final AtomicInteger loadCounter;
 		final ArtifactMapping mapping;
 		final Set<String> namesToProcess;
-		final GlobalExecutionContext globalContext;
-		final ArtifactErrorHandler errorHandler;
 
 		/**
 		 * Constructor to initialize all final and mandatory fields.
@@ -386,10 +386,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 		}
 
 		/**
-		 * 
 		 * {@inheritDoc}
 		 */
-		public Void call() throws Exception {
+		public Void call() {
 
 			AbstractArtifactLoader.this.loadArtifactsOfNames(this.bundle,
 					this.errorCounter, this.loadCounter, this.mapping,
@@ -483,10 +482,11 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 				final Set<String> names = new HashSet<String>(bundle
 						.getStreamArtifactNames());
 				for (final String name : names) {
-					String newName = name.startsWith(mapping.getRelative()) ? removeBegginingFrom(
-							mapping.getRelative(), name)
-							: name;
-					if (!namesToProcess.contains(newName) && !namesToProcess.contains(name)) {
+					final String newName = name.startsWith(mapping
+							.getRelative()) ? removeBegginingFrom(mapping
+							.getRelative(), name) : name;
+					if (!namesToProcess.contains(newName)
+							&& !namesToProcess.contains(name)) {
 						final StreamArtifact artifactToDelete = bundle
 								.getStreamArtifactByName(name);
 						bundle.removeStreamArtifact(artifactToDelete);
@@ -494,8 +494,8 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 				}
 				for (final String name : bundle.getCustomArtifactNames()) {
 					boolean found = false;
-					looking: for (String nameToProcess : namesToProcess) {
-						String completeName = mapping.getRelative()
+					looking: for (final String nameToProcess : namesToProcess) {
+						final String completeName = mapping.getRelative()
 								+ nameToProcess;
 						if (completeName.equals(name)) {
 							found = true;
@@ -565,8 +565,9 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 					final byte[] content = localContext
 							.loadArtifactOrReturnNullToIgnore(bundle, mapping,
 									artifactName, globalContext);
-					if (content == null)
+					if (content == null) {
 						continue;
+					}
 					final String sha1 = getSha1SignatureEncodedAsBase64(content);
 					final InputStream is = new ByteArrayInputStream(content);
 					final StreamArtifact artifact = bundle
