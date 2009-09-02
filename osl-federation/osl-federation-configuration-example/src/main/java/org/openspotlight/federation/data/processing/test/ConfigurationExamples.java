@@ -91,17 +91,17 @@ public class ConfigurationExamples {
 		final ArtifactMapping h2ArtifactMapping = new ArtifactMapping(h2Bundle,
 				"PUBLIC/");
 		final Included h2IncludedTrigger = new Included(h2ArtifactMapping,
-				"TRIGGER/*");
+				"TRIGGER/**/*");
 		final Included h2IncludedProcedure = new Included(h2ArtifactMapping,
-				"PROCEDURE/*");
+				"PROCEDURE/**/*");
 		final Included h2IncludedTable = new Included(h2ArtifactMapping,
-				"TABLE/*");
+				"TABLE/**/*");
 		final Included h2IncludedFunction = new Included(h2ArtifactMapping,
-				"FUNCTION/*");
+				"FUNCTION/**/*");
 		final Included h2IncludedView = new Included(h2ArtifactMapping,
-				"VIEW/*");
+				"VIEW/**/*");
 		final Included h2IncludedIndex = new Included(h2ArtifactMapping,
-				"INDEX/*");
+				"INDEX/**/*");
 		final BundleProcessorType h2CommonProcessor = new BundleProcessorType(
 				h2Bundle,
 				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
