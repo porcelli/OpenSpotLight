@@ -17,6 +17,9 @@ nbproject
 # logs 
 *.log
 
+# mac files
+.DS_Store
+
 # general files
 *.ipr
 *.iws
