@@ -49,6 +49,7 @@
 // annoying package name just to exclude this class for the profiler filter...
 package org.openspotlightTest.graph.test;
 
+import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 
 import java.io.BufferedReader;
@@ -59,6 +60,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import org.junit.Test;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
@@ -76,164 +78,177 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("all")
 public class GraphWithMassiveDataTest {
-    
-    public static void main(final String... args) throws Exception {
-        final long start = System.currentTimeMillis();
-        
-        final GraphWithMassiveDataTest g = new GraphWithMassiveDataTest();
-        g.setup();
-        g.shouldInsertNodeData();
-        final long end = System.currentTimeMillis();
-        final long spent = end - start;
-        g.logger.info("Spent time " + spent + " milliseconds");
-    }
-    
-    private final Random random = new Random();
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private SLNode rootNode;
-    
-    private SLGraphSession session;
-    
-    public void setup() throws Exception {
-        final SLGraphFactory factory = new SLGraphFactoryImpl();
-        final SLGraph graph = factory.createGraph();
-        this.session = graph.openSession();
-        this.rootNode = this.session.createContext(1L).getRootNode();
-        
-    }
-    
-    public void shouldInsertLinkData(final Map<String, SLNode> handleMap)
-            throws Exception {
-        int count = 0;
-        int err = 0;
-        int ok = 0;
-        
-        try {
-            final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/linkData.csv");
-            final BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is));
-            String line = null;
-            boolean first = true;
-            while ((count++ != 100000) && ((line = reader.readLine()) != null)) {
-                if (first) {
-                    first = false;
-                    continue;
-                }
-                try {
-                    final StringTokenizer tok = new StringTokenizer(line, "|");
-                    final String handleA = tok.nextToken();
-                    final String handleB = tok.nextToken();
-                    final String type = tok.nextToken().replaceAll(" ", "")
-                            .replaceAll("\\.", "").replaceAll("-", "");
-                    
-                    final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
-                            .forName("org.openspotlight.graph.link." + type
-                                    + "Link");
-                    this.session.addLink(clazz, handleMap.get(handleA),
-                            handleMap.get(handleB), false);
-                    ok++;
-                    
-                } catch (final Exception e) {
-                    this.logger.error("error on link: " + e.getMessage() + ": "
-                            + line, e);
-                    err++;
-                }
-            }
-        } finally {
-            System.out.println("count " + count);
-            System.out.println("err   " + err);
-            System.out.println("ok    " + ok);
-            
-        }
-    }
-    
-    public void shouldInsertNodeData() throws Exception {
-        
-        final Map<String, SLNode> handleMap = new HashMap<String, SLNode>();
-        final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/nodeData.csv");
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                is));
-        String line = null;
-        boolean first = true;
-        int count = 0;
-        int err = 0;
-        int ok = 0;
-        try {
-            while ((count++ != 40000) && ((line = reader.readLine()) != null)) {
-                
-                if (first) {
-                    first = false;
-                    continue;
-                }
-                
-                try {
-                    
-                    final StringTokenizer tok = new StringTokenizer(line, "|");
-                    final String t1 = tok.nextToken();
-                    final String t2 = tok.nextToken();
-                    final String t3 = tok.nextToken();
-                    final String t4 = tok.nextToken();
-                    
-                    final String t5;
-                    if (tok.hasMoreTokens()) {
-                        t5 = tok.nextToken();
-                    } else {
-                        t5 = null;
-                    }
-                    
-                    final String handle = t1;
-                    final String parentHandle = t5 == null ? null : t2;
-                    final String key = t5 == null ? t2 : t3;
-                    final String caption = t5 == null ? t3 : t4;
-                    final String type = (t5 == null ? t4 : t5).replaceAll(" ",
-                            "").replaceAll("\\.", "").replaceAll("-", "");
-                    
-                    SLNode node;
-                    
-                    final Class<? extends SLNode> clazz = (Class<? extends SLNode>) Class
-                            .forName("org.openspotlight.graph.node." + type
-                                    + "Node");
-                    
-                    if ((parentHandle == null)
-                            || parentHandle.trim().equals("")) {
-                        node = this.rootNode.addNode(clazz, key);
-                        
-                    } else {
-                        final SLNode parent = handleMap.get(parentHandle);
-                        if (parent == null) {
-                            throw new Exception("no parent");
-                        }
-                        node = parent.addNode(clazz, key);
-                    }
-                    final int randomInt = this.random.nextInt(100);
-                    final float randomFloat = this.random.nextFloat();
-                    final boolean randomBoolean = this.random.nextBoolean();
-                    
-                    clazz.getMethod("setIntProperty", int.class).invoke(node,
-                            randomInt);
-                    clazz.getMethod("setBooleanProperty", boolean.class)
-                            .invoke(node, randomBoolean);
-                    clazz.getMethod("setFloatProperty", float.class).invoke(
-                            node, randomFloat);
-                    clazz.getMethod("setCaption", String.class).invoke(node,
-                            caption);
-                    handleMap.put(handle, node);
-                    ok++;
-                    
-                } catch (final Exception e) {
-                    this.logger.error("error on node: " + e.getMessage() + ": "
-                            + line, e);
-                    err++;
-                }
-            }
-        } finally {
-            System.out.println("count " + count);
-            System.out.println("err   " + err);
-            System.out.println("ok    " + ok);
-            
-        }
-        this.shouldInsertLinkData(handleMap);
-        
-    }
+
+	public static void main(final String... args) throws Exception {
+		final long start = System.currentTimeMillis();
+
+		final GraphWithMassiveDataTest g = new GraphWithMassiveDataTest();
+		g.setup();
+		g.shouldInsertNodeData();
+		final long end = System.currentTimeMillis();
+		final long spent = end - start;
+		g.logger.info("Spent time " + spent + " milliseconds");
+	}
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private final Random random = new Random();
+
+	private SLNode rootNode;
+	private SLGraphSession session;
+
+	public void setup() throws Exception {
+		final SLGraphFactory factory = new SLGraphFactoryImpl();
+		final SLGraph graph = factory.createTempGraph(true);
+		this.session = graph.openSession();
+		this.rootNode = this.session.createContext(1L).getRootNode();
+
+	}
+
+	@Test
+	public void shouldInsertAllNodeData() throws Exception {
+		if ("true".equals(System.getProperty("runStressTests"))) {
+			main(null);
+		} else {
+			this.logger
+					.warn(format(
+							"Skipping stress tests because of {0} system property isn't set to {1}",
+							"runStressTests", true));
+		}
+
+	}
+
+	public void shouldInsertLinkData(final Map<String, SLNode> handleMap)
+			throws Exception {
+		int count = 0;
+		int err = 0;
+		int ok = 0;
+
+		try {
+			final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/linkData.csv");
+			final BufferedReader reader = new BufferedReader(
+					new InputStreamReader(is));
+			String line = null;
+			boolean first = true;
+			while ((count++ != 100000) && ((line = reader.readLine()) != null)) {
+				if (first) {
+					first = false;
+					continue;
+				}
+				try {
+					final StringTokenizer tok = new StringTokenizer(line, "|");
+					final String handleA = tok.nextToken();
+					final String handleB = tok.nextToken();
+					final String type = tok.nextToken().replaceAll(" ", "")
+							.replaceAll("\\.", "").replaceAll("-", "");
+
+					final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
+							.forName("org.openspotlight.graph.link." + type
+									+ "Link");
+					this.session.addLink(clazz, handleMap.get(handleA),
+							handleMap.get(handleB), false);
+					ok++;
+
+				} catch (final Exception e) {
+					this.logger.error("error on link: " + e.getMessage() + ": "
+							+ line, e);
+					err++;
+				}
+			}
+		} finally {
+			System.out.println("count " + count);
+			System.out.println("err   " + err);
+			System.out.println("ok    " + ok);
+
+		}
+	}
+
+	public void shouldInsertNodeData() throws Exception {
+
+		final Map<String, SLNode> handleMap = new HashMap<String, SLNode>();
+		final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/nodeData.csv");
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(
+				is));
+		String line = null;
+		boolean first = true;
+		int count = 0;
+		int err = 0;
+		int ok = 0;
+		try {
+			while ((count++ != 40000) && ((line = reader.readLine()) != null)) {
+
+				if (first) {
+					first = false;
+					continue;
+				}
+
+				try {
+
+					final StringTokenizer tok = new StringTokenizer(line, "|");
+					final String t1 = tok.nextToken();
+					final String t2 = tok.nextToken();
+					final String t3 = tok.nextToken();
+					final String t4 = tok.nextToken();
+
+					final String t5;
+					if (tok.hasMoreTokens()) {
+						t5 = tok.nextToken();
+					} else {
+						t5 = null;
+					}
+
+					final String handle = t1;
+					final String parentHandle = t5 == null ? null : t2;
+					final String key = t5 == null ? t2 : t3;
+					final String caption = t5 == null ? t3 : t4;
+					final String type = (t5 == null ? t4 : t5).replaceAll(" ",
+							"").replaceAll("\\.", "").replaceAll("-", "");
+
+					SLNode node;
+
+					final Class<? extends SLNode> clazz = (Class<? extends SLNode>) Class
+							.forName("org.openspotlight.graph.node." + type
+									+ "Node");
+
+					if ((parentHandle == null)
+							|| parentHandle.trim().equals("")) {
+						node = this.rootNode.addNode(clazz, key);
+
+					} else {
+						final SLNode parent = handleMap.get(parentHandle);
+						if (parent == null) {
+							throw new Exception("no parent");
+						}
+						node = parent.addNode(clazz, key);
+					}
+					final int randomInt = this.random.nextInt(100);
+					final float randomFloat = this.random.nextFloat();
+					final boolean randomBoolean = this.random.nextBoolean();
+
+					clazz.getMethod("setIntProperty", int.class).invoke(node,
+							randomInt);
+					clazz.getMethod("setBooleanProperty", boolean.class)
+							.invoke(node, randomBoolean);
+					clazz.getMethod("setFloatProperty", float.class).invoke(
+							node, randomFloat);
+					clazz.getMethod("setCaption", String.class).invoke(node,
+							caption);
+					handleMap.put(handle, node);
+					ok++;
+
+				} catch (final Exception e) {
+					this.logger.error("error on node: " + e.getMessage() + ": "
+							+ line, e);
+					err++;
+				}
+			}
+		} finally {
+			System.out.println("count " + count);
+			System.out.println("err   " + err);
+			System.out.println("ok    " + ok);
+
+		}
+		this.shouldInsertLinkData(handleMap);
+
+	}
 }
