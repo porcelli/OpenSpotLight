@@ -12,6 +12,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
+@SuppressWarnings("all")
 public class H2DatabaseStreamTest extends DatabaseStreamTest {
 
 	@Before
@@ -24,7 +25,7 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
+		final Configuration configuration = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
 		return (DbBundle) configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
 				.getProjectByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
@@ -34,7 +35,7 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void fillDatabase(Connection conn) throws Exception {
+	protected void fillDatabase(final Connection conn) throws Exception {
 		H2Support.fillDatabaseArtifacts(conn);
 	}
 

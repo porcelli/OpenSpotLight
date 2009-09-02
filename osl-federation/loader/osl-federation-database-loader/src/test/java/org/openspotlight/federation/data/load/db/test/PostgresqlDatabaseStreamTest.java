@@ -2,8 +2,6 @@ package org.openspotlight.federation.data.load.db.test;
 
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createPostgresqlConfiguration;
 
-import java.sql.Connection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -11,6 +9,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
+@SuppressWarnings("all")
 public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements
 		RunWhenDatabaseVendorTestsIsActive {
 
@@ -19,7 +18,7 @@ public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createPostgresqlConfiguration();
+		final Configuration configuration = createPostgresqlConfiguration();
 		return (DbBundle) configuration.getRepositoryByName(
 				"postgresql Repository") //$NON-NLS-1$
 				.getProjectByName("postgresql Group") //$NON-NLS-1$

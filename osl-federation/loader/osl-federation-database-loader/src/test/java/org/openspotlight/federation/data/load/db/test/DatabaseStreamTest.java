@@ -1,11 +1,11 @@
 package org.openspotlight.federation.data.load.db.test;
 
 import static java.text.MessageFormat.format;
-import static org.openspotlight.common.util.Files.delete;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
@@ -39,13 +39,14 @@ import org.slf4j.LoggerFactory;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
+@SuppressWarnings("all")
 public abstract class DatabaseStreamTest {
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Before
 	public void cleanFiles() throws Exception {
-		delete("./target/test-data/" + getClass().getSimpleName() + "/");
+		delete("./target/test-data/" + this.getClass().getSimpleName() + "/");
 	}
 
 	/**
@@ -65,7 +66,7 @@ public abstract class DatabaseStreamTest {
 	 * @param conn
 	 * @throws Exception
 	 */
-	protected void fillDatabase(Connection conn) throws Exception {
+	protected void fillDatabase(final Connection conn) throws Exception {
 		//
 	}
 
@@ -75,15 +76,9 @@ public abstract class DatabaseStreamTest {
 	 * @param conn
 	 * @throws Exception
 	 */
-	protected void resetDatabase(Connection conn) throws Exception {
+	protected void resetDatabase(final Connection conn) throws Exception {
 		//
 	};
-
-	/**
-	 * 
-	 * @return the types to load during the test.
-	 */
-	protected abstract Set<ScriptType> typesToAssert();
 
 	/**
 	 * This test method will load all artifacts from the configuration and
@@ -96,39 +91,47 @@ public abstract class DatabaseStreamTest {
 	public void shouldLoadAllValidTypes() throws Exception {
 		if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
 			if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
-				validateAllTypes();
+				this.validateAllTypes();
 			} else {
-				logger
+				this.logger
 						.warn(format(
 								"Ignoring test {0} because system property {1} isn't set to true.",
-								getClass().getSimpleName(),
+								this.getClass().getSimpleName(),
 								"runDatabaseVendorTests"));
 			}
 		} else {
-			validateAllTypes();
+			this.validateAllTypes();
 		}
 
 	}
 
+	/**
+	 * 
+	 * @return the types to load during the test.
+	 */
+	protected abstract Set<ScriptType> typesToAssert();
+
 	private void validateAllTypes() throws Exception {
-		DbBundle bundle = createValidConfigurationWithMappings();
+		final DbBundle bundle = this.createValidConfigurationWithMappings();
 		Connection conn = createConnection(bundle);
-		fillDatabase(conn);
-		if (!conn.isClosed())
+		this.fillDatabase(conn);
+		if (!conn.isClosed()) {
 			conn.close();
-		DatabaseStreamLoader loader = new DatabaseStreamLoader();
+		}
+		final DatabaseStreamLoader loader = new DatabaseStreamLoader();
 		loader.loadArtifactsFromMappings(bundle);
 		conn = createConnection(bundle);
-		resetDatabase(conn);
-		if (!conn.isClosed())
+		this.resetDatabase(conn);
+		if (!conn.isClosed()) {
 			conn.close();
+		}
 
-		Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(bundle,
+		final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(bundle,
 				StreamArtifact.class);
-		Set<String> failMessages = new HashSet<String>();
-		lookingTypes: for (ScriptType typeToAssert : typesToAssert()) {
-			for (StreamArtifact streamArtifact : loadedArtifacts) {
-				String relativeName = streamArtifact.getRelativeName();
+		final Set<String> failMessages = new HashSet<String>();
+		lookingTypes: for (final ScriptType typeToAssert : this.typesToAssert()) {
+			for (final StreamArtifact streamArtifact : loadedArtifacts) {
+				final String relativeName = streamArtifact.getRelativeName();
 				if (relativeName.contains(typeToAssert.name())) {
 					assertThat(streamArtifact.getDataSha1(), is(notNullValue()));
 					assertThat(streamArtifact.getData(), is(notNullValue()));
@@ -144,16 +147,17 @@ public abstract class DatabaseStreamTest {
 		if (!failMessages.isEmpty()) {
 			fail(failMessages.toString());
 		}
-		for (StreamArtifact loaded : loadedArtifacts) {
-			String name = "./target/test-data/" + getClass().getSimpleName()
-					+ "/" + loaded.getRelativeName();
-			String dirName = name.substring(0, name.lastIndexOf('/'));
+		for (final StreamArtifact loaded : loadedArtifacts) {
+			final String name = "./target/test-data/"
+					+ this.getClass().getSimpleName() + "/"
+					+ loaded.getRelativeName();
+			final String dirName = name.substring(0, name.lastIndexOf('/'));
 			new File(dirName).mkdirs();
-			OutputStream fos = new BufferedOutputStream(new FileOutputStream(
-					name + ".sql"));
-			InputStream is = loaded.getData();
+			final OutputStream fos = new BufferedOutputStream(
+					new FileOutputStream(name + ".sql"));
+			final InputStream is = loaded.getData();
 			while (true) {
-				int data = is.read();
+				final int data = is.read();
 				if (data == -1) {
 					break;
 				}

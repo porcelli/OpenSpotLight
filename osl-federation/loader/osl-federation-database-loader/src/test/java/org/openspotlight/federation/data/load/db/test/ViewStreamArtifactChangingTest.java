@@ -27,6 +27,7 @@ import org.openspotlight.federation.data.load.db.DatabaseSupport;
  * @author feu
  * 
  */
+@SuppressWarnings("all")
 public class ViewStreamArtifactChangingTest {
 
 	@Before
@@ -38,8 +39,8 @@ public class ViewStreamArtifactChangingTest {
 	public void shouldFireStreamChangeWhenViewWithSelectStarChange()
 			throws Exception {
 
-		Configuration configuration = createH2DbConfiguration("ViewStreamArtifactChangingTest"); //$NON-NLS-1$
-		DbBundle dbBundle = (DbBundle) configuration.getRepositoryByName(
+		final Configuration configuration = createH2DbConfiguration("ViewStreamArtifactChangingTest"); //$NON-NLS-1$
+		final DbBundle dbBundle = (DbBundle) configuration.getRepositoryByName(
 				"H2 Repository") //$NON-NLS-1$
 				.getProjectByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
@@ -53,7 +54,7 @@ public class ViewStreamArtifactChangingTest {
 				"create view exampleView as select * from exampleTable") //$NON-NLS-1$
 				.execute();
 		conn.close();
-		ArtifactLoaderGroup loader = new ArtifactLoaderGroup(
+		final ArtifactLoaderGroup loader = new ArtifactLoaderGroup(
 				new DatabaseStreamLoader(), new DatabaseCustomArtifactLoader());
 
 		loader.loadArtifactsFromMappings(dbBundle);
@@ -73,11 +74,11 @@ public class ViewStreamArtifactChangingTest {
 				.execute();
 		conn.close();
 		loader.loadArtifactsFromMappings(dbBundle);
-		StreamArtifact view = dbBundle
+		final StreamArtifact view = dbBundle
 				.getStreamArtifactByName("PUBLIC/VIEW/DB/EXAMPLEVIEW");
 		assertThat(view, is(notNullValue()));
-		Set<ConfigurationNode> dirtyNodes = dbBundle.getInstanceMetadata()
-				.getSharedData().getDirtyNodes();
+		final Set<ConfigurationNode> dirtyNodes = dbBundle
+				.getInstanceMetadata().getSharedData().getDirtyNodes();
 		assertThat(dirtyNodes.contains(view), is(true));
 	}
 }

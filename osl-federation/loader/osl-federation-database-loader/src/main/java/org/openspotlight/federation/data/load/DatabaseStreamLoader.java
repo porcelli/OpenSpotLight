@@ -6,6 +6,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -29,6 +30,8 @@ import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.data.load.db.test.DatabaseStreamTest;
+import org.openspotlight.federation.data.load.db.test.RunWhenDatabaseVendorTestsIsActive;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**
@@ -49,19 +52,113 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * <b>osl-database-artifact-loader/src/main
  * /resources/configuration/DatabaseType-ScriptType.xml</b>.
  * 
- * There's two ways to create this scripts: Using template or using sql to get
- * the ddl scripts. FIXME finish javadoc
+ * There's two ways to create this scripts: to use template or to use direct sql
+ * to get the ddl scripts. The following content examples should be used as a
+ * base to that files:
+ * 
+ * <b>SQL way</b>
+ * 
+ * <pre>
+ * &lt;script&gt;
+ * 	&lt;scriptType&gt;FUNCTION&lt;/scriptType&gt;
+ * 	&lt;database&gt;DB2&lt;/database&gt;
+ * 	&lt;preferedType&gt;SQL&lt;/preferedType&gt;
+ * 	&lt;dataSelect&gt;&lt;![CDATA[
+ * 		select 
+ * 			funcschema as schema_name, 
+ * 			funcname as name, 
+ * 			'' as catalog_name 
+ * 		from syscat.FUNCTIONS
+ *       ]]&gt;&lt;/dataSelect&gt;
+ * 	&lt;contentSelect&gt;&lt;![CDATA[
+ * 		select body
+ * 		from syscat.FUNCTIONS
+ * 		where
+ * 			funcschema = '$schema_name$' and
+ * 			funcname  = '$name$'
+ *    	 ]]&gt;&lt;/contentSelect&gt;
+ * &lt;/script&gt;
+ * </pre>
+ * 
+ * <b>Template way</b>
+ * 
+ * <pre>
+ * &lt;script&gt;
+ * 	&lt;scriptType&gt;INDEX&lt;/scriptType&gt;
+ * 	&lt;database&gt;DB2&lt;/database&gt;
+ * 	&lt;preferedType&gt;TEMPLATE&lt;/preferedType&gt;
+ * 	&lt;template&gt;&lt;![CDATA[
+ * 	create index $name$ on $detail.tabname$ ( $detail.colnames$ )
+ * 	]]&gt;&lt;/template&gt;
+ * 
+ * 	&lt;dataSelect&gt;&lt;![CDATA[
+ * 		select 
+ * 			indschema as schema_name, 
+ * 			indname as name, 
+ * 			'' as catalog_name 
+ * 		from syscat.INDEXES
+ *       ]]&gt;&lt;/dataSelect&gt;
+ * 	&lt;templatesSelect&gt;&lt;![CDATA[
+ * 		select 
+ * 			tabname, colnames 
+ * 		from syscat.indexes 
+ * 		where
+ * 		    indschema = '$schema_name$' and
+ * 		    indname = '$name$'
+ * 	 ]]&gt;&lt;/templatesSelect&gt;
+ * &lt;/script&gt;
+ * </pre>
+ * 
+ * <b>Few tips:</b>
+ * <ul>
+ * <li>The data content select is necessary in both cases, and the column names
+ * should be the same as in both examples.</li>
+ * <li>All fields are mandatory in data content select, except for CATALOG_NAME.
+ * </li>
+ * <li>In both cases all fields from data content select must be used in the
+ * target select, using a syntax for {@link StringTemplate}.</li>
+ * <li>In SQL case, the select should return just one column and one row. If
+ * there's more than one row or column, just the first one will be used. If
+ * there's no return for the select, that artifact been loaded should be
+ * ignored.</li>
+ * <li>In template case, the template section and templatesSelect section should
+ * be filled.</li>
+ * <li>In template case, the following ways to access select fields should be
+ * used: $name$ for results from the first select, $name$ for results from the
+ * templatesSelect on the first row, and $detail.name$ to iterate all rows. Note
+ * that this last case should be done in a {@link StringTemplate} way. Please
+ * take a look on the other xmls or the {@link StringTemplate} documentation for
+ * more details.</li>
+ * <li>Theres a test case called {@link DatabaseStreamTest}. This test case
+ * should be used to test all valid {@link ScriptType script types} for all
+ * valid {@link DatabaseType database types}. When necessary, the {@link Driver}
+ * dependency should be included inside the pom's <b>withDatabaseVendorTests</b>
+ * profile. The test should implement {@link RunWhenDatabaseVendorTestsIsActive}
+ * interface. So, the tests and the profile should be active just when the
+ * system property <b>runDatabaseVendorTests</b> is set to true.</li>
+ * </ul>
  * 
  * @author feu
  * 
  */
 public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
+	/**
+	 * {@link ThreadExecutionContext} class for loading database
+	 * {@link StreamArtifact stream artifacts} using direct sql or template
+	 * filled with sql.
+	 * 
+	 * @author feu
+	 * 
+	 */
 	protected static class DatabaseThreadExecutionContext extends
 			DefaultThreadExecutionContext {
 
 		private Connection conn;
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
@@ -100,6 +197,17 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			return null;
 		}
 
+		/**
+		 * Loads the stream content by using a sql statement to fill it.
+		 * 
+		 * 
+		 * @param catalog
+		 * @param schema
+		 * @param name
+		 * @param scriptDescription
+		 * @return the stream loaded from a sql query
+		 * @throws Exception
+		 */
 		private byte[] loadFromSql(final String catalog, final String schema,
 				final String name,
 				final DatabaseMetadataScript scriptDescription)
@@ -139,6 +247,19 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			return null;
 		}
 
+		/**
+		 * Loads the stream content by using a {@link StringTemplate} and a sql
+		 * statement to fill it.
+		 * 
+		 * 
+		 * @param catalog
+		 * @param schema
+		 * @param name
+		 * @param scriptDescription
+		 * @return the stream loaded from a sql query and its
+		 *         {@link StringTemplate}
+		 * @throws Exception
+		 */
 		private byte[] loadFromTemplate(final String catalog,
 				final String schema, final String name,
 				final DatabaseMetadataScript scriptDescription)
@@ -224,6 +345,9 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			}
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void threadExecutionAboutToStart(final Bundle bundle,
 				final ArtifactMapping mapping,
@@ -236,6 +360,9 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			}
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void threadExecutionFinished(final Bundle bundle,
 				final ArtifactMapping mapping,
@@ -249,7 +376,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			}
 		}
 
-	};
+	}
 
 	/**
 	 * This context will be used to load all database data
@@ -330,6 +457,9 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			return emptySet();
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public Integer withThreadPoolSize(final Bundle bundle) {
 			final Integer defaultValue = super.withThreadPoolSize(bundle);
@@ -347,11 +477,17 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected GlobalExecutionContext createGlobalExecutionContext() {
 		return new GlobalDatabaseContext();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected ThreadExecutionContext createThreadExecutionContext() {
 		return new DatabaseThreadExecutionContext();

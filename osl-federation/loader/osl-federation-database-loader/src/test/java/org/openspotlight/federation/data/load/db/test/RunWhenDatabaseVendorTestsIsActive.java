@@ -10,5 +10,5 @@ package org.openspotlight.federation.data.load.db.test;
  * 
  */
 public interface RunWhenDatabaseVendorTestsIsActive {
-
+	//
 }

@@ -129,32 +129,25 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 	protected abstract static class GlobalDnaResourceContext extends
 			DefaultGlobalExecutionContext {
 
-		private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
 		private static final String repositoryName = "repository"; //$NON-NLS-1$
-
-		private final Map<String, Session> mappingSessions = new ConcurrentHashMap<String, Session>();
+		private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
 
 		private final Map<String, JcrEngine> mappingEngines = new ConcurrentHashMap<String, JcrEngine>();
 
+		private final Map<String, Session> mappingSessions = new ConcurrentHashMap<String, Session>();
+
 		/**
+		 * Abstract method to setup the DNA Repository Source
 		 * 
-		 * {@inheritDoc}
+		 * @param sourceDefinition
+		 * 
+		 * @param configuration
+		 * @param bundle
+		 * @param relative
 		 */
-		public Set<String> getAllArtifactNames(final Bundle bundle,
-				final ArtifactMapping mapping) throws ConfigurationException {
-
-			final Set<String> names = new HashSet<String>();
-			try {
-
-				final Session session = getSessionForMapping(mapping
-						.getRelative());
-				session.getRootNode().accept(
-						withVisitor(new FillNamesVisitor(names)));
-				return names;
-			} catch (final Exception e) {
-				throw logAndReturnNew(e, ConfigurationException.class);
-			}
-		}
+		protected abstract void configureWithBundle(
+				RepositorySourceDefinition<?> sourceDefinition, Bundle bundle,
+				ArtifactMapping relative);
 
 		/**
 		 * Creates a new {@link Session jcr session}. The client class is
@@ -171,6 +164,26 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 					new SecurityContextCredentials(
 							DefaultSecurityContext.READ_ONLY));
 			return session;
+		}
+
+		/**
+		 * 
+		 * {@inheritDoc}
+		 */
+		public Set<String> getAllArtifactNames(final Bundle bundle,
+				final ArtifactMapping mapping) throws ConfigurationException {
+
+			final Set<String> names = new HashSet<String>();
+			try {
+
+				final Session session = this.getSessionForMapping(mapping
+						.getRelative());
+				session.getRootNode().accept(
+						withVisitor(new FillNamesVisitor(names)));
+				return names;
+			} catch (final Exception e) {
+				throw logAndReturnNew(e, ConfigurationException.class);
+			}
 		}
 
 		/**
@@ -203,7 +216,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 						.getArtifactMappings()) {
 
 					final JcrConfiguration configuration = new JcrConfiguration();
-					configureWithBundle(configuration
+					this.configureWithBundle(configuration
 							.repositorySource(repositorySource), bundle,
 							relative);
 					configuration.repository(repositoryName).setSource(
@@ -218,17 +231,6 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 				throw logAndReturnNew(e, ConfigurationException.class);
 			}
 		}
-
-		/**
-		 * Abstract method to setup the DNA Repository Source
-		 * 
-		 * @param configuration
-		 * @param bundle
-		 * @param relative
-		 */
-		protected abstract void configureWithBundle(
-				RepositorySourceDefinition<?> sourceDefinition, Bundle bundle,
-				ArtifactMapping relative);
 
 		/**
 		 * 
@@ -271,7 +273,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
 			try {
-				final Node node = getSession().getRootNode().getNode(
+				final Node node = this.getSession().getRootNode().getNode(
 						artifactName);
 
 				final Node content = node.getNode("jcr:content"); //$NON-NLS-1$

@@ -10,6 +10,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
+@SuppressWarnings("all")
 public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 		RunWhenDatabaseVendorTestsIsActive {
 
@@ -18,25 +19,15 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createSqlServerDbConfiguration();
+		final Configuration configuration = createSqlServerDbConfiguration();
 		return (DbBundle) configuration.getRepositoryByName(
 				"sqlserver Repository") //$NON-NLS-1$
 				.getProjectByName("sqlserver Group") //$NON-NLS-1$
 				.getBundleByName("sqlserver Connection"); //$NON-NLS-1$
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected Set<ScriptType> typesToAssert() {
-		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
-				ScriptType.PROCEDURE, ScriptType.FUNCTION, ScriptType.VIEW,
-				ScriptType.CONSTRAINT);
-	}
-
-	@Override
-	protected void fillDatabase(Connection conn) throws Exception {
+	protected void fillDatabase(final Connection conn) throws Exception {
 		conn.prepareStatement(
 				"CREATE TABLE example_table ( id INT,  data VARCHAR(100) ) ")
 				.execute();
@@ -59,12 +50,22 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 	}
 
 	@Override
-	protected void resetDatabase(Connection conn) throws Exception {
+	protected void resetDatabase(final Connection conn) throws Exception {
 		conn.prepareStatement("drop TRIGGER example_trigger ").execute();
 		conn.prepareStatement("drop view example_view ").execute();
 		conn.prepareStatement("drop TABLE example_table ").execute();
 		// conn.prepareStatement("drop PROCEDURE example_proc ").execute();
 		conn.prepareStatement(" drop FUNCTION example_function ").execute();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Set<ScriptType> typesToAssert() {
+		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
+				ScriptType.PROCEDURE, ScriptType.FUNCTION, ScriptType.VIEW,
+				ScriptType.CONSTRAINT);
 	}
 
 }

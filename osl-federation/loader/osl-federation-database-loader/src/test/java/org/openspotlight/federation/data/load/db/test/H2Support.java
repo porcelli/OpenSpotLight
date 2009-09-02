@@ -2,8 +2,10 @@ package org.openspotlight.federation.data.load.db.test;
 
 import java.sql.Connection;
 
+@SuppressWarnings("all")
 public class H2Support {
-	public static void fillDatabaseArtifacts(Connection conn) throws Exception {
+	public static void fillDatabaseArtifacts(final Connection conn)
+			throws Exception {
 		conn
 				.prepareStatement(
 						"create alias exampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\"") //$NON-NLS-1$
