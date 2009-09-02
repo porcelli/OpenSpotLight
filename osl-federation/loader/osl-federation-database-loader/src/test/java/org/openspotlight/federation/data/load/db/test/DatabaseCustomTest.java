@@ -20,60 +20,27 @@ import org.openspotlight.federation.data.impl.ViewArtifact;
 import org.openspotlight.federation.data.impl.RoutineArtifact.RoutineType;
 import org.openspotlight.federation.data.load.DatabaseCustomArtifactLoader;
 
-@SuppressWarnings("nls")
+@SuppressWarnings("all")
 public class DatabaseCustomTest {
-
-	private DatabaseCustomArtifactLoader artifactLoader = new DatabaseCustomArtifactLoader();
-
-	@Before
-	public void cleanDatabaseFiles() throws Exception {
-		delete("./target/test-data"); //$NON-NLS-1$
-	}
 
 	@BeforeClass
 	public static void loadDriver() throws Exception {
 		Class.forName("org.h2.Driver");
 	}
 
-	@Test
-	public void shouldLoadTablesAndViews() throws Exception {
-		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Group")
-				.getBundleByName("H2 Connection");
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
-		final Connection connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
-				"sa", "");
-		connection
-				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
-		connection
-				.prepareStatement(
-						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
-				.execute();
-		connection.commit();
-		connection.close();
+	private final DatabaseCustomArtifactLoader artifactLoader = new DatabaseCustomArtifactLoader();
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-
-		Set<String> loadedNames = bundle.getCustomArtifactNames();
-		CustomArtifact exampleTable = bundle
-				.getCustomArtifactByName("PUBLIC/TABLE/DB/EXAMPLETABLE");
-		CustomArtifact exampleView = bundle
-				.getCustomArtifactByName("PUBLIC/VIEW/DB/EXAMPLEVIEW");
-		assertThat(exampleTable, is(TableArtifact.class));
-		assertThat(exampleView, is(ViewArtifact.class));
+	@Before
+	public void cleanDatabaseFiles() throws Exception {
+		delete("./target/test-data"); //$NON-NLS-1$
 	}
 
 	@Test
 	public void shouldLoadProceduresAndFunctions() throws Exception {
 		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Group")
-				.getBundleByName("H2 Connection");
+				"H2 Repository").getProjectByName("h2 Group").getBundleByName(
+				"H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 		Connection connection = getConnection(
@@ -93,9 +60,9 @@ public class DatabaseCustomTest {
 
 		this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		RoutineArtifact exampleProcedure = (RoutineArtifact) bundle
+		final RoutineArtifact exampleProcedure = (RoutineArtifact) bundle
 				.getCustomArtifactByName("PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
-		RoutineArtifact exampleFunction = (RoutineArtifact) bundle
+		final RoutineArtifact exampleFunction = (RoutineArtifact) bundle
 				.getCustomArtifactByName("PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
 		assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
 		assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
@@ -109,6 +76,39 @@ public class DatabaseCustomTest {
 		connection.commit();
 		connection.close();
 
+	}
+
+	@Test
+	public void shouldLoadTablesAndViews() throws Exception {
+		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
+				"DatabaseArtifactLoaderTest").getRepositoryByName(
+				"H2 Repository").getProjectByName("h2 Group").getBundleByName(
+				"H2 Connection");
+		bundle
+				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+		final Connection connection = getConnection(
+				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
+				"sa", "");
+		connection
+				.prepareStatement(
+						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection
+				.prepareStatement(
+						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
+				.execute();
+		connection.commit();
+		connection.close();
+
+		this.artifactLoader.loadArtifactsFromMappings(bundle);
+
+		final Set<String> loadedNames = bundle.getCustomArtifactNames();
+		final CustomArtifact exampleTable = bundle
+				.getCustomArtifactByName("PUBLIC/TABLE/DB/EXAMPLETABLE");
+		final CustomArtifact exampleView = bundle
+				.getCustomArtifactByName("PUBLIC/VIEW/DB/EXAMPLEVIEW");
+		assertThat(exampleTable, is(TableArtifact.class));
+		assertThat(exampleView, is(ViewArtifact.class));
 	}
 
 }

@@ -10,6 +10,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
+@SuppressWarnings("all")
 public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements
 		RunWhenDatabaseVendorTestsIsActive {
 
@@ -18,23 +19,14 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createMySqlDbConfiguration();
+		final Configuration configuration = createMySqlDbConfiguration();
 		return (DbBundle) configuration.getRepositoryByName("mysql Repository") //$NON-NLS-1$
 				.getProjectByName("mysql Group") //$NON-NLS-1$
 				.getBundleByName("mysql Connection"); //$NON-NLS-1$
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected Set<ScriptType> typesToAssert() {
-		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
-				ScriptType.FUNCTION, ScriptType.PROCEDURE);
-	}
-
-	@Override
-	protected void fillDatabase(Connection conn) throws Exception {
+	protected void fillDatabase(final Connection conn) throws Exception {
 		conn.prepareStatement(
 				"CREATE TABLE example_table ( id INT,  data VARCHAR(100) ) ")
 				.execute();
@@ -55,11 +47,20 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements
 	}
 
 	@Override
-	protected void resetDatabase(Connection conn) throws Exception {
+	protected void resetDatabase(final Connection conn) throws Exception {
 		conn.prepareStatement("drop TRIGGER example_trigger ").execute();
 		conn.prepareStatement("drop TABLE example_table ").execute();
 		conn.prepareStatement("drop PROCEDURE example_proc ").execute();
 		conn.prepareStatement(" drop FUNCTION example_function ").execute();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Set<ScriptType> typesToAssert() {
+		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
+				ScriptType.FUNCTION, ScriptType.PROCEDURE);
 	}
 
 }

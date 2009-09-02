@@ -113,16 +113,17 @@ public final class BundleProcessorManager {
 	 * and so on.
 	 * 
 	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+	 * @param <T>
 	 */
 	private static class BundleProcessorCallable<T extends Artifact> implements
 			Callable<ProcessingAction> {
 
 		private final BundleProcessor<T> bundleProcessor;
 		private final BundleProcessorWithCallback<T> callBack;
-		private final T targetArtifact;
 		private final GraphContext graphContext;
 		private final BundleProcessingGroup<T> immutableProcessingGroup;
 		private final BundleProcessingGroup<T> mutableProcessingGroup;
+		private final T targetArtifact;
 
 		/**
 		 * Constructor to initialize final mandatory fields.
@@ -220,8 +221,8 @@ public final class BundleProcessorManager {
 	 * @param <T>
 	 */
 	private static class CreateProcessorActionsResult<T extends Artifact> {
-		private final List<BundleProcessorCallable<T>> processorCallables;
 		FinalizationContext<T> finalizationContext;
+		private final List<BundleProcessorCallable<T>> processorCallables;
 
 		public CreateProcessorActionsResult(
 				final List<BundleProcessorCallable<T>> processorCallables,
@@ -251,8 +252,8 @@ public final class BundleProcessorManager {
 	 *            Artifact type
 	 */
 	private static class FinalizationContext<T extends Artifact> {
-		private final GraphContext graphContext;
 		private final BundleProcessingGroup<T> bundleProcessingGroup;
+		private final GraphContext graphContext;
 		private final BundleProcessor<T> processor;
 
 		public FinalizationContext(final GraphContext graphContext,
@@ -303,8 +304,8 @@ public final class BundleProcessorManager {
 	 */
 	private static class MappedProcessor<T extends Artifact> {
 		private final Class<T> artifactType;
-		private final Class<? extends BundleProcessor<T>> processorType;
 		private final int hashcode;
+		private final Class<? extends BundleProcessor<T>> processorType;
 
 		public MappedProcessor(final Class<T> artifactType,
 				final Class<? extends BundleProcessor<T>> processorType) {
@@ -354,6 +355,9 @@ public final class BundleProcessorManager {
 		}
 	}
 
+	private static final CreateProcessorActionsResult<Artifact> emptyResult = new CreateProcessorActionsResult<Artifact>(
+			new ArrayList<BundleProcessorCallable<Artifact>>(0), null);
+
 	private static final Set<MappedProcessor<? extends Artifact>> processorRegistry;
 
 	/**
@@ -370,6 +374,8 @@ public final class BundleProcessorManager {
 
 	/**
 	 * This method fills the artifacts by change type.
+	 * 
+	 * @param <T>
 	 * 
 	 * @param bundle
 	 * @param allValidArtifacts
@@ -432,9 +438,6 @@ public final class BundleProcessorManager {
 	 */
 	private SLGraph graph;
 
-	private static final CreateProcessorActionsResult<Artifact> emptyResult = new CreateProcessorActionsResult<Artifact>(
-			new ArrayList<BundleProcessorCallable<Artifact>>(0), null);
-
 	/**
 	 * Constructor to finalize graph sessions
 	 * 
@@ -451,6 +454,8 @@ public final class BundleProcessorManager {
 	 * . It make a few copies because the decision to mark some artifact as
 	 * ignored or processed should be done by each {@link BundleProcessor},
 	 * independent of the other {@link BundleProcessor} involved.
+	 * 
+	 * @param <T>
 	 * 
 	 * @param bundle
 	 * @param allValidArtifacts
@@ -559,6 +564,7 @@ public final class BundleProcessorManager {
 	 *            artifact type
 	 * @param mappedProcessor
 	 * @param allProcessActions
+	 * @param finalizationContexts
 	 * @param bundle
 	 * @param graphContext
 	 * @param processors
@@ -639,7 +645,7 @@ public final class BundleProcessorManager {
 			}
 			final Integer numberOfParallelThreads = repository
 					.getConfiguration().getNumberOfParallelThreads();
-			ExecutorService executor = Executors
+			final ExecutorService executor = Executors
 					.newFixedThreadPool(numberOfParallelThreads);
 			try {
 
@@ -648,9 +654,9 @@ public final class BundleProcessorManager {
 				while (executor.awaitTermination(300, TimeUnit.MILLISECONDS)) {
 					this.wait();
 				}
-				
+
 				for (final FinalizationContext<? extends Artifact> context : finalizationContexts) {
-					if(context!=null){
+					if (context != null) {
 						context.getProcessor().globalProcessingFinalized(
 								context.getBundleProcessingGroup(),
 								context.getGraphContext());

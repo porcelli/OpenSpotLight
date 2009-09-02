@@ -9,6 +9,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
+@SuppressWarnings("all")
 public class Db2DatabaseStreamTest extends DatabaseStreamTest implements
 		RunWhenDatabaseVendorTestsIsActive {
 
@@ -17,7 +18,7 @@ public class Db2DatabaseStreamTest extends DatabaseStreamTest implements
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createDb2Configuration();
+		final Configuration configuration = createDb2Configuration();
 		return (DbBundle) configuration.getRepositoryByName("db2 Repository") //$NON-NLS-1$
 				.getProjectByName("db2 Group") //$NON-NLS-1$
 				.getBundleByName("db2 Connection"); //$NON-NLS-1$

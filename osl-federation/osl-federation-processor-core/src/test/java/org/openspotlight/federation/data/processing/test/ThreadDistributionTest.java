@@ -65,9 +65,10 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 
 enum FinishMode {
-	NORMAL, ERROR
+	ERROR, NORMAL
 }
 
+@SuppressWarnings("all")
 class Sleepy implements Callable<FinishMode> {
 
 	public FinishMode call() throws Exception {
@@ -91,8 +92,8 @@ class Sleepy implements Callable<FinishMode> {
 @SuppressWarnings("all")
 public class ThreadDistributionTest {
 
-	static final int TIME = 100;
 	static final int NUMBER_OF_THREADS = 10;
+	static final int TIME = 100;
 
 	@Test
 	public void shouldSpendLessThanFiveSeconds() throws Exception {

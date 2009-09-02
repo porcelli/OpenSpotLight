@@ -50,100 +50,192 @@
 package org.openspotlight.federation.data.load.db;
 
 import org.openspotlight.federation.data.impl.DatabaseType;
+import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.load.DatabaseStreamLoader;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Pojo class to store the script to get database metadata for a database type.
- * This class should be getter by {@link DatabaseMetadataScriptManager}.
+ * This class should be getted by {@link DatabaseMetadataScriptManager}.
+ * 
+ * This pojo class is serialized by {@link XStream} and should not be directly
+ * instantiated. Instead, take a look on {@link DatabaseStreamLoader} class to
+ * see the instructions to fill the xml files.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public final class DatabaseMetadataScript {
 
+	/**
+	 * Type for describing the way for filling the {@link StreamArtifact}
+	 * content for {@link DatabaseType database} {@link ScriptType scripts}.
+	 * 
+	 * @author feu
+	 * 
+	 */
 	public static enum PreferedType {
-		TEMPLATE, SQL
+		/**
+		 * Simple sql statement should be used.
+		 */
+		SQL,
+		/**
+		 * Template should be used.
+		 */
+		TEMPLATE
 	}
 
-	private PreferedType preferedType;
-	private boolean immutable = false;
-	private ScriptType scriptType;
-	private DatabaseType database;
 	private String contentSelect;
+	private DatabaseType database;
 	private String dataSelect;
+	private boolean immutable = false;
+	private PreferedType preferedType;
+	private ScriptType scriptType;
 	private String template;
 	private String templatesSelect;
 
-	public ScriptType getScriptType() {
-		return this.scriptType;
-	}
-
-	public void setScriptType(ScriptType scriptType) {
-		if (this.immutable) {
-			throw new UnsupportedOperationException();
-		}
-		this.scriptType = scriptType;
-	}
-
-	public DatabaseType getDatabase() {
-		return this.database;
-	}
-
-	public void setDatabase(DatabaseType database) {
-		if (this.immutable) {
-			throw new UnsupportedOperationException();
-		}
-		this.database = database;
-	}
-
+	/**
+	 * 
+	 * @return the select for filling the stream content
+	 */
 	public String getContentSelect() {
 		return this.contentSelect;
 	}
 
-	public void setContentSelect(String contentSelect) {
+	/**
+	 * 
+	 * @return the database type
+	 */
+	public DatabaseType getDatabase() {
+		return this.database;
+	}
+
+	/**
+	 * 
+	 * @return the mandatory select for filling the basic common data for all
+	 *         stream artifacts loaded from database
+	 */
+	public String getDataSelect() {
+		return this.dataSelect;
+	}
+
+	/**
+	 * 
+	 * @return the prefered type
+	 */
+	public PreferedType getPreferedType() {
+		return this.preferedType;
+	}
+
+	/**
+	 * 
+	 * @return the script type
+	 */
+	public ScriptType getScriptType() {
+		return this.scriptType;
+	}
+
+	/**
+	 * 
+	 * @return the template for stream content
+	 */
+	public String getTemplate() {
+		return this.template;
+	}
+
+	/**
+	 * 
+	 * @return the select to fill the template for stream content
+	 */
+	public String getTemplatesSelect() {
+		return this.templatesSelect;
+	}
+
+	/**
+	 * Sets the select for filling the stream content.
+	 * 
+	 * @param contentSelect
+	 */
+	public void setContentSelect(final String contentSelect) {
 		if (this.immutable) {
 			throw new UnsupportedOperationException();
 		}
 		this.contentSelect = contentSelect;
 	}
 
-	public String getDataSelect() {
-		return this.dataSelect;
+	/**
+	 * Sets the database type.
+	 * 
+	 * @param database
+	 */
+	public void setDatabase(final DatabaseType database) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.database = database;
 	}
 
-	public void setDataSelect(String dataSelect) {
+	/**
+	 * Sets the mandatory select for filling the basic common data for all
+	 * stream artifacts loaded from database.
+	 * 
+	 * @param dataSelect
+	 */
+	public void setDataSelect(final String dataSelect) {
 		if (this.immutable) {
 			throw new UnsupportedOperationException();
 		}
 		this.dataSelect = dataSelect;
 	}
 
+	/**
+	 * Changes the behavior of this object to be immutable. After this method
+	 * call all setters should throw an {@link UnsupportedOperationException}
+	 * when called.
+	 */
 	void setImmutable() {
 		if (!this.immutable) {
 			this.immutable = true;
 		}
 	}
 
-	public PreferedType getPreferedType() {
-		return this.preferedType;
-	}
-
-	public void setPreferedType(PreferedType preferedType) {
+	/**
+	 * Sets the preffered type.
+	 * 
+	 * @param preferedType
+	 */
+	public void setPreferedType(final PreferedType preferedType) {
 		this.preferedType = preferedType;
 	}
 
-	public String getTemplate() {
-		return this.template;
+	/**
+	 * Sets the script type.
+	 * 
+	 * @param scriptType
+	 */
+	public void setScriptType(final ScriptType scriptType) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.scriptType = scriptType;
 	}
 
-	public void setTemplate(String template) {
+	/**
+	 * Sets the template for stream content.
+	 * 
+	 * @param template
+	 */
+	public void setTemplate(final String template) {
 		this.template = template;
 	}
 
-	public String getTemplatesSelect() {
-		return this.templatesSelect;
-	}
-
-	public void setTemplatesSelect(String templatesSelect) {
+	/**
+	 * Sets the select to fill the template for stream content.
+	 * 
+	 * @param templatesSelect
+	 */
+	public void setTemplatesSelect(final String templatesSelect) {
 		this.templatesSelect = templatesSelect;
 	}
 

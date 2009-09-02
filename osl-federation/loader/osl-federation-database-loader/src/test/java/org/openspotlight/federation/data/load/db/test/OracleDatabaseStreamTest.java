@@ -2,7 +2,6 @@ package org.openspotlight.federation.data.load.db.test;
 
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOracleOciDbConfiguration;
 
-import java.sql.Connection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -10,6 +9,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
+@SuppressWarnings("all")
 public class OracleDatabaseStreamTest extends DatabaseStreamTest implements
 		RunWhenDatabaseVendorTestsIsActive {
 
@@ -18,7 +18,7 @@ public class OracleDatabaseStreamTest extends DatabaseStreamTest implements
 	 */
 	@Override
 	protected DbBundle createValidConfigurationWithMappings() {
-		Configuration configuration = createOracleOciDbConfiguration();
+		final Configuration configuration = createOracleOciDbConfiguration();
 		return (DbBundle) configuration
 				.getRepositoryByName("oracle Repository") //$NON-NLS-1$
 				.getProjectByName("oracle Group") //$NON-NLS-1$
