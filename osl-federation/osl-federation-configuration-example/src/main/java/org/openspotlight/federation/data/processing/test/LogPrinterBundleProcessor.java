@@ -53,8 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
-import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
 import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,48 +64,45 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor {
-    
-    /**
-     * counter to use on test
-     */
-    public static AtomicInteger count = new AtomicInteger(0);
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public void globalProcessingFinalized(
-            final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-            final GraphContext graphContext) {
-        // nothing to do here
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public final ProcessingStartAction globalProcessingStarted(
-            final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
-            throws BundleProcessingFatalException {
-        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public ProcessingAction processArtifact(
-            final StreamArtifact targetArtifact,
-            final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
-            throws BundleProcessingNonFatalException,
-            BundleProcessingFatalException {
-        this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
-        count.incrementAndGet();
-        return ProcessingAction.ARTIFACT_PROCESSED;
-    }
-    
+
+	/**
+	 * counter to use on test
+	 */
+	public static AtomicInteger count = new AtomicInteger(0);
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public void globalProcessingFinalized(
+			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+			final GraphContext graphContext) {
+		// nothing to do here
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public final ProcessingStartAction globalProcessingStarted(
+			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+			final GraphContext graphContext) {
+		return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public ProcessingAction processArtifact(
+			final StreamArtifact targetArtifact,
+			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+			final GraphContext graphContext) {
+		this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
+		count.incrementAndGet();
+		return ProcessingAction.ARTIFACT_PROCESSED;
+	}
+
 }

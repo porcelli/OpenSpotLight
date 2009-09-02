@@ -145,15 +145,18 @@ public final class JcrNodeVisitor implements ItemVisitor {
 		 * 
 		 * @param n
 		 * @param currenctlyAddedNodes
+		 * @param limit
+		 * @param handler
+		 * @param visitor
 		 * @param state
 		 * @throws Exception
 		 */
 		private static void fillChildren(final Node n,
-				final LinkedList<Node> currenctlyAddedNodes, Integer limit,
-				final ErrorHandler handler, final NodeVisitor visitor)
-				throws Exception {
+				final LinkedList<Node> currenctlyAddedNodes,
+				final Integer limit, final ErrorHandler handler,
+				final NodeVisitor visitor) throws Exception {
 			try {
-				if (limit == null || n.getDepth() < limit.intValue()) {
+				if ((limit == null) || (n.getDepth() < limit.intValue())) {
 					if (n.hasNodes()) {
 						final NodeIterator nodeIterator = n.getNodes();
 						while (nodeIterator.hasNext()) {
@@ -201,6 +204,8 @@ public final class JcrNodeVisitor implements ItemVisitor {
 		}
 
 	}
+
+	private static final ErrorHandler DEFAULT_HANDLER = new DoNothingErrorHandler();
 
 	/**
 	 * Creates an {@link ItemVisitor} to visit the nodes with no level limit.
@@ -266,17 +271,16 @@ public final class JcrNodeVisitor implements ItemVisitor {
 
 	private final ErrorHandler errorHandler;
 
-	private final NodeVisitor visitor;
-
 	private final Integer maxLevels;
 
-	private static final ErrorHandler DEFAULT_HANDLER = new DoNothingErrorHandler();
+	private final NodeVisitor visitor;
 
 	/**
 	 * Creates a {@link JcrNodeVisitor} with max levels.
 	 * 
 	 * @param visitor
 	 * @param maxLevels
+	 * @param handler
 	 */
 	private JcrNodeVisitor(final NodeVisitor visitor, final Integer maxLevels,
 			final ErrorHandler handler) {
@@ -302,7 +306,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
 	 * 
 	 * {@inheritDoc}
 	 */
-	public void visit(final Property property) throws RepositoryException {
+	public void visit(final Property property) {
 		// nothing to do here
 	}
 

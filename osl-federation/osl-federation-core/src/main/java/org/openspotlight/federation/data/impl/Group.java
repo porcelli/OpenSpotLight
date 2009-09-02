@@ -82,27 +82,11 @@ public final class Group implements ConfigurationNode {
 	private static final String ACTIVE = "active"; //$NON-NLS-1$
 
 	private static final String GRAPH_ROOT = "graphRoot";
+	static final long serialVersionUID = -3606246260530743008L;
+
 	private static final String TYPE = "type";
 
-	public Boolean getGraphRoot() {
-		return instanceMetadata.getProperty(GRAPH_ROOT);
-	}
-
-	public void setGraphRoot(Boolean graphRoot) {
-		this.instanceMetadata.setProperty(GRAPH_ROOT, graphRoot);
-	}
-
-	public String getType() {
-		return this.instanceMetadata.getProperty(TYPE);
-	}
-
-	public void setType(String type) {
-		this.instanceMetadata.setProperty(TYPE, type);
-	}
-
 	private final InstanceMetadata instanceMetadata;
-
-	static final long serialVersionUID = -3606246260530743008L;
 
 	/**
 	 * Creates a project within a other project.
@@ -256,6 +240,14 @@ public final class Group implements ConfigurationNode {
 
 	/**
 	 * 
+	 * @return the graph root property
+	 */
+	public Boolean getGraphRoot() {
+		return this.instanceMetadata.getProperty(GRAPH_ROOT);
+	}
+
+	/**
+	 * 
 	 * {@inheritDoc}
 	 */
 	public final InstanceMetadata getInstanceMetadata() {
@@ -330,6 +322,14 @@ public final class Group implements ConfigurationNode {
 
 	/**
 	 * 
+	 * @return the type property
+	 */
+	public String getType() {
+		return this.instanceMetadata.getProperty(TYPE);
+	}
+
+	/**
+	 * 
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -377,10 +377,10 @@ public final class Group implements ConfigurationNode {
 	/**
 	 * Removes a project.
 	 * 
-	 * @param Group
+	 * @param group
 	 */
-	public final void removeProject(final Group Project) {
-		this.instanceMetadata.removeChild(Project);
+	public final void removeProject(final Group group) {
+		this.instanceMetadata.removeChild(group);
 	}
 
 	/**
@@ -390,6 +390,24 @@ public final class Group implements ConfigurationNode {
 	 */
 	public final void setActive(final Boolean active) {
 		this.instanceMetadata.setProperty(ACTIVE, active);
+	}
+
+	/**
+	 * Sets the graph root property.
+	 * 
+	 * @param graphRoot
+	 */
+	public void setGraphRoot(final Boolean graphRoot) {
+		this.instanceMetadata.setProperty(GRAPH_ROOT, graphRoot);
+	}
+
+	/**
+	 * Sets the type property.
+	 * 
+	 * @param type
+	 */
+	public void setType(final String type) {
+		this.instanceMetadata.setProperty(TYPE, type);
 	}
 
 }

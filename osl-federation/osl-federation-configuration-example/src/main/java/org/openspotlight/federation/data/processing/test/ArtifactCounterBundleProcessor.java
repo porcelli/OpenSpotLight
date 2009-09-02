@@ -54,10 +54,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
-import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
 import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
-
 
 /**
  * Example class for bundle processor.
@@ -65,49 +62,59 @@ import org.openspotlight.federation.data.processing.StreamArtifactBundleProcesso
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class ArtifactCounterBundleProcessor implements StreamArtifactBundleProcessor {
-
-	private static final List<StreamArtifact> PROCESSED_ARTIFACTS = new CopyOnWriteArrayList<StreamArtifact>();
-	
-	private static BundleProcessingGroup<StreamArtifact> LAST_GROUP;
+public class ArtifactCounterBundleProcessor implements
+		StreamArtifactBundleProcessor {
 
 	private static ProcessingStartAction DEFAULT_START_ACTION;
-	
-	public static BundleProcessingGroup<StreamArtifact> getLastGroup(){
+
+	private static BundleProcessingGroup<StreamArtifact> LAST_GROUP;
+
+	private static final List<StreamArtifact> PROCESSED_ARTIFACTS = new CopyOnWriteArrayList<StreamArtifact>();
+
+	/**
+	 * @return last group processed
+	 */
+	public static BundleProcessingGroup<StreamArtifact> getLastGroup() {
 		return LAST_GROUP;
 	}
 
-	public static List<StreamArtifact> getProcessedArtifacts(){
+	/**
+	 * @return last processed artifact
+	 */
+	public static List<StreamArtifact> getProcessedArtifacts() {
 		return PROCESSED_ARTIFACTS;
 	}
-	
-	public static void setDefaultProcessingStartAction(ProcessingStartAction startAction){
+
+	/**
+	 * Sets the default start action
+	 * 
+	 * @param startAction
+	 */
+	public static void setDefaultProcessingStartAction(
+			final ProcessingStartAction startAction) {
 		DEFAULT_START_ACTION = startAction;
 	}
-	
+
 	public void globalProcessingFinalized(
-			BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-			GraphContext graphContext) {
+			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+			final GraphContext graphContext) {
 		//
 	}
 
 	public ProcessingStartAction globalProcessingStarted(
-			BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			GraphContext graphContext)
-			throws BundleProcessingFatalException {
+			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+			final GraphContext graphContext) {
 		LAST_GROUP = bundleProcessingGroup;
 		PROCESSED_ARTIFACTS.clear();
 		return DEFAULT_START_ACTION;
 	}
 
 	public ProcessingAction processArtifact(
-			StreamArtifact targetArtifact,
-			BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			GraphContext graphContext)
-			throws BundleProcessingNonFatalException,
-			BundleProcessingFatalException {
+			final StreamArtifact targetArtifact,
+			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+			final GraphContext graphContext) {
 		PROCESSED_ARTIFACTS.add(targetArtifact);
 		return ProcessingAction.ARTIFACT_PROCESSED;
 	}
-	
+
 }
