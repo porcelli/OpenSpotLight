@@ -56,9 +56,12 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph</artifactId>
-			<scope></scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>

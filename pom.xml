@@ -73,6 +73,7 @@
 		<module>osl-common</module>
 		<module>osl-graph-api</module>
 		<module>osl-graph</module>
+		<module>osl-graph-import-test</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
 		<module>osl-federation</module>
