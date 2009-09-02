@@ -30,8 +30,6 @@ import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
-import org.openspotlight.federation.data.load.db.test.DatabaseStreamTest;
-import org.openspotlight.federation.data.load.db.test.RunWhenDatabaseVendorTestsIsActive;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**
@@ -129,11 +127,11 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * that this last case should be done in a {@link StringTemplate} way. Please
  * take a look on the other xmls or the {@link StringTemplate} documentation for
  * more details.</li>
- * <li>Theres a test case called {@link DatabaseStreamTest}. This test case
- * should be used to test all valid {@link ScriptType script types} for all
- * valid {@link DatabaseType database types}. When necessary, the {@link Driver}
+ * <li>Theres a test case called DatabaseStreamTest. This test case should be
+ * used to test all valid {@link ScriptType script types} for all valid
+ * {@link DatabaseType database types}. When necessary, the {@link Driver}
  * dependency should be included inside the pom's <b>withDatabaseVendorTests</b>
- * profile. The test should implement {@link RunWhenDatabaseVendorTestsIsActive}
+ * profile. The test should implement RunWhenDatabaseVendorTestsIsActive
  * interface. So, the tests and the profile should be active just when the
  * system property <b>runDatabaseVendorTests</b> is set to true.</li>
  * </ul>
