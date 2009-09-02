@@ -1,0 +1,23 @@
+# .gitignore for OpenSpotLight
+
+# IDE support files
+.classpath
+.project
+.metadata
+.settings
+.wtpmodules
+
+# Maven generated folders
+target
+
+# General folders
+local
+nbproject
+
+# logs 
+*.log
+
+# general files
+*.ipr
+*.iws
+*.iml
