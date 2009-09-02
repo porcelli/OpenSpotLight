@@ -55,6 +55,7 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
@@ -62,25 +63,31 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Column;
 import org.openspotlight.federation.data.impl.ColumnType;
 import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.NullableSqlType;
 import org.openspotlight.federation.data.impl.RoutineArtifact;
 import org.openspotlight.federation.data.impl.RoutineParameter;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.impl.ViewArtifact;
 import org.openspotlight.federation.data.impl.RoutineArtifact.RoutineType;
 import org.openspotlight.federation.data.impl.RoutineParameter.RoutineParameterType;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.data.util.AggregateNodesListener;
 
 public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 
@@ -106,13 +113,16 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 						table = new TableArtifact(bundle, metadata.toString());
 					}
 				}
+				List<Column> columnsToRemove = new ArrayList<Column>();
 				for (final String columnName : table.getColumnNames()) {
 					if (!tableMetadata.getColumns().containsKey(columnName)) {
 						final Column column = table.getColumnByName(columnName);
-						table.removeColumn(column);
+						columnsToRemove.add(column);
 					}
 				}
-
+				for (Column columnToRemove : columnsToRemove) {
+					table.removeColumn(columnToRemove);
+				}
 				for (final ColumnDescription colDesc : tableMetadata
 						.getColumns().values()) {
 					Column column = table.getColumnByName(colDesc
@@ -165,6 +175,64 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 
 	protected static class DatabaseCustomGlobalContext extends
 			DefaultGlobalExecutionContext {
+
+		private final AggregateNodesListener listener = new AggregateNodesListener();
+
+		@Override
+		public void globalExecutionAboutToStart(Bundle bundle) {
+			bundle.getInstanceMetadata().getSharedData()
+					.addNodeListenerForAGivenType(listener, Column.class);
+			bundle.getInstanceMetadata().getSharedData()
+					.addNodeListenerForAGivenType(listener, ViewArtifact.class);
+		}
+
+		@Override
+		public void globalExecutionFinished(Bundle bundle) {
+			bundle.getInstanceMetadata().getSharedData().removeNodeListener(
+					listener);
+			Set<ConfigurationNode> changedNodes = new HashSet<ConfigurationNode>();
+			changedNodes.addAll(listener.getChangedNodes());
+			for (ConfigurationNode node : changedNodes) {
+				if (node instanceof ViewArtifact) {
+					ViewArtifact view = (ViewArtifact) node;
+					ConfigurationNode parent = view.getInstanceMetadata()
+							.getDefaultParent();
+					StreamArtifact stream = null;
+					if (parent instanceof Bundle) {
+						Bundle b = (Bundle) parent;
+						stream = b.getStreamArtifactByName(view
+								.getRelativeName());
+					} else if (parent instanceof Group) {
+						Group g = (Group) parent;
+						stream = g.getStreamArtifactByName(view
+								.getRelativeName());
+					} else {
+						logAndReturn(new IllegalStateException(format(
+								"Unexpected type for bundle parent: {0}",
+								parent.getClass())));
+					}
+					if (stream != null) {
+						if (!bundle.getInstanceMetadata().getSharedData()
+								.getDirtyNodes().contains(stream)) {
+							stream.getInstanceMetadata().getSharedData()
+									.fireNodeChange(stream, stream);
+						}
+					}
+				} else if (node instanceof Column) {
+					Column column = (Column) node;
+					ConfigurationNode parent = column.getInstanceMetadata()
+							.getDefaultParent();
+					if (parent instanceof TableArtifact) {
+						TableArtifact t = (TableArtifact) parent;
+						if (!bundle.getInstanceMetadata().getSharedData()
+								.getDirtyNodes().contains(t)) {
+							bundle.getInstanceMetadata().getSharedData()
+									.fireNodeChange(t, t);
+						}
+					}
+				}
+			}
+		}
 
 		@Override
 		public Integer withThreadPoolSize(Bundle bundle) {
