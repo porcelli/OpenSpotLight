@@ -486,7 +486,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 					String newName = name.startsWith(mapping.getRelative()) ? removeBegginingFrom(
 							mapping.getRelative(), name)
 							: name;
-					if (!namesToProcess.contains(newName)) {
+					if (!namesToProcess.contains(newName) && !namesToProcess.contains(name)) {
 						final StreamArtifact artifactToDelete = bundle
 								.getStreamArtifactByName(name);
 						bundle.removeStreamArtifact(artifactToDelete);

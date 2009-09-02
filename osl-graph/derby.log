@@ -1,0 +1,18 @@
+----------------------------------------------------------------
+2009-09-01 03:08:56.999 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.2.1.6 - (452058): instance c013800d-0123-7393-9ce3-0000000c7430
+on database directory /private/tmp/repository/version/db  
+
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+2009-09-01 03:08:58.511 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.2.1.6 - (452058): instance c3350098-0123-7393-9ce3-0000000c7430
+on database directory /private/tmp/repository/workspaces/default/db  
+
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+2009-09-01 03:08:59.791 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.2.1.6 - (452058): instance c934c123-0123-7393-9ce3-0000000c7430
+on database directory /private/tmp/repository/workspaces/security/db  
+
+Database Class Loader started - derby.database.classpath=''

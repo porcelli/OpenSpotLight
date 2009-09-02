@@ -62,8 +62,6 @@ import org.openspotlight.federation.data.StaticMetadata;
  * A Custom artifact is an artifact with hierarchical data. So, this artifact is
  * easily represented with Jcr structure instead of bytes to be parsed.
  * 
- * LATER_TASK DNA Federation - artifact loader
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
