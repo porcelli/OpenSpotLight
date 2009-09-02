@@ -218,7 +218,16 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 									.fireNodeChange(stream, stream);
 						}
 					}
-				} else if (node instanceof Column) {
+				}
+			}
+
+			Set<ConfigurationNode> allChanges = new HashSet<ConfigurationNode>();
+			allChanges.addAll(listener.getChangedNodes());
+			allChanges.addAll(listener.getInsertedNodes());
+			allChanges.addAll(listener.getRemovedNodes());
+
+			for (ConfigurationNode node : allChanges) {
+				if (node instanceof Column) {
 					Column column = (Column) node;
 					ConfigurationNode parent = column.getInstanceMetadata()
 							.getDefaultParent();
@@ -232,6 +241,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 					}
 				}
 			}
+
 		}
 
 		@Override
