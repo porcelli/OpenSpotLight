@@ -16,7 +16,7 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
 
 	@Before
 	public void cleanDatabaseFiles() throws Exception {
-		delete("./target/test-data"); //$NON-NLS-1$
+		delete("./target/test-data/H2DatabaseStreamTest"); //$NON-NLS-1$
 	}
 
 	/**
