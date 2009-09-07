@@ -59,9 +59,9 @@ import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.impl.DnaFileBundle;
 import org.openspotlight.federation.data.impl.DnaSvnBundle;
+import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.JavaBundle;
-import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 
 /**
@@ -72,6 +72,53 @@ import org.openspotlight.federation.data.impl.Repository;
  */
 @SuppressWarnings("all")
 public class ConfigurationExamples {
+	public static Configuration createDb2Configuration() {
+		final Configuration configuration = new Configuration();
+		final Repository db2Repository = new Repository(configuration,
+				"db2 Repository");
+		configuration.setNumberOfParallelThreads(4);
+		db2Repository.setActive(true);
+		final Group db2Project = new Group(db2Repository, "db2 Group");
+		db2Project.setActive(true);
+		final DbBundle db2Bundle = new DbBundle(db2Project, "db2 Connection");
+		db2Bundle.setActive(true);
+		db2Bundle.setUser("db2admin");
+		db2Bundle.setPassword("db2admin");
+		db2Bundle.setMaxConnections(4);
+		db2Bundle.setType(DatabaseType.DB2);
+		db2Bundle.setInitialLookup("jdbc:db2://localhost:50000/SAMPLE");
+		db2Bundle.setDriverClass("com.ibm.db2.jcc.DB2Driver");
+
+		final ArtifactMapping db2ArtifactMapping = new ArtifactMapping(
+				db2Bundle, "DB2ADMIN/");
+		final Included db2IncludedTrigger = new Included(db2ArtifactMapping,
+				"TRIGGER/*");
+		final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
+				"PROCEDURE/*");
+		final Included db2IncludedTable = new Included(db2ArtifactMapping,
+				"TABLE/*");
+		final Included db2IncludedSequence = new Included(db2ArtifactMapping,
+				"SEQUENCE/*");
+		final Included db2IncludedConstraint = new Included(db2ArtifactMapping,
+				"CONSTRAINT/*");
+		final Included db2IncludedFunction = new Included(db2ArtifactMapping,
+				"FUNCTION/*");
+		final Included db2IncludedView = new Included(db2ArtifactMapping,
+				"VIEW/*");
+		final Included db2IncludedIndex = new Included(db2ArtifactMapping,
+				"INDEX/*");
+		final BundleProcessorType db2CommonProcessor = new BundleProcessorType(
+				db2Bundle,
+				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+		final BundleProcessorType db2CustomProcessor = new BundleProcessorType(
+				db2Bundle,
+				"org.openspotlight.federation.data.processing.test.LogTableCustomArtifactProcessor");
+
+		db2CommonProcessor.setActive(true);
+		db2CustomProcessor.setActive(true);
+		return configuration;
+	}
+
 	public static Configuration createH2DbConfiguration(final String dirName) {
 		final Configuration configuration = new Configuration();
 		final Repository h2Repository = new Repository(configuration,
@@ -120,8 +167,7 @@ public class ConfigurationExamples {
 				"mysql Repository");
 		configuration.setNumberOfParallelThreads(4);
 		mysqlRepository.setActive(true);
-		final Group mysqlProject = new Group(mysqlRepository,
-				"mysql Group");
+		final Group mysqlProject = new Group(mysqlRepository, "mysql Group");
 		mysqlProject.setActive(true);
 		final DbBundle mysqlBundle = new DbBundle(mysqlProject,
 				"mysql Connection");
@@ -132,7 +178,7 @@ public class ConfigurationExamples {
 		mysqlBundle.setInitialLookup("jdbc:mysql://localhost:3306/test");
 		mysqlBundle.setDriverClass("com.mysql.jdbc.Driver");
 		final ArtifactMapping mysqlArtifactMapping = new ArtifactMapping(
-				mysqlBundle, "test/");
+				mysqlBundle, "*/");
 		final Included mysqlIncludedTrigger = new Included(
 				mysqlArtifactMapping, "TRIGGER/*");
 		final Included mysqlIncludedProcedure = new Included(
@@ -163,8 +209,7 @@ public class ConfigurationExamples {
 				"oracle Repository");
 		configuration.setNumberOfParallelThreads(4);
 		oracleRepository.setActive(true);
-		final Group oracleProject = new Group(oracleRepository,
-				"oracle Group");
+		final Group oracleProject = new Group(oracleRepository, "oracle Group");
 		oracleProject.setActive(true);
 		final DbBundle oracleBundle = new DbBundle(oracleProject,
 				"oracle Connection");
@@ -211,50 +256,152 @@ public class ConfigurationExamples {
 		return configuration;
 	}
 
-	public static Configuration createDb2Configuration() {
+	public static Configuration createOslValidConfiguration(final String dirName)
+			throws Exception {
+		final String basePath = new File("../../../").getCanonicalPath() + "/";
 		final Configuration configuration = new Configuration();
-		final Repository db2Repository = new Repository(configuration,
-				"db2 Repository");
+		final Repository oslRepository = new Repository(configuration,
+				"OSL Group");
 		configuration.setNumberOfParallelThreads(4);
-		db2Repository.setActive(true);
-		final Group db2Project = new Group(db2Repository, "db2 Group");
-		db2Project.setActive(true);
-		final DbBundle db2Bundle = new DbBundle(db2Project, "db2 Connection");
-		db2Bundle.setActive(true);
-		db2Bundle.setUser("db2admin");
-		db2Bundle.setPassword("db2admin");
-		db2Bundle.setMaxConnections(4);
-		db2Bundle.setType(DatabaseType.DB2);
-		db2Bundle.setInitialLookup("jdbc:db2://localhost:50000/SAMPLE");
-		db2Bundle.setDriverClass("com.ibm.db2.jcc.DB2Driver");
-
-		final ArtifactMapping db2ArtifactMapping = new ArtifactMapping(
-				db2Bundle, "DB2ADMIN/");
-		final Included db2IncludedTrigger = new Included(db2ArtifactMapping,
-				"TRIGGER/*");
-		final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
-				"PROCEDURE/*");
-		final Included db2IncludedTable = new Included(db2ArtifactMapping,
-				"TABLE/*");
-		final Included db2IncludedSequence = new Included(db2ArtifactMapping,
-				"SEQUENCE/*");
-		final Included db2IncludedConstraint = new Included(db2ArtifactMapping,
-				"CONSTRAINT/*");
-		final Included db2IncludedFunction = new Included(db2ArtifactMapping,
-				"FUNCTION/*");
-		final Included db2IncludedView = new Included(db2ArtifactMapping,
-				"VIEW/*");
-		final Included db2IncludedIndex = new Included(db2ArtifactMapping,
-				"INDEX/*");
-		final BundleProcessorType db2CommonProcessor = new BundleProcessorType(
-				db2Bundle,
+		oslRepository.setActive(true);
+		final Group oslRootProject = new Group(oslRepository, "OSL Root Group");
+		oslRootProject.setActive(true);
+		final Group oslCommonsProject = new Group(oslRootProject,
+				"OSL Commons Library");
+		oslCommonsProject.setActive(true);
+		final Bundle oslCommonsJavaSourceBundle = new Bundle(oslCommonsProject,
+				"java source for OSL Bundle");
+		oslCommonsJavaSourceBundle.setActive(true);
+		oslCommonsJavaSourceBundle.setInitialLookup(basePath);
+		final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(
+				oslCommonsJavaSourceBundle, "osl-common/");
+		final Included oslCommonsIncludedJavaFilesForSrcMainJava = new Included(
+				oslCommonsArtifactMapping, "src/main/java/**/*.java");
+		final Included oslCommonsIncludedJavaFilesForSrcTestJava = new Included(
+				oslCommonsArtifactMapping, "src/test/java/**/*.java");
+		final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
+				oslCommonsJavaSourceBundle,
 				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		final BundleProcessorType db2CustomProcessor = new BundleProcessorType(
-				db2Bundle,
-				"org.openspotlight.federation.data.processing.test.LogTableCustomArtifactProcessor");
+		oslCommonProcessor.setActive(true);
+		final Group oslFederationProject = new Group(oslRootProject,
+				"OSL Federation Library");
+		oslFederationProject.setActive(true);
+		final Bundle oslFederationJavaSourceBundle = new JavaBundle(
+				oslFederationProject, "java source for OSL Bundle");
+		oslFederationJavaSourceBundle.setActive(true);
+		final BundleProcessorType oslFederationProcessor = new BundleProcessorType(
+				oslFederationJavaSourceBundle,
+				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+		oslFederationProcessor.setActive(true);
 
-		db2CommonProcessor.setActive(true);
-		db2CustomProcessor.setActive(true);
+		oslFederationJavaSourceBundle.setInitialLookup(basePath);
+		final ArtifactMapping oslFederationArtifactMapping = new ArtifactMapping(
+				oslFederationJavaSourceBundle,
+				"osl-federation/loader/osl-federation-filesystem-loader/");
+		final Included oslFederationIncludedJavaFilesForSrcMainJava = new Included(
+				oslFederationArtifactMapping, "src/main/java/**/*.java");
+		final Included oslFederationIncludedJavaFilesForSrcTestJava = new Included(
+				oslFederationArtifactMapping, "src/test/java/**/*.java");
+
+		final Group oslGraphProject = new Group(oslRootProject,
+				"OSL Graph Library");
+		oslGraphProject.setActive(true);
+		final Bundle oslGraphJavaSourceBundle = new JavaBundle(oslGraphProject,
+				"java source for OSL Bundle");
+		oslGraphJavaSourceBundle.setActive(true);
+		oslGraphJavaSourceBundle.setInitialLookup(basePath);
+		final ArtifactMapping oslGraphArtifactMapping = new ArtifactMapping(
+				oslGraphJavaSourceBundle, "osl-graph/");
+		final Included oslGraphIncludedJavaFilesForSrcMainJava = new Included(
+				oslGraphArtifactMapping, "src/main/java/**/*.java");
+		new File("./target/test-data/" + dirName + "/").mkdirs();
+		final Included oslGraphIncludedJavaFilesForSrcTestJava = new Included(
+				oslGraphArtifactMapping, "src/test/java/**/*.java");
+		final BundleProcessorType oslGraphProcessor = new BundleProcessorType(
+				oslGraphJavaSourceBundle,
+				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+		oslGraphProcessor.setActive(true);
+		return configuration;
+	}
+
+	public static Configuration createOslValidDnaFileConnectorConfiguration(
+			final String dirName) throws Exception {
+		final String basePath = new File("../../../").getCanonicalPath() + "/";
+		final Configuration configuration = new Configuration();
+		final Repository oslRepository = new Repository(configuration,
+				"OSL Group");
+		configuration.setNumberOfParallelThreads(4);
+		oslRepository.setActive(true);
+		final Group oslRootProject = new Group(oslRepository, "OSL Root Group");
+		oslRootProject.setActive(true);
+		final Group oslCommonsProject = new Group(oslRootProject,
+				"OSL Commons Library");
+		oslCommonsProject.setActive(true);
+		final Bundle oslCommonsJavaSourceBundle = new DnaFileBundle(
+				oslCommonsProject, "java source for OSL Bundle");
+		oslCommonsJavaSourceBundle.setActive(true);
+		oslCommonsJavaSourceBundle.setInitialLookup(basePath);
+		final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(
+				oslCommonsJavaSourceBundle, "osl-common/");
+		final Included oslCommonsIncludedJavaFilesForSrcMainJava = new Included(
+				oslCommonsArtifactMapping, "src/main/java/**/*.java");
+		final Included oslCommonsIncludedJavaFilesForSrcTestJava = new Included(
+				oslCommonsArtifactMapping, "src/test/java/**/*.java");
+		final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
+				oslCommonsJavaSourceBundle,
+				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+		oslCommonProcessor.setActive(true);
+
+		final Group oslGraphProject = new Group(oslRootProject,
+				"OSL Graph Library");
+		oslGraphProject.setActive(true);
+		final Bundle oslGraphJavaSourceBundle = new JavaBundle(oslGraphProject,
+				"java source for OSL Bundle");
+		oslGraphJavaSourceBundle.setActive(true);
+		oslGraphJavaSourceBundle.setInitialLookup(basePath);
+		final ArtifactMapping oslGraphArtifactMapping = new ArtifactMapping(
+				oslGraphJavaSourceBundle, "osl-graph/");
+		final Included oslGraphIncludedJavaFilesForSrcMainJava = new Included(
+				oslGraphArtifactMapping, "src/main/java/**/*.java");
+		new File("./target/test-data/" + dirName + "/").mkdirs();
+		final Included oslGraphIncludedJavaFilesForSrcTestJava = new Included(
+				oslGraphArtifactMapping, "src/test/java/**/*.java");
+		final BundleProcessorType oslGraphProcessor = new BundleProcessorType(
+				oslGraphJavaSourceBundle,
+				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+		oslGraphProcessor.setActive(true);
+		return configuration;
+	}
+
+	public static Configuration createOslValidDnaSvnConnectorConfiguration(
+			final String dirName) throws Exception {
+		final Configuration configuration = new Configuration();
+		final Repository oslRepository = new Repository(configuration,
+				"Hamcrest Repository");
+		configuration.setNumberOfParallelThreads(4);
+		oslRepository.setActive(true);
+		final Group oslRootProject = new Group(oslRepository, "Hamcrest Group");
+		oslRootProject.setActive(true);
+		final Group oslCommonsProject = new Group(oslRootProject,
+				"Hamcrest SubProject");
+		oslCommonsProject.setActive(true);
+		final DnaSvnBundle bundle = new DnaSvnBundle(oslCommonsProject,
+				"Svn bundle");
+
+		bundle
+				.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
+		bundle.setUser("anonymous");
+		bundle.setPassword("");
+		bundle.setActive(true);
+		final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
+				"src/");
+		new Included(artifactMapping, "**/*.java");
+
+		final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
+				bundle,
+				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
+		oslCommonProcessor.setActive(true);
+
 		return configuration;
 	}
 
@@ -355,158 +502,6 @@ public class ConfigurationExamples {
 
 		sqlserverCommonProcessor.setActive(true);
 		sqlserverCustomProcessor.setActive(true);
-		return configuration;
-	}
-
-	public static Configuration createOslValidConfiguration(final String dirName)
-			throws Exception {
-		final String basePath = new File("../../../").getCanonicalPath() + "/";
-		final Configuration configuration = new Configuration();
-		final Repository oslRepository = new Repository(configuration,
-				"OSL Group");
-		configuration.setNumberOfParallelThreads(4);
-		oslRepository.setActive(true);
-		final Group oslRootProject = new Group(oslRepository,
-				"OSL Root Group");
-		oslRootProject.setActive(true);
-		final Group oslCommonsProject = new Group(oslRootProject,
-				"OSL Commons Library");
-		oslCommonsProject.setActive(true);
-		final Bundle oslCommonsJavaSourceBundle = new Bundle(oslCommonsProject,
-				"java source for OSL Bundle");
-		oslCommonsJavaSourceBundle.setActive(true);
-		oslCommonsJavaSourceBundle.setInitialLookup(basePath);
-		final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(
-				oslCommonsJavaSourceBundle, "osl-common/");
-		final Included oslCommonsIncludedJavaFilesForSrcMainJava = new Included(
-				oslCommonsArtifactMapping, "src/main/java/**/*.java");
-		final Included oslCommonsIncludedJavaFilesForSrcTestJava = new Included(
-				oslCommonsArtifactMapping, "src/test/java/**/*.java");
-		final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
-				oslCommonsJavaSourceBundle,
-				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		oslCommonProcessor.setActive(true);
-		final Group oslFederationProject = new Group(oslRootProject,
-				"OSL Federation Library");
-		oslFederationProject.setActive(true);
-		final Bundle oslFederationJavaSourceBundle = new JavaBundle(
-				oslFederationProject, "java source for OSL Bundle");
-		oslFederationJavaSourceBundle.setActive(true);
-		final BundleProcessorType oslFederationProcessor = new BundleProcessorType(
-				oslFederationJavaSourceBundle,
-				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		oslFederationProcessor.setActive(true);
-
-		oslFederationJavaSourceBundle.setInitialLookup(basePath);
-		final ArtifactMapping oslFederationArtifactMapping = new ArtifactMapping(
-				oslFederationJavaSourceBundle,
-				"osl-federation/loader/osl-federation-filesystem-loader/");
-		final Included oslFederationIncludedJavaFilesForSrcMainJava = new Included(
-				oslFederationArtifactMapping, "src/main/java/**/*.java");
-		final Included oslFederationIncludedJavaFilesForSrcTestJava = new Included(
-				oslFederationArtifactMapping, "src/test/java/**/*.java");
-
-		final Group oslGraphProject = new Group(oslRootProject,
-				"OSL Graph Library");
-		oslGraphProject.setActive(true);
-		final Bundle oslGraphJavaSourceBundle = new JavaBundle(oslGraphProject,
-				"java source for OSL Bundle");
-		oslGraphJavaSourceBundle.setActive(true);
-		oslGraphJavaSourceBundle.setInitialLookup(basePath);
-		final ArtifactMapping oslGraphArtifactMapping = new ArtifactMapping(
-				oslGraphJavaSourceBundle, "osl-graph/");
-		final Included oslGraphIncludedJavaFilesForSrcMainJava = new Included(
-				oslGraphArtifactMapping, "src/main/java/**/*.java");
-		new File("./target/test-data/" + dirName + "/").mkdirs();
-		final Included oslGraphIncludedJavaFilesForSrcTestJava = new Included(
-				oslGraphArtifactMapping, "src/test/java/**/*.java");
-		final BundleProcessorType oslGraphProcessor = new BundleProcessorType(
-				oslGraphJavaSourceBundle,
-				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		oslGraphProcessor.setActive(true);
-		return configuration;
-	}
-
-	public static Configuration createOslValidDnaFileConnectorConfiguration(
-			final String dirName) throws Exception {
-		final String basePath = new File("../../../").getCanonicalPath() + "/";
-		final Configuration configuration = new Configuration();
-		final Repository oslRepository = new Repository(configuration,
-				"OSL Group");
-		configuration.setNumberOfParallelThreads(4);
-		oslRepository.setActive(true);
-		final Group oslRootProject = new Group(oslRepository,
-				"OSL Root Group");
-		oslRootProject.setActive(true);
-		final Group oslCommonsProject = new Group(oslRootProject,
-				"OSL Commons Library");
-		oslCommonsProject.setActive(true);
-		final Bundle oslCommonsJavaSourceBundle = new DnaFileBundle(
-				oslCommonsProject, "java source for OSL Bundle");
-		oslCommonsJavaSourceBundle.setActive(true);
-		oslCommonsJavaSourceBundle.setInitialLookup(basePath);
-		final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(
-				oslCommonsJavaSourceBundle, "osl-common/");
-		final Included oslCommonsIncludedJavaFilesForSrcMainJava = new Included(
-				oslCommonsArtifactMapping, "src/main/java/**/*.java");
-		final Included oslCommonsIncludedJavaFilesForSrcTestJava = new Included(
-				oslCommonsArtifactMapping, "src/test/java/**/*.java");
-		final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
-				oslCommonsJavaSourceBundle,
-				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		oslCommonProcessor.setActive(true);
-
-		final Group oslGraphProject = new Group(oslRootProject,
-				"OSL Graph Library");
-		oslGraphProject.setActive(true);
-		final Bundle oslGraphJavaSourceBundle = new JavaBundle(oslGraphProject,
-				"java source for OSL Bundle");
-		oslGraphJavaSourceBundle.setActive(true);
-		oslGraphJavaSourceBundle.setInitialLookup(basePath);
-		final ArtifactMapping oslGraphArtifactMapping = new ArtifactMapping(
-				oslGraphJavaSourceBundle, "osl-graph/");
-		final Included oslGraphIncludedJavaFilesForSrcMainJava = new Included(
-				oslGraphArtifactMapping, "src/main/java/**/*.java");
-		new File("./target/test-data/" + dirName + "/").mkdirs();
-		final Included oslGraphIncludedJavaFilesForSrcTestJava = new Included(
-				oslGraphArtifactMapping, "src/test/java/**/*.java");
-		final BundleProcessorType oslGraphProcessor = new BundleProcessorType(
-				oslGraphJavaSourceBundle,
-				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		oslGraphProcessor.setActive(true);
-		return configuration;
-	}
-
-	public static Configuration createOslValidDnaSvnConnectorConfiguration(
-			final String dirName) throws Exception {
-		final Configuration configuration = new Configuration();
-		final Repository oslRepository = new Repository(configuration,
-				"Hamcrest Repository");
-		configuration.setNumberOfParallelThreads(4);
-		oslRepository.setActive(true);
-		final Group oslRootProject = new Group(oslRepository,
-				"Hamcrest Group");
-		oslRootProject.setActive(true);
-		final Group oslCommonsProject = new Group(oslRootProject,
-				"Hamcrest SubProject");
-		oslCommonsProject.setActive(true);
-		final DnaSvnBundle bundle = new DnaSvnBundle(oslCommonsProject,
-				"Svn bundle");
-
-		bundle
-				.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
-		bundle.setUser("anonymous");
-		bundle.setPassword("");
-		bundle.setActive(true);
-		final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-				"src/");
-		new Included(artifactMapping, "**/*.java");
-
-		final BundleProcessorType oslCommonProcessor = new BundleProcessorType(
-				bundle,
-				"org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
-		oslCommonProcessor.setActive(true);
-
 		return configuration;
 	}
 

@@ -77,16 +77,6 @@ import org.openspotlight.federation.data.test.NodeTest;
 @SuppressWarnings("all")
 public abstract class AbstractArtifactLoaderTest extends NodeTest {
 
-	protected ArtifactLoader artifactLoader;
-
-	protected Configuration configuration;
-
-	protected String REPOSITORY_NAME = "r-1";
-
-	protected String PROJECT_NAME = "p-1,1";
-
-	protected String BUNDLE_NAME = "b-1,1,1";
-
 	private static class SampleArtifactLoader extends AbstractArtifactLoader {
 
 		@Override
@@ -110,8 +100,8 @@ public abstract class AbstractArtifactLoaderTest extends NodeTest {
 		protected ThreadExecutionContext createThreadExecutionContext() {
 			return new DefaultThreadExecutionContext() {
 
-				public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
-						final ArtifactMapping mapping,
+				public byte[] loadArtifactOrReturnNullToIgnore(
+						final Bundle bundle, final ArtifactMapping mapping,
 						final String artifactName,
 						final GlobalExecutionContext context) throws Exception {
 					return artifactName.getBytes();
@@ -120,7 +110,17 @@ public abstract class AbstractArtifactLoaderTest extends NodeTest {
 			};
 		}
 
-	};
+	}
+
+	protected ArtifactLoader artifactLoader;
+
+	protected String BUNDLE_NAME = "b-1,1,1";
+
+	protected Configuration configuration;
+
+	protected String PROJECT_NAME = "p-1,1";
+
+	protected String REPOSITORY_NAME = "r-1";;
 
 	@Before
 	public void createArtifactLoader() {

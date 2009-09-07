@@ -3,6 +3,7 @@ package org.openspotlight.federation.data.load;
 import static java.util.Collections.emptySet;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
 import java.sql.Connection;
@@ -161,10 +162,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
 			final DbBundle dbBundle = (DbBundle) bundle;
-			final String completeArtifactName = mapping.getRelative()
-					+ artifactName;
-			final StringTokenizer tok = new StringTokenizer(
-					completeArtifactName, "/"); //$NON-NLS-1$
+
+			final StringTokenizer tok = new StringTokenizer(artifactName, "/"); //$NON-NLS-1$
 			final int numberOfTokens = tok.countTokens();
 			String catalog;
 			final String schema = tok.nextToken();
@@ -434,9 +433,9 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 							final String result = this.fillName(scriptType,
 									resultSet);
 							final String starting = mapping.getRelative();
-							if (result.startsWith(starting)) {
-								loadedNames.add(result.substring(starting
-										.length()));
+							if (isMatchingWithoutCaseSentitiveness(result,
+									starting + "*")) {
+								loadedNames.add(result);
 							}
 						}
 						resultSet.close();
@@ -489,6 +488,15 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 	@Override
 	protected ThreadExecutionContext createThreadExecutionContext() {
 		return new DatabaseThreadExecutionContext();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String fixMapping(final String mapString, final Bundle bundle,
+			final ArtifactMapping mapping) {
+		return mapping.getRelative() + mapString;
 	}
 
 }

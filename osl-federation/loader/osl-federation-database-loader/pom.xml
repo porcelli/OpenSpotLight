@@ -61,6 +61,7 @@
 	<profiles>
 		<profile>
 			<activation>
+				<activeByDefault>true</activeByDefault>
 				<property>
 					<name>runDatabaseVendorTests</name>
 					<value>true</value>

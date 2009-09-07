@@ -74,65 +74,65 @@ import org.openspotlight.common.util.Files;
  */
 @SuppressWarnings("all")
 public class FilesTest {
-    
-    private static String LOWEST_PATH = "./target/test-data/FilesTest/"; //$NON-NLS-1$
-    
-    private static String LOWER_PATH = LOWEST_PATH + "resources/testData/"; //$NON-NLS-1$
-    
-    private static String TEST_DIR = LOWER_PATH + "SomeOtherDir/anotherDir/"; //$NON-NLS-1$
-    
-    private static String TEST_FILE = TEST_DIR + "temp.txt"; //$NON-NLS-1$
-    
-    private static String RELATIVE_PATH_FILE = removeBegginingFrom(LOWEST_PATH,
-            TEST_FILE);
-    
-    @SuppressWarnings("boxing")
-    @Before
-    public void createSomeTestData() throws Exception {
-        final File dir = new File(TEST_DIR);
-        final File file = new File(TEST_FILE);
-        
-        dir.mkdirs();
-        file.createNewFile();
-        
-        assertThat(dir.exists(), is(true));
-        assertThat(file.exists(), is(true));
-        
-    }
-    
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldDeleteValidDirs() throws Exception {
-        delete(LOWER_PATH);
-        assertThat(new File(LOWER_PATH).exists(), is(false));
-    }
-    
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldDeleteValidFiles() throws Exception {
-        delete(TEST_FILE);
-        assertThat(new File(TEST_FILE).exists(), is(false));
-    }
-    
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldListFileNamesInARecursiveWay() throws Exception {
-        final Set<String> fileNames = listFileNamesFrom(LOWEST_PATH);
-        assertThat(fileNames.contains(RELATIVE_PATH_FILE), is(true));
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionWhenGettingInvalidFile() throws Exception {
-        listFileNamesFrom("invalid base path"); //$NON-NLS-1$
-    }
-    
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldWriteByteArrayFromStream() throws Exception {
-        final byte[] initialContent = "initialContent".getBytes(); //$NON-NLS-1$
-        final InputStream is = new ByteArrayInputStream(initialContent);
-        final byte[] readedContent = readBytesFromStream(is);
-        assertThat(Arrays.equals(initialContent, readedContent), is(true));
-    }
-    
+
+	private static String __LOWEST_PATH = "./target/test-data/FilesTest/"; //$NON-NLS-1$
+	private static String _LOWER_PATH = __LOWEST_PATH + "resources/testData/"; //$NON-NLS-1$
+	private static String _TEST_DIR = _LOWER_PATH + "SomeOtherDir/anotherDir/"; //$NON-NLS-1$
+
+	private static String _TEST_FILE = _TEST_DIR + "temp.txt"; //$NON-NLS-1$
+
+	private static String RELATIVE_PATH_FILE = removeBegginingFrom(
+			__LOWEST_PATH, _TEST_FILE);
+
+	@SuppressWarnings("boxing")
+	@Before
+	public void createSomeTestData() throws Exception {
+		final File dir = new File(_TEST_DIR);
+		final File file = new File(_TEST_FILE);
+
+		dir.mkdirs();
+		file.createNewFile();
+
+		assertThat(dir.exists(), is(true));
+		assertThat(file.exists(), is(true));
+
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldDeleteValidDirs() throws Exception {
+		delete(_LOWER_PATH);
+		assertThat(new File(_LOWER_PATH).exists(), is(false));
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldDeleteValidFiles() throws Exception {
+		delete(_TEST_FILE);
+		assertThat(new File(_TEST_FILE).exists(), is(false));
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldListFileNamesInARecursiveWay() throws Exception {
+		final Set<String> fileNames = listFileNamesFrom(__LOWEST_PATH);
+		final String completePath = new File(__LOWEST_PATH + RELATIVE_PATH_FILE)
+				.getCanonicalPath();
+		assertThat(fileNames.contains(completePath), is(true));
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void shouldThrowExceptionWhenGettingInvalidFile() throws Exception {
+		listFileNamesFrom("invalid base path"); //$NON-NLS-1$
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldWriteByteArrayFromStream() throws Exception {
+		final byte[] initialContent = "initialContent".getBytes(); //$NON-NLS-1$
+		final InputStream is = new ByteArrayInputStream(initialContent);
+		final byte[] readedContent = readBytesFromStream(is);
+		assertThat(Arrays.equals(initialContent, readedContent), is(true));
+	}
+
 }

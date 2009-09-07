@@ -62,14 +62,13 @@ import org.openspotlight.federation.data.impl.Bundle;
  * 
  */
 public class DNAFileSystemArtifactLoader extends DnaArtifactLoader {
-
 	protected static final class DnaFileExecutionContext extends
 			GlobalDnaResourceContext {
 
 		@Override
 		protected void configureWithBundle(
-				RepositorySourceDefinition<?> sourceDefinition, Bundle bundle,
-				ArtifactMapping relative) {
+				final RepositorySourceDefinition<?> sourceDefinition,
+				final Bundle bundle, final ArtifactMapping relative) {
 			sourceDefinition
 					.usingClass(FileSystemSource.class)
 					.setProperty("workspaceRootPath", bundle.getInitialLookup()).setProperty( //$NON-NLS-1$ 
