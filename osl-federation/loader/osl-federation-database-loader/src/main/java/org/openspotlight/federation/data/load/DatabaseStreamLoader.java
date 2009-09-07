@@ -231,7 +231,11 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			try {
 				resultSet = this.conn.prepareStatement(sql).executeQuery();
 				if (resultSet.next()) {
-					final String content = resultSet.getString(1);
+					final int columnToUse = scriptDescription
+							.getContentColumnToUse() != null ? scriptDescription
+							.getContentColumnToUse().intValue()
+							: 1;
+					final String content = resultSet.getString(columnToUse);
 					return content.getBytes();
 				}
 			} catch (final Exception e) {

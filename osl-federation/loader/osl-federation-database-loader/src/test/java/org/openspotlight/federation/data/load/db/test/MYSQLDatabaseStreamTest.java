@@ -60,7 +60,7 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements
 	@Override
 	protected Set<ScriptType> typesToAssert() {
 		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
-				ScriptType.FUNCTION, ScriptType.PROCEDURE);
+				ScriptType.FUNCTION, ScriptType.PROCEDURE, ScriptType.VIEW);
 	}
 
 }

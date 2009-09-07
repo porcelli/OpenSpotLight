@@ -1,8 +1,9 @@
 <script>
 	<scriptType>TABLE</scriptType>
 	<database>MYSQL</database>
-	<preferedType>TEMPLATE</preferedType>
+	<preferedType>SQL</preferedType>
 	<contentSelect><![CDATA[show create table $schema_name$.$name$]]></contentSelect>
+	<contentColumnToUse>2</contentColumnToUse>
 	<template><![CDATA[
 	create table $name$ (
 		$detail:{$it.column_name$  $it.column_type$ $if(it.nullable)$ null $else$ not null $endif$ $if(it.column_default)$ default $it.column_default$ $endif$};separator=", "$
