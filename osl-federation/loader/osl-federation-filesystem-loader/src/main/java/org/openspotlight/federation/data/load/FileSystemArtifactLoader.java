@@ -57,14 +57,15 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Files.listFileNamesFrom;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.slf4j.Logger;
@@ -77,77 +78,85 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class FileSystemArtifactLoader extends AbstractArtifactLoader {
-    
-    static final Logger logger = LoggerFactory.getLogger(FileSystemArtifactLoader.class);
-    
-    
-    
-    
-    private static class FileGlobalExecutionContext extends DefaultGlobalExecutionContext{
+	private static class FileGlobalExecutionContext extends
+			DefaultGlobalExecutionContext {
 
-    	/**
-         * Return all files from bundle.initialLookup directory.
-         */
-        public Set<String> getAllArtifactNames(final Bundle bundle,
-                final ArtifactMapping mapping)
-                throws ConfigurationException {
-            checkNotNull("bundle", bundle); //$NON-NLS-1$
-            try {
-                final String basePath = bundle.getInitialLookup()
-                        + mapping.getRelative();
-                boolean exists = false;
-                try {
-                    exists = new File(basePath).exists();
-                } catch (final Exception e) {
-                    exists = false;
-                    catchAndLog(
-                            format(
-                                    Messages
-                                            .getString("FileSystemArtifactLoader.ignoring"), basePath), e); //$NON-NLS-1$
-                }
-                if (!exists) {
-                    logger.info(format(Messages
-                            .getString("FileSystemArtifactLoader.ignoring"), //$NON-NLS-1$
-                            basePath));
-                    return emptySet();
-                }
-                final Set<String> filesFromThisMapping = listFileNamesFrom(basePath);
-                return filesFromThisMapping;
-            } catch (final SLException e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
-    	
-    }
-    
-    private static class FileThreadExecutionContext extends DefaultThreadExecutionContext{
+		/**
+		 * Return all files from bundle.initialLookup directory.
+		 */
+		public Set<String> getAllArtifactNames(final Bundle bundle,
+				final ArtifactMapping mapping) throws ConfigurationException {
+			checkNotNull("bundle", bundle); //$NON-NLS-1$
+			try {
+				final String basePath = bundle.getInitialLookup()
+						+ mapping.getRelative();
+				boolean exists = false;
+				try {
+					exists = new File(basePath).exists();
+				} catch (final Exception e) {
+					exists = false;
+					catchAndLog(
+							format(
+									Messages
+											.getString("FileSystemArtifactLoader.ignoring"), basePath), e); //$NON-NLS-1$
+				}
+				if (!exists) {
+					logger.info(format(Messages
+							.getString("FileSystemArtifactLoader.ignoring"), //$NON-NLS-1$
+							basePath));
+					return emptySet();
+				}
+				final Set<String> filesFromThisMapping = listFileNamesFrom(basePath);
+				final String unfriendlyBasePath = new File(basePath)
+						.getCanonicalPath();
+				final Set<String> friendlyNames = new HashSet<String>();
+				final String newBasePath = basePath.endsWith("/") ? basePath
+						.substring(0, basePath.length() - 1) : basePath;
+				for (final String fileName : filesFromThisMapping) {
+					final String relativeName = removeBegginingFrom(
+							unfriendlyBasePath, fileName);
+					final String newName = newBasePath + relativeName;
+					friendlyNames.add(newName);
+				}
+				return friendlyNames;
+			} catch (final Exception e) {
+				throw logAndReturnNew(e, ConfigurationException.class);
+			}
+		}
 
-    	/**
-         * loads the content of a file found on bundle.initialLookup + artifactName
-         */
-        public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
-                final ArtifactMapping mapping, final String artifactName,
-                final GlobalExecutionContext globalContext) throws Exception {
-            checkNotNull("bundle", bundle); //$NON-NLS-1$
-            checkNotNull("mapping", mapping); //$NON-NLS-1$
-            checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
-            final String fileName = bundle.getInitialLookup()
-                    + mapping.getRelative() + artifactName;
-            final File file = new File(fileName);
-            checkCondition("fileExists", file.exists()); //$NON-NLS-1$
-            final FileInputStream fis = new FileInputStream(file);
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            while (fis.available() > 0) {
-                baos.write(fis.read());
-            }
-            final byte[] content = baos.toByteArray();
-            fis.close();
-            return content;
-        }
+	}
 
-    	
-    }
-    
+	private static class FileThreadExecutionContext extends
+			DefaultThreadExecutionContext {
+
+		/**
+		 * loads the content of a file found on bundle.initialLookup +
+		 * artifactName
+		 */
+		public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
+				final ArtifactMapping mapping, final String artifactName,
+				final GlobalExecutionContext globalContext) throws Exception {
+			checkNotNull("bundle", bundle); //$NON-NLS-1$
+			checkNotNull("mapping", mapping); //$NON-NLS-1$
+			checkNotEmpty("artifactName", artifactName); //$NON-NLS-1$
+
+			final File file = new File(artifactName);
+			checkCondition("fileExists", file.exists()); //$NON-NLS-1$
+			final FileInputStream fis = new FileInputStream(file);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			while (fis.available() > 0) {
+				baos.write(fis.read());
+			}
+			final byte[] content = baos.toByteArray();
+			fis.close();
+			return content;
+		}
+
+	}
+
+	static final Logger logger = LoggerFactory
+			.getLogger(FileSystemArtifactLoader.class);
+
 	@SuppressWarnings("synthetic-access")
 	@Override
 	protected GlobalExecutionContext createGlobalExecutionContext() {
@@ -159,5 +168,14 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
 	protected ThreadExecutionContext createThreadExecutionContext() {
 		return new FileThreadExecutionContext();
 	}
-    
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String fixMapping(final String mapString, final Bundle bundle,
+			final ArtifactMapping mapping) {
+		return bundle.getInitialLookup() + mapping.getRelative() + mapString;
+	}
+
 }

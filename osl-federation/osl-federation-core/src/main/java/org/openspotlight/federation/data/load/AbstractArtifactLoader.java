@@ -437,6 +437,21 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 	protected abstract ThreadExecutionContext createThreadExecutionContext();
 
 	/**
+	 * Some artifact loaders needs different behavior to create the mapping
+	 * string to be used on pattern matchers. So, this method should be
+	 * overwritten in this cases.
+	 * 
+	 * @param mapString
+	 * @param bundle
+	 * @param mapping
+	 * @return new mapping string
+	 */
+	protected String fixMapping(final String mapString, final Bundle bundle,
+			final ArtifactMapping mapping) {
+		return mapString;
+	}
+
+	/**
 	 * Filter the included and excluded patterns and also creates each artifact
 	 * and calculates the sha-1 key for the content. In this method we have also
 	 * the logic for dividing the tasks between
@@ -464,13 +479,18 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 			globalContext.globalExecutionAboutToStart(bundle);
 			final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
 			for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
+				final String starting = mapping.getRelative();
 				final Set<String> includedPatterns = new HashSet<String>();
 				final Set<String> excludedPatterns = new HashSet<String>();
 				for (final Included included : mapping.getIncludeds()) {
-					includedPatterns.add(included.getName());
+					final String newMapping = this.fixMapping(included
+							.getName(), bundle, mapping);
+					includedPatterns.add(newMapping);
 				}
 				for (final Excluded excluded : mapping.getExcludeds()) {
-					excludedPatterns.add(excluded.getName());
+					final String newMapping = this.fixMapping(excluded
+							.getName(), bundle, mapping);
+					excludedPatterns.add(newMapping);
 				}
 				final Set<String> namesToFilter = globalContext
 						.getAllArtifactNames(bundle, mapping);
@@ -492,11 +512,11 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 						bundle.removeStreamArtifact(artifactToDelete);
 					}
 				}
+				final Set<CustomArtifact> artifactsToRemove = new HashSet<CustomArtifact>();
 				for (final String name : bundle.getCustomArtifactNames()) {
 					boolean found = false;
 					looking: for (final String nameToProcess : namesToProcess) {
-						final String completeName = mapping.getRelative()
-								+ nameToProcess;
+						final String completeName = starting + nameToProcess;
 						if (completeName.equals(name)) {
 							found = true;
 							break looking;
@@ -505,8 +525,11 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 					if (!found) {
 						final CustomArtifact artifactToDelete = bundle
 								.getCustomArtifactByName(name);
-						bundle.removeCustomArtifact(artifactToDelete);
+						artifactsToRemove.add(artifactToDelete);
 					}
+				}
+				for (final CustomArtifact artifactToDelete : artifactsToRemove) {
+					bundle.removeCustomArtifact(artifactToDelete);
 				}
 				ignoreCount += innerResult.getIgnoredNames().size();
 
@@ -571,8 +594,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 					final String sha1 = getSha1SignatureEncodedAsBase64(content);
 					final InputStream is = new ByteArrayInputStream(content);
 					final StreamArtifact artifact = bundle
-							.addStreamArtifact(mapping.getRelative()
-									+ artifactName);
+							.addStreamArtifact(artifactName);
 					artifact.setData(is);
 					artifact.setDataSha1(sha1);
 					loadCounter.incrementAndGet();
