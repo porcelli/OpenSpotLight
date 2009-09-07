@@ -86,6 +86,7 @@ public final class DatabaseMetadataScript {
 		TEMPLATE
 	}
 
+	private Integer contentColumnToUse;
 	private String contentSelect;
 	private DatabaseType database;
 	private String dataSelect;
@@ -93,7 +94,16 @@ public final class DatabaseMetadataScript {
 	private PreferedType preferedType;
 	private ScriptType scriptType;
 	private String template;
+
 	private String templatesSelect;
+
+	/**
+	 * 
+	 * @return column number to use on content select
+	 */
+	public Integer getContentColumnToUse() {
+		return this.contentColumnToUse;
+	}
 
 	/**
 	 * 
@@ -150,6 +160,18 @@ public final class DatabaseMetadataScript {
 	 */
 	public String getTemplatesSelect() {
 		return this.templatesSelect;
+	}
+
+	/**
+	 * Sets the column number to use inside the content select.
+	 * 
+	 * @param contentColumnToUse
+	 */
+	public void setContentColumnToUse(final Integer contentColumnToUse) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.contentColumnToUse = contentColumnToUse;
 	}
 
 	/**
@@ -227,6 +249,9 @@ public final class DatabaseMetadataScript {
 	 * @param template
 	 */
 	public void setTemplate(final String template) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
 		this.template = template;
 	}
 
@@ -236,6 +261,9 @@ public final class DatabaseMetadataScript {
 	 * @param templatesSelect
 	 */
 	public void setTemplatesSelect(final String templatesSelect) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
 		this.templatesSelect = templatesSelect;
 	}
 
