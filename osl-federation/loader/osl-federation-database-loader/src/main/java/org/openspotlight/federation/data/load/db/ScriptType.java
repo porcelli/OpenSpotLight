@@ -7,44 +7,48 @@ package org.openspotlight.federation.data.load.db;
  * 
  */
 public enum ScriptType {
-    /**
-     * Trigger type.
-     */
-    TRIGGER,
-    /**
-     * Procedure type.
-     */
-    PROCEDURE,
-    /**
-     * Function type.
-     */
-    FUNCTION,
-    /**
-     * View creation script.
-     */
-    VIEW,
-    /**
-     * Table creation script.
-     */
-    TABLE,
-    /**
-     * Index creation script.
-     */
-    INDEX,
-    /**
-     * Sequence creation script.
-     */
-    SEQUENCE,
-    /**
-     * Package creation script.
-     */
-    PACKAGE,
-    /**
-     * Tablespace creation script.
-     */
-    TABLESPACE,
-    /**
-     * Constraint creation script.
-     */
-    CONSTRAINT
+	/**
+	 * Constraint creation script.
+	 */
+	CONSTRAINT,
+	/**
+	 * Foreign key information.
+	 */
+	FK,
+	/**
+	 * Function type.
+	 */
+	FUNCTION,
+	/**
+	 * Index creation script.
+	 */
+	INDEX,
+	/**
+	 * Package creation script.
+	 */
+	PACKAGE,
+	/**
+	 * Procedure type.
+	 */
+	PROCEDURE,
+	/**
+	 * Sequence creation script.
+	 */
+	SEQUENCE,
+	/**
+	 * Table creation script.
+	 */
+	TABLE,
+	/**
+	 * Tablespace creation script.
+	 */
+	TABLESPACE,
+	/**
+	 * Trigger type.
+	 */
+	TRIGGER,
+	/**
+	 * View creation script.
+	 */
+	VIEW
 }
