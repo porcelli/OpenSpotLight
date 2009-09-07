@@ -31,7 +31,7 @@ public class Db2DatabaseStreamTest extends DatabaseStreamTest implements
 	protected Set<ScriptType> typesToAssert() {
 		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
 				ScriptType.PROCEDURE, ScriptType.FUNCTION, ScriptType.VIEW,
-				ScriptType.INDEX, ScriptType.CONSTRAINT);
+				ScriptType.INDEX, ScriptType.CONSTRAINT, ScriptType.FK);
 	}
 
 	// @Override

@@ -1,0 +1,29 @@
+<script>
+	<scriptType>FK</scriptType>
+	<database>DB2</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	alter table $pk_table$ add constraint $name$ on (
+		$pk_table$.$pk_column$ references $fk_table$.$fk_column$
+	)]]></template>
+	<dataSelect><![CDATA[
+       select 
+		    pktable_schem as schema_name,
+		    fk_name as name ,
+		    '' as catalog_name
+		from 
+		    SYSIBM.SQLFOREIGNKEYS
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select 
+		    pktable_name as pk_table,
+		    pkcolumn_name as pk_column,
+		    fktable_name as fk_table,
+		    fkcolumn_name as fk_column
+		from 
+		    SYSIBM.SQLFOREIGNKEYS
+		where
+		    pktable_schem='$schema_name$' and
+		    fk_name='$name$'
+ ]]></templatesSelect>
+</script>

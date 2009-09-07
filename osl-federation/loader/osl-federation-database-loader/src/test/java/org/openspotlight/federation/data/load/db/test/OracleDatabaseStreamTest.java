@@ -33,7 +33,7 @@ public class OracleDatabaseStreamTest extends DatabaseStreamTest implements
 		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
 				ScriptType.PROCEDURE, ScriptType.FUNCTION, ScriptType.VIEW,
 				ScriptType.INDEX, ScriptType.SEQUENCE, ScriptType.CONSTRAINT,
-				ScriptType.PACKAGE);
+				ScriptType.PACKAGE, ScriptType.FK);
 	}
 
 	// @Override
