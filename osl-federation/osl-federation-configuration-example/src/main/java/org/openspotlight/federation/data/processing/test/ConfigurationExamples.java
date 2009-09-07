@@ -426,13 +426,13 @@ public class ConfigurationExamples {
 		postgresqlBundle.setDriverClass("org.postgresql.Driver");
 
 		final ArtifactMapping postgresqlArtifactMapping = new ArtifactMapping(
-				postgresqlBundle, "pg_catalog/");
+				postgresqlBundle, "*/");
 		final Included postgresqlIncludedTrigger = new Included(
 				postgresqlArtifactMapping, "TRIGGER/*");
-		final ArtifactMapping postgresqlPublicArtifactMapping = new ArtifactMapping(
-				postgresqlBundle, "public/");
+		final Included postgresqlIncludedFk = new Included(
+				postgresqlArtifactMapping, "FK/*");
 		final Included postgresqlIncludedPublicFunction = new Included(
-				postgresqlPublicArtifactMapping, "FUNCTION/*");
+				postgresqlArtifactMapping, "FUNCTION/*");
 		final Included postgresqlIncludedProcedure = new Included(
 				postgresqlArtifactMapping, "PROCEDURE/*");
 		final Included postgresqlIncludedTable = new Included(
@@ -441,8 +441,6 @@ public class ConfigurationExamples {
 				postgresqlArtifactMapping, "SEQUENCE/*");
 		final Included postgresqlIncludedConstraint = new Included(
 				postgresqlArtifactMapping, "CONSTRAINT/*");
-		final Included postgresqlIncludedFunction = new Included(
-				postgresqlArtifactMapping, "FUNCTION/*");
 		final Included postgresqlIncludedView = new Included(
 				postgresqlArtifactMapping, "VIEW/*");
 		final Included postgresqlIncludedIndex = new Included(

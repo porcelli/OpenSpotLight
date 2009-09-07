@@ -1,0 +1,44 @@
+<!-- Information from site: http://www.alberton.info/postgresql_meta_info.html -->
+<script>
+	<scriptType>FK</scriptType>
+	<database>POSTGRES</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	alter table $table_name$ add constraint $name$
+	$table_name$.$column_name$ references $references_table$.$references_column$
+	]]></template>
+	<dataSelect><![CDATA[
+		select  
+		    constraint_catalog as catalog_name, 
+		    constraint_schema as schema_name,
+		    constraint_name as name
+		FROM    
+		    information_schema.table_constraints 
+		where 
+		    constraint_type='FOREIGN KEY'
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		   SELECT 
+		          tc.table_name as table_name,
+		          kcu.column_name as column_name,
+		          ccu.table_name AS references_table,
+		          ccu.column_name AS references_column
+		     FROM information_schema.table_constraints tc
+		LEFT JOIN information_schema.key_column_usage kcu
+		       ON tc.constraint_catalog = kcu.constraint_catalog
+		      AND tc.constraint_schema = kcu.constraint_schema
+		      AND tc.constraint_name = kcu.constraint_name
+		LEFT JOIN information_schema.referential_constraints rc
+		       ON tc.constraint_catalog = rc.constraint_catalog
+		      AND tc.constraint_schema = rc.constraint_schema
+		      AND tc.constraint_name = rc.constraint_name
+		LEFT JOIN information_schema.constraint_column_usage ccu
+		       ON rc.unique_constraint_catalog = ccu.constraint_catalog
+		      AND rc.unique_constraint_schema = ccu.constraint_schema
+		      AND rc.unique_constraint_name = ccu.constraint_name
+		where tc.constraint_type='FOREIGN KEY'
+		and tc.constraint_catalog = '$catalog_name$'
+		and tc.constraint_schema = '$schema_name$'
+		and tc.constraint_name = '$name$'
+ ]]></templatesSelect>
+</script>

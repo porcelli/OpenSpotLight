@@ -31,7 +31,8 @@ public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements
 	@Override
 	protected Set<ScriptType> typesToAssert() {
 		return EnumSet.of(ScriptType.TRIGGER, ScriptType.VIEW,
-				ScriptType.INDEX, ScriptType.TABLE, ScriptType.FUNCTION);
+				ScriptType.INDEX, ScriptType.TABLE, ScriptType.FUNCTION,
+				ScriptType.FK);
 	}
 
 	// @Override
