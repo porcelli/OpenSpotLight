@@ -1,16 +1,23 @@
 <script>
 	<scriptType>PROCEDURE</scriptType>
 	<database>MYSQL</database>
-	<preferedType>SQL</preferedType>
-	<contentSelect><![CDATA[
+	<preferedType>TEMPLATE</preferedType>
+	<template>
+		create procedure $name$($parameters$) as 
+		$definition$
+	</template>
+	<templatesSelect><![CDATA[
 	       select 
-            routine_definition as sql_content 
-        from 
-            information_schema.routines
-        where routine_type='PROCEDURE' and
-            routine_schema = '$schema_name$' and 
-            routine_name = '$name$'
-	]]></contentSelect>
+	       		body as definition, 
+	       		returns as return_type, 
+	       		param_list as parameters 
+	      from  
+	      		mysql.proc 
+	      where 
+	      		type='PROCEDURE' and 
+	      		name='$name$' and 
+	      		db='$schema_name$'
+	]]></templatesSelect>
 	<dataSelect><![CDATA[
        select 
             routine_catalog as catalog_name, 

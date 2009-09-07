@@ -1,16 +1,23 @@
 <script>
 	<scriptType>FUNCTION</scriptType>
 	<database>MYSQL</database>
-	<preferedType>SQL</preferedType>
-	<contentSelect><![CDATA[
+	<preferedType>TEMPLATE</preferedType>
+	<template>
+		create function $name$($parameters$) returning $return_type$ as 
+		$definition$
+	</template>
+	<templatesSelect><![CDATA[
 	       select 
-            routine_definition as sql_content 
-        from 
-            information_schema.routines
-        where routine_type='FUNCTION' and
-            routine_schema = '$schema_name$' and 
-            routine_name = '$name$'
-	]]></contentSelect>
+	       		body as definition, 
+	       		returns as return_type, 
+	       		param_list as parameters 
+	      from  
+	      		mysql.proc 
+	      where 
+	      		type='FUNCTION' and 
+	      		name='$name$' and 
+	      		db='$schema_name$'
+	]]></templatesSelect>
 	<dataSelect><![CDATA[
        select 
             routine_catalog as catalog_name, 
