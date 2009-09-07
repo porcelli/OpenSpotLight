@@ -236,7 +236,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 							.getContentColumnToUse().intValue()
 							: 1;
 					final String content = resultSet.getString(columnToUse);
-					return content.getBytes();
+					return content!=null?content.getBytes():null;
 				}
 			} catch (final Exception e) {
 				logAndReturn("Error on Sql " + sql, e);

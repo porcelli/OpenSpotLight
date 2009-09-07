@@ -65,7 +65,7 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 	protected Set<ScriptType> typesToAssert() {
 		return EnumSet.of(ScriptType.TABLE, ScriptType.TRIGGER,
 				ScriptType.PROCEDURE, ScriptType.FUNCTION, ScriptType.VIEW,
-				ScriptType.CONSTRAINT);
+				ScriptType.CONSTRAINT, ScriptType.FK);
 	}
 
 }

@@ -90,10 +90,12 @@ public class ConfigurationExamples {
 		db2Bundle.setDriverClass("com.ibm.db2.jcc.DB2Driver");
 
 		final ArtifactMapping db2ArtifactMapping = new ArtifactMapping(
-				db2Bundle, "DB2ADMIN/");
+				db2Bundle, "*/");
 		final Included db2IncludedTrigger = new Included(db2ArtifactMapping,
-				"TRIGGER/*");
-		final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
+		"TRIGGER/*");
+		final Included db2IncludedFk = new Included(db2ArtifactMapping,
+		"FK/*");
+final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 				"PROCEDURE/*");
 		final Included db2IncludedTable = new Included(db2ArtifactMapping,
 				"TABLE/*");
@@ -226,10 +228,19 @@ public class ConfigurationExamples {
 		final Included oracleIncludedPackage = new Included(
 				oracleArtifactSysMapping, "PACKAGE/*");
 
+		final ArtifactMapping oracleArtifactTablesMapping = new ArtifactMapping(
+				oracleBundle, "*/");
+		final Included oracleIncludedTables = new Included(
+				oracleArtifactTablesMapping, "TABLE/*");
+		final Included oracleIncludedViews = new Included(
+				oracleArtifactTablesMapping, "VIEW/*");
+
 		final ArtifactMapping oracleArtifactMapping = new ArtifactMapping(
 				oracleBundle, "HR/");
 		final Included oracleIncludedTrigger = new Included(
 				oracleArtifactMapping, "TRIGGER/*");
+		final Included oracleIncludedFk = new Included(
+				oracleArtifactMapping, "FK/*");
 		final Included oracleIncludedProcedure = new Included(
 				oracleArtifactMapping, "PROCEDURE/*");
 		final Included oracleIncludedTable = new Included(
@@ -476,9 +487,11 @@ public class ConfigurationExamples {
 				.setInitialLookup("jdbc:jtds:sqlserver://localhost:49385");
 		sqlserverBundle.setDriverClass("net.sourceforge.jtds.jdbc.Driver");
 		final ArtifactMapping sqlserverArtifactMapping = new ArtifactMapping(
-				sqlserverBundle, "dbo/");
+				sqlserverBundle, "*/");
 		final Included sqlserverIncludedTrigger = new Included(
 				sqlserverArtifactMapping, "TRIGGER/*");
+		final Included sqlserverIncludedFk = new Included(
+				sqlserverArtifactMapping, "FK/*");
 		final Included sqlserverIncludedProcedure = new Included(
 				sqlserverArtifactMapping, "PROCEDURE/*");
 		final Included sqlserverIncludedTable = new Included(

@@ -1,0 +1,47 @@
+<!-- This SQL was taken from http://www.alberton.info/sql_server_meta_info.html -->
+<script>
+	<scriptType>FK</scriptType>
+	<database>SQL_SERVER</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	alter table $pk_table$ add constraint $name$ on (
+		$pk_table$.$pk_column$ references $fk_table$.$fk_column$
+	)]]></template>
+	<dataSelect><![CDATA[
+       select 
+       		constraint_catalog as catalog_name, 
+       		constraint_schema as schema_name, 
+       		constraint_name as name 
+       	from 
+       		information_schema.table_constraints 
+       	where 
+       		constraint_type='FOREIGN KEY'
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		select k.table_name as pk_table,
+          k.column_name as pk_column,
+          ccu.table_name as fk_table,
+          ccu.column_name as fk_column
+     from information_schema.key_column_usage k
+     left join information_schema.table_constraints c
+       on k.table_name = c.table_name
+      and k.table_schema = c.table_schema
+      and k.table_catalog = c.table_catalog
+      and k.constraint_catalog = c.constraint_catalog
+      and k.constraint_name = c.constraint_name
+left join information_schema.referential_constraints rc
+       on rc.constraint_schema = c.constraint_schema
+      and rc.constraint_catalog = c.constraint_catalog
+      and rc.constraint_name = c.constraint_name
+left join information_schema.constraint_column_usage ccu
+       on rc.unique_constraint_schema = ccu.constraint_schema
+      and rc.unique_constraint_catalog = ccu.constraint_catalog
+      and rc.unique_constraint_name = ccu.constraint_name
+    where c.constraint_name = '$name$'
+      and c.constraint_catalog = '$catalog_name$'
+      and c.constraint_schema = '$schema_name$'
+and c.constraint_type='FOREIGN KEY'
+ ORDER BY k.constraint_name,
+          k.ordinal_position;
+ ]]></templatesSelect>
+</script>

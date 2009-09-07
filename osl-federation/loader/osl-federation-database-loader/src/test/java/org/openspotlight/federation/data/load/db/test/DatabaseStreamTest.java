@@ -150,7 +150,7 @@ public abstract class DatabaseStreamTest {
 		for (final StreamArtifact loaded : loadedArtifacts) {
 			final String name = "./target/test-data/"
 					+ this.getClass().getSimpleName() + "/"
-					+ loaded.getRelativeName();
+					+ loaded.getRelativeName().replaceAll(" ", "");//DB2 has some spaces 
 			final String dirName = name.substring(0, name.lastIndexOf('/'));
 			new File(dirName).mkdirs();
 			final OutputStream fos = new BufferedOutputStream(

@@ -1,0 +1,38 @@
+<script>
+	<scriptType>FK</scriptType>
+	<database>ORACLE</database>
+	<preferedType>TEMPLATE</preferedType>
+	<template><![CDATA[
+	alter table $pk_table$ add constraint $name$ on (
+		$pk_table$.$pk_column$ references $fk_table$.$fk_column$
+	)]]></template>
+	<dataSelect><![CDATA[
+       select 
+       		owner as schema_name, 
+       		constraint_name as name, 
+       		null as catalog_name 
+       	from 
+       		all_constraints
+   		where 
+   			constraint_type='R'
+      ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		Select 
+		    pk.table_name pk_table, 
+		    pk.column_name pk_column, 
+		    fk.table_name fk_table, 
+		    fk.column_name fk_column
+		from 
+		    all_cons_columns pk, 
+		    all_constraints constraints, 
+		    all_cons_columns fk 
+		where 
+		    fk.constraint_name = constraints.constraint_name and 
+		    constraints.constraint_type='R' and 
+		    pk.constraint_name = constraints.r_constraint_name and 
+		    pk.position = fk.position and
+		    constraints.constraint_name = '$name$' and
+		    constraints.owner = '$schema_name$'
+		order by pk.table_name, pk.column_name, fk.table_name, fk.column_name
+ ]]></templatesSelect>
+</script>
