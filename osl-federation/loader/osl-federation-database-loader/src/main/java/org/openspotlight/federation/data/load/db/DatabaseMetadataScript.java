@@ -76,10 +76,10 @@ import com.thoughtworks.xstream.XStream;
 public final class DatabaseMetadataScript {
 
 	/**
-	 * The Interface DatabaseArtifactNameHandler is used to handle callback during the
-	 * initial phases of Database {@link StreamArtifact} processing. This
-	 * handler should be used as a filter also on situations where there's no
-	 * possible to filter the sql results.
+	 * The Interface DatabaseArtifactNameHandler is used to handle callback
+	 * during the initial phases of Database {@link StreamArtifact} processing.
+	 * This handler should be used as a filter also on situations where there's
+	 * no possible to filter the sql results.
 	 */
 	public static interface DatabaseArtifactNameHandler {
 
@@ -191,7 +191,7 @@ public final class DatabaseMetadataScript {
 	private DatabaseType database;
 
 	/** The data handler class. */
-	private Class<DatabaseArtifactNameHandler> dataHandlerClass;
+	private Class<? extends DatabaseArtifactNameHandler> dataHandlerClass;
 
 	/** The data select. */
 	private String dataSelect;
@@ -206,7 +206,7 @@ public final class DatabaseMetadataScript {
 	private ScriptType scriptType;
 
 	/** The stream handler class. */
-	private Class<DatabaseStreamHandler> streamHandlerClass;
+	private Class<? extends DatabaseStreamHandler> streamHandlerClass;
 
 	/** The template. */
 	private String template;
@@ -262,7 +262,7 @@ public final class DatabaseMetadataScript {
 	 * 
 	 * @return the data handler class
 	 */
-	public Class<DatabaseArtifactNameHandler> getDataHandlerClass() {
+	public Class<? extends DatabaseArtifactNameHandler> getDataHandlerClass() {
 
 		return this.dataHandlerClass;
 	}
@@ -300,7 +300,7 @@ public final class DatabaseMetadataScript {
 	 * 
 	 * @return the stream handler class
 	 */
-	public Class<DatabaseStreamHandler> getStreamHandlerClass() {
+	public Class<? extends DatabaseStreamHandler> getStreamHandlerClass() {
 		return this.streamHandlerClass;
 	}
 
@@ -382,7 +382,7 @@ public final class DatabaseMetadataScript {
 	 *            the new data handler class
 	 */
 	public void setDataHandlerClass(
-			final Class<DatabaseArtifactNameHandler> dataHandlerClass) {
+			final Class<? extends DatabaseArtifactNameHandler> dataHandlerClass) {
 		if (this.immutable) {
 			throw new UnsupportedOperationException();
 		}
@@ -444,7 +444,7 @@ public final class DatabaseMetadataScript {
 	 *            the new stream handler class
 	 */
 	public void setStreamHandlerClass(
-			final Class<DatabaseStreamHandler> streamHandlerClass) {
+			final Class<? extends DatabaseStreamHandler> streamHandlerClass) {
 		if (this.immutable) {
 			throw new UnsupportedOperationException();
 		}
