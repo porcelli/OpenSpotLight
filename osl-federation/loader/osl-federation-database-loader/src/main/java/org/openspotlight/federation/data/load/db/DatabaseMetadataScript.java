@@ -49,6 +49,15 @@
 
 package org.openspotlight.federation.data.load.db;
 
+import static java.util.Collections.unmodifiableMap;
+
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.EnumMap;
+import java.util.Map;
+
+import org.antlr.stringtemplate.StringTemplate;
 import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
@@ -64,40 +73,167 @@ import com.thoughtworks.xstream.XStream;
  * see the instructions to fill the xml files.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public final class DatabaseMetadataScript {
+
+	/**
+	 * The Interface DatabaseDataHandler is used to handle callback during the
+	 * initial phases of Database {@link StreamArtifact} processing. This
+	 * handler should be used as a filter also on situations where there's no
+	 * possible to filter the sql results.
+	 */
+	public static interface DatabaseDataHandler {
+
+		/**
+		 * Decide if the data passed to this method should be processed.
+		 * 
+		 * @param schema
+		 *            the schema
+		 * @param type
+		 *            the type
+		 * @param catalog
+		 *            the catalog
+		 * @param name
+		 *            the name
+		 * @param loadedData
+		 *            the loaded data
+		 * @param resultSet
+		 *            the result set
+		 * 
+		 * @return true, if successful
+		 * 
+		 * @throws Exception
+		 *             if anything wrong happened
+		 */
+		public boolean shouldProcessData(String schema, ScriptType type,
+				String catalog, String name, InputStream loadedData,
+				ResultSet resultSet) throws Exception;
+
+	}
+
+	/**
+	 * The Interface DatabaseStreamHandler is used to handle callbacks during
+	 * the {@link StreamArtifact} final loading phase. Here is possible to
+	 * reject or modify the input stream. There's also methods to add new
+	 * variables to a template.
+	 */
+	public static interface DatabaseStreamHandler {
+
+		/**
+		 * Calback method to modify or reject the byte array before the
+		 * {@link StreamArtifact} loading.
+		 * 
+		 * @param schema
+		 *            the schema
+		 * @param type
+		 *            the type
+		 * @param catalog
+		 *            the catalog
+		 * @param name
+		 *            the name
+		 * @param loadedData
+		 *            the loaded data
+		 * @param connection
+		 *            the connection
+		 * 
+		 * @return the input stream or null to ignore this artifact
+		 * 
+		 * @throws Exception
+		 *             if anything wrong happened
+		 */
+		public byte[] afterStreamProcessing(String schema, ScriptType type,
+				String catalog, String name, byte[] loadedData,
+				Connection connection) throws Exception;
+
+		/**
+		 * Before fill template this method will be called to add some new
+		 * variables to the template.
+		 * 
+		 * @param schema
+		 *            the schema
+		 * @param type
+		 *            the type
+		 * @param catalog
+		 *            the catalog
+		 * @param name
+		 *            the name
+		 * @param template
+		 *            the template
+		 * @param connection
+		 *            the connection
+		 * 
+		 * @throws Exception
+		 *             if anything wrong happened
+		 */
+		public void beforeFillTemplate(String schema, ScriptType type,
+				String catalog, String name, StringTemplate template,
+				Connection connection) throws Exception;
+
+	}
 
 	/**
 	 * Type for describing the way for filling the {@link StreamArtifact}
 	 * content for {@link DatabaseType database} {@link ScriptType scripts}.
 	 * 
 	 * @author feu
-	 * 
 	 */
 	public static enum PreferedType {
-		/**
-		 * Simple sql statement should be used.
-		 */
+
+		/** Simple sql statement should be used. */
 		SQL,
-		/**
-		 * Template should be used.
-		 */
+
+		/** Template should be used. */
 		TEMPLATE
 	}
 
+	/** The column alias map. */
+	private EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap;
+
+	/** The content column to use. */
 	private Integer contentColumnToUse;
+
+	/** The content select. */
 	private String contentSelect;
+
+	/** The database. */
 	private DatabaseType database;
+
+	/** The data select. */
 	private String dataSelect;
+
+	/** The immutable. */
 	private boolean immutable = false;
+
+	/** The prefered type. */
 	private PreferedType preferedType;
+
+	/** The script type. */
 	private ScriptType scriptType;
+
+	/** The template. */
 	private String template;
 
+	/** The templates select. */
 	private String templatesSelect;
 
 	/**
+	 * Gets the column alias map.
+	 * 
+	 * @return the column alias map
+	 */
+	public synchronized Map<ColumnsNamesForMetadataSelect, String> getColumnAliasMap() {
+		if (this.columnAliasMap == null) {
+			this.columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(
+					ColumnsNamesForMetadataSelect.class);
+		}
+		if (this.immutable) {
+			return unmodifiableMap(this.columnAliasMap);
+		}
+		return this.columnAliasMap;
+	}
+
+	/**
+	 * Gets the content column to use.
 	 * 
 	 * @return column number to use on content select
 	 */
@@ -106,6 +242,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the content select.
 	 * 
 	 * @return the select for filling the stream content
 	 */
@@ -114,6 +251,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the database.
 	 * 
 	 * @return the database type
 	 */
@@ -122,6 +260,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the data select.
 	 * 
 	 * @return the mandatory select for filling the basic common data for all
 	 *         stream artifacts loaded from database
@@ -131,6 +270,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the prefered type.
 	 * 
 	 * @return the prefered type
 	 */
@@ -139,6 +279,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the script type.
 	 * 
 	 * @return the script type
 	 */
@@ -147,6 +288,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the template.
 	 * 
 	 * @return the template for stream content
 	 */
@@ -155,6 +297,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the templates select.
 	 * 
 	 * @return the select to fill the template for stream content
 	 */
@@ -163,9 +306,24 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Sets the column alias map.
+	 * 
+	 * @param columnAliasMap
+	 *            the column alias map
+	 */
+	public void setColumnAliasMap(
+			final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.columnAliasMap = columnAliasMap;
+	}
+
+	/**
 	 * Sets the column number to use inside the content select.
 	 * 
 	 * @param contentColumnToUse
+	 *            the content column to use
 	 */
 	public void setContentColumnToUse(final Integer contentColumnToUse) {
 		if (this.immutable) {
@@ -178,6 +336,7 @@ public final class DatabaseMetadataScript {
 	 * Sets the select for filling the stream content.
 	 * 
 	 * @param contentSelect
+	 *            the content select
 	 */
 	public void setContentSelect(final String contentSelect) {
 		if (this.immutable) {
@@ -190,6 +349,7 @@ public final class DatabaseMetadataScript {
 	 * Sets the database type.
 	 * 
 	 * @param database
+	 *            the database
 	 */
 	public void setDatabase(final DatabaseType database) {
 		if (this.immutable) {
@@ -203,6 +363,7 @@ public final class DatabaseMetadataScript {
 	 * stream artifacts loaded from database.
 	 * 
 	 * @param dataSelect
+	 *            the data select
 	 */
 	public void setDataSelect(final String dataSelect) {
 		if (this.immutable) {
@@ -226,6 +387,7 @@ public final class DatabaseMetadataScript {
 	 * Sets the preffered type.
 	 * 
 	 * @param preferedType
+	 *            the prefered type
 	 */
 	public void setPreferedType(final PreferedType preferedType) {
 		this.preferedType = preferedType;
@@ -235,6 +397,7 @@ public final class DatabaseMetadataScript {
 	 * Sets the script type.
 	 * 
 	 * @param scriptType
+	 *            the script type
 	 */
 	public void setScriptType(final ScriptType scriptType) {
 		if (this.immutable) {
@@ -247,6 +410,7 @@ public final class DatabaseMetadataScript {
 	 * Sets the template for stream content.
 	 * 
 	 * @param template
+	 *            the template
 	 */
 	public void setTemplate(final String template) {
 		if (this.immutable) {
@@ -259,6 +423,7 @@ public final class DatabaseMetadataScript {
 	 * Sets the select to fill the template for stream content.
 	 * 
 	 * @param templatesSelect
+	 *            the templates select
 	 */
 	public void setTemplatesSelect(final String templatesSelect) {
 		if (this.immutable) {

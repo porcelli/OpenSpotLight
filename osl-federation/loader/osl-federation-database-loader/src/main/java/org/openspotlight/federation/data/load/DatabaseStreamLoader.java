@@ -6,6 +6,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.ResultSet;
@@ -31,6 +32,7 @@ import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**
@@ -59,23 +61,23 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * 
  * <pre>
  * &lt;script&gt;
- * 	&lt;scriptType&gt;FUNCTION&lt;/scriptType&gt;
- * 	&lt;database&gt;DB2&lt;/database&gt;
- * 	&lt;preferedType&gt;SQL&lt;/preferedType&gt;
- * 	&lt;dataSelect&gt;&lt;![CDATA[
- * 		select 
- * 			funcschema as schema_name, 
- * 			funcname as name, 
- * 			'' as catalog_name 
- * 		from syscat.FUNCTIONS
- *       ]]&gt;&lt;/dataSelect&gt;
- * 	&lt;contentSelect&gt;&lt;![CDATA[
- * 		select body
- * 		from syscat.FUNCTIONS
- * 		where
- * 			funcschema = '$schema_name$' and
- * 			funcname  = '$name$'
- *    	 ]]&gt;&lt;/contentSelect&gt;
+ * &lt;scriptType&gt;FUNCTION&lt;/scriptType&gt;
+ * &lt;database&gt;DB2&lt;/database&gt;
+ * &lt;preferedType&gt;SQL&lt;/preferedType&gt;
+ * &lt;dataSelect&gt;&lt;![CDATA[
+ * select
+ * funcschema as schema_name,
+ * funcname as name,
+ * '' as catalog_name
+ * from syscat.FUNCTIONS
+ * ]]&gt;&lt;/dataSelect&gt;
+ * &lt;contentSelect&gt;&lt;![CDATA[
+ * select body
+ * from syscat.FUNCTIONS
+ * where
+ * funcschema = '$schema_name$' and
+ * funcname  = '$name$'
+ * ]]&gt;&lt;/contentSelect&gt;
  * &lt;/script&gt;
  * </pre>
  * 
@@ -83,28 +85,28 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * 
  * <pre>
  * &lt;script&gt;
- * 	&lt;scriptType&gt;INDEX&lt;/scriptType&gt;
- * 	&lt;database&gt;DB2&lt;/database&gt;
- * 	&lt;preferedType&gt;TEMPLATE&lt;/preferedType&gt;
- * 	&lt;template&gt;&lt;![CDATA[
- * 	create index $name$ on $detail.tabname$ ( $detail.colnames$ )
- * 	]]&gt;&lt;/template&gt;
+ * &lt;scriptType&gt;INDEX&lt;/scriptType&gt;
+ * &lt;database&gt;DB2&lt;/database&gt;
+ * &lt;preferedType&gt;TEMPLATE&lt;/preferedType&gt;
+ * &lt;template&gt;&lt;![CDATA[
+ * create index $name$ on $detail.tabname$ ( $detail.colnames$ )
+ * ]]&gt;&lt;/template&gt;
  * 
- * 	&lt;dataSelect&gt;&lt;![CDATA[
- * 		select 
- * 			indschema as schema_name, 
- * 			indname as name, 
- * 			'' as catalog_name 
- * 		from syscat.INDEXES
- *       ]]&gt;&lt;/dataSelect&gt;
- * 	&lt;templatesSelect&gt;&lt;![CDATA[
- * 		select 
- * 			tabname, colnames 
- * 		from syscat.indexes 
- * 		where
- * 		    indschema = '$schema_name$' and
- * 		    indname = '$name$'
- * 	 ]]&gt;&lt;/templatesSelect&gt;
+ * &lt;dataSelect&gt;&lt;![CDATA[
+ * select
+ * indschema as schema_name,
+ * indname as name,
+ * '' as catalog_name
+ * from syscat.INDEXES
+ * ]]&gt;&lt;/dataSelect&gt;
+ * &lt;templatesSelect&gt;&lt;![CDATA[
+ * select
+ * tabname, colnames
+ * from syscat.indexes
+ * where
+ * indschema = '$schema_name$' and
+ * indname = '$name$'
+ * ]]&gt;&lt;/templatesSelect&gt;
  * &lt;/script&gt;
  * </pre>
  * 
@@ -137,8 +139,30 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * system property <b>runDatabaseVendorTests</b> is set to true.</li>
  * </ul>
  * 
- * @author feu
+ * There's a few ways to change the behavior of stream artifact loading for
+ * databases.
  * 
+ * The first one: During a loading process of {@link PreferedType#SQL sql type}
+ * it takes the content as the first column for the resulting select. To change
+ * the column to use (the second one, for example) as the {@link StreamArtifact}
+ * content, just add the
+ * <code> &lt;contentColumnToUse&gt;2&lt;/contentColumnToUse&gt; </code> xml
+ * attribute.
+ * 
+ * The second one: To change the {@link ColumnsNamesForMetadataSelect column
+ * names used during the data select} just add the following xml fragment with
+ * the desired information:
+ * 
+ * <pre>
+ * 	&lt;columnAliasMap enum-type=&quot;column&quot;&gt;
+ * 		&lt;entry&gt;
+ * 			&lt;column&gt;valid_enum_type&lt;/column&gt;
+ * 			&lt;string&gt;newName&lt;/string&gt;
+ * 		&lt;/entry&gt;
+ * 	&lt;/columnAliasMap&gt;
+ * </pre>
+ * 
+ * @author feu
  */
 public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
@@ -148,11 +172,11 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 	 * filled with sql.
 	 * 
 	 * @author feu
-	 * 
 	 */
 	protected static class DatabaseThreadExecutionContext extends
 			DefaultThreadExecutionContext {
 
+		/** The conn. */
 		private Connection conn;
 
 		/**
@@ -197,13 +221,19 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		/**
 		 * Loads the stream content by using a sql statement to fill it.
 		 * 
-		 * 
 		 * @param catalog
+		 *            the catalog
 		 * @param schema
+		 *            the schema
 		 * @param name
+		 *            the name
 		 * @param scriptDescription
+		 *            the script description
+		 * 
 		 * @return the stream loaded from a sql query
+		 * 
 		 * @throws Exception
+		 *             the exception
 		 */
 		private byte[] loadFromSql(final String catalog, final String schema,
 				final String name,
@@ -229,14 +259,14 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
 			ResultSet resultSet = null;
 			try {
-				resultSet = this.conn.prepareStatement(sql).executeQuery();
+				resultSet = executeStatement(sql, this.conn);
 				if (resultSet.next()) {
 					final int columnToUse = scriptDescription
 							.getContentColumnToUse() != null ? scriptDescription
 							.getContentColumnToUse().intValue()
 							: 1;
 					final String content = resultSet.getString(columnToUse);
-					return content!=null?content.getBytes():null;
+					return content != null ? content.getBytes() : null;
 				}
 			} catch (final Exception e) {
 				logAndReturn("Error on Sql " + sql, e);
@@ -252,14 +282,20 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 * Loads the stream content by using a {@link StringTemplate} and a sql
 		 * statement to fill it.
 		 * 
-		 * 
 		 * @param catalog
+		 *            the catalog
 		 * @param schema
+		 *            the schema
 		 * @param name
+		 *            the name
 		 * @param scriptDescription
+		 *            the script description
+		 * 
 		 * @return the stream loaded from a sql query and its
 		 *         {@link StringTemplate}
+		 * 
 		 * @throws Exception
+		 *             the exception
 		 */
 		private byte[] loadFromTemplate(final String catalog,
 				final String schema, final String name,
@@ -285,7 +321,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
 			ResultSet resultSet = null;
 			try {
-				resultSet = this.conn.prepareStatement(sql).executeQuery();
+				resultSet = executeStatement(sql, this.conn);
 				final String templateString = scriptDescription.getTemplate();
 				final CustomizedStringTemplate contentTemplate = new CustomizedStringTemplate(
 						templateString, DefaultTemplateLexer.class);
@@ -380,27 +416,49 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 	}
 
 	/**
-	 * This context will be used to load all database data
+	 * This context will be used to load all database data.
 	 * 
 	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
 	 */
 	protected static class GlobalDatabaseContext extends
 			DefaultGlobalExecutionContext {
 
-		private String fillName(final ScriptType scriptType,
+		/**
+		 * Fill name based on the column names configured on
+		 * {@link DatabaseMetadataScript} xml file.
+		 * 
+		 * @param script
+		 *            the script
+		 * @param resultSet
+		 *            the result set
+		 * 
+		 * @return the artifact name
+		 * 
+		 * @throws SQLException
+		 *             the SQL exception
+		 */
+		private String fillName(final DatabaseMetadataScript script,
 				final ResultSet resultSet) throws SQLException {
 			final StringBuilder buffer = new StringBuilder();
-			final String catalog = resultSet
-					.getString(ColumnsNamesForMetadataSelect.catalog_name
-							.name());
-			final String name = resultSet
-					.getString(ColumnsNamesForMetadataSelect.name.name());
-			final String schema = resultSet
-					.getString(ColumnsNamesForMetadataSelect.schema_name.name());
+			String catalogColumnName = script.getColumnAliasMap().get(
+					ColumnsNamesForMetadataSelect.catalog_name);
+			String nameColumnName = script.getColumnAliasMap().get(
+					ColumnsNamesForMetadataSelect.name);
+			String schemaColumnName = script.getColumnAliasMap().get(
+					ColumnsNamesForMetadataSelect.schema_name);
+			catalogColumnName = catalogColumnName != null ? catalogColumnName
+					: ColumnsNamesForMetadataSelect.catalog_name.name();
+			nameColumnName = nameColumnName != null ? nameColumnName
+					: ColumnsNamesForMetadataSelect.name.name();
+			schemaColumnName = schemaColumnName != null ? schemaColumnName
+					: ColumnsNamesForMetadataSelect.schema_name.name();
+
+			final String catalog = resultSet.getString(catalogColumnName);
+			final String name = resultSet.getString(nameColumnName);
+			final String schema = resultSet.getString(schemaColumnName);
 			buffer.append(schema);
 			buffer.append('/');
-			buffer.append(scriptType.name());
+			buffer.append(script.getScriptType().name());
 			buffer.append('/');
 			if ((catalog != null) && !"".equals(catalog.trim())) {
 				buffer.append(catalog);
@@ -411,6 +469,9 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			return result;
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public Set<String> getAllArtifactNames(final Bundle bundle,
 				final ArtifactMapping mapping) throws ConfigurationException {
 			if (!(bundle instanceof DbBundle)) {
@@ -430,12 +491,11 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 						if (scriptDescription == null) {
 							continue;
 						}
-						final ResultSet resultSet = conn.prepareStatement(
-								scriptDescription.getDataSelect())
-								.executeQuery();
+						final ResultSet resultSet = executeStatement(
+								scriptDescription.getDataSelect(), conn);
 						while (resultSet.next()) {
-							final String result = this.fillName(scriptType,
-									resultSet);
+							final String result = this.fillName(
+									scriptDescription, resultSet);
 							final String starting = mapping.getRelative();
 							if (isMatchingWithoutCaseSentitiveness(result,
 									starting + "*")) {
@@ -476,6 +536,31 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			return defaultValue;
 		}
 
+	}
+
+	/**
+	 * Execute the statement as a normal SQL query or as a
+	 * {@link CallableStatement} if the script starts with '{'.
+	 * 
+	 * @param sql
+	 *            the sql
+	 * @param connection
+	 *            the connection
+	 * 
+	 * @return the result set
+	 * 
+	 * @throws SQLException
+	 *             if anything wrong happens
+	 */
+	static ResultSet executeStatement(final String sql,
+			final Connection connection) throws SQLException {
+		ResultSet rs;
+		if (sql.trim().startsWith("{")) {
+			rs = connection.prepareCall(sql).executeQuery();
+		} else {
+			rs = connection.prepareStatement(sql).executeQuery();
+		}
+		return rs;
 	}
 
 	/**
