@@ -32,6 +32,8 @@ import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
@@ -141,17 +143,16 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * 
  * There's a few ways to change the behavior of stream artifact loading for
  * databases.
- * 
- * The first one: During a loading process of {@link PreferedType#SQL sql type}
- * it takes the content as the first column for the resulting select. To change
- * the column to use (the second one, for example) as the {@link StreamArtifact}
+ * <ul>
+ * <li>During a loading process of {@link PreferedType#SQL sql type} it takes
+ * the content as the first column for the resulting select. To change the
+ * column to use (the second one, for example) as the {@link StreamArtifact}
  * content, just add the
  * <code> &lt;contentColumnToUse&gt;2&lt;/contentColumnToUse&gt; </code> xml
- * attribute.
- * 
- * The second one: To change the {@link ColumnsNamesForMetadataSelect column
- * names used during the data select} just add the following xml fragment with
- * the desired information:
+ * attribute.</li>
+ * <li>To change the {@link ColumnsNamesForMetadataSelect column names used
+ * during the data select} just add the following xml fragment with the desired
+ * information:
  * 
  * <pre>
  * 	&lt;columnAliasMap enum-type=&quot;column&quot;&gt;
@@ -162,15 +163,25 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * 	&lt;/columnAliasMap&gt;
  * </pre>
  * 
- * Also is important to know: In any place where is possible to use a valid sql
- * statements, its possible also to use callable statements. Use the common java
- * syntax:
+ * </li>
+ * 
+ * <li>Also is important to know: In any place where is possible to use a valid
+ * sql statements, its possible also to use callable statements. Use the common
+ * java syntax:
  * 
  * <pre>
  * {call exampleCallable('stringParameter',3,null)}
  * </pre>
  * 
- * Remember: this exampleCallable should return a result set.
+ * Remember: this exampleCallable should return a result set.</li>
+ * </ul>
+ * 
+ * There's also some callback classes to be used on situations where just the
+ * {@link PreferedType#SQL} or {@link PreferedType#TEMPLATE} isn't enough. Just
+ * implement the interface {@link DatabaseArtifactNameHandler} to decide if an
+ * artifact should be loaded or not, and implement the interface
+ * {@link DatabaseStreamLoader} to change the behavior of artifact loading for
+ * the artifact been loaded. Here it's possible also to ignore this artifact.
  * 
  * @author feu
  */
@@ -215,17 +226,39 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			if (scriptDescription == null) {
 				return null;
 			}
+
+			final Class<DatabaseStreamHandler> streamHandlerType = scriptDescription
+					.getStreamHandlerClass();
+			final DatabaseStreamHandler streamHandler;
+			if (streamHandlerType != null) {
+				streamHandler = streamHandlerType.newInstance();
+			} else {
+				streamHandler = null;
+			}
+			byte[] content;
 			switch (scriptDescription.getPreferedType()) {
 			case SQL:
-				return this.loadFromSql(catalog, schema, name,
-						scriptDescription);
+				content = this.loadFromSql(catalog, schema, name,
+						scriptDescription, streamHandler);
+				break;
 			case TEMPLATE:
-				return this.loadFromTemplate(catalog, schema, name,
-						scriptDescription);
+				content = this.loadFromTemplate(catalog, schema, name,
+						scriptDescription, streamHandler);
+				break;
 			default:
+				content = null;
 				logAndReturn(new ConfigurationException("Invalid prefered type"));
 			}
-			return null;
+			if (content == null) {
+				return null;
+			}
+			if (streamHandler != null) {
+				final byte[] newContent = streamHandler.afterStreamProcessing(
+						schema, scriptType, catalog, name, content, this.conn);
+				return newContent;
+			}
+			return content;
+
 		}
 
 		/**
@@ -239,6 +272,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 *            the name
 		 * @param scriptDescription
 		 *            the script description
+		 * @param streamHandler
+		 *            the stream handler
 		 * 
 		 * @return the stream loaded from a sql query
 		 * 
@@ -247,8 +282,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 */
 		private byte[] loadFromSql(final String catalog, final String schema,
 				final String name,
-				final DatabaseMetadataScript scriptDescription)
-				throws Exception {
+				final DatabaseMetadataScript scriptDescription,
+				final DatabaseStreamHandler streamHandler) throws Exception {
 			final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
 					ColumnsNamesForMetadataSelect.class);
 
@@ -263,6 +298,10 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry : columnValues
 					.entrySet()) {
 				template.setAttribute(entry.getKey().name(), entry.getValue());
+			}
+			if (streamHandler != null) {
+				streamHandler.beforeFillTemplate(schema, scriptDescription
+						.getScriptType(), catalog, name, template, this.conn);
 			}
 
 			final String sql = template.toString();
@@ -300,6 +339,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 *            the name
 		 * @param scriptDescription
 		 *            the script description
+		 * @param streamHandler
+		 *            the stream handler
 		 * 
 		 * @return the stream loaded from a sql query and its
 		 *         {@link StringTemplate}
@@ -309,8 +350,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 */
 		private byte[] loadFromTemplate(final String catalog,
 				final String schema, final String name,
-				final DatabaseMetadataScript scriptDescription)
-				throws Exception {
+				final DatabaseMetadataScript scriptDescription,
+				final DatabaseStreamHandler streamHandler) throws Exception {
 			final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
 					ColumnsNamesForMetadataSelect.class);
 
@@ -325,6 +366,10 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 			for (final Map.Entry<ColumnsNamesForMetadataSelect, String> entry : columnValues
 					.entrySet()) {
 				template.setAttribute(entry.getKey().name(), entry.getValue());
+			}
+			if (streamHandler != null) {
+				streamHandler.beforeFillTemplate(schema, scriptDescription
+						.getScriptType(), catalog, name, template, this.conn);
 			}
 
 			final String sql = template.toString();
@@ -501,16 +546,31 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 						if (scriptDescription == null) {
 							continue;
 						}
+						final Class<DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
+								.getDataHandlerClass();
+						final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType
+								.newInstance()
+								: null;
+
 						final ResultSet resultSet = executeStatement(
 								scriptDescription.getDataSelect(), conn);
-						while (resultSet.next()) {
+						walkingOnResult: while (resultSet.next()) {
 							final String result = this.fillName(
 									scriptDescription, resultSet);
+							if (nameHandler != null) {
+								final boolean shouldProcess = nameHandler
+										.shouldIncludeName(result, scriptType,
+												resultSet);
+								if (!shouldProcess) {
+									continue walkingOnResult;
+								}
+							}
 							final String starting = mapping.getRelative();
 							if (isMatchingWithoutCaseSentitiveness(result,
 									starting + "*")) {
 								loadedNames.add(result);
 							}
+
 						}
 						resultSet.close();
 					}

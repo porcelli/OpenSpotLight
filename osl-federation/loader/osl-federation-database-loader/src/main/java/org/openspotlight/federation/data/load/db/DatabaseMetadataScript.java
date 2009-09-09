@@ -51,7 +51,6 @@ package org.openspotlight.federation.data.load.db;
 
 import static java.util.Collections.unmodifiableMap;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.EnumMap;
@@ -77,26 +76,20 @@ import com.thoughtworks.xstream.XStream;
 public final class DatabaseMetadataScript {
 
 	/**
-	 * The Interface DatabaseDataHandler is used to handle callback during the
+	 * The Interface DatabaseArtifactNameHandler is used to handle callback during the
 	 * initial phases of Database {@link StreamArtifact} processing. This
 	 * handler should be used as a filter also on situations where there's no
 	 * possible to filter the sql results.
 	 */
-	public static interface DatabaseDataHandler {
+	public static interface DatabaseArtifactNameHandler {
 
 		/**
 		 * Decide if the data passed to this method should be processed.
 		 * 
-		 * @param schema
-		 *            the schema
+		 * @param artifactName
+		 *            the artifact name
 		 * @param type
 		 *            the type
-		 * @param catalog
-		 *            the catalog
-		 * @param name
-		 *            the name
-		 * @param loadedData
-		 *            the loaded data
 		 * @param resultSet
 		 *            the result set
 		 * 
@@ -105,8 +98,7 @@ public final class DatabaseMetadataScript {
 		 * @throws Exception
 		 *             if anything wrong happened
 		 */
-		public boolean shouldProcessData(String schema, ScriptType type,
-				String catalog, String name, InputStream loadedData,
+		public boolean shouldIncludeName(String artifactName, ScriptType type,
 				ResultSet resultSet) throws Exception;
 
 	}
@@ -198,6 +190,9 @@ public final class DatabaseMetadataScript {
 	/** The database. */
 	private DatabaseType database;
 
+	/** The data handler class. */
+	private Class<DatabaseArtifactNameHandler> dataHandlerClass;
+
 	/** The data select. */
 	private String dataSelect;
 
@@ -209,6 +204,9 @@ public final class DatabaseMetadataScript {
 
 	/** The script type. */
 	private ScriptType scriptType;
+
+	/** The stream handler class. */
+	private Class<DatabaseStreamHandler> streamHandlerClass;
 
 	/** The template. */
 	private String template;
@@ -260,6 +258,16 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Gets the data handler class.
+	 * 
+	 * @return the data handler class
+	 */
+	public Class<DatabaseArtifactNameHandler> getDataHandlerClass() {
+
+		return this.dataHandlerClass;
+	}
+
+	/**
 	 * Gets the data select.
 	 * 
 	 * @return the mandatory select for filling the basic common data for all
@@ -285,6 +293,15 @@ public final class DatabaseMetadataScript {
 	 */
 	public ScriptType getScriptType() {
 		return this.scriptType;
+	}
+
+	/**
+	 * Gets the stream handler class.
+	 * 
+	 * @return the stream handler class
+	 */
+	public Class<DatabaseStreamHandler> getStreamHandlerClass() {
+		return this.streamHandlerClass;
 	}
 
 	/**
@@ -359,6 +376,20 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
+	 * Sets the data handler class.
+	 * 
+	 * @param dataHandlerClass
+	 *            the new data handler class
+	 */
+	public void setDataHandlerClass(
+			final Class<DatabaseArtifactNameHandler> dataHandlerClass) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.dataHandlerClass = dataHandlerClass;
+	}
+
+	/**
 	 * Sets the mandatory select for filling the basic common data for all
 	 * stream artifacts loaded from database.
 	 * 
@@ -404,6 +435,20 @@ public final class DatabaseMetadataScript {
 			throw new UnsupportedOperationException();
 		}
 		this.scriptType = scriptType;
+	}
+
+	/**
+	 * Sets the stream handler class.
+	 * 
+	 * @param streamHandlerClass
+	 *            the new stream handler class
+	 */
+	public void setStreamHandlerClass(
+			final Class<DatabaseStreamHandler> streamHandlerClass) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.streamHandlerClass = streamHandlerClass;
 	}
 
 	/**
