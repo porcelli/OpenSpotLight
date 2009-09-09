@@ -6,6 +6,12 @@
 	create table $name$ (
 		$detail:{$it.column_name$  $it.data_type$ $if(it.nullable)$ null $else$ not null $endif$ $if(it.column_default)$ default $it.column_default$ $endif$};separator=", "$
 	)]]></template>
+	<columnAliasMap enum-type="column">
+		<entry>
+			<column>catalog_name</column>
+			<string>newName</string>
+		</entry>
+	</columnAliasMap>
 	<dataSelect><![CDATA[
         select 
 			table_name as  name, 

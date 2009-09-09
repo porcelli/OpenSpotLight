@@ -93,17 +93,29 @@ public enum DatabaseMetadataScriptManager {
 	 */
 	INSTANCE;
 
-	private Map<MapKey, DatabaseMetadataScript> scriptMap = new HashMap<MapKey, DatabaseMetadataScript>();
-
 	private static class MapKey {
 		private final DatabaseType databaseType;
-		private final ScriptType scriptType;
 		private final int hashCode;
+		private final ScriptType scriptType;
 
-		public MapKey(DatabaseType databaseType, ScriptType scriptType) {
+		public MapKey(final DatabaseType databaseType,
+				final ScriptType scriptType) {
 			this.databaseType = databaseType;
 			this.scriptType = scriptType;
 			this.hashCode = hashOf(databaseType, scriptType);
+		}
+
+		@Override
+		public boolean equals(final Object o) {
+			if (o == this) {
+				return true;
+			}
+			if (!(o instanceof MapKey)) {
+				return false;
+			}
+			final MapKey that = (MapKey) o;
+			return eachEquality(of(this.databaseType, this.scriptType), andOf(
+					that.databaseType, that.scriptType));
 		}
 
 		@Override
@@ -111,18 +123,9 @@ public enum DatabaseMetadataScriptManager {
 			return this.hashCode;
 		}
 
-		@Override
-		public boolean equals(Object o) {
-			if (o == this)
-				return true;
-			if (!(o instanceof MapKey))
-				return false;
-			MapKey that = (MapKey) o;
-			return eachEquality(of(this.databaseType, this.scriptType), andOf(
-					that.databaseType, that.scriptType));
-		}
-
 	}
+
+	private final Map<MapKey, DatabaseMetadataScript> scriptMap = new HashMap<MapKey, DatabaseMetadataScript>();
 
 	/**
 	 * Load the {@link DatabaseMetadataScripts} if needed and return the loaded
@@ -133,17 +136,19 @@ public enum DatabaseMetadataScriptManager {
 	 * @return the database metadata script or null if there's no script for
 	 *         that db and type
 	 */
-	public DatabaseMetadataScript getScript(DatabaseType databaseType,
-			ScriptType scriptType) {
-		if (this.scriptMap.size() == 0)
-			reloadScripts();
+	public DatabaseMetadataScript getScript(final DatabaseType databaseType,
+			final ScriptType scriptType) {
+		if (this.scriptMap.size() == 0) {
+			this.reloadScripts();
+		}
 		DatabaseMetadataScript script = this.scriptMap.get(new MapKey(
 				databaseType, scriptType));
 		DatabaseType internalType = databaseType;
 		while (script == null) {
 			internalType = internalType.getParent();
-			if (internalType == null)
+			if (internalType == null) {
 				return null;
+			}
 			script = this.scriptMap.get(new MapKey(internalType, scriptType));
 		}
 		return script;
@@ -160,15 +165,18 @@ public enum DatabaseMetadataScriptManager {
 			this.scriptMap.clear();
 			final XStream xstream = new XStream();
 			xstream.alias("script", DatabaseMetadataScript.class); //$NON-NLS-1$
+			xstream.alias("column", ColumnsNamesForMetadataSelect.class);//$NON-NLS-1$
 			xstream.omitField(DatabaseMetadataScript.class, "immutable"); //$NON-NLS-1$
-			for (ScriptType scriptType : ScriptType.values()) {
-				for (DatabaseType databaseType : DatabaseType.values()) {
-					String fileName = format("/configuration/{0}-{1}.xml",
-							databaseType, scriptType);
+			for (final ScriptType scriptType : ScriptType.values()) {
+				for (final DatabaseType databaseType : DatabaseType.values()) {
+					final String fileName = format(
+							"/configuration/{0}-{1}.xml", databaseType,
+							scriptType);
 					final InputStream stream = getResourceFromClassPath(fileName);
-					if (stream == null)
+					if (stream == null) {
 						continue;
-					DatabaseMetadataScript newScript = (DatabaseMetadataScript) xstream
+					}
+					final DatabaseMetadataScript newScript = (DatabaseMetadataScript) xstream
 							.fromXML(stream);
 					if (!databaseType.equals(newScript.getDatabase())) {
 						logAndReturn(new IllegalStateException(format(
@@ -183,8 +191,8 @@ public enum DatabaseMetadataScriptManager {
 								"No preferedType on {0}", fileName)));
 					}
 					if (PreferedType.SQL.equals(newScript.getPreferedType())
-							&& (newScript.getContentSelect() == null || newScript
-									.getDataSelect() == null)) {
+							&& ((newScript.getContentSelect() == null) || (newScript
+									.getDataSelect() == null))) {
 						logAndReturn(new IllegalStateException(
 								format(
 										"PreferedType SQL but no selects for content or data on {0}",
@@ -192,8 +200,8 @@ public enum DatabaseMetadataScriptManager {
 					}
 					if (PreferedType.TEMPLATE.equals(newScript
 							.getPreferedType())
-							&& (newScript.getTemplate() == null || newScript
-									.getTemplatesSelect() == null)) {
+							&& ((newScript.getTemplate() == null) || (newScript
+									.getTemplatesSelect() == null))) {
 						logAndReturn(new IllegalStateException(
 								format(
 										"PreferedType TEMPLATE but no select for template or missing template itself on {0}",
