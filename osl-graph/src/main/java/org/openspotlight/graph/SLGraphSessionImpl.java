@@ -261,7 +261,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * 
 	 * @see org.openspotlight.graph.SLGraphSession#createContext(java.lang.Long)
 	 */
-	public SLContext createContext(final Long id) throws SLContextAlreadyExistsException, SLGraphSessionException {
+	public SLContext createContext(final String id) throws SLContextAlreadyExistsException, SLGraphSessionException {
 		SLContext context = null;
 		try {
 			final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
@@ -409,7 +409,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * 
 	 * @see org.openspotlight.graph.SLGraphSession#getContext(java.lang.Long)
 	 */
-	public SLContext getContext(final Long id) throws SLGraphSessionException {
+	public SLContext getContext(final String id) throws SLGraphSessionException {
 		try {
 			SLContext context = null;
 			final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
@@ -693,7 +693,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			SLNode node = null;
 			final SLPersistentNode pNode = this.treeSession.getNodeByID(id);
 			final String[] names = pNode.getPath().substring(1).split("/");
-			final Long contextID = new Long(names[INDEX_CONTEXT_ID]);
+			final String contextID = names[INDEX_CONTEXT_ID];
 			final SLContext context = this.getContext(contextID);
 			final SLEncoder fakeEncoder = this.getEncoderFactory().getFakeEncoder();
 			for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {

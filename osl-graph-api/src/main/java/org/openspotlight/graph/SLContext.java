@@ -69,7 +69,7 @@ public interface SLContext {
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public Long getID() throws SLGraphSessionException;
+	public String getID() throws SLGraphSessionException;
 	
 	/**
 	 * Gets the root node.

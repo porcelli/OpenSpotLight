@@ -402,7 +402,7 @@ public class SLGraphTest {
 	private void setUpEmptyLinkScenario() {
 		try {
 			this.session.clear();
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
 			this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 		}
@@ -421,7 +421,7 @@ public class SLGraphTest {
 	 */
 	private void setUpExistentABLinkScenario(final Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		this.session.clear();
-		final SLNode root = this.session.createContext(1L).getRootNode();
+		final SLNode root = this.session.createContext("1L").getRootNode();
 		this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
 		this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 
@@ -438,7 +438,7 @@ public class SLGraphTest {
 	 */
 	private void setUpExistentBALinkScenario(final Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		this.session.clear();
-		final SLNode root = this.session.createContext(1L).getRootNode();
+		final SLNode root = this.session.createContext("1L").getRootNode();
 		this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
 		this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 
@@ -455,7 +455,7 @@ public class SLGraphTest {
 	 */
 	private void setUpExistentBothLinkScenario(final Class<? extends SLLink> linkClass) throws SLGraphSessionException {
 		this.session.clear();
-		final SLNode root = this.session.createContext(1L).getRootNode();
+		final SLNode root = this.session.createContext("1L").getRootNode();
 		this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
 		this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 
@@ -469,7 +469,7 @@ public class SLGraphTest {
 	@Test
 	public void testAddAndGetNodeWithStrangeCharsOnName() {
 		try {
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
 			Assert.assertNotNull(javaClassNode1);
 			final JavaClassNode javaClassNode2 = root1.getNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
@@ -490,7 +490,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 
 			// add sub type, then add super type; sub type is supposed to be
 			// kept ...
@@ -784,7 +784,7 @@ public class SLGraphTest {
 			final Date now = new Date();
 
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Date> prop1 = root.setProperty(Date.class, "prop", now);
 			Assert.assertNotNull(prop1);
 			Assert.assertNotNull(prop1.getValue());
@@ -825,7 +825,7 @@ public class SLGraphTest {
 
 		try {
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Boolean> prop1 = root.setProperty(Boolean.class, "prop", true);
 			Assert.assertNotNull(prop1);
 			Assert.assertNotNull(prop1.getValue());
@@ -864,7 +864,7 @@ public class SLGraphTest {
 	@Test
 	public void testChiLdNodesRetrieval() {
 		try {
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNode node1 = root.addNode("node1");
 			final SLNode node2 = root.addNode("node2");
 			final Set<SLNode> ch1LdNodes = root.getNodes();
@@ -889,12 +889,12 @@ public class SLGraphTest {
 	 */
 	@Test
 	public void testContextOperations() throws SLGraphSessionException {
-		final SLContext context1 = this.session.createContext(1L);
+		final SLContext context1 = this.session.createContext("1L");
 		Assert.assertNotNull(context1, "context1 should not be null.");
-		final SLContext context2 = this.session.getContext(1L);
+		final SLContext context2 = this.session.getContext("1L");
 		Assert.assertNotNull(context2, "context2 should not be null.");
-		final Long id1 = context1.getID();
-		final Long id2 = context2.getID();
+		final String id1 = context1.getID();
+		final String id2 = context2.getID();
 		Assert.assertNotNull(id1);
 		Assert.assertNotNull(id2);
 		Assert.assertEquals(id1, id2);
@@ -909,7 +909,7 @@ public class SLGraphTest {
 
 		try {
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Double> prop1 = root.setProperty(Double.class, "prop", 8.0);
 			Assert.assertNotNull(prop1);
 			Assert.assertNotNull(prop1.getValue());
@@ -962,7 +962,7 @@ public class SLGraphTest {
 
 		try {
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Float> prop1 = root.setProperty(Float.class, "prop", 8.0F);
 			Assert.assertNotNull(prop1);
 			Assert.assertNotNull(prop1.getValue());
@@ -1015,7 +1015,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1050,7 +1050,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1091,7 +1091,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			javaClassNode1.addNode(JavaInnerClassNode.class, "javaInnerClassNode1");
 			javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
@@ -1121,7 +1121,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			javaClassNode1.addNode(JavaInnerClassNode.class, "javaInnerClassNode1");
 			javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
@@ -1151,7 +1151,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1300,7 +1300,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1337,7 +1337,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1379,7 +1379,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			root1.addNode(JavaPackageNode.class, "javaPackageNode2");
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
@@ -1410,7 +1410,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			javaClassNode1.setClassName("HelloWorld");
 			javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
@@ -1450,7 +1450,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
 			javaClassNode.setClassName("HelloWorld");
 			javaClassNode.setModifier(JavaClassNode.MODIFIER_PUBLIC);
@@ -1488,7 +1488,7 @@ public class SLGraphTest {
 	public void testGetMetaNodes() {
 
 		try {
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			root1.addNode(JavaPackageNode.class, "javaPackageNode2");
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
@@ -1512,7 +1512,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final SLMetadata metadata = this.session.getMetadata();
 			final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
@@ -1541,7 +1541,7 @@ public class SLGraphTest {
 	public void testGetMetaRenderHints() {
 
 		try {
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final SLMetadata metadata = this.session.getMetadata();
 			final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
@@ -1573,7 +1573,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaClassNode javaClassNode2 = root1.addNode(JavaClassNode.class, "javaClassNode2");
@@ -1625,7 +1625,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaClassNode javaClassNode2 = root1.addNode(JavaClassNode.class, "javaClassNode2");
@@ -1670,7 +1670,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			final JavaClassNode javaClassNode1 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaClassNode javaClassNode2 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode2");
@@ -1704,7 +1704,7 @@ public class SLGraphTest {
 	@Test
 	public void testGetPropertyAsString() {
 		try {
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNode node = root.addNode("node");
 			final SLNodeProperty<Integer> property = node.setProperty(Integer.class, "number", new Integer(8));
 			String value = node.getPropertyValueAsString("number");
@@ -1728,7 +1728,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1771,7 +1771,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1814,7 +1814,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1858,7 +1858,7 @@ public class SLGraphTest {
 		try {
 
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, "prop", 8);
 			Assert.assertNotNull(prop1);
 			Assert.assertNotNull(prop1.getValue());
@@ -1910,7 +1910,7 @@ public class SLGraphTest {
 	public void testLineReference() {
 
 		try {
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
 			final SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
@@ -1956,7 +1956,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
@@ -1999,7 +1999,7 @@ public class SLGraphTest {
 	public void testLinkPropertyWithAnnotations() {
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -2028,7 +2028,7 @@ public class SLGraphTest {
 
 		try {
 
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
 			final JavaClassNode javaClassNode1 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaClassNode javaClassNode2 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode2");
@@ -2072,7 +2072,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 			final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2089,7 +2089,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -2110,7 +2110,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 			final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2125,7 +2125,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
 			final Collection<? extends SLLink> links = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null);
@@ -2149,7 +2149,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 			final JavaMethodNode javaMethodNode2 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2166,7 +2166,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			final Collection<SLNode> nodes = javaClassNode1.getNodes();
 			Assert.assertEquals(nodes.size(), 1);
@@ -2187,7 +2187,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 			final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2202,7 +2202,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			final Collection<SLNode> nodes = javaClassNode1.getNodes();
 			Assert.assertTrue(nodes.isEmpty());
@@ -2221,7 +2221,7 @@ public class SLGraphTest {
 
 		try {
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Long> prop1 = root.setProperty(Long.class, "prop", 8L);
 
 			Assert.assertNotNull(prop1);
@@ -2273,7 +2273,7 @@ public class SLGraphTest {
 	@Test
 	public void testMetaLinkGetDescription() {
 		try {
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
 			final JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
 			this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
@@ -2296,7 +2296,7 @@ public class SLGraphTest {
 	@Test
 	public void testMetaNodeGetDescription() {
 		try {
-			final SLNode root1 = this.session.createContext(1L).getRootNode();
+			final SLNode root1 = this.session.createContext("1L").getRootNode();
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
 
 			final SLMetadata metadata = this.session.getMetadata();
@@ -2318,7 +2318,7 @@ public class SLGraphTest {
 	public void testNodeOperations() {
 		try {
 			// add new node ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNode node1 = root.addNode("node");
 			Assert.assertNotNull(node1);
 			Assert.assertEquals(node1.getName(), "node");
@@ -2352,7 +2352,7 @@ public class SLGraphTest {
 	@Test
 	public void testPropertiesRetrieval() {
 		try {
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			root.setProperty(Integer.class, "integerProp", 8);
 			root.setProperty(String.class, "stringProp", "Hello World!");
 			final Set<SLNodeProperty<Serializable>> properties = root.getProperties();
@@ -2377,7 +2377,7 @@ public class SLGraphTest {
 	@Test
 	public void testPropertyRemoval() {
 		try {
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, "property", 8);
 			prop1.remove();
 			try {
@@ -2400,7 +2400,7 @@ public class SLGraphTest {
 	@Test
 	public void testPropertyValueOverwriting() {
 		try {
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, "prop", 8);
 			final SLNodeProperty<Integer> prop2 = root.getProperty(Integer.class, "prop");
 			prop2.setValue(71);
@@ -2421,7 +2421,7 @@ public class SLGraphTest {
 
 		try {
 			// set new property ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final SLNodeProperty<String> prop1 = root.setProperty(String.class, "prop", "Hello");
 			Assert.assertNotNull(prop1);
 			Assert.assertNotNull(prop1.getValue());
@@ -2462,7 +2462,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 			final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2473,7 +2473,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
 			final Collection<? extends SLLink> links = this.session.getUnidirectionalLinks(TransientLink.class, javaClassNode1, javaMethodNode1);
@@ -2494,7 +2494,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 			JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2508,7 +2508,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
 			javaMethodNode2 = root1.getNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2531,7 +2531,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -2541,7 +2541,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			Assert.assertNotNull(javaClassNode1);
 			javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class, "javaMethodNode1");
@@ -2565,7 +2565,7 @@ public class SLGraphTest {
 
 		try {
 
-			SLNode root1 = this.session.createContext(1L).getRootNode();
+			SLNode root1 = this.session.createContext("1L").getRootNode();
 			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1", NORMAL);
 			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1", NORMAL);
 
@@ -2578,7 +2578,7 @@ public class SLGraphTest {
 			this.session.save();
 			this.session = this.graph.openSession();
 
-			root1 = this.session.getContext(1L).getRootNode();
+			root1 = this.session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
 			Assert.assertNotNull(javaClassNode1);
 			javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class, "javaMethodNode1");
@@ -2600,7 +2600,7 @@ public class SLGraphTest {
 		try {
 
 			// add new node ...
-			final SLNode root = this.session.createContext(1L).getRootNode();
+			final SLNode root = this.session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root.addNode(JavaClassNode.class, "javaClassNode");
 			Assert.assertNotNull(javaClassNode1);
 			Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
