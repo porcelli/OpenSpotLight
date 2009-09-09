@@ -51,8 +51,8 @@ package org.openspotlight.graph.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotligAllht.graph.query.info.SLAllTypesInfo;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.query.info.SLAllTypesInfo;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
@@ -313,6 +313,13 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 		 */
 		public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
 			return selectFacade.selectByNodeType();
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkCount()
+		 */
+		public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
+			return selectFacade.selectByLinkCount();
 		}
 	}
 

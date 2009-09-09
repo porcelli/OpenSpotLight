@@ -53,7 +53,6 @@ import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeI
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLWhereByLinkTypeImpl.
  * 

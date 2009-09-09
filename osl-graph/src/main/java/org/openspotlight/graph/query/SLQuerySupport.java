@@ -223,7 +223,7 @@ public class SLQuerySupport {
 	static PNodeWrapper findPNodeWrapper(List<PNodeWrapper> nodeWrappers, String id) throws SLPersistentTreeSessionException {
 		PNodeWrapper nodeWrapper = null;
 		for (PNodeWrapper current : nodeWrappers) {
-			if (current.getId().equals(id)) {
+			if (current.getID().equals(id)) {
 				nodeWrapper = current;
 				break;
 			}

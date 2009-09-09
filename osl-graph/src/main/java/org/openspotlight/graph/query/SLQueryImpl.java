@@ -74,7 +74,6 @@ import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
 import org.openspotlight.graph.util.ProxyUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLQueryImpl.
  * 
@@ -128,6 +127,15 @@ public class SLQueryImpl implements SLQuery {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkCount()
+	 */
+	public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
+		SLSelectByLinkCount select = new SLSelectByLinkCountImpl(this);
+		selects.add(select);
+		return select;
+	}
+
+	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.query.SLQuery#execute()
 	 */
 	public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLGraphSessionException {
@@ -152,7 +160,7 @@ public class SLQueryImpl implements SLQuery {
 	 * @see org.openspotlight.graph.query.SLQuery#execute(org.openspotlight.graph.query.SLQuery.SortMode, boolean)
 	 */
 	public SLQueryResult execute(SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
-		return execute((String[]) null, SortMode.NOT_SORTED, false);
+		return execute((String[]) null, sortMode, showSLQL);
 	}
 	
 	/* (non-Javadoc)
@@ -230,7 +238,7 @@ public class SLQueryImpl implements SLQuery {
 
 			Collection<SLNode> nodes = new ArrayList<SLNode>();
 			for (PNodeWrapper pNodeWrapper : resultNodeWrappers) {
-				SLNode node = session.getNodeByID(pNodeWrapper.getId());
+				SLNode node = session.getNodeByID(pNodeWrapper.getID());
 				SLNode nodeProxy = ProxyUtil.createNodeProxy(SLNode.class, node);
 				nodes.add(nodeProxy);
 			}
@@ -324,7 +332,6 @@ public class SLQueryImpl implements SLQuery {
 			}
 		};
 	}
-
 }
 
 class PNodeWrapper {
@@ -360,7 +367,7 @@ class PNodeWrapper {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-	public String getId() throws SLPersistentTreeSessionException {
+	public String getID() throws SLPersistentTreeSessionException {
 		if (id == null) {
 			id = pNode.getID();
 		}
@@ -408,7 +415,7 @@ class PNodeWrapper {
 	@Override
 	public int hashCode() {
 		try {
-			return getId().hashCode();
+			return getID().hashCode();
 		}
 		catch (SLPersistentTreeSessionException e) {
 			throw new SLRuntimeException("Error on attempt to calculate persistent node wrapper hash code.", e);
@@ -419,7 +426,7 @@ class PNodeWrapper {
 	public boolean equals(Object obj) {
 		try {
 			PNodeWrapper nodeWrapper = (PNodeWrapper) obj;
-			return getId().equals(nodeWrapper.getId());
+			return getID().equals(nodeWrapper.getID());
 		}
 		catch (SLPersistentTreeSessionException e) {
 			throw new SLRuntimeException("Error on attempt to verify persistent node wrapper equality.", e);

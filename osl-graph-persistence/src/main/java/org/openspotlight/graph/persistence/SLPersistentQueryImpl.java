@@ -48,11 +48,6 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
@@ -116,32 +111,11 @@ public class SLPersistentQueryImpl implements SLPersistentQuery {
 	 */
 	public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException {
 		try {
-			
 			Workspace workspace = session.getWorkspace();
 			QueryManager queryManager = workspace.getQueryManager();
 			Query query = queryManager.createQuery(statement , Query.XPATH);
 			QueryResult result = query.execute();
-			NodeIterator iter = result.getNodes();
-			
-			Collection<SLPersistentNode> persistentNodes = new ArrayList<SLPersistentNode>();
-			
-			while (iter.hasNext()) {
-				Node node = iter.nextNode();
-				String[] names = node.getPath().split("/");
-				SLPersistentNode persistentNode = null;
-				for (int i = 0; i < names.length; i++) {
-					if (names[i].trim().equals("")) continue;
-					if (persistentNode == null && names[i].equals("osl")) {
-						persistentNode = treeSession.getRootNode();
-					}
-					else {
-						persistentNode = persistentNode.getNode(names[i]);
-					}
-				}
-				persistentNodes.add(persistentNode);
-			}
-			
-			return new SLPersistentQueryResultImpl(persistentNodes);
+			return new SLPersistentQueryResultImpl(treeSession, result);
 		}
 		catch (RepositoryException e) {
 			throw new SLPersistentTreeSessionException("Error on attempt to execute query.", e);

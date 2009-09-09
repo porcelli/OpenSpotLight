@@ -188,6 +188,13 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 		public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
 			return selectFacade.selectByNodeType();
 		}
+		
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkCount()
+		 */
+		public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
+			return selectFacade.selectByLinkCount();
+		}
 	}
 
 	/**
