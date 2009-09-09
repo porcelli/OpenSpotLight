@@ -174,6 +174,15 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * </pre>
  * 
  * Remember: this exampleCallable should return a result set.</li>
+ * <li>When it's necessary to return a different type when the other one doesn't
+ * have any result (example: {@link PreferedType#TEMPLATE} when
+ * {@link PreferedType#SQL} doesn't have any result) just add the attribute
+ * 
+ * <pre>
+ * &lt;tryAgainIfNoResult&gt;true&lt;/tryAgainIfNoResult&gt;
+ * </pre>
+ * 
+ * to the xml file.</li>
  * </ul>
  * 
  * There's also some callback classes to be used on situations where just the
@@ -261,8 +270,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 						content = this.loadFromSql(catalog, schema, name,
 								scriptDescription, streamHandler);
 						break;
-					default:
-						content = null;
+
 					}
 				}
 			}
@@ -400,7 +408,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 				int count = 0;
 				boolean hasAnyResult = false;
 				String attributeName = null;
-				if (sql != null && sql.trim().length() != 0) {
+				if ((sql != null) && (sql.trim().length() != 0)) {
 					resultSet = executeStatement(sql, this.conn);
 					while (resultSet.next()) {
 						final List<String> columnsFromDatabase = new ArrayList<String>();
@@ -508,6 +516,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 *            the script
 		 * @param resultSet
 		 *            the result set
+		 * @param nameHandler
+		 *            the name handler
 		 * 
 		 * @return the artifact name
 		 * 
@@ -516,7 +526,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 */
 		private String fillName(final DatabaseMetadataScript script,
 				final ResultSet resultSet,
-				DatabaseArtifactNameHandler nameHandler) throws SQLException {
+				final DatabaseArtifactNameHandler nameHandler)
+				throws SQLException {
 			final StringBuilder buffer = new StringBuilder();
 			String catalogColumnName = script.getColumnAliasMap().get(
 					ColumnsNamesForMetadataSelect.catalog_name);

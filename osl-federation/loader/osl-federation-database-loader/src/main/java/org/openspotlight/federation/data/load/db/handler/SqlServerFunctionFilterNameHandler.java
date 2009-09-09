@@ -49,7 +49,6 @@
 
 package org.openspotlight.federation.data.load.db.handler;
 
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
 import org.openspotlight.federation.data.load.db.ScriptType;
@@ -62,22 +61,25 @@ import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.Database
 public class SqlServerFunctionFilterNameHandler implements
 		DatabaseArtifactNameHandler {
 
-	public String fixName(String oldName) {
-		if (oldName.indexOf(';') == -1)
+	public String fixName(final String oldName) {
+		if (oldName.indexOf(';') == -1) {
 			return oldName;
-		else
-			return oldName.substring(0, oldName.indexOf(';'));
+		}
+		return oldName.substring(0, oldName.indexOf(';'));
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean shouldIncludeName(String artifactName, ScriptType type,
-			ResultSet resultSet) throws Exception {
-		boolean isFunction = resultSet.getString("PROCEDURE_NAME").endsWith(";0");
-		if(isFunction){
+	public boolean shouldIncludeName(final String artifactName,
+			final ScriptType type, final ResultSet resultSet) throws Exception {
+		final boolean isFunction = resultSet.getString("PROCEDURE_NAME")
+				.endsWith(";0");
+		if (isFunction) {
 			return true;
 		}
-		return false;}
+		return false;
+	}
 
 }
