@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -107,27 +108,76 @@ public class SLQueryImpl implements SLQuery {
 		this.treeSession = treeSession;
 		this.metadata = session.getMetadata();
 	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#selectByNodeType()
+	 */
+	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
+		SLSelectByNodeType select = new SLSelectByNodeTypeImpl(this);
+		selects.add(select);
+		return select;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#selectByLinkType()
+	 */
+	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
+		SLSelectByLinkType select = new SLSelectByLinkTypeImpl(this);
+		selects.add(select);
+		return select;
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.query.SLQuery#execute()
 	 */
 	public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLGraphSessionException {
-		return execute(SortMode.NOT_SORTED, false);
+		return execute((String[]) null, SortMode.NOT_SORTED, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#execute(java.util.Collection)
+	 */
+	public SLQueryResult execute(Collection<SLNode> inputNodes) throws SLInvalidQuerySyntaxException, SLGraphSessionException {
+		return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#execute(java.lang.String[])
+	 */
+	public SLQueryResult execute(String[] inputNodesIDs) throws SLInvalidQuerySyntaxException, SLGraphSessionException {
+		return execute(inputNodesIDs, SortMode.NOT_SORTED, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#execute(org.openspotlight.graph.query.SLQuery.SortMode, boolean)
+	 */
+	public SLQueryResult execute(SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+		return execute((String[]) null, SortMode.NOT_SORTED, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#execute(java.util.Collection, org.openspotlight.graph.query.SLQuery.SortMode, boolean)
+	 */
+	public SLQueryResult execute(Collection<SLNode> inputNodes, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+		return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.query.SLQuery#execute(org.openspotlight.graph.query.SLQuery.SortMode, boolean)
 	 */
-	public SLQueryResult execute(SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
 		
 		try {
 			
+			Collection<PNodeWrapper> selectNodeWrappers = null;
+			Collection<PNodeWrapper> resultNodeWrappers = null;
+
 			SLSelectCommandDO commandDO = new SLSelectCommandDO();
 			commandDO.setMetadata(metadata);
 			commandDO.setTreeSession(treeSession);
-			
-			Collection<PNodeWrapper> selectNodeWrappers = null;
-			Collection<PNodeWrapper> resultNodeWrappers = null;
+
+			Set<PNodeWrapper> wrappers = SLQuerySupport.getNodeWrappers(treeSession, inputNodesIDs);
+			commandDO.setPreviousNodeWrappers(wrappers);
 			
 			if (sortMode.equals(SortMode.SORTED)) {
 				Comparator<PNodeWrapper> comparator = getPNodeWrapperComparator();
@@ -139,7 +189,7 @@ public class SLQueryImpl implements SLQuery {
 			
 			for (SLSelect select : selects) {
 				
-				SLSelectInfo selectInfo = SLSelectCommandSupport.getSelectInfo(select);
+				SLSelectInfo selectInfo = SLQuerySupport.getSelectInfo(select);
 				Integer xTimes = selectInfo.getXTimes() == null ? 1 : selectInfo.getXTimes();
 				SLSelectAbstractCommand command = SLSelectAbstractCommand.getExecuteCommand(select, selectInfo, commandDO);
 				
@@ -191,24 +241,6 @@ public class SLQueryImpl implements SLQuery {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLQuery#selectByNodeType()
-	 */
-	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
-		SLSelectByNodeType select = new SLSelectByNodeTypeImpl();
-		selects.add(select);
-		return select;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLQuery#selectByLinkType()
-	 */
-	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
-		SLSelectByLinkType select = new SLSelectByLinkTypeImpl();
-		selects.add(select);
-		return select;
-	}
-	
 	/**
 	 * Prints the.
 	 * 
@@ -292,6 +324,7 @@ public class SLQueryImpl implements SLQuery {
 			}
 		};
 	}
+
 }
 
 class PNodeWrapper {

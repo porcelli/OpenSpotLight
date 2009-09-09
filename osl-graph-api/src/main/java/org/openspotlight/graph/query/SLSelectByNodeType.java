@@ -48,14 +48,19 @@
  */
 package org.openspotlight.graph.query;
 
-
-
 /**
  * The Interface SLSelect.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectByNodeType extends SLSelect {
+	
+	/**
+	 * All types.
+	 * 
+	 * @return the all types
+	 */
+	public AllTypes allTypes(); 
 	
 	/**
 	 * Type.
@@ -72,6 +77,26 @@ public interface SLSelectByNodeType extends SLSelect {
 	 * @return the end
 	 */
 	public End end();
+	
+	/**
+	 * The Interface AllTypes.
+	 */
+	public static interface AllTypes {
+		
+		/**
+		 * On where.
+		 * 
+		 * @return the all types
+		 */
+		public AllTypes onWhere();
+		
+		/**
+		 * Select end.
+		 * 
+		 * @return the end
+		 */
+		public End selectEnd();
+	}
 	
 	/**
 	 * The Interface Type.
@@ -107,7 +132,7 @@ public interface SLSelectByNodeType extends SLSelect {
 	 * 
 	 * @author Vitor Hugo Chagas
 	 */
-	public static interface End {
+	public static interface End extends SLSelectFacade {
 		
 		/**
 		 * Where.

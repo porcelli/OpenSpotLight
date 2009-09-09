@@ -137,7 +137,7 @@ public class SLGraphQueryTest {
 	@BeforeClass
 	public void init() throws SLException {
 		SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-		graph = factory.createTempGraph(true);
+		graph = factory.createTempGraph(false);
 		session = graph.openSession();
 	}
 	
@@ -2262,7 +2262,7 @@ public class SLGraphQueryTest {
 			
 			query
 				.selectByNodeType()
-					.type(JavaInterface.class.getName())
+					.allTypes().onWhere()
 				.selectEnd()
 
 				.where()
@@ -2281,6 +2281,145 @@ public class SLGraphQueryTest {
 		}
 	}
 	
+	@Test
+	public void test2() {
+		try {
+
+			SLQuery query = session.createQuery();
+			
+			query
+				.selectByNodeType()
+					.allTypes().onWhere()
+				.selectEnd()
+
+				.where()
+					.type(JavaInterface.class.getName())
+						.each().property("caption").contains().value("Set")
+					.typeEnd()
+					.type(JavaType.class.getName()).subTypes()
+						.each().property("caption").contains().value("Map")
+					.typeEnd()
+					
+				.whereEnd();
+
+			SLQueryResult result = query.execute(sortMode, printInfo);
+			Collection<SLNode> nodes = result.getNodes();
+			printResult(nodes);
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	@Test
+	public void test3() {
+		try {
+
+			SLQuery query = session.createQuery();
+			
+			query
+				.selectByNodeType()
+					.allTypes()
+				.selectEnd()
+
+				.where()
+					.type(JavaTypeMethod.class.getName())
+						.each().property("caption").equalsTo().value("get")
+					.typeEnd()
+					.type(JavaInterface.class.getName())
+						.each().property("caption").contains().value("Set")
+					.typeEnd()
+					.type(JavaType.class.getName()).subTypes()
+						.each().property("caption").contains().value("Map")
+					.typeEnd()
+					
+				.whereEnd();
+
+			SLQueryResult result = query.execute(sortMode, printInfo);
+			Collection<SLNode> nodes = result.getNodes();
+			printResult(nodes);
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	@Test
+	public void test4() {
+		
+		try {
+
+			SLQuery query = session.createQuery();
+			
+			query
+				.selectByNodeType()
+					.type(JavaInterface.class.getName())
+				.selectEnd()
+				
+				.where()
+					.type(JavaInterface.class.getName()).subTypes()
+						.each().property("caption").equalsTo().value("java.util.SortedSet")
+					.typeEnd()
+				.whereEnd()
+				
+				.keepResult()
+				
+				.selectByLinkType()
+					.type(JavaInterface.class.getName()).comma()
+					.byLink(JavaInterfaceHierarchy.class.getName()).b()
+				.selectEnd()
+				
+				.keepResult()
+				
+				.executeXTimes(3);
+
+			SLQueryResult result = query.execute(sortMode, printInfo);
+			Collection<SLNode> nodes = result.getNodes();
+			
+			printResult(nodes);
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	@Test
+	public void test5() {
+		try {
+
+			SLQuery query = session.createQuery();
+			
+			query
+				.selectByNodeType()
+					.allTypes().onWhere()
+				.selectEnd()
+
+				.where()
+					.type(JavaType.class.getName()).subTypes()
+						.each().property("caption").contains().value("Set")
+					.typeEnd()
+				.whereEnd();
+
+			SLQueryResult result = query.execute(sortMode, printInfo);
+			Collection<SLNode> nodes = result.getNodes();
+			printResult(nodes);
+
+			query = session.createQuery();
+			
+			query
+				.selectByNodeType()
+					.type(JavaInterface.class.getName())
+				.selectEnd();
+
+			result = query.execute(nodes, sortMode, printInfo);
+			nodes = result.getNodes();
+			printResult(nodes);
+		}
+		catch (SLException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
 	/**
 	 * The main method.
 	 * 

@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo;
@@ -65,15 +66,16 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 	
 	/** The where by node type info. */
 	private SLWhereByNodeTypeInfo whereByNodeTypeInfo;
-	
+
 	/**
 	 * Instantiates a new sL where by node type impl.
 	 * 
+	 * @param selectFacade the select facade
 	 * @param orderBy the order by
 	 * @param whereByNodeTypeInfo the where by node type info
 	 */
-	public SLWhereByNodeTypeImpl(SLOrderByStatement orderBy, SLWhereByNodeTypeInfo whereByNodeTypeInfo) {
-		this(new EndImpl(whereByNodeTypeInfo, orderBy), whereByNodeTypeInfo);
+	public SLWhereByNodeTypeImpl(SLSelectFacade selectFacade, SLOrderByStatement orderBy, SLWhereByNodeTypeInfo whereByNodeTypeInfo) {
+		this(new EndImpl(selectFacade, whereByNodeTypeInfo, orderBy), whereByNodeTypeInfo);
 	}
 
 	/**
@@ -126,13 +128,18 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 		/** The order by statement. */
 		private SLOrderByStatement orderByStatement;
 		
+		/** The select facade. */
+		private SLSelectFacade selectFacade;
+		
 		/**
 		 * Instantiates a new end impl.
 		 * 
+		 * @param selectFacade the select facade
 		 * @param whereByNodeTypeInfo the where by node type info
 		 * @param orderByStatement the order by statement
 		 */
-		public EndImpl(SLWhereByNodeTypeInfo whereByNodeTypeInfo, SLOrderByStatement orderByStatement) {
+		public EndImpl(SLSelectFacade selectFacade, SLWhereByNodeTypeInfo whereByNodeTypeInfo, SLOrderByStatement orderByStatement) {
+			this.selectFacade = selectFacade;
 			this.whereByNodeTypeInfo = whereByNodeTypeInfo;
 			this.orderByStatement = orderByStatement;
 		}
@@ -166,6 +173,20 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 		public End executeXTimes(int x) {
 			whereByNodeTypeInfo.getSelectByNodeTypeInfo().setXTimes(x);
 			return this;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkType()
+		 */
+		public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
+			return selectFacade.selectByLinkType();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByNodeType()
+		 */
+		public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
+			return selectFacade.selectByNodeType();
 		}
 	}
 

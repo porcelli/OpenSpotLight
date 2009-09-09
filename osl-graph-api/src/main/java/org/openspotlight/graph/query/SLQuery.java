@@ -48,14 +48,17 @@
  */
 package org.openspotlight.graph.query;
 
+import java.util.Collection;
+
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLNode;
 
 /**
  * The Interface SLQuery.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQuery {
+public interface SLQuery extends SLSelectFacade {
 	
 	/**
 	 * The Enum SortMode.
@@ -72,24 +75,6 @@ public interface SLQuery {
 	}
 	
 	/**
-	 * Select by node type.
-	 * 
-	 * @return the sL select by node type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException;
-	
-	/**
-	 * Select by link type.
-	 * 
-	 * @return the sL select by link type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException;
-	
-	/**
 	 * Execute.
 	 * 
 	 * @return the sL query result
@@ -102,14 +87,69 @@ public interface SLQuery {
 	/**
 	 * Execute.
 	 * 
-	 * @param sortMode the sort mode
-	 * @param showSLQL the show slql
+	 * @param inputNodes the input nodes
 	 * 
 	 * @return the sL query result
 	 * 
 	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLQueryResult execute(SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	public SLQueryResult execute(Collection<SLNode> inputNodes) throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	
+	/**
+	 * Execute.
+	 * 
+	 * @param inputNodesIDs the input nodes i ds
+	 * 
+	 * @return the sL query result
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLQueryResult execute(String[] inputNodesIDs) throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	
+	/**
+	 * Execute.
+	 * 
+	 * @param sortMode the sort mode
+	 * @param showSLQL the show slql
+	 * 
+	 * @return the sL query result
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 * @throws SLQueryException the SL query exception
+	 */
+	public SLQueryResult execute(SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+
+	/**
+	 * Execute.
+	 * 
+	 * @param inputNodes the input nodes
+	 * @param sortMode the sort mode
+	 * @param showSLQL the show slql
+	 * 
+	 * @return the sL query result
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 * @throws SLQueryException the SL query exception
+	 */
+	public SLQueryResult execute(Collection<SLNode> inputNodes, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+	
+	/**
+	 * Execute.
+	 * 
+	 * @param inputNodesIDs the input nodes i ds
+	 * @param sortMode the sort mode
+	 * @param showSLQL the show slql
+	 * 
+	 * @return the sL query result
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 * @throws SLQueryException the SL query exception
+	 */
+	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 }
 

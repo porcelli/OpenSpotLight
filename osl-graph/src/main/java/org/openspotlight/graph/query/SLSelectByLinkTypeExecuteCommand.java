@@ -77,8 +77,6 @@ import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeI
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
 
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLSelectByLinkTypeExecuteCommand.
  * 
@@ -120,7 +118,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 				List<String> typeNames = new ArrayList<String>();
 				List<SLSelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
 				for (SLSelectTypeInfo typeInfo : typeInfoList) {
-					Collection<String> hierarchyTypeNames = SLSelectCommandSupport.getHierarchyTypeNames(commandDO.getMetadata(), typeInfo.getName(), typeInfo.isSubTypes());
+					Collection<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(commandDO.getMetadata(), typeInfo.getName(), typeInfo.isSubTypes());
 					typeNames.addAll(hierarchyTypeNames);
 				}
 				
@@ -194,7 +192,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 				SLPersistentTreeSession treeSession = commandDO.getTreeSession();
 				String xpath = statementBuilder.getXPath();
 				SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
-				Collection<PLinkNodeWrapper> pLinkNodeWrappers = SLSelectCommandSupport.wrapLinkNodes(query.execute().getNodes());
+				Collection<PLinkNodeWrapper> pLinkNodeWrappers = SLQuerySupport.wrapLinkNodes(query.execute().getNodes());
 				
 				if (!pLinkNodeWrappers.isEmpty()) {
 					
@@ -217,8 +215,8 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 						else if (side.equals(SLSideType.ANY_SIDE)) {
 							String sourceID = pLinkNodeWrapper.getSourceID();
 							String targetID = pLinkNodeWrapper.getTargetID();
-							PNodeWrapper sourceNodeWrapper = SLSelectCommandSupport.findPNodeWrapper(inputNodeWrappers, sourceID);
-							PNodeWrapper targetNodeWrapper = SLSelectCommandSupport.findPNodeWrapper(inputNodeWrappers, targetID);
+							PNodeWrapper sourceNodeWrapper = SLQuerySupport.findPNodeWrapper(inputNodeWrappers, sourceID);
+							PNodeWrapper targetNodeWrapper = SLQuerySupport.findPNodeWrapper(inputNodeWrappers, targetID);
 							
 							if (sourceNodeWrapper == null && targetNodeWrapper != null) {
 								SLPersistentNode pNode = treeSession.getNodeByID(sourceID);

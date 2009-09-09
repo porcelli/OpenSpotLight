@@ -51,7 +51,9 @@ package org.openspotlight.graph.query.info;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openspotligAllht.graph.query.info.SLAllTypesInfo;
 import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 
 /**
  * The Class SLSelectByNodeTypeInfo.
@@ -69,11 +71,35 @@ public class SLSelectByNodeTypeInfo extends SLSelectInfo {
 	/** The where statement info. */
 	private SLWhereByNodeTypeInfo whereStatementInfo;
 	
+	/** The all types info. */
+	private SLAllTypesInfo allTypesInfo;
+	
 	/**
 	 * Instantiates a new sL select by node type info.
 	 */
 	public SLSelectByNodeTypeInfo() {
 		typeInfoList = new ArrayList<SLSelectTypeInfo>();
+	}
+	
+	/**
+	 * Gets the all types.
+	 * 
+	 * @return the all types
+	 */
+	public SLAllTypesInfo getAllTypes() {
+		return allTypesInfo;
+	}
+	
+	/**
+	 * Adds the all types.
+	 * 
+	 * @return the sL all types info
+	 */
+	public SLAllTypesInfo addAllTypes() {
+		if (allTypesInfo == null) {
+			allTypesInfo = new SLAllTypesInfo();
+		}
+		return allTypesInfo;
 	}
 	
 	/**
@@ -123,8 +149,17 @@ public class SLSelectByNodeTypeInfo extends SLSelectInfo {
 	public String toString() {
 		StringBuilder buffer = new StringBuilder();
 		
-		// SELECT clause ...
-		buffer.append("\nSELECT\n");
+		if (allTypesInfo == null) {
+			buffer.append("\nSELECT\n");	
+		}
+		else {
+			if (allTypesInfo.isOnWhere()) {
+				buffer.append("\nSELECT **\n");
+			}
+			else {
+				buffer.append("\nSELECT *\n");
+			}
+		}
 		
 		// types ...
 		for (int i = 0; i < typeInfoList.size(); i++) {
@@ -230,6 +265,11 @@ public class SLSelectByNodeTypeInfo extends SLSelectInfo {
 		@Override
 		public boolean equals(Object obj) {
 			return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
+		}
+		
+		@Override
+		public int hashCode() {
+			return HashCodes.hashOf(name);
 		}
 	}
 
