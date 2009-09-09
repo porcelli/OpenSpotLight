@@ -2,6 +2,28 @@
 	<scriptType>PROCEDURE</scriptType>
 	<database>SQL_SERVER</database>
 	<preferedType>SQL</preferedType>
+	<nameHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerProcedureFilterNameHandler</nameHandlerClass>
+	<streamHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerRoutineStreamHandler</streamHandlerClass>
+	<template><![CDATA[create procedure $name$ ( $parameter:{$it.column$  $it.inOut$ $it.type$}; separator=", "$ ) $returnType$ /* no source available */ 
+	]]></template>
+	<tryAgainIfNoResult>true</tryAgainIfNoResult>
+	<columnAliasMap enum-type="column">
+		<entry> 
+			<column>catalog_name</column>
+			<string>procedure_qualifier</string>
+		</entry>
+		<entry>
+			<column>schema_name</column>
+			<string>procedure_owner</string>
+		</entry>
+		<entry>
+			<column>name</column>
+			<string>procedure_name</string>
+		</entry>
+	</columnAliasMap>
+	<dataSelect><![CDATA[
+		{call sp_stored_procedures(null, null, null, 1)}      
+	]]></dataSelect>
 	<contentSelect><![CDATA[
 	       select 
             routine_definition as sql_content 
@@ -12,13 +34,4 @@
             routine_catalog = '$catalog_name$' and 
             routine_name = '$name$'
 	]]></contentSelect>
-	<dataSelect><![CDATA[
-       select 
-            routine_catalog as catalog_name, 
-            routine_schema as schema_name, 
-            routine_name as name
-        from 
-            information_schema.routines
-        where routine_type='PROCEDURE'      
-        ]]></dataSelect>
 </script>

@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de GovernanÔøΩa de TI de CÔøΩdigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribuiÔøΩÔøΩo de direito autoral declarada e atribuÔøΩda pelo autor.
+ * Todas as contribuiÔøΩÔøΩes de terceiros estÔøΩo distribuÔøΩdas sob licenÔøΩa da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa ÔøΩ software livre; vocÔøΩ pode redistribuÔøΩ-lo e/ou modificÔøΩ-lo sob os 
+ * termos da LicenÔøΩa PÔøΩblica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa ÔøΩ distribuÔøΩdo na expectativa de que seja ÔøΩtil, porÔøΩm, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implÔøΩcita de COMERCIABILIDADE OU ADEQUAÔøΩÔøΩO A UMA
+ * FINALIDADE ESPECÔøΩFICA. Consulte a LicenÔøΩa PÔøΩblica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * VocÔøΩ deve ter recebido uma cÔøΩpia da LicenÔøΩa PÔøΩblica Geral Menor do GNU junto com este
+ * programa; se nÔøΩo, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
@@ -83,6 +83,8 @@ public final class DatabaseMetadataScript {
 	 */
 	public static interface DatabaseArtifactNameHandler {
 
+		public String fixName(String oldName);
+		
 		/**
 		 * Decide if the data passed to this method should be processed.
 		 * 
@@ -190,8 +192,8 @@ public final class DatabaseMetadataScript {
 	/** The database. */
 	private DatabaseType database;
 
-	/** The data handler class. */
-	private Class<? extends DatabaseArtifactNameHandler> dataHandlerClass;
+	/** The name handler class. */
+	private Class<? extends DatabaseArtifactNameHandler> nameHandlerClass;
 
 	/** The data select. */
 	private String dataSelect;
@@ -258,13 +260,13 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
-	 * Gets the data handler class.
+	 * Gets the name handler class.
 	 * 
-	 * @return the data handler class
+	 * @return the name handler class
 	 */
-	public Class<? extends DatabaseArtifactNameHandler> getDataHandlerClass() {
+	public Class<? extends DatabaseArtifactNameHandler> getNameHandlerClass() {
 
-		return this.dataHandlerClass;
+		return this.nameHandlerClass;
 	}
 
 	/**
@@ -376,17 +378,17 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
-	 * Sets the data handler class.
+	 * Sets the name handler class.
 	 * 
-	 * @param dataHandlerClass
-	 *            the new data handler class
+	 * @param nameHandlerClass
+	 *            the new name handler class
 	 */
-	public void setDataHandlerClass(
-			final Class<? extends DatabaseArtifactNameHandler> dataHandlerClass) {
+	public void setNameHandlerClass(
+			final Class<? extends DatabaseArtifactNameHandler> nameHandlerClass) {
 		if (this.immutable) {
 			throw new UnsupportedOperationException();
 		}
-		this.dataHandlerClass = dataHandlerClass;
+		this.nameHandlerClass = nameHandlerClass;
 	}
 
 	/**
@@ -462,6 +464,18 @@ public final class DatabaseMetadataScript {
 			throw new UnsupportedOperationException();
 		}
 		this.template = template;
+	}
+	private boolean tryAgainIfNoResult;
+
+	public boolean isTryAgainIfNoResult() {
+		return tryAgainIfNoResult;
+	}
+
+	public void setTryAgainIfNoResult(boolean tryAgainIfNoResult) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.tryAgainIfNoResult = tryAgainIfNoResult;
 	}
 
 	/**
