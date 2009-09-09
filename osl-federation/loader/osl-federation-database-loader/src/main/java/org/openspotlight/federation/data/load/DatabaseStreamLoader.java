@@ -162,6 +162,16 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * 	&lt;/columnAliasMap&gt;
  * </pre>
  * 
+ * Also is important to know: In any place where is possible to use a valid sql
+ * statements, its possible also to use callable statements. Use the common java
+ * syntax:
+ * 
+ * <pre>
+ * {call exampleCallable('stringParameter',3,null)}
+ * </pre>
+ * 
+ * Remember: this exampleCallable should return a result set.
+ * 
  * @author feu
  */
 public class DatabaseStreamLoader extends AbstractArtifactLoader {
