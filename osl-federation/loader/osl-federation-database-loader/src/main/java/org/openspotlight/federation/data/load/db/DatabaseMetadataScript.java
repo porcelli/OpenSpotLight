@@ -83,8 +83,15 @@ public final class DatabaseMetadataScript {
 	 */
 	public static interface DatabaseArtifactNameHandler {
 
+		/**
+		 * This method is called to fix a wrong artifact name returned by some
+		 * select statement.
+		 * 
+		 * @param oldName
+		 * @return the new name
+		 */
 		public String fixName(String oldName);
-		
+
 		/**
 		 * Decide if the data passed to this method should be processed.
 		 * 
@@ -192,14 +199,14 @@ public final class DatabaseMetadataScript {
 	/** The database. */
 	private DatabaseType database;
 
-	/** The name handler class. */
-	private Class<? extends DatabaseArtifactNameHandler> nameHandlerClass;
-
 	/** The data select. */
 	private String dataSelect;
 
 	/** The immutable. */
 	private boolean immutable = false;
+
+	/** The name handler class. */
+	private Class<? extends DatabaseArtifactNameHandler> nameHandlerClass;
 
 	/** The prefered type. */
 	private PreferedType preferedType;
@@ -215,6 +222,8 @@ public final class DatabaseMetadataScript {
 
 	/** The templates select. */
 	private String templatesSelect;
+
+	private boolean tryAgainIfNoResult;
 
 	/**
 	 * Gets the column alias map.
@@ -260,16 +269,6 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
-	 * Gets the name handler class.
-	 * 
-	 * @return the name handler class
-	 */
-	public Class<? extends DatabaseArtifactNameHandler> getNameHandlerClass() {
-
-		return this.nameHandlerClass;
-	}
-
-	/**
 	 * Gets the data select.
 	 * 
 	 * @return the mandatory select for filling the basic common data for all
@@ -277,6 +276,16 @@ public final class DatabaseMetadataScript {
 	 */
 	public String getDataSelect() {
 		return this.dataSelect;
+	}
+
+	/**
+	 * Gets the name handler class.
+	 * 
+	 * @return the name handler class
+	 */
+	public Class<? extends DatabaseArtifactNameHandler> getNameHandlerClass() {
+
+		return this.nameHandlerClass;
 	}
 
 	/**
@@ -322,6 +331,15 @@ public final class DatabaseMetadataScript {
 	 */
 	public String getTemplatesSelect() {
 		return this.templatesSelect;
+	}
+
+	/**
+	 * Checks if is try again if no result.
+	 * 
+	 * @return true, if is try again if no result
+	 */
+	public boolean isTryAgainIfNoResult() {
+		return this.tryAgainIfNoResult;
 	}
 
 	/**
@@ -378,20 +396,6 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
-	 * Sets the name handler class.
-	 * 
-	 * @param nameHandlerClass
-	 *            the new name handler class
-	 */
-	public void setNameHandlerClass(
-			final Class<? extends DatabaseArtifactNameHandler> nameHandlerClass) {
-		if (this.immutable) {
-			throw new UnsupportedOperationException();
-		}
-		this.nameHandlerClass = nameHandlerClass;
-	}
-
-	/**
 	 * Sets the mandatory select for filling the basic common data for all
 	 * stream artifacts loaded from database.
 	 * 
@@ -414,6 +418,20 @@ public final class DatabaseMetadataScript {
 		if (!this.immutable) {
 			this.immutable = true;
 		}
+	}
+
+	/**
+	 * Sets the name handler class.
+	 * 
+	 * @param nameHandlerClass
+	 *            the new name handler class
+	 */
+	public void setNameHandlerClass(
+			final Class<? extends DatabaseArtifactNameHandler> nameHandlerClass) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.nameHandlerClass = nameHandlerClass;
 	}
 
 	/**
@@ -465,18 +483,6 @@ public final class DatabaseMetadataScript {
 		}
 		this.template = template;
 	}
-	private boolean tryAgainIfNoResult;
-
-	public boolean isTryAgainIfNoResult() {
-		return tryAgainIfNoResult;
-	}
-
-	public void setTryAgainIfNoResult(boolean tryAgainIfNoResult) {
-		if (this.immutable) {
-			throw new UnsupportedOperationException();
-		}
-		this.tryAgainIfNoResult = tryAgainIfNoResult;
-	}
 
 	/**
 	 * Sets the select to fill the template for stream content.
@@ -489,6 +495,19 @@ public final class DatabaseMetadataScript {
 			throw new UnsupportedOperationException();
 		}
 		this.templatesSelect = templatesSelect;
+	}
+
+	/**
+	 * Sets the try again if no result.
+	 * 
+	 * @param tryAgainIfNoResult
+	 *            the new try again if no result
+	 */
+	public void setTryAgainIfNoResult(final boolean tryAgainIfNoResult) {
+		if (this.immutable) {
+			throw new UnsupportedOperationException();
+		}
+		this.tryAgainIfNoResult = tryAgainIfNoResult;
 	}
 
 }

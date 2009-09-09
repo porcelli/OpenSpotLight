@@ -86,7 +86,6 @@ public abstract class DatabaseStreamTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("boxing")
 	@Test
 	public void shouldLoadAllValidTypes() throws Exception {
 		if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
@@ -150,7 +149,9 @@ public abstract class DatabaseStreamTest {
 		for (final StreamArtifact loaded : loadedArtifacts) {
 			final String name = "./target/test-data/"
 					+ this.getClass().getSimpleName() + "/"
-					+ loaded.getRelativeName().replaceAll(" ", "");//DB2 has some spaces 
+					+ loaded.getRelativeName().replaceAll(" ", "");// DB2 has
+																	// some
+																	// spaces
 			final String dirName = name.substring(0, name.lastIndexOf('/'));
 			new File(dirName).mkdirs();
 			final OutputStream fos = new BufferedOutputStream(

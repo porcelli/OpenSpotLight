@@ -56,7 +56,6 @@ import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
