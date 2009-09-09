@@ -2,34 +2,29 @@
 	<scriptType>TABLE</scriptType>
 	<database>SQL_SERVER</database>
 	<preferedType>TEMPLATE</preferedType>
+	<nameHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerTableFilterNameHandler</nameHandlerClass>
 	<template><![CDATA[
 	create table $name$ (
-		$detail:{$it.column_name$  $it.data_type$ $if(it.nullable)$ null $else$ not null $endif$ $if(it.column_default)$ default $it.column_default$ $endif$};separator=", "$
+		$detail:{$it.column_name$ $it.type_name$ };separator=", "$
 	)]]></template>
 	<columnAliasMap enum-type="column">
-		<entry>
+		<entry> 
 			<column>catalog_name</column>
-			<string>newName</string>
+			<string>table_qualifier</string>
+		</entry>
+		<entry>
+			<column>schema_name</column>
+			<string>table_owner</string>
+		</entry>
+		<entry>
+			<column>name</column>
+			<string>table_name</string>
 		</entry>
 	</columnAliasMap>
 	<dataSelect><![CDATA[
-        select 
-			table_name as  name, 
-			table_catalog as catalog_name, 
-			table_schema as schema_name 
-		from 
-			information_schema.tables
+ 		 {call sp_tables(null, null, null, null, 1)}
       ]]></dataSelect>
 	<templatesSelect><![CDATA[
-		select 
-			column_name, 
-            column_default, 
-            case is_nullable when 'YES' then 'true' else 'false' end as nullable, 
-            data_type
-		from 
-			information_schema.columns 
-		where table_name='$name$' 
-		  and table_schema='$schema_name$'
-		  and table_catalog='$catalog_name$'
+		{call sp_columns('$name$', '$schema_name$', '$catalog_name$', null, null)}
  ]]></templatesSelect>
 </script>

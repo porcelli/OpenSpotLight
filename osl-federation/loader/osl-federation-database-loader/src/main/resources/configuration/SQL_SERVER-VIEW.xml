@@ -2,14 +2,33 @@
 	<scriptType>VIEW</scriptType>
 	<database>SQL_SERVER</database>
 	<preferedType>SQL</preferedType>
+	<nameHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerViewFilterNameHandler</nameHandlerClass>
+	<template><![CDATA[
+	create view $name$ with columns (
+		$detail:{$it.column_name$ $it.type_name$ };separator=", "$
+	/* no source available */
+	)]]></template>
+	<tryAgainIfNoResult>true</tryAgainIfNoResult>
+	<columnAliasMap enum-type="column">
+		<entry> 
+			<column>catalog_name</column>
+			<string>table_qualifier</string>
+		</entry>
+		<entry>
+			<column>schema_name</column>
+			<string>table_owner</string>
+		</entry>
+		<entry>
+			<column>name</column>
+			<string>table_name</string>
+		</entry>
+	</columnAliasMap>
 	<dataSelect><![CDATA[
-        select 
-			table_name as  name, 
-			table_catalog as catalog_name, 
-			table_schema as schema_name 
-		from 
-			information_schema.views
+ 		 {call sp_tables(null, null, null, null, 1)}
       ]]></dataSelect>
+	<templatesSelect><![CDATA[
+		{call sp_columns('$name$', '$schema_name$', '$catalog_name$', null, null)}
+ ]]></templatesSelect>
 	<contentSelect><![CDATA[
 		select 
 			view_definition

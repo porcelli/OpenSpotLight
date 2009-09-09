@@ -250,6 +250,23 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 				logAndReturn(new ConfigurationException("Invalid prefered type"));
 			}
 			if (content == null) {
+				if (scriptDescription.isTryAgainIfNoResult()) {
+					switch (scriptDescription.getPreferedType()) {
+					case SQL:
+						content = this.loadFromTemplate(catalog, schema, name,
+								scriptDescription, streamHandler);
+
+						break;
+					case TEMPLATE:
+						content = this.loadFromSql(catalog, schema, name,
+								scriptDescription, streamHandler);
+						break;
+					default:
+						content = null;
+					}
+				}
+			}
+			if (content == null) {
 				return null;
 			}
 			if (streamHandler != null) {
@@ -367,16 +384,11 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 					.entrySet()) {
 				template.setAttribute(entry.getKey().name(), entry.getValue());
 			}
-			if (streamHandler != null) {
-				streamHandler.beforeFillTemplate(schema, scriptDescription
-						.getScriptType(), catalog, name, template, this.conn);
-			}
 
 			final String sql = template.toString();
 
 			ResultSet resultSet = null;
 			try {
-				resultSet = executeStatement(sql, this.conn);
 				final String templateString = scriptDescription.getTemplate();
 				final CustomizedStringTemplate contentTemplate = new CustomizedStringTemplate(
 						templateString, DefaultTemplateLexer.class);
@@ -388,45 +400,55 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 				int count = 0;
 				boolean hasAnyResult = false;
 				String attributeName = null;
-				while (resultSet.next()) {
-					final List<String> columnsFromDatabase = new ArrayList<String>();
-					if (!hasAnyResult) {
-						hasAnyResult = true;
-						final StringBuilder baseForTemplate = new StringBuilder(
-								"detail.{");
-						final ResultSetMetaData metadata = resultSet
-								.getMetaData();
-						count = metadata.getColumnCount();
-						for (int i = 1; i <= count; i++) {
-							final String columnName = metadata
-									.getColumnLabel(i).toLowerCase();
-							final String content = resultSet.getString(i);
-							contentTemplate.setAttribute(columnName, content);
-							columnsFromDatabase.add(content);
+				if (sql != null && sql.trim().length() != 0) {
+					resultSet = executeStatement(sql, this.conn);
+					while (resultSet.next()) {
+						final List<String> columnsFromDatabase = new ArrayList<String>();
+						if (!hasAnyResult) {
+							hasAnyResult = true;
+							final StringBuilder baseForTemplate = new StringBuilder(
+									"detail.{");
+							final ResultSetMetaData metadata = resultSet
+									.getMetaData();
+							count = metadata.getColumnCount();
+							for (int i = 1; i <= count; i++) {
+								final String columnName = metadata
+										.getColumnLabel(i).toLowerCase();
+								final String content = resultSet.getString(i);
+								contentTemplate.setAttribute(columnName,
+										content);
+								columnsFromDatabase.add(content);
 
-							baseForTemplate.append(columnName);
-							if (i != count) {
-								baseForTemplate.append(',');
+								baseForTemplate.append(columnName);
+								if (i != count) {
+									baseForTemplate.append(',');
+								}
+							}
+							baseForTemplate.append('}');
+							attributeName = baseForTemplate.toString();
+						} else {
+							for (int i = 1; i <= count; i++) {
+								columnsFromDatabase.add(resultSet.getString(i));
 							}
 						}
-						baseForTemplate.append('}');
-						attributeName = baseForTemplate.toString();
-					} else {
-						for (int i = 1; i <= count; i++) {
-							columnsFromDatabase.add(resultSet.getString(i));
-						}
+						final Object[] valuesAsArray = columnsFromDatabase
+								.toArray();
+						contentTemplate.setAttributeArray(attributeName,
+								valuesAsArray);
 					}
-					final Object[] valuesAsArray = columnsFromDatabase
-							.toArray();
-					contentTemplate.setAttributeArray(attributeName,
-							valuesAsArray);
-				}
-				resultSet.close();
-				if (!hasAnyResult) {
-					logAndReturn(new IllegalStateException("no result on "
-							+ sql));
+					resultSet.close();
+					if (!hasAnyResult) {
+						logAndReturn(new IllegalStateException("no result on "
+								+ sql));
 
+					}
 				}
+				if (streamHandler != null) {
+					streamHandler.beforeFillTemplate(schema, scriptDescription
+							.getScriptType(), catalog, name, contentTemplate,
+							this.conn);
+				}
+
 				final String result = contentTemplate.toString();
 				return result.getBytes();
 
@@ -493,7 +515,8 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 *             the SQL exception
 		 */
 		private String fillName(final DatabaseMetadataScript script,
-				final ResultSet resultSet) throws SQLException {
+				final ResultSet resultSet,
+				DatabaseArtifactNameHandler nameHandler) throws SQLException {
 			final StringBuilder buffer = new StringBuilder();
 			String catalogColumnName = script.getColumnAliasMap().get(
 					ColumnsNamesForMetadataSelect.catalog_name);
@@ -509,7 +532,9 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 					: ColumnsNamesForMetadataSelect.schema_name.name();
 
 			final String catalog = resultSet.getString(catalogColumnName);
-			final String name = resultSet.getString(nameColumnName);
+			final String name = nameHandler == null ? resultSet
+					.getString(nameColumnName) : nameHandler.fixName(resultSet
+					.getString(nameColumnName));
 			final String schema = resultSet.getString(schemaColumnName);
 			buffer.append(schema);
 			buffer.append('/');
@@ -547,7 +572,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 							continue;
 						}
 						final Class<? extends DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
-								.getDataHandlerClass();
+								.getNameHandlerClass();
 						final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType
 								.newInstance()
 								: null;
@@ -556,7 +581,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 								scriptDescription.getDataSelect(), conn);
 						walkingOnResult: while (resultSet.next()) {
 							final String result = this.fillName(
-									scriptDescription, resultSet);
+									scriptDescription, resultSet, nameHandler);
 							if (nameHandler != null) {
 								final boolean shouldProcess = nameHandler
 										.shouldIncludeName(result, scriptType,
