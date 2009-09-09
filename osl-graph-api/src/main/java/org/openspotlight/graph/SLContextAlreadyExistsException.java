@@ -63,7 +63,7 @@ public class SLContextAlreadyExistsException extends SLGraphSessionException {
 	 * 
 	 * @param id the id
 	 */
-	public SLContextAlreadyExistsException(Long id) {
+	public SLContextAlreadyExistsException(String id) {
 		super("Context " + id + " already exists.");
 	}
 }

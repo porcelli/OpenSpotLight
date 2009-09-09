@@ -69,7 +69,7 @@ public interface SLGraphSession {
 	 * @throws SLContextAlreadyExistsException the SL context already exists exception
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLContext createContext(Long id) throws SLContextAlreadyExistsException, SLGraphSessionException;
+	public SLContext createContext(String id) throws SLContextAlreadyExistsException, SLGraphSessionException;
 	
 	/**
 	 * Gets the context.
@@ -80,7 +80,7 @@ public interface SLGraphSession {
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLContext getContext(Long id) throws SLGraphSessionException;
+	public SLContext getContext(String id) throws SLGraphSessionException;
 	
 	/**
 	 * Save.

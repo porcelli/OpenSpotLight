@@ -93,8 +93,8 @@ public class SLContextImpl implements SLContext {
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLContext#getID()
 	 */
-	public Long getID() throws SLGraphSessionException {
-		return new Long(rootNode.getName());
+	public String getID() throws SLGraphSessionException {
+		return rootNode.getName();
 	}
 
 	//@Override

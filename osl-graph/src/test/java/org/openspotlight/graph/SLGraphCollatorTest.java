@@ -49,7 +49,7 @@ public class SLGraphCollatorTest {
 	public void testNodeCollator() {
 
 		try {
-			final SLNode root1 = session.createContext(1L).getRootNode();
+			final SLNode root1 = session.createContext("1L").getRootNode();
 
 			// test addNode ...
 			final SQLElement element1 = root1.addNode(SQLElement.class, "selecao");
@@ -76,7 +76,7 @@ public class SLGraphCollatorTest {
 
 		try {
 
-			final SLNode root1 = session.createContext(1L).getRootNode();
+			final SLNode root1 = session.createContext("1L").getRootNode();
 			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 			final JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -110,7 +110,7 @@ public class SLGraphCollatorTest {
 
 		try {
 
-			final SLNode root1 = session.createContext(1L).getRootNode();
+			final SLNode root1 = session.createContext("1L").getRootNode();
 			final SQLElement element = root1.addNode(SQLElement.class, "element");
 
 			final SLNodeProperty<String> prop1 = element.setProperty(String.class, "selecao", "great");
