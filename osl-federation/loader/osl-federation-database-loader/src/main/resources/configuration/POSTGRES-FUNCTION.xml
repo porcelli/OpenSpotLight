@@ -2,6 +2,7 @@
 	<scriptType>FUNCTION</scriptType>
 	<database>POSTGRES</database>
 	<preferedType>SQL</preferedType>
+	<streamHandlerClass>org.openspotlight.federation.data.load.db.handler.PostgresRoutineStreamHandler</streamHandlerClass>
 	<dataSelect><![CDATA[
 		select 
 		    specific_catalog as catalog_name,

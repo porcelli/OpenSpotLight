@@ -227,7 +227,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 				return null;
 			}
 
-			final Class<DatabaseStreamHandler> streamHandlerType = scriptDescription
+			final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription
 					.getStreamHandlerClass();
 			final DatabaseStreamHandler streamHandler;
 			if (streamHandlerType != null) {
@@ -546,7 +546,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 						if (scriptDescription == null) {
 							continue;
 						}
-						final Class<DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
+						final Class<? extends DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
 								.getDataHandlerClass();
 						final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType
 								.newInstance()

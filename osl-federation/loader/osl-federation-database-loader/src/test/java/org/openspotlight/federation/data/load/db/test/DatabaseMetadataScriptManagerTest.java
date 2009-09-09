@@ -64,6 +64,7 @@ import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
+import org.openspotlight.federation.data.load.db.handler.PostgresRoutineStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +95,7 @@ public class DatabaseMetadataScriptManagerTest {
 		script.setTemplate("create table $dummy$ ");
 		script.setDatabase(DatabaseType.ORACLE);
 		script.setScriptType(ScriptType.TABLE);
+		script.setStreamHandlerClass(PostgresRoutineStreamHandler.class);
 		final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(
 				ColumnsNamesForMetadataSelect.class);
 		columnAliasMap.put(ColumnsNamesForMetadataSelect.catalog_name,
