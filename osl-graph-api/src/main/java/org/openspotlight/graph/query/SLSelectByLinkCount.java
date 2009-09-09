@@ -48,39 +48,85 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLGraphSessionException;
-
 /**
- * The Interface SLSelectFacade.
+ * The Interface SLSelectByLinkCount.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLSelectFacade {
-
-	/**
-	 * Select by node type.
-	 * 
-	 * @return the sL select by node type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException;
+public interface SLSelectByLinkCount extends SLSelect {
 	
 	/**
-	 * Select by link type.
+	 * Type.
 	 * 
-	 * @return the sL select by link type
+	 * @param typeName the type name
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @return the type
 	 */
-	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException;
+	public Type type(String typeName);
 	
 	/**
-	 * Select by link count.
+	 * End.
 	 * 
-	 * @return the sL select by link count
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @return the end
 	 */
-	public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException;
+	public End end();
+	
+	/**
+	 * The Interface Type.
+	 * 
+	 * @author Vitor Hugo Chagas
+	 */
+	public static interface Type {
+		
+		/**
+		 * Comma.
+		 * 
+		 * @return the sL select by link count
+		 */
+		public SLSelectByLinkCount comma();
+		
+		/**
+		 * Select end.
+		 * 
+		 * @return the end
+		 */
+		public End selectEnd();
+		
+		/**
+		 * Sub types.
+		 * 
+		 * @return the type
+		 */
+		public Type subTypes();
+	}
+	
+	/**
+	 * The Interface End.
+	 * 
+	 * @author Vitor Hugo Chagas
+	 */
+	public static interface End extends SLSelectFacade {
+		
+		/**
+		 * Where.
+		 * 
+		 * @return the sL where by link count
+		 */
+		public SLWhereByLinkCount where();
+		
+		/**
+		 * Order by.
+		 * 
+		 * @return the sL order by statement
+		 */
+		public SLOrderByStatement orderBy();
+		
+		/**
+		 * Keep result.
+		 * 
+		 * @return the end
+		 */
+		public End keepResult();
+		
+	}
 }

@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotligAllht.graph.query.info;
+package org.openspotlight.graph.query.info;
 
 /**
  * The Class AllTypesInfo.

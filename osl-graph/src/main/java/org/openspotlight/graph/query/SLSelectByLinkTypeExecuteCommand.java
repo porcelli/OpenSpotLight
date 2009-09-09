@@ -160,7 +160,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 						for (int j = 0; j < inputNodeWrappers.size(); j++) {
 							Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
 							PNodeWrapper pNodeWrapper = inputNodeWrappers.get(j);
-							condition.leftOperand(idPropName).operator(EQUAL).rightOperand(pNodeWrapper.getId());
+							condition.leftOperand(idPropName).operator(EQUAL).rightOperand(pNodeWrapper.getID());
 						}
 						typeStatement.closeBracket();
 					}
@@ -181,8 +181,8 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 							PNodeWrapper pNodeWrapper = inputNodeWrappers.get(j);
 							String sourceIdPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_ID);
 							String targetIdPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_ID);
-							condition.leftOperand(sourceIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getId())
-								.operator(operator).condition().leftOperand(targetIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getId());
+							condition.leftOperand(sourceIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getID())
+								.operator(operator).condition().leftOperand(targetIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getID());
 						}
 						typeStatement.closeBracket();
 					}
@@ -239,7 +239,6 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 					}
 				}
 			}
-			
 		}
 		catch (SLException e) {
 			throw new SLGraphSessionException("Error on attempt to execute " + this.getClass().getName() + " command.");
@@ -315,7 +314,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 				
 				String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH); 
 				conditionStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(linkTypeName.hashCode())
-					.operator(AND).condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator()).rightOperand(conditionInfo.getValue());
+					.operator(AND).condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
 
 			}
 			else {

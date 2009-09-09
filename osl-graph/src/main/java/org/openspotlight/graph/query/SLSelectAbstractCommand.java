@@ -49,6 +49,7 @@
 package org.openspotlight.graph.query;
 
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
@@ -85,6 +86,10 @@ public abstract class SLSelectAbstractCommand {
 		else if (select instanceof SLSelectByLinkType) {
 			SLSelectByLinkTypeInfo selectByLinkTypeInfo = SLSelectByLinkTypeInfo.class.cast(selectInfo);
 			command = new SLSelectByLinkTypeExecuteCommand(selectByLinkTypeInfo, commandDO);
+		}
+		else if (select instanceof SLSelectByLinkCount) {
+			SLSelectByLinkCountInfo selectByLinkCountInfo = SLSelectByLinkCountInfo.class.cast(selectInfo);
+			command = new SLSelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
 		}
 		return command;
 	}

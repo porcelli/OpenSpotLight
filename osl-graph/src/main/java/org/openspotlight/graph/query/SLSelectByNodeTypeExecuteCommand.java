@@ -253,7 +253,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 							Condition idCondition;
 							if (j == 0) idCondition = idStatement.condition();
 							else idCondition = idStatement.operator(OR).condition();
-							idCondition.leftOperand("jcr:uuid").operator(EQUAL, conditionInfo.isRelationalNotOperator()).rightOperand(pNodeWrapper.getId());
+							idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(pNodeWrapper.getID());
 						}
 						idStatement.closeBracket();
 					}
@@ -266,7 +266,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 					condition = conditionStatement.operator(AND).condition();
 				}
 				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-				condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator()).rightOperand(conditionInfo.getValue());
+				condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
 			}
 			else {
 				filterByWhereStatement(conditionStatement, typeName, conditionInfo.getInnerStatementInfo());

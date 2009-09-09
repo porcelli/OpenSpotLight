@@ -665,7 +665,7 @@ public class SLWhereByNodeTypeInfo {
 					boolean subTypes = typeInfo.isSubTypes();
 					
 					StringBuilder buffer = new StringBuilder();
-					appendIfNotNull(buffer, conditionalOperator, conditionalOperator, ' ');
+					appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
 					appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
 					appendIfNotNull(buffer, propertyName,  "property \"", propertyName, "\" ");
 					appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");
