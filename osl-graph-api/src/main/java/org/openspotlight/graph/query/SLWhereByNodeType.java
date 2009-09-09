@@ -78,7 +78,7 @@ public interface SLWhereByNodeType extends SLStatement {
 	 * 
 	 * @author Vitor Hugo Chagas
 	 */
-	public static interface End {
+	public static interface End extends SLSelectFacade {
 		
 		/**
 		 * Order by.

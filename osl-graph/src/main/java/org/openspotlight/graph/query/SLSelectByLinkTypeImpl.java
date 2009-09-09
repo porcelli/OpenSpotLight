@@ -56,6 +56,7 @@ import static org.openspotlight.graph.query.SLSideType.B_SIDE;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
@@ -82,12 +83,14 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
 	
 	/**
 	 * Instantiates a new sL select statement impl.
+	 * 
+	 * @param selectFacade the select facade
 	 */
-	public SLSelectByLinkTypeImpl() {
+	public SLSelectByLinkTypeImpl(SLSelectFacade selectFacade) {
 		this.selectInfo = new SLSelectByLinkTypeInfo();
 		this.types = new ArrayList<Type>();
 		this.byLinks = new ArrayList<ByLink>();
-		this.selectEnd = new EndImpl(selectInfo);
+		this.selectEnd = new EndImpl(selectFacade, selectInfo);
 	}
 
 	/* (non-Javadoc)
@@ -226,12 +229,17 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
 		/** The order by. */
 		private SLOrderByStatement orderBy;
 		
+		/** The select facade. */
+		private SLSelectFacade selectFacade;
+		
 		/**
 		 * Instantiates a new end impl.
 		 * 
+		 * @param selectFacade the select facade
 		 * @param selectInfo the select info
 		 */
-		EndImpl(SLSelectByLinkTypeInfo selectInfo) {
+		EndImpl(SLSelectFacade selectFacade, SLSelectByLinkTypeInfo selectInfo) {
+			this.selectFacade = selectFacade;
 			this.selectInfo = selectInfo;
 			this.orderBy = new SLOrderByStatementImpl();
 		}
@@ -277,6 +285,20 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
 		public End executeXTimes(int x) {
 			selectInfo.setXTimes(x);
 			return this;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkType()
+		 */
+		public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
+			return selectFacade.selectByLinkType();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByNodeType()
+		 */
+		public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
+			return selectFacade.selectByNodeType();
 		}
 	}
 	

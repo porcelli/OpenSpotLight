@@ -59,7 +59,10 @@ import java.util.Set;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
+import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.info.SLSelectInfo;
 
@@ -68,7 +71,54 @@ import org.openspotlight.graph.query.info.SLSelectInfo;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLSelectCommandSupport {
+public class SLQuerySupport {
+	
+	/**
+	 * Gets the node wrappers.
+	 * 
+	 * @param treeSession the tree session
+	 * @param ids the ids
+	 * 
+	 * @return the node wrappers
+	 * 
+	 * @throws SLPersistentNodeNotFoundException the SL persistent node not found exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	static Set<PNodeWrapper> getNodeWrappers(SLPersistentTreeSession treeSession, String[] ids) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
+		Set<PNodeWrapper> wrappers = null;
+		if (ids != null && ids.length > 0) {
+			wrappers = new HashSet<PNodeWrapper>();
+			for (int i = 0; i < ids.length; i++) {
+				SLPersistentNode pNode = treeSession.getNodeByID(ids[i]);
+				wrappers.add(new PNodeWrapper(pNode));
+			}
+		}
+		return wrappers;
+	}
+
+	
+	/**
+	 * Gets the node i ds.
+	 * 
+	 * @param nodes the nodes
+	 * 
+	 * @return the node i ds
+	 * 
+	 * @throws SLQueryException the SL query exception
+	 */
+	static String[] getNodeIDs(Collection<SLNode> nodes) throws SLQueryException {
+		try {
+			int count = 0;
+			String[] ids = new String[nodes.size()];
+			for (SLNode node : nodes) {
+				ids[count++] = node.getID();
+			}
+			return ids;
+		}
+		catch (SLGraphSessionException e) {
+			throw new SLQueryException("Error on attempt to get node ids.", e);
+		}
+	}
 	
 	/**
 	 * Gets the select info.

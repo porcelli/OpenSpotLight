@@ -46,76 +46,33 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query.info;
-
-import org.openspotlight.common.util.StringBuilderUtil;
+package org.openspotligAllht.graph.query.info;
 
 /**
- * The Class SLSelectInfo.
+ * The Class AllTypesInfo.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class SLSelectInfo {
+public class SLAllTypesInfo {
 	
-	/** The Constant INDIFINITE. */
-	public static final int INDIFINITE = 0; 
-	
-	/** The keep result. */
-	private boolean keepResult;
-	
-	/** The x times. */
-	private Integer xTimes;
+	/** The on where. */
+	private boolean onWhere;
 
 	/**
-	 * Checks if is keep result.
+	 * Checks if is on where.
 	 * 
-	 * @return true, if is keep result
+	 * @return true, if is on where
 	 */
-	public boolean isKeepResult() {
-		return keepResult;
+	public boolean isOnWhere() {
+		return onWhere;
 	}
 
 	/**
-	 * Sets the keep result.
+	 * Sets the on where.
 	 * 
-	 * @param keepResult the new keep result
+	 * @param onWhere the new on where
 	 */
-	public void setKeepResult(boolean keepResult) {
-		this.keepResult = keepResult;
-	}
-
-	/**
-	 * Gets the x times.
-	 * 
-	 * @return the x times
-	 */
-	public Integer getXTimes() {
-		return xTimes;
-	}
-
-	/**
-	 * Sets the x times.
-	 * 
-	 * @param times the new x times
-	 */
-	public void setXTimes(Integer times) {
-		xTimes = times;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder();
-		if (isKeepResult()) {
-			StringBuilderUtil.append(buffer, "\nKEEP RESULT");
-		}
-		Integer xTimes = getXTimes();
-		if (xTimes != null) {
-			StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDIFINITE ? "INDIFINITE" : "" + xTimes), " TIMES");	
-		}
-
-		return buffer.toString();
+	public void setOnWhere(boolean onWhere) {
+		this.onWhere = onWhere;
 	}
 }

@@ -53,7 +53,9 @@ import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
 import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +64,8 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLMetaNodeType;
+import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -80,10 +84,6 @@ import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.
  * 
  * @author Vitor Hugo Chagas
  */
-/**
- * @author vitorchagas
- *
- */
 public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	
 	/** The select info. */
@@ -95,6 +95,9 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	/** The node wrapper list map. */
 	private Map<String, List<PNodeWrapper>> nodeWrapperListMap;
 	
+	/** The metadata. */
+	private SLMetadata metadata;
+	
 	/**
 	 * Instantiates a new sL select by node type execute command.
 	 * 
@@ -104,6 +107,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	SLSelectByNodeTypeExecuteCommand(SLSelectByNodeTypeInfo selectInfo, SLSelectCommandDO commandDO) {
 		this.selectInfo = selectInfo;
 		this.commandDO = commandDO;
+		this.metadata = commandDO.getMetadata();
 	}
 
 	/* (non-Javadoc)
@@ -115,16 +119,16 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 		try {
 			
 			if (commandDO.getPreviousNodeWrappers() != null) {
-				nodeWrapperListMap = SLSelectCommandSupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
+				nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
 			}
 			
-			List<SLSelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
+			Set<SLSelectTypeInfo> typeInfoSet = getSelectTypeInfoSet();
 			String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
 			SLWhereByNodeTypeInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
 
-			List<String> typesNotFiltered = new ArrayList<String>();
-	 		for (SLSelectTypeInfo typeInfo : typeInfoList) {
-	 			List<String> hierarchyTypeNames = SLSelectCommandSupport.getHierarchyTypeNames(commandDO.getMetadata(), typeInfo.getName(), typeInfo.isSubTypes());
+			Set<String> typesNotFiltered = new HashSet<String>();
+	 		for (SLSelectTypeInfo typeInfo : typeInfoSet) {
+	 			List<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(), typeInfo.isSubTypes());
 	 			typesNotFiltered.addAll(hierarchyTypeNames);
 			}
 
@@ -153,7 +157,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 		}
 	 		
 	 		if (commandDO.getPreviousNodeWrappers() == null) {
- 				for (int i = 0; i < typesNotFiltered.size(); i++) {
+ 				for (String typeName : typesNotFiltered) {
 	 				Condition condition;
 	 				if (rootStatement.getConditionCount() == 0) {
 	 					condition = rootStatement.condition();
@@ -161,23 +165,24 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 				else {
 	 					condition = rootStatement.operator(OR).condition();
 	 				}
-	 				condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typesNotFiltered.get(i));
+	 				condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typeName);
  				}
 	 		}
 	 		
 	 		statementBuilder.setOrderBy(typePropName);
-
-			SLPersistentTreeSession treeSession = commandDO.getTreeSession();
-			String xpath = statementBuilder.getXPath();
-			SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
-			SLPersistentQueryResult result = query.execute();
-			
-			Set<PNodeWrapper> pNodeWrappers = SLSelectCommandSupport.wrapNodes(result.getNodes());
-			commandDO.setNodeWrappers(pNodeWrappers);
+	 		Set<PNodeWrapper> pNodeWrappers = new HashSet<PNodeWrapper>();
+	 		commandDO.setNodeWrappers(pNodeWrappers);
+	 		
+	 		if (statementBuilder.getRootStatement().getConditionCount() > 0) {
+				SLPersistentTreeSession treeSession = commandDO.getTreeSession();
+				String xpath = statementBuilder.getXPath();
+				SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
+				SLPersistentQueryResult result = query.execute();
+				pNodeWrappers.addAll(SLQuerySupport.wrapNodes(result.getNodes()));
+	 		}
 			
 			if (commandDO.getPreviousNodeWrappers() != null) {
-				for (int i = 0; i < typesNotFiltered.size(); i++) {
-					String typeName = typesNotFiltered.get(i);
+				for (String typeName : typesNotFiltered) {
 					List<PNodeWrapper> typeNodeWrappers = nodeWrapperListMap.get(typeName);
 					if (typeNodeWrappers != null) {
 						pNodeWrappers.addAll(typeNodeWrappers);
@@ -201,7 +206,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 		Map<String, SLWhereTypeInfo> map = new HashMap<String, SLWhereTypeInfo>();
 		List<SLWhereTypeInfo> list = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
 		for (SLWhereTypeInfo whereTypeInfo : list) {
-			List<String> typeNames = SLSelectCommandSupport.getHierarchyTypeNames(commandDO.getMetadata(), whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+			List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
 			for (String typeName : typeNames) {
 				if (!map.containsKey(typeName)) {
 					SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
@@ -213,6 +218,16 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 		return map;
 	}
 	
+	/**
+	 * Filter by where statement.
+	 * 
+	 * @param statement the statement
+	 * @param typeName the type name
+	 * @param typeStatementInfo the type statement info
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
 	private void filterByWhereStatement(Statement statement, String typeName, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
 		
 		List<SLConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
@@ -259,6 +274,39 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 			
 			conditionStatement.closeBracket();
 		}
+	}
+	
+	/**
+	 * Gets the select type info set.
+	 * 
+	 * @return the select type info set
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private Set<SLSelectTypeInfo> getSelectTypeInfoSet() throws SLGraphSessionException {
+		Set<SLSelectTypeInfo> set = new HashSet<SLSelectTypeInfo>();
+		if (selectInfo.getAllTypes() != null) {
+			if (selectInfo.getAllTypes().isOnWhere()) {
+				List<SLWhereTypeInfo> whereTypeInfoList = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
+				for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoList) {
+					SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(whereTypeInfo.getName());
+					typeInfo.setSubTypes(whereTypeInfo.isSubTypes());
+					set.add(typeInfo);
+				}
+			}
+			else {
+				Collection<SLMetaNodeType> metaNodeTypes = metadata.getMetaNodesTypes();
+				for (SLMetaNodeType metaNodeType : metaNodeTypes) {
+					SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(metaNodeType.getTypeName());
+					typeInfo.setSubTypes(true);
+					set.add(typeInfo);
+				}
+			}
+		}
+		else {
+			set.addAll(selectInfo.getTypeInfoList());
+		}
+		return set;
 	}
 }
 

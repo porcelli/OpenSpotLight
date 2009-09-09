@@ -115,7 +115,7 @@ public interface SLSelectByLinkType extends SLSelect {
 	 * 
 	 * @author Vitor Hugo Chagas
 	 */
-	public static interface End {
+	public static interface End extends SLSelectFacade {
 		
 		/**
 		 * Where.

@@ -46,76 +46,32 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query.info;
+package org.openspotlight.graph.query;
 
-import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.graph.SLGraphSessionException;
 
 /**
- * The Class SLSelectInfo.
+ * The Interface SLSelectFacade.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class SLSelectInfo {
-	
-	/** The Constant INDIFINITE. */
-	public static final int INDIFINITE = 0; 
-	
-	/** The keep result. */
-	private boolean keepResult;
-	
-	/** The x times. */
-	private Integer xTimes;
+public interface SLSelectFacade {
 
 	/**
-	 * Checks if is keep result.
+	 * Select by node type.
 	 * 
-	 * @return true, if is keep result
-	 */
-	public boolean isKeepResult() {
-		return keepResult;
-	}
-
-	/**
-	 * Sets the keep result.
+	 * @return the sL select by node type
 	 * 
-	 * @param keepResult the new keep result
+	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public void setKeepResult(boolean keepResult) {
-		this.keepResult = keepResult;
-	}
-
-	/**
-	 * Gets the x times.
-	 * 
-	 * @return the x times
-	 */
-	public Integer getXTimes() {
-		return xTimes;
-	}
-
-	/**
-	 * Sets the x times.
-	 * 
-	 * @param times the new x times
-	 */
-	public void setXTimes(Integer times) {
-		xTimes = times;
-	}
+	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException;
 	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * Select by link type.
+	 * 
+	 * @return the sL select by link type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder();
-		if (isKeepResult()) {
-			StringBuilderUtil.append(buffer, "\nKEEP RESULT");
-		}
-		Integer xTimes = getXTimes();
-		if (xTimes != null) {
-			StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDIFINITE ? "INDIFINITE" : "" + xTimes), " TIMES");	
-		}
-
-		return buffer.toString();
-	}
+	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException;
 }

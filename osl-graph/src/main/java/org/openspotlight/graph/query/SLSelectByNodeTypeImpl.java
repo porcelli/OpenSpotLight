@@ -51,6 +51,8 @@ package org.openspotlight.graph.query;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openspotligAllht.graph.query.info.SLAllTypesInfo;
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
@@ -73,12 +75,22 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 	private End selectEnd;
 	
 	/**
-	 * Instantiates a new sL select statement impl.
+	 * Instantiates a new sL select by node type impl.
+	 * 
+	 * @param selectFacade the select facade
 	 */
-	public SLSelectByNodeTypeImpl() {
+	public SLSelectByNodeTypeImpl(SLSelectFacade selectFacade) {
 		this.selectInfo = new SLSelectByNodeTypeInfo();
 		this.types = new ArrayList<Type>();
-		this.selectEnd = new EndImpl(selectInfo);
+		this.selectEnd = new EndImpl(selectFacade, selectInfo);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLSelectByNodeType#allTypes()
+	 */
+	public AllTypes allTypes() {
+		SLAllTypesInfo allTypesInfo = selectInfo.addAllTypes();
+		return new AllTypesImpl(this, allTypesInfo);
 	}
 
 	/* (non-Javadoc)
@@ -122,6 +134,47 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 		int commaCount = 0;
 		for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
 			commaCount += typeInfo.isComma() ? 1 : 0;
+		}
+	}
+	
+	
+	/**
+	 * The Class AllTypesImpl.
+	 * 
+	 * @author Vitor Hugo Chagas
+	 */
+	public static class AllTypesImpl implements AllTypes {
+		
+		/** The select by node type. */
+		private SLSelectByNodeType selectByNodeType; 
+		
+		/** The all types info. */
+		private SLAllTypesInfo allTypesInfo;
+
+		/**
+		 * Instantiates a new all types impl.
+		 * 
+		 * @param selectByNodeType the select by node type
+		 * @param allTypesInfo the all types info
+		 */
+		public AllTypesImpl(SLSelectByNodeType selectByNodeType, SLAllTypesInfo allTypesInfo) {
+			this.selectByNodeType = selectByNodeType;
+			this.allTypesInfo = allTypesInfo;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectByNodeType.AllTypes#onWhere()
+		 */
+		public AllTypes onWhere() {
+			allTypesInfo.setOnWhere(true);
+			return this;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectByNodeType.AllTypes#selectEnd()
+		 */
+		public End selectEnd() {
+			return selectByNodeType.end();
 		}
 	}
 	
@@ -180,6 +233,9 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 	 * @author Vitor Hugo Chagas
 	 */
 	public static class EndImpl implements End {
+		
+		/** The select facade. */
+		private SLSelectFacade selectFacade;
 
 		/** The select info. */
 		private SLSelectByNodeTypeInfo selectInfo;
@@ -189,13 +245,15 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 		
 		/** The order by. */
 		private SLOrderByStatement orderBy;
-		
+
 		/**
 		 * Instantiates a new end impl.
 		 * 
+		 * @param selectFacade the select facade
 		 * @param selectInfo the select info
 		 */
-		EndImpl(SLSelectByNodeTypeInfo selectInfo) {
+		EndImpl(SLSelectFacade selectFacade, SLSelectByNodeTypeInfo selectInfo) {
+			this.selectFacade = selectFacade;
 			this.selectInfo = selectInfo;
 			this.orderBy = new SLOrderByStatementImpl();
 		}
@@ -207,7 +265,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 			if (this.where == null) {
 				SLWhereByNodeTypeInfo whereStatementInfo = new SLWhereByNodeTypeInfo(selectInfo);
 				selectInfo.setWhereStatementInfo(whereStatementInfo);
-				this.where = new SLWhereByNodeTypeImpl(orderBy, whereStatementInfo);
+				this.where = new SLWhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
 			}
 			return where;
 		}
@@ -241,6 +299,20 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 		public End executeXTimes(int x) {
 			selectInfo.setXTimes(x);
 			return this;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkType()
+		 */
+		public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
+			return selectFacade.selectByLinkType();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByNodeType()
+		 */
+		public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
+			return selectFacade.selectByNodeType();
 		}
 	}
 
