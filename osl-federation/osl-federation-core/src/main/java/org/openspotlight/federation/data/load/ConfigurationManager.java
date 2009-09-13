@@ -80,6 +80,25 @@ import org.openspotlight.federation.data.impl.Configuration;
  */
 public interface ConfigurationManager {
     
+	
+	/**
+	 * Finds a node by its given unique data. 
+	 * 
+	 * @param <T>
+	 * @param <K>
+	 * @param root
+	 * @param nodeType
+	 * @param uuid
+	 * @param version
+	 * @return an artifact by the given uuid
+	 * @throws ConfigurationException
+	 */
+	public <T extends ConfigurationNode, K extends Serializable> T findNodeByUuidAndVersion(
+			final ConfigurationNode root, final Class<T> nodeType,
+			final String uuid, final String version)
+			throws ConfigurationException;
+
+	
     /**
      * Helper class to map the class name to a valid node name and vice versa.
      * 
