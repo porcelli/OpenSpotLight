@@ -58,9 +58,8 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * A bundle is a group of artifact sources such as source folders, database
- * tables and so on. The bundle should group similar artifacts (example: java
- * files).
+ * This class describes data for a bundle execution. The syntax for the cron
+ * information should be the same used on quartz.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
@@ -85,7 +84,8 @@ public class ScheduleData implements ConfigurationNode {
 	/**
 	 * Sets the description.
 	 * 
-	 * @param description the new description
+	 * @param description
+	 *            the new description
 	 */
 	public void setDescription(String description) {
 		this.instanceMetadata.setProperty(DESCRIPTION, description);
@@ -98,10 +98,13 @@ public class ScheduleData implements ConfigurationNode {
 	private final InstanceMetadata instanceMetadata;
 
 	/**
-	 * creates a Schedule Data inside this project.
+	 * creates a Schedule Data inside this project. The syntax for the cron
+	 * information should be the same used on quartz.
 	 * 
-	 * @param group the group
-	 * @param cronInformation the cron information
+	 * @param group
+	 *            the group
+	 * @param cronInformation
+	 *            the cron information
 	 */
 	public ScheduleData(final Group group, final String cronInformation) {
 		this.instanceMetadata = createWithKeyProperty(this, group,
@@ -114,8 +117,12 @@ public class ScheduleData implements ConfigurationNode {
 	/**
 	 * creates a Schedule Data inside this bundle.
 	 * 
-	 * @param bundle the bundle
-	 * @param cronInformation the cron information
+	 * The syntax for the cron information should be the same used on quartz.
+	 * 
+	 * @param bundle
+	 *            the bundle
+	 * @param cronInformation
+	 *            the cron information
 	 */
 	public ScheduleData(final Bundle bundle, final String cronInformation) {
 		this.instanceMetadata = createWithKeyProperty(this, bundle,

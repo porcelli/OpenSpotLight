@@ -77,7 +77,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 		Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
 		BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class,
 		ArtifactMapping.class, ScheduleData.class })
-public class Bundle implements ConfigurationNode , Schedulable<Bundle>{
+public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
 
 	/** The Constant ACTIVE. */
 	private static final String ACTIVE = "active"; //$NON-NLS-1$
@@ -352,6 +352,23 @@ public class Bundle implements ConfigurationNode , Schedulable<Bundle>{
 			parentGroup = Group.class.cast(defaultParent);
 		}
 		return parentGroup;
+	}
+
+	public Collection<ScheduleData> getScheduleDataForThisBundle() {
+
+		Collection<ScheduleData> scheduleData = this.getScheduleData();
+		while (scheduleData == null || scheduleData.size() == 0) {
+			ConfigurationNode parent = this.getInstanceMetadata()
+					.getDefaultParent();
+			if (parent != null && parent instanceof Group) {
+				Group parentGroup = (Group) parent;
+				scheduleData = parentGroup.getScheduleData();
+			} else {
+				throw logAndReturn(new IllegalStateException(
+						"Bundle with no schedule data"));
+			}
+		}
+		return scheduleData;
 
 	}
 
@@ -467,7 +484,6 @@ public class Bundle implements ConfigurationNode , Schedulable<Bundle>{
 		this.instanceMetadata.setProperty(INITIAL_LOOKUP, initialLookup);
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -498,5 +514,4 @@ public class Bundle implements ConfigurationNode , Schedulable<Bundle>{
 		this.instanceMetadata.removeChild(scheduleData);
 	}
 
-	
 }

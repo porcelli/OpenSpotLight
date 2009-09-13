@@ -704,19 +704,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 	}
 
 	/**
-	 * Finds a node by its given unique data. This method is not on
-	 * {@link ConfigurationManager} class because it use unique data related by
-	 * jcr.
-	 * 
-	 * 
-	 * @param <T>
-	 * @param <K>
-	 * @param root
-	 * @param nodeType
-	 * @param uuid
-	 * @param version
-	 * @return an artifact by the given uuid
-	 * @throws ConfigurationException
+	 * {@inheritDoc}
 	 */
 	public <T extends ConfigurationNode, K extends Serializable> T findNodeByUuidAndVersion(
 			final ConfigurationNode root, final Class<T> nodeType,
