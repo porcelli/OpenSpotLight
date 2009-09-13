@@ -46,76 +46,55 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.data.test;
+package org.openspotlight.federation.data.impl;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import java.util.Collection;
+import java.util.Set;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
 import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
 
 /**
- * Test class for {@link SharedData} {@link ItemEventListener node listeners}.
+ * This interface should be implemented for nodes to make its nodes possible to
+ * be scheduled.
+ * 
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
+ * @param <T>
+ *            the type who implements the {@link Schedulable} interface
  */
-@SuppressWarnings("all")
-public class SharedDataListenerTest {
+public interface Schedulable<T extends ConfigurationNode> {
 
-	private static class CustomNodeListener implements
-			ItemEventListener<ConfigurationNode> {
+	/**
+	 * Gets the schedule data.
+	 * 
+	 * @return the schedule data
+	 */
+	public Collection<ScheduleData> getScheduleData();
 
-		private final List<ConfigurationNode> nodesChanged = new ArrayList<ConfigurationNode>();
+	/**
+	 * Gets the schedule data cron informations.
+	 * 
+	 * @return the schedule data cron informations
+	 */
+	public Set<String> getScheduleDataCronInformations();
 
-		public void changeEventHappened(
-				final ItemChangeEvent<ConfigurationNode> event) {
-			final ConfigurationNode target = event.getNewItem() != null ? event
-					.getNewItem() : event.getOldItem();
-			this.nodesChanged.add(target);
+	/**
+	 * Gets the schedule data by cron information.
+	 * 
+	 * @param cronInformation
+	 *            the cron information
+	 * 
+	 * @return the schedule data by cron information
+	 */
+	public ScheduleData getScheduleDataByCronInformation(String cronInformation);
 
-		}
-
-		public List<ConfigurationNode> getNodesChanged() {
-			return this.nodesChanged;
-		}
-
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenParent() throws Exception {
-		final CustomNodeListener listener = new CustomNodeListener();
-		final Configuration configuration = new Configuration();
-		final Repository repo1 = new Repository(configuration, "repo1");
-		final Repository repo2 = new Repository(configuration, "repo2");
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenParent(listener, repo2);
-		new Group(repo1, "group1");
-		final Group group2 = new Group(repo2, "group2");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group2));
-
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenType() throws Exception {
-		final CustomNodeListener listener = new CustomNodeListener();
-		final Configuration configuration = new Configuration();
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenType(listener, Group.class);
-		final Repository repo = new Repository(configuration, "repo");
-		final Group group = new Group(repo, "group");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group));
-	}
+	/**
+	 * Removes the schedule data.
+	 * 
+	 * @param scheduleData
+	 *            the schedule data
+	 */
+	public void removeScheduleData(ScheduleData scheduleData);
 
 }

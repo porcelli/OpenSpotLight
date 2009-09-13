@@ -76,8 +76,8 @@ import org.openspotlight.federation.data.StaticMetadata;
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
 		Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
 		BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class,
-		ArtifactMapping.class })
-public class Bundle implements ConfigurationNode {
+		ArtifactMapping.class, ScheduleData.class })
+public class Bundle implements ConfigurationNode , Schedulable<Bundle>{
 
 	/** The Constant ACTIVE. */
 	private static final String ACTIVE = "active"; //$NON-NLS-1$
@@ -467,4 +467,36 @@ public class Bundle implements ConfigurationNode {
 		this.instanceMetadata.setProperty(INITIAL_LOOKUP, initialLookup);
 	}
 
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Collection<ScheduleData> getScheduleData() {
+		return this.instanceMetadata.getChildrensOfType(ScheduleData.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ScheduleData getScheduleDataByCronInformation(String cronInformation) {
+		return this.instanceMetadata.getChildByKeyValue(ScheduleData.class,
+				cronInformation);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<String> getScheduleDataCronInformations() {
+		return (Set<String>) this.instanceMetadata
+				.getKeyFromChildrenOfTypes(ScheduleData.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void removeScheduleData(ScheduleData scheduleData) {
+		this.instanceMetadata.removeChild(scheduleData);
+	}
+
+	
 }

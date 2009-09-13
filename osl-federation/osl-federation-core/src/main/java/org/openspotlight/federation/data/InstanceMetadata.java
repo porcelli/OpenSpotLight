@@ -165,7 +165,7 @@ public interface InstanceMetadata {
 			 * Class for {@link ConfigurationNode configuration nodes}
 			 * supporting the visitor GoF pattern in a stack overflow safe way.
 			 * 
-			 * @author feu
+			 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 			 * 
 			 */
 			private static class VisitorSupport {
@@ -1332,7 +1332,7 @@ public interface InstanceMetadata {
 		 * <li>Listeners for a given parent</li>
 		 * </ul>
 		 * 
-		 * @author feu
+		 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 		 * 
 		 */
 		private static class ListenerHandle {

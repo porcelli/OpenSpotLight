@@ -46,76 +46,72 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.data.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+package org.openspotlight.federation.scheduler;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
-import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.data.processing.BundleProcessor;
 
 /**
- * Test class for {@link SharedData} {@link ItemEventListener node listeners}.
+ * This interface is to be used on Scheduler implementations to execute the
+ * {@link BundleProcessor} on specified interfals.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
-public class SharedDataListenerTest {
+public interface Scheduler {
 
-	private static class CustomNodeListener implements
-			ItemEventListener<ConfigurationNode> {
+	/**
+	 * Load or reload the configuration.
+	 * 
+	 * @param configurationProvider
+	 *            the configuration provider
+	 * 
+	 * @throws ConfigurationException
+	 *             the configuration exception
+	 */
+	public void loadConfiguration(ConfigurationProvider configurationProvider)
+			throws ConfigurationException;
 
-		private final List<ConfigurationNode> nodesChanged = new ArrayList<ConfigurationNode>();
+	/**
+	 * Shutdown the execution scheduling.
+	 * 
+	 * @throws ConfigurationException
+	 *             the configuration exception
+	 */
+	public void shutdown() throws ConfigurationException;
 
-		public void changeEventHappened(
-				final ItemChangeEvent<ConfigurationNode> event) {
-			final ConfigurationNode target = event.getNewItem() != null ? event
-					.getNewItem() : event.getOldItem();
-			this.nodesChanged.add(target);
+	/**
+	 * Starts the execution scheduling.
+	 * 
+	 * @throws JobExecutionException
+	 *             the job execution exception
+	 */
+	public void start() throws JobExecutionException;
 
-		}
+	/**
+	 * Fire immediate execution for a group.
+	 * 
+	 * @param group
+	 *            the group
+	 * 
+	 * @throws JobExecutionException
+	 *             the job execution exception
+	 */
+	public void fireImmediateExecution(Group group)
+			throws JobExecutionException;
 
-		public List<ConfigurationNode> getNodesChanged() {
-			return this.nodesChanged;
-		}
-
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenParent() throws Exception {
-		final CustomNodeListener listener = new CustomNodeListener();
-		final Configuration configuration = new Configuration();
-		final Repository repo1 = new Repository(configuration, "repo1");
-		final Repository repo2 = new Repository(configuration, "repo2");
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenParent(listener, repo2);
-		new Group(repo1, "group1");
-		final Group group2 = new Group(repo2, "group2");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group2));
-
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenType() throws Exception {
-		final CustomNodeListener listener = new CustomNodeListener();
-		final Configuration configuration = new Configuration();
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenType(listener, Group.class);
-		final Repository repo = new Repository(configuration, "repo");
-		final Group group = new Group(repo, "group");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group));
-	}
+	/**
+	 * Fire immediate execution for a bundle.
+	 * 
+	 * @param bundle
+	 *            the bundle
+	 * 
+	 * @throws JobExecutionException
+	 *             the job execution exception
+	 */
+	public void fireImmediateExecution(Bundle bundle)
+			throws JobExecutionException;
 
 }
