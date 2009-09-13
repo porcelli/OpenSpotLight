@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.Bundle;
@@ -17,6 +18,7 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingGroup;
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingStartAction;
+import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
@@ -82,7 +84,9 @@ public class BundleProcessingGroupTest {
 				.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_EACH_ONE_NEW);
 		final BundleProcessorManager manager = new BundleProcessorManager(graph);
 		final Repository repository = this.createDirtyRepository();
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		final BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor
 				.getLastGroup();
 		assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
@@ -103,7 +107,9 @@ public class BundleProcessingGroupTest {
 				.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_ALL_AGAIN);
 		final BundleProcessorManager manager = new BundleProcessorManager(graph);
 		final Repository repository = this.createDirtyRepository();
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
 				.getProcessedArtifacts();
 		assertThat(processed.size(), is(this.allArtifactsSize));
@@ -118,7 +124,9 @@ public class BundleProcessingGroupTest {
 				.setDefaultProcessingStartAction(ProcessingStartAction.ALL_PROCESSING_ALREADY_DONE);
 		final BundleProcessorManager manager = new BundleProcessorManager(graph);
 		final Repository repository = this.createDirtyRepository();
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
 				.getProcessedArtifacts();
 		assertThat(processed.size(), is(0));
@@ -133,7 +141,9 @@ public class BundleProcessingGroupTest {
 				.setDefaultProcessingStartAction(ProcessingStartAction.IGNORE_ALL);
 		final BundleProcessorManager manager = new BundleProcessorManager(graph);
 		final Repository repository = this.createDirtyRepository();
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
 				.getProcessedArtifacts();
 		assertThat(processed.size(), is(0));
@@ -149,7 +159,9 @@ public class BundleProcessingGroupTest {
 				.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_EACH_ONE_NEW);
 		final BundleProcessorManager manager = new BundleProcessorManager(graph);
 		final Repository repository = this.createDirtyRepository();
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
 				.getProcessedArtifacts();
 		assertThat(processed.size(), is(this.newArtifactsSize));

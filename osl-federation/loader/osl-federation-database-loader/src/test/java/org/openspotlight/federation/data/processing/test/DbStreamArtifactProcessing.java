@@ -72,6 +72,7 @@ import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.test.H2Support;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
+import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
@@ -135,7 +136,9 @@ public class DbStreamArtifactProcessing {
 				StreamArtifact.class);
 		final Repository repository = configuration
 				.getRepositoryByName("H2 Repository");
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
 	}
 

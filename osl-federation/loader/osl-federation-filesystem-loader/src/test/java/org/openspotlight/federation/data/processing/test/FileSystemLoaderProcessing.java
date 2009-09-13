@@ -67,6 +67,7 @@ import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
+import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
@@ -114,7 +115,8 @@ public class FileSystemLoaderProcessing {
                 StreamArtifact.class);
         final Repository repository = configuration
                 .getRepositoryByName("OSL Group");
-        manager.processRepository(repository);
+        Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        manager.processBundles(bundles);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }
     

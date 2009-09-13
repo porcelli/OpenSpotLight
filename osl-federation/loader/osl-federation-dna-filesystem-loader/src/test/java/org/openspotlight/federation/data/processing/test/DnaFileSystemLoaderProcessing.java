@@ -69,54 +69,57 @@ import org.openspotlight.federation.data.load.DnaArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader.ArtifactProcessingCount;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
+import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
 @SuppressWarnings("all")
 public class DnaFileSystemLoaderProcessing {
-    
-    public static Configuration loadAllFilesFromThisConfiguration(
-            final Configuration configuration) throws Exception {
-        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
-                new DNAFileSystemArtifactLoader());
-        final Set<Bundle> bundles = findAllNodesOfType(configuration,
-                Bundle.class);
-        for (final Bundle bundle : bundles) {
-            final ArtifactProcessingCount count = group
-                    .loadArtifactsFromMappings(bundle);
-            assertThat(count.getErrorCount(), is(0L));
-        }
-        return configuration;
-        
-    }
-    
-    @Test
-    public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
-        final Configuration configuration = this
-                .loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
-        final Set<Bundle> bundles = findAllNodesOfType(configuration,
-                Bundle.class);
-        for (final Bundle bundle : bundles) {
-            assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
-        }
-    }
-    
-    @Test
-    public void shouldProcessAllValidOslSourceCode() throws Exception {
-        final Configuration configuration = this
-                .loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
-        final SLGraph graph = mock(SLGraph.class);
-        final SLGraphSession session = mock(SLGraphSession.class);
-        when(graph.openSession()).thenReturn(session);
-        
-        final BundleProcessorManager manager = new BundleProcessorManager(graph);
-        final GraphContext graphContext = mock(GraphContext.class);
-        final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
-                StreamArtifact.class);
-        final Repository repository = configuration
-                .getRepositoryByName("OSL Group");
-        manager.processRepository(repository);
-        assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
-    }
-    
+
+	public static Configuration loadAllFilesFromThisConfiguration(
+			final Configuration configuration) throws Exception {
+		final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
+				new DNAFileSystemArtifactLoader());
+		final Set<Bundle> bundles = findAllNodesOfType(configuration,
+				Bundle.class);
+		for (final Bundle bundle : bundles) {
+			final ArtifactProcessingCount count = group
+					.loadArtifactsFromMappings(bundle);
+			assertThat(count.getErrorCount(), is(0L));
+		}
+		return configuration;
+
+	}
+
+	@Test
+	public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
+		final Configuration configuration = this
+				.loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
+		final Set<Bundle> bundles = findAllNodesOfType(configuration,
+				Bundle.class);
+		for (final Bundle bundle : bundles) {
+			assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
+		}
+	}
+
+	@Test
+	public void shouldProcessAllValidOslSourceCode() throws Exception {
+		final Configuration configuration = this
+				.loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
+		final SLGraph graph = mock(SLGraph.class);
+		final SLGraphSession session = mock(SLGraphSession.class);
+		when(graph.openSession()).thenReturn(session);
+
+		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+		final GraphContext graphContext = mock(GraphContext.class);
+		final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
+				StreamArtifact.class);
+		final Repository repository = configuration
+				.getRepositoryByName("OSL Group");
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
+		assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
+	}
+
 }
