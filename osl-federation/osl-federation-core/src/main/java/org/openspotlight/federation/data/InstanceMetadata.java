@@ -50,6 +50,7 @@
 package org.openspotlight.federation.data;
 
 import static java.text.MessageFormat.format;
+import static java.util.Collections.reverse;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
@@ -273,6 +274,8 @@ public interface InstanceMetadata {
 			 * optional parent node
 			 */
 			private final ConfigurationNode parent;
+
+			private volatile String pathString = null;
 
 			/**
 			 * Property map.
@@ -553,6 +556,41 @@ public interface InstanceMetadata {
 						.contains(inheritanceType));
 
 				return parentType.cast(this.parent);
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public String getPath() {
+				if (this.pathString == null) {
+					final List<String> paths = new ArrayList<String>();
+					ConfigurationNode currentOwner = getOwner();
+					while (currentOwner != null) {
+						final String path = currentOwner.getClass()
+								.getSimpleName()
+								+ (currentOwner.getInstanceMetadata()
+										.getKeyPropertyValue() != null ? "["
+										+ currentOwner.getInstanceMetadata()
+												.getStaticMetadata()
+												.keyPropertyName()
+										+ "="
+										+ currentOwner.getInstanceMetadata()
+												.getKeyPropertyValue() + "]"
+										: "");
+						paths.add(path);
+						currentOwner = currentOwner.getInstanceMetadata()
+								.getDefaultParent();
+					}
+					reverse(paths);
+					final StringBuilder sb = new StringBuilder();
+					for (final String path : paths) {
+						sb.append('/');
+						sb.append(path);
+					}
+					this.pathString = sb.toString();
+				}
+
+				return this.pathString;
 			}
 
 			/**
@@ -1805,6 +1843,14 @@ public interface InstanceMetadata {
 	 * @return the parent node
 	 */
 	public <N extends ConfigurationNode> N getParent(Class<N> parentType);
+
+	/**
+	 * Just a string containing the path and ids from this
+	 * {@link ConfigurationNode}, in a way to identify this node.
+	 * 
+	 * @return the path string
+	 */
+	public String getPath();
 
 	/**
 	 * Returns a map with all of the property names and values to be used on

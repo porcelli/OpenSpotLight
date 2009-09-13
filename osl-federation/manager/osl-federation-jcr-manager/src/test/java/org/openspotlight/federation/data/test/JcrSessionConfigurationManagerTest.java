@@ -176,7 +176,7 @@ public class JcrSessionConfigurationManagerTest extends
 		final JcrSessionConfigurationManager manager = (JcrSessionConfigurationManager) this
 				.createInstance();
 		final Bundle bundle = configuration.getRepositoryByName("r-1")
-				.getProjectByName("p-1,1").getBundleByName("b-1,1,1");
+				.getGroupByName("p-1,1").getBundleByName("b-1,1,1");
 		final StreamArtifact artifact = new StreamArtifact(bundle, "TABLE_NAME");
 		manager.save(configuration);
 		final StreamArtifact found = manager.findNodeByUuidAndVersion(

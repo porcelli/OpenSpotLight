@@ -51,6 +51,7 @@ package org.openspotlight.federation.data.impl;
 
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
 
 import java.util.Collection;
@@ -69,32 +70,34 @@ import org.openspotlight.federation.data.StaticMetadata;
  * files).
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 @SuppressWarnings("unchecked")
 @ThreadSafe
 @StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
 		Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-		BundleProcessorType.class, Group.class, StreamArtifact.class,
-		CustomArtifact.class, ArtifactMapping.class })
+		BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class,
+		ArtifactMapping.class })
 public class Bundle implements ConfigurationNode {
 
+	/** The Constant ACTIVE. */
 	private static final String ACTIVE = "active"; //$NON-NLS-1$
 
+	/** The Constant INITIAL_LOOKUP. */
 	private static final String INITIAL_LOOKUP = "initialLookup"; //$NON-NLS-1$
 
-	/**
-	 * 
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1092283780730455977L;
 
+	/** The instance metadata. */
 	private final InstanceMetadata instanceMetadata;
 
 	/**
 	 * creates a bundle inside this project.
 	 * 
 	 * @param project
+	 *            the project
 	 * @param name
+	 *            the name
 	 */
 	public Bundle(final Group project, final String name) {
 		this.instanceMetadata = createWithKeyProperty(this, project, name);
@@ -111,6 +114,8 @@ public class Bundle implements ConfigurationNode {
 	 * just returns the existing one.
 	 * 
 	 * @param artifactName
+	 *            the artifact name
+	 * 
 	 * @return a stream artifact
 	 */
 	public StreamArtifact addStreamArtifact(final String artifactName) {
@@ -140,6 +145,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the active.
 	 * 
 	 * @return active property
 	 */
@@ -170,6 +176,8 @@ public class Bundle implements ConfigurationNode {
 	 * Returns a artifact mapping by its name.
 	 * 
 	 * @param name
+	 *            the name
+	 * 
 	 * @return an artifact mapping
 	 */
 	public final ArtifactMapping getArtifactMappingByName(final String name) {
@@ -178,6 +186,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the artifact mapping names.
 	 * 
 	 * @return all artifact mapping names
 	 */
@@ -187,6 +196,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the artifact mappings.
 	 * 
 	 * @return all artifact mappings
 	 */
@@ -195,9 +205,11 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
-	 * Returns a bundle by its name
+	 * Returns a bundle by its name.
 	 * 
 	 * @param name
+	 *            the name
+	 * 
 	 * @return a bundle
 	 */
 	public final Bundle getBundleByName(final String name) {
@@ -205,6 +217,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the bundle names.
 	 * 
 	 * @return all bundle names
 	 */
@@ -214,6 +227,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the bundles.
 	 * 
 	 * @return all bundles
 	 */
@@ -225,6 +239,8 @@ public class Bundle implements ConfigurationNode {
 	 * Returns a custom artifact by its name.
 	 * 
 	 * @param name
+	 *            the name
+	 * 
 	 * @return a custom artifact
 	 */
 	public final CustomArtifact getCustomArtifactByName(final String name) {
@@ -233,6 +249,8 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the custom artifact names.
+	 * 
 	 * @return all custom artifact names
 	 */
 	public final Set<String> getCustomArtifactNames() {
@@ -241,6 +259,8 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the custom artifacts.
+	 * 
 	 * @return all custom artifacts
 	 */
 	public final Collection<CustomArtifact> getCustomArtifacts() {
@@ -248,6 +268,16 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the group.
+	 * 
+	 * @return the group
+	 */
+	public Group getGroup() {
+		return this.instanceMetadata.getParent(Group.class);
+	}
+
+	/**
+	 * Gets the initial lookup.
 	 * 
 	 * @return the initial lookup property.
 	 */
@@ -274,6 +304,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the project.
 	 * 
 	 * @return the parent project
 	 */
@@ -300,9 +331,36 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the root group.
+	 * 
+	 * @return the root group
+	 */
+	public Group getRootGroup() {
+		Group parentGroup = this.getGroup();
+		boolean found = (this.getGroup().getGraphRoot() != null)
+				&& this.getGroup().getGraphRoot().booleanValue();
+		while (!found) {
+			found = (this.getGroup().getGraphRoot() != null)
+					&& this.getGroup().getGraphRoot().booleanValue();
+
+			final ConfigurationNode defaultParent = parentGroup
+					.getInstanceMetadata().getDefaultParent();
+			if (!(defaultParent instanceof Group)) {
+				throw logAndReturn(new IllegalStateException(
+						"Parent group for this bundle was not found"));
+			}
+			parentGroup = Group.class.cast(defaultParent);
+		}
+		return parentGroup;
+
+	}
+
+	/**
 	 * Returns an artifact by its name.
 	 * 
 	 * @param name
+	 *            the name
+	 * 
 	 * @return an artifact
 	 */
 	public final StreamArtifact getStreamArtifactByName(final String name) {
@@ -311,6 +369,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the stream artifact names.
 	 * 
 	 * @return all artifact names
 	 */
@@ -320,6 +379,7 @@ public class Bundle implements ConfigurationNode {
 	}
 
 	/**
+	 * Gets the stream artifacts.
 	 * 
 	 * @return all artifacts
 	 */
@@ -340,6 +400,7 @@ public class Bundle implements ConfigurationNode {
 	 * Removes a artifact mapping.
 	 * 
 	 * @param ArtifactMapping
+	 *            the artifact mapping
 	 */
 	public final void removeArtifactMapping(
 			final ArtifactMapping ArtifactMapping) {
@@ -350,6 +411,7 @@ public class Bundle implements ConfigurationNode {
 	 * removes a bundle.
 	 * 
 	 * @param bundle
+	 *            the bundle
 	 */
 	public final void removeBundle(final Bundle bundle) {
 		this.instanceMetadata.removeChild(bundle);
@@ -359,6 +421,7 @@ public class Bundle implements ConfigurationNode {
 	 * Removes a Custom Artifact.
 	 * 
 	 * @param CustomArtifact
+	 *            the custom artifact
 	 */
 	public final void removeCustomArtifact(final CustomArtifact CustomArtifact) {
 		this.instanceMetadata.removeChild(CustomArtifact);
@@ -368,6 +431,7 @@ public class Bundle implements ConfigurationNode {
 	 * Removes a project.
 	 * 
 	 * @param group
+	 *            the group
 	 */
 	public final void removeProject(final Group group) {
 		this.instanceMetadata.removeChild(group);
@@ -377,6 +441,7 @@ public class Bundle implements ConfigurationNode {
 	 * Removes an artifact.
 	 * 
 	 * @param Artifact
+	 *            the artifact
 	 */
 	public final void removeStreamArtifact(final StreamArtifact Artifact) {
 		this.instanceMetadata.removeChild(Artifact);
@@ -386,6 +451,7 @@ public class Bundle implements ConfigurationNode {
 	 * Sets the active property.
 	 * 
 	 * @param active
+	 *            the active
 	 */
 	public final void setActive(final Boolean active) {
 		this.instanceMetadata.setProperty(ACTIVE, active);
@@ -395,6 +461,7 @@ public class Bundle implements ConfigurationNode {
 	 * Sets the initial lookup property.
 	 * 
 	 * @param initialLookup
+	 *            the initial lookup
 	 */
 	public final void setInitialLookup(final String initialLookup) {
 		this.instanceMetadata.setProperty(INITIAL_LOOKUP, initialLookup);

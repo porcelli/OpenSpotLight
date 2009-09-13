@@ -79,6 +79,7 @@ public class ConfigurationExamples {
 		configuration.setNumberOfParallelThreads(4);
 		db2Repository.setActive(true);
 		final Group db2Project = new Group(db2Repository, "db2 Group");
+		db2Project.setGraphRoot(Boolean.TRUE);
 		db2Project.setActive(true);
 		final DbBundle db2Bundle = new DbBundle(db2Project, "db2 Connection");
 		db2Bundle.setActive(true);
@@ -92,10 +93,9 @@ public class ConfigurationExamples {
 		final ArtifactMapping db2ArtifactMapping = new ArtifactMapping(
 				db2Bundle, "*/");
 		final Included db2IncludedTrigger = new Included(db2ArtifactMapping,
-		"TRIGGER/*");
-		final Included db2IncludedFk = new Included(db2ArtifactMapping,
-		"FK/*");
-final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
+				"TRIGGER/*");
+		final Included db2IncludedFk = new Included(db2ArtifactMapping, "FK/*");
+		final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 				"PROCEDURE/*");
 		final Included db2IncludedTable = new Included(db2ArtifactMapping,
 				"TABLE/*");
@@ -129,6 +129,7 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		h2Repository.setActive(true);
 		final Group h2Project = new Group(h2Repository, "h2 Group");
 		h2Project.setActive(true);
+		h2Project.setGraphRoot(Boolean.TRUE);
 		final DbBundle h2Bundle = new DbBundle(h2Project, "H2 Connection");
 		h2Bundle.setActive(true);
 		h2Bundle.setUser("sa");
@@ -171,6 +172,7 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		mysqlRepository.setActive(true);
 		final Group mysqlProject = new Group(mysqlRepository, "mysql Group");
 		mysqlProject.setActive(true);
+		mysqlProject.setGraphRoot(Boolean.TRUE);
 		final DbBundle mysqlBundle = new DbBundle(mysqlProject,
 				"mysql Connection");
 		mysqlBundle.setActive(true);
@@ -213,6 +215,8 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		oracleRepository.setActive(true);
 		final Group oracleProject = new Group(oracleRepository, "oracle Group");
 		oracleProject.setActive(true);
+		oracleProject.setGraphRoot(Boolean.TRUE);
+
 		final DbBundle oracleBundle = new DbBundle(oracleProject,
 				"oracle Connection");
 		oracleBundle.setActive(true);
@@ -239,8 +243,8 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 				oracleBundle, "HR/");
 		final Included oracleIncludedTrigger = new Included(
 				oracleArtifactMapping, "TRIGGER/*");
-		final Included oracleIncludedFk = new Included(
-				oracleArtifactMapping, "FK/*");
+		final Included oracleIncludedFk = new Included(oracleArtifactMapping,
+				"FK/*");
 		final Included oracleIncludedProcedure = new Included(
 				oracleArtifactMapping, "PROCEDURE/*");
 		final Included oracleIncludedTable = new Included(
@@ -277,6 +281,8 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		oslRepository.setActive(true);
 		final Group oslRootProject = new Group(oslRepository, "OSL Root Group");
 		oslRootProject.setActive(true);
+		oslRootProject.setGraphRoot(Boolean.TRUE);
+
 		final Group oslCommonsProject = new Group(oslRootProject,
 				"OSL Commons Library");
 		oslCommonsProject.setActive(true);
@@ -345,6 +351,8 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		oslRepository.setActive(true);
 		final Group oslRootProject = new Group(oslRepository, "OSL Root Group");
 		oslRootProject.setActive(true);
+		oslRootProject.setGraphRoot(Boolean.TRUE);
+
 		final Group oslCommonsProject = new Group(oslRootProject,
 				"OSL Commons Library");
 		oslCommonsProject.setActive(true);
@@ -395,6 +403,8 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		oslRootProject.setActive(true);
 		final Group oslCommonsProject = new Group(oslRootProject,
 				"Hamcrest SubProject");
+		oslCommonsProject.setGraphRoot(Boolean.TRUE);
+
 		oslCommonsProject.setActive(true);
 		final DnaSvnBundle bundle = new DnaSvnBundle(oslCommonsProject,
 				"Svn bundle");
@@ -425,6 +435,8 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		final Group postgresqlProject = new Group(postgresqlRepository,
 				"postgresql Group");
 		postgresqlProject.setActive(true);
+		postgresqlProject.setGraphRoot(Boolean.TRUE);
+
 		final DbBundle postgresqlBundle = new DbBundle(postgresqlProject,
 				"postgresql Connection");
 		postgresqlBundle.setActive(true);
@@ -477,6 +489,7 @@ final Included db2IncludedProcedure = new Included(db2ArtifactMapping,
 		final Group sqlserverProject = new Group(sqlserverRepository,
 				"sqlserver Group");
 		sqlserverProject.setActive(true);
+		sqlserverProject.setGraphRoot(Boolean.TRUE);
 		final DbBundle sqlserverBundle = new DbBundle(sqlserverProject,
 				"sqlserver Connection");
 		sqlserverBundle.setActive(true);

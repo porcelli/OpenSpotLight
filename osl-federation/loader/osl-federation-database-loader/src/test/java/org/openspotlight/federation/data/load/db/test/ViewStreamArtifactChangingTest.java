@@ -42,7 +42,7 @@ public class ViewStreamArtifactChangingTest {
 		final Configuration configuration = createH2DbConfiguration("ViewStreamArtifactChangingTest"); //$NON-NLS-1$
 		final DbBundle dbBundle = (DbBundle) configuration.getRepositoryByName(
 				"H2 Repository") //$NON-NLS-1$
-				.getProjectByName("h2 Group") //$NON-NLS-1$
+				.getGroupByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
 		Connection conn = DatabaseSupport.createConnection(dbBundle);
 

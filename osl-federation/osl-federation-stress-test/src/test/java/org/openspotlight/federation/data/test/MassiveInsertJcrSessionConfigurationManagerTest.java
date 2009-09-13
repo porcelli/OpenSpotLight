@@ -198,7 +198,7 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
 					Group node;
 					if ((parentHandle == null)
 							|| parentHandle.trim().equals("")) {
-						node = rootProject.getProjectByName(key);
+						node = rootProject.getGroupByName(key);
 						if (node == null) {
 							node = new Group(rootProject, key);
 						}
@@ -208,7 +208,7 @@ public class MassiveInsertJcrSessionConfigurationManagerTest {
 						if (parent == null) {
 							Assert.fail();
 						}
-						node = parent.getProjectByName(key);
+						node = parent.getGroupByName(key);
 						if (node == null) {
 							node = new Group(parent, key);
 						}

@@ -27,7 +27,7 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
 	protected DbBundle createValidConfigurationWithMappings() {
 		final Configuration configuration = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
 		return (DbBundle) configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
-				.getProjectByName("h2 Group") //$NON-NLS-1$
+				.getGroupByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
 	}
 

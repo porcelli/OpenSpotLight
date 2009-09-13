@@ -101,7 +101,7 @@ public class DatabaseStreamDeltaTest {
 
 		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Group")
+				"H2 Repository").getGroupByName("h2 Group")
 				.getBundleByName("H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db");
@@ -152,7 +152,7 @@ public class DatabaseStreamDeltaTest {
 	public void shouldListenExclusionsOnStreams() throws Exception {
 		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Group")
+				"H2 Repository").getGroupByName("h2 Group")
 				.getBundleByName("H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db");
@@ -196,7 +196,7 @@ public class DatabaseStreamDeltaTest {
 	public void shouldListenInclusionsOnStreams() throws Exception {
 		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getProjectByName("h2 Group")
+				"H2 Repository").getGroupByName("h2 Group")
 				.getBundleByName("H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");

@@ -510,7 +510,7 @@ public final class BundleProcessorManager {
 					copyOfnotProcessedArtifacts,
 					copyOfalreadyProcessedArtifacts, MutableType.IMMUTABLE);
 			final GraphContext startingGraphContext = new GraphContext(
-					this.graph, LazyType.LAZY);
+					this.graph, LazyType.LAZY, bundle.getRootGroup());
 			startingGraphContext.processStarted();
 			final ProcessingStartAction start = processor
 					.globalProcessingStarted(mutableGroup, startingGraphContext);
@@ -537,7 +537,7 @@ public final class BundleProcessorManager {
 					copyOfnotProcessedArtifacts.size());
 			for (final T targetArtifact : copyOfnotProcessedArtifacts) {
 				final GraphContext graphContext = processor instanceof BundleProcessorWithCallback ? new GraphContext(
-						this.graph, LazyType.LAZY)
+						this.graph, LazyType.LAZY, bundle.getRootGroup())
 						: startingGraphContext;
 				processActions.add(new BundleProcessorCallable(processor,
 						targetArtifact, graphContext, mutableGroup,

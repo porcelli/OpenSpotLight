@@ -147,7 +147,7 @@ public final class Repository implements ConfigurationNode {
      * @param name
      * @return a project by its name
      */
-    public final Group getProjectByName(final String name) {
+    public final Group getGroupByName(final String name) {
         return this.instanceMetadata.getChildByKeyValue(Group.class, name);
     }
     
@@ -155,7 +155,7 @@ public final class Repository implements ConfigurationNode {
      * 
      * @return all valid names existing projects inside this repository
      */
-    public final Set<String> getProjectNames() {
+    public final Set<String> getGroupNames() {
         return (Set<String>) this.instanceMetadata
                 .getKeyFromChildrenOfTypes(Group.class);
     }
@@ -164,7 +164,7 @@ public final class Repository implements ConfigurationNode {
      * 
      * @return all projects inside this repository
      */
-    public final Collection<Group> getProjects() {
+    public final Collection<Group> getGroups() {
         return this.instanceMetadata.getChildrensOfType(Group.class);
     }
     
@@ -182,7 +182,7 @@ public final class Repository implements ConfigurationNode {
      * 
      * @param project
      */
-    public final void removeProject(final Group project) {
+    public final void removeGroup(final Group project) {
         this.instanceMetadata.removeChild(project);
     }
     
