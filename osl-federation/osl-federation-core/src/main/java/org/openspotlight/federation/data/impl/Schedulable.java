@@ -63,7 +63,8 @@ import org.openspotlight.federation.data.ConfigurationNode;
  * @param <T>
  *            the type who implements the {@link Schedulable} interface
  */
-public interface Schedulable<T extends ConfigurationNode> {
+public interface Schedulable<T extends ConfigurationNode> extends
+		ConfigurationNode {
 
 	/**
 	 * Gets the schedule data.

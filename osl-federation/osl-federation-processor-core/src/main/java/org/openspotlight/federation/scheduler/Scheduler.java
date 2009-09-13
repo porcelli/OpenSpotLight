@@ -50,17 +50,30 @@
 package org.openspotlight.federation.scheduler;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Group;
+import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.impl.Schedulable;
 import org.openspotlight.federation.data.processing.BundleProcessor;
+import org.openspotlight.federation.data.processing.BundleProcessorManager;
 
 /**
  * This interface is to be used on Scheduler implementations to execute the
  * {@link BundleProcessor} on specified interfals.
  * 
+ * Inside this Interface there's also some helper classes and a factory class
+ * with the default implementation.
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public interface Scheduler {
+
+	/**
+	 * Sets the bundle processor manager.
+	 * 
+	 * @param bundleProcessorManager
+	 *            the new bundle processor manager
+	 */
+	public void setBundleProcessorManager(
+			BundleProcessorManager bundleProcessorManager);
 
 	/**
 	 * Load or reload the configuration.
@@ -91,27 +104,89 @@ public interface Scheduler {
 	public void start() throws JobExecutionException;
 
 	/**
-	 * Fire immediate execution for a group.
+	 * Fire immediate execution for a {@link Schedulable} node.
 	 * 
-	 * @param group
-	 *            the group
+	 * @param schedulable
+	 *            the schedulable
 	 * 
 	 * @throws JobExecutionException
 	 *             the job execution exception
 	 */
-	public void fireImmediateExecution(Group group)
-			throws JobExecutionException;
+	public <T extends ConfigurationNode> void fireImmediateExecution(
+			Schedulable<T> schedulable) throws JobExecutionException;
 
 	/**
-	 * Fire immediate execution for a bundle.
+	 * A factory class used to create default instances of {@link Scheduler}.
 	 * 
-	 * @param bundle
-	 *            the bundle
-	 * 
-	 * @throws JobExecutionException
-	 *             the job execution exception
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 */
-	public void fireImmediateExecution(Bundle bundle)
-			throws JobExecutionException;
+	public static final class Factory {
+
+		/**
+		 * Creates the scheduler.
+		 * 
+		 * @return the scheduler
+		 */
+		public static Scheduler createScheduler() {
+			return QuartzScheduler.INSTANCE;
+		}
+
+		/**
+		 * {@link Scheduler} implementation using Quartz.
+		 * 
+		 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+		 * 
+		 */
+		private static enum QuartzScheduler implements Scheduler {
+
+			/**
+			 * Default instance.
+			 */
+			INSTANCE;
+			
+			/**
+			 * {@inheritDoc}
+			 */
+			public <T extends ConfigurationNode> void fireImmediateExecution(
+					Schedulable<T> schedulable) throws JobExecutionException {
+				// TODO Auto-generated method stub
+
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public void loadConfiguration(
+					ConfigurationProvider configurationProvider)
+					throws ConfigurationException {
+				// TODO Auto-generated method stub
+
+			}
+
+			private BundleProcessorManager bundleProcessorManager;
+			
+			/**
+			 * {@inheritDoc}
+			 */
+			public void setBundleProcessorManager(
+					BundleProcessorManager bundleProcessorManager) {
+this.bundleProcessorManager = bundleProcessorManager;
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public void shutdown() throws ConfigurationException {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void start() throws JobExecutionException {
+				// TODO Auto-generated method stub
+
+			}
+
+		}
+	}
 
 }

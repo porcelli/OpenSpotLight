@@ -69,6 +69,7 @@ import org.openspotlight.federation.data.load.DNASvnArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader.ArtifactProcessingCount;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
+import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 
@@ -116,7 +117,9 @@ public class DnaSvnLoaderProcessing {
 				StreamArtifact.class);
 		final Repository repository = configuration
 				.getRepositoryByName("OSL Group");
-		manager.processRepository(repository);
+		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+				Bundle.class);
+		manager.processBundles(bundles);
 		assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
 	}
 

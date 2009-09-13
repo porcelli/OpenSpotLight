@@ -61,6 +61,7 @@ import static org.openspotlight.common.util.HashCodes.hashOf;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -610,24 +611,21 @@ public final class BundleProcessorManager {
 	}
 
 	/**
-	 * Start to process this {@link Repository} and to distribute all the
-	 * processing jobs for its {@link BundleProcessor configured processors}.
+	 * Start to process this {@link Bundle} and to distribute all the processing
+	 * jobs for its {@link BundleProcessor configured processors}.
 	 * 
-	 * @param repository
+	 * @param bundles
 	 * @throws BundleProcessingFatalException
 	 *             if a fatal error occurs.
 	 */
 	@SuppressWarnings("boxing")
-	public synchronized void processRepository(final Repository repository)
+	public synchronized void processBundles(final Collection<Bundle> bundles)
 			throws BundleProcessingFatalException {
-		checkNotNull("repository", repository); //$NON-NLS-1$
+		checkNotNull("bundles", bundles); //$NON-NLS-1$
 		checkNotNull("graph", this.graph); //$NON-NLS-1$
-
 		try {
 
 			final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
-			final Set<Bundle> bundles = findAllNodesOfType(repository,
-					Bundle.class);
 			final List<FinalizationContext<? extends Artifact>> finalizationContexts = new ArrayList<FinalizationContext<? extends Artifact>>(
 					bundles.size());
 			for (final Bundle bundle : bundles) {
@@ -643,8 +641,9 @@ public final class BundleProcessorManager {
 							processors);
 				}
 			}
-			final Integer numberOfParallelThreads = repository
-					.getConfiguration().getNumberOfParallelThreads();
+			final Integer numberOfParallelThreads = bundles.iterator().next()
+					.getRepository().getConfiguration()
+					.getNumberOfParallelThreads();
 			final ExecutorService executor = Executors
 					.newFixedThreadPool(numberOfParallelThreads);
 			try {
