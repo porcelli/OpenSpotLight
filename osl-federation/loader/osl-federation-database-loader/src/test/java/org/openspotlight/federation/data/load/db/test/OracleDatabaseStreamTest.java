@@ -21,7 +21,7 @@ public class OracleDatabaseStreamTest extends DatabaseStreamTest implements
 		final Configuration configuration = createOracleOciDbConfiguration();
 		return (DbBundle) configuration
 				.getRepositoryByName("oracle Repository") //$NON-NLS-1$
-				.getProjectByName("oracle Group") //$NON-NLS-1$
+				.getGroupByName("oracle Group") //$NON-NLS-1$
 				.getBundleByName("oracle Connection"); //$NON-NLS-1$
 	}
 

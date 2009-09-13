@@ -84,7 +84,7 @@ public class DbStreamArtifactProcessing {
 		Configuration configuration = createH2DbConfiguration("DbStreamArtifactProcessing");
 		DbBundle bundle = (DbBundle) configuration.getRepositoryByName(
 				"H2 Repository") //$NON-NLS-1$
-				.getProjectByName("h2 Group") //$NON-NLS-1$
+				.getGroupByName("h2 Group") //$NON-NLS-1$
 				.getBundleByName("H2 Connection"); //$NON-NLS-1$
 		Connection conn = createConnection(bundle);
 		try {

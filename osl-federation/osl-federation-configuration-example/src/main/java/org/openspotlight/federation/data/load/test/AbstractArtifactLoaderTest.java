@@ -137,7 +137,7 @@ public abstract class AbstractArtifactLoaderTest extends NodeTest {
 	@Test
 	public void shouldLoadArtifacts() throws Exception {
 		final Bundle bundle = this.configuration.getRepositoryByName(
-				this.REPOSITORY_NAME).getProjectByName(this.PROJECT_NAME)
+				this.REPOSITORY_NAME).getGroupByName(this.PROJECT_NAME)
 				.getBundleByName(this.BUNDLE_NAME);
 		this.artifactLoader.loadArtifactsFromMappings(bundle);
 		if (!(bundle instanceof JavaBundle)) {

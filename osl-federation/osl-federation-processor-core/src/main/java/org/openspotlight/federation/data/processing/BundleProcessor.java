@@ -50,6 +50,7 @@
 package org.openspotlight.federation.data.processing;
 
 import static java.util.Collections.unmodifiableSet;
+import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
@@ -62,6 +63,8 @@ import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.Group;
+import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
@@ -259,26 +262,11 @@ public interface BundleProcessor<T extends Artifact> {
 
 		private SLGraphSession graphSession;
 
+		private SLContext localContext;
+
 		private final GraphContext parentGraphContext;
 
-		/**
-		 * Constructor with final mandatory fields.
-		 * 
-		 * @param graph
-		 * @param lazy
-		 * @throws SLGraphException
-		 * 
-		 */
-		public GraphContext(final SLGraph graph, final LazyType lazy)
-				throws SLGraphException {
-			checkNotNull("graph", graph); //$NON-NLS-1$
-			checkNotNull("lazy", lazy); //$NON-NLS-1$
-			this.graph = graph;
-			this.parentGraphContext = null;
-			if (LazyType.EAGER.equals(lazy)) {
-				openSession();
-			}
-		}
+		private final Group rootGroup;
 
 		/**
 		 * Constructor with final mandatory fields to create {@link Artifact}
@@ -290,11 +278,24 @@ public interface BundleProcessor<T extends Artifact> {
 		 * @throws SLGraphException
 		 * 
 		 */
+		/**
+		 * @param graph
+		 * @param lazy
+		 * @param parent
+		 * @param rootGroup
+		 * @throws SLGraphException
+		 */
 		public GraphContext(final SLGraph graph, final LazyType lazy,
-				final GraphContext parent) throws SLGraphException {
+				final GraphContext parent, final Group rootGroup)
+				throws SLGraphException {
 			checkNotNull("graph", graph); //$NON-NLS-1$
 			checkNotNull("lazy", lazy); //$NON-NLS-1$
 			checkNotNull("parent", parent); //$NON-NLS-1$
+			checkNotNull("rootGroup", rootGroup); //$NON-NLS-1$
+			checkCondition(
+					"rootGroupConfiguredAsRoot", rootGroup.getGraphRoot().booleanValue()); //$NON-NLS-1$
+			checkCondition("sameRootGroup", parent.rootGroup.equals(rootGroup)); //$NON-NLS-1$
+			this.rootGroup = rootGroup;
 			this.graph = graph;
 			if (LazyType.EAGER.equals(lazy)) {
 				openSession();
@@ -303,15 +304,43 @@ public interface BundleProcessor<T extends Artifact> {
 		}
 
 		/**
+		 * Constructor with final mandatory fields.
+		 * 
+		 * @param graph
+		 *            the graph
+		 * @param lazy
+		 *            the lazy
+		 * @param rootGroup
+		 *            the root group
+		 * 
+		 * @throws SLGraphException
+		 *             the SL graph exception
+		 */
+		public GraphContext(final SLGraph graph, final LazyType lazy,
+				final Group rootGroup) throws SLGraphException {
+			checkNotNull("graph", graph); //$NON-NLS-1$
+			checkNotNull("lazy", lazy); //$NON-NLS-1$
+			checkNotNull("rootGroup", rootGroup); //$NON-NLS-1$
+			checkCondition(
+					"rootGroupConfiguredAsRoot", rootGroup.getGraphRoot().booleanValue()); //$NON-NLS-1$
+			this.rootGroup = rootGroup;
+			this.graph = graph;
+			this.parentGraphContext = null;
+			if (LazyType.EAGER.equals(lazy)) {
+				openSession();
+			}
+		}
+
+		/**
 		 * 
 		 * @return the graph session
 		 * @throws SLGraphException
 		 */
-		public SLGraphSession getGlobalGraphSession() throws SLGraphException {
+		public SLContext getGlobalContext() throws SLGraphException {
 			if (this.parentGraphContext == null) {
-				return getLocalGraphSession();
+				return getLocalContext();
 			}
-			return this.parentGraphContext.getLocalGraphSession();
+			return this.parentGraphContext.getLocalContext();
 
 		}
 
@@ -320,11 +349,11 @@ public interface BundleProcessor<T extends Artifact> {
 		 * @return the graph session
 		 * @throws SLGraphException
 		 */
-		public SLGraphSession getLocalGraphSession() throws SLGraphException {
+		public SLContext getLocalContext() throws SLGraphException {
 			if (this.graphSession == null) {
 				openSession();
 			}
-			return this.graphSession;
+			return this.localContext;
 		}
 
 		/**
@@ -335,6 +364,8 @@ public interface BundleProcessor<T extends Artifact> {
 		private synchronized void openSession() throws SLGraphException {
 			if (this.graphSession == null) {
 				this.graphSession = this.graph.openSession();
+				this.localContext = this.graphSession.getContext(this.rootGroup
+						.getInstanceMetadata().getPath());
 			}
 		}
 

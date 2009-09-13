@@ -97,7 +97,7 @@ public final class Group implements ConfigurationNode {
 	public Group(final Group project, final String name) {
 		this.instanceMetadata = createWithKeyProperty(this, project, name);
 		checkCondition("noProject", //$NON-NLS-1$
-				project.getProjectByName(name) == null);
+				project.getGroupByName(name) == null);
 		project.getInstanceMetadata().addChild(this);
 
 	}
@@ -111,7 +111,7 @@ public final class Group implements ConfigurationNode {
 	public Group(final Repository repository, final String name) {
 		this.instanceMetadata = createWithKeyProperty(this, repository, name);
 		checkCondition("noProject", //$NON-NLS-1$
-				repository.getProjectByName(name) == null);
+				repository.getGroupByName(name) == null);
 		repository.getInstanceMetadata().addChild(this);
 	}
 
@@ -270,7 +270,7 @@ public final class Group implements ConfigurationNode {
 	 * @param name
 	 * @return a project
 	 */
-	public final Group getProjectByName(final String name) {
+	public final Group getGroupByName(final String name) {
 		return this.instanceMetadata.getChildByKeyValue(Group.class, name);
 	}
 
@@ -278,7 +278,7 @@ public final class Group implements ConfigurationNode {
 	 * 
 	 * @return all child project names
 	 */
-	public final Set<String> getProjectNames() {
+	public final Set<String> getGroupNames() {
 		return (Set<String>) this.instanceMetadata
 				.getKeyFromChildrenOfTypes(Group.class);
 	}
@@ -287,7 +287,7 @@ public final class Group implements ConfigurationNode {
 	 * 
 	 * @return all child projects
 	 */
-	public final Collection<Group> getProjects() {
+	public final Collection<Group> getGroups() {
 		return this.instanceMetadata.getChildrensOfType(Group.class);
 	}
 
@@ -379,7 +379,7 @@ public final class Group implements ConfigurationNode {
 	 * 
 	 * @param group
 	 */
-	public final void removeProject(final Group group) {
+	public final void removeGroups(final Group group) {
 		this.instanceMetadata.removeChild(group);
 	}
 

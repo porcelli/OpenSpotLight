@@ -21,7 +21,7 @@ public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements
 		final Configuration configuration = createPostgresqlConfiguration();
 		return (DbBundle) configuration.getRepositoryByName(
 				"postgresql Repository") //$NON-NLS-1$
-				.getProjectByName("postgresql Group") //$NON-NLS-1$
+				.getGroupByName("postgresql Group") //$NON-NLS-1$
 				.getBundleByName("postgresql Connection"); //$NON-NLS-1$
 	}
 

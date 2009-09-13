@@ -148,7 +148,7 @@ public class AbstractNodeTest extends NodeTest {
         assertThat(this.lastNodeChange, is(nullValue()));
         final Bundle newBundle = new Bundle(newProject, "newBundle");
         assertThat((Bundle) this.lastNodeChange.getNewItem(), is(newBundle));
-        repository.removeProject(newProject);
+        repository.removeGroup(newProject);
         assertThat(this.lastNodeChange.getType(), is(ItemChangeType.EXCLUDED));
         assertThat(this.lastNodeChange.getNewItem(), is(nullValue()));
         assertThat((Group) this.lastNodeChange.getOldItem(), is(newProject));

@@ -1,4 +1,5 @@
 package org.openspotlight.federation.data.processing.test;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -22,26 +23,39 @@ import org.openspotlight.graph.SLGraphSession;
 @SuppressWarnings("all")
 public class BundleProcessingGroupTest {
 
+	final int addedSize = 5;
+	final int allArtifactsSize = this.addedSize + this.changedSize
+			+ this.notChangedSize;
+	final int changedSize = 2;
+	final int excludedSize = 3;
+	final int newArtifactsSize = this.addedSize + this.changedSize;
+	final int notChangedSize = 4;
+
 	private Repository createDirtyRepository() throws Exception {
-		Configuration configuration = new Configuration();
+		final Configuration configuration = new Configuration();
 		configuration.setNumberOfParallelThreads(Integer.valueOf(4));
-		Repository repository = new Repository(configuration, "repository");
+		final Repository repository = new Repository(configuration,
+				"repository");
 		repository.setActive(Boolean.TRUE);
-		Group project = new Group(repository, "project");
+		final Group project = new Group(repository, "project");
+		project.setGraphRoot(Boolean.TRUE);
 		project.setActive(Boolean.TRUE);
-		Bundle bundle = new Bundle(project, "bundle");
+		final Bundle bundle = new Bundle(project, "bundle");
 		bundle.setActive(Boolean.TRUE);
-		new BundleProcessorType(bundle,"org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
+		new BundleProcessorType(
+				bundle,
+				"org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor")
+				.setActive(Boolean.TRUE);
 		new StreamArtifact(bundle, "notChangedAtAllArtifact1");
 		new StreamArtifact(bundle, "notChangedAtAllArtifact2");
 		new StreamArtifact(bundle, "notChangedAtAllArtifact3");
 		new StreamArtifact(bundle, "notChangedAtAllArtifact4");
-		StreamArtifact excluded1 = new StreamArtifact(bundle, "excluded1");
-		StreamArtifact excluded2 = new StreamArtifact(bundle, "excluded2");
-		StreamArtifact excluded3 = new StreamArtifact(bundle, "excluded3");
-		StreamArtifact changedArtifact1 = new StreamArtifact(bundle,
+		final StreamArtifact excluded1 = new StreamArtifact(bundle, "excluded1");
+		final StreamArtifact excluded2 = new StreamArtifact(bundle, "excluded2");
+		final StreamArtifact excluded3 = new StreamArtifact(bundle, "excluded3");
+		final StreamArtifact changedArtifact1 = new StreamArtifact(bundle,
 				"changedArtifact1");
-		StreamArtifact changedArtifact2 = new StreamArtifact(bundle,
+		final StreamArtifact changedArtifact2 = new StreamArtifact(bundle,
 				"changedArtifact2");
 		configuration.getInstanceMetadata().getSharedData().markAsSaved();
 		new StreamArtifact(bundle, "included1");
@@ -57,27 +71,27 @@ public class BundleProcessingGroupTest {
 
 		return repository;
 	}
-	final int addedSize = 5;
-	final int excludedSize = 3;
-	final int changedSize = 2;
-	final int notChangedSize = 4;
-	final int allArtifactsSize = addedSize+changedSize+notChangedSize;
-	final int newArtifactsSize = addedSize+changedSize;
+
 	@Test
 	public void shouldCreateCorrectBundleProcessingGroup() throws Exception {
 
 		final SLGraph graph = mock(SLGraph.class);
 		final SLGraphSession session = mock(SLGraphSession.class);
 		when(graph.openSession()).thenReturn(session);
-		ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_EACH_ONE_NEW);
-		BundleProcessorManager manager = new BundleProcessorManager(graph);
-		Repository repository = createDirtyRepository();
+		ArtifactCounterBundleProcessor
+				.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_EACH_ONE_NEW);
+		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+		final Repository repository = this.createDirtyRepository();
 		manager.processRepository(repository);
-		BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor.getLastGroup();
-		assertThat(lastGroup.getAddedArtifacts().size(), is(addedSize));
-		assertThat(lastGroup.getExcludedArtifacts().size(), is(excludedSize));
-		assertThat(lastGroup.getModifiedArtifacts().size(), is(changedSize));
-		assertThat(lastGroup.getAllValidArtifacts().size(), is(allArtifactsSize));
+		final BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor
+				.getLastGroup();
+		assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
+		assertThat(lastGroup.getExcludedArtifacts().size(),
+				is(this.excludedSize));
+		assertThat(lastGroup.getModifiedArtifacts().size(),
+				is(this.changedSize));
+		assertThat(lastGroup.getAllValidArtifacts().size(),
+				is(this.allArtifactsSize));
 	}
 
 	@Test
@@ -85,25 +99,14 @@ public class BundleProcessingGroupTest {
 		final SLGraph graph = mock(SLGraph.class);
 		final SLGraphSession session = mock(SLGraphSession.class);
 		when(graph.openSession()).thenReturn(session);
-		ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_ALL_AGAIN);
-		BundleProcessorManager manager = new BundleProcessorManager(graph);
-		Repository repository = createDirtyRepository();
+		ArtifactCounterBundleProcessor
+				.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_ALL_AGAIN);
+		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+		final Repository repository = this.createDirtyRepository();
 		manager.processRepository(repository);
-		List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-		assertThat(processed.size(), is(allArtifactsSize));
-	}
-
-	@Test
-	public void shouldProcessChangedArtifacts() throws Exception {
-		final SLGraph graph = mock(SLGraph.class);
-		final SLGraphSession session = mock(SLGraphSession.class);
-		when(graph.openSession()).thenReturn(session);
-		ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_EACH_ONE_NEW);
-		BundleProcessorManager manager = new BundleProcessorManager(graph);
-		Repository repository = createDirtyRepository();
-		manager.processRepository(repository);
-		List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-		assertThat(processed.size(), is(newArtifactsSize));
+		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
+				.getProcessedArtifacts();
+		assertThat(processed.size(), is(this.allArtifactsSize));
 	}
 
 	@Test
@@ -111,26 +114,45 @@ public class BundleProcessingGroupTest {
 		final SLGraph graph = mock(SLGraph.class);
 		final SLGraphSession session = mock(SLGraphSession.class);
 		when(graph.openSession()).thenReturn(session);
-		ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.ALL_PROCESSING_ALREADY_DONE);
-		BundleProcessorManager manager = new BundleProcessorManager(graph);
-		Repository repository = createDirtyRepository();
+		ArtifactCounterBundleProcessor
+				.setDefaultProcessingStartAction(ProcessingStartAction.ALL_PROCESSING_ALREADY_DONE);
+		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+		final Repository repository = this.createDirtyRepository();
 		manager.processRepository(repository);
-		List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
+		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
+				.getProcessedArtifacts();
 		assertThat(processed.size(), is(0));
 	}
-	
+
 	@Test
 	public void shouldProcessAnyArtifactsOnIgnore() throws Exception {
 		final SLGraph graph = mock(SLGraph.class);
 		final SLGraphSession session = mock(SLGraphSession.class);
 		when(graph.openSession()).thenReturn(session);
-		ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.IGNORE_ALL);
-		BundleProcessorManager manager = new BundleProcessorManager(graph);
-		Repository repository = createDirtyRepository();
+		ArtifactCounterBundleProcessor
+				.setDefaultProcessingStartAction(ProcessingStartAction.IGNORE_ALL);
+		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+		final Repository repository = this.createDirtyRepository();
 		manager.processRepository(repository);
-		List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
+		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
+				.getProcessedArtifacts();
 		assertThat(processed.size(), is(0));
-		
+
 	}
-	
+
+	@Test
+	public void shouldProcessChangedArtifacts() throws Exception {
+		final SLGraph graph = mock(SLGraph.class);
+		final SLGraphSession session = mock(SLGraphSession.class);
+		when(graph.openSession()).thenReturn(session);
+		ArtifactCounterBundleProcessor
+				.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_EACH_ONE_NEW);
+		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+		final Repository repository = this.createDirtyRepository();
+		manager.processRepository(repository);
+		final List<StreamArtifact> processed = ArtifactCounterBundleProcessor
+				.getProcessedArtifacts();
+		assertThat(processed.size(), is(this.newArtifactsSize));
+	}
+
 }

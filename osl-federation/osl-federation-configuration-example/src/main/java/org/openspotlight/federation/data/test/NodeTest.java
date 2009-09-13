@@ -89,16 +89,16 @@ public class NodeTest {
         assertThat(repository.getActive(), is(true));
         assertThat(repository.getConfiguration(), is(configuration));
         assertThat(configuration.getNumberOfParallelThreads(), is(1));
-        assertThat(repository.getProjects().size(), is(not(0)));
-        assertThat(repository.getProjectNames().size(), is(not(0)));
+        assertThat(repository.getGroups().size(), is(not(0)));
+        assertThat(repository.getGroupNames().size(), is(not(0)));
         
-        final Group project = repository.getProjectByName("p-1,1");
+        final Group project = repository.getGroupByName("p-1,1");
         assertThat(project.getActive(), is(true));
         assertThat(project.getRepository(), is(repository));
         assertThat(project.getBundleNames().size(), is(not(0)));
         assertThat(project.getBundles().size(), is(not(0)));
         
-        final Group innerProject = project.getProjectByName("ip-1,1");
+        final Group innerProject = project.getGroupByName("ip-1,1");
         assertThat(innerProject.getActive(), is(true));
         assertThat(innerProject.getRepository(), is(repository));
         assertThat(innerProject.getBundleNames().size(), is(0));

@@ -22,7 +22,7 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 		final Configuration configuration = createSqlServerDbConfiguration();
 		return (DbBundle) configuration.getRepositoryByName(
 				"sqlserver Repository") //$NON-NLS-1$
-				.getProjectByName("sqlserver Group") //$NON-NLS-1$
+				.getGroupByName("sqlserver Group") //$NON-NLS-1$
 				.getBundleByName("sqlserver Connection"); //$NON-NLS-1$
 	}
 
