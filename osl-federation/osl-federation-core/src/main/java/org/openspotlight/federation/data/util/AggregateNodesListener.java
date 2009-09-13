@@ -59,7 +59,7 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
 /**
  * Simple listener for grouping all changes for later use.
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public class AggregateNodesListener implements

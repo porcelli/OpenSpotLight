@@ -24,7 +24,7 @@ import org.openspotlight.federation.data.load.db.DatabaseSupport;
  * During a column changing, its table needs to be marked as changed also. This
  * test is to assert this behavior.
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @SuppressWarnings("all")

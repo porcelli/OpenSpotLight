@@ -46,76 +46,28 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.data.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
+package org.openspotlight.federation.scheduler;
 
-import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
+import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
 
 /**
- * Test class for {@link SharedData} {@link ItemEventListener node listeners}.
+ * This interface abstracts a simple class with the capability to return a valid
+ * {@link Configuration} to the {@link Scheduler} for its later use.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
-public class SharedDataListenerTest {
+public interface ConfigurationProvider {
 
-	private static class CustomNodeListener implements
-			ItemEventListener<ConfigurationNode> {
-
-		private final List<ConfigurationNode> nodesChanged = new ArrayList<ConfigurationNode>();
-
-		public void changeEventHappened(
-				final ItemChangeEvent<ConfigurationNode> event) {
-			final ConfigurationNode target = event.getNewItem() != null ? event
-					.getNewItem() : event.getOldItem();
-			this.nodesChanged.add(target);
-
-		}
-
-		public List<ConfigurationNode> getNodesChanged() {
-			return this.nodesChanged;
-		}
-
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenParent() throws Exception {
-		final CustomNodeListener listener = new CustomNodeListener();
-		final Configuration configuration = new Configuration();
-		final Repository repo1 = new Repository(configuration, "repo1");
-		final Repository repo2 = new Repository(configuration, "repo2");
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenParent(listener, repo2);
-		new Group(repo1, "group1");
-		final Group group2 = new Group(repo2, "group2");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group2));
-
-	}
-
-	@Test
-	public void shouldListenChangesForAGivenType() throws Exception {
-		final CustomNodeListener listener = new CustomNodeListener();
-		final Configuration configuration = new Configuration();
-		configuration.getInstanceMetadata().getSharedData()
-				.addNodeListenerForAGivenType(listener, Group.class);
-		final Repository repo = new Repository(configuration, "repo");
-		final Group group = new Group(repo, "group");
-		assertThat(listener.getNodesChanged().size(), is(1));
-		assertThat((Group) listener.getNodesChanged().get(0), is(group));
-	}
-
+	/**
+	 * Gets the configuration.
+	 * 
+	 * @return the configuration
+	 * 
+	 * @throws ConfigurationException
+	 *             if there's anyproblem to retrieve the {@link Configuration}u
+	 */
+	public Configuration getConfiguration() throws ConfigurationException;
 }

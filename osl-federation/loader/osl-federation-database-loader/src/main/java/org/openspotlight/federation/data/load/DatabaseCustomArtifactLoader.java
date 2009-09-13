@@ -102,7 +102,7 @@ import org.openspotlight.federation.data.util.AggregateNodesListener;
  * artifact related to it changes also.
  * 
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
@@ -329,7 +329,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 	 * {@link StreamArtifact} related to changed views and fires changes on
 	 * {@link TableArtifact tables } related to changed {@link Column columns}.
 	 * 
-	 * @author feu
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 * 
 	 */
 	protected static class DatabaseCustomGlobalContext extends
@@ -524,7 +524,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 	 * {@link ThreadExecutionContext} used to load database artifacts from jdbc
 	 * driver.
 	 * 
-	 * @author feu
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 * 
 	 */
 	protected static class DatabaseCustomThreadContext extends
@@ -636,7 +636,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 	/**
 	 * This is just a marker class to describe database items
 	 * 
-	 * @author feu
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 * 
 	 */
 	private abstract static class DatabaseItemDescription {
@@ -646,7 +646,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 	/**
 	 * Class with description for procedures and triggers.
 	 * 
-	 * @author feu
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 * 
 	 */
 	private static class RoutineDescription extends DatabaseItemDescription {

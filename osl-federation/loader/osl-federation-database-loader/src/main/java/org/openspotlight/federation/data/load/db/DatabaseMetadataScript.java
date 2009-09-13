@@ -176,7 +176,7 @@ public final class DatabaseMetadataScript {
 	 * Type for describing the way for filling the {@link StreamArtifact}
 	 * content for {@link DatabaseType database} {@link ScriptType scripts}.
 	 * 
-	 * @author feu
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 */
 	public static enum PreferedType {
 

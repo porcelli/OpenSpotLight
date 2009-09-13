@@ -361,7 +361,11 @@
 				<artifactId>collections-generic</artifactId>
 				<version>4.01</version>
 			</dependency>
-
+			<dependency>
+				<groupId>opensymphony</groupId>
+				<artifactId>quartz</artifactId>
+				<version>1.6.3</version>
+			</dependency>
 			<!-- log dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>

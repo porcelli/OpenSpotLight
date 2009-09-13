@@ -37,7 +37,7 @@
 			</exclusions>
 		</dependency>
 		<!-- External dependencies -->
-        <dependency>
+		<dependency>
 			<groupId>net.jcip</groupId>
 			<artifactId>jcip-annotations</artifactId>
 			<scope>compile</scope>
@@ -71,6 +71,10 @@
 		<dependency>
 			<groupId>javax.jcr</groupId>
 			<artifactId>jcr</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>quartz</artifactId>
 		</dependency>
 	</dependencies>
 </project>

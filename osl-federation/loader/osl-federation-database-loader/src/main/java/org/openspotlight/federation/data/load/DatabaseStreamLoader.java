@@ -192,7 +192,7 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * {@link DatabaseStreamLoader} to change the behavior of artifact loading for
  * the artifact been loaded. Here it's possible also to ignore this artifact.
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
@@ -201,7 +201,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 	 * {@link StreamArtifact stream artifacts} using direct sql or template
 	 * filled with sql.
 	 * 
-	 * @author feu
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
 	 */
 	protected static class DatabaseThreadExecutionContext extends
 			DefaultThreadExecutionContext {

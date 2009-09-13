@@ -74,10 +74,10 @@ import org.openspotlight.federation.data.StaticMetadata;
 @ThreadSafe
 @StaticMetadata(propertyNames = { "active", "graphRoot", "type" }, propertyTypes = {
 		Boolean.class, Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {
-		Group.class, Repository.class }, validChildrenTypes = { Group.class,
-		StreamArtifact.class, CustomArtifact.class, ArtifactMapping.class,
-		Bundle.class })
-public final class Group implements ConfigurationNode {
+		Group.class, Repository.class }, validChildrenTypes = {
+		ScheduleData.class, Group.class, StreamArtifact.class,
+		CustomArtifact.class, ArtifactMapping.class, Bundle.class })
+public final class Group implements ConfigurationNode, Schedulable<Group> {
 
 	private static final String ACTIVE = "active"; //$NON-NLS-1$
 
@@ -408,6 +408,36 @@ public final class Group implements ConfigurationNode {
 	 */
 	public void setType(final String type) {
 		this.instanceMetadata.setProperty(TYPE, type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Collection<ScheduleData> getScheduleData() {
+		return this.instanceMetadata.getChildrensOfType(ScheduleData.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ScheduleData getScheduleDataByCronInformation(String cronInformation) {
+		return this.instanceMetadata.getChildByKeyValue(ScheduleData.class,
+				cronInformation);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<String> getScheduleDataCronInformations() {
+		return (Set<String>) this.instanceMetadata
+				.getKeyFromChildrenOfTypes(ScheduleData.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void removeScheduleData(ScheduleData scheduleData) {
+		this.instanceMetadata.removeChild(scheduleData);
 	}
 
 }

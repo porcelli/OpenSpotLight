@@ -24,7 +24,7 @@ import org.openspotlight.federation.data.load.db.DatabaseSupport;
  * This test class is to assert the fire changing action on view stream artifact
  * when it's columns changes. It should be done
  * 
- * @author feu
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @SuppressWarnings("all")
