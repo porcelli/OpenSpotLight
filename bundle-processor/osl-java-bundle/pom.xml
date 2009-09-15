@@ -7,6 +7,8 @@
 		<groupId>org.openspotlight</groupId>
 		<artifactId>osl</artifactId>
 		<version>0.0.4-SNAPSHOT</version>
+		<relativePath>../..</relativePath>
+
 	</parent>
 
 	<artifactId>osl-java-bundle</artifactId>
