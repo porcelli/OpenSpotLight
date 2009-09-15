@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openspotlight</groupId>
 	<artifactId>osl</artifactId>
@@ -74,6 +73,7 @@
 		<module>osl-graph-persistence</module>
 		<module>osl-federation</module>
 		<module>bundle-processor/osl-java-bundle</module>
+		<module>bundle-processor/initial-import/osl-java-bundle-initial-import</module>
 	</modules>
 	<build>
 		<plugins>
@@ -101,7 +101,7 @@
 	</build>
 	<dependencyManagement>
 		<dependencies>
-			<!-- osl modules -->
+<!-- osl modules -->
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-common</artifactId>
@@ -132,8 +132,17 @@
 				<artifactId>osl-graph-persistence</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
-
-			<!-- dna federation dependencies -->
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-java-bundle</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-java-bundle-initial-import</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+<!-- dna federation dependencies -->
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-connector-filesystem</artifactId>
@@ -158,38 +167,38 @@
 				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
-			<!-- XML manipulation made easy  -->
+<!-- XML manipulation made easy  -->
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
 				<artifactId>xstream</artifactId>
 				<version>1.3.1</version>
 			</dependency>
-			<!-- Java Concurrency in Practice annotations -->
+<!-- Java Concurrency in Practice annotations -->
 			<dependency>
 				<groupId>net.jcip</groupId>
 				<artifactId>jcip-annotations</artifactId>
 				<version>1.0</version>
 				<scope>compile</scope>
 			</dependency>
-			<!-- H2 for sql92 tests -->
+<!-- H2 for sql92 tests -->
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
 				<version>1.1.115</version>
 			</dependency>
-			<!-- Cryptography utilities-->
+<!-- Cryptography utilities-->
 			<dependency>
 				<groupId>org.jasypt</groupId>
 				<artifactId>jasypt</artifactId>
 				<version>1.5</version>
 			</dependency>
-			<!-- Bean utils -->
+<!-- Bean utils -->
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			<!-- Java Content Repository API -->
+<!-- Java Content Repository API -->
 			<dependency>
 				<groupId>javax.jcr</groupId>
 				<artifactId>jcr</artifactId>
@@ -214,7 +223,7 @@
 				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
-			<!--
+<!--
 				XML dependencies just to write and read the configuration in a
 				simple way
 			-->
@@ -223,13 +232,12 @@
 				<artifactId>dom4j</artifactId>
 				<version>1.6.1</version>
 			</dependency>
-			<!-- ant dependency to use the same logic for directory mappings -->
+<!-- ant dependency to use the same logic for directory mappings -->
 			<dependency>
 				<groupId>ant</groupId>
 				<artifactId>ant</artifactId>
 				<version>1.7.0</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.thoughtworks.qdox</groupId>
 				<artifactId>qdox</artifactId>
@@ -291,7 +299,7 @@
 				<artifactId>jta</artifactId>
 				<version>1.1</version>
 			</dependency>
-			<!-- Tests and BDD dependencies -->
+<!-- Tests and BDD dependencies -->
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-all</artifactId>
@@ -320,7 +328,7 @@
 				<version>1.1</version>
 				<scope>test</scope>
 			</dependency>
-			<!-- JAAS implementation (and dependencies) for DNA security -->
+<!-- JAAS implementation (and dependencies) for DNA security -->
 			<dependency>
 				<groupId>org.jboss.security</groupId>
 				<artifactId>jboss-idtrust</artifactId>
@@ -366,7 +374,7 @@
 				<artifactId>quartz</artifactId>
 				<version>1.6.3</version>
 			</dependency>
-			<!-- log dependencies -->
+<!-- log dependencies -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -382,12 +390,12 @@
 				<artifactId>log4j</artifactId>
 				<version>1.2.12</version>
 			</dependency>
-			<!-- Apache Jackrabbit (JCR Implementation) -->
+<!-- Apache Jackrabbit (JCR Implementation) -->
 			<dependency>
 				<groupId>org.apache.jackrabbit</groupId>
 				<artifactId>jackrabbit-api</artifactId>
 				<version>1.5.0</version>
-				<!-- Exclude these since they are included in JDK 1.5 -->
+<!-- Exclude these since they are included in JDK 1.5 -->
 				<exclusions>
 					<exclusion>
 						<groupId>xml-apis</groupId>
@@ -403,7 +411,7 @@
 				<groupId>org.apache.jackrabbit</groupId>
 				<artifactId>jackrabbit-core</artifactId>
 				<version>1.5.5</version>
-				<!-- Exclude these since they are included in JDK 1.5 -->
+<!-- Exclude these since they are included in JDK 1.5 -->
 				<exclusions>
 					<exclusion>
 						<groupId>xml-apis</groupId>
@@ -420,14 +428,14 @@
 				<artifactId>stringtemplate</artifactId>
 				<version>2.3b6</version>
 			</dependency>
-			<!-- Databases and JDBC Drivers -->
+<!-- Databases and JDBC Drivers -->
 			<dependency>
 				<groupId>net.sourceforge.jtds</groupId>
 				<artifactId>jtds</artifactId>
 				<version>1.2.2</version>
 			</dependency>
-			<!-- Maven command to install artifact: -->
-			<!--
+<!-- Maven command to install artifact: -->
+<!--
 				mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc5
 				-Dversion=11.1.0 -Dpackaging=jar -Dfile=ojdbc5.jar
 			-->
@@ -436,7 +444,7 @@
 				<artifactId>ojdbc5</artifactId>
 				<version>11.1.0</version>
 			</dependency>
-			<!--
+<!--
 				mvn install:install-file -DgroupId=com.ibm -DartifactId=db2jcc
 				-Dversion=9.7 -Dpackaging=jar -Dfile=db2jcc.jar
 			-->
@@ -445,7 +453,7 @@
 				<artifactId>db2jcc</artifactId>
 				<version>9.7</version>
 			</dependency>
-			<!--
+<!--
 				mvn install:install-file -DgroupId=com.ibm
 				-DartifactId=db2jcc_license_cu -Dversion=9.7 -Dpackaging=jar
 				-Dfile=db2jcc_license_cu.jar
