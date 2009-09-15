@@ -73,6 +73,7 @@
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
 		<module>osl-federation</module>
+		<module>bundle-processor/osl-java-bundle</module>
 	</modules>
 	<build>
 		<plugins>
