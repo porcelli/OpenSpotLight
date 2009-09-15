@@ -61,5 +61,9 @@
 			<artifactId>hamcrest-all</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		  <groupId>ant</groupId>
+		  <artifactId>ant</artifactId>
+		</dependency>
 	</dependencies>
 </project>

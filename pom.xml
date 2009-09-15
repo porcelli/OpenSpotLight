@@ -478,6 +478,12 @@
 				<artifactId>postgresql</artifactId>
 				<version>8.3-603.jdbc3</version>
 			</dependency>
+<!-- To be used on bundle initial imports -->
+			<dependency>
+			  <groupId>ant</groupId>
+			  <artifactId>ant</artifactId>
+			  <version>1.7.0</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>
