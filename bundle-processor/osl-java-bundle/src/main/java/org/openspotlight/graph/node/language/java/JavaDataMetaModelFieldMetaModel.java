@@ -49,10 +49,7 @@
  */
 package org.openspotlight.graph.node.language.java;
 
-import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.SLGraphSessionException;
 
 /**
  * The Interface for node Java Data Field Meta Model.
