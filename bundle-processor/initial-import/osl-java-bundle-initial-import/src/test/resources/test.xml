@@ -1,0 +1,4959 @@
+<linked-list>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>AbstractButtonBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classAbstractButton</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>AbstractButtonBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing.beaninfo</packageName>
+    <typeName>SwingBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>1057</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>java.beans</packageName>
+      <typeName>SimpleBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>BOUND</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>CONSTRAINED</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>PROPERTYEDITORCLASS</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>READMETHOD</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>WRITEMETHOD</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>DISPLAYNAME</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>EXPERT</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>HIDDEN</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>PREFERRED</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>SHORTDESCRIPTION</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+      <Field>
+        <name>CUSTOMIZERCLASS</name>
+        <access>25</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>SwingBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>throwError</name>
+        <access>4</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>initFeatureDescriptor</name>
+        <access>2</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.beans</packageName>
+              <typeName>FeatureDescriptor</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>2</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>Object</typeName>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>Class</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>2</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>Class</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getDefaultPropertyIndex</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>INT</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getAdditionalBeanInfo</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>BeanInfo</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createReadOnlyPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>Class</typeName>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list">
+          <SimpleTypeRef>
+            <packageName>java.beans</packageName>
+            <typeName>IntrospectionException</typeName>
+          </SimpleTypeRef>
+        </thrownExceptions>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>capitalize</name>
+        <access>10</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>String</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JAppletBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJApplet</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JAppletBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JButtonBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJButton</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JButtonBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JCheckBoxBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJCheckBox</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JCheckBoxBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JCheckBoxMenuItemBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJCheckBoxMenuItem</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JCheckBoxMenuItemBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JColorChooserBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJColorChooser</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JColorChooserBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JComboBoxBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJComboBox</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JComboBoxBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JComponentBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJComponent</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JComponentBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JDialogBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJDialog</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JDialogBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JEditorPaneBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJEditorPane</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JEditorPaneBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JFileChooserBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJFileChooser</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JFileChooserBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JFormattedTextFieldBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJFormattedTextField</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JFormattedTextFieldBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JFrameBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJFrame</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JFrameBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JInternalFrameBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJInternalFrame</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JInternalFrameBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JLabelBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJLabel</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JLabelBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JListBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJList</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JListBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JMenuBarBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJMenuBar</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JMenuBarBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JMenuBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJMenu</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JMenuBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JMenuItemBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJMenuItem</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JMenuItemBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JOptionPaneBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJOptionPane</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JOptionPaneBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JPanelBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJPanel</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JPanelBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JPasswordFieldBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJPasswordField</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JPasswordFieldBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JPopupMenuBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJPopupMenu</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JPopupMenuBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JProgressBarBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJProgressBar</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JProgressBarBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JRadioButtonBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJRadioButton</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JRadioButtonBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JRadioButtonMenuItemBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJRadioButtonMenuItem</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JRadioButtonMenuItemBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JScrollBarBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJScrollBar</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JScrollBarBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JScrollPaneBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJScrollPane</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JScrollPaneBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JSeparatorBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJSeparator</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JSeparatorBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JSliderBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJSlider</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JSliderBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JSpinnerBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJSpinner</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JSpinnerBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JSplitPaneBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJSplitPane</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JSplitPaneBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JTabbedPaneBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTabbedPane</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTabbedPaneBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JTableBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTable</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTableBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JTextAreaBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTextArea</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTextAreaBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JTextFieldBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTextField</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTextFieldBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JTextPaneBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTextPane</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTextPaneBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JToggleButtonBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJToggleButton</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JToggleButtonBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JToolBarBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJToolBar</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JToolBarBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JTreeBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTree</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTreeBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing</packageName>
+    <typeName>JWindowBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJWindow</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JWindowBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+  <JavaType>
+    <packageName>javax.swing.text</packageName>
+    <typeName>JTextComponentBeanInfo</typeName>
+    <type>CLASS</type>
+    <access>33</access>
+    <extendsDef class="SimpleTypeRef">
+      <packageName>javax.swing.beaninfo</packageName>
+      <typeName>SwingBeanInfo</typeName>
+    </extendsDef>
+    <implementsDef class="linked-list"/>
+    <fields class="linked-list">
+      <Field>
+        <name>classJTextComponent</name>
+        <access>26</access>
+        <type class="SimpleTypeRef">
+          <packageName>java.lang</packageName>
+          <typeName>Class</typeName>
+        </type>
+      </Field>
+    </fields>
+    <methods class="linked-list">
+      <MethodDeclaration>
+        <name>JTextComponentBeanInfo</name>
+        <access>1</access>
+        <returnType class="PrimitiveTypeRef">
+          <type>VOID</type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>true</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getBeanDescriptor</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>BeanDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>createPropertyDescriptor</name>
+        <access>2</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.beans</packageName>
+          <typeName>PropertyDescriptor</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="SimpleTypeRef">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </dataType>
+          </MethodParameter>
+          <MethodParameter>
+            <position>1</position>
+            <dataType class="ArrayTypeRef">
+              <arrayDimensions>1</arrayDimensions>
+              <type class="SimpleTypeRef">
+                <packageName>java.lang</packageName>
+                <typeName>Object</typeName>
+              </type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getPropertyDescriptors</name>
+        <access>1</access>
+        <returnType class="ArrayTypeRef">
+          <arrayDimensions>1</arrayDimensions>
+          <type class="SimpleTypeRef">
+            <packageName>java.beans</packageName>
+            <typeName>PropertyDescriptor</typeName>
+          </type>
+        </returnType>
+        <parameters class="linked-list"/>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+      <MethodDeclaration>
+        <name>getIcon</name>
+        <access>1</access>
+        <returnType class="SimpleTypeRef">
+          <packageName>java.awt</packageName>
+          <typeName>Image</typeName>
+        </returnType>
+        <parameters class="linked-list">
+          <MethodParameter>
+            <position>0</position>
+            <dataType class="PrimitiveTypeRef">
+              <type>INT</type>
+            </dataType>
+          </MethodParameter>
+        </parameters>
+        <isConstructor>false</isConstructor>
+        <thrownExceptions class="linked-list"/>
+        <typeParameters class="linked-list"/>
+      </MethodDeclaration>
+    </methods>
+  </JavaType>
+</linked-list>

@@ -193,6 +193,12 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * the artifact been loaded. Here it's possible also to ignore this artifact.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
+ * TODO MySql 4 table and indice stream loading (easy)
+ * TODO Postgresql 7 all artifact loading (medium)
+ * TODO SqlServer 2000 trigger (easy)
+ * TODO oracle 8 table loading (already done, but not on SCM)
+ * TODO Script validation from database (hard - not done yet)
  */
 public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
