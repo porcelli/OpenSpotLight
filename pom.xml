@@ -137,25 +137,25 @@
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-connector-filesystem</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-connector-svn</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-repository</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-jcr</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<!-- XML manipulation made easy  -->
@@ -199,19 +199,19 @@
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-common</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-graph</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-common</artifactId>
-				<version>0.6-SNAPSHOT</version>
+				<version>0.6</version>
 				<scope>compile</scope>
 			</dependency>
 			<!--
@@ -351,7 +351,6 @@
 				<artifactId>jaxb-impl</artifactId>
 				<version>2.1.9</version>
 			</dependency>
-
 			<dependency>
 				<groupId>colt</groupId>
 				<artifactId>colt</artifactId>
