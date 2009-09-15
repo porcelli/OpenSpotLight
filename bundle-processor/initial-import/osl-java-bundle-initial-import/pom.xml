@@ -71,5 +71,9 @@
 			<groupId>org.beanshell</groupId>
 			<artifactId>bsh</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm</artifactId>
+		</dependency>
 	</dependencies>
 </project>

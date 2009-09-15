@@ -101,7 +101,7 @@ public class GraphWithMassiveDataTest {
 		final SLGraphFactory factory = new SLGraphFactoryImpl();
 		final SLGraph graph = factory.createTempGraph(true);
 		this.session = graph.openSession();
-		this.rootNode = this.session.createContext(1L).getRootNode();
+		this.rootNode = this.session.createContext("sample").getRootNode();
 
 	}
 
