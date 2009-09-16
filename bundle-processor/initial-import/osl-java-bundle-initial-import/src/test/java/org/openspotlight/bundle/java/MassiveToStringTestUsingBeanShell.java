@@ -53,8 +53,8 @@ import org.junit.Test;
 public class MassiveToStringTestUsingBeanShell {
 	@Test
 	public void shouldExecuteScript() throws Exception {
-		bsh.Interpreter
-				.main(new String[] { "./src/test/java/org/openspotlight/bundle/java/MassiveToStringBeanShellTest.bsh" });
+//		bsh.Interpreter
+//				.main(new String[] { "./src/test/java/org/openspotlight/bundle/java/MassiveToStringBeanShellTest.bsh" });
 
 	}
 

@@ -16,7 +16,7 @@ public class TestASMCodeGen {
 
 		FileSet jreFileSet = new FileSet();
 		jreFileSet.setDir(new File("/Users/porcelli/Documents/dev/java-jre/"));
-		jreFileSet.setIncludes("**/*.jar");
+		jreFileSet.setIncludes("**/jce.jar");
 		jreFileSet.setIncludes("**/*.class");
 		task.addJREFileSet(jreFileSet);
 
