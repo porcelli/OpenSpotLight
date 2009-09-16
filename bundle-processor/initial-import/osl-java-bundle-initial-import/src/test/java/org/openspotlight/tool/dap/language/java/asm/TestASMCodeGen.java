@@ -9,17 +9,19 @@ import org.openspotlight.tool.dap.language.java.asm.ASMExportTask;
 
 public class TestASMCodeGen {
 
-	@Test
-	public void testASMExtract() {
-		ASMExportTask task = new ASMExportTask();
-		task.setProject(new Project());
+    @Test
+    public void testASMExtract() {
+        ASMExportTask task = new ASMExportTask();
+        task.setProject(new Project());
 
-		FileSet jreFileSet = new FileSet();
-		jreFileSet.setDir(new File("/Users/porcelli/Documents/dev/java-jre/"));
-		jreFileSet.setIncludes("**/jce.jar");
-		jreFileSet.setIncludes("**/*.class");
-		task.addJREFileSet(jreFileSet);
+        FileSet jreFileSet = new FileSet();
+        jreFileSet.setDir(new File("."));
+        jreFileSet.setIncludes("**/*.jar");
+        //        jreFileSet.setIncludes("**/*.class");
+        task.addCompiledArtifacts(jreFileSet);
+        task.setSerializeXML(true);
+        task.setXmlOutputFileName("./target/test-data/result.xml");
 
-		task.execute();
-	}
+        task.execute();
+    }
 }
