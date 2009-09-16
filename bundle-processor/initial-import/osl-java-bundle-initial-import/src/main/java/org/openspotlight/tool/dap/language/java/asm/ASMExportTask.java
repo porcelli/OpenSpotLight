@@ -75,69 +75,107 @@ import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 
 public class ASMExportTask extends Task {
 
-    private Logger     LOG        = LoggerFactory.getLogger(ASMExportTask.class);
-    private Set<File>  jreFileSet = new HashSet<File>();
-    private ASMVisitor asmVisitor = new ASMVisitor();
-    private XStream    xstream    = new XStream();
+    private Logger         LOG               = LoggerFactory.getLogger(ASMExportTask.class);
+    private Set<File>      compiledArtifacts = new HashSet<File>();
+    private ASMVisitor     asmVisitor        = new ASMVisitor();
+    private List<JavaType> scannedTypes      = new LinkedList<JavaType>();
+    private boolean        serializeXML      = false;
+    private String         xmlOutputFileName = "";
 
-    public void addJREFileSet( FileSet fileSet ) {
-        DirectoryScanner scanner = fileSet.getDirectoryScanner(getProject());
+    public void setSerializeXML( boolean serializeXML ) {
+        this.serializeXML = serializeXML;
+    }
+
+    public void setXmlOutputFileName( String xmlOutputFileName ) {
+        this.xmlOutputFileName = xmlOutputFileName;
+    }
+
+    public void addCompiledArtifacts( FileSet artifactSet ) {
+        DirectoryScanner scanner = artifactSet.getDirectoryScanner(getProject());
         for (String activeFileName : scanner.getIncludedFiles()) {
-            File file = new File(fileSet.getDir(getProject()), activeFileName);
-            jreFileSet.add(file);
+            File file = new File(artifactSet.getDir(getProject()), activeFileName);
+            compiledArtifacts.add(file);
         }
     }
 
     public void execute() {
-        xstream.aliasPackage("", "org.openspotlight.tool.dap.language.java.asm.model");
-        xstream.registerConverter(new JavaBeanConverter(xstream.getMapper()) {
-            @SuppressWarnings( "unchecked" )
-            public boolean canConvert( Class type ) {
-                return type.getName() == MethodDeclaration.class.getName();
+        if (isValid()) {
+            int count = 0;
+            try {
+                for (File activeArtifact : compiledArtifacts) {
+                    if (activeArtifact.getName().endsWith(".jar")) {
+                        LOG.info("Parsing Jar Artifact \"" + activeArtifact.getCanonicalPath() + "\"");
+                        // Open Zip file for reading
+                        ZipFile zipFile = new ZipFile(activeArtifact, ZipFile.OPEN_READ);
+
+                        // Create an enumeration of the entries in the zip file
+                        Enumeration<? extends ZipEntry> zipFileEntries = zipFile.entries();
+
+                        // Process each entry
+                        while (zipFileEntries.hasMoreElements()) {
+                            // grab a zip file entry
+                            ZipEntry entry = zipFileEntries.nextElement();
+                            // extract file if not a directory
+                            if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                                ClassReader reader = new ClassReader(zipFile.getInputStream(entry));
+                                reader.accept(asmVisitor, 0);
+                                count++;
+                                scannedTypes.add(asmVisitor.getType());
+                            }
+                        }
+                        zipFile.close();
+                    } else if (activeArtifact.getName().endsWith(".class")) {
+                        LOG.info("Parsing Class Artifact \"" + activeArtifact.getCanonicalPath() + "\"");
+                        ClassReader reader = new ClassReader(new FileInputStream(activeArtifact));
+                        reader.accept(asmVisitor, 0);
+                        count++;
+                        scannedTypes.add(asmVisitor.getType());
+                    }
+                }
+
+                System.out.println("ASMExporter: Finishing processing " + count + " types.");
+                LOG.info("ASMExporter: Finishing processing " + count + " types.");
+
+                if (serializeXML) {
+                    System.out.println("ASMExporter: Starting generation XML output file.");
+                    LOG.info("ASMExporter: Starting generation XML output file.");
+                    XStream xstream = new XStream();
+                    xstream.aliasPackage("", "org.openspotlight.tool.dap.language.java.asm.model");
+                    xstream.registerConverter(new JavaBeanConverter(xstream.getMapper()) {
+                        @SuppressWarnings( "unchecked" )
+                        public boolean canConvert( Class type ) {
+                            return type.getName() == MethodDeclaration.class.getName();
+                        }
+                    });
+
+                    if (this.xmlOutputFileName != null && this.xmlOutputFileName.indexOf("/") != -1) {
+                        final String dir = this.xmlOutputFileName.substring(0, this.xmlOutputFileName.lastIndexOf("/"));
+                        new File(dir).mkdirs();
+                    }
+
+                    xstream.toXML(scannedTypes, new FileOutputStream(xmlOutputFileName));
+                    System.out.println("ASMExporter: Finished XML output file.");
+                    LOG.info("ASMExporter: Finished XML output file.");
+                }
+            } catch (Exception ex) {
+                StringWriter sWriter = new StringWriter();
+                ex.printStackTrace(new PrintWriter(sWriter));
+                LOG.error("Problems during parser - Stack trace:\n" + sWriter.getBuffer().toString());
             }
-        }, XStream.PRIORITY_VERY_HIGH);
-        scanJRE();
+        } else {
+            System.out.println("ASMExporter ERROR - Invalid State: Missing XmlOutputFileName.");
+            LOG.error("ASMExporter ERROR - Invalid State: Missing XmlOutputFileName.");
+        }
     }
 
-    private void scanJRE() {
-        int count = 0;
-        List<JavaType> types = new LinkedList<JavaType>();
-        try {
-            for (File activeArtifact : jreFileSet) {
-                LOG.info("Parsing JRE File \"" + activeArtifact.getCanonicalPath() + "\"");
-                if (activeArtifact.getName().endsWith(".jar")) {
-                    // Open Zip file for reading
-                    ZipFile zipFile = new ZipFile(activeArtifact, ZipFile.OPEN_READ);
+    public List<JavaType> getScannedTypes() {
+        return scannedTypes;
+    }
 
-                    // Create an enumeration of the entries in the zip file
-                    Enumeration<? extends ZipEntry> zipFileEntries = zipFile.entries();
-
-                    // Process each entry
-                    while (zipFileEntries.hasMoreElements()) {
-                        // grab a zip file entry
-                        ZipEntry entry = zipFileEntries.nextElement();
-                        // extract file if not a directory
-                        if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                            ClassReader reader = new ClassReader(zipFile.getInputStream(entry));
-                            reader.accept(asmVisitor, 0);
-                            count++;
-                            types.add(asmVisitor.getType());
-                        }
-                    }
-                    zipFile.close();
-                } else if (activeArtifact.getName().endsWith(".class")) {
-                    ClassReader reader = new ClassReader(new FileInputStream(activeArtifact));
-                    reader.accept(asmVisitor, 0);
-                    count++;
-                    types.add(asmVisitor.getType());
-                }
-            }
-            System.out.println(count);
-            xstream.toXML(types, new FileOutputStream("test.xml"));
-        } catch (Exception ex) {
-            StringWriter sWriter = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sWriter));
-            LOG.error("Problems during parser - Stack trace:\n" + sWriter.getBuffer().toString());
+    private boolean isValid() {
+        if (serializeXML == true && (xmlOutputFileName == null || xmlOutputFileName.trim().length() == 0)) {
+            return false;
         }
+        return true;
     }
 }
