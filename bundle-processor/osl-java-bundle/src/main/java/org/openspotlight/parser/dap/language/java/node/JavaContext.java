@@ -47,31 +47,30 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.parser.dap.language.java.link;
+package org.openspotlight.parser.dap.language.java.node;
 
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Data Type.
- * 
+ * The Interface for node Java Context Meta Model.
  *
- * Java Data A2B Java Type
  *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-@SLDescription("Data Type")
-public interface DataType extends SLLink {
-    @SLProperty
-    public boolean getArray();
-    public void setArray(boolean newArray);
+@SLDescription("Java Context")
+public interface JavaContext extends SLNode {
 
     @SLProperty
-    public int getArrayDimension();
-    public void setArrayDimension(int newArrayDimension);
+    public String getVersion();
+    public void setVersion(String newVersion);
 
+    @SLProperty
+    public String getName();
+    public void setName(String newName);
+
+    
 }
-
 
         

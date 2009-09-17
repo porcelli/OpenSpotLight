@@ -63,6 +63,18 @@ import org.openspotlight.graph.annotation.SLDescription;
  */
 @SLDescription("Method Parameter Definition")
 public interface MethodParameterDefinition extends SLLink {
+    @SLProperty
+    public int getOrder();
+    public void setOrder(int newOrder);
+
+    @SLProperty
+    public boolean getArray();
+    public void setArray(boolean newArray);
+
+    @SLProperty
+    public int getArrayDimension();
+    public void setArrayDimension(int newArrayDimension);
+
 }
 
 

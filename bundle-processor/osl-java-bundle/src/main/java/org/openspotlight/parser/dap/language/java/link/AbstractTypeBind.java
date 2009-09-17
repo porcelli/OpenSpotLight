@@ -54,23 +54,15 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Data Type.
+ * The Interface for a link between Abstract Type Bind.
  * 
  *
- * Java Data A2B Java Type
+ * Java Context A2B Java Type
  *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-@SLDescription("Data Type")
-public interface DataType extends SLLink {
-    @SLProperty
-    public boolean getArray();
-    public void setArray(boolean newArray);
-
-    @SLProperty
-    public int getArrayDimension();
-    public void setArrayDimension(int newArrayDimension);
-
+@SLDescription("Abstract Type Bind")
+public interface AbstractTypeBind extends SLLink {
 }
 
 
