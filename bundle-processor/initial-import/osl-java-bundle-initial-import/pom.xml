@@ -17,8 +17,28 @@
 		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
+			<artifactId>osl-graph</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-persistence</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-persistence-api</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-java-bundle</artifactId>
+        </dependency>
 		<!-- External dependencies -->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
