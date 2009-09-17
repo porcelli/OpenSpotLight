@@ -53,8 +53,8 @@ import org.junit.Test;
 public class JavaInitialImportUsingBeanShell {
 	@Test
 	public void shouldExecuteScript() throws Exception {
-//		bsh.Interpreter
-//		.main(new String[] { "./src/main/resources/JavaInitialData.bsh" });
+		bsh.Interpreter
+				.main(new String[] { "./src/main/resources/JavaInitialData.bsh" });
 
 	}
 

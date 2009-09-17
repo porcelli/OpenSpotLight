@@ -63,6 +63,14 @@ import org.openspotlight.graph.annotation.SLDescription;
  */
 @SLDescription("Data Type")
 public interface DataType extends SLLink {
+    @SLProperty
+    public boolean getArray();
+    public void setArray(boolean newArray);
+
+    @SLProperty
+    public int getArrayDimension();
+    public void setArrayDimension(int newArrayDimension);
+
 }
 
 

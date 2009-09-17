@@ -63,10 +63,6 @@ import org.openspotlight.graph.annotation.SLDescription;
  */
 @SLDescription("Method Parameter Declare")
 public interface MethodParameterDeclare extends SLLink {
-    @SLProperty
-    public int getOrder();
-    public void setOrder(int newOrder);
-
 }
 
 

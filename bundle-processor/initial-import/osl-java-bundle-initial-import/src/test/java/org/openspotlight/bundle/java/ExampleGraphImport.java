@@ -48,40 +48,51 @@
  */
 package org.openspotlight.bundle.java;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.objectweb.asm.Opcodes;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.parser.dap.language.java.link.*;
-import org.openspotlight.parser.dap.language.java.node.*;
+import org.openspotlight.parser.dap.language.java.link.DataType;
+import org.openspotlight.parser.dap.language.java.link.Extends;
+import org.openspotlight.parser.dap.language.java.link.Implements;
+import org.openspotlight.parser.dap.language.java.link.MethodParameterDefinition;
+import org.openspotlight.parser.dap.language.java.link.MethodReturns;
+import org.openspotlight.parser.dap.language.java.link.MethodThrows;
+import org.openspotlight.parser.dap.language.java.link.PackageType;
+import org.openspotlight.parser.dap.language.java.link.TypeDeclares;
+import org.openspotlight.parser.dap.language.java.node.JavaDataField;
+import org.openspotlight.parser.dap.language.java.node.JavaDataParameter;
+import org.openspotlight.parser.dap.language.java.node.JavaMethod;
+import org.openspotlight.parser.dap.language.java.node.JavaMethodConstructor;
+import org.openspotlight.parser.dap.language.java.node.JavaMethodMethod;
+import org.openspotlight.parser.dap.language.java.node.JavaPackage;
+import org.openspotlight.parser.dap.language.java.node.JavaType;
+import org.openspotlight.parser.dap.language.java.node.JavaTypeClass;
+import org.openspotlight.parser.dap.language.java.node.JavaTypeEnum;
+import org.openspotlight.parser.dap.language.java.node.JavaTypeInterface;
+import org.openspotlight.parser.dap.language.java.node.JavaTypePrimitive;
+import org.openspotlight.tool.dap.language.java.JavaGraphNodeHelper;
 
-class StringUtils {
 
-	public static String repeatString(String s, int n) {
-		StringBuilder sb = new StringBuilder();
-		for(int i=0;i<n;i++){
-			sb.append(s);
-		}
-		return sb.toString();
-	}
-}
+
 
 public class ExampleGraphImport {
 
 	@Test
 	public void shouldImportSomeData() throws Exception {
 		
+
 		SLGraphFactory factory = new SLGraphFactoryImpl();
 		SLGraph graph = factory.createTempGraph(true);
 		SLGraphSession session = graph.openSession();
-		SLNode rootNode = session.createContext("sample").getRootNode();
-		
-		// global variables to be reused for each type
+		SLNode currentContextRootNode = session.createContext("sample").getRootNode();
+		SLNode abstractContextRootNode = session.createContext("abstractJavaContext").getRootNode();
 
+		JavaGraphNodeHelper helper = new JavaGraphNodeHelper(session, currentContextRootNode,abstractContextRootNode);
+
+		// global variables to be reused for each type
 		JavaType newType;
 		JavaPackage newPackage;
 		JavaType newSuperType;
@@ -119,9 +130,9 @@ public class ExampleGraphImport {
 		JavaPackage methodParameterTypePackage;
 		JavaType methodParameterTypeType;
 		PackageType methodParameterTypePackageTypeLink;
-		MethodParameterDeclare methodParametersType;
+		MethodParameterDefinition methodParametersType;
 		JavaPackage newExceptionPackage;
-		JavaTypeClass newExceptionType;
+		JavaType newExceptionType;
 		PackageType exceptionPackageTypeLink;
 		MethodThrows methodThrowsType;
 		JavaPackage methodReturnTypePackage;
@@ -129,6157 +140,1545 @@ public class ExampleGraphImport {
 		String arraySquareBrackets;
 		Extends extendsSuper;
 		Implements implementsSuper;
+		boolean isArray = false;
+		int arrayDimensions = 0;
 
-		    
-		// starting type org.jboss.seam.Component$1
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$1");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface MethodFilter 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "javassist.util.proxy");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "MethodFilter");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface MethodFilter 
-
-
-
-		    // starting method org.jboss.seam.Component$1#Component$1()
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$1()");
-		    method.setSimpleName("Component$1");
-		    isMethodPublic = (0 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (0 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (0 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (0 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (0 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (0 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$1#Component$1()
-
-		    // starting method org.jboss.seam.Component$1#isHandled(java.lang.reflect.Method)
-		    method = newType.addNode(JavaMethodMethod.class,"isHandled(java.lang.reflect.Method)");
-		    method.setSimpleName("isHandled");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$1#isHandled(java.lang.reflect.Method)
-
-		// finishing type org.jboss.seam.Component$1
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$2", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam", "Component$BijectedAttribute", 1537);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$BijectedField", 48);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$BijectedMethod", 48);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$BijectedProperty", 48);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$ConstantInitialValue", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$ELInitialValue", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam", "Component$InitialValue", 1536);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$ListInitialValue", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$MapInitialValue", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$SetInitialValue", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "ComponentType$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeEnum.class,"org.jboss.seam", "ComponentType", 16433);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "ConcurrentRequestTimeoutException", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "CyclicDependencyException", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Entity$NotEntityException", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Entity", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam", "Instance", 1537);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "InstantiationException", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Model", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Namespace", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "NoConversationException", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "RequiredException", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "ScopeType$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeEnum.class,"org.jboss.seam", "ScopeType", 16433);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Seam$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Seam", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "ApplicationException", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "AutoCreate", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Begin", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Conversational", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Create", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "DataBinderClass", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "DataSelectorClass", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Destroy", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "End", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Factory", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeEnum.class,"org.jboss.seam.annotations", "FlushModeType", 16433);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Import", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "In", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Install", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "JndiName", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Logger", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Name", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Namespace", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Observer", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Out", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.annotations", "Outcome", 131105);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "PerNestedConversation", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "RaiseEvent", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "ReadOnly", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Role", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Roles", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Scope", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Startup", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Synchronized", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.annotations", "TransactionPropagationType$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeEnum.class,"org.jboss.seam.annotations", "TransactionPropagationType", 16433);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Transactional", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations", "Unwrap", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.async", "Asynchronous", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.async", "Duration", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.async", "Expiration", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.async", "FinalExpiration", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.async", "IntervalCron", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.async", "IntervalDuration", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.bpm", "BeginTask", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.bpm", "CreateProcess", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.bpm", "EndTask", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.bpm", "ResumeProcess", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.bpm", "StartTask", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.bpm", "Transition", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.datamodel", "DataModel", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.datamodel", "DataModelSelection", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.datamodel", "DataModelSelectionIndex", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.exception", "HttpError", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.exception", "Redirect", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.faces", "Converter", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.faces", "Validator", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.intercept", "AroundInvoke", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.intercept", "BypassInterceptors", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.intercept", "Interceptor", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeEnum.class,"org.jboss.seam.annotations.intercept", "InterceptorType", 16433);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.intercept", "Interceptors", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.intercept", "PostActivate", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.intercept", "PrePassivate", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "Admin", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "Delete", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "Insert", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "PermissionCheck", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "Read", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "Restrict", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "RoleCheck", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "TokenUsername", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "TokenValue", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security", "Update", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "RoleConditional", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "RoleGroups", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "RoleName", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "UserEnabled", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "UserFirstName", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "UserLastName", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "UserPassword", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "UserPrincipal", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.management", "UserRoles", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "Identifier", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "Permission", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "PermissionAction", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "PermissionDiscriminator", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "PermissionRole", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "PermissionTarget", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "PermissionUser", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.security.permission", "Permissions", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.web", "Filter", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.annotations.web", "RequestParameter", 9729);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AbstractDispatcher$DispatcherParameters", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AbstractDispatcher", 1057);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "Asynchronous$ContextualAsynchronousRequest", 1057);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "Asynchronous", 1057);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousEvent$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousEvent$2", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousEvent", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousExceptionHandler", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousInterceptor", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousInvocation$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousInvocation$2", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "AsynchronousInvocation", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "CronSchedule", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.async", "Dispatcher", 1537);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.async", "LocalTimerServiceDispatcher", 1537);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "QuartzDispatcher$QuartzJob", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "QuartzDispatcher", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "QuartzTriggerHandle", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "Schedule", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "ThreadPoolDispatcher$RunnableAsynchronous", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "ThreadPoolDispatcher", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerSchedule", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerHandleProxy$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerHandleProxy", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerProxy$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerProxy$2", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerProxy$3", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerProxy$4", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerProxy$5", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher$TimerProxy", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TimerServiceDispatcher", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TransactionCompletionEvent", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.async", "TransactionSuccessEvent", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeInterface.class,"org.jboss.seam.async", "package-info", 512);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "Actor$1$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "Actor$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "Actor", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "BusinessProcess", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "BusinessProcessInterceptor", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "Jbpm$SeamSubProcessResolver", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "Jbpm", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "JbpmELResolver", 48);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "ManagedJbpmContext", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "PageflowDeploymentHandler$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "PageflowDeploymentHandler", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "PageflowParser", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "PooledTask", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "PooledTaskInstanceList", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "ProcessInstance$1", 32);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "ProcessInstance", 33);
+		newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"org.jboss.seam.bpm", "ProcessInstanceFinder", 33);
 		// #########################################################
 
-		// starting type org.jboss.seam.Component$2
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$2");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-
-		    // starting field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$ComponentType
-			field = newType.addNode(JavaDataField.class,"$SwitchMap$org$jboss$seam$ComponentType"); 
-		    // starting array
-		    arraySquareBrackets = StringUtils.repeatString("[]",1);
-		    fieldType = rootNode.addNode(JavaTypePrimitive.class, "int"+arraySquareBrackets);
-		    //ending array
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (4120 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (4120 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (4120 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (4120 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (4120 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (4120 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (4120 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$ComponentType
-
-		    // starting field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType
-			field = newType.addNode(JavaDataField.class,"$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType"); 
-		    // starting array
-		    arraySquareBrackets = StringUtils.repeatString("[]",1);
-		    fieldType = rootNode.addNode(JavaTypePrimitive.class, "int"+arraySquareBrackets);
-		    //ending array
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (4120 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (4120 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (4120 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (4120 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (4120 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (4120 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (4120 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType
-
-
-
-		// finishing type org.jboss.seam.Component$2
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$BijectedAttribute
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeInterface.class, "Component$BijectedAttribute");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (1537 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (1537 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (1537 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (1537 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (1537 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-
-
-
-		    // starting method org.jboss.seam.Component$BijectedAttribute#getName()
-		    method = newType.addNode(JavaMethodMethod.class,"getName()");
-		    method.setSimpleName("getName");
-		    isMethodPublic = (1025 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1025 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1025 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1025 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1025 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1025 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedAttribute#getName()
-
-		    // starting method org.jboss.seam.Component$BijectedAttribute#getAnnotation()
-		    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
-		    method.setSimpleName("getAnnotation");
-		    isMethodPublic = (1025 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1025 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1025 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1025 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1025 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1025 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Annotation");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedAttribute#getAnnotation()
-
-		    // starting method org.jboss.seam.Component$BijectedAttribute#getType()
-		    method = newType.addNode(JavaMethodMethod.class,"getType()");
-		    method.setSimpleName("getType");
-		    isMethodPublic = (1025 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1025 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1025 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1025 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1025 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1025 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Class");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedAttribute#getType()
-
-		    // starting method org.jboss.seam.Component$BijectedAttribute#set(java.lang.Object, java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
-		    method.setSimpleName("set");
-		    isMethodPublic = (1025 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1025 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1025 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1025 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1025 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1025 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component$BijectedAttribute#set(java.lang.Object, java.lang.Object)
-
-		    // starting method org.jboss.seam.Component$BijectedAttribute#get(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
-		    method.setSimpleName("get");
-		    isMethodPublic = (1025 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1025 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1025 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1025 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1025 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1025 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$BijectedAttribute#get(java.lang.Object)
-
-		// finishing type org.jboss.seam.Component$BijectedAttribute
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$BijectedField
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$BijectedField");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (48 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (48 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (48 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (48 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (48 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$BijectedAttribute 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$BijectedAttribute");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$BijectedAttribute 
-
-		    // starting field org.jboss.seam.Component$BijectedField#name
-			field = newType.addNode(JavaDataField.class,"name"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "String");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (18 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (18 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (18 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (18 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (18 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (18 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (18 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedField#name
-
-		    // starting field org.jboss.seam.Component$BijectedField#field
-			field = newType.addNode(JavaDataField.class,"field"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Field");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (18 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (18 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (18 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (18 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (18 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (18 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (18 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedField#field
-
-		    // starting field org.jboss.seam.Component$BijectedField#annotation
-			field = newType.addNode(JavaDataField.class,"annotation"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			fieldType = fieldPackage.addNode(JavaType.class, "Annotation");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (18 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (18 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (18 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (18 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (18 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (18 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (18 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedField#annotation
-
-		    // starting field org.jboss.seam.Component$BijectedField#this$0
-			field = newType.addNode(JavaDataField.class,"this$0"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "Component");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (4112 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (4112 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (4112 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (4112 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (4112 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (4112 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (4112 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedField#this$0
-
-
-
-		    // starting method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)");
-		    method.setSimpleName("Component$BijectedField");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Field");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		    // finishing method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)
-
-		    // starting method org.jboss.seam.Component$BijectedField#getName()
-		    method = newType.addNode(JavaMethodMethod.class,"getName()");
-		    method.setSimpleName("getName");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedField#getName()
-
-		    // starting method org.jboss.seam.Component$BijectedField#getField()
-		    method = newType.addNode(JavaMethodMethod.class,"getField()");
-		    method.setSimpleName("getField");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Field");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedField#getField()
-
-		    // starting method org.jboss.seam.Component$BijectedField#getAnnotation()
-		    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
-		    method.setSimpleName("getAnnotation");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Annotation");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedField#getAnnotation()
-
-		    // starting method org.jboss.seam.Component$BijectedField#getType()
-		    method = newType.addNode(JavaMethodMethod.class,"getType()");
-		    method.setSimpleName("getType");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Class");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedField#getType()
-
-		    // starting method org.jboss.seam.Component$BijectedField#set(java.lang.Object, java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
-		    method.setSimpleName("set");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component$BijectedField#set(java.lang.Object, java.lang.Object)
-
-		    // starting method org.jboss.seam.Component$BijectedField#get(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
-		    method.setSimpleName("get");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$BijectedField#get(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component$BijectedField#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedField#toString()
-
-		    // starting method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)");
-		    method.setSimpleName("Component$BijectedField");
-		    isMethodPublic = (4096 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4096 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4096 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4096 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4096 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4096 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Field");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		        // starting parameter #4
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component$1");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(4);
-		        // finishing parameter #4
-		    // finishing method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
-
-		// finishing type org.jboss.seam.Component$BijectedField
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$BijectedMethod
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$BijectedMethod");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (48 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (48 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (48 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (48 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (48 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$BijectedAttribute 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$BijectedAttribute");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$BijectedAttribute 
-
-		    // starting field org.jboss.seam.Component$BijectedMethod#name
-			field = newType.addNode(JavaDataField.class,"name"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "String");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (18 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (18 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (18 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (18 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (18 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (18 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (18 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedMethod#name
-
-		    // starting field org.jboss.seam.Component$BijectedMethod#method
-			field = newType.addNode(JavaDataField.class,"method"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (18 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (18 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (18 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (18 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (18 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (18 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (18 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedMethod#method
-
-		    // starting field org.jboss.seam.Component$BijectedMethod#annotation
-			field = newType.addNode(JavaDataField.class,"annotation"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			fieldType = fieldPackage.addNode(JavaType.class, "Annotation");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (18 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (18 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (18 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (18 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (18 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (18 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (18 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedMethod#annotation
-
-		    // starting field org.jboss.seam.Component$BijectedMethod#this$0
-			field = newType.addNode(JavaDataField.class,"this$0"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "Component");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (4112 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (4112 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (4112 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (4112 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (4112 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (4112 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (4112 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedMethod#this$0
-
-
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)");
-		    method.setSimpleName("Component$BijectedMethod");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		    // finishing method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#getName()
-		    method = newType.addNode(JavaMethodMethod.class,"getName()");
-		    method.setSimpleName("getName");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedMethod#getName()
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#getMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"getMethod()");
-		    method.setSimpleName("getMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Method");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedMethod#getMethod()
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#getAnnotation()
-		    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
-		    method.setSimpleName("getAnnotation");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Annotation");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedMethod#getAnnotation()
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#set(java.lang.Object, java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
-		    method.setSimpleName("set");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component$BijectedMethod#set(java.lang.Object, java.lang.Object)
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#get(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
-		    method.setSimpleName("get");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$BijectedMethod#get(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#getType()
-		    method = newType.addNode(JavaMethodMethod.class,"getType()");
-		    method.setSimpleName("getType");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Class");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedMethod#getType()
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedMethod#toString()
-
-		    // starting method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation, org.jboss.seam.Component$1)");
-		    method.setSimpleName("Component$BijectedMethod");
-		    isMethodPublic = (4096 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4096 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4096 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4096 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4096 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4096 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		        // starting parameter #4
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component$1");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(4);
-		        // finishing parameter #4
-		    // finishing method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
-
-		// finishing type org.jboss.seam.Component$BijectedMethod
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$BijectedProperty
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$BijectedProperty");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (48 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (48 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (48 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (48 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (48 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$BijectedAttribute 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$BijectedAttribute");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$BijectedAttribute 
-
-		    // starting field org.jboss.seam.Component$BijectedProperty#getter
-			field = newType.addNode(JavaDataField.class,"getter"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "Component$BijectedMethod");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedProperty#getter
-
-		    // starting field org.jboss.seam.Component$BijectedProperty#setter
-			field = newType.addNode(JavaDataField.class,"setter"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "Component$BijectedMethod");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedProperty#setter
-
-		    // starting field org.jboss.seam.Component$BijectedProperty#this$0
-			field = newType.addNode(JavaDataField.class,"this$0"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "Component");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (4112 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (4112 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (4112 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (4112 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (4112 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (4112 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (4112 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$BijectedProperty#this$0
-
-
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.reflect.Method, java.lang.annotation.Annotation)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.reflect.Method, java.lang.annotation.Annotation)");
-		    method.setSimpleName("Component$BijectedProperty");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		        // starting parameter #4
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(4);
-		        // finishing parameter #4
-		    // finishing method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.reflect.Method, java.lang.annotation.Annotation)
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)");
-		    method.setSimpleName("Component$BijectedProperty");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		    // finishing method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#get(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
-		    method.setSimpleName("get");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$BijectedProperty#get(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#getAnnotation()
-		    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
-		    method.setSimpleName("getAnnotation");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Annotation");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedProperty#getAnnotation()
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#getName()
-		    method = newType.addNode(JavaMethodMethod.class,"getName()");
-		    method.setSimpleName("getName");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedProperty#getName()
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#getType()
-		    method = newType.addNode(JavaMethodMethod.class,"getType()");
-		    method.setSimpleName("getType");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Class");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$BijectedProperty#getType()
-
-		    // starting method org.jboss.seam.Component$BijectedProperty#set(java.lang.Object, java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
-		    method.setSimpleName("set");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component$BijectedProperty#set(java.lang.Object, java.lang.Object)
-
-		// finishing type org.jboss.seam.Component$BijectedProperty
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$ConstantInitialValue
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$ConstantInitialValue");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$InitialValue 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$InitialValue");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$InitialValue 
-
-		    // starting field org.jboss.seam.Component$ConstantInitialValue#value
-			field = newType.addNode(JavaDataField.class,"value"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Object");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ConstantInitialValue#value
-
-
-
-		    // starting method org.jboss.seam.Component$ConstantInitialValue#Component$ConstantInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$ConstantInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("Component$ConstantInitialValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component$ConstantInitialValue#Component$ConstantInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component$ConstantInitialValue#getValue(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
-		    method.setSimpleName("getValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$ConstantInitialValue#getValue(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component$ConstantInitialValue#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$ConstantInitialValue#toString()
-
-		// finishing type org.jboss.seam.Component$ConstantInitialValue
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$ELInitialValue
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$ELInitialValue");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$InitialValue 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$InitialValue");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$InitialValue 
-
-		    // starting field org.jboss.seam.Component$ELInitialValue#expression
-			field = newType.addNode(JavaDataField.class,"expression"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "String");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ELInitialValue#expression
-
-		    // starting field org.jboss.seam.Component$ELInitialValue#converter
-			field = newType.addNode(JavaDataField.class,"converter"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Conversions$Converter");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ELInitialValue#converter
-
-		    // starting field org.jboss.seam.Component$ELInitialValue#parameterType
-			field = newType.addNode(JavaDataField.class,"parameterType"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Type");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ELInitialValue#parameterType
-
-
-
-		    // starting method org.jboss.seam.Component$ELInitialValue#Component$ELInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$ELInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("Component$ELInitialValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component$ELInitialValue#Component$ELInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component$ELInitialValue#getValue(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
-		    method.setSimpleName("getValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$ELInitialValue#getValue(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component$ELInitialValue#createValueExpression()
-		    method = newType.addNode(JavaMethodMethod.class,"createValueExpression()");
-		    method.setSimpleName("createValueExpression");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.core");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Expressions$ValueExpression");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$ELInitialValue#createValueExpression()
-
-		    // starting method org.jboss.seam.Component$ELInitialValue#createMethodExpression()
-		    method = newType.addNode(JavaMethodMethod.class,"createMethodExpression()");
-		    method.setSimpleName("createMethodExpression");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.core");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Expressions$MethodExpression");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$ELInitialValue#createMethodExpression()
-
-		    // starting method org.jboss.seam.Component$ELInitialValue#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$ELInitialValue#toString()
-
-		// finishing type org.jboss.seam.Component$ELInitialValue
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$InitialValue
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeInterface.class, "Component$InitialValue");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (1536 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (1536 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (1536 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (1536 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (1536 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-
-
-
-		    // starting method org.jboss.seam.Component$InitialValue#getValue(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
-		    method.setSimpleName("getValue");
-		    isMethodPublic = (1025 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1025 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1025 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1025 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1025 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1025 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$InitialValue#getValue(java.lang.Class)
-
-		// finishing type org.jboss.seam.Component$InitialValue
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$ListInitialValue
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$ListInitialValue");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$InitialValue 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$InitialValue");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$InitialValue 
-
-		    // starting field org.jboss.seam.Component$ListInitialValue#initialValues
-			field = newType.addNode(JavaDataField.class,"initialValues"); 
-		    // starting array
-		    arraySquareBrackets = StringUtils.repeatString("[]",1);
-		    fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    fieldType = fieldPackage.addNode(JavaType.class, "Component$InitialValue"+arraySquareBrackets);
-		    fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    //ending array
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ListInitialValue#initialValues
-
-		    // starting field org.jboss.seam.Component$ListInitialValue#elementType
-			field = newType.addNode(JavaDataField.class,"elementType"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ListInitialValue#elementType
-
-		    // starting field org.jboss.seam.Component$ListInitialValue#isArray
-			field = newType.addNode(JavaDataField.class,"isArray"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ListInitialValue#isArray
-
-		    // starting field org.jboss.seam.Component$ListInitialValue#collectionClass
-			field = newType.addNode(JavaDataField.class,"collectionClass"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$ListInitialValue#collectionClass
-
-
-
-		    // starting method org.jboss.seam.Component$ListInitialValue#Component$ListInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$ListInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("Component$ListInitialValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component$ListInitialValue#Component$ListInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component$ListInitialValue#getValue(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
-		    method.setSimpleName("getValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$ListInitialValue#getValue(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component$ListInitialValue#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$ListInitialValue#toString()
-
-		// finishing type org.jboss.seam.Component$ListInitialValue
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$MapInitialValue
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$MapInitialValue");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$InitialValue 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$InitialValue");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$InitialValue 
-
-		    // starting field org.jboss.seam.Component$MapInitialValue#initialValues
-			field = newType.addNode(JavaDataField.class,"initialValues"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Map");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$MapInitialValue#initialValues
-
-		    // starting field org.jboss.seam.Component$MapInitialValue#elementType
-			field = newType.addNode(JavaDataField.class,"elementType"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$MapInitialValue#elementType
-
-		    // starting field org.jboss.seam.Component$MapInitialValue#keyType
-			field = newType.addNode(JavaDataField.class,"keyType"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$MapInitialValue#keyType
-
-		    // starting field org.jboss.seam.Component$MapInitialValue#collectionClass
-			field = newType.addNode(JavaDataField.class,"collectionClass"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$MapInitialValue#collectionClass
-
-
-
-		    // starting method org.jboss.seam.Component$MapInitialValue#Component$MapInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$MapInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("Component$MapInitialValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component$MapInitialValue#Component$MapInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component$MapInitialValue#getValue(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
-		    method.setSimpleName("getValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$MapInitialValue#getValue(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component$MapInitialValue#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$MapInitialValue#toString()
-
-		// finishing type org.jboss.seam.Component$MapInitialValue
-		// #########################################################
-
-		// starting type org.jboss.seam.Component$SetInitialValue
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component$SetInitialValue");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (32 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (32 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (32 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (32 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (32 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-		    
-		    // starting interface Component$InitialValue 
-		    newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    newSuperType = newSuperPackage.addNode(JavaTypeInterface.class, "Component$InitialValue");
-		    superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-		    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-		    // ending interface Component$InitialValue 
-
-		    // starting field org.jboss.seam.Component$SetInitialValue#initialValues
-			field = newType.addNode(JavaDataField.class,"initialValues"); 
-		    // starting array
-		    arraySquareBrackets = StringUtils.repeatString("[]",1);
-		    fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    fieldType = fieldPackage.addNode(JavaType.class, "Component$InitialValue"+arraySquareBrackets);
-		    fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    //ending array
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$SetInitialValue#initialValues
-
-		    // starting field org.jboss.seam.Component$SetInitialValue#elementType
-			field = newType.addNode(JavaDataField.class,"elementType"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$SetInitialValue#elementType
-
-		    // starting field org.jboss.seam.Component$SetInitialValue#collectionClass
-			field = newType.addNode(JavaDataField.class,"collectionClass"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component$SetInitialValue#collectionClass
-
-
-
-		    // starting method org.jboss.seam.Component$SetInitialValue#Component$SetInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component$SetInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("Component$SetInitialValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component$SetInitialValue#Component$SetInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component$SetInitialValue#getValue(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
-		    method.setSimpleName("getValue");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component$SetInitialValue#getValue(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component$SetInitialValue#toString()
-		    method = newType.addNode(JavaMethodMethod.class,"toString()");
-		    method.setSimpleName("toString");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component$SetInitialValue#toString()
-
-		// finishing type org.jboss.seam.Component$SetInitialValue
-		// #########################################################
-
-		// starting type org.jboss.seam.Component
-		newPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		newType = newPackage.addNode(JavaTypeClass.class, "Component");
-		packageTypeLink = session.addLink(PackageType.class, newPackage, newType, false);
-		isPublic = (33 & Opcodes.ACC_PUBLIC) != 0;
-		isPrivate = (33 & Opcodes.ACC_PRIVATE) != 0;
-		isStatic = (33 & Opcodes.ACC_STATIC) != 0;
-		isFinal = (33 & Opcodes.ACC_FINAL) != 0;
-		isProtected = (33 & Opcodes.ACC_PROTECTED) != 0;
-		newType.setPublic(isPublic);
-		newType.setPrivate(isPrivate);
-		newType.setStatic(isStatic);
-		newType.setFinal(isFinal);
-		newType.setProtected(isProtected);
-			//superclass
-			newSuperPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			newSuperType = newSuperPackage.addNode(JavaTypeClass.class, "Model");
-			superPackageTypeLink = session.addLink(PackageType.class, newSuperPackage, newSuperType, false);
-			extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
-			//ending superclass
-
-		    // starting field org.jboss.seam.Component#PROPERTIES
-			field = newType.addNode(JavaDataField.class,"PROPERTIES"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "String");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (25 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (25 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (25 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (25 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (25 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (25 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (25 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#PROPERTIES
-
-		    // starting field org.jboss.seam.Component#log
-			field = newType.addNode(JavaDataField.class,"log"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.log");
-			fieldType = fieldPackage.addNode(JavaType.class, "LogProvider");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (26 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (26 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (26 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (26 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (26 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (26 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (26 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#log
-
-		    // starting field org.jboss.seam.Component#type
-			field = newType.addNode(JavaDataField.class,"type"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "ComponentType");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#type
-
-		    // starting field org.jboss.seam.Component#name
-			field = newType.addNode(JavaDataField.class,"name"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "String");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#name
-
-		    // starting field org.jboss.seam.Component#scope
-			field = newType.addNode(JavaDataField.class,"scope"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "ScopeType");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#scope
-
-		    // starting field org.jboss.seam.Component#jndiName
-			field = newType.addNode(JavaDataField.class,"jndiName"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "String");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#jndiName
-
-		    // starting field org.jboss.seam.Component#interceptionEnabled
-			field = newType.addNode(JavaDataField.class,"interceptionEnabled"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#interceptionEnabled
-
-		    // starting field org.jboss.seam.Component#startup
-			field = newType.addNode(JavaDataField.class,"startup"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#startup
-
-		    // starting field org.jboss.seam.Component#dependencies
-			field = newType.addNode(JavaDataField.class,"dependencies"); 
-		    // starting array
-		    arraySquareBrackets = StringUtils.repeatString("[]",1);
-		    fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    fieldType = fieldPackage.addNode(JavaType.class, "String"+arraySquareBrackets);
-		    fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    //ending array
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#dependencies
-
-		    // starting field org.jboss.seam.Component#synchronize
-			field = newType.addNode(JavaDataField.class,"synchronize"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#synchronize
-
-		    // starting field org.jboss.seam.Component#timeout
-			field = newType.addNode(JavaDataField.class,"timeout"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "long");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#timeout
-
-		    // starting field org.jboss.seam.Component#secure
-			field = newType.addNode(JavaDataField.class,"secure"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#secure
-
-		    // starting field org.jboss.seam.Component#businessInterfaces
-			field = newType.addNode(JavaDataField.class,"businessInterfaces"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Set");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#businessInterfaces
-
-		    // starting field org.jboss.seam.Component#destroyMethod
-			field = newType.addNode(JavaDataField.class,"destroyMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#destroyMethod
-
-		    // starting field org.jboss.seam.Component#createMethod
-			field = newType.addNode(JavaDataField.class,"createMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#createMethod
-
-		    // starting field org.jboss.seam.Component#unwrapMethod
-			field = newType.addNode(JavaDataField.class,"unwrapMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#unwrapMethod
-
-		    // starting field org.jboss.seam.Component#defaultRemoveMethod
-			field = newType.addNode(JavaDataField.class,"defaultRemoveMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#defaultRemoveMethod
-
-		    // starting field org.jboss.seam.Component#preDestroyMethod
-			field = newType.addNode(JavaDataField.class,"preDestroyMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#preDestroyMethod
-
-		    // starting field org.jboss.seam.Component#postConstructMethod
-			field = newType.addNode(JavaDataField.class,"postConstructMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#postConstructMethod
-
-		    // starting field org.jboss.seam.Component#prePassivateMethod
-			field = newType.addNode(JavaDataField.class,"prePassivateMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#prePassivateMethod
-
-		    // starting field org.jboss.seam.Component#postActivateMethod
-			field = newType.addNode(JavaDataField.class,"postActivateMethod"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			fieldType = fieldPackage.addNode(JavaType.class, "Method");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#postActivateMethod
-
-		    // starting field org.jboss.seam.Component#removeMethods
-			field = newType.addNode(JavaDataField.class,"removeMethods"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Map");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#removeMethods
-
-		    // starting field org.jboss.seam.Component#lifecycleMethods
-			field = newType.addNode(JavaDataField.class,"lifecycleMethods"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Set");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#lifecycleMethods
-
-		    // starting field org.jboss.seam.Component#conversationManagementMethods
-			field = newType.addNode(JavaDataField.class,"conversationManagementMethods"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Set");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#conversationManagementMethods
-
-		    // starting field org.jboss.seam.Component#inAttributes
-			field = newType.addNode(JavaDataField.class,"inAttributes"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#inAttributes
-
-		    // starting field org.jboss.seam.Component#outAttributes
-			field = newType.addNode(JavaDataField.class,"outAttributes"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#outAttributes
-
-		    // starting field org.jboss.seam.Component#parameterSetters
-			field = newType.addNode(JavaDataField.class,"parameterSetters"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#parameterSetters
-
-		    // starting field org.jboss.seam.Component#dataModelGetters
-			field = newType.addNode(JavaDataField.class,"dataModelGetters"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#dataModelGetters
-
-		    // starting field org.jboss.seam.Component#pcAttributes
-			field = newType.addNode(JavaDataField.class,"pcAttributes"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#pcAttributes
-
-		    // starting field org.jboss.seam.Component#dataModelSelectionSetters
-			field = newType.addNode(JavaDataField.class,"dataModelSelectionSetters"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Map");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#dataModelSelectionSetters
-
-		    // starting field org.jboss.seam.Component#interceptors
-			field = newType.addNode(JavaDataField.class,"interceptors"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#interceptors
-
-		    // starting field org.jboss.seam.Component#clientSideInterceptors
-			field = newType.addNode(JavaDataField.class,"clientSideInterceptors"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#clientSideInterceptors
-
-		    // starting field org.jboss.seam.Component#initializerSetters
-			field = newType.addNode(JavaDataField.class,"initializerSetters"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Map");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#initializerSetters
-
-		    // starting field org.jboss.seam.Component#initializerFields
-			field = newType.addNode(JavaDataField.class,"initializerFields"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Map");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#initializerFields
-
-		    // starting field org.jboss.seam.Component#logFields
-			field = newType.addNode(JavaDataField.class,"logFields"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#logFields
-
-		    // starting field org.jboss.seam.Component#logInstances
-			field = newType.addNode(JavaDataField.class,"logInstances"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "List");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#logInstances
-
-		    // starting field org.jboss.seam.Component#imports
-			field = newType.addNode(JavaDataField.class,"imports"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.util");
-			fieldType = fieldPackage.addNode(JavaType.class, "Collection");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#imports
-
-		    // starting field org.jboss.seam.Component#namespace
-			field = newType.addNode(JavaDataField.class,"namespace"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			fieldType = fieldPackage.addNode(JavaType.class, "Namespace");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#namespace
-
-		    // starting field org.jboss.seam.Component#perNestedConversation
-			field = newType.addNode(JavaDataField.class,"perNestedConversation"); 
-			fieldType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#perNestedConversation
-
-		    // starting field org.jboss.seam.Component#factory
-			field = newType.addNode(JavaDataField.class,"factory"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			fieldType = fieldPackage.addNode(JavaType.class, "Class");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (2 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (2 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (2 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (2 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#factory
-
-		    // starting field org.jboss.seam.Component#FINALIZE_FILTER
-			field = newType.addNode(JavaDataField.class,"FINALIZE_FILTER"); 
-			fieldPackage = rootNode.addNode(JavaPackage.class, "javassist.util.proxy");
-			fieldType = fieldPackage.addNode(JavaType.class, "MethodFilter");
-			fieldPackageTypeLink = session.addLink(PackageType.class, fieldPackage, fieldType, false);
-		    fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
-			isFieldPublic = (26 & Opcodes.ACC_PUBLIC) != 0;
-			isFieldPrivate = (26 & Opcodes.ACC_PRIVATE) != 0;
-			isFieldStatic = (26 & Opcodes.ACC_STATIC) != 0;
-			isFieldFinal = (26 & Opcodes.ACC_FINAL) != 0;
-			isFieldProtected = (26 & Opcodes.ACC_PROTECTED) != 0;
-			isFieldTransient = (26 & Opcodes.ACC_TRANSIENT) != 0;
-			isFieldVolatile = (26 & Opcodes.ACC_VOLATILE) != 0;
-			field.setPublic(isFieldPublic);
-			field.setPrivate(isFieldPrivate);
-			field.setStatic(isFieldStatic);
-			field.setFinal(isFieldFinal);
-			field.setProtected(isFieldProtected);
-			field.setTransient(isFieldTransient);
-			field.setVolatile(isFieldVolatile);
-		    // finishing field org.jboss.seam.Component#FINALIZE_FILTER
-
-
-
-		    // starting method org.jboss.seam.Component#Component(java.lang.Class)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component(java.lang.Class)");
-		    method.setSimpleName("Component");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#Component(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component#Component(java.lang.Class, java.lang.String)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component(java.lang.Class, java.lang.String)");
-		    method.setSimpleName("Component");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#Component(java.lang.Class, java.lang.String)
-
-		    // starting method org.jboss.seam.Component#Component(java.lang.Class, org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component(java.lang.Class, org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("Component");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#Component(java.lang.Class, org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#Component(java.lang.Class, java.lang.String, org.jboss.seam.ScopeType, boolean, java.lang.String[], java.lang.String)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component(java.lang.Class, java.lang.String, org.jboss.seam.ScopeType, boolean, java.lang.String[], java.lang.String)");
-		    method.setSimpleName("Component");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "ScopeType");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		        // starting parameter #4
-			    // starting array
-			    arraySquareBrackets = StringUtils.repeatString("[]",1);
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String"+arraySquareBrackets);
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    //ending array
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(4);
-		        // finishing parameter #4
-		        // starting parameter #5
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(5);
-		        // finishing parameter #5
-		    // finishing method org.jboss.seam.Component#Component(java.lang.Class, java.lang.String, org.jboss.seam.ScopeType, boolean, java.lang.String[], java.lang.String)
-
-		    // starting method org.jboss.seam.Component#Component(java.lang.Class, java.lang.String, org.jboss.seam.ScopeType, boolean, java.lang.String[], java.lang.String, org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodConstructor.class,"Component(java.lang.Class, java.lang.String, org.jboss.seam.ScopeType, boolean, java.lang.String[], java.lang.String, org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("Component");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "ScopeType");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		        // starting parameter #4
-			    // starting array
-			    arraySquareBrackets = StringUtils.repeatString("[]",1);
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String"+arraySquareBrackets);
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    //ending array
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(4);
-		        // finishing parameter #4
-		        // starting parameter #5
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(5);
-		        // finishing parameter #5
-		        // starting parameter #6
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(6);
-		        // finishing parameter #6
-		    // finishing method org.jboss.seam.Component#Component(java.lang.Class, java.lang.String, org.jboss.seam.ScopeType, boolean, java.lang.String[], java.lang.String, org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#checkName()
-		    method = newType.addNode(JavaMethodMethod.class,"checkName()");
-		    method.setSimpleName("checkName");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkName()
-
-		    // starting method org.jboss.seam.Component#checkNonabstract()
-		    method = newType.addNode(JavaMethodMethod.class,"checkNonabstract()");
-		    method.setSimpleName("checkNonabstract");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkNonabstract()
-
-		    // starting method org.jboss.seam.Component#initStartup()
-		    method = newType.addNode(JavaMethodMethod.class,"initStartup()");
-		    method.setSimpleName("initStartup");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#initStartup()
-
-		    // starting method org.jboss.seam.Component#initSynchronize()
-		    method = newType.addNode(JavaMethodMethod.class,"initSynchronize()");
-		    method.setSimpleName("initSynchronize");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#initSynchronize()
-
-		    // starting method org.jboss.seam.Component#registerConverterOrValidator(org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodMethod.class,"registerConverterOrValidator(org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("registerConverterOrValidator");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#registerConverterOrValidator(org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#initNamespace(java.lang.String, org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodMethod.class,"initNamespace(java.lang.String, org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("initNamespace");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#initNamespace(java.lang.String, org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#initImports(org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodMethod.class,"initImports(org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("initImports");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#initImports(org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#addImport(org.jboss.seam.core.Init, org.jboss.seam.annotations.Import)
-		    method = newType.addNode(JavaMethodMethod.class,"addImport(org.jboss.seam.core.Init, org.jboss.seam.annotations.Import)");
-		    method.setSimpleName("addImport");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.core");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Init");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.annotations");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Import");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#addImport(org.jboss.seam.core.Init, org.jboss.seam.annotations.Import)
-
-		    // starting method org.jboss.seam.Component#checkScopeForComponentType()
-		    method = newType.addNode(JavaMethodMethod.class,"checkScopeForComponentType()");
-		    method.setSimpleName("checkScopeForComponentType");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkScopeForComponentType()
-
-		    // starting method org.jboss.seam.Component#checkSynchronizedForComponentType()
-		    method = newType.addNode(JavaMethodMethod.class,"checkSynchronizedForComponentType()");
-		    method.setSimpleName("checkSynchronizedForComponentType");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkSynchronizedForComponentType()
-
-		    // starting method org.jboss.seam.Component#checkSerializableForComponentType()
-		    method = newType.addNode(JavaMethodMethod.class,"checkSerializableForComponentType()");
-		    method.setSimpleName("checkSerializableForComponentType");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkSerializableForComponentType()
-
-		    // starting method org.jboss.seam.Component#getJndiName(org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodMethod.class,"getJndiName(org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("getJndiName");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#getJndiName(org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#initInitializers(org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodMethod.class,"initInitializers(org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("initInitializers");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#initInitializers(org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#getInitialValueHonoringExceptions(java.lang.String, org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodMethod.class,"getInitialValueHonoringExceptions(java.lang.String, org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("getInitialValueHonoringExceptions");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Component$InitialValue");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		    // finishing method org.jboss.seam.Component#getInitialValueHonoringExceptions(java.lang.String, org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component#getInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-		    method = newType.addNode(JavaMethodMethod.class,"getInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
-		    method.setSimpleName("getInitialValue");
-		    isMethodPublic = (10 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (10 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (10 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (10 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (10 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (10 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Component$InitialValue");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Conversions$PropertyValue");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Type");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component#getInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
-
-		    // starting method org.jboss.seam.Component#initMembers(java.lang.Class, org.jboss.seam.contexts.Context)
-		    method = newType.addNode(JavaMethodMethod.class,"initMembers(java.lang.Class, org.jboss.seam.contexts.Context)");
-		    method.setSimpleName("initMembers");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#initMembers(java.lang.Class, org.jboss.seam.contexts.Context)
-
-		    // starting method org.jboss.seam.Component#checkDefaultRemoveMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"checkDefaultRemoveMethod()");
-		    method.setSimpleName("checkDefaultRemoveMethod");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkDefaultRemoveMethod()
-
-		    // starting method org.jboss.seam.Component#scanMethod(org.jboss.seam.contexts.Context, java.util.Map, java.util.Set, java.lang.reflect.Method)
-		    method = newType.addNode(JavaMethodMethod.class,"scanMethod(org.jboss.seam.contexts.Context, java.util.Map, java.util.Set, java.lang.reflect.Method)");
-		    method.setSimpleName("scanMethod");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.contexts");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Context");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Map");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Set");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Method");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		    // finishing method org.jboss.seam.Component#scanMethod(org.jboss.seam.contexts.Context, java.util.Map, java.util.Set, java.lang.reflect.Method)
-
-		    // starting method org.jboss.seam.Component#scanField(java.util.Map, java.util.Set, java.lang.reflect.Field)
-		    method = newType.addNode(JavaMethodMethod.class,"scanField(java.util.Map, java.util.Set, java.lang.reflect.Field)");
-		    method.setSimpleName("scanField");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Map");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Set");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Field");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		    // finishing method org.jboss.seam.Component#scanField(java.util.Map, java.util.Set, java.lang.reflect.Field)
-
-		    // starting method org.jboss.seam.Component#checkPersistenceContextForComponentType()
-		    method = newType.addNode(JavaMethodMethod.class,"checkPersistenceContextForComponentType()");
-		    method.setSimpleName("checkPersistenceContextForComponentType");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#checkPersistenceContextForComponentType()
-
-		    // starting method org.jboss.seam.Component#getDataModelSelectionName(java.util.Set, boolean, java.lang.String, java.lang.annotation.Annotation)
-		    method = newType.addNode(JavaMethodMethod.class,"getDataModelSelectionName(java.util.Set, boolean, java.lang.String, java.lang.annotation.Annotation)");
-		    method.setSimpleName("getDataModelSelectionName");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Set");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		        // starting parameter #2
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(2);
-		        // finishing parameter #2
-		        // starting parameter #3
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.annotation");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Annotation");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(3);
-		        // finishing parameter #3
-		    // finishing method org.jboss.seam.Component#getDataModelSelectionName(java.util.Set, boolean, java.lang.String, java.lang.annotation.Annotation)
-
-		    // starting method org.jboss.seam.Component#checkDataModelScope(org.jboss.seam.annotations.datamodel.DataModel)
-		    method = newType.addNode(JavaMethodMethod.class,"checkDataModelScope(org.jboss.seam.annotations.datamodel.DataModel)");
-		    method.setSimpleName("checkDataModelScope");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.annotations.datamodel");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "DataModel");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#checkDataModelScope(org.jboss.seam.annotations.datamodel.DataModel)
-
-		    // starting method org.jboss.seam.Component#initInterceptors()
-		    method = newType.addNode(JavaMethodMethod.class,"initInterceptors()");
-		    method.setSimpleName("initInterceptors");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#initInterceptors()
-
-		    // starting method org.jboss.seam.Component#addInterceptor(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"addInterceptor(java.lang.Object)");
-		    method.setSimpleName("addInterceptor");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#addInterceptor(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#addInterceptor(org.jboss.seam.intercept.Interceptor)
-		    method = newType.addNode(JavaMethodMethod.class,"addInterceptor(org.jboss.seam.intercept.Interceptor)");
-		    method.setSimpleName("addInterceptor");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.intercept");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Interceptor");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#addInterceptor(org.jboss.seam.intercept.Interceptor)
-
-		    // starting method org.jboss.seam.Component#newSort(java.util.List)
-		    method = newType.addNode(JavaMethodMethod.class,"newSort(java.util.List)");
-		    method.setSimpleName("newSort");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "List");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#newSort(java.util.List)
-
-		    // starting method org.jboss.seam.Component#initDefaultInterceptors()
-		    method = newType.addNode(JavaMethodMethod.class,"initDefaultInterceptors()");
-		    method.setSimpleName("initDefaultInterceptors");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#initDefaultInterceptors()
-
-		    // starting method org.jboss.seam.Component#initSecurity()
-		    method = newType.addNode(JavaMethodMethod.class,"initSecurity()");
-		    method.setSimpleName("initSecurity");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#initSecurity()
-
-		    // starting method org.jboss.seam.Component#hasAnnotation(java.lang.Class, java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"hasAnnotation(java.lang.Class, java.lang.Class)");
-		    method.setSimpleName("hasAnnotation");
-		    isMethodPublic = (10 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (10 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (10 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (10 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (10 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (10 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#hasAnnotation(java.lang.Class, java.lang.Class)
-
-		    // starting method org.jboss.seam.Component#hasAnnotation(java.lang.Class, java.lang.String)
-		    method = newType.addNode(JavaMethodMethod.class,"hasAnnotation(java.lang.Class, java.lang.String)");
-		    method.setSimpleName("hasAnnotation");
-		    isMethodPublic = (10 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (10 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (10 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (10 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (10 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (10 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#hasAnnotation(java.lang.Class, java.lang.String)
-
-		    // starting method org.jboss.seam.Component#beanClassHasAnnotation(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"beanClassHasAnnotation(java.lang.Class)");
-		    method.setSimpleName("beanClassHasAnnotation");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#beanClassHasAnnotation(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component#beanClassHasAnnotation(java.lang.String)
-		    method = newType.addNode(JavaMethodMethod.class,"beanClassHasAnnotation(java.lang.String)");
-		    method.setSimpleName("beanClassHasAnnotation");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#beanClassHasAnnotation(java.lang.String)
-
-		    // starting method org.jboss.seam.Component#businessInterfaceHasAnnotation(java.lang.Class)
-		    method = newType.addNode(JavaMethodMethod.class,"businessInterfaceHasAnnotation(java.lang.Class)");
-		    method.setSimpleName("businessInterfaceHasAnnotation");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Class");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#businessInterfaceHasAnnotation(java.lang.Class)
-
-		    // starting method org.jboss.seam.Component#getName()
-		    method = newType.addNode(JavaMethodMethod.class,"getName()");
-		    method.setSimpleName("getName");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "String");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getName()
-
-		    // starting method org.jboss.seam.Component#getType()
-		    method = newType.addNode(JavaMethodMethod.class,"getType()");
-		    method.setSimpleName("getType");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "ComponentType");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getType()
-
-		    // starting method org.jboss.seam.Component#getScope()
-		    method = newType.addNode(JavaMethodMethod.class,"getScope()");
-		    method.setSimpleName("getScope");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "ScopeType");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getScope()
-
-		    // starting method org.jboss.seam.Component#getInterceptors(org.jboss.seam.annotations.intercept.InterceptorType)
-		    method = newType.addNode(JavaMethodMethod.class,"getInterceptors(org.jboss.seam.annotations.intercept.InterceptorType)");
-		    method.setSimpleName("getInterceptors");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.annotations.intercept");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "InterceptorType");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#getInterceptors(org.jboss.seam.annotations.intercept.InterceptorType)
-
-		    // starting method org.jboss.seam.Component#createUserInterceptors(org.jboss.seam.annotations.intercept.InterceptorType)
-		    method = newType.addNode(JavaMethodMethod.class,"createUserInterceptors(org.jboss.seam.annotations.intercept.InterceptorType)");
-		    method.setSimpleName("createUserInterceptors");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam.annotations.intercept");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "InterceptorType");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#createUserInterceptors(org.jboss.seam.annotations.intercept.InterceptorType)
-
-		    // starting method org.jboss.seam.Component#getServerSideInterceptors()
-		    method = newType.addNode(JavaMethodMethod.class,"getServerSideInterceptors()");
-		    method.setSimpleName("getServerSideInterceptors");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getServerSideInterceptors()
-
-		    // starting method org.jboss.seam.Component#getClientSideInterceptors()
-		    method = newType.addNode(JavaMethodMethod.class,"getClientSideInterceptors()");
-		    method.setSimpleName("getClientSideInterceptors");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getClientSideInterceptors()
-
-		    // starting method org.jboss.seam.Component#getDestroyMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"getDestroyMethod()");
-		    method.setSimpleName("getDestroyMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Method");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getDestroyMethod()
-
-		    // starting method org.jboss.seam.Component#getRemoveMethods()
-		    method = newType.addNode(JavaMethodMethod.class,"getRemoveMethods()");
-		    method.setSimpleName("getRemoveMethods");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Collection");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getRemoveMethods()
-
-		    // starting method org.jboss.seam.Component#getRemoveMethod(java.lang.String)
-		    method = newType.addNode(JavaMethodMethod.class,"getRemoveMethod(java.lang.String)");
-		    method.setSimpleName("getRemoveMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Method");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "String");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#getRemoveMethod(java.lang.String)
-
-		    // starting method org.jboss.seam.Component#hasPreDestroyMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasPreDestroyMethod()");
-		    method.setSimpleName("hasPreDestroyMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasPreDestroyMethod()
-
-		    // starting method org.jboss.seam.Component#hasPostConstructMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasPostConstructMethod()");
-		    method.setSimpleName("hasPostConstructMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasPostConstructMethod()
-
-		    // starting method org.jboss.seam.Component#hasPrePassivateMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasPrePassivateMethod()");
-		    method.setSimpleName("hasPrePassivateMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasPrePassivateMethod()
-
-		    // starting method org.jboss.seam.Component#hasPostActivateMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasPostActivateMethod()");
-		    method.setSimpleName("hasPostActivateMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasPostActivateMethod()
-
-		    // starting method org.jboss.seam.Component#hasDestroyMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasDestroyMethod()");
-		    method.setSimpleName("hasDestroyMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasDestroyMethod()
-
-		    // starting method org.jboss.seam.Component#hasCreateMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasCreateMethod()");
-		    method.setSimpleName("hasCreateMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasCreateMethod()
-
-		    // starting method org.jboss.seam.Component#getCreateMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"getCreateMethod()");
-		    method.setSimpleName("getCreateMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Method");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getCreateMethod()
-
-		    // starting method org.jboss.seam.Component#hasUnwrapMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"hasUnwrapMethod()");
-		    method.setSimpleName("hasUnwrapMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#hasUnwrapMethod()
-
-		    // starting method org.jboss.seam.Component#getUnwrapMethod()
-		    method = newType.addNode(JavaMethodMethod.class,"getUnwrapMethod()");
-		    method.setSimpleName("getUnwrapMethod");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang.reflect");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Method");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getUnwrapMethod()
-
-		    // starting method org.jboss.seam.Component#getOutAttributes()
-		    method = newType.addNode(JavaMethodMethod.class,"getOutAttributes()");
-		    method.setSimpleName("getOutAttributes");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getOutAttributes()
-
-		    // starting method org.jboss.seam.Component#getInAttributes()
-		    method = newType.addNode(JavaMethodMethod.class,"getInAttributes()");
-		    method.setSimpleName("getInAttributes");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.util");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "List");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getInAttributes()
-
-		    // starting method org.jboss.seam.Component#needsInjection()
-		    method = newType.addNode(JavaMethodMethod.class,"needsInjection()");
-		    method.setSimpleName("needsInjection");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#needsInjection()
-
-		    // starting method org.jboss.seam.Component#needsOutjection()
-		    method = newType.addNode(JavaMethodMethod.class,"needsOutjection()");
-		    method.setSimpleName("needsOutjection");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#needsOutjection()
-
-		    // starting method org.jboss.seam.Component#instantiate()
-		    method = newType.addNode(JavaMethodMethod.class,"instantiate()");
-		    method.setSimpleName("instantiate");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		    // finishing method org.jboss.seam.Component#instantiate()
-
-		    // starting method org.jboss.seam.Component#postConstruct(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"postConstruct(java.lang.Object)");
-		    method.setSimpleName("postConstruct");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#postConstruct(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#instantiateSessionBean()
-		    method = newType.addNode(JavaMethodMethod.class,"instantiateSessionBean()");
-		    method.setSimpleName("instantiateSessionBean");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		        // starting throws exception javax.naming.NamingException
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "javax.naming");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "NamingException");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception javax.naming.NamingException
-		    
-		    // finishing method org.jboss.seam.Component#instantiateSessionBean()
-
-		    // starting method org.jboss.seam.Component#postConstructSessionBean(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"postConstructSessionBean(java.lang.Object)");
-		    method.setSimpleName("postConstructSessionBean");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		        // starting throws exception javax.naming.NamingException
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "javax.naming");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "NamingException");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception javax.naming.NamingException
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#postConstructSessionBean(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#instantiateEntityBean()
-		    method = newType.addNode(JavaMethodMethod.class,"instantiateEntityBean()");
-		    method.setSimpleName("instantiateEntityBean");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		    // finishing method org.jboss.seam.Component#instantiateEntityBean()
-
-		    // starting method org.jboss.seam.Component#postConstructEntityBean(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"postConstructEntityBean(java.lang.Object)");
-		    method.setSimpleName("postConstructEntityBean");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#postConstructEntityBean(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#instantiateJavaBean()
-		    method = newType.addNode(JavaMethodMethod.class,"instantiateJavaBean()");
-		    method.setSimpleName("instantiateJavaBean");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		    // finishing method org.jboss.seam.Component#instantiateJavaBean()
-
-		    // starting method org.jboss.seam.Component#postConstructJavaBean(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"postConstructJavaBean(java.lang.Object)");
-		    method.setSimpleName("postConstructJavaBean");
-		    isMethodPublic = (4 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (4 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (4 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (4 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (4 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (4 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#postConstructJavaBean(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#destroy(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"destroy(java.lang.Object)");
-		    method.setSimpleName("destroy");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#destroy(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#wrap(java.lang.Object, javassist.util.proxy.MethodHandler)
-		    method = newType.addNode(JavaMethodMethod.class,"wrap(java.lang.Object, javassist.util.proxy.MethodHandler)");
-		    method.setSimpleName("wrap");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Object");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "javassist.util.proxy");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "MethodHandler");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#wrap(java.lang.Object, javassist.util.proxy.MethodHandler)
-
-		    // starting method org.jboss.seam.Component#getProxyFactory()
-		    method = newType.addNode(JavaMethodMethod.class,"getProxyFactory()");
-		    method.setSimpleName("getProxyFactory");
-		    isMethodPublic = (34 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (34 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (34 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (34 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (34 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (34 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		    methodReturnTypeType = methodReturnTypePackage.addNode(JavaType.class, "Class");
-		    methodReturnTypePackageTypeLink = session.addLink(PackageType.class, methodReturnTypePackage, methodReturnTypeType, false);
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		    // finishing method org.jboss.seam.Component#getProxyFactory()
-
-		    // starting method org.jboss.seam.Component#initialize(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"initialize(java.lang.Object)");
-		    method.setSimpleName("initialize");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		        // starting throws exception java.lang.Exception
-		        newExceptionPackage = rootNode.addNode(JavaPackage.class, "java.lang");
-		        newExceptionType = newExceptionPackage.addNode(JavaTypeClass.class, "Exception");
-		        exceptionPackageTypeLink = session.addLink(PackageType.class, newExceptionPackage, newExceptionType, false);
-		        methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
-		        // ending throws exception java.lang.Exception
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#initialize(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#inject(java.lang.Object, boolean)
-		    method = newType.addNode(JavaMethodMethod.class,"inject(java.lang.Object, boolean)");
-		    method.setSimpleName("inject");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#inject(java.lang.Object, boolean)
-
-		    // starting method org.jboss.seam.Component#disinject(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"disinject(java.lang.Object)");
-		    method.setSimpleName("disinject");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#disinject(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#injectLog(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"injectLog(java.lang.Object)");
-		    method.setSimpleName("injectLog");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#injectLog(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#injectParameters(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"injectParameters(java.lang.Object)");
-		    method.setSimpleName("injectParameters");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#injectParameters(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#outject(java.lang.Object, boolean)
-		    method = newType.addNode(JavaMethodMethod.class,"outject(java.lang.Object, boolean)");
-		    method.setSimpleName("outject");
-		    isMethodPublic = (1 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (1 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (1 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (1 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (1 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (1 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypeType = rootNode.addNode(JavaTypePrimitive.class, "boolean");
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#outject(java.lang.Object, boolean)
-
-		    // starting method org.jboss.seam.Component#injectDataModelSelections(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"injectDataModelSelections(java.lang.Object)");
-		    method.setSimpleName("injectDataModelSelections");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#injectDataModelSelections(java.lang.Object)
-
-		    // starting method org.jboss.seam.Component#injectDataModelSelection(java.lang.Object, org.jboss.seam.Component$BijectedAttribute)
-		    method = newType.addNode(JavaMethodMethod.class,"injectDataModelSelection(java.lang.Object, org.jboss.seam.Component$BijectedAttribute)");
-		    method.setSimpleName("injectDataModelSelection");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		        // starting parameter #1
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "org.jboss.seam");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Component$BijectedAttribute");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(1);
-		        // finishing parameter #1
-		    // finishing method org.jboss.seam.Component#injectDataModelSelection(java.lang.Object, org.jboss.seam.Component$BijectedAttribute)
-
-		    // starting method org.jboss.seam.Component#outjectDataModels(java.lang.Object)
-		    method = newType.addNode(JavaMethodMethod.class,"outjectDataModels(java.lang.Object)");
-		    method.setSimpleName("outjectDataModels");
-		    isMethodPublic = (2 & Opcodes.ACC_PUBLIC) != 0;
-		    isMethodPrivate = (2 & Opcodes.ACC_PRIVATE) != 0;
-		    isMethodStatic = (2 & Opcodes.ACC_STATIC) != 0;
-		    isMethodFinal = (2 & Opcodes.ACC_FINAL) != 0;
-		    isMethodProtected = (2 & Opcodes.ACC_PROTECTED) != 0;
-		    isMethodSynchronized = (2 & Opcodes.ACC_SYNCHRONIZED) != 0;
-		    method.setPublic(isMethodPublic);
-		    method.setPrivate(isMethodPrivate);
-		    method.setStatic(isMethodStatic);
-		    method.setFinal(isMethodFinal);
-		    method.setProtected(isMethodProtected);
-		    method.setSynchronized(isMethodSynchronized);
-		    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-		    
-		    // starting method return 
-		    methodReturnTypeType = rootNode.addNode(JavaTypePrimitive.class, "void");
-		    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-		    // finishing method return 
-		    
-		        // starting parameter #0
-			    methodParameterTypePackage = rootNode.addNode(JavaPackage.class, "java.lang");
-			    methodParameterTypeType = methodParameterTypePackage.addNode(JavaType.class, "Object");
-			    methodParameterTypePackageTypeLink = session.addLink(PackageType.class, methodParameterTypePackage, methodParameterTypeType, false);
-			    methodParametersType = session.addLink(MethodParameterDeclare.class, method, methodParameterTypeType, false);
-		        methodParametersType.setOrder(0);
-		        // finishing parameter #0
-		    // finishing method org.jboss.seam.Component#outjectDataModels(java.lang.Object)
-
+	    newType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$2");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$ComponentType
+		field = newType.addNode(JavaDataField.class,"$SwitchMap$org$jboss$seam$ComponentType"); 
+	    // starting array
+	    arrayDimensions = 1;
+	    fieldType = helper.addAfterTypeProcessing(JavaTypePrimitive.class, "","int");
+	    //ending array
+	    helper.insertFieldData(field, fieldType, 4120, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$ComponentType
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType
+		field = newType.addNode(JavaDataField.class,"$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType"); 
+	    // starting array
+	    arrayDimensions = 1;
+	    fieldType = helper.addAfterTypeProcessing(JavaTypePrimitive.class, "","int");
+	    //ending array
+	    helper.insertFieldData(field, fieldType, 4120, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType
+
+
+	// finishing type org.jboss.seam.Component$2
+	// #########################################################
+
+	    newType = helper.addAfterTypeProcessing(JavaTypeInterface.class,"org.jboss.seam", "Component$BijectedAttribute");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+
+
+
+	    // starting method org.jboss.seam.Component$BijectedAttribute#getName()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getName()");
+	    method.setSimpleName("getName");
+	    helper.setMethodData(method,1025);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedAttribute#getName()
+
+	    // starting method org.jboss.seam.Component$BijectedAttribute#getAnnotation()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
+	    method.setSimpleName("getAnnotation");
+	    helper.setMethodData(method,1025);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedAttribute#getAnnotation()
+
+	    // starting method org.jboss.seam.Component$BijectedAttribute#getType()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getType()");
+	    method.setSimpleName("getType");
+	    helper.setMethodData(method,1025);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedAttribute#getType()
+
+	    // starting method org.jboss.seam.Component$BijectedAttribute#set(java.lang.Object, java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
+	    method.setSimpleName("set");
+	    helper.setMethodData(method,1025);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+	    // finishing method org.jboss.seam.Component$BijectedAttribute#set(java.lang.Object, java.lang.Object)
+
+	    // starting method org.jboss.seam.Component$BijectedAttribute#get(java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
+	    method.setSimpleName("get");
+	    helper.setMethodData(method,1025);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+	    // finishing method org.jboss.seam.Component$BijectedAttribute#get(java.lang.Object)
+
+	// finishing type org.jboss.seam.Component$BijectedAttribute
+	// #########################################################
+
+	    newType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$BijectedField");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+	    
+	    // starting interface Component$BijectedAttribute 
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam","Component$BijectedAttribute");
+	    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
+	    // ending interface Component$BijectedAttribute 
+
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedField#name
+		field = newType.addNode(JavaDataField.class,"name"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    helper.insertFieldData(field, fieldType, 18, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedField#name
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedField#field
+		field = newType.addNode(JavaDataField.class,"field"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Field");
+	    helper.insertFieldData(field, fieldType, 18, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedField#field
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedField#annotation
+		field = newType.addNode(JavaDataField.class,"annotation"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+	    helper.insertFieldData(field, fieldType, 18, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedField#annotation
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedField#this$0
+		field = newType.addNode(JavaDataField.class,"this$0"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+	    helper.insertFieldData(field, fieldType, 4112, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedField#this$0
+
+
+	    // starting method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)");
+	    method.setSimpleName("Component$BijectedField");
+	    helper.setMethodData(method,2);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Field");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #3
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(3);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #3
+	    // finishing method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)
+
+	    // starting method org.jboss.seam.Component$BijectedField#getName()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getName()");
+	    method.setSimpleName("getName");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedField#getName()
+
+	    // starting method org.jboss.seam.Component$BijectedField#getField()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getField()");
+	    method.setSimpleName("getField");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Field");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedField#getField()
+
+	    // starting method org.jboss.seam.Component$BijectedField#getAnnotation()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
+	    method.setSimpleName("getAnnotation");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedField#getAnnotation()
+
+	    // starting method org.jboss.seam.Component$BijectedField#getType()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getType()");
+	    method.setSimpleName("getType");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedField#getType()
+
+	    // starting method org.jboss.seam.Component$BijectedField#set(java.lang.Object, java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
+	    method.setSimpleName("set");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+	    // finishing method org.jboss.seam.Component$BijectedField#set(java.lang.Object, java.lang.Object)
+
+	    // starting method org.jboss.seam.Component$BijectedField#get(java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
+	    method.setSimpleName("get");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+	    // finishing method org.jboss.seam.Component$BijectedField#get(java.lang.Object)
+
+	    // starting method org.jboss.seam.Component$BijectedField#toString()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"toString()");
+	    method.setSimpleName("toString");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedField#toString()
+
+	    // starting method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)");
+	    method.setSimpleName("Component$BijectedField");
+	    helper.setMethodData(method,4096);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Field");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #3
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(3);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #3
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #4
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component$1");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(4);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #4
+	    // finishing method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
+
+	// finishing type org.jboss.seam.Component$BijectedField
+	// #########################################################
+
+	    newType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$BijectedMethod");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+	    
+	    // starting interface Component$BijectedAttribute 
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam","Component$BijectedAttribute");
+	    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
+	    // ending interface Component$BijectedAttribute 
+
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedMethod#name
+		field = newType.addNode(JavaDataField.class,"name"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    helper.insertFieldData(field, fieldType, 18, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedMethod#name
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedMethod#method
+		field = newType.addNode(JavaDataField.class,"method"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+	    helper.insertFieldData(field, fieldType, 18, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedMethod#method
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedMethod#annotation
+		field = newType.addNode(JavaDataField.class,"annotation"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+	    helper.insertFieldData(field, fieldType, 18, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedMethod#annotation
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedMethod#this$0
+		field = newType.addNode(JavaDataField.class,"this$0"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+	    helper.insertFieldData(field, fieldType, 4112, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedMethod#this$0
+
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)");
+	    method.setSimpleName("Component$BijectedMethod");
+	    helper.setMethodData(method,2);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #3
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(3);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #3
+	    // finishing method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#getName()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getName()");
+	    method.setSimpleName("getName");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedMethod#getName()
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#getMethod()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getMethod()");
+	    method.setSimpleName("getMethod");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedMethod#getMethod()
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#getAnnotation()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
+	    method.setSimpleName("getAnnotation");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedMethod#getAnnotation()
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#set(java.lang.Object, java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
+	    method.setSimpleName("set");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+	    // finishing method org.jboss.seam.Component$BijectedMethod#set(java.lang.Object, java.lang.Object)
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#get(java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
+	    method.setSimpleName("get");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+	    // finishing method org.jboss.seam.Component$BijectedMethod#get(java.lang.Object)
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#getType()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getType()");
+	    method.setSimpleName("getType");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedMethod#getType()
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#toString()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"toString()");
+	    method.setSimpleName("toString");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedMethod#toString()
+
+	    // starting method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation, org.jboss.seam.Component$1)");
+	    method.setSimpleName("Component$BijectedMethod");
+	    helper.setMethodData(method,4096);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #3
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(3);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #3
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #4
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component$1");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(4);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #4
+	    // finishing method org.jboss.seam.Component$BijectedMethod#Component$BijectedMethod(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
+
+	// finishing type org.jboss.seam.Component$BijectedMethod
+	// #########################################################
+
+	    newType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$BijectedProperty");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+	    
+	    // starting interface Component$BijectedAttribute 
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam","Component$BijectedAttribute");
+	    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
+	    // ending interface Component$BijectedAttribute 
+
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedProperty#getter
+		field = newType.addNode(JavaDataField.class,"getter"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component$BijectedMethod");
+	    helper.insertFieldData(field, fieldType, 2, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedProperty#getter
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedProperty#setter
+		field = newType.addNode(JavaDataField.class,"setter"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component$BijectedMethod");
+	    helper.insertFieldData(field, fieldType, 2, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedProperty#setter
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$BijectedProperty#this$0
+		field = newType.addNode(JavaDataField.class,"this$0"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+	    helper.insertFieldData(field, fieldType, 4112, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$BijectedProperty#this$0
+
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.reflect.Method, java.lang.annotation.Annotation)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.reflect.Method, java.lang.annotation.Annotation)");
+	    method.setSimpleName("Component$BijectedProperty");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #3
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(3);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #3
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #4
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(4);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #4
+	    // finishing method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.reflect.Method, java.lang.annotation.Annotation)
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)");
+	    method.setSimpleName("Component$BijectedProperty");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam","Component");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Method");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #3
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(3);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #3
+	    // finishing method org.jboss.seam.Component$BijectedProperty#Component$BijectedProperty(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Method, java.lang.annotation.Annotation)
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#get(java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"get(java.lang.Object)");
+	    method.setSimpleName("get");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+	    // finishing method org.jboss.seam.Component$BijectedProperty#get(java.lang.Object)
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#getAnnotation()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getAnnotation()");
+	    method.setSimpleName("getAnnotation");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.annotation","Annotation");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedProperty#getAnnotation()
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#getName()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getName()");
+	    method.setSimpleName("getName");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedProperty#getName()
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#getType()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getType()");
+	    method.setSimpleName("getType");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$BijectedProperty#getType()
+
+	    // starting method org.jboss.seam.Component$BijectedProperty#set(java.lang.Object, java.lang.Object)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"set(java.lang.Object, java.lang.Object)");
+	    method.setSimpleName("set");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+	    // finishing method org.jboss.seam.Component$BijectedProperty#set(java.lang.Object, java.lang.Object)
+
+	// finishing type org.jboss.seam.Component$BijectedProperty
+	// #########################################################
+
+	    newType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$ConstantInitialValue");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+	    
+	    // starting interface Component$InitialValue 
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam","Component$InitialValue");
+	    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
+	    // ending interface Component$InitialValue 
+
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$ConstantInitialValue#value
+		field = newType.addNode(JavaDataField.class,"value"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    helper.insertFieldData(field, fieldType, 2, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$ConstantInitialValue#value
+
+
+	    // starting method org.jboss.seam.Component$ConstantInitialValue#Component$ConstantInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$ConstantInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
+	    method.setSimpleName("Component$ConstantInitialValue");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam.util","Conversions$PropertyValue");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Type");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+	    // finishing method org.jboss.seam.Component$ConstantInitialValue#Component$ConstantInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
+
+	    // starting method org.jboss.seam.Component$ConstantInitialValue#getValue(java.lang.Class)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
+	    method.setSimpleName("getValue");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+	    // finishing method org.jboss.seam.Component$ConstantInitialValue#getValue(java.lang.Class)
+
+	    // starting method org.jboss.seam.Component$ConstantInitialValue#toString()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"toString()");
+	    method.setSimpleName("toString");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$ConstantInitialValue#toString()
+
+	// finishing type org.jboss.seam.Component$ConstantInitialValue
+	// #########################################################
+
+	    newType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam", "Component$ELInitialValue");
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"java.lang","Object");
+	    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+	    
+	    // starting interface Component$InitialValue 
+	    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"org.jboss.seam","Component$InitialValue");
+	    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
+	    // ending interface Component$InitialValue 
+
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$ELInitialValue#expression
+		field = newType.addNode(JavaDataField.class,"expression"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    helper.insertFieldData(field, fieldType, 2, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$ELInitialValue#expression
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$ELInitialValue#converter
+		field = newType.addNode(JavaDataField.class,"converter"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam.util","Conversions$Converter");
+	    helper.insertFieldData(field, fieldType, 2, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$ELInitialValue#converter
+	    isArray = false;
+	    arrayDimensions = 0;
+	    // starting field org.jboss.seam.Component$ELInitialValue#parameterType
+		field = newType.addNode(JavaDataField.class,"parameterType"); 
+		fieldType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Type");
+	    helper.insertFieldData(field, fieldType, 2, isArray, arrayDimensions);
+	    // finishing field org.jboss.seam.Component$ELInitialValue#parameterType
+
+
+	    // starting method org.jboss.seam.Component$ELInitialValue#Component$ELInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodConstructor.class,"Component$ELInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)");
+	    method.setSimpleName("Component$ELInitialValue");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "void");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam.util","Conversions$PropertyValue");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #1
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(1);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #1
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #2
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang.reflect","Type");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(2);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #2
+	    // finishing method org.jboss.seam.Component$ELInitialValue#Component$ELInitialValue(org.jboss.seam.util.Conversions$PropertyValue, java.lang.Class, java.lang.reflect.Type)
+
+	    // starting method org.jboss.seam.Component$ELInitialValue#getValue(java.lang.Class)
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"getValue(java.lang.Class)");
+	    method.setSimpleName("getValue");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Object");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+		    isArray = false;
+		    arrayDimensions = 0;
+	        // starting parameter #0
+		    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","Class");
+		    methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
+	        methodParametersType.setOrder(0);
+	        methodParametersType.setArray(isArray);
+	        methodParametersType.setArrayDimension(arrayDimensions);
+	    
+	        // finishing parameter #0
+	    // finishing method org.jboss.seam.Component$ELInitialValue#getValue(java.lang.Class)
+
+	    // starting method org.jboss.seam.Component$ELInitialValue#createValueExpression()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"createValueExpression()");
+	    method.setSimpleName("createValueExpression");
+	    helper.setMethodData(method,2);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam.core","Expressions$ValueExpression");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$ELInitialValue#createValueExpression()
+
+	    // starting method org.jboss.seam.Component$ELInitialValue#createMethodExpression()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"createMethodExpression()");
+	    method.setSimpleName("createMethodExpression");
+	    helper.setMethodData(method,2);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "org.jboss.seam.core","Expressions$MethodExpression");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$ELInitialValue#createMethodExpression()
+
+	    // starting method org.jboss.seam.Component$ELInitialValue#toString()
+	    isArray = false;
+	    arrayDimensions = 0;
+	    method = newType.addNode(JavaMethodMethod.class,"toString()");
+	    method.setSimpleName("toString");
+	    helper.setMethodData(method,1);
+	    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
+	    
+	    // starting method return 
+	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "java.lang","String");
+	    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
+	    methodReturnsType.setArray(isArray);
+	    methodReturnsType.setArrayDimension(arrayDimensions);
+	        
+	    // finishing method return 
+	    
+	    // finishing method org.jboss.seam.Component$ELInitialValue#toString()
+
+	// finishing type org.jboss.seam.Component$ELInitialValue
+	// #########################################################
 
 	}
 }
