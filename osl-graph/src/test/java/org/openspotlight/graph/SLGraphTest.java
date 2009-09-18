@@ -2628,4 +2628,32 @@ public class SLGraphTest {
 			Assert.fail();
 		}
 	}
+
+    /**
+     * Test typed node on different contexts.
+     */
+    @Test
+    public void testTypedOnDifferentContexts() {
+        try {
+
+            // add new node ...
+            final SLNode root = this.session.createContext("1L").getRootNode();
+            final JavaClassNode javaClassNode1 = root.addNode(JavaClassNode.class, "javaClassNode");
+            Assert.assertNotNull(javaClassNode1);
+            Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
+
+            // add new node ...
+            final SLNode root2 = this.session.createContext("2L").getRootNode();
+            final JavaClassNode javaClassNode2 = root2.addNode(JavaClassNode.class, "javaClassNode");
+            Assert.assertNotNull(javaClassNode2);
+            Assert.assertEquals(javaClassNode2.getName(), "javaClassNode");
+            
+            Assert.assertFalse(javaClassNode1.getID().equals(javaClassNode2.getID()));            
+        }
+        catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        }
+    }
+
 }

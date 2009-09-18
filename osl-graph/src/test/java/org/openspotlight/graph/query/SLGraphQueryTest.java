@@ -67,6 +67,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -84,6 +85,7 @@ import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 
@@ -152,7 +154,7 @@ public class SLGraphQueryTest {
 	/**
 	 * Populate graph.
 	 */
-	@Test
+	@BeforeSuite
 	public void populateGraph() {
 
 		try {
@@ -179,6 +181,8 @@ public class SLGraphQueryTest {
 			}
 			
 			for (Class<?> clazz : classes) {
+			    context = session.createContext("queryTest2");
+	            root = context.getRootNode();
 				JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
 				session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
 				javaClass.setCaption(clazz.getName());
@@ -2670,6 +2674,7 @@ public class SLGraphQueryTest {
 	 * 
 	 * @param args the arguments
 	 */
+	@Test(enabled=false)
 	public static void main(String[] args) {
 		try {
 			int count = 0;
