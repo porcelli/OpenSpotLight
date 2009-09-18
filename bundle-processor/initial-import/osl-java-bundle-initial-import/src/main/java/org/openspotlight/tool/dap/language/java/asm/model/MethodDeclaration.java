@@ -59,6 +59,7 @@ public class MethodDeclaration {
     private boolean               isConstructor    = false;
     private List<TypeRef>         thrownExceptions = new LinkedList<TypeRef>();
     private List<TypeParameter>   typeParameters   = new LinkedList<TypeParameter>();
+    private boolean               isPrivate        = false;
 
     public MethodDeclaration() {
     }
@@ -125,14 +126,22 @@ public class MethodDeclaration {
         sb.append("(");
         for (int i = 0; i < parameters.size(); i++) {
             sb.append(parameters.get(i).getDataType().getFullName());
-            if (i != (parameters.size() - 1)){
-                sb.append(", ");   
+            if (i != (parameters.size() - 1)) {
+                sb.append(", ");
             }
         }
         sb.append(")");
         return sb.toString();
     }
 
-    public void setFullName(String fullName) {
+    public void setFullName( String fullName ) {
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate( boolean isPrivate ) {
+        this.isPrivate = isPrivate;
     }
 }

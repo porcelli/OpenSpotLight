@@ -85,6 +85,10 @@ public class ASMVisitor extends AbstractASMVisitor {
         }
         type.setAccess(access);
 
+        if ((access & Opcodes.ACC_PRIVATE) > 0) {
+            type.setPrivate(true);
+        }
+
         if (superName != null) {
             Pair<String, String> superPackageAndTypeName = getPackageAndTypeNames(superName);
             SimpleTypeRef superType = new SimpleTypeRef(superPackageAndTypeName.getK1(), superPackageAndTypeName.getK2());
@@ -110,6 +114,10 @@ public class ASMVisitor extends AbstractASMVisitor {
         field.setName(name);
         field.setType(asmParser.type());
         field.setAccess(access);
+
+        if ((access & Opcodes.ACC_PRIVATE) > 0) {
+            field.setPrivate(true);
+        }
 
         type.getFields().add(field);
 
@@ -147,6 +155,10 @@ public class ASMVisitor extends AbstractASMVisitor {
         }
 
         methodDeclaration.setAccess(access);
+        if ((access & Opcodes.ACC_PRIVATE) > 0) {
+            methodDeclaration.setPrivate(true);
+        }
+
         type.getMethods().add(methodDeclaration);
 
         return null;

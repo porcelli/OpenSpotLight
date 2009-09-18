@@ -64,14 +64,15 @@ public class JavaType {
     private String                  typeName      = null;
     private JavaTypeDef             type          = null;
     private int                     access;
+    private boolean                 isPrivate     = false;
     private TypeRef                 extendsDef    = null;
     private List<TypeRef>           implementsDef = new LinkedList<TypeRef>();
     private List<Field>             fields        = new LinkedList<Field>();
     private List<MethodDeclaration> methods       = new LinkedList<MethodDeclaration>();
 
-    public JavaType(){
+    public JavaType() {
     }
-    
+
     public String getPackageName() {
         return packageName;
     }
@@ -134,5 +135,13 @@ public class JavaType {
 
     public void setMethods( List<MethodDeclaration> methods ) {
         this.methods = methods;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate( boolean isPrivate ) {
+        this.isPrivate = isPrivate;
     }
 }
