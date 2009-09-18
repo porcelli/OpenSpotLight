@@ -49,13 +49,14 @@
 package org.openspotlight.tool.dap.language.java.asm.model;
 
 public class Field {
-    private String  name = null;
+    private String  name      = null;
     private int     access;
-    private TypeRef type = null;
+    private boolean isPrivate = false;
+    private TypeRef type      = null;
 
-    public Field(){
+    public Field() {
     }
-    
+
     public String getName() {
         return name;
     }
@@ -78,5 +79,13 @@ public class Field {
 
     public void setType( TypeRef type ) {
         this.type = type;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate( boolean isPrivate ) {
+        this.isPrivate = isPrivate;
     }
 }
