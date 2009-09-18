@@ -10,14 +10,16 @@ public class TestASMCodeGen {
 
     @Test
     public void testASMExtract() {
-        CompiledTypesExtractorTask task = new CompiledTypesExtractorTask();
+        final CompiledTypesExtractorTask task = new CompiledTypesExtractorTask();
         task.setProject(new Project());
 
-//        FileSet jreFileSet = new FileSet();
-//        jreFileSet.setDir(new File("."));
-//        jreFileSet.setIncludes("**/*.jar");
-//        //        jreFileSet.setIncludes("**/*.class");
-//        task.addCompiledArtifacts(jreFileSet);
+        final FileSet jreFileSet = new FileSet();
+        jreFileSet.setDir(new File("."));
+        jreFileSet.setIncludes("**/*.jar");
+        //        jreFileSet.setIncludes("**/*.class");
+        task.addCompiledArtifacts(jreFileSet);
+        task.setName("SomeLibraryName");
+        task.setVersion("1.0-GA");
         task.setXmlOutputFileName("./target/test-data/result.xml");
 
         task.execute();

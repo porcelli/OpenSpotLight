@@ -1,0 +1,85 @@
+<root>
+	<package packageName="java">
+		<nodes>
+			<nodeData parentTypeName="" typeName="Java Package">
+				<validParent>Java Package</validParent>
+				<validParent>Java Type</validParent>
+				<validParent>Java Block</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Java Type">
+				<property propertyName="static" propertyType="boolean" />
+				<property propertyName="anonymous" propertyType="boolean" />
+				<property propertyName="inner" propertyType="boolean" />
+				<property propertyName="version" propertyType="String" />
+				<property propertyName="public" propertyType="boolean" />
+				<property propertyName="private" propertyType="boolean" />
+				<property propertyName="final" propertyType="boolean" />
+				<property propertyName="protected" propertyType="boolean" />
+			</nodeData>
+			<nodeData parentTypeName="Java Type" typeName="Class" />
+			<nodeData parentTypeName="Java Type" typeName="Interface" />
+			<nodeData parentTypeName="Java Type" typeName="Annotation" />
+			<nodeData parentTypeName="Java Type" typeName="Enum" />
+			<nodeData parentTypeName="Java Type" typeName="Primitive" />
+			<nodeData parentTypeName="" typeName="Java Data">
+				<validParent>Java Type</validParent>
+				<validParent>Java Block</validParent>
+			</nodeData>
+			<nodeData parentTypeName="Java Data" typeName="Field">
+				<property propertyName="static" propertyType="boolean" />
+				<property propertyName="final" propertyType="boolean" />
+				<property propertyName="protected" propertyType="boolean" />
+				<property propertyName="transient" propertyType="boolean" />
+				<property propertyName="volatile" propertyType="boolean" />
+				<property propertyName="public" propertyType="boolean" />
+				<property propertyName="private" propertyType="boolean" />
+			</nodeData>
+			<nodeData parentTypeName="Java Data" typeName="Variable" />
+			<nodeData parentTypeName="Java Data" typeName="Parameter" />
+			<nodeData parentTypeName="" typeName="Java Method">
+				<validParent>Java Type</validParent>
+				<property propertyName="static" propertyType="boolean" />
+				<property propertyName="version" propertyType="String" />
+				<property propertyName="public" propertyType="boolean" />
+				<property propertyName="protected" propertyType="boolean" />
+				<property propertyName="final" propertyType="boolean" />
+				<property propertyName="synchronized" propertyType="boolean" />
+				<property propertyName="private" propertyType="boolean" />
+				<property propertyName="simpleName" propertyType="String" />
+			</nodeData>
+			<nodeData parentTypeName="Java Method" typeName="Constructor ">
+			</nodeData>
+			<nodeData parentTypeName="Java Method" typeName="Method ">
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Java Block" />
+			<nodeData parentTypeName="Java Block" typeName="If " />
+			<nodeData parentTypeName="Java Block" typeName="For " />
+			<nodeData parentTypeName="Java Block" typeName="While" />
+			<nodeData parentTypeName="Java Block" typeName="Method " />
+			<nodeData parentTypeName="Java Block" typeName="Enhanced For" />
+			<nodeData parentTypeName="Java Block" typeName="Switch " />
+			<nodeData parentTypeName="Java Block" typeName="Simple " />
+			<nodeData parentTypeName="Java Block" typeName="Type" />
+			<nodeData parentTypeName="Java Block" typeName="Method " />
+			<nodeData parentTypeName="" typeName="Java Label">
+				<validParent>Java Block</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Java Application">
+				<property propertyName="version" propertyType="String" />
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Java Context">
+				<property propertyName="version" propertyType="String" />
+				<property propertyName="name" propertyType="String" />
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Java Artifact" />
+			<nodeData parentTypeName="Java Artifact" typeName="Jar">
+				<property propertyName="version" propertyType="String" />
+			</nodeData>
+			<nodeData parentTypeName="Java Artifact" typeName="Class ">
+				<property propertyName="version" propertyType="String" />
+			</nodeData>
+			<nodeData parentTypeName="Java Artifact" typeName="JavaSourceFile" />
+			<nodeData parentTypeName="" typeName="Java Abstract Type" />
+		</nodes>
+	</package>
+</root>

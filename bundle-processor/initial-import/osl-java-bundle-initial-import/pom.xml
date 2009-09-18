@@ -31,14 +31,14 @@
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-persistence-api</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.openspotlight</groupId>
-            <artifactId>osl-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openspotlight</groupId>
-            <artifactId>osl-java-bundle</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-java-bundle</artifactId>
+		</dependency>
 		<!-- External dependencies -->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
@@ -73,6 +73,10 @@
 		<dependency>
 			<groupId>asm</groupId>
 			<artifactId>asm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>dynamo</groupId>
+			<artifactId>dynamo-file-gen</artifactId>
 		</dependency>
 	</dependencies>
 </project>
