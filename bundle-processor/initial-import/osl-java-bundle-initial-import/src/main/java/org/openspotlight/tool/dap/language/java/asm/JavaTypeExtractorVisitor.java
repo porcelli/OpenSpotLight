@@ -52,15 +52,15 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.common.Pair;
-import org.openspotlight.tool.dap.language.java.asm.model.Field;
-import org.openspotlight.tool.dap.language.java.asm.model.JavaType;
+import org.openspotlight.tool.dap.language.java.asm.model.FieldDeclaration;
+import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
-import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeRef;
-import org.openspotlight.tool.dap.language.java.asm.model.JavaType.JavaTypeDef;
+import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeReference;
+import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition.JavaTypes;
 
 public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
 
-    private JavaType type = null;
+    private TypeDefinition type = null;
 
     public void visit( int version,
                        int access,
@@ -68,20 +68,20 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
                        String signature,
                        String superName,
                        String[] interfaces ) {
-        type = new JavaType();
+        type = new TypeDefinition();
 
         Pair<String, String> packageAndTypeName = getPackageAndTypeNames(name);
         type.setPackageName(packageAndTypeName.getK1());
         type.setTypeName(packageAndTypeName.getK2());
 
         if ((access & Opcodes.ACC_INTERFACE) > 0) {
-            type.setType(JavaTypeDef.INTERFACE);
+            type.setType(JavaTypes.INTERFACE);
         } else if ((access & Opcodes.ACC_ENUM) > 0) {
-            type.setType(JavaTypeDef.ENUM);
+            type.setType(JavaTypes.ENUM);
         } else if ((access & Opcodes.ACC_ANNOTATION) > 0) {
-            type.setType(JavaTypeDef.ANNOTATION);
+            type.setType(JavaTypes.ANNOTATION);
         } else {
-            type.setType(JavaTypeDef.CLASS);
+            type.setType(JavaTypes.CLASS);
         }
         type.setAccess(access);
 
@@ -91,13 +91,13 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
 
         if (superName != null) {
             Pair<String, String> superPackageAndTypeName = getPackageAndTypeNames(superName);
-            SimpleTypeRef superType = new SimpleTypeRef(superPackageAndTypeName.getK1(), superPackageAndTypeName.getK2());
+            SimpleTypeReference superType = new SimpleTypeReference(superPackageAndTypeName.getK1(), superPackageAndTypeName.getK2());
             type.setExtendsDef(superType);
         }
 
         for (String interfaceName : interfaces) {
             Pair<String, String> interfacePackageAndTypeName = getPackageAndTypeNames(interfaceName);
-            SimpleTypeRef interfaceType = new SimpleTypeRef(interfacePackageAndTypeName.getK1(),
+            SimpleTypeReference interfaceType = new SimpleTypeReference(interfacePackageAndTypeName.getK1(),
                                                             interfacePackageAndTypeName.getK2());
             type.getImplementsDef().add(interfaceType);
         }
@@ -110,7 +110,7 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
                                     Object value ) {
         ASMParser asmParser = new ASMParser(desc);
 
-        Field field = new Field();
+        FieldDeclaration field = new FieldDeclaration();
         field.setName(name);
         field.setType(asmParser.type());
         field.setAccess(access);
@@ -148,7 +148,7 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
         if (exceptions != null) {
             for (String exceptionName : exceptions) {
                 Pair<String, String> exceptionPackageAndTypeName = getPackageAndTypeNames(exceptionName);
-                SimpleTypeRef exceptionType = new SimpleTypeRef(exceptionPackageAndTypeName.getK1(),
+                SimpleTypeReference exceptionType = new SimpleTypeReference(exceptionPackageAndTypeName.getK1(),
                                                                 exceptionPackageAndTypeName.getK2());
                 methodDeclaration.getThrownExceptions().add(exceptionType);
             }
@@ -172,7 +172,7 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
         return new Pair<String, String>(packageName, className);
     }
 
-    public JavaType getType() {
+    public TypeDefinition getType() {
         return type;
     }
 }

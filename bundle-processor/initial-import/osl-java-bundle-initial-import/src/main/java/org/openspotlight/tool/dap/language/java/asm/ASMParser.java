@@ -57,17 +57,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.openspotlight.common.Pair;
-import org.openspotlight.tool.dap.language.java.asm.model.ArrayTypeRef;
+import org.openspotlight.tool.dap.language.java.asm.model.ArrayTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodParameter;
-import org.openspotlight.tool.dap.language.java.asm.model.ParameterizedTypeRef;
-import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeRef;
-import org.openspotlight.tool.dap.language.java.asm.model.QualifiedTypeRef;
-import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeRef;
+import org.openspotlight.tool.dap.language.java.asm.model.ParameterizedTypeReference;
+import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeReference;
+import org.openspotlight.tool.dap.language.java.asm.model.QualifiedTypeReference;
+import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeParameter;
-import org.openspotlight.tool.dap.language.java.asm.model.TypeRef;
-import org.openspotlight.tool.dap.language.java.asm.model.WildcardTypeRef;
-import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeRef.PrimitiveType;
+import org.openspotlight.tool.dap.language.java.asm.model.TypeReference;
+import org.openspotlight.tool.dap.language.java.asm.model.WildcardTypeReference;
+import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeReference.PrimitiveType;
 
 public class ASMParser {
     private ANTLRStringStream input;
@@ -77,8 +77,8 @@ public class ASMParser {
         input = new ANTLRStringStream(type);
     }
 
-    public List<TypeRef> types() {
-        List<TypeRef> typeList = new LinkedList<TypeRef>();
+    public List<TypeReference> types() {
+        List<TypeReference> typeList = new LinkedList<TypeReference>();
         while (true) {
             if (input.LA(1) == ANTLRStringStream.EOF) {
                 break;
@@ -88,7 +88,7 @@ public class ASMParser {
         return typeList;
     }
 
-    public TypeRef type() {
+    public TypeReference type() {
         return mTYPE(true);
     }
 
@@ -141,7 +141,7 @@ public class ASMParser {
         return activeMethod;
     }
 
-    private TypeRef mEXCEPTION() {
+    private TypeReference mEXCEPTION() {
         input.consume();
         return mTYPE(true);
     }
@@ -165,8 +165,8 @@ public class ASMParser {
         return typeParameter;
     }
 
-    private TypeRef mTYPE( boolean consumeLast ) {
-        TypeRef newType = null;
+    private TypeReference mTYPE( boolean consumeLast ) {
+        TypeReference newType = null;
         int arraySize = -1;
         if (input.LA(1) == '[') {
             arraySize = mARRAY_SIZE();
@@ -174,54 +174,54 @@ public class ASMParser {
 
         switch (input.LA(1)) {
             case 'Z':
-                newType = new PrimitiveTypeRef(PrimitiveType.BOOLEAN);
+                newType = new PrimitiveTypeReference(PrimitiveType.BOOLEAN);
                 break;
             case 'C':
-                newType = new PrimitiveTypeRef(PrimitiveType.CHAR);
+                newType = new PrimitiveTypeReference(PrimitiveType.CHAR);
                 break;
             case 'B':
-                newType = new PrimitiveTypeRef(PrimitiveType.BYTE);
+                newType = new PrimitiveTypeReference(PrimitiveType.BYTE);
                 break;
             case 'S':
-                newType = new PrimitiveTypeRef(PrimitiveType.SHORT);
+                newType = new PrimitiveTypeReference(PrimitiveType.SHORT);
                 break;
             case 'I':
-                newType = new PrimitiveTypeRef(PrimitiveType.INT);
+                newType = new PrimitiveTypeReference(PrimitiveType.INT);
                 break;
             case 'F':
-                newType = new PrimitiveTypeRef(PrimitiveType.FLOAT);
+                newType = new PrimitiveTypeReference(PrimitiveType.FLOAT);
                 break;
             case 'J':
-                newType = new PrimitiveTypeRef(PrimitiveType.LONG);
+                newType = new PrimitiveTypeReference(PrimitiveType.LONG);
                 break;
             case 'D':
-                newType = new PrimitiveTypeRef(PrimitiveType.DOUBLE);
+                newType = new PrimitiveTypeReference(PrimitiveType.DOUBLE);
                 break;
             case 'V':
-                newType = new PrimitiveTypeRef(PrimitiveType.VOID);
+                newType = new PrimitiveTypeReference(PrimitiveType.VOID);
                 break;
             case 'L':
                 newType = mOBJECT();
                 break;
             case '*':
-                newType = new WildcardTypeRef();
+                newType = new WildcardTypeReference();
                 break;
             case '+':
                 input.consume();
-                newType = new WildcardTypeRef(true, mTYPE(false));
+                newType = new WildcardTypeReference(true, mTYPE(false));
                 break;
             case '-':
                 input.consume();
-                newType = new WildcardTypeRef(false, mTYPE(false));
+                newType = new WildcardTypeReference(false, mTYPE(false));
                 break;
             case 'T':
                 input.consume();
-                newType = new WildcardTypeRef();
+                newType = new WildcardTypeReference();
                 mID();
                 break;
         }
         if (arraySize != -1) {
-            newType = new ArrayTypeRef(arraySize, newType);
+            newType = new ArrayTypeReference(arraySize, newType);
         }
         if (consumeLast) {
             input.consume();
@@ -241,13 +241,13 @@ public class ASMParser {
         return arraySize;
     }
 
-    private TypeRef mOBJECT() {
+    private TypeReference mOBJECT() {
         input.consume();
-        TypeRef rootType = null;
+        TypeReference rootType = null;
 
         int contLoop = 0;
         List<Queue<String>> nameList = new ArrayList<Queue<String>>();
-        List<List<TypeRef>> genericTypeList = new ArrayList<List<TypeRef>>();
+        List<List<TypeReference>> genericTypeList = new ArrayList<List<TypeReference>>();
         while (true) {
             nameList.add(contLoop, mID());
             if (input.LA(1) == '<') {
@@ -286,24 +286,24 @@ public class ASMParser {
         return new Pair<String, String>(packageName, className);
     }
 
-    private TypeRef buildType( String packageName,
+    private TypeReference buildType( String packageName,
                                String typeName,
                                List<Queue<String>> nameList,
-                               List<List<TypeRef>> genericTypeList ) {
-        TypeRef resultType = null;
+                               List<List<TypeReference>> genericTypeList ) {
+        TypeReference resultType = null;
 
-        resultType = new SimpleTypeRef(packageName, typeName);
+        resultType = new SimpleTypeReference(packageName, typeName);
         if (genericTypeList.size() > 0 && genericTypeList.get(0) != null) {
-            resultType = new ParameterizedTypeRef(genericTypeList.get(0), resultType);
+            resultType = new ParameterizedTypeReference(genericTypeList.get(0), resultType);
         }
 
         for (int a = 0; a < nameList.size(); a++) {
             // TODO check this for
             for (int i2 = 0; i2 < nameList.get(a).size(); i2++) {
-                resultType = new QualifiedTypeRef(resultType, nameList.get(a).poll());
+                resultType = new QualifiedTypeReference(resultType, nameList.get(a).poll());
             }
             if (genericTypeList.size() > a + 1 && genericTypeList.get(a + 1) != null) {
-                resultType = new ParameterizedTypeRef(genericTypeList.get(a + 1), resultType);
+                resultType = new ParameterizedTypeReference(genericTypeList.get(a + 1), resultType);
             }
         }
 
@@ -328,8 +328,8 @@ public class ASMParser {
         return resultList;
     }
 
-    private List<TypeRef> mGENERICS() {
-        List<TypeRef> listType = new LinkedList<TypeRef>();
+    private List<TypeReference> mGENERICS() {
+        List<TypeReference> listType = new LinkedList<TypeReference>();
         input.consume();
         while (true) {
             if (input.LA(1) == '>') {

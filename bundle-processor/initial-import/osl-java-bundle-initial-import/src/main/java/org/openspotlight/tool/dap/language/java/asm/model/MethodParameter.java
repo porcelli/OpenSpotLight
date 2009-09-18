@@ -50,11 +50,11 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 
 public class MethodParameter {
     private int     position = -1;
-    private TypeRef dataType = null;
+    private TypeReference dataType = null;
 
-    public MethodParameter(){
+    public MethodParameter() {
     }
-    
+
     public int getPosition() {
         return position;
     }
@@ -63,11 +63,11 @@ public class MethodParameter {
         this.position = position;
     }
 
-    public TypeRef getDataType() {
+    public TypeReference getDataType() {
         return dataType;
     }
 
-    public void setDataType( TypeRef dataType ) {
+    public void setDataType( TypeReference dataType ) {
         this.dataType = dataType;
     }
 }

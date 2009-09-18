@@ -48,48 +48,41 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-import java.util.LinkedList;
-import java.util.List;
+public class WildcardTypeReference implements TypeReference {
 
-public class ParameterizedTypeRef implements TypeRef {
+    private boolean isUpperBound = false;
+    private TypeReference boundType    = null;
 
-    private List<TypeRef> typeArguments = new LinkedList<TypeRef>();
-    private TypeRef       type          = null;
-
-    public ParameterizedTypeRef(){
-    }
-    
-    public ParameterizedTypeRef(
-                                 List<TypeRef> typeArguments, TypeRef type ) {
-        this.typeArguments = typeArguments;
-        this.type = type;
+    public WildcardTypeReference() {
     }
 
-    public List<TypeRef> getTypeArguments() {
-        return typeArguments;
+    public WildcardTypeReference(
+                            boolean isUpperBound, TypeReference boundType ) {
+        this.isUpperBound = isUpperBound;
+        this.boundType = boundType;
     }
 
-    public void setTypeArguments( List<TypeRef> typeArguments ) {
-        this.typeArguments = typeArguments;
+    public boolean isUpperBound() {
+        return isUpperBound;
     }
 
-    public TypeRef getType() {
-        return type;
+    public void setUpperBound( boolean isUpperBound ) {
+        this.isUpperBound = isUpperBound;
     }
 
-    public void setType( TypeRef type ) {
-        this.type = type;
+    public TypeReference getBoundType() {
+        return boundType;
     }
 
-    public boolean isParameterizedType() {
-        return true;
+    public void setBoundType( TypeReference boundType ) {
+        this.boundType = boundType;
     }
 
     public String getFullName() {
-        return type.getFullName();
+        return null;
     }
 
     public String getName() {
-        return type.getName();
+        return null;
     }
 }

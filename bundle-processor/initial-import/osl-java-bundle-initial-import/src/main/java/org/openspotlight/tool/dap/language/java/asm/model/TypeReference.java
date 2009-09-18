@@ -48,40 +48,25 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class SimpleTypeRef implements TypeRef {
-    private String packageName = null;
-    private String typeName    = null;
+/**
+ * This interface is a reference type. As we have {@link TypeDefinition} for definition of a type, we have this interface to define a
+ * type reference.
+ * 
+ * @author porcelli
+ */
+public interface TypeReference {
 
-    public SimpleTypeRef(){
-    }
-    
-    public SimpleTypeRef(
-                          String packageName, String typeName ) {
-        this.packageName = packageName;
-        this.typeName = typeName;
-    }
+    /**
+     * Gets the type name.
+     * 
+     * @return the type name
+     */
+    public String getName();
 
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName( String packageName ) {
-        this.packageName = packageName;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName( String typeName ) {
-        this.typeName = typeName;
-    }
-
-    public String getFullName() {
-        return packageName + "." + typeName;
-    }
-
-    public String getName() {
-        return typeName;
-    }
+    /**
+     * Gets the full type name. Usually it includes the package name.
+     * 
+     * @return the full type name
+     */
+    public String getFullName();
 }

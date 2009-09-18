@@ -48,100 +48,92 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-import java.util.LinkedList;
-import java.util.List;
+/**
+ * Represents a array type that encloses other {@link TypeReference}. This class represents that the enclosed type is an array of "N"
+ * dimensions.
+ * 
+ * @author porcelli
+ */
+public class ArrayTypeReference implements TypeReference {
 
-public class JavaType {
+    /** The array dimensions. */
+    private int     arrayDimensions = -1;
 
-    public enum JavaTypeDef {
-        CLASS,
-        INTERFACE,
-        ENUM,
-        ANNOTATION;
-    }
+    /** The enclosed type. */
+    private TypeReference type            = null;
 
-    private String                  packageName   = null;
-    private String                  typeName      = null;
-    private JavaTypeDef             type          = null;
-    private int                     access;
-    private boolean                 isPrivate     = false;
-    private TypeRef                 extendsDef    = null;
-    private List<TypeRef>           implementsDef = new LinkedList<TypeRef>();
-    private List<Field>             fields        = new LinkedList<Field>();
-    private List<MethodDeclaration> methods       = new LinkedList<MethodDeclaration>();
-
-    public JavaType() {
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public void setPackageName( String packageName ) {
-        this.packageName = packageName;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName( String typeName ) {
-        this.typeName = typeName;
-    }
-
-    public JavaTypeDef getType() {
-        return type;
-    }
-
-    public void setType( JavaTypeDef type ) {
+    /**
+     * Instantiates a new array type reference.
+     * 
+     * @param arraySize the array size
+     * @param type the type
+     */
+    public ArrayTypeReference(
+                         int arraySize, TypeReference type ) {
+        this.arrayDimensions = arraySize;
         this.type = type;
     }
 
-    public int getAccess() {
-        return access;
+    /**
+     * Gets the array dimensions.
+     * 
+     * @return the array dimensions
+     */
+    public int getArrayDimensions() {
+        return arrayDimensions;
     }
 
-    public void setAccess( int access ) {
-        this.access = access;
+    /**
+     * Sets the array dimensions.
+     * 
+     * @param arrayDimensions the new array dimensions
+     */
+    public void setArrayDimensions( int arrayDimensions ) {
+        this.arrayDimensions = arrayDimensions;
     }
 
-    public TypeRef getExtendsDef() {
-        return extendsDef;
+    /**
+     * Gets the enclosed type.
+     * 
+     * @return the type
+     */
+    public TypeReference getType() {
+        return type;
     }
 
-    public void setExtendsDef( TypeRef extendsDef ) {
-        this.extendsDef = extendsDef;
+    /**
+     * Sets the type.
+     * 
+     * @param type the new type
+     */
+    public void setType( TypeReference type ) {
+        this.type = type;
     }
 
-    public List<TypeRef> getImplementsDef() {
-        return implementsDef;
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+     */
+    public String getFullName() {
+        return type.getFullName() + getDimensions();
     }
 
-    public void setImplementsDef( List<TypeRef> implementsDef ) {
-        this.implementsDef = implementsDef;
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
+     */
+    public String getName() {
+        return type.getName() + getDimensions();
     }
 
-    public List<Field> getFields() {
-        return fields;
-    }
-
-    public void setFields( List<Field> fields ) {
-        this.fields = fields;
-    }
-
-    public List<MethodDeclaration> getMethods() {
-        return methods;
-    }
-
-    public void setMethods( List<MethodDeclaration> methods ) {
-        this.methods = methods;
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public void setPrivate( boolean isPrivate ) {
-        this.isPrivate = isPrivate;
+    /**
+     * Gets the dimensions in String format.
+     * 
+     * @return the dimensions
+     */
+    private String getDimensions() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arrayDimensions; i++) {
+            sb.append("[]");
+        }
+        return sb.toString();
     }
 }
