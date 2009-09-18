@@ -49,15 +49,15 @@
 package org.openspotlight.tool.dap.language.java.asm.model;
 
 /**
- * Represents a array type that encloses other {@link TypeReference}. This class represents that the enclosed type is an array of "N"
- * dimensions.
+ * Represents a array type that encloses other {@link TypeReference}. This class represents that the enclosed type is an array of
+ * "N" dimensions.
  * 
  * @author porcelli
  */
 public class ArrayTypeReference implements TypeReference {
 
     /** The array dimensions. */
-    private int     arrayDimensions = -1;
+    private int           arrayDimensions = -1;
 
     /** The enclosed type. */
     private TypeReference type            = null;
@@ -69,7 +69,7 @@ public class ArrayTypeReference implements TypeReference {
      * @param type the type
      */
     public ArrayTypeReference(
-                         int arraySize, TypeReference type ) {
+                               int arraySize, TypeReference type ) {
         this.arrayDimensions = arraySize;
         this.type = type;
     }

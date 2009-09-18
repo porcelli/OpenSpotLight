@@ -48,40 +48,84 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
+/**
+ * Represents a wildcard type, this type is associated to generics. A wildcard type can be bounded to another type (upper or
+ * lower).
+ * 
+ * @author porcelli
+ */
 public class WildcardTypeReference implements TypeReference {
 
-    private boolean isUpperBound = false;
+    /** The is upper bound. */
+    private boolean       isUpperBound = false;
+
+    /** The bound type. */
     private TypeReference boundType    = null;
 
+    /**
+     * Instantiates a new wildcard type reference.
+     */
     public WildcardTypeReference() {
     }
 
+    /**
+     * Instantiates a new wildcard type reference.
+     * 
+     * @param isUpperBound the is upper bound
+     * @param boundType the bound type
+     */
     public WildcardTypeReference(
-                            boolean isUpperBound, TypeReference boundType ) {
+                                  boolean isUpperBound, TypeReference boundType ) {
         this.isUpperBound = isUpperBound;
         this.boundType = boundType;
     }
 
+    /**
+     * Checks if is upper bound.
+     * 
+     * @return true, if is upper bound
+     */
     public boolean isUpperBound() {
         return isUpperBound;
     }
 
+    /**
+     * Sets the upper bound.
+     * 
+     * @param isUpperBound the new upper bound
+     */
     public void setUpperBound( boolean isUpperBound ) {
         this.isUpperBound = isUpperBound;
     }
 
+    /**
+     * Gets the bound type.
+     * 
+     * @return the bound type
+     */
     public TypeReference getBoundType() {
         return boundType;
     }
 
+    /**
+     * Sets the bound type.
+     * 
+     * @param boundType the new bound type
+     */
     public void setBoundType( TypeReference boundType ) {
         this.boundType = boundType;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName()
+     */
     public String getFullName() {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName()
+     */
     public String getName() {
         return null;
     }

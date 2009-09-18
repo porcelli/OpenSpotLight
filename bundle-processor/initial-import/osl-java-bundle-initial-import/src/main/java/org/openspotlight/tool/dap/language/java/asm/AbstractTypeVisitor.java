@@ -54,56 +54,88 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
+/**
+ * This abstracy class has no goal other than enables the real implementation be focused just on necessary methods.
+ * 
+ * @author porcelli
+ */
 public abstract class AbstractTypeVisitor implements ClassVisitor {
 
-    public void visit( int arg0,
-                       int arg1,
-                       String arg2,
-                       String arg3,
-                       String arg4,
-                       String[] arg5 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+     */
+    public void visit( int version,
+                       int access,
+                       String name,
+                       String signature,
+                       String superName,
+                       String[] interfaces ) {
     }
 
-    public AnnotationVisitor visitAnnotation( String arg0,
-                                              boolean arg1 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitAnnotation(java.lang.String, boolean)
+     */
+    public AnnotationVisitor visitAnnotation( String desc,
+                                              boolean visible ) {
         return null;
     }
 
-    public void visitAttribute( Attribute arg0 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitAttribute(org.objectweb.asm.Attribute)
+     */
+    public void visitAttribute( Attribute attr ) {
     }
 
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitEnd()
+     */
     public void visitEnd() {
     }
 
-    public FieldVisitor visitField( int arg0,
-                                    String arg1,
-                                    String arg2,
-                                    String arg3,
-                                    Object arg4 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitField(int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
+     */
+    public FieldVisitor visitField( int access,
+                                    String name,
+                                    String desc,
+                                    String signature,
+                                    Object value ) {
         return null;
     }
 
-    public void visitInnerClass( String arg0,
-                                 String arg1,
-                                 String arg2,
-                                 int arg3 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitInnerClass(java.lang.String, java.lang.String, java.lang.String, int)
+     */
+    public void visitInnerClass( String name,
+                                 String outerName,
+                                 String innerName,
+                                 int access ) {
     }
 
-    public MethodVisitor visitMethod( int arg0,
-                                      String arg1,
-                                      String arg2,
-                                      String arg3,
-                                      String[] arg4 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+     */
+    public MethodVisitor visitMethod( int access,
+                                      String name,
+                                      String desc,
+                                      String signature,
+                                      String[] exceptions ) {
         return null;
     }
 
-    public void visitOuterClass( String arg0,
-                                 String arg1,
-                                 String arg2 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitOuterClass(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void visitOuterClass( String owner,
+                                 String name,
+                                 String desc ) {
     }
 
-    public void visitSource( String arg0,
-                             String arg1 ) {
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.ClassVisitor#visitSource(java.lang.String, java.lang.String)
+     */
+    public void visitSource( String source,
+                             String debug ) {
     }
 
 }

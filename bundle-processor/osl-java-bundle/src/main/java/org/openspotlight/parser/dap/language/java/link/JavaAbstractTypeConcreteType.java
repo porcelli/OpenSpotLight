@@ -49,7 +49,6 @@
  */
 package org.openspotlight.parser.dap.language.java.link;
 
-import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 

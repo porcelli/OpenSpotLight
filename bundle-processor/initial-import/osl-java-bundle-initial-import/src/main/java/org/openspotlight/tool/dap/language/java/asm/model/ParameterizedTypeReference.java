@@ -51,44 +51,77 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents a type reference parameterized (generics).
+ * 
+ * @author porcelli
+ */
 public class ParameterizedTypeReference implements TypeReference {
 
+    /** The type arguments. */
     private List<TypeReference> typeArguments = new LinkedList<TypeReference>();
+
+    /** The enclosed type. */
     private TypeReference       type          = null;
 
-    public ParameterizedTypeReference(){
-    }
-    
+    /**
+     * Instantiates a new parameterized type reference.
+     * 
+     * @param typeArguments the type arguments
+     * @param type the type
+     */
     public ParameterizedTypeReference(
-                                 List<TypeReference> typeArguments, TypeReference type ) {
+                                       List<TypeReference> typeArguments, TypeReference type ) {
         this.typeArguments = typeArguments;
         this.type = type;
     }
 
+    /**
+     * Gets the type arguments.
+     * 
+     * @return the type arguments
+     */
     public List<TypeReference> getTypeArguments() {
         return typeArguments;
     }
 
+    /**
+     * Sets the type arguments.
+     * 
+     * @param typeArguments the new type arguments
+     */
     public void setTypeArguments( List<TypeReference> typeArguments ) {
         this.typeArguments = typeArguments;
     }
 
+    /**
+     * Gets the enclosed type.
+     * 
+     * @return the enclosed type
+     */
     public TypeReference getType() {
         return type;
     }
 
+    /**
+     * Sets the enclosed type.
+     * 
+     * @param type the new enclosed type
+     */
     public void setType( TypeReference type ) {
         this.type = type;
     }
 
-    public boolean isParameterizedType() {
-        return true;
-    }
-
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName()
+     */
     public String getFullName() {
         return type.getFullName();
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName()
+     */
     public String getName() {
         return type.getName();
     }

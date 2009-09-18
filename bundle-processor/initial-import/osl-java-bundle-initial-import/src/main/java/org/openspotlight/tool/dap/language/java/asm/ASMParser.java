@@ -59,7 +59,7 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.openspotlight.common.Pair;
 import org.openspotlight.tool.dap.language.java.asm.model.ArrayTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
-import org.openspotlight.tool.dap.language.java.asm.model.MethodParameter;
+import org.openspotlight.tool.dap.language.java.asm.model.MethodParameterDefinition;
 import org.openspotlight.tool.dap.language.java.asm.model.ParameterizedTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.QualifiedTypeReference;
@@ -67,16 +67,34 @@ import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeParameter;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.WildcardTypeReference;
-import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeReference.PrimitiveType;
+import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeReference.JavaPrimitiveTypes;
 
+/**
+ * Class that parsers Java ASM structure and creates a model. <br/>
+ * Note: The class body is inspired by ANTLR generated lexers.
+ * 
+ * @author porcelli
+ */
 public class ASMParser {
+
+    /** The input. */
     private ANTLRStringStream input;
 
+    /**
+     * Instantiates a new ASM parser.
+     * 
+     * @param type the type
+     */
     public ASMParser(
-                            String type ) {
+                      String type ) {
         input = new ANTLRStringStream(type);
     }
 
+    /**
+     * Parser a list of types.
+     * 
+     * @return the list< type reference>
+     */
     public List<TypeReference> types() {
         List<TypeReference> typeList = new LinkedList<TypeReference>();
         while (true) {
@@ -88,15 +106,34 @@ public class ASMParser {
         return typeList;
     }
 
+    /**
+     * Parser a type.
+     * 
+     * @return the type reference
+     */
     public TypeReference type() {
         return mTYPE(true);
     }
 
+    /**
+     * Parser a method declaration.
+     * 
+     * @param name the method name
+     * @param isConstructor determine if this method is a constructor
+     * @return the method declaration
+     */
     public MethodDeclaration method( String name,
                                      boolean isConstructor ) {
         return mMETHOD(name, isConstructor);
     }
 
+    /**
+     * Internal parser for method.
+     * 
+     * @param name the parser name
+     * @param isConstructor determine if this method is a constructor
+     * @return the method declaration
+     */
     private MethodDeclaration mMETHOD( String name,
                                        boolean isConstructor ) {
         MethodDeclaration activeMethod = new MethodDeclaration();
@@ -119,7 +156,7 @@ public class ASMParser {
                 break;
             }
             // Parameters
-            MethodParameter parameter = new MethodParameter();
+            MethodParameterDefinition parameter = new MethodParameterDefinition();
             parameter.setDataType(mTYPE(true));
             parameter.setPosition(position);
             activeMethod.getParameters().add(parameter);
@@ -141,11 +178,21 @@ public class ASMParser {
         return activeMethod;
     }
 
+    /**
+     * Internal parser for exception.
+     * 
+     * @return the type reference
+     */
     private TypeReference mEXCEPTION() {
         input.consume();
         return mTYPE(true);
     }
 
+    /**
+     * Internal parser for type parameter.
+     * 
+     * @return the type parameter
+     */
     private TypeParameter mTYPE_PARAM() {
         TypeParameter typeParameter = new TypeParameter();
         input.consume();
@@ -165,40 +212,46 @@ public class ASMParser {
         return typeParameter;
     }
 
+    /**
+     * Internal parser for type.
+     * 
+     * @param consumeLast the consume last
+     * @return the type reference
+     */
     private TypeReference mTYPE( boolean consumeLast ) {
         TypeReference newType = null;
         int arraySize = -1;
         if (input.LA(1) == '[') {
-            arraySize = mARRAY_SIZE();
+            arraySize = mARRAY_DIMENSION();
         }
 
         switch (input.LA(1)) {
             case 'Z':
-                newType = new PrimitiveTypeReference(PrimitiveType.BOOLEAN);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.BOOLEAN);
                 break;
             case 'C':
-                newType = new PrimitiveTypeReference(PrimitiveType.CHAR);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.CHAR);
                 break;
             case 'B':
-                newType = new PrimitiveTypeReference(PrimitiveType.BYTE);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.BYTE);
                 break;
             case 'S':
-                newType = new PrimitiveTypeReference(PrimitiveType.SHORT);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.SHORT);
                 break;
             case 'I':
-                newType = new PrimitiveTypeReference(PrimitiveType.INT);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.INT);
                 break;
             case 'F':
-                newType = new PrimitiveTypeReference(PrimitiveType.FLOAT);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.FLOAT);
                 break;
             case 'J':
-                newType = new PrimitiveTypeReference(PrimitiveType.LONG);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.LONG);
                 break;
             case 'D':
-                newType = new PrimitiveTypeReference(PrimitiveType.DOUBLE);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.DOUBLE);
                 break;
             case 'V':
-                newType = new PrimitiveTypeReference(PrimitiveType.VOID);
+                newType = new PrimitiveTypeReference(JavaPrimitiveTypes.VOID);
                 break;
             case 'L':
                 newType = mOBJECT();
@@ -229,7 +282,12 @@ public class ASMParser {
         return newType;
     }
 
-    private int mARRAY_SIZE() {
+    /**
+     * Internal parser for array dimensions.
+     * 
+     * @return the int
+     */
+    private int mARRAY_DIMENSION() {
         int arraySize = 0;
         while (true) {
             if (input.LA(1) != '[') {
@@ -241,6 +299,11 @@ public class ASMParser {
         return arraySize;
     }
 
+    /**
+     * Internal parser for an object reference.
+     * 
+     * @return the type reference
+     */
     private TypeReference mOBJECT() {
         input.consume();
         TypeReference rootType = null;
@@ -269,6 +332,12 @@ public class ASMParser {
         return rootType;
     }
 
+    /**
+     * Separate package.
+     * 
+     * @param queue the queue
+     * @return the pair< string, string>
+     */
     private Pair<String, String> separatePackage( Queue<String> queue ) {
         StringBuffer sb = new StringBuffer();
 
@@ -286,10 +355,19 @@ public class ASMParser {
         return new Pair<String, String>(packageName, className);
     }
 
+    /**
+     * Builds the type.
+     * 
+     * @param packageName the package name
+     * @param typeName the type name
+     * @param nameList the name list
+     * @param genericTypeList the generic type list
+     * @return the type reference
+     */
     private TypeReference buildType( String packageName,
-                               String typeName,
-                               List<Queue<String>> nameList,
-                               List<List<TypeReference>> genericTypeList ) {
+                                     String typeName,
+                                     List<Queue<String>> nameList,
+                                     List<List<TypeReference>> genericTypeList ) {
         TypeReference resultType = null;
 
         resultType = new SimpleTypeReference(packageName, typeName);
@@ -310,6 +388,11 @@ public class ASMParser {
         return resultType;
     }
 
+    /**
+     * Internal parser for an identifier.
+     * 
+     * @return the queue< string>
+     */
     private Queue<String> mID() {
         int start = input.index();
         Queue<String> resultList = new LinkedBlockingQueue<String>();
@@ -328,6 +411,11 @@ public class ASMParser {
         return resultList;
     }
 
+    /**
+     * Internal parser for generics structure.
+     * 
+     * @return the list< type reference>
+     */
     private List<TypeReference> mGENERICS() {
         List<TypeReference> listType = new LinkedList<TypeReference>();
         input.consume();

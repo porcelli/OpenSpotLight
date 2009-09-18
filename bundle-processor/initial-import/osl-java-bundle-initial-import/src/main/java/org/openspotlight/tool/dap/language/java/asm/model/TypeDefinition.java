@@ -51,96 +51,218 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Model class that represents a java type definition.
+ * 
+ * @author porcelli
+ */
 public class TypeDefinition {
 
+    /**
+     * Enum that represents all java types.
+     * 
+     * @author porcelli
+     */
     public enum JavaTypes {
+
+        /** The CLASS. */
         CLASS,
+
+        /** The INTERFACE. */
         INTERFACE,
+
+        /** The ENUM. */
         ENUM,
+
+        /** The ANNOTATION. */
         ANNOTATION;
     }
 
+    /** The package name. */
     private String                  packageName   = null;
+
+    /** The type name. */
     private String                  typeName      = null;
+
+    /** The type. */
     private JavaTypes               type          = null;
+
+    /** The access. */
     private int                     access;
+
+    /** The is private. */
     private boolean                 isPrivate     = false;
+
+    /** The extends def. */
     private TypeReference           extendsDef    = null;
+
+    /** The implements def. */
     private List<TypeReference>     implementsDef = new LinkedList<TypeReference>();
+
+    /** The fields. */
     private List<FieldDeclaration>  fields        = new LinkedList<FieldDeclaration>();
+
+    /** The methods. */
     private List<MethodDeclaration> methods       = new LinkedList<MethodDeclaration>();
 
-    public TypeDefinition() {
-    }
-
+    /**
+     * Gets the package name.
+     * 
+     * @return the package name
+     */
     public String getPackageName() {
         return packageName;
     }
 
+    /**
+     * Sets the package name.
+     * 
+     * @param packageName the new package name
+     */
     public void setPackageName( String packageName ) {
         this.packageName = packageName;
     }
 
+    /**
+     * Gets the type name.
+     * 
+     * @return the type name
+     */
     public String getTypeName() {
         return typeName;
     }
 
+    /**
+     * Sets the type name.
+     * 
+     * @param typeName the new type name
+     */
     public void setTypeName( String typeName ) {
         this.typeName = typeName;
     }
 
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     */
     public JavaTypes getType() {
         return type;
     }
 
+    /**
+     * Sets the type.
+     * 
+     * @param type the new type
+     */
     public void setType( JavaTypes type ) {
         this.type = type;
     }
 
+    /**
+     * Gets the access.
+     * 
+     * @return the access
+     */
     public int getAccess() {
         return access;
     }
 
+    /**
+     * Sets the access.
+     * 
+     * @param access the new access
+     */
     public void setAccess( int access ) {
         this.access = access;
     }
 
+    /**
+     * Gets the extends def.
+     * 
+     * @return the extends def
+     */
     public TypeReference getExtendsDef() {
         return extendsDef;
     }
 
+    /**
+     * Sets the extends def.
+     * 
+     * @param extendsDef the new extends def
+     */
     public void setExtendsDef( TypeReference extendsDef ) {
         this.extendsDef = extendsDef;
     }
 
+    /**
+     * Gets the implements def.
+     * 
+     * @return the implements def
+     */
     public List<TypeReference> getImplementsDef() {
         return implementsDef;
     }
 
+    /**
+     * Sets the implements def.
+     * 
+     * @param implementsDef the new implements def
+     */
     public void setImplementsDef( List<TypeReference> implementsDef ) {
         this.implementsDef = implementsDef;
     }
 
+    /**
+     * Gets the fields.
+     * 
+     * @return the fields
+     */
     public List<FieldDeclaration> getFields() {
         return fields;
     }
 
+    /**
+     * Sets the fields.
+     * 
+     * @param fields the new fields
+     */
     public void setFields( List<FieldDeclaration> fields ) {
         this.fields = fields;
     }
 
+    /**
+     * Gets the methods.
+     * 
+     * @return the methods
+     */
     public List<MethodDeclaration> getMethods() {
         return methods;
     }
 
+    /**
+     * Sets the methods.
+     * 
+     * @param methods the new methods
+     */
     public void setMethods( List<MethodDeclaration> methods ) {
         this.methods = methods;
     }
 
+    /**
+     * Checks if is private.
+     * 
+     * @return true, if is private
+     */
     public boolean isPrivate() {
         return isPrivate;
     }
 
+    /**
+     * Sets the private.
+     * 
+     * @param isPrivate the new private
+     */
     public void setPrivate( boolean isPrivate ) {
         this.isPrivate = isPrivate;
     }

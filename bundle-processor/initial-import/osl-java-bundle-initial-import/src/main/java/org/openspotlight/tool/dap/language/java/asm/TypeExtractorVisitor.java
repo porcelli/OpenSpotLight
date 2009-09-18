@@ -58,10 +58,20 @@ import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition.JavaTypes;
 
+// TODO: Auto-generated Javadoc
+/**
+ * Visits a compiled java type (.class) and builds a {@link TypeDefinition}.
+ * 
+ * @author porcelli
+ */
 public class TypeExtractorVisitor extends AbstractTypeVisitor {
 
+    /** The type. */
     private TypeDefinition type = null;
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.AbstractTypeVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+     */
     public void visit( int version,
                        int access,
                        String name,
@@ -104,6 +114,9 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.AbstractTypeVisitor#visitField(int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
+     */
     public FieldVisitor visitField( int access,
                                     String name,
                                     String desc,
@@ -125,6 +138,9 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.AbstractTypeVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+     */
     public MethodVisitor visitMethod( int access,
                                       String name,
                                       String desc,
@@ -165,6 +181,12 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         return null;
     }
 
+    /**
+     * Gets the package and type names (in this order).
+     * 
+     * @param name the name
+     * @return the package and type names
+     */
     private Pair<String, String> getPackageAndTypeNames( String name ) {
 
         String packageName = name.substring(0, name.lastIndexOf('/')).replace("/", ".");
@@ -173,6 +195,11 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         return new Pair<String, String>(packageName, className);
     }
 
+    /**
+     * Exposes the type.
+     * 
+     * @return the type
+     */
     public TypeDefinition getType() {
         return type;
     }

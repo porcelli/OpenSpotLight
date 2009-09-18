@@ -66,10 +66,23 @@ import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class extracts from compiled artifacts all java types definitions.
+ * 
+ * @see TypeDefinition
+ * @author porcelli
+ */
 public class CompiledTypesExtractor {
 
+    /** The LOG. */
     private final Logger LOG = LoggerFactory.getLogger(CompiledTypesExtractor.class);
 
+    /**
+     * Generates a list of {@link TypeDefinition} based on a set of artifacts (.jar or .class files).
+     * 
+     * @param artifacts the artifacts. Allowed artifacts: .jar and .class .
+     * @return the java types
+     */
     public List<TypeDefinition> getJavaTypes( Set<File> artifacts ) {
         int count = 0;
         List<TypeDefinition> scannedTypes = new LinkedList<TypeDefinition>();
@@ -114,12 +127,18 @@ public class CompiledTypesExtractor {
         return scannedTypes;
     }
 
+    /**
+     * Process the compiled input stream using {@link TypeExtractorVisitor}.
+     * 
+     * @param stream the stream
+     * @return the type definition
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     private TypeDefinition processCompiledInputStream( InputStream stream ) throws IOException {
         ClassReader reader = new ClassReader(stream);
-        TypeExtractorVisitor asmVisitor = new TypeExtractorVisitor();
-        reader.accept(asmVisitor, 0);
+        TypeExtractorVisitor visitor = new TypeExtractorVisitor();
+        reader.accept(visitor, 0);
         stream.close();
-        //count++;
-        return asmVisitor.getType();
+        return visitor.getType();
     }
 }

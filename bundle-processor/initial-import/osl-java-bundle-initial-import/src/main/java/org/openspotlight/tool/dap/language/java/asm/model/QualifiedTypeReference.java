@@ -59,7 +59,7 @@ public class QualifiedTypeReference implements TypeReference {
     private TypeReference type     = null;
 
     /** The type name. */
-    private String  typeName = null;
+    private String        typeName = null;
 
     /**
      * Instantiates a new qualified type reference.
@@ -68,7 +68,7 @@ public class QualifiedTypeReference implements TypeReference {
      * @param typeName the type name
      */
     public QualifiedTypeReference(
-                             TypeReference type, String typeName ) {
+                                   TypeReference type, String typeName ) {
         this.type = type;
         this.typeName = typeName;
     }

@@ -63,20 +63,25 @@ import org.openspotlight.parser.dap.language.java.node.JavaPackage;
 import org.openspotlight.parser.dap.language.java.node.JavaType;
 import org.openspotlight.parser.dap.language.java.node.JavaTypePrimitive;
 
-public class JavaGraphNodeHelper{
+public class JavaGraphNodeHelper {
 
-    private final SLNode currentContextRootNode;
-    private final SLNode abstractContextRootNode;
-    private final SLGraphSession session;
+    private final SLNode                currentContextRootNode;
+    private final SLNode                abstractContextRootNode;
+    private final SLGraphSession        session;
     private final Map<String, JavaType> nodesFromThisContext = new TreeMap<String, JavaType>();
 
-    public JavaGraphNodeHelper(SLGraphSession session, SLNode currentContextRootNode, SLNode abstractContextRootNode){
+    public JavaGraphNodeHelper(
+                                SLGraphSession session, SLNode currentContextRootNode, SLNode abstractContextRootNode ) {
         this.session = session;
         this.currentContextRootNode = currentContextRootNode;
         this.abstractContextRootNode = abstractContextRootNode;
     }
 
-    public void insertFieldData(JavaDataField field, JavaType fieldType, int access, boolean isArray, int dimension) throws Exception{
+    public void insertFieldData( JavaDataField field,
+                                 JavaType fieldType,
+                                 int access,
+                                 boolean isArray,
+                                 int dimension ) throws Exception {
         DataType fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
         fieldTypeLink.setArray(isArray);
         fieldTypeLink.setArrayDimension(dimension);
@@ -95,8 +100,9 @@ public class JavaGraphNodeHelper{
         field.setTransient(isFieldTransient);
         field.setVolatile(isFieldVolatile);
     }
-    
-    public void setMethodData(JavaMethod method, int access){
+
+    public void setMethodData( JavaMethod method,
+                               int access ) {
         boolean isMethodPublic = (access & Opcodes.ACC_PUBLIC) != 0;
         boolean isMethodPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
         boolean isMethodStatic = (access & Opcodes.ACC_STATIC) != 0;
@@ -111,16 +117,18 @@ public class JavaGraphNodeHelper{
         method.setSynchronized(isMethodSynchronized);
     }
 
-
-    public <T extends JavaType> T addBeforeTypeProcessing(Class<T> nodeType, String packageName, String nodeName, int access)throws Exception{
-        if(nodesFromThisContext.containsKey(packageName+nodeName)) {
-            return (T)nodesFromThisContext.get(packageName+nodeName);
+    public <T extends JavaType> T addBeforeTypeProcessing( Class<T> nodeType,
+                                                           String packageName,
+                                                           String nodeName,
+                                                           int access ) throws Exception {
+        if (nodesFromThisContext.containsKey(packageName + nodeName)) {
+            return (T)nodesFromThisContext.get(packageName + nodeName);
         }
 
         JavaPackage newPackage = currentContextRootNode.addNode(JavaPackage.class, packageName);
-        T newType = newPackage.addNode(nodeType,nodeName);
+        T newType = newPackage.addNode(nodeType, nodeName);
         session.addLink(PackageType.class, newPackage, newType, false);
-        nodesFromThisContext.put(packageName+nodeName,newType);
+        nodesFromThisContext.put(packageName + nodeName, newType);
         boolean isPublic = (access & Opcodes.ACC_PUBLIC) != 0;
         boolean isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
         boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
@@ -131,28 +139,28 @@ public class JavaGraphNodeHelper{
         newType.setStatic(isStatic);
         newType.setFinal(isFinal);
         newType.setProtected(isProtected);
-        
+
         JavaPackage newAbstractPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
-        JavaType newAbstractType = newAbstractPackage.addNode(JavaType.class,nodeName);
+        JavaType newAbstractType = newAbstractPackage.addNode(JavaType.class, nodeName);
         session.addLink(PackageType.class, newPackage, newType, false);
-        session.addLink(AbstractTypeBind.class,newAbstractType,newType,false);
-        
+        session.addLink(AbstractTypeBind.class, newAbstractType, newType, false);
+
         return newType;
     }
-    
 
-    public <T extends JavaType> T addAfterTypeProcessing(Class<T> nodeType, String packageName, String nodeName)throws Exception{
-        if(nodesFromThisContext.containsKey(packageName+nodeName)){
-            return (T)nodesFromThisContext.get(packageName+nodeName);
+    public <T extends JavaType> T addAfterTypeProcessing( Class<T> nodeType,
+                                                          String packageName,
+                                                          String nodeName ) throws Exception {
+        if (nodesFromThisContext.containsKey(packageName + nodeName)) {
+            return (T)nodesFromThisContext.get(packageName + nodeName);
         }
-        if(JavaTypePrimitive.class.equals(nodeType)){
-            T newType = abstractContextRootNode.addNode(nodeType,nodeName);
+        if (JavaTypePrimitive.class.equals(nodeType)) {
+            T newType = abstractContextRootNode.addNode(nodeType, nodeName);
             return newType;
         }
         JavaPackage newPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
-        T newType = newPackage.addNode(nodeType,nodeName);
+        T newType = newPackage.addNode(nodeType, nodeName);
         session.addLink(PackageType.class, newPackage, newType, false);
         return newType;
     }
 }
-
