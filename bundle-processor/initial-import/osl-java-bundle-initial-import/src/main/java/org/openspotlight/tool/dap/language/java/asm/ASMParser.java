@@ -69,10 +69,10 @@ import org.openspotlight.tool.dap.language.java.asm.model.TypeRef;
 import org.openspotlight.tool.dap.language.java.asm.model.WildcardTypeRef;
 import org.openspotlight.tool.dap.language.java.asm.model.PrimitiveTypeRef.PrimitiveType;
 
-public class DirectASMParser {
+public class ASMParser {
     private ANTLRStringStream input;
 
-    public DirectASMParser(
+    public ASMParser(
                             String type ) {
         input = new ANTLRStringStream(type);
     }

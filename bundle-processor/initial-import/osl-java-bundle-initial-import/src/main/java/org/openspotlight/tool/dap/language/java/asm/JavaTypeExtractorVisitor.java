@@ -58,7 +58,7 @@ import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeRef;
 import org.openspotlight.tool.dap.language.java.asm.model.JavaType.JavaTypeDef;
 
-public class ASMVisitor extends AbstractASMVisitor {
+public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
 
     private JavaType type = null;
 
@@ -108,7 +108,7 @@ public class ASMVisitor extends AbstractASMVisitor {
                                     String desc,
                                     String signature,
                                     Object value ) {
-        DirectASMParser asmParser = new DirectASMParser(desc);
+        ASMParser asmParser = new ASMParser(desc);
 
         Field field = new Field();
         field.setName(name);
@@ -133,7 +133,7 @@ public class ASMVisitor extends AbstractASMVisitor {
             return null;
         }
 
-        DirectASMParser asmParser = new DirectASMParser(desc);
+        ASMParser asmParser = new ASMParser(desc);
 
         MethodDeclaration methodDeclaration = new MethodDeclaration();
         if (name.equals("<init>")) {

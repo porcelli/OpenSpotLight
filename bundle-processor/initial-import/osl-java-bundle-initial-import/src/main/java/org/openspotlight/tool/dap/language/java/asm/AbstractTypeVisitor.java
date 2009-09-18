@@ -54,7 +54,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-public abstract class AbstractASMVisitor implements ClassVisitor {
+public abstract class AbstractTypeVisitor implements ClassVisitor {
 
     public void visit( int arg0,
                        int arg1,
