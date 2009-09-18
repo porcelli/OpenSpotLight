@@ -56,11 +56,11 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 public class PrimitiveTypeReference implements TypeReference {
 
     /**
-     * The Enum that represents all the availables primitive types.
+     * Enum that represents all the availables primitive types.
      * 
      * @author porcelli
      */
-    public enum PrimitiveType {
+    public enum JavaPrimitiveTypes {
 
         /** The BOOLEAN type. */
         BOOLEAN,
@@ -98,7 +98,7 @@ public class PrimitiveTypeReference implements TypeReference {
     }
 
     /** The type. */
-    private PrimitiveType type = null;
+    private JavaPrimitiveTypes type = null;
 
     /**
      * Instantiates a new primitive type reference.
@@ -106,7 +106,7 @@ public class PrimitiveTypeReference implements TypeReference {
      * @param type the type
      */
     public PrimitiveTypeReference(
-                             PrimitiveType type ) {
+                                   JavaPrimitiveTypes type ) {
         this.type = type;
     }
 
@@ -115,7 +115,7 @@ public class PrimitiveTypeReference implements TypeReference {
      * 
      * @return the type
      */
-    public PrimitiveType getType() {
+    public JavaPrimitiveTypes getType() {
         return type;
     }
 
@@ -124,7 +124,7 @@ public class PrimitiveTypeReference implements TypeReference {
      * 
      * @param type the new type
      */
-    public void setType( PrimitiveType type ) {
+    public void setType( JavaPrimitiveTypes type ) {
         this.type = type;
     }
 

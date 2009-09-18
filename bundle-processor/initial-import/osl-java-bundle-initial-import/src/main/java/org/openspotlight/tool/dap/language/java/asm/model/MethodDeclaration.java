@@ -59,28 +59,28 @@ import java.util.List;
 public class MethodDeclaration {
 
     /** The method name. */
-    private String                name             = null;
+    private String                          name             = null;
 
     /** The accessor. */
-    private int                   access;
+    private int                             access;
 
     /** The isPrivate indicates if method is private. */
-    private boolean               isPrivate        = false;
+    private boolean                         isPrivate        = false;
 
     /** The isConstructor defines if this method is a contructor. */
-    private boolean               isConstructor    = false;
+    private boolean                         isConstructor    = false;
 
     /** The method return type. */
-    private TypeReference               returnType       = null;
+    private TypeReference                   returnType       = null;
 
     /** The parameters. */
-    private List<MethodParameter> parameters       = new LinkedList<MethodParameter>();
+    private List<MethodParameterDefinition> parameters       = new LinkedList<MethodParameterDefinition>();
 
     /** The exceptions that can be throwed by this method. */
-    private List<TypeReference>         thrownExceptions = new LinkedList<TypeReference>();
+    private List<TypeReference>             thrownExceptions = new LinkedList<TypeReference>();
 
     /** The type parameters(related to generics). */
-    private List<TypeParameter>   typeParameters   = new LinkedList<TypeParameter>();
+    private List<TypeParameter>             typeParameters   = new LinkedList<TypeParameter>();
 
     /**
      * Instantiates a new method declaration.
@@ -183,7 +183,7 @@ public class MethodDeclaration {
      * 
      * @return the parameters
      */
-    public List<MethodParameter> getParameters() {
+    public List<MethodParameterDefinition> getParameters() {
         return parameters;
     }
 
@@ -192,7 +192,7 @@ public class MethodDeclaration {
      * 
      * @param parameters the new parameters
      */
-    public void setParameters( List<MethodParameter> parameters ) {
+    public void setParameters( List<MethodParameterDefinition> parameters ) {
         this.parameters = parameters;
     }
 

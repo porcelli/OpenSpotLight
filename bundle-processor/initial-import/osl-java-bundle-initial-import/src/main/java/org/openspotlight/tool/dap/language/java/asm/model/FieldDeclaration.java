@@ -56,13 +56,13 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 public class FieldDeclaration {
 
     /** The field name. */
-    private String  name      = null;
+    private String        name      = null;
 
     /** The accessor. */
-    private int     access;
+    private int           access;
 
     /** The isPrivate indicates if field is private. */
-    private boolean isPrivate = false;
+    private boolean       isPrivate = false;
 
     /** The type identifies the data type of field. */
     private TypeReference type      = null;
@@ -126,7 +126,7 @@ public class FieldDeclaration {
     public void setPrivate( boolean isPrivate ) {
         this.isPrivate = isPrivate;
     }
-    
+
     /**
      * Gets the data type of the field.
      * 

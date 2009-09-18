@@ -68,7 +68,7 @@ public class SimpleTypeReference implements TypeReference {
      * @param typeName the type name
      */
     public SimpleTypeReference(
-                          String packageName, String typeName ) {
+                                String packageName, String typeName ) {
         this.packageName = packageName;
         this.typeName = typeName;
     }

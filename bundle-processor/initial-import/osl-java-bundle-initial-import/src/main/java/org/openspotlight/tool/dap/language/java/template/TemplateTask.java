@@ -178,33 +178,6 @@ public class TemplateTask extends Task {
     }
 
     /**
-     * Gets the output directory.
-     * 
-     * @return the output directory
-     */
-    public String getOutputDirectory() {
-        return this.outputDirectory;
-    }
-
-    /**
-     * Gets the script file location.
-     * 
-     * @return the script file location
-     */
-    public String getScriptFileLocation() {
-        return this.scriptFileLocation;
-    }
-
-    /**
-     * Gets the template path.
-     * 
-     * @return the template path
-     */
-    public String getTemplatePath() {
-        return this.templatePath;
-    }
-
-    /**
      * Checks if is execute bean shell script.
      * 
      * @return true, if is execute bean shell script

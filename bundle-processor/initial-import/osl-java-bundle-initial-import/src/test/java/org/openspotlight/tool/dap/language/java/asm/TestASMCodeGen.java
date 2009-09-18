@@ -18,8 +18,8 @@ public class TestASMCodeGen {
         jreFileSet.setIncludes("**/*.jar");
         //        jreFileSet.setIncludes("**/*.class");
         task.addCompiledArtifacts(jreFileSet);
-        task.setName("SomeLibraryName");
-        task.setVersion("1.0-GA");
+        task.setContextName("SomeLibraryName");
+        task.setContextVersion("1.0-GA");
         task.setXmlOutputFileName("./target/test-data/result.xml");
 
         task.execute();

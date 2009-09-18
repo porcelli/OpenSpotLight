@@ -48,25 +48,52 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class MethodParameter {
-    private int     position = -1;
+// TODO: Auto-generated Javadoc
+/**
+ * Model class that represents the method parameter definition.
+ * 
+ * @author porcelli
+ */
+public class MethodParameterDefinition {
+
+    /** The parameter position. */
+    private int           position = -1;
+
+    /** The data type. */
     private TypeReference dataType = null;
 
-    public MethodParameter() {
-    }
-
+    /**
+     * Gets the position.
+     * 
+     * @return the position
+     */
     public int getPosition() {
         return position;
     }
 
+    /**
+     * Sets the parameter position.
+     * 
+     * @param position the new parameter position
+     */
     public void setPosition( int position ) {
         this.position = position;
     }
 
+    /**
+     * Gets the data type.
+     * 
+     * @return the data type
+     */
     public TypeReference getDataType() {
         return dataType;
     }
 
+    /**
+     * Sets the data type.
+     * 
+     * @param dataType the new data type
+     */
     public void setDataType( TypeReference dataType ) {
         this.dataType = dataType;
     }

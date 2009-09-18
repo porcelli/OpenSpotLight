@@ -49,8 +49,8 @@
 package org.openspotlight.tool.dap.language.java.asm.model;
 
 /**
- * This interface is a reference type. As we have {@link TypeDefinition} for definition of a type, we have this interface to define a
- * type reference.
+ * This interface is a reference type. As we have {@link TypeDefinition} for definition of a type, we have this interface to
+ * define a type reference.
  * 
  * @author porcelli
  */

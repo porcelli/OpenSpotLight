@@ -49,8 +49,8 @@
  */
 package org.openspotlight.parser.dap.language.java.node;
 
-import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface for node Java Artifact Jar Meta Model.

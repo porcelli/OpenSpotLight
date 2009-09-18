@@ -51,6 +51,7 @@ package org.openspotlight.tool.dap.language.java.asm;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,29 +60,42 @@ import java.util.Set;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
-import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinitionSet;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition;
+import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinitionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 
+/**
+ * This class is an {@link Task ant task} that reads compiled artifacts and generates an XML File with all declared java types.
+ * 
+ * @author porcelli
+ */
 public class CompiledTypesExtractorTask extends Task {
 
-    /** The name. */
-    private String          name;
-
-    /** The version. */
-    private String          version;
-
+    /** The LOG. */
     private final Logger    LOG               = LoggerFactory.getLogger(CompiledTypesExtractorTask.class);
 
+    /** The context name. Default value is "unknown". */
+    private String          contextName       = "unknown";
+
+    /** The context version. Default value is "unknown". */
+    private String          contextVersion    = "unknown";
+
+    /** The compiled artifacts. */
     private final Set<File> compiledArtifacts = new HashSet<File>();
 
+    /** The xml output file name. */
     private String          xmlOutputFileName = "";
 
+    /**
+     * Adds a set of compiled artifacts.
+     * 
+     * @param artifactSet the artifact set
+     */
     public void addCompiledArtifacts( final FileSet artifactSet ) {
         final DirectoryScanner scanner = artifactSet.getDirectoryScanner(this.getProject());
         for (final String activeFileName : scanner.getIncludedFiles()) {
@@ -90,6 +104,9 @@ public class CompiledTypesExtractorTask extends Task {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.tools.ant.Task#execute()
+     */
     @Override
     public void execute() {
         if (this.isValid()) {
@@ -98,10 +115,9 @@ public class CompiledTypesExtractorTask extends Task {
                 final List<TypeDefinition> scannedTypes = typeExtractor.getJavaTypes(this.compiledArtifacts);
                 final TypeDefinitionSet wrapper = new TypeDefinitionSet();
                 wrapper.setTypes(scannedTypes);
-                wrapper.setName(this.name);
-                wrapper.setVersion(this.version);
+                wrapper.setName(this.contextName);
+                wrapper.setVersion(this.contextVersion);
                 //XML Output Generation
-                this.LOG.info("Starting XML Output generation.");
                 final XStream xstream = new XStream();
                 xstream.aliasPackage("", "org.openspotlight.tool.dap.language.java.asm.model");
                 xstream.alias("List", LinkedList.class);
@@ -114,8 +130,13 @@ public class CompiledTypesExtractorTask extends Task {
                     }
                 });
 
-                xstream.toXML(wrapper, new FileOutputStream(this.xmlOutputFileName));
+                this.LOG.info("Starting XML Output generation.");
+                OutputStream outputStream = new FileOutputStream(this.xmlOutputFileName);
+                xstream.toXML(wrapper, outputStream);
+                outputStream.flush();
+                outputStream.close();
                 this.LOG.info("Finished XML output file.");
+
             } catch (final IOException e) {
                 e.printStackTrace();
             } finally {
@@ -126,14 +147,11 @@ public class CompiledTypesExtractorTask extends Task {
         }
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getVersion() {
-        return this.version;
-    }
-
+    /**
+     * Checks if the task state is valid.
+     * 
+     * @return true, if it is valid
+     */
     private boolean isValid() {
         if ((this.xmlOutputFileName == null) || (this.xmlOutputFileName.trim().length() == 0)) {
             return false;
@@ -141,14 +159,29 @@ public class CompiledTypesExtractorTask extends Task {
         return true;
     }
 
-    public void setName( final String name ) {
-        this.name = name;
+    /**
+     * Sets the context name.
+     * 
+     * @param contextName the new context name
+     */
+    public void setContextName( String contextName ) {
+        this.contextName = contextName;
     }
 
-    public void setVersion( final String version ) {
-        this.version = version;
+    /**
+     * Sets the context version.
+     * 
+     * @param contextVersion the new context version
+     */
+    public void setContextVersion( String contextVersion ) {
+        this.contextVersion = contextVersion;
     }
 
+    /**
+     * Sets the xml output file name.
+     * 
+     * @param xmlOutputFileName the new xml output file name
+     */
     public void setXmlOutputFileName( final String xmlOutputFileName ) {
         this.xmlOutputFileName = xmlOutputFileName;
     }

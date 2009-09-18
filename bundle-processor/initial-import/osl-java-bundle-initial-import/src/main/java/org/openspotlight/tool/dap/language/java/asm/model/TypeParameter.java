@@ -51,26 +51,51 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Model class that represents teh type parapeters associated to {@link MethodDeclaration}.
+ * 
+ * @author porcelli
+ */
 public class TypeParameter {
 
-    private String        name       = null;
+    /** The parameter name. */
+    private String              name       = null;
+
+    /** The type bounds. */
     private List<TypeReference> typeBounds = new LinkedList<TypeReference>();
 
-    public TypeParameter() {
-    }
-
+    /**
+     * Gets the type name.
+     * 
+     * @return the type name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the type name.
+     * 
+     * @param name the new name
+     */
     public void setName( String name ) {
         this.name = name;
     }
 
+    /**
+     * Gets the type bounds.
+     * 
+     * @return the type bounds
+     */
     public List<TypeReference> getTypeBounds() {
         return typeBounds;
     }
 
+    /**
+     * Sets the type bounds.
+     * 
+     * @param typeBounds the new type bounds
+     */
     public void setTypeBounds( List<TypeReference> typeBounds ) {
         this.typeBounds = typeBounds;
     }
