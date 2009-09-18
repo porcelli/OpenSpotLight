@@ -48,45 +48,100 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class WildcardTypeRef implements TypeRef {
+/**
+ * Model class that reprents a Field Declaration inside a {@link TypeDefinition}.
+ * 
+ * @author porcelli
+ */
+public class FieldDeclaration {
 
-    private boolean isUpperBound = false;
-    private TypeRef boundType    = null;
+    /** The field name. */
+    private String  name      = null;
 
-    public WildcardTypeRef() {
+    /** The accessor. */
+    private int     access;
+
+    /** The isPrivate indicates if field is private. */
+    private boolean isPrivate = false;
+
+    /** The type identifies the data type of field. */
+    private TypeReference type      = null;
+
+    /**
+     * Instantiates a new field declaration.
+     */
+    public FieldDeclaration() {
     }
 
-    public WildcardTypeRef(
-                            boolean isUpperBound, TypeRef boundType ) {
-        this.isUpperBound = isUpperBound;
-        this.boundType = boundType;
-    }
-
-    public boolean isUpperBound() {
-        return isUpperBound;
-    }
-
-    public void setUpperBound( boolean isUpperBound ) {
-        this.isUpperBound = isUpperBound;
-    }
-
-    public TypeRef getBoundType() {
-        return boundType;
-    }
-
-    public void setBoundType( TypeRef boundType ) {
-        this.boundType = boundType;
-    }
-
-    public boolean isWildcardType() {
-        return true;
-    }
-
-    public String getFullName() {
-        return null;
-    }
-
+    /**
+     * Gets the field name.
+     * 
+     * @return the field name
+     */
     public String getName() {
-        return null;
+        return name;
+    }
+
+    /**
+     * Sets the field name.
+     * 
+     * @param name the new field name
+     */
+    public void setName( String name ) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the accessor.
+     * 
+     * @return the accessor
+     */
+    public int getAccess() {
+        return access;
+    }
+
+    /**
+     * Sets the accessor.
+     * 
+     * @param access the new accessor
+     */
+    public void setAccess( int access ) {
+        this.access = access;
+    }
+
+    /**
+     * Checks if is private.
+     * 
+     * @return true, if is private
+     */
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    /**
+     * Sets the private.
+     * 
+     * @param isPrivate indicate if it is a private field
+     */
+    public void setPrivate( boolean isPrivate ) {
+        this.isPrivate = isPrivate;
+    }
+    
+    /**
+     * Gets the data type of the field.
+     * 
+     * @return the data type
+     */
+    public TypeReference getType() {
+        return type;
+    }
+
+    /**
+     * Sets the data type.
+     * 
+     * @param type the new data type
+     */
+    public void setType( TypeReference type ) {
+        this.type = type;
     }
 }

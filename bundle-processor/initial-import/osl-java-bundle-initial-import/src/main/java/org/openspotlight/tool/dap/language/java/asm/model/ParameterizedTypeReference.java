@@ -48,53 +48,48 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class ArrayTypeRef implements TypeRef {
+import java.util.LinkedList;
+import java.util.List;
 
-    private int     arrayDimensions = -1;
-    private TypeRef type            = null;
+public class ParameterizedTypeReference implements TypeReference {
 
-    public ArrayTypeRef() {
+    private List<TypeReference> typeArguments = new LinkedList<TypeReference>();
+    private TypeReference       type          = null;
+
+    public ParameterizedTypeReference(){
     }
-
-    public ArrayTypeRef(
-                         int arraySize, TypeRef type ) {
-        this.arrayDimensions = arraySize;
+    
+    public ParameterizedTypeReference(
+                                 List<TypeReference> typeArguments, TypeReference type ) {
+        this.typeArguments = typeArguments;
         this.type = type;
     }
 
-    public int getArrayDimensions() {
-        return arrayDimensions;
+    public List<TypeReference> getTypeArguments() {
+        return typeArguments;
     }
 
-    public void setArrayDimensions( int arrayDimensions ) {
-        this.arrayDimensions = arrayDimensions;
+    public void setTypeArguments( List<TypeReference> typeArguments ) {
+        this.typeArguments = typeArguments;
     }
 
-    public TypeRef getType() {
+    public TypeReference getType() {
         return type;
     }
 
-    public void setType( TypeRef type ) {
+    public void setType( TypeReference type ) {
         this.type = type;
     }
 
-    public boolean isArray() {
+    public boolean isParameterizedType() {
         return true;
     }
 
     public String getFullName() {
-        return type.getFullName() + getDimensions();
+        return type.getFullName();
     }
 
     public String getName() {
-        return type.getName() + getDimensions();
-    }
-
-    private String getDimensions() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arrayDimensions; i++) {
-            sb.append("[]");
-        }
-        return sb.toString();
+        return type.getName();
     }
 }

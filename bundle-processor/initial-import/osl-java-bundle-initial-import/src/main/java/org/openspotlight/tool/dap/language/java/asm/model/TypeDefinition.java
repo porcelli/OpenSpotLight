@@ -48,8 +48,100 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public interface TypeRef {
-    public String getName();
+import java.util.LinkedList;
+import java.util.List;
 
-    public String getFullName();
+public class TypeDefinition {
+
+    public enum JavaTypes {
+        CLASS,
+        INTERFACE,
+        ENUM,
+        ANNOTATION;
+    }
+
+    private String                  packageName   = null;
+    private String                  typeName      = null;
+    private JavaTypes               type          = null;
+    private int                     access;
+    private boolean                 isPrivate     = false;
+    private TypeReference           extendsDef    = null;
+    private List<TypeReference>     implementsDef = new LinkedList<TypeReference>();
+    private List<FieldDeclaration>  fields        = new LinkedList<FieldDeclaration>();
+    private List<MethodDeclaration> methods       = new LinkedList<MethodDeclaration>();
+
+    public TypeDefinition() {
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName( String packageName ) {
+        this.packageName = packageName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName( String typeName ) {
+        this.typeName = typeName;
+    }
+
+    public JavaTypes getType() {
+        return type;
+    }
+
+    public void setType( JavaTypes type ) {
+        this.type = type;
+    }
+
+    public int getAccess() {
+        return access;
+    }
+
+    public void setAccess( int access ) {
+        this.access = access;
+    }
+
+    public TypeReference getExtendsDef() {
+        return extendsDef;
+    }
+
+    public void setExtendsDef( TypeReference extendsDef ) {
+        this.extendsDef = extendsDef;
+    }
+
+    public List<TypeReference> getImplementsDef() {
+        return implementsDef;
+    }
+
+    public void setImplementsDef( List<TypeReference> implementsDef ) {
+        this.implementsDef = implementsDef;
+    }
+
+    public List<FieldDeclaration> getFields() {
+        return fields;
+    }
+
+    public void setFields( List<FieldDeclaration> fields ) {
+        this.fields = fields;
+    }
+
+    public List<MethodDeclaration> getMethods() {
+        return methods;
+    }
+
+    public void setMethods( List<MethodDeclaration> methods ) {
+        this.methods = methods;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate( boolean isPrivate ) {
+        this.isPrivate = isPrivate;
+    }
 }

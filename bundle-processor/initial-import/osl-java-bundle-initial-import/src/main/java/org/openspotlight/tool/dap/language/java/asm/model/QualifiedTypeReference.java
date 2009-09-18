@@ -48,40 +48,77 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class QualifiedTypeRef implements TypeRef {
+/**
+ * Represents a qualified type that encloses other {@link TypeReference}.
+ * 
+ * @author porcelli
+ */
+public class QualifiedTypeReference implements TypeReference {
 
-    private TypeRef type     = null;
+    /** The enclosed type. */
+    private TypeReference type     = null;
+
+    /** The type name. */
     private String  typeName = null;
 
-    public QualifiedTypeRef(){
-    }
-
-    public QualifiedTypeRef(
-                             TypeRef type, String typeName ) {
+    /**
+     * Instantiates a new qualified type reference.
+     * 
+     * @param type the type
+     * @param typeName the type name
+     */
+    public QualifiedTypeReference(
+                             TypeReference type, String typeName ) {
         this.type = type;
         this.typeName = typeName;
     }
 
+    /**
+     * Gets the type name.
+     * 
+     * @return the type name
+     */
     public String getTypeName() {
         return typeName;
     }
 
+    /**
+     * Sets the type name.
+     * 
+     * @param typeName the new type name
+     */
     public void setTypeName( String typeName ) {
         this.typeName = typeName;
     }
 
-    public TypeRef getType() {
+    /**
+     * Gets the enclosed type.
+     * 
+     * @return the type
+     */
+    public TypeReference getType() {
         return type;
     }
 
-    public void setType( TypeRef type ) {
+    /**
+     * Sets the enclosed type.
+     * 
+     * @param type the new type
+     */
+    public void setType( TypeReference type ) {
         this.type = type;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+     */
     public String getFullName() {
         return type.getFullName() + "." + typeName;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
+     */
     public String getName() {
         return type.getName() + "." + typeName;
     }

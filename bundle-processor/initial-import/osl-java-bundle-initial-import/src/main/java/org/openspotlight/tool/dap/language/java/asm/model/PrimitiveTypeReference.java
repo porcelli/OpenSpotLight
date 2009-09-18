@@ -48,50 +48,96 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class PrimitiveTypeRef implements TypeRef {
+/**
+ * Represents a reference to a primitive type.
+ * 
+ * @author porcelli
+ */
+public class PrimitiveTypeReference implements TypeReference {
 
+    /**
+     * The Enum that represents all the availables primitive types.
+     * 
+     * @author porcelli
+     */
     public enum PrimitiveType {
+
+        /** The BOOLEAN type. */
         BOOLEAN,
+
+        /** The CHAR type. */
         CHAR,
+
+        /** The BYTE type. */
         BYTE,
+
+        /** The SHORT type. */
         SHORT,
+
+        /** The INT type. */
         INT,
+
+        /** The FLOAT type. */
         FLOAT,
+
+        /** The LONG type. */
         LONG,
+
+        /** The DOUBLE type. */
         DOUBLE,
+
+        /** The VOID type. */
         VOID;
 
+        /* (non-Javadoc)
+         * @see java.lang.Enum#toString()
+         */
         public String toString() {
             return name().toLowerCase();
         }
     }
 
+    /** The type. */
     private PrimitiveType type = null;
 
-    public PrimitiveTypeRef(){
-    }
-    
-    public PrimitiveTypeRef(
+    /**
+     * Instantiates a new primitive type reference.
+     * 
+     * @param type the type
+     */
+    public PrimitiveTypeReference(
                              PrimitiveType type ) {
         this.type = type;
     }
 
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     */
     public PrimitiveType getType() {
         return type;
     }
 
+    /**
+     * Sets the type.
+     * 
+     * @param type the new type
+     */
     public void setType( PrimitiveType type ) {
         this.type = type;
     }
 
-    public boolean isPrimitive() {
-        return true;
-    }
-
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+     */
     public String getFullName() {
         return getName();
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
+     */
     public String getName() {
         return type.toString();
     }

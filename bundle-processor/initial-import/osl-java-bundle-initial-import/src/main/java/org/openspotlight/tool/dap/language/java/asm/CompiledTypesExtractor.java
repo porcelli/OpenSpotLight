@@ -62,7 +62,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.objectweb.asm.ClassReader;
-import org.openspotlight.tool.dap.language.java.asm.model.JavaType;
+import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +70,9 @@ public class CompiledTypesExtractor {
 
     private final Logger LOG = LoggerFactory.getLogger(CompiledTypesExtractor.class);
 
-    public List<JavaType> getJavaTypes( Set<File> artifacts ) {
+    public List<TypeDefinition> getJavaTypes( Set<File> artifacts ) {
         int count = 0;
-        List<JavaType> scannedTypes = new LinkedList<JavaType>();
+        List<TypeDefinition> scannedTypes = new LinkedList<TypeDefinition>();
         try {
             for (File activeArtifact : artifacts) {
                 if (activeArtifact.getName().endsWith(".jar")) {
@@ -90,7 +90,7 @@ public class CompiledTypesExtractor {
                         // extract file if not a directory
                         if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
                             LOG.info(String.format("\tExtracting .class Type \"%s\".", entry.getName()));
-                            JavaType type = processCompiledInputStream(zipFile.getInputStream(entry));
+                            TypeDefinition type = processCompiledInputStream(zipFile.getInputStream(entry));
                             count++;
                             scannedTypes.add(type);
                         }
@@ -99,7 +99,7 @@ public class CompiledTypesExtractor {
                     zipFile.close();
                 } else if (activeArtifact.getName().endsWith(".class")) {
                     LOG.info(String.format("Extracting .class Type \"%s\".", activeArtifact.getCanonicalPath()));
-                    JavaType type = processCompiledInputStream(new FileInputStream(activeArtifact));
+                    TypeDefinition type = processCompiledInputStream(new FileInputStream(activeArtifact));
                     count++;
                     scannedTypes.add(type);
                 }
@@ -114,7 +114,7 @@ public class CompiledTypesExtractor {
         return scannedTypes;
     }
 
-    private JavaType processCompiledInputStream( InputStream stream ) throws IOException {
+    private TypeDefinition processCompiledInputStream( InputStream stream ) throws IOException {
         ClassReader reader = new ClassReader(stream);
         JavaTypeExtractorVisitor asmVisitor = new JavaTypeExtractorVisitor();
         reader.accept(asmVisitor, 0);

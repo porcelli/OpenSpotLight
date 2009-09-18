@@ -99,14 +99,14 @@ public class JavaTypeList {
     }
 
     /** The types. */
-    private List<JavaType> types = new LinkedList<JavaType>();
+    private List<TypeDefinition> types = new LinkedList<TypeDefinition>();
 
     /**
      * Gets the types.
      * 
      * @return the types
      */
-    public List<JavaType> getTypes() {
+    public List<TypeDefinition> getTypes() {
         return this.types;
     }
 
@@ -115,7 +115,7 @@ public class JavaTypeList {
      * 
      * @param types the new types
      */
-    public void setTypes( final List<JavaType> types ) {
+    public void setTypes( final List<TypeDefinition> types ) {
         this.types = types;
     }
 

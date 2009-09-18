@@ -54,11 +54,11 @@ import java.util.List;
 public class TypeParameter {
 
     private String        name       = null;
-    private List<TypeRef> typeBounds = new LinkedList<TypeRef>();
+    private List<TypeReference> typeBounds = new LinkedList<TypeReference>();
 
-    public TypeParameter(){
+    public TypeParameter() {
     }
-    
+
     public String getName() {
         return name;
     }
@@ -67,11 +67,11 @@ public class TypeParameter {
         this.name = name;
     }
 
-    public List<TypeRef> getTypeBounds() {
+    public List<TypeReference> getTypeBounds() {
         return typeBounds;
     }
 
-    public void setTypeBounds( List<TypeRef> typeBounds ) {
+    public void setTypeBounds( List<TypeReference> typeBounds ) {
         this.typeBounds = typeBounds;
     }
 }

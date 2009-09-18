@@ -51,97 +51,185 @@ package org.openspotlight.tool.dap.language.java.asm.model;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Model class that reprents a Method Declaration inside a {@link TypeDefinition}.
+ * 
+ * @author porcelli
+ */
 public class MethodDeclaration {
+
+    /** The method name. */
     private String                name             = null;
+
+    /** The accessor. */
     private int                   access;
-    private TypeRef               returnType       = null;
-    private List<MethodParameter> parameters       = new LinkedList<MethodParameter>();
-    private boolean               isConstructor    = false;
-    private List<TypeRef>         thrownExceptions = new LinkedList<TypeRef>();
-    private List<TypeParameter>   typeParameters   = new LinkedList<TypeParameter>();
+
+    /** The isPrivate indicates if method is private. */
     private boolean               isPrivate        = false;
 
+    /** The isConstructor defines if this method is a contructor. */
+    private boolean               isConstructor    = false;
+
+    /** The method return type. */
+    private TypeReference               returnType       = null;
+
+    /** The parameters. */
+    private List<MethodParameter> parameters       = new LinkedList<MethodParameter>();
+
+    /** The exceptions that can be throwed by this method. */
+    private List<TypeReference>         thrownExceptions = new LinkedList<TypeReference>();
+
+    /** The type parameters(related to generics). */
+    private List<TypeParameter>   typeParameters   = new LinkedList<TypeParameter>();
+
+    /**
+     * Instantiates a new method declaration.
+     */
     public MethodDeclaration() {
     }
 
-    public int getAccess() {
-        return access;
-    }
-
-    public void setAccess( int access ) {
-        this.access = access;
-    }
-
-    public List<TypeParameter> getTypeParameters() {
-        return typeParameters;
-    }
-
-    public void setTypeParameters( List<TypeParameter> typeParameters ) {
-        this.typeParameters = typeParameters;
-    }
-
-    public List<TypeRef> getThrownExceptions() {
-        return thrownExceptions;
-    }
-
-    public void setThrownExceptions( List<TypeRef> thrownExceptions ) {
-        this.thrownExceptions = thrownExceptions;
-    }
-
-    public boolean isConstructor() {
-        return isConstructor;
-    }
-
-    public void setConstructor( boolean isConstructor ) {
-        this.isConstructor = isConstructor;
-    }
-
+    /**
+     * Gets the method name.
+     * 
+     * @return the method name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the method name.
+     * 
+     * @param name the new method name
+     */
     public void setName( String name ) {
         this.name = name;
     }
 
-    public TypeRef getReturnType() {
-        return returnType;
+    /**
+     * Gets the accessor.
+     * 
+     * @return the accessor
+     */
+    public int getAccess() {
+        return access;
     }
 
-    public void setReturnType( TypeRef returnType ) {
-        this.returnType = returnType;
+    /**
+     * Sets the accessor.
+     * 
+     * @param access the new accessor
+     */
+    public void setAccess( int access ) {
+        this.access = access;
     }
 
-    public List<MethodParameter> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters( List<MethodParameter> parameters ) {
-        this.parameters = parameters;
-    }
-
-    public String getFullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name);
-        sb.append("(");
-        for (int i = 0; i < parameters.size(); i++) {
-            sb.append(parameters.get(i).getDataType().getFullName());
-            if (i != (parameters.size() - 1)) {
-                sb.append(", ");
-            }
-        }
-        sb.append(")");
-        return sb.toString();
-    }
-
-    public void setFullName( String fullName ) {
-    }
-
+    /**
+     * Checks if is private.
+     * 
+     * @return true, if is private
+     */
     public boolean isPrivate() {
         return isPrivate;
     }
 
+    /**
+     * Sets the private.
+     * 
+     * @param isPrivate indicates if it is a private method
+     */
     public void setPrivate( boolean isPrivate ) {
         this.isPrivate = isPrivate;
     }
+
+    /**
+     * Checks if is constructor.
+     * 
+     * @return true, if is constructor
+     */
+    public boolean isConstructor() {
+        return isConstructor;
+    }
+
+    /**
+     * Sets the constructor.
+     * 
+     * @param isConstructor indicates if it is a constructor
+     */
+    public void setConstructor( boolean isConstructor ) {
+        this.isConstructor = isConstructor;
+    }
+
+    /**
+     * Gets the return type.
+     * 
+     * @return the return type
+     */
+    public TypeReference getReturnType() {
+        return returnType;
+    }
+
+    /**
+     * Sets the return type.
+     * 
+     * @param returnType the new return type
+     */
+    public void setReturnType( TypeReference returnType ) {
+        this.returnType = returnType;
+    }
+
+    /**
+     * Gets the parameters.
+     * 
+     * @return the parameters
+     */
+    public List<MethodParameter> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Sets the parameters.
+     * 
+     * @param parameters the new parameters
+     */
+    public void setParameters( List<MethodParameter> parameters ) {
+        this.parameters = parameters;
+    }
+
+    /**
+     * Gets the thrown exceptions.
+     * 
+     * @return the thrown exceptions
+     */
+    public List<TypeReference> getThrownExceptions() {
+        return thrownExceptions;
+    }
+
+    /**
+     * Sets the thrown exceptions.
+     * 
+     * @param thrownExceptions the new thrown exceptions
+     */
+    public void setThrownExceptions( List<TypeReference> thrownExceptions ) {
+        this.thrownExceptions = thrownExceptions;
+    }
+
+    /**
+     * Gets the type parameters. This data is related to Generics.
+     * 
+     * @return the type parameters
+     */
+    public List<TypeParameter> getTypeParameters() {
+        return typeParameters;
+    }
+
+    /**
+     * Sets the type parameters. This data is related to Generics.
+     * 
+     * @param typeParameters the new type parameters
+     */
+    public void setTypeParameters( List<TypeParameter> typeParameters ) {
+        this.typeParameters = typeParameters;
+    }
+
 }

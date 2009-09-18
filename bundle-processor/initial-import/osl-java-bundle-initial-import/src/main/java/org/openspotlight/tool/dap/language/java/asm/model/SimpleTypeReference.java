@@ -48,44 +48,78 @@
  */
 package org.openspotlight.tool.dap.language.java.asm.model;
 
-public class Field {
-    private String  name      = null;
-    private int     access;
-    private boolean isPrivate = false;
-    private TypeRef type      = null;
+/**
+ * Represents a reference to a simple type.
+ * 
+ * @author porcelli
+ */
+public class SimpleTypeReference implements TypeReference {
 
-    public Field() {
+    /** The package name. */
+    private String packageName = null;
+
+    /** The type name. */
+    private String typeName    = null;
+
+    /**
+     * Instantiates a new simple type reference.
+     * 
+     * @param packageName the package name
+     * @param typeName the type name
+     */
+    public SimpleTypeReference(
+                          String packageName, String typeName ) {
+        this.packageName = packageName;
+        this.typeName = typeName;
     }
 
+    /**
+     * Gets the package name.
+     * 
+     * @return the package name
+     */
+    public String getPackageName() {
+        return packageName;
+    }
+
+    /**
+     * Sets the package name.
+     * 
+     * @param packageName the new package name
+     */
+    public void setPackageName( String packageName ) {
+        this.packageName = packageName;
+    }
+
+    /**
+     * Gets the type name.
+     * 
+     * @return the type name
+     */
+    public String getTypeName() {
+        return typeName;
+    }
+
+    /**
+     * Sets the type name.
+     * 
+     * @param typeName the new type name
+     */
+    public void setTypeName( String typeName ) {
+        this.typeName = typeName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+     */
+    public String getFullName() {
+        return packageName + "." + typeName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
+     */
     public String getName() {
-        return name;
-    }
-
-    public void setName( String name ) {
-        this.name = name;
-    }
-
-    public int getAccess() {
-        return access;
-    }
-
-    public void setAccess( int access ) {
-        this.access = access;
-    }
-
-    public TypeRef getType() {
-        return type;
-    }
-
-    public void setType( TypeRef type ) {
-        this.type = type;
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public void setPrivate( boolean isPrivate ) {
-        this.isPrivate = isPrivate;
+        return typeName;
     }
 }
