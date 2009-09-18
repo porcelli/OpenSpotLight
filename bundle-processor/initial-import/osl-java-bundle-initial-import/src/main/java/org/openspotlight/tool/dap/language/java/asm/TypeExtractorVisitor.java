@@ -58,7 +58,7 @@ import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.tool.dap.language.java.asm.model.SimpleTypeReference;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition.JavaTypes;
 
-public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
+public class TypeExtractorVisitor extends AbstractTypeVisitor {
 
     private TypeDefinition type = null;
 
@@ -91,14 +91,15 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
 
         if (superName != null) {
             Pair<String, String> superPackageAndTypeName = getPackageAndTypeNames(superName);
-            SimpleTypeReference superType = new SimpleTypeReference(superPackageAndTypeName.getK1(), superPackageAndTypeName.getK2());
+            SimpleTypeReference superType = new SimpleTypeReference(superPackageAndTypeName.getK1(),
+                                                                    superPackageAndTypeName.getK2());
             type.setExtendsDef(superType);
         }
 
         for (String interfaceName : interfaces) {
             Pair<String, String> interfacePackageAndTypeName = getPackageAndTypeNames(interfaceName);
             SimpleTypeReference interfaceType = new SimpleTypeReference(interfacePackageAndTypeName.getK1(),
-                                                            interfacePackageAndTypeName.getK2());
+                                                                        interfacePackageAndTypeName.getK2());
             type.getImplementsDef().add(interfaceType);
         }
     }
@@ -149,7 +150,7 @@ public class JavaTypeExtractorVisitor extends AbstractTypeVisitor {
             for (String exceptionName : exceptions) {
                 Pair<String, String> exceptionPackageAndTypeName = getPackageAndTypeNames(exceptionName);
                 SimpleTypeReference exceptionType = new SimpleTypeReference(exceptionPackageAndTypeName.getK1(),
-                                                                exceptionPackageAndTypeName.getK2());
+                                                                            exceptionPackageAndTypeName.getK2());
                 methodDeclaration.getThrownExceptions().add(exceptionType);
             }
         }

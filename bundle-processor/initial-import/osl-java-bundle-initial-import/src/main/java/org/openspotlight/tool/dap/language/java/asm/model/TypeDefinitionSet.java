@@ -52,18 +52,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The Class JavaTypeList.
+ * Class that represents a Set of Type Definitions.
+ * 
+ * @author porcelli
  */
-public class JavaTypeList {
+public class TypeDefinitionSet {
 
-    /** The name. */
-    private String name;
+    /** The type set name. */
+    private String               name;
 
     /** The version. */
-    private String version;
+    private String               version;
+
+    /** The types. */
+    private List<TypeDefinition> types = new LinkedList<TypeDefinition>();
 
     /**
-     * Gets the name.
+     * Gets the type set name.
      * 
      * @return the name
      */
@@ -72,9 +77,9 @@ public class JavaTypeList {
     }
 
     /**
-     * Sets the name.
+     * Sets the type set name.
      * 
-     * @param name the new name
+     * @param name the new type set name
      */
     public void setName( final String name ) {
         this.name = name;
@@ -97,9 +102,6 @@ public class JavaTypeList {
     public void setVersion( final String version ) {
         this.version = version;
     }
-
-    /** The types. */
-    private List<TypeDefinition> types = new LinkedList<TypeDefinition>();
 
     /**
      * Gets the types.

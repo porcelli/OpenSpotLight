@@ -59,7 +59,7 @@ import java.util.Set;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
-import org.openspotlight.tool.dap.language.java.asm.model.JavaTypeList;
+import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinitionSet;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.tool.dap.language.java.asm.model.TypeDefinition;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class CompiledTypesExtractorTask extends Task {
             try {
                 final CompiledTypesExtractor typeExtractor = new CompiledTypesExtractor();
                 final List<TypeDefinition> scannedTypes = typeExtractor.getJavaTypes(this.compiledArtifacts);
-                final JavaTypeList wrapper = new JavaTypeList();
+                final TypeDefinitionSet wrapper = new TypeDefinitionSet();
                 wrapper.setTypes(scannedTypes);
                 wrapper.setName(this.name);
                 wrapper.setVersion(this.version);

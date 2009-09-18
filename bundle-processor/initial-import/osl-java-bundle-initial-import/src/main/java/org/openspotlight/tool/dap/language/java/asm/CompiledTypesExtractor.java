@@ -116,7 +116,7 @@ public class CompiledTypesExtractor {
 
     private TypeDefinition processCompiledInputStream( InputStream stream ) throws IOException {
         ClassReader reader = new ClassReader(stream);
-        JavaTypeExtractorVisitor asmVisitor = new JavaTypeExtractorVisitor();
+        TypeExtractorVisitor asmVisitor = new TypeExtractorVisitor();
         reader.accept(asmVisitor, 0);
         stream.close();
         //count++;
