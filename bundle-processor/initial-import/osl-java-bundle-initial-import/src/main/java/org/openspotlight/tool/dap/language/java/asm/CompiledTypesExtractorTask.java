@@ -60,6 +60,7 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 import org.openspotlight.tool.dap.language.java.asm.model.JavaType;
+import org.openspotlight.tool.dap.language.java.asm.model.JavaTypeList;
 import org.openspotlight.tool.dap.language.java.asm.model.MethodDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,56 +70,86 @@ import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 
 public class CompiledTypesExtractorTask extends Task {
 
-    private final Logger LOG               = LoggerFactory.getLogger(CompiledTypesExtractorTask.class);
-    private Set<File>    compiledArtifacts = new HashSet<File>();
-    private String       xmlOutputFileName = "";
+    /** The name. */
+    private String          name;
 
-    public void setXmlOutputFileName( String xmlOutputFileName ) {
-        this.xmlOutputFileName = xmlOutputFileName;
-    }
+    /** The version. */
+    private String          version;
 
-    public void addCompiledArtifacts( FileSet artifactSet ) {
-        DirectoryScanner scanner = artifactSet.getDirectoryScanner(getProject());
-        for (String activeFileName : scanner.getIncludedFiles()) {
-            File file = new File(artifactSet.getDir(getProject()), activeFileName);
-            compiledArtifacts.add(file);
+    private final Logger    LOG               = LoggerFactory.getLogger(CompiledTypesExtractorTask.class);
+
+    private final Set<File> compiledArtifacts = new HashSet<File>();
+
+    private String          xmlOutputFileName = "";
+
+    public void addCompiledArtifacts( final FileSet artifactSet ) {
+        final DirectoryScanner scanner = artifactSet.getDirectoryScanner(this.getProject());
+        for (final String activeFileName : scanner.getIncludedFiles()) {
+            final File file = new File(artifactSet.getDir(this.getProject()), activeFileName);
+            this.compiledArtifacts.add(file);
         }
     }
 
+    @Override
     public void execute() {
-        if (isValid()) {
+        if (this.isValid()) {
             try {
-                CompiledTypesExtractor typeExtractor = new CompiledTypesExtractor();
-                List<JavaType> scannedTypes = typeExtractor.getJavaTypes(compiledArtifacts);
-
+                final CompiledTypesExtractor typeExtractor = new CompiledTypesExtractor();
+                final List<JavaType> scannedTypes = typeExtractor.getJavaTypes(this.compiledArtifacts);
+                final JavaTypeList wrapper = new JavaTypeList();
+                wrapper.setTypes(scannedTypes);
+                wrapper.setName(this.name);
+                wrapper.setVersion(this.version);
                 //XML Output Generation
-                LOG.info("Starting XML Output generation.");
-                XStream xstream = new XStream();
+                this.LOG.info("Starting XML Output generation.");
+                final XStream xstream = new XStream();
                 xstream.aliasPackage("", "org.openspotlight.tool.dap.language.java.asm.model");
                 xstream.alias("List", LinkedList.class);
 
                 xstream.registerConverter(new JavaBeanConverter(xstream.getMapper()) {
+                    @Override
                     @SuppressWarnings( "unchecked" )
-                    public boolean canConvert( Class type ) {
+                    public boolean canConvert( final Class type ) {
                         return type.getName() == MethodDeclaration.class.getName();
                     }
                 });
-                xstream.toXML(scannedTypes, new FileOutputStream(xmlOutputFileName));
-                LOG.info("Finished XML output file.");
-            } catch (IOException e) {
+
+                xstream.toXML(wrapper, new FileOutputStream(this.xmlOutputFileName));
+                this.LOG.info("Finished XML output file.");
+            } catch (final IOException e) {
                 e.printStackTrace();
             } finally {
 
             }
         } else {
-            LOG.error("Invalid State: Missing XmlOutputFileName.");
+            this.LOG.error("Invalid State: Missing XmlOutputFileName.");
         }
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
     private boolean isValid() {
-        if (xmlOutputFileName == null || xmlOutputFileName.trim().length() == 0) {
+        if ((this.xmlOutputFileName == null) || (this.xmlOutputFileName.trim().length() == 0)) {
             return false;
         }
         return true;
+    }
+
+    public void setName( final String name ) {
+        this.name = name;
+    }
+
+    public void setVersion( final String version ) {
+        this.version = version;
+    }
+
+    public void setXmlOutputFileName( final String xmlOutputFileName ) {
+        this.xmlOutputFileName = xmlOutputFileName;
     }
 }

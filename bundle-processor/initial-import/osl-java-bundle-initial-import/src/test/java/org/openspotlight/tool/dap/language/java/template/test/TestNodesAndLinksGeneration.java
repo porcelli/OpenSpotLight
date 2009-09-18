@@ -46,16 +46,36 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.java;
+package org.openspotlight.tool.dap.language.java.template.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
 import org.junit.Test;
+import org.openspotlight.tool.dap.language.java.template.TemplateTask;
 
-public class MassiveToStringTestUsingBeanShell {
-	@Test
-	public void shouldExecuteScript() throws Exception {
-//		bsh.Interpreter
-//		.main(new String[] { "./src/test/java/org/openspotlight/bundle/java/MassiveToStringBeanShellTest.bsh" });
+public class TestNodesAndLinksGeneration {
 
-	}
-
+    @Test
+    public void shouldCreateClassFiles() throws Exception {
+        final TemplateTask task = new TemplateTask();
+        task.setProject(new Project());
+        task.setExecuteBeanShellScript(false);
+        task.setTemplatePath("src/test/resources/template/sourcecode/");
+        task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
+        final FileSet xmls = new FileSet();
+        xmls.setDir(new File("src/test/resources/data/sourcecode/"));
+        xmls.setIncludes("*.xml");
+        task.addXmlFiles(xmls);
+        task.setOutputDirectory("./target/test-data/TestNodesAndLinksGeneration/output/");
+        task.execute();
+        final String linkDir = "target/test-data/TestNodesAndLinksGeneration/output/bundle-processor/osl-java-bundle/src/main/java/org/openspotlight/parser/dap/language/java/link";
+        assertThat(new File(linkDir).exists(), is(true));
+        assertThat(new File(linkDir).list().length, is(not(0)));
+    }
 }

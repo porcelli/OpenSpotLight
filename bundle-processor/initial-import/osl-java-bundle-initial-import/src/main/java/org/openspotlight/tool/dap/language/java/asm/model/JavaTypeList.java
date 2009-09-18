@@ -46,16 +46,77 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.java;
+package org.openspotlight.tool.dap.language.java.asm.model;
 
-import org.junit.Test;
+import java.util.LinkedList;
+import java.util.List;
 
-public class JavaInitialImportUsingBeanShell {
-	@Test
-	public void shouldExecuteScript() throws Exception {
-		bsh.Interpreter
-				.main(new String[] { "./src/main/resources/JavaInitialData.bsh" });
+/**
+ * The Class JavaTypeList.
+ */
+public class JavaTypeList {
 
-	}
+    /** The name. */
+    private String name;
+
+    /** The version. */
+    private String version;
+
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
+    public void setName( final String name ) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
+    public String getVersion() {
+        return this.version;
+    }
+
+    /**
+     * Sets the version.
+     * 
+     * @param version the new version
+     */
+    public void setVersion( final String version ) {
+        this.version = version;
+    }
+
+    /** The types. */
+    private List<JavaType> types = new LinkedList<JavaType>();
+
+    /**
+     * Gets the types.
+     * 
+     * @return the types
+     */
+    public List<JavaType> getTypes() {
+        return this.types;
+    }
+
+    /**
+     * Sets the types.
+     * 
+     * @param types the new types
+     */
+    public void setTypes( final List<JavaType> types ) {
+        this.types = types;
+    }
 
 }
