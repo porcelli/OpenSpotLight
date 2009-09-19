@@ -116,13 +116,31 @@ public class ParameterizedTypeReference implements TypeReference {
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName()
      */
     public String getFullName() {
-        return type.getFullName();
+        return type.getFullName() + getParameterizedFormat();
     }
 
     /* (non-Javadoc)
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName()
      */
     public String getName() {
-        return type.getName();
+        return type.getName() + getParameterizedFormat();
+    }
+
+    /**
+     * Genarates the parameterized format.
+     * 
+     * @return the parameterized format
+     */
+    private String getParameterizedFormat() {
+        StringBuffer sb = new StringBuffer();
+        sb.append('<');
+        for (int i = 0; i < typeArguments.size(); i++) {
+            sb.append(typeArguments.get(i).getFullName());
+            if (i < typeArguments.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append('>');
+        return sb.toString();
     }
 }

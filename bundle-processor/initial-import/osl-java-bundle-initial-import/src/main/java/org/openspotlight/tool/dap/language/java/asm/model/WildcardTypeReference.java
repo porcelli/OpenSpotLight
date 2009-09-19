@@ -62,10 +62,23 @@ public class WildcardTypeReference implements TypeReference {
     /** The bound type. */
     private TypeReference boundType    = null;
 
+    /** The alias. */
+    private String        alias        = null;
+
     /**
      * Instantiates a new wildcard type reference.
      */
     public WildcardTypeReference() {
+    }
+
+    /**
+     * Instantiates a new wildcard type reference.
+     * 
+     * @param alias the alias
+     */
+    public WildcardTypeReference(
+                                  String alias ) {
+        this.alias = alias;
     }
 
     /**
@@ -116,17 +129,52 @@ public class WildcardTypeReference implements TypeReference {
         this.boundType = boundType;
     }
 
+    /**
+     * Gets the alias.
+     * 
+     * @return the alias
+     */
+    public String getAlias() {
+        return alias;
+    }
+
+    /**
+     * Sets the alias.
+     * 
+     * @param alias the new alias
+     */
+    public void setAlias( String alias ) {
+        this.alias = alias;
+    }
+
     /* (non-Javadoc)
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName()
      */
     public String getFullName() {
-        return null;
+        return getName();
     }
 
     /* (non-Javadoc)
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName()
      */
     public String getName() {
-        return null;
+        if (boundType != null && isUpperBound) {
+            return getInternalName() + " extends " + boundType.getFullName();
+        } else if (boundType != null && !isUpperBound) {
+            return getInternalName() + " instanceOf " + boundType.getFullName();
+        }
+        return getInternalName();
+    }
+
+    /**
+     * Gets the internal name.
+     * 
+     * @return the internal name
+     */
+    private String getInternalName() {
+        if ((alias == null) || (alias.trim().length() == 0)) {
+            return "?";
+        }
+        return alias;
     }
 }
