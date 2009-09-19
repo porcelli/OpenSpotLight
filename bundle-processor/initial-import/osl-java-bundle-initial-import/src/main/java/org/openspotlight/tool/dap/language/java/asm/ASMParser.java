@@ -269,8 +269,7 @@ public class ASMParser {
                 break;
             case 'T':
                 input.consume();
-                newType = new WildcardTypeReference();
-                mID();
+                newType = new WildcardTypeReference(mID().poll());
                 break;
         }
         if (arraySize != -1) {
