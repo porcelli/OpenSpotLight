@@ -46,49 +46,40 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.bundle.dap.language.java.tool.template;
 
-package org.openspotlight.common.util;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import java.io.File;
 
-import java.io.InputStream;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
+import org.junit.Test;
+import org.openspotlight.bundle.dap.language.java.tool.template.TemplateTask;
 
-import org.openspotlight.common.exception.SLException;
+public class TestNodesAndLinksGeneration {
 
-/**
- * Class for resource loading.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
- */
-public class ClassPathResource {
-    
-    /**
-     * 
-     * Loads a resource from the current classpath.
-     * 
-     * @param artifactName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath(final String artifactName)
-            throws SLException {
-        checkNotEmpty("location", artifactName); //$NON-NLS-1$
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(artifactName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                        .getResourceAsStream(artifactName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(artifactName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
+    @Test
+    public void shouldCreateClassFiles() throws Exception {
+        final TemplateTask task = new TemplateTask();
+        task.setProject(new Project());
+        task.setExecuteBeanShellScript(false);
+        task.setTemplatePath("src/test/resources/template/sourcecode/");
+        task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
+        final FileSet xmls = new FileSet();
+        xmls.setDir(new File("src/test/resources/data/sourcecode/"));
+        xmls.setIncludes("*.xml");
+        task.addXmlFiles(xmls);
+        task.setOutputDirectory("./target/test-data/TestNodesAndLinksGeneration/output/");
+        task.execute();
+        final String linkDir = "target/test-data/TestNodesAndLinksGeneration/output/bundle-processor/osl-java-bundle/src/main/java/org/openspotlight/bundle/dap/language/java/metamodel/link";
+        assertThat(new File(linkDir).exists(), is(true));
+        assertThat(new File(linkDir).list().length, is(not(0)));
+
+        final String nodeDir = "target/test-data/TestNodesAndLinksGeneration/output/bundle-processor/osl-java-bundle/src/main/java/org/openspotlight/bundle/dap/language/java/metamodel/node";
+        assertThat(new File(nodeDir).exists(), is(true));
+        assertThat(new File(nodeDir).list().length, is(not(0)));
     }
-    
 }

@@ -1,3 +1,17 @@
+<files>
+<#list doc.root.package as package>
+<#assign nodes = package.nodes>
+<#list nodes.nodeData as node>
+    <#assign parentClassName="SLNode">
+    <#assign className = node.@typeName?replace(" ","")?replace(".","")?replace("-","")>
+	<#if node.@parentTypeName != "">
+	    <#assign parentClassName = node.@parentTypeName?replace(" ","")?replace(".","")?replace("-","") >
+	    <#assign className = parentClassName + node.@typeName?replace(" ","")?replace(".","")?replace("-","")>
+	</#if>
+    <file>
+        <name>${className}.java</name>
+        <location>bundle-processor/osl-java-bundle/src/main/java/org/openspotlight/bundle/dap/language/${package.@packageName}/metamodel/node</location>
+        <content>
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -46,49 +60,38 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.bundle.dap.language.${package.@packageName}.metamodel.node;
 
-package org.openspotlight.common.util;
-
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-
-import java.io.InputStream;
-
-import org.openspotlight.common.exception.SLException;
+<#if node.@parentTypeName == "">
+import org.openspotlight.graph.SLNode;
+</#if>
+import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * Class for resource loading.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * The Interface for node ${(node.@parentTypeName + " " + node.@typeName)?trim} Meta Model.
+ *
+<#list node.validParent as parent>
+<#assign linkedParentClassName=parent?replace(" ","")?replace(".","")?replace("-","")>
+ * {@link ${linkedParentClassName}} should be used as parent.
+</#list>
+ *
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-public class ClassPathResource {
-    
-    /**
-     * 
-     * Loads a resource from the current classpath.
-     * 
-     * @param artifactName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath(final String artifactName)
-            throws SLException {
-        checkNotEmpty("location", artifactName); //$NON-NLS-1$
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(artifactName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                        .getResourceAsStream(artifactName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(artifactName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+@SLDescription("${(node.@parentTypeName + " " + node.@typeName)?trim}")
+public interface ${className} extends ${parentClassName}<#if node.@parentTypeName != ""></#if> {
+
+<#list node.property as property>
+    @SLProperty
+    public ${property.@propertyType} get${t.upperFirst(property.@propertyName)}();
+    public void set${t.upperFirst(property.@propertyName)}(${property.@propertyType} new${t.upperFirst(property.@propertyName)});
+
+</#list>
     
 }
+
+        </content>
+    </file>
+</#list>
+</#list>
+</files>

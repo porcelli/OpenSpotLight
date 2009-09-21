@@ -52,11 +52,11 @@ import java.io.File;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.openspotlight.common.util.ClassPathResource;
 
 /**
  * The Class SLPersistentTreeFactoryImpl.
@@ -75,11 +75,11 @@ public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
 				deleteDir(new File("/tmp/repository"));
 			}
 			Credentials credentials = new SimpleCredentials("username", "password".toCharArray());
-			RepositoryConfig config = RepositoryConfig.create(new File(".", "src/main/resources/repository.xml").getAbsolutePath(), "/tmp/repository");
+			RepositoryConfig config = RepositoryConfig.create(ClassPathResource.getResourceFromClassPath("repository.xml"), "/tmp/repository");
 			Repository repo = RepositoryImpl.create(config);
 			return new SLPersistentTreeImpl(repo, credentials);
 		}
-		catch (RepositoryException e) {
+		catch (Exception e) {
 			throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
 		}
 	}

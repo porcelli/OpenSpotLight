@@ -1,3 +1,11 @@
+<files>
+<#list doc.root.package as package>
+<#list package.linkData as link>
+    <#assign className = link.@linkName?replace(" ","")?replace(".","")?replace("-","")>
+    <file>
+        <name>${className}.java</name>
+        <location>bundle-processor/osl-java-bundle/src/main/java/org/openspotlight/bundle/dap/language/${package.@packageName}/metamodel/link</location>
+        <content>
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -46,49 +54,35 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.bundle.dap.language.${package.@packageName}.metamodel.link;
 
-package org.openspotlight.common.util;
-
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-
-import java.io.InputStream;
-
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * Class for resource loading.
+ * The Interface for a link between ${link.@linkName}.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ *
+<#list link.description as description>
+ * ${description.@sideA} ${link.@linkType} ${description.@sideB}
+</#list>
+ *
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-public class ClassPathResource {
-    
-    /**
-     * 
-     * Loads a resource from the current classpath.
-     * 
-     * @param artifactName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath(final String artifactName)
-            throws SLException {
-        checkNotEmpty("location", artifactName); //$NON-NLS-1$
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(artifactName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                        .getResourceAsStream(artifactName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(artifactName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
-    
+@SLDescription("${link.@linkName}")
+public interface ${className} extends SLLink {
+<#list link.property as property>
+    @SLProperty
+    public ${property.@propertyType} get${t.upperFirst(property.@propertyName)}();
+    public void set${t.upperFirst(property.@propertyName)}(${property.@propertyType} new${t.upperFirst(property.@propertyName)});
+
+</#list>
 }
+
+
+        </content>
+    </file>
+</#list>
+</#list>
+</files>
