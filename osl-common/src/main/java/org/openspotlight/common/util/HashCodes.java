@@ -56,10 +56,8 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import java.util.Map;
 
 /**
- * Helper class to build hashCode methods in a secure and concise way. All the
- * hash functions for primitive types was created based on Effective Java book.
- * 
- * to be used like this...
+ * Helper class to build hashCode methods in a secure and concise way. All the hash functions for primitive types was created
+ * based on Effective Java book. to be used like this...
  * 
  * <pre>
  * private volatile hashcode;
@@ -88,12 +86,10 @@ import java.util.Map;
  * }
  * </pre>
  * 
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class HashCodes {
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -117,10 +113,10 @@ public class HashCodes {
      * @param b
      * @return the hash code
      */
-    public static int hashOf(final boolean b) {
+    public static int hashOf( final boolean b ) {
         return b ? 1 : 0;
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -144,10 +140,10 @@ public class HashCodes {
      * @param b
      * @return the hash code
      */
-    public static int hashOf(final byte b) {
+    public static int hashOf( final byte b ) {
         return b;
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -171,10 +167,10 @@ public class HashCodes {
      * @param c
      * @return the hash code
      */
-    public static int hashOf(final char c) {
+    public static int hashOf( final char c ) {
         return c;
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -198,10 +194,10 @@ public class HashCodes {
      * @param d
      * @return the hash code
      */
-    public static int hashOf(final double d) {
+    public static int hashOf( final double d ) {
         return hashOf(doubleToLongBits(d));
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -225,10 +221,10 @@ public class HashCodes {
      * @param f
      * @return the hash code
      */
-    public static int hashOf(final float f) {
+    public static int hashOf( final float f ) {
         return floatToIntBits(f);
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -252,13 +248,12 @@ public class HashCodes {
      * @param i
      * @return the hash code
      */
-    public static int hashOf(final int i) {
+    public static int hashOf( final int i ) {
         return i;
     }
-    
+
     /**
-     * Hash helper method to be used like this (based on Effective Java book).
-     * To be used like this:
+     * Hash helper method to be used like this (based on Effective Java book). To be used like this:
      * 
      * <pre>
      * public int hashCode(){
@@ -274,14 +269,14 @@ public class HashCodes {
      * @param iterable
      * @return the hash code
      */
-    public static int hashOf(final Iterable<?> iterable) {
+    public static int hashOf( final Iterable<?> iterable ) {
         int result = 17;
         for (final Object attribute : iterable) {
             result = 31 * result + hashOf(attribute);
         }
         return result;
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -305,13 +300,12 @@ public class HashCodes {
      * @param l
      * @return the hash code
      */
-    public static int hashOf(final long l) {
-        return (int) (l ^ (l >>> 32));
+    public static int hashOf( final long l ) {
+        return (int)(l ^ (l >>> 32));
     }
-    
+
     /**
-     * Hash helper method to be used like this (based on Effective Java book).
-     * To be used like this:
+     * Hash helper method to be used like this (based on Effective Java book). To be used like this:
      * 
      * <pre>
      * public int hashCode(){
@@ -327,7 +321,7 @@ public class HashCodes {
      * @param map
      * @return the hash code
      */
-    public static int hashOf(final Map<?, ?> map) {
+    public static int hashOf( final Map<?, ?> map ) {
         int result = 17;
         for (final Map.Entry<?, ?> entry : map.entrySet()) {
             result = 31 * result + hashOf(entry.getKey());
@@ -335,7 +329,7 @@ public class HashCodes {
         }
         return result;
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -359,13 +353,12 @@ public class HashCodes {
      * @param o
      * @return the hash code
      */
-    public static int hashOf(final Object o) {
+    public static int hashOf( final Object o ) {
         return o == null ? 0 : o.hashCode();
     }
-    
+
     /**
-     * Hash helper method to be used like this (based on Effective Java book).
-     * To be used like this:
+     * Hash helper method to be used like this (based on Effective Java book). To be used like this:
      * 
      * <pre>
      * public int hashCode(){
@@ -381,21 +374,21 @@ public class HashCodes {
      * @param attributes
      * @return the hash code
      */
-    public static int hashOf(final Object... attributes) {
+    public static int hashOf( final Object... attributes ) {
         int result = 17;
         for (final Object attribute : attributes) {
-            if (attribute instanceof Iterable) {
-                result = 31 * result + hashOf((Iterable<?>) attribute);
-            } else if (attribute instanceof Map) {
-                result = 31 * result + hashOf((Map<?, ?>) attribute);
+            if (attribute instanceof Iterable<?>) {
+                result = 31 * result + hashOf((Iterable<?>)attribute);
+            } else if (attribute instanceof Map<?, ?>) {
+                result = 31 * result + hashOf((Map<?, ?>)attribute);
             } else {
                 result = 31 * result + hashOf(attribute);
             }
-            
+
         }
         return result;
     }
-    
+
     /**
      * Hash helper method to be used like this (based on Effective Java book):
      * 
@@ -419,16 +412,15 @@ public class HashCodes {
      * @param s
      * @return the hash code
      */
-    public static int hashOf(final short s) {
+    public static int hashOf( final short s ) {
         return s;
     }
-    
+
     /**
      * Should not be instantiated
      */
     private HashCodes() {
-        logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
-    
+
 }

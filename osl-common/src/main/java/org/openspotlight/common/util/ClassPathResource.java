@@ -68,22 +68,22 @@ public class ClassPathResource {
      * 
      * Loads a resource from the current classpath.
      * 
-     * @param location
+     * @param artifactName
      * @return a input stream from classpath
      * @throws SLException
      */
-    public static InputStream getResourceFromClassPath(final String location)
+    public static InputStream getResourceFromClassPath(final String artifactName)
             throws SLException {
-        checkNotEmpty("location", location); //$NON-NLS-1$
+        checkNotEmpty("location", artifactName); //$NON-NLS-1$
         try {
             InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream(location);
+                    .getResourceAsStream(artifactName);
             if (stream == null) {
                 stream = ClassLoader.getSystemClassLoader()
-                        .getResourceAsStream(location);
+                        .getResourceAsStream(artifactName);
             }
             if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(location);
+                stream = ClassPathResource.class.getResourceAsStream(artifactName);
             }
             return stream;
         } catch (final Exception e) {
