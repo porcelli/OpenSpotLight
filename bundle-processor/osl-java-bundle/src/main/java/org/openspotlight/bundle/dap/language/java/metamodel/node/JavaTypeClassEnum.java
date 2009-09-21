@@ -46,15 +46,16 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.dap.language.java.metamodel.link;
+package org.openspotlight.bundle.dap.language.java.metamodel.node;
 
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Implicit References. Java Type A2B Java Type
+ * The Interface for node Java Type Class Enum Meta Model.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Implicit References" )
-public interface ImplicitReferences extends JavaLink {
+@SLDescription( "Java Type Class Enum" )
+public interface JavaTypeClassEnum extends JavaTypeClass {
+
 }
