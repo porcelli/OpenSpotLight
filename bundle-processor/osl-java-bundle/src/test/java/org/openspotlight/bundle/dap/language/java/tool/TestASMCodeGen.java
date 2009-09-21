@@ -16,7 +16,7 @@ public class TestASMCodeGen {
 
         final FileSet jreFileSet = new FileSet();
         jreFileSet.setDir(new File("."));
-        jreFileSet.setIncludes("**/jboss-seam*.jar");
+        jreFileSet.setIncludes("**/*.jar");
         //        jreFileSet.setIncludes("**/*.class");
         task.addCompiledArtifacts(jreFileSet);
         task.setContextName("Seam");
