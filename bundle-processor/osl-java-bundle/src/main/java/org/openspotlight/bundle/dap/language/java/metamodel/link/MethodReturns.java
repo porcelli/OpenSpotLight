@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.dap.language.java.metamodel.link;
 
-import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
@@ -58,7 +57,7 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Method Returns" )
-public interface MethodReturns extends SLLink {
+public interface MethodReturns extends JavaLink {
     @SLProperty
     public boolean getArray();
 

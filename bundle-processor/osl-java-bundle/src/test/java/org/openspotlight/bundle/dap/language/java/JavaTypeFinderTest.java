@@ -1,11 +1,3 @@
-<files>
-<#list doc.root.package as package>
-<#list package.linkData as link>
-    <#assign className = link.@linkName?replace(" ","")?replace(".","")?replace("-","")>
-    <file>
-        <name>${className}.java</name>
-        <location>bundle-processor/osl-${package.@packageName}-bundle/src/main/java/org/openspotlight/bundle/dap/language/${package.@packageName}/metamodel/link</location>
-        <content>
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -54,35 +46,55 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.dap.language.${package.@packageName}.metamodel.link;
+/**
+ * 
+ */
+package org.openspotlight.bundle.dap.language.java;
 
-import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLDescription;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.dap.language.java.support.JavaTypeFinder;
 
 /**
- * The Interface for a link between ${link.@linkName}.
- * 
- *
-<#list link.description as description>
- * ${description.@sideA} ${link.@linkType} ${description.@sideB}
-</#list>
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("${link.@linkName}")
-public interface ${className} extends ${package.@packageName?capitalize}Link {
-<#list link.property as property>
-    @SLProperty
-    public ${property.@propertyType} get${t.upperFirst(property.@propertyName)}();
-    public void set${t.upperFirst(property.@propertyName)}(${property.@propertyType} new${t.upperFirst(property.@propertyName)});
+public class JavaTypeFinderTest {
 
-</#list>
+    private JavaTypeFinder javaTypeFinder;
+
+    @Before
+    public void setupJavaFinder() throws Exception {
+        throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Test
+    public void shouldFindConcreteClass() throws Exception {
+        final JavaTypeClass stringClass = this.javaTypeFinder.getType("java.lang.String");
+        assertThat(stringClass, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldFindConcreteInnerClass() throws Exception {
+        final JavaTypeClass entryClass = this.javaTypeFinder.getType("java.lang.Map.Entry");
+        assertThat(entryClass, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldFindInterfaceType() throws Exception {
+        final JavaTypeInterface mapClass = this.javaTypeFinder.getType("java.util.Map");
+        assertThat(mapClass, is(notNullValue()));
+    }
+
+    @Test
+    public void shouldFindPrimitiveType() throws Exception {
+        final JavaTypePrimitive intClass = this.javaTypeFinder.getType("int");
+        assertThat(intClass, is(notNullValue()));
+    }
 }
-
-
-        </content>
-    </file>
-</#list>
-</#list>
-</files>
