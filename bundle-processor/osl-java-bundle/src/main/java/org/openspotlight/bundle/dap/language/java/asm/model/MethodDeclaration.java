@@ -89,93 +89,35 @@ public class MethodDeclaration {
     }
 
     /**
-     * Gets the method name.
-     * 
-     * @return the method name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the method name.
-     * 
-     * @param name the new method name
-     */
-    public void setName( String name ) {
-        this.name = name;
-    }
-
-    /**
      * Gets the accessor.
      * 
      * @return the accessor
      */
     public int getAccess() {
-        return access;
+        return this.access;
+    }
+
+    public String getFullName() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(this.name);
+        sb.append("(");
+        for (int i = 0; i < this.parameters.size(); i++) {
+            sb.append(this.parameters.get(i).getDataType().getFullName());
+            if (i != (this.parameters.size() - 1)) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
     /**
-     * Sets the accessor.
+     * Gets the method name.
      * 
-     * @param access the new accessor
+     * @return the method name
      */
-    public void setAccess( int access ) {
-        this.access = access;
-    }
-
-    /**
-     * Checks if is private.
-     * 
-     * @return true, if is private
-     */
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    /**
-     * Sets the private.
-     * 
-     * @param isPrivate indicates if it is a private method
-     */
-    public void setPrivate( boolean isPrivate ) {
-        this.isPrivate = isPrivate;
-    }
-
-    /**
-     * Checks if is constructor.
-     * 
-     * @return true, if is constructor
-     */
-    public boolean isConstructor() {
-        return isConstructor;
-    }
-
-    /**
-     * Sets the constructor.
-     * 
-     * @param isConstructor indicates if it is a constructor
-     */
-    public void setConstructor( boolean isConstructor ) {
-        this.isConstructor = isConstructor;
-    }
-
-    /**
-     * Gets the return type.
-     * 
-     * @return the return type
-     */
-    public TypeReference getReturnType() {
-        return returnType;
-    }
-
-    /**
-     * Sets the return type.
-     * 
-     * @param returnType the new return type
-     */
-    public void setReturnType( TypeReference returnType ) {
-        this.returnType = returnType;
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -184,16 +126,16 @@ public class MethodDeclaration {
      * @return the parameters
      */
     public List<MethodParameterDefinition> getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
     /**
-     * Sets the parameters.
+     * Gets the return type.
      * 
-     * @param parameters the new parameters
+     * @return the return type
      */
-    public void setParameters( List<MethodParameterDefinition> parameters ) {
-        this.parameters = parameters;
+    public TypeReference getReturnType() {
+        return this.returnType;
     }
 
     /**
@@ -202,16 +144,7 @@ public class MethodDeclaration {
      * @return the thrown exceptions
      */
     public List<TypeReference> getThrownExceptions() {
-        return thrownExceptions;
-    }
-
-    /**
-     * Sets the thrown exceptions.
-     * 
-     * @param thrownExceptions the new thrown exceptions
-     */
-    public void setThrownExceptions( List<TypeReference> thrownExceptions ) {
-        this.thrownExceptions = thrownExceptions;
+        return this.thrownExceptions;
     }
 
     /**
@@ -220,7 +153,91 @@ public class MethodDeclaration {
      * @return the type parameters
      */
     public List<TypeParameter> getTypeParameters() {
-        return typeParameters;
+        return this.typeParameters;
+    }
+
+    /**
+     * Checks if is constructor.
+     * 
+     * @return true, if is constructor
+     */
+    public boolean isConstructor() {
+        return this.isConstructor;
+    }
+
+    /**
+     * Checks if is private.
+     * 
+     * @return true, if is private
+     */
+    public boolean isPrivate() {
+        return this.isPrivate;
+    }
+
+    /**
+     * Sets the accessor.
+     * 
+     * @param access the new accessor
+     */
+    public void setAccess( final int access ) {
+        this.access = access;
+    }
+
+    /**
+     * Sets the constructor.
+     * 
+     * @param isConstructor indicates if it is a constructor
+     */
+    public void setConstructor( final boolean isConstructor ) {
+        this.isConstructor = isConstructor;
+    }
+
+    public void setFullName( final String fullName ) {
+    }
+
+    /**
+     * Sets the method name.
+     * 
+     * @param name the new method name
+     */
+    public void setName( final String name ) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the parameters.
+     * 
+     * @param parameters the new parameters
+     */
+    public void setParameters( final List<MethodParameterDefinition> parameters ) {
+        this.parameters = parameters;
+    }
+
+    /**
+     * Sets the private.
+     * 
+     * @param isPrivate indicates if it is a private method
+     */
+    public void setPrivate( final boolean isPrivate ) {
+        this.isPrivate = isPrivate;
+    }
+
+    /**
+     * Sets the return type.
+     * 
+     * @param returnType the new return type
+     */
+    public void setReturnType( final TypeReference returnType ) {
+        this.returnType = returnType;
+    }
+
+    /**
+     * Sets the thrown exceptions.
+     * 
+     * @param thrownExceptions the new thrown exceptions
+     */
+    public void setThrownExceptions( final List<TypeReference> thrownExceptions ) {
+        this.thrownExceptions = thrownExceptions;
     }
 
     /**
@@ -228,7 +245,7 @@ public class MethodDeclaration {
      * 
      * @param typeParameters the new type parameters
      */
-    public void setTypeParameters( List<TypeParameter> typeParameters ) {
+    public void setTypeParameters( final List<TypeParameter> typeParameters ) {
         this.typeParameters = typeParameters;
     }
 
