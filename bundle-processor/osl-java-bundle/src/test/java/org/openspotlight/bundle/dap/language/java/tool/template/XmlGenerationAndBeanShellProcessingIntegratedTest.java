@@ -53,39 +53,36 @@ import java.io.File;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.junit.Test;
+import org.openspotlight.bundle.dap.language.java.asm.tool.CompiledTypesExtractorTask;
 
-public class TestBeanShellScriptGenerationAndExecution {
+public class XmlGenerationAndBeanShellProcessingIntegratedTest {
 
     @Test
     public void shouldCreateBeanShellScript() throws Exception {
-        final TemplateTask task = new TemplateTask();
+        final CompiledTypesExtractorTask task = new CompiledTypesExtractorTask();
         task.setProject(new Project());
-        task.setExecuteBeanShellScript(false);
-        task.setTemplatePath("src/test/resources/template/beanshell/");
-        task.addTemplateFiles("JavaInitialData.ftl");
-        final FileSet xmls = new FileSet();
-        xmls.setDir(new File("src/test/resources/data/beanshell/"));
-        xmls.setIncludes("big*.xml");
-        task.addXmlFiles(xmls);
-        task.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
-        task.execute();
-        //        assertThat(new File(linkDir).exists(), is(true));
-        //        assertThat(new File(linkDir).list().length, is(not(0)));
-    }
 
-    @Test
-    public void shouldExecuteBeanShell() throws Exception {
-        final TemplateTask task = new TemplateTask();
-        task.setProject(new Project());
-        task.setExecuteBeanShellScript(true);
-        task.setTemplatePath("src/test/resources/template/beanshell/");
-        task.addTemplateFiles("JavaInitialData.ftl");
-        final FileSet xmls = new FileSet();
-        xmls.setDir(new File("src/test/resources/data/beanshell/"));
-        xmls.setIncludes("big*.xml");
-        task.addXmlFiles(xmls);
-        task.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
+        final FileSet jreFileSet = new FileSet();
+        jreFileSet.setDir(new File("."));
+        jreFileSet.setIncludes("**/dynamo*.jar");
+        //        jreFileSet.setIncludes("**/*.class");
+        task.addCompiledArtifacts(jreFileSet);
+        task.setContextName("Dynamo");
+        task.setContextVersion("1.0.1");
+        task.setXmlOutputFileName("./target/test-data/TestBeanShellScriptGenerationAndExecution/small-result.xml");
+
         task.execute();
+        final TemplateTask anotherTask = new TemplateTask();
+        anotherTask.setProject(new Project());
+        anotherTask.setExecuteBeanShellScript(true);
+        anotherTask.setTemplatePath("src/test/resources/template/beanshell/");
+        anotherTask.addTemplateFiles("JavaInitialData.ftl");
+        final FileSet xmls = new FileSet();
+        xmls.setDir(new File("target/test-data/TestBeanShellScriptGenerationAndExecution/"));
+        xmls.setIncludes("small*.xml");
+        anotherTask.addXmlFiles(xmls);
+        anotherTask.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
+        anotherTask.execute();
         //        assertThat(new File(linkDir).exists(), is(true));
         //        assertThat(new File(linkDir).list().length, is(not(0)));
     }
