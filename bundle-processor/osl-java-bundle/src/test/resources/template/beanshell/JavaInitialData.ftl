@@ -1,6 +1,6 @@
 <files>
     <file>
-        <name>java-initial-data-for-${doc.JavaTypeList.name}-${doc.JavaTypeList.version}.bsh</name>
+        <name>java-initial-data-for-${doc.TypeDefinitionSet.name}-${doc.TypeDefinitionSet.version}.bsh</name>
         <location>beanshell</location>
         <content><![CDATA[
 
@@ -79,7 +79,7 @@ Implements implementsSuper;
 boolean isArray = false;
 int arrayDimensions = 0;
 
-<#list doc.JavaTypeList.types.JavaType as javaType>
+<#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
 newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}", ${javaType.access});
 <#else>
@@ -89,12 +89,12 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
 
 
 
-<#list doc.JavaTypeList.types.JavaType as javaType>
+<#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
     newType = helper.addAfterTypeProcessing(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}");
     newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"${javaType.extendsDef.packageName}","${javaType.extendsDef.typeName}");
     extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
-<#list javaType.implementsDef.SimpleTypeRef as interface>
+<#list javaType.implementsDef.SimpleTypeReference as interface>
     
     // starting interface ${interface.typeName} 
     newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"${interface.packageName}","${interface.typeName}");
@@ -102,22 +102,22 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
     // ending interface ${interface.typeName} 
 </#list>
 
-<#list javaType.fields.Field as field>
+<#list javaType.fields.FieldDeclaration as field>
 <#if field.isPrivate=="false">
     isArray = false;
     arrayDimensions = 0;
     // starting field ${javaType.packageName}.${javaType.typeName}#${field.name}
 	field = newType.addNode(JavaDataField.class,"${field.name}"); 
-	<#if field.type.@class=="SimpleTypeRef">
+	<#if field.type.@class=="SimpleTypeReference">
 	fieldType = helper.addAfterTypeProcessing(JavaType.class, "${field.type.packageName}","${field.type.typeName}");
-    <#elseif field.type.@class="PrimitiveTypeRef">
+    <#elseif field.type.@class="PrimitiveTypeReference">
 	fieldType = helper.addAfterTypeProcessing(JavaTypePrimitive.class, "","${field.type.type?lower_case}");
-    <#elseif field.type.@class="ArrayTypeRef">
+    <#elseif field.type.@class="ArrayTypeReferenceerence">
     // starting array
     arrayDimensions = ${field.type.arrayDimensions};
-    <#if field.type.type.@class=="SimpleTypeRef">
+    <#if field.type.type.@class=="SimpleTypeReference">
     fieldType = helper.addAfterTypeProcessing(JavaType.class, "${field.type.type.packageName}","${field.type.type.typeName}");
-    <#elseif field.type.type.@class="PrimitiveTypeRef">
+    <#elseif field.type.type.@class="PrimitiveTypeReference">
     fieldType = helper.addAfterTypeProcessing(JavaTypePrimitive.class, "","${field.type.type.type?lower_case}");
     </#if>
     //ending array
@@ -147,16 +147,16 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
     typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
     
     // starting method return 
-    <#if method.returnType.@class=="SimpleTypeRef">
+    <#if method.returnType.@class=="SimpleTypeReference">
     methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "${method.returnType.packageName}","${method.returnType.typeName}");
-    <#elseif method.returnType.@class="PrimitiveTypeRef">
+    <#elseif method.returnType.@class="PrimitiveTypeReference">
     methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${method.returnType.type?lower_case}");
-    <#elseif method.returnType.@class="ArrayTypeRef">
+    <#elseif method.returnType.@class="ArrayTypeReferenceerence">
     isArray = true;
     arrayDimensions = ${method.returnType.arrayDimensions};
-    <#if method.returnType.type.@class=="SimpleTypeRef">
+    <#if method.returnType.type.@class=="SimpleTypeReference">
     methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "${method.returnType.type.packageName}","${method.returnType.type.typeName}");
-    <#elseif method.returnType.type.@class="PrimitiveTypeRef">
+    <#elseif method.returnType.type.@class="PrimitiveTypeReference">
     methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${method.returnType.type.type?lower_case}");
     </#if>
     //ending array
@@ -168,7 +168,7 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
     methodReturnsType.setArrayDimension(arrayDimensions);
         
     // finishing method return 
-    <#list method.thrownExceptions.SimpleTypeRef as exception>
+    <#list method.thrownExceptions.SimpleTypeReference as exception>
         newExceptionType = helper.addAfterTypeProcessing(JavaType.class, "${exception.packageName}","${exception.typeName}");
         methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
         // ending throws exception ${exception.packageName}.${exception.typeName}
@@ -178,18 +178,18 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
 	    isArray = false;
 	    arrayDimensions = 0;
         // starting parameter #${parameter.position}
-	    <#if parameter.dataType.@class=="SimpleTypeRef">
+	    <#if parameter.dataType.@class=="SimpleTypeReference">
 	    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "${parameter.dataType.packageName}","${parameter.dataType.typeName}");
-	    <#elseif parameter.dataType.@class="PrimitiveTypeRef">
+	    <#elseif parameter.dataType.@class="PrimitiveTypeReference">
         methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${parameter.dataType.type?lower_case}");
-	    <#elseif parameter.dataType.@class="ArrayTypeRef">
+	    <#elseif parameter.dataType.@class="ArrayTypeReferenceerence">
 	    isArray = true;
         arrayDimensions = ${parameter.dataType.arrayDimensions};
         
 	    // starting array
-	    <#if parameter.dataType.type.@class=="SimpleTypeRef">
+	    <#if parameter.dataType.type.@class=="SimpleTypeReference">
         methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "${parameter.dataType.type.packageName}","${parameter.dataType.type.typeName}");
-	    <#elseif parameter.dataType.type.@class="PrimitiveTypeRef">
+	    <#elseif parameter.dataType.type.@class="PrimitiveTypeReference">
 	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${parameter.dataType.type.type?lower_case}");
 	    </#if>
 	    //ending array

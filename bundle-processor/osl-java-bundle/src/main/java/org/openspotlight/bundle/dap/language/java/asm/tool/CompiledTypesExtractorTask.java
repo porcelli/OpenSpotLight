@@ -120,7 +120,7 @@ public class CompiledTypesExtractorTask extends Task {
                 wrapper.setVersion(this.contextVersion);
                 //XML Output Generation
                 final XStream xstream = new XStream();
-                xstream.aliasPackage("", "org.openspotlight.tool.dap.language.java.asm.model");
+                xstream.aliasPackage("", "org.openspotlight.bundle.dap.language.java.asm.model");
                 xstream.alias("List", LinkedList.class);
 
                 xstream.registerConverter(new JavaBeanConverter(xstream.getMapper()) {
@@ -132,7 +132,7 @@ public class CompiledTypesExtractorTask extends Task {
                 });
 
                 this.LOG.info("Starting XML Output generation.");
-                OutputStream outputStream = new FileOutputStream(this.xmlOutputFileName);
+                final OutputStream outputStream = new FileOutputStream(this.xmlOutputFileName);
                 xstream.toXML(wrapper, outputStream);
                 outputStream.flush();
                 outputStream.close();
@@ -165,7 +165,7 @@ public class CompiledTypesExtractorTask extends Task {
      * 
      * @param contextName the new context name
      */
-    public void setContextName( String contextName ) {
+    public void setContextName( final String contextName ) {
         this.contextName = contextName;
     }
 
@@ -174,7 +174,7 @@ public class CompiledTypesExtractorTask extends Task {
      * 
      * @param contextVersion the new context version
      */
-    public void setContextVersion( String contextVersion ) {
+    public void setContextVersion( final String contextVersion ) {
         this.contextVersion = contextVersion;
     }
 
