@@ -1,7 +1,5 @@
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.SLEncoder;
-import org.openspotlight.graph.SLEncoderFactory;
 
 public class SLEncoderFactoryImpl implements SLEncoderFactory {
 
