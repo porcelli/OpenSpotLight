@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph;
 
-import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 import static org.openspotlight.graph.SLRecursiveMode.NOT_RECURSIVE;
+import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 
 import java.util.ArrayList;
 import java.util.Collection;

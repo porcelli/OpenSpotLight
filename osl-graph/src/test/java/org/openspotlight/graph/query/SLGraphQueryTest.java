@@ -67,7 +67,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -79,23 +78,18 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-
-
 
 /**
  * The Class SLGraphQueryTest.
  * 
  * @author Vitor Hugo Chagas
  */
-@Test
 public class SLGraphQueryTest {
 
 	/** The Constant LOGGER. */
@@ -130,37 +124,20 @@ public class SLGraphQueryTest {
 		this.sortMode = sortMode;
 		this.printInfo = printInfo;
 	}
-
-	/**
-	 * Inits the.
-	 * 
-	 * @throws SLException the SL exception
-	 */
-	@BeforeClass
-	public void init() throws SLException {
-		SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-		graph = factory.createTempGraph(false);
-		session = graph.openSession();
-	}
-	
-	/**
-	 * Finish.
-	 */
-	@AfterClass
-	public void finish() {
-		graph.shutdown();
-	}
 	
 	/**
 	 * Populate graph.
 	 */
-	@BeforeSuite
+	@BeforeClass
 	public void populateGraph() {
-
 		try {
-			
-			SLMetadata metadata = session.getMetadata();
-			if (metadata.findMetaNodeType(JavaType.class) != null) return;
+		    SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            graph = factory.createTempGraph(false);
+            session = graph.openSession();
+            sortMode = SortMode.SORTED;
+
+//			SLMetadata metadata = session.getMetadata();
+//			if (metadata.findMetaNodeType(JavaType.class) != null) return;
 			
 			Collection<Class<?>> iFaces = loadClasses("java-util-interfaces.txt");
 			Collection<Class<?>> classes = loadClasses("java-util-classes.txt");
@@ -181,7 +158,7 @@ public class SLGraphQueryTest {
 			}
 			
 			for (Class<?> clazz : classes) {
-			    context = session.createContext("queryTest2");
+//			    context = session.createContext("queryTest2");
 	            root = context.getRootNode();
 				JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
 				session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
@@ -200,6 +177,16 @@ public class SLGraphQueryTest {
 			LOGGER.error(e.getMessage(), e);
 		}
 	}
+
+	   /**
+     * Finish.
+     */
+    @AfterClass
+    public void finish() {
+        session.close();
+        graph.shutdown();
+    }
+    
 
 	/**
 	 * Test select all packages.
