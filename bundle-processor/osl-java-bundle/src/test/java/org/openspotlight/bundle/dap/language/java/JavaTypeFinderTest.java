@@ -61,6 +61,7 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
@@ -93,16 +94,17 @@ public class JavaTypeFinderTest {
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
         SLContext ctx = session.createContext("JRE-util-1.5");
         final JavaGraphNodeSupport support = new JavaGraphNodeSupport(session, ctx.getRootNode(), abstractContext.getRootNode());
-        support.setUsingCache(false);
-        support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
+        final JavaType objectClass = support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
         support.addBeforeTypeProcessing(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
+        support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
         support.addBeforeTypeProcessing(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
-        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
-        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
+        final JavaTypeClass stringClass = support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
         support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
         support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
+        support.addAfterTypeProcessing(JavaTypeInterface.class, "java.lang", "Number");
         support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
         support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
+        session.addLink(Extends.class, stringClass, objectClass, false);
 
         session.save();
         session.close();
@@ -112,6 +114,16 @@ public class JavaTypeFinderTest {
         final List<SLContext> orderedActiveContexts = asList(ctx);
 
         javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true, session);
+
+    }
+
+    @Test
+    public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
+        final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
+        final JavaTypeInterface numberClass = javaTypeFinder.getType("Number", stringClass, null);
+        assertThat(numberClass, is(notNullValue()));
+        assertThat(numberClass.getName(), is("Number"));
+        assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.lang.Number"));
 
     }
 
