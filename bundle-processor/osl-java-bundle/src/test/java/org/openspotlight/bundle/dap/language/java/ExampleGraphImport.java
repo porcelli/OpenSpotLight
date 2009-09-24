@@ -60,14 +60,11 @@ import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -93,10 +90,10 @@ public class ExampleGraphImport {
         final JavaPackage newPackage;
         JavaType newSuperType;
         final JavaPackage newSuperPackage;
-        JavaType fieldType;
+        final JavaType fieldType;
         final JavaPackage fieldPackage;
-        JavaDataField field;
-        JavaMethod method;
+        final JavaDataField field;
+        final JavaMethod method;
         final JavaDataParameter parameter;
         final PackageType packageTypeLink;
         final PackageType fieldPackageTypeLink;
@@ -120,13 +117,13 @@ public class ExampleGraphImport {
         final boolean isMethodProtected;
         final boolean isMethodSynchronized;
         final PackageType superPackageTypeLink;
-        TypeDeclares typeDeclaresMethod;
-        JavaType methodReturnTypeType;
-        MethodReturns methodReturnsType;
+        final TypeDeclares typeDeclaresMethod;
+        final JavaType methodReturnTypeType;
+        final MethodReturns methodReturnsType;
         final JavaPackage methodParameterTypePackage;
-        JavaType methodParameterTypeType;
+        final JavaType methodParameterTypeType;
         final PackageType methodParameterTypePackageTypeLink;
-        MethodParameterDefinition methodParametersType;
+        final MethodParameterDefinition methodParametersType;
         final JavaPackage newExceptionPackage;
         final JavaType newExceptionType;
         final PackageType exceptionPackageTypeLink;
@@ -136,8 +133,8 @@ public class ExampleGraphImport {
         final String arraySquareBrackets;
         Extends extendsSuper;
         Implements implementsSuper;
-        boolean isArray = false;
-        int arrayDimensions = 0;
+        final boolean isArray = false;
+        final int arrayDimensions = 0;
 
         newType = helper.addTypeOnCurrentContext(JavaTypeClass.class, "org.jboss.seam", "Component$1", 32);
         newType = helper.addTypeOnCurrentContext(JavaTypeClass.class, "org.jboss.seam", "Component$2", 32);
@@ -2038,446 +2035,6 @@ public class ExampleGraphImport {
         newSuperType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "javassist.util.proxy", "MethodFilter");
         implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
         // ending interface MethodFilter 
-
-        // starting method org.jboss.seam.Component$1#Component$1()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodConstructor.class, "Component$1()");
-        method.setSimpleName("Component$1");
-        helper.setMethodData(method, 0);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "void");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$1#Component$1()
-        // starting method org.jboss.seam.Component$1#isHandled(java.lang.reflect.Method)
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "isHandled(java.lang.reflect.Method)");
-        method.setSimpleName("isHandled");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "boolean");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #0
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang.reflect", "Method");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(0);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #0
-        // finishing method org.jboss.seam.Component$1#isHandled(java.lang.reflect.Method)
-
-        // finishing type org.jboss.seam.Component$1
-        // #########################################################
-
-        newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "org.jboss.seam", "Component$2");
-        newSuperType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "Object");
-        extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$ComponentType
-        field = newType.addNode(JavaDataField.class, "$SwitchMap$org$jboss$seam$ComponentType");
-        // starting array
-        arrayDimensions = 1;
-        fieldType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "int");
-        //ending array
-        helper.insertFieldData(field, fieldType, 4120, isArray, arrayDimensions);
-        // finishing field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$ComponentType
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType
-        field = newType.addNode(JavaDataField.class, "$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType");
-        // starting array
-        arrayDimensions = 1;
-        fieldType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "int");
-        //ending array
-        helper.insertFieldData(field, fieldType, 4120, isArray, arrayDimensions);
-        // finishing field org.jboss.seam.Component$2#$SwitchMap$org$jboss$seam$annotations$intercept$InterceptorType
-
-        // finishing type org.jboss.seam.Component$2
-        // #########################################################
-
-        newType = helper.addTypeOnAbstractContext(JavaTypeInterface.class, "org.jboss.seam", "Component$BijectedAttribute");
-        newSuperType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "Object");
-        extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
-
-        // starting method org.jboss.seam.Component$BijectedAttribute#getName()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getName()");
-        method.setSimpleName("getName");
-        helper.setMethodData(method, 1025);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "String");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedAttribute#getName()
-        // starting method org.jboss.seam.Component$BijectedAttribute#getAnnotation()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getAnnotation()");
-        method.setSimpleName("getAnnotation");
-        helper.setMethodData(method, 1025);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang.annotation", "Annotation");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedAttribute#getAnnotation()
-        // starting method org.jboss.seam.Component$BijectedAttribute#getType()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getType()");
-        method.setSimpleName("getType");
-        helper.setMethodData(method, 1025);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Class");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedAttribute#getType()
-        // starting method org.jboss.seam.Component$BijectedAttribute#set(java.lang.Object, java.lang.Object)
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "set(java.lang.Object, java.lang.Object)");
-        method.setSimpleName("set");
-        helper.setMethodData(method, 1025);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "void");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #0
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(0);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #0
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #1
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(1);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #1
-        // finishing method org.jboss.seam.Component$BijectedAttribute#set(java.lang.Object, java.lang.Object)
-        // starting method org.jboss.seam.Component$BijectedAttribute#get(java.lang.Object)
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "get(java.lang.Object)");
-        method.setSimpleName("get");
-        helper.setMethodData(method, 1025);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #0
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(0);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #0
-        // finishing method org.jboss.seam.Component$BijectedAttribute#get(java.lang.Object)
-
-        // finishing type org.jboss.seam.Component$BijectedAttribute
-        // #########################################################
-
-        newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "org.jboss.seam", "Component$BijectedField");
-        newSuperType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "Object");
-        extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
-
-        // starting interface Component$BijectedAttribute 
-        newSuperType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "org.jboss.seam", "Component$BijectedAttribute");
-        implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
-        // ending interface Component$BijectedAttribute 
-
-        // ignoring field org.jboss.seam.Component$BijectedField#name 
-
-        // ignoring field org.jboss.seam.Component$BijectedField#field 
-
-        // ignoring field org.jboss.seam.Component$BijectedField#annotation 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting field org.jboss.seam.Component$BijectedField#this$0
-        field = newType.addNode(JavaDataField.class, "this$0");
-        fieldType = helper.addTypeOnAbstractContext(JavaType.class, "org.jboss.seam", "Component");
-        helper.insertFieldData(field, fieldType, 4112, isArray, arrayDimensions);
-        // finishing field org.jboss.seam.Component$BijectedField#this$0
-
-        // ignoring method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation)
-        // starting method org.jboss.seam.Component$BijectedField#getName()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getName()");
-        method.setSimpleName("getName");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "String");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedField#getName()
-        // starting method org.jboss.seam.Component$BijectedField#getField()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getField()");
-        method.setSimpleName("getField");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang.reflect", "Field");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedField#getField()
-        // starting method org.jboss.seam.Component$BijectedField#getAnnotation()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getAnnotation()");
-        method.setSimpleName("getAnnotation");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang.annotation", "Annotation");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedField#getAnnotation()
-        // starting method org.jboss.seam.Component$BijectedField#getType()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "getType()");
-        method.setSimpleName("getType");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Class");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedField#getType()
-        // starting method org.jboss.seam.Component$BijectedField#set(java.lang.Object, java.lang.Object)
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "set(java.lang.Object, java.lang.Object)");
-        method.setSimpleName("set");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "void");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #0
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(0);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #0
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #1
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(1);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #1
-        // finishing method org.jboss.seam.Component$BijectedField#set(java.lang.Object, java.lang.Object)
-        // starting method org.jboss.seam.Component$BijectedField#get(java.lang.Object)
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "get(java.lang.Object)");
-        method.setSimpleName("get");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #0
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "Object");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(0);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #0
-        // finishing method org.jboss.seam.Component$BijectedField#get(java.lang.Object)
-        // starting method org.jboss.seam.Component$BijectedField#toString()
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(JavaMethodMethod.class, "toString()");
-        method.setSimpleName("toString");
-        helper.setMethodData(method, 1);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "String");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        // finishing method org.jboss.seam.Component$BijectedField#toString()
-        // starting method org.jboss.seam.Component$BijectedField#Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)
-        isArray = false;
-        arrayDimensions = 0;
-        method = newType.addNode(
-                                 JavaMethodConstructor.class,
-                                 "Component$BijectedField(org.jboss.seam.Component, java.lang.String, java.lang.reflect.Field, java.lang.annotation.Annotation, org.jboss.seam.Component$1)");
-        method.setSimpleName("Component$BijectedField");
-        helper.setMethodData(method, 4096);
-        typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-
-        // starting method return 
-        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "void");
-        methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-        methodReturnsType.setArray(isArray);
-        methodReturnsType.setArrayDimension(arrayDimensions);
-
-        // finishing method return 
-
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #0
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "org.jboss.seam", "Component");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(0);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #0
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #1
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang", "String");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(1);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #1
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #2
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang.reflect", "Field");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(2);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #2
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #3
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "java.lang.annotation", "Annotation");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(3);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
-
-        // finishing parameter #3
-        isArray = false;
-        arrayDimensions = 0;
-        // starting parameter #4
-        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "org.jboss.seam", "Component$1");
-        methodParametersType = session.addLink(MethodParameterDefinition.class, method, methodParameterTypeType, false);
-        methodParametersType.setOrder(4);
-        methodParametersType.setArray(isArray);
-        methodParametersType.setArrayDimension(arrayDimensions);
 
         session.close();
         graph.shutdown();

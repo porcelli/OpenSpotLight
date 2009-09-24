@@ -29,50 +29,52 @@ public class TestMethodResolution {
     private JavaGraphNodeSupport helper         = null;
     private SLContext            abstractContex = null;
 
-    @Before
-    public void setup() throws SLGraphFactoryException, SLGraphException {
-        methodResolver = new MethodResolver(getTypeFinder(), getGraphSession());
-        setupGraph();
+    private Pair<JavaType, JavaMethod> createMethod( final String packageName,
+                                                     final String className,
+                                                     final String methodName ) throws Exception {
+        final JavaType newType = this.helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, className,
+                                                                     Opcodes.ACC_PUBLIC);
+
+        final JavaMethod method = newType.addNode(JavaMethodMethod.class, methodName);
+        // FIXME use the other helper methods
+        //helper.setMethodData(method, Opcodes.ACC_PUBLIC);
+        this.graphSession.addLink(TypeDeclares.class, newType, method, false);
+        return new Pair<JavaType, JavaMethod>(newType, method);
+    }
+
+    private SLGraphSession getGraphSession() throws SLGraphFactoryException, SLGraphException {
+        final SLGraphFactory factory = new SLGraphFactoryImpl();
+        final SLGraph graph = factory.createTempGraph(true);
+        this.graphSession = graph.openSession();
+        return this.graphSession;
     }
 
     private TypeResolver getTypeFinder() {
         return new TypeResolver();
     }
 
-    private SLGraphSession getGraphSession() throws SLGraphFactoryException, SLGraphException {
-        SLGraphFactory factory = new SLGraphFactoryImpl();
-        SLGraph graph = factory.createTempGraph(true);
-        this.graphSession = graph.openSession();
-        return this.graphSession;
-    }
-
     @Test
     public void resolveSimpleMethod() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethod = createMethod("java.lang", "Object", "toString()");
+        final Pair<JavaType, JavaMethod> typeAndMethod = this.createMethod("java.lang", "Object", "toString()");
 
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeAndMethod.getK1(), "toString");
+        final JavaMethodMethod foundMethod = this.methodResolver.getMethod(typeAndMethod.getK1(), "toString");
         Assert.assertEquals(foundMethod.getID(), typeAndMethod.getK2().getID());
 
-        Assert.assertEquals(false, foundMethod.getContext().equals(abstractContex));
+        Assert.assertEquals(false, foundMethod.getContext().equals(this.abstractContex));
 
+    }
+
+    @Before
+    public void setup() throws SLGraphFactoryException, SLGraphException {
+        this.methodResolver = new MethodResolver(this.getTypeFinder(), this.getGraphSession());
+        this.setupGraph();
     }
 
     private void setupGraph() throws SLContextAlreadyExistsException, SLGraphSessionException {
-        abstractContex = graphSession.createContext("abstractJavaContext");
+        this.abstractContex = this.graphSession.createContext("abstractJavaContext");
 
-        SLNode currentContextRootNode = graphSession.createContext("test").getRootNode();
-        SLNode abstractContextRootNode = abstractContex.getRootNode();
-        helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode, abstractContextRootNode);
-    }
-
-    private Pair<JavaType, JavaMethod> createMethod( String packageName,
-                                                     String className,
-                                                     String methodName ) throws Exception {
-        JavaType newType = helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, className, Opcodes.ACC_PUBLIC);
-
-        JavaMethod method = newType.addNode(JavaMethodMethod.class, methodName);
-        helper.setMethodData(method, Opcodes.ACC_PUBLIC);
-        graphSession.addLink(TypeDeclares.class, newType, method, false);
-        return new Pair<JavaType, JavaMethod>(newType, method);
+        final SLNode currentContextRootNode = this.graphSession.createContext("test").getRootNode();
+        final SLNode abstractContextRootNode = this.abstractContex.getRootNode();
+        this.helper = new JavaGraphNodeSupport(this.graphSession, currentContextRootNode, abstractContextRootNode);
     }
 }
