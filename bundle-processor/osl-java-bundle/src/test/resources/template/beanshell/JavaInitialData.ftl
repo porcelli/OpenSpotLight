@@ -93,14 +93,12 @@ newType = helper.addTypeOnAbstractContext(JavaType${t.upperFirst(javaType.type?l
 
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
+newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}",${javaType.access});
 <#if javaType.extendsDef.packageName?is_string>
-    newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}",${javaType.access});
     helper.addExtendsLinks("${javaType.packageName}", "${javaType.typeName}","${javaType.extendsDef.packageName}","${javaType.extendsDef.typeName}");
 </#if>
 <#list javaType.implementsDef.SimpleTypeReference as interface>
-    // starting interface ${interface.typeName} 
     helper.addImplementsLinks("${javaType.packageName}", "${javaType.typeName}","${interface.packageName}","${interface.typeName}");
-    // ending interface ${interface.typeName} 
 </#list>
 
 <#list javaType.fields.FieldDeclaration as field>
@@ -130,45 +128,23 @@ newType = helper.addTypeOnAbstractContext(JavaType${t.upperFirst(javaType.type?l
 <#else>
 // ignoring field ${javaType.packageName}.${javaType.typeName}#${field.name} 
 </#if>
-
 </#list>
-
 <#list javaType.methods.MethodDeclaration as method>
 <#if method.private=="false">
-    // starting method ${javaType.packageName}.${javaType.typeName}#${method.fullName}
-    isArray = false;
-    arrayDimensions = 0;
-    <#if method.constructor=="true">
-    method = newType.addNode(JavaMethodConstructor.class,"${method.fullName}");
-    <#else>
-    method = newType.addNode(JavaMethodMethod.class,"${method.fullName}");
-    </#if>
-    method.setSimpleName("${method.name}");
-    helper.setMethodData(method,${method.access});
-    typeDeclaresMethod = session.addLink(TypeDeclares.class, newType, method, false);
-    
-    // starting method return 
+    method = helper.createMethod(newType,"${method.fullName}","${method.name}",${method.constructor},${method.access});
     <#if method.returnType.@class=="SimpleTypeReference">
-    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "${method.returnType.packageName}","${method.returnType.typeName}");
+    helper.createMethodReturnType(method,JavaType.class,"${method.returnType.packageName}","${method.returnType.typeName}",false,0);
     <#elseif method.returnType.@class="PrimitiveTypeReference">
-    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class,"", "${method.returnType.type?lower_case}");
-    <#elseif method.returnType.@class="ArrayTypeReferenceerence">
-    isArray = true;
-    arrayDimensions = ${method.returnType.arrayDimensions};
+    helper.createMethodReturnType(method,JavaTypePrimitive.class,"", "${method.returnType.type?lower_case}",false,0);
+    <#elseif method.returnType.@class="ArrayTypeReference">
     <#if method.returnType.type.@class=="SimpleTypeReference">
-    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "${method.returnType.type.packageName}","${method.returnType.type.typeName}");
+    helper.createMethodReturnType(method,JavaTypePrimitive.class,"${method.returnType.type.packageName}","${method.returnType.type.typeName}",true,${method.returnType.arrayDimensions});
     <#elseif method.returnType.type.@class="PrimitiveTypeReference">
-    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class,"", "${method.returnType.type.type?lower_case}");
+    helper.createMethodReturnType(method,JavaTypePrimitive.class,"", "${method.returnType.type.type?lower_case}",true,${method.returnType.arrayDimensions});
     </#if>
-    //ending array
     <#else>
     //method needs to be processed: ${method.returnType.@class}
     </#if>
-    methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnTypeType, false);
-    methodReturnsType.setArray(isArray);
-    methodReturnsType.setArrayDimension(arrayDimensions);
-        
-    // finishing method return 
     <#list method.thrownExceptions.SimpleTypeReference as exception>
         newExceptionType = helper.addTypeOnAbstractContext(JavaType.class, "${exception.packageName}","${exception.typeName}");
         methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
