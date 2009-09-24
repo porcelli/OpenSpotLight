@@ -51,12 +51,12 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
@@ -97,6 +97,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
     /**
      * @{inheritDoc
      */
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
         try {
@@ -105,11 +106,23 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
                                                                                                                                                              "completeName").equalsTo().value(
                                                                                                                                                                                               "java.util.Collection").typeEnd().whereEnd();
             final SLQueryResult result = query.execute();
-            final Collection<SLNode> nodes = result.getNodes();
-            final int size = nodes.size();
-            checkCondition("correctSize", nodes.size() == 1);
-            final T nextNode = (T)nodes.iterator().next();
-            return nextNode;
+            final Map<String, List<JavaType>> resultMap = new HashMap<String, List<JavaType>>();
+            for (final SLContext ctx : super.getOrderedActiveContexts()) {
+                resultMap.put(ctx.getID(), new ArrayList<JavaType>());
+            }
+            for (final SLNode n : result.getNodes()) {
+                final List<JavaType> resultList = resultMap.get(n.getContext().getID());
+                if ((resultList != null) && (n instanceof JavaType)) {
+                    resultList.add((JavaType)n);
+                }
+            }
+            for (final SLContext ctx : super.getOrderedActiveContexts()) {
+                final List<JavaType> resultList = resultMap.get(ctx.getID());
+                if (resultList.size() > 0) {
+                    return (T)resultList.get(0);
+                }
+            }
+            throw new NodeNotFoundException();
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
