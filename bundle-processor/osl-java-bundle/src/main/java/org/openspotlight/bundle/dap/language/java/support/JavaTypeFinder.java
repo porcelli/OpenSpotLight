@@ -51,6 +51,7 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.util.ArrayList;
@@ -97,32 +98,17 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
     /**
      * @{inheritDoc
      */
-    @SuppressWarnings( "unchecked" )
+
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
         try {
-            final SLQuery query = this.getSession().createQuery();
-            query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                             "completeName").equalsTo().value(
-                                                                                                                                                                                              "java.util.Collection").typeEnd().whereEnd();
-            final SLQueryResult result = query.execute();
-            final Map<String, List<JavaType>> resultMap = new HashMap<String, List<JavaType>>();
-            for (final SLContext ctx : super.getOrderedActiveContexts()) {
-                resultMap.put(ctx.getID(), new ArrayList<JavaType>());
+            final SLNode slNode = this.internalGetNodeByAllPossibleNames(typeToSolve);
+            if (slNode == null) {
+                throw logAndReturn(new NodeNotFoundException());
             }
-            for (final SLNode n : result.getNodes()) {
-                final List<JavaType> resultList = resultMap.get(n.getContext().getID());
-                if ((resultList != null) && (n instanceof JavaType)) {
-                    resultList.add((JavaType)n);
-                }
-            }
-            for (final SLContext ctx : super.getOrderedActiveContexts()) {
-                final List<JavaType> resultList = resultMap.get(ctx.getID());
-                if (resultList.size() > 0) {
-                    return (T)resultList.get(0);
-                }
-            }
-            throw new NodeNotFoundException();
+            @SuppressWarnings( "unchecked" )
+            final T typedNode = (T)this.getSession().getNodeByID(slNode.getID());
+            return typedNode;
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
@@ -135,7 +121,59 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
     public <T extends JavaType, A extends JavaType> T getType( final String typeToSolve,
                                                                final A activeType,
                                                                final List<? extends JavaType> parametrizedTypes ) {
+        //find all nodes with name = typeToSolve and linked with packages with name=
+
         throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    private SLNode internalGetNodeByAllPossibleNames( final String typeToSolve ) throws Exception {
+        SLNode result = this.internalGetType(typeToSolve);
+        if (result != null) {
+            return result;
+        }
+        String newName = typeToSolve;
+        while (newName.indexOf(".") != -1) {
+            newName = newName.substring(0, newName.lastIndexOf(".")) + "$"
+                      + newName.substring(".".length() + newName.lastIndexOf("."));
+            result = this.internalGetType(newName);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+
+    }
+
+    private SLNode internalGetType( final String typeToSolve ) throws Exception {
+        final SLQuery query = this.getSession().createQuery();
+        query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).each().property(
+                                                                                                                                              "completeName").equalsTo().value(
+                                                                                                                                                                               typeToSolve).typeEnd();
+        final SLQueryResult result = query.execute();
+        final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
+        for (final SLContext ctx : super.getOrderedActiveContexts()) {
+            resultMap.put(ctx.getID(), new ArrayList<SLNode>());
+        }
+        for (final SLNode n : result.getNodes()) {
+            final List<SLNode> resultList = resultMap.get(n.getContext().getID());
+            if ((resultList != null)) {
+                resultList.add(n);
+                if (resultList.size() > 1) {
+                    //FIXME uncomment this lines
+                    //                    logAndThrow(new IllegalStateException(
+                    //                                                          format(
+                    //                                                                 "Two nodes of the same type and name on the same context: node {0} (parent {2}) inside context {1}",
+                    //                                                                 n.getName(), n.getContext().getID(), n.getParent().getName())));
+                }
+            }
+        }
+        for (final SLContext ctx : super.getOrderedActiveContexts()) {
+            final List<SLNode> resultList = resultMap.get(ctx.getID());
+            if (resultList.size() > 0) {
+                return resultList.get(0);
+            }
+        }
+        return null;
     }
 
 }

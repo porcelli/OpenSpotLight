@@ -55,90 +55,97 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mock;
+import org.objectweb.asm.Opcodes;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import org.openspotlight.bundle.dap.language.java.support.JavaTypeFinder;
 import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphFactory;
+import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLQuery;
-import org.openspotlight.graph.query.SLQueryResult;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class JavaTypeFinderTest {
 
-    private JavaTypeFinder javaTypeFinder;
-    @Mock
-    private SLContext      abstractContext;
-    @Mock
-    private SLContext      contextNumberOne;
-    @Mock
-    private SLContext      contextNumberTwo;
-    @Mock
-    private SLContext      contextNumberTree;
-    @Mock
-    private SLGraphSession session;
-    @Mock
-    private SLQuery        query;
-    @Mock
-    private SLQueryResult  result;
+    static JavaTypeFinder javaTypeFinder;
 
-    @Before
-    public void setup() throws Exception {
-        initMocks(this);
-        when(this.abstractContext.getID()).thenReturn(Constants.ABSTRACT_CONTEXT);
-        when(this.contextNumberOne.getID()).thenReturn("ctx-1");
-        when(this.contextNumberTwo.getID()).thenReturn("ctx-2");
-        when(this.contextNumberTree.getID()).thenReturn("ctx-3");
-        when(this.session.createQuery()).thenReturn(this.query);
-        when(this.query.execute()).thenReturn(this.result);
-        final List<SLContext> orderedActiveContexts = asList(this.contextNumberOne, this.contextNumberTwo, this.contextNumberTree);
-        this.javaTypeFinder = new JavaTypeFinder(this.abstractContext, orderedActiveContexts, true, this.session);
+    static SLGraph        graph;
+    static SLGraphSession session;
+
+    @BeforeClass
+    public static void setupJavaFinder() throws Exception {
+        final SLGraphFactory factory = new SLGraphFactoryImpl();
+
+        graph = factory.createTempGraph(true);
+        session = graph.openSession();
+        SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
+        SLContext ctx = session.createContext("JRE-util-1.5");
+        final JavaGraphNodeSupport support = new JavaGraphNodeSupport(session, ctx.getRootNode(), abstractContext.getRootNode());
+        support.setUsingCache(false);
+        support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
+        support.addBeforeTypeProcessing(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
+        support.addBeforeTypeProcessing(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
+        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
+        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
+        support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
+        support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
+        //        support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
+        //        support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
+
+        session.save();
+        session.close();
+        session = graph.openSession();
+        abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
+        ctx = session.getContext("JRE-util-1.5");
+        final List<SLContext> orderedActiveContexts = asList(ctx);
+
+        javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true, session);
+
     }
 
     @Test
     public void shouldFindConcreteClass() throws Exception {
-        final List<SLNode> resultList = new ArrayList<SLNode>();
-        final JavaTypeClass newType = mock(JavaTypeClass.class);
-        when(newType.getContext()).thenReturn(this.contextNumberOne);
-        when(newType.getCompleteName()).thenReturn("java.lang.String");
-        when(this.result.getNodes()).thenReturn(resultList);
-        final JavaTypeClass stringClass = this.javaTypeFinder.getType("java.lang.String");
+        final SLNode stringClass = javaTypeFinder.getType("java.lang.String");
         assertThat(stringClass, is(notNullValue()));
+        assertThat(stringClass.getName(), is("String"));
+        assertThat(stringClass.getPropertyValueAsString("completeName"), is("java.lang.String"));
     }
 
-    @Ignore
     @Test
     public void shouldFindConcreteInnerClass() throws Exception {
-        final JavaTypeClass entryClass = this.javaTypeFinder.getType("java.lang.Map.Entry");
+        final SLNode entryClass = javaTypeFinder.getType("java.util.Map$Entry");
         assertThat(entryClass, is(notNullValue()));
+        final SLNode newEntryClass = javaTypeFinder.getType("java.util.Map.Entry");
+        assertThat(newEntryClass, is(notNullValue()));
+        assertThat(entryClass.getName(), is("Map$Entry"));
+        assertThat(entryClass.getPropertyValueAsString("completeName"), is("java.util.Map$Entry"));
+
     }
 
-    @Ignore
     @Test
     public void shouldFindInterfaceType() throws Exception {
-        final JavaTypeInterface mapClass = this.javaTypeFinder.getType("java.util.Map");
+        final SLNode mapClass = javaTypeFinder.getType("java.util.Map");
         assertThat(mapClass, is(notNullValue()));
+        assertThat(mapClass.getName(), is("Map"));
+        assertThat(mapClass.getPropertyValueAsString("completeName"), is("java.util.Map"));
     }
 
-    @Ignore
     @Test
     public void shouldFindPrimitiveType() throws Exception {
-        final JavaTypePrimitive intClass = this.javaTypeFinder.getType("int");
+        final SLNode intClass = javaTypeFinder.getType("int");
         assertThat(intClass, is(notNullValue()));
+        assertThat(intClass.getName(), is("int"));
+        assertThat(intClass.getPropertyValueAsString("completeName"), is("int"));
     }
 }

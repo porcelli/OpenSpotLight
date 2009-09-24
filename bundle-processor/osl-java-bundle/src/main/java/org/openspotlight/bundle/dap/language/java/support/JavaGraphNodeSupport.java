@@ -64,7 +64,7 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 
 public class JavaGraphNodeSupport {
-
+    private boolean                     usingCache           = true;
     private final SLNode                currentContextRootNode;
     private final SLNode                abstractContextRootNode;
     private final SLGraphSession        session;
@@ -81,7 +81,7 @@ public class JavaGraphNodeSupport {
     public <T extends JavaType> T addAfterTypeProcessing( final Class<T> nodeType,
                                                           final String packageName,
                                                           final String nodeName ) throws Exception {
-        if (this.nodesFromThisContext.containsKey(packageName + nodeName)) {
+        if (this.usingCache && this.nodesFromThisContext.containsKey(packageName + nodeName)) {
             return (T)this.nodesFromThisContext.get(packageName + nodeName);
         }
         if (JavaTypePrimitive.class.equals(nodeType)) {
@@ -102,10 +102,15 @@ public class JavaGraphNodeSupport {
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access ) throws Exception {
-        if (this.nodesFromThisContext.containsKey(packageName + nodeName)) {
+        if (this.usingCache && this.nodesFromThisContext.containsKey(packageName + nodeName)) {
             return (T)this.nodesFromThisContext.get(packageName + nodeName);
         }
-
+        if (JavaTypePrimitive.class.equals(nodeType)) {
+            final T newType = this.abstractContextRootNode.addNode(nodeType, nodeName);
+            newType.setSimpleName(nodeName);
+            newType.setCompleteName(nodeName);
+            return newType;
+        }
         final JavaPackage newPackage = this.currentContextRootNode.addNode(JavaPackage.class, packageName);
         final T newType = newPackage.addNode(nodeType, nodeName);
         newType.setSimpleName(nodeName);
@@ -155,6 +160,10 @@ public class JavaGraphNodeSupport {
         field.setVolatile(isFieldVolatile);
     }
 
+    public boolean isUsingCache() {
+        return this.usingCache;
+    }
+
     public void setMethodData( final JavaMethod method,
                                final int access ) {
         final boolean isMethodPublic = (access & Opcodes.ACC_PUBLIC) != 0;
@@ -169,5 +178,9 @@ public class JavaGraphNodeSupport {
         method.setFinal(isMethodFinal);
         method.setProtected(isMethodProtected);
         method.setSynchronized(isMethodSynchronized);
+    }
+
+    public void setUsingCache( final boolean usingCache ) {
+        this.usingCache = usingCache;
     }
 }

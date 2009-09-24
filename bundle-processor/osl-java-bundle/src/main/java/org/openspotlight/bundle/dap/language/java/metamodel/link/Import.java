@@ -46,47 +46,15 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.dap.language.java.metamodel.node;
+package org.openspotlight.bundle.dap.language.java.metamodel.link;
 
-import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface for node Java Context Meta Model.
+ * The Interface for a link between Import. Java Type A2B Java Type
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Java Context" )
-public interface JavaContext extends SLNode {
-
-    /**
-     * Gets the version.
-     * 
-     * @return the version
-     */
-    @SLProperty
-    public String getVersion();
-
-    /**
-     * Sets the version.
-     * 
-     * @param newVersion the new version
-     */
-    public void setVersion( String newVersion );
-
-    /**
-     * @{inheritDoc
-     */
-    @SLProperty
-    public String getName();
-
-    /**
-     * Sets the name.
-     * 
-     * @param newName the new name
-     */
-    public void setName( String newName );
-
+@SLDescription( "Import" )
+public interface Import extends JavaLink {
 }
