@@ -91,11 +91,12 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
 
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
+<#if javaType.extendsDef.packageName?is_string>
     newType = helper.addAfterTypeProcessing(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}");
     newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"${javaType.extendsDef.packageName}","${javaType.extendsDef.typeName}");
     extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+</#if>
 <#list javaType.implementsDef.SimpleTypeReference as interface>
-    
     // starting interface ${interface.typeName} 
     newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"${interface.packageName}","${interface.typeName}");
     implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
