@@ -68,7 +68,7 @@ public class TestMethodResolution {
     private Pair<JavaType, JavaMethod> createMethod( String packageName,
                                                      String className,
                                                      String methodName ) throws Exception {
-        JavaType newType = helper.addBeforeTypeProcessing(JavaTypeClass.class, packageName, className, Opcodes.ACC_PUBLIC);
+        JavaType newType = helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, className, Opcodes.ACC_PUBLIC);
 
         JavaMethod method = newType.addNode(JavaMethodMethod.class, methodName);
         helper.setMethodData(method, Opcodes.ACC_PUBLIC);

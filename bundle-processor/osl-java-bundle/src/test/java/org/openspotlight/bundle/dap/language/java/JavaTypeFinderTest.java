@@ -100,19 +100,23 @@ public class JavaTypeFinderTest {
                                                                           abstractContext.getRootNode());
         final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(session, crudFrameworkCtx.getRootNode(),
                                                                                    abstractContext.getRootNode());
-        final JavaType objectClass = jre5support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object",
+        final JavaType objectClass = jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "Object",
                                                                          Opcodes.ACC_PUBLIC);
-        jre5support.addBeforeTypeProcessing(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
-        jre5support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
-        jre5support.addBeforeTypeProcessing(JavaType.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
-        jre5support.addBeforeTypeProcessing(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
-        jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
-        jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
-        jre5support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
-        final JavaTypeClass hashMapClass = jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "HashMap");
-        jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "Number");
-        jre5support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
-        jre5support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
+        jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaType.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "String");
+        jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.util", "Map$Entry");
+        jre5support.addTypeOnAbstractContext(JavaTypeInterface.class, "java.util", "Map");
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaType.class, "org.crud", "DAO", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnAbstractContext(JavaTypeInterface.class, "org.crud", "DAO");
+        crudFrameworkSupport.addTypeOnAbstractContext(JavaTypeClass.class, "org.crud", "DAOImpl");
+        crudFrameworkSupport.addTypeOnAbstractContext(JavaTypeClass.class, "org.crud", "CustomList");
+        final JavaTypeClass hashMapClass = jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.util", "HashMap");
+        jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "Number");
+        jre5support.addTypeOnCurrentContext(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "int");
         session.addLink(Extends.class, hashMapClass, objectClass, false);
 
         session.save();
@@ -131,10 +135,6 @@ public class JavaTypeFinderTest {
     public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
         final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
         final JavaType numberClass = javaTypeFinder.getType("Number", stringClass, null);
-        final Class[] interfaces = numberClass.getClass().getInterfaces();
-        for (final Class i : interfaces) {
-            System.err.println(i.getName());
-        }
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Number"));
         assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.lang.Number"));

@@ -83,7 +83,7 @@ int arrayDimensions = 0;
 
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
-newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}", ${javaType.access});
+newType = helper.addTypeOnAbstractContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}");
 <#else>
 //ignoring type ${javaType.packageName}${javaType.typeName}
 </#if>
@@ -94,14 +94,12 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
 <#if javaType.extendsDef.packageName?is_string>
-    newType = helper.addAfterTypeProcessing(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}");
-    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"${javaType.extendsDef.packageName}","${javaType.extendsDef.typeName}");
-    extendsSuper = session.addLink(Extends.class, newType, newSuperType, false);
+    newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}",${javaType.access});
+    helper.addExtendsLinks("${javaType.packageName}", "${javaType.typeName}","${javaType.extendsDef.packageName}","${javaType.extendsDef.typeName}");
 </#if>
 <#list javaType.implementsDef.SimpleTypeReference as interface>
     // starting interface ${interface.typeName} 
-    newSuperType = helper.addAfterTypeProcessing(JavaTypeClass.class,"${interface.packageName}","${interface.typeName}");
-    implementsSuper = session.addLink(Implements.class, newType, newSuperType, false);
+    helper.addImplementsLinks("${javaType.packageName}", "${javaType.typeName}","${interface.packageName}","${interface.typeName}");
     // ending interface ${interface.typeName} 
 </#list>
 
@@ -112,16 +110,16 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
     // starting field ${javaType.packageName}.${javaType.typeName}#${field.name}
 	field = newType.addNode(JavaDataField.class,"${field.name}"); 
 	<#if field.type.@class=="SimpleTypeReference">
-	fieldType = helper.addAfterTypeProcessing(JavaType.class, "${field.type.packageName}","${field.type.typeName}");
+	fieldType = helper.addTypeOnAbstractContext(JavaType.class, "${field.type.packageName}","${field.type.typeName}");
     <#elseif field.type.@class="PrimitiveTypeReference">
-	fieldType = helper.addAfterTypeProcessing(JavaTypePrimitive.class, "","${field.type.type?lower_case}");
+	fieldType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "","${field.type.type?lower_case}");
     <#elseif field.type.@class="ArrayTypeReferenceerence">
     // starting array
     arrayDimensions = ${field.type.arrayDimensions};
     <#if field.type.type.@class=="SimpleTypeReference">
-    fieldType = helper.addAfterTypeProcessing(JavaType.class, "${field.type.type.packageName}","${field.type.type.typeName}");
+    fieldType = helper.addTypeOnAbstractContext(JavaType.class, "${field.type.type.packageName}","${field.type.type.typeName}");
     <#elseif field.type.type.@class="PrimitiveTypeReference">
-    fieldType = helper.addAfterTypeProcessing(JavaTypePrimitive.class, "","${field.type.type.type?lower_case}");
+    fieldType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class, "","${field.type.type.type?lower_case}");
     </#if>
     //ending array
     <#else>
@@ -151,16 +149,16 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
     
     // starting method return 
     <#if method.returnType.@class=="SimpleTypeReference">
-    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "${method.returnType.packageName}","${method.returnType.typeName}");
+    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "${method.returnType.packageName}","${method.returnType.typeName}");
     <#elseif method.returnType.@class="PrimitiveTypeReference">
-    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${method.returnType.type?lower_case}");
+    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class,"", "${method.returnType.type?lower_case}");
     <#elseif method.returnType.@class="ArrayTypeReferenceerence">
     isArray = true;
     arrayDimensions = ${method.returnType.arrayDimensions};
     <#if method.returnType.type.@class=="SimpleTypeReference">
-    methodReturnTypeType = helper.addAfterTypeProcessing(JavaType.class, "${method.returnType.type.packageName}","${method.returnType.type.typeName}");
+    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaType.class, "${method.returnType.type.packageName}","${method.returnType.type.typeName}");
     <#elseif method.returnType.type.@class="PrimitiveTypeReference">
-    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${method.returnType.type.type?lower_case}");
+    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class,"", "${method.returnType.type.type?lower_case}");
     </#if>
     //ending array
     <#else>
@@ -172,7 +170,7 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
         
     // finishing method return 
     <#list method.thrownExceptions.SimpleTypeReference as exception>
-        newExceptionType = helper.addAfterTypeProcessing(JavaType.class, "${exception.packageName}","${exception.typeName}");
+        newExceptionType = helper.addTypeOnAbstractContext(JavaType.class, "${exception.packageName}","${exception.typeName}");
         methodThrowsType = session.addLink(MethodThrows.class, method, newExceptionType, false);
         // ending throws exception ${exception.packageName}.${exception.typeName}
     </#list>
@@ -182,18 +180,18 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
 	    arrayDimensions = 0;
         // starting parameter #${parameter.position}
 	    <#if parameter.dataType.@class=="SimpleTypeReference">
-	    methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "${parameter.dataType.packageName}","${parameter.dataType.typeName}");
+	    methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "${parameter.dataType.packageName}","${parameter.dataType.typeName}");
 	    <#elseif parameter.dataType.@class="PrimitiveTypeReference">
-        methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${parameter.dataType.type?lower_case}");
+        methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class,"", "${parameter.dataType.type?lower_case}");
 	    <#elseif parameter.dataType.@class="ArrayTypeReferenceerence">
 	    isArray = true;
         arrayDimensions = ${parameter.dataType.arrayDimensions};
         
 	    // starting array
 	    <#if parameter.dataType.type.@class=="SimpleTypeReference">
-        methodParameterTypeType = helper.addAfterTypeProcessing(JavaType.class, "${parameter.dataType.type.packageName}","${parameter.dataType.type.typeName}");
+        methodParameterTypeType = helper.addTypeOnAbstractContext(JavaType.class, "${parameter.dataType.type.packageName}","${parameter.dataType.type.typeName}");
 	    <#elseif parameter.dataType.type.@class="PrimitiveTypeReference">
-	    methodReturnTypeType = helper.addAfterTypeProcessing(JavaTypePrimitive.class,"", "${parameter.dataType.type.type?lower_case}");
+	    methodReturnTypeType = helper.addTypeOnAbstractContext(JavaTypePrimitive.class,"", "${parameter.dataType.type.type?lower_case}");
 	    </#if>
 	    //ending array
 	    <#else>
