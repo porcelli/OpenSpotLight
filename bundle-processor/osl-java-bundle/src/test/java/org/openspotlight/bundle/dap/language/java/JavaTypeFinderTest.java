@@ -51,13 +51,15 @@
  */
 package org.openspotlight.bundle.dap.language.java;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNull;
-import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
@@ -66,6 +68,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterfa
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import org.openspotlight.bundle.dap.language.java.support.JavaTypeFinder;
+import org.openspotlight.bundle.dap.language.java.support.TypeFinder.ResultOrder;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -76,6 +79,7 @@ import org.openspotlight.graph.SLNode;
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
+@SuppressWarnings( "boxing" )
 public class JavaTypeFinderTest {
 
     static JavaTypeFinder javaTypeFinder;
@@ -89,15 +93,14 @@ public class JavaTypeFinderTest {
     public static void setupJavaFinder() throws Exception {
         final SLGraphFactory factory = new SLGraphFactoryImpl();
 
-        JavaTypeFinderTest.graph = factory.createTempGraph(true);
-        JavaTypeFinderTest.session = JavaTypeFinderTest.graph.openSession();
-        SLContext abstractContext = JavaTypeFinderTest.session.createContext(Constants.ABSTRACT_CONTEXT);
-        SLContext jre15ctx = JavaTypeFinderTest.session.createContext("JRE-util-1.5");
-        SLContext crudFrameworkCtx = JavaTypeFinderTest.session.createContext("Crud-1.2");
-        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(JavaTypeFinderTest.session, jre15ctx.getRootNode(),
+        graph = factory.createTempGraph(true);
+        session = graph.openSession();
+        SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
+        SLContext jre15ctx = session.createContext("JRE-util-1.5");
+        SLContext crudFrameworkCtx = session.createContext("Crud-1.2");
+        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(session, jre15ctx.getRootNode(),
                                                                           abstractContext.getRootNode());
-        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(JavaTypeFinderTest.session,
-                                                                                   crudFrameworkCtx.getRootNode(),
+        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(session, crudFrameworkCtx.getRootNode(),
                                                                                    abstractContext.getRootNode());
         jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
         jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
@@ -139,91 +142,343 @@ public class JavaTypeFinderTest {
         crudFrameworkSupport.addImplementsLinks("com.crud.controller.impl", "ControllerImpl", "com.crud.controller", "Controller");
         crudFrameworkSupport.addImplementsLinks("com.crud.view.impl", "ViewImpl", "com.crud.view", "View");
 
-        JavaTypeFinderTest.session.save();
-        JavaTypeFinderTest.session.close();
-        JavaTypeFinderTest.session = JavaTypeFinderTest.graph.openSession();
-        abstractContext = JavaTypeFinderTest.session.getContext(Constants.ABSTRACT_CONTEXT);
-        jre15ctx = JavaTypeFinderTest.session.getContext("JRE-util-1.5");
-        crudFrameworkCtx = JavaTypeFinderTest.session.getContext("Crud-1.2");
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.dao", "CustomerDao", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.controller", "CustomerController",
+                                                     Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.view", "CustomerView", Opcodes.ACC_PUBLIC);
+
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.dao.impl", "CustomerDaoImpl",
+                                                     Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.controller.impl", "CustomerControllerImpl",
+                                                     Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.view.impl", "CustomerViewImpl",
+                                                     Opcodes.ACC_PUBLIC);
+
+        crudFrameworkSupport.addImplementsLinks("com.crud.dao.impl", "CustomerDaoImpl", "com.crud.dao", "CustomerDao");
+        crudFrameworkSupport.addImplementsLinks("com.crud.controller.impl", "CustomerControllerImpl", "com.crud.controller",
+                                                "CustomerController");
+        crudFrameworkSupport.addImplementsLinks("com.crud.view.impl", "CustomerViewImpl", "com.crud.view", "CustomerView");
+
+        crudFrameworkSupport.addImplementsLinks("com.crud.dao.impl", "CustomerDaoImpl", "com.crud.dao", "Dao");
+        crudFrameworkSupport.addImplementsLinks("com.crud.controller.impl", "CustomerControllerImpl", "com.crud.controller",
+                                                "Controller");
+        crudFrameworkSupport.addImplementsLinks("com.crud.view.impl", "CustomerViewImpl", "com.crud.view", "View");
+
+        crudFrameworkSupport.addExtendsLinks("com.crud.dao.impl", "CustomerDaoImpl", "com.crud.dao.impl", "DaoImpl");
+        crudFrameworkSupport.addExtendsLinks("com.crud.controller.impl", "CustomerControllerImpl", "com.crud.controller.impl",
+                                             "ControllerImpl");
+        crudFrameworkSupport.addExtendsLinks("com.crud.view.impl", "CustomerViewImpl", "com.crud.view.impl", "ViewImpl");
+
+        session.save();
+        session.close();
+        session = graph.openSession();
+        abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
+        jre15ctx = session.getContext("JRE-util-1.5");
+        crudFrameworkCtx = session.getContext("Crud-1.2");
         final List<SLContext> orderedActiveContexts = Arrays.asList(crudFrameworkCtx, jre15ctx);
 
-        JavaTypeFinderTest.javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true,
-                                                               JavaTypeFinderTest.session);
+        javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true, session);
 
     }
 
     @Test
+    @Ignore
+    public void shouldDoNotFindTypeOfSomethingInWrongOrder() throws Exception {
+        final JavaType mapClass = javaTypeFinder.getType("java.util.Map");
+        final JavaType hashMapClass = javaTypeFinder.getType("java.util.HashMap");
+        assertThat(javaTypeFinder.isTypeOf(mapClass, hashMapClass), is(true));
+    }
+
+    @Test
+    @Ignore
+    public void shouldDoNotFindTypeOfSomethingWrong() throws Exception {
+        final JavaType mapClass = javaTypeFinder.getType("java.util.Map");
+        final JavaType daoClass = javaTypeFinder.getType("com.crud.dao.Dao");
+        assertThat(javaTypeFinder.isTypeOf(mapClass, daoClass), is(false));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindAllChildrenTypesOnCorrectOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getAllChildren(type, ResultOrder.ASC);
+        assertThat(result.size(), is(3));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindAllChildrenTypesOnReverseOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getAllChildren(type, ResultOrder.DESC);
+        assertThat(result.size(), is(3));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindAllParentTypesOnCorrectOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getAllParents(type, ResultOrder.ASC);
+        assertThat(result.size(), is(4));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("Object"));
+        assertThat(result.get(i++).getSimpleName(), is("View"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindAllParentTypesOnReverseOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getAllParents(type, ResultOrder.DESC);
+        assertThat(result.size(), is(4));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("View"));
+        assertThat(result.get(i++).getSimpleName(), is("Object"));
+    }
+
+    @Test
     public void shouldFindAnotherTypeOnTheSamePackageFromImplementedType() throws Exception {
-        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.lang.String");
-        final JavaType fileClass = JavaTypeFinderTest.javaTypeFinder.getType("File", stringClass, null);
-        Assert.assertThat(fileClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(fileClass.getName(), Is.is("File"));
-        Assert.assertThat(fileClass.getPropertyValueAsString("completeName"), Is.is("java.io.File"));
+        final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
+        final JavaType fileClass = javaTypeFinder.getType("File", stringClass, null);
+        assertThat(fileClass, is(notNullValue()));
+        assertThat(fileClass.getName(), is("File"));
+        assertThat(fileClass.getPropertyValueAsString("completeName"), is("java.io.File"));
 
     }
 
     @Test
     public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
-        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.HashMap");
-        final JavaType numberClass = JavaTypeFinderTest.javaTypeFinder.getType("Number", stringClass, null);
-        Assert.assertThat(numberClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(numberClass.getName(), Is.is("Number"));
-        Assert.assertThat(numberClass.getPropertyValueAsString("completeName"), Is.is("java.lang.Number"));
+        final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
+        final JavaType numberClass = javaTypeFinder.getType("Number", stringClass, null);
+        assertThat(numberClass, is(notNullValue()));
+        assertThat(numberClass.getName(), is("Number"));
+        assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.lang.Number"));
 
     }
 
     @Test
     public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperType() throws Exception {
-        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.HashMap");
-        final JavaType numberClass = JavaTypeFinderTest.javaTypeFinder.getType("Map$Entry", stringClass, null);
-        Assert.assertThat(numberClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(numberClass.getName(), Is.is("Map$Entry"));
-        Assert.assertThat(numberClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map$Entry"));
+        final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
+        final JavaType numberClass = javaTypeFinder.getType("Map.Entry", stringClass, null);
+        assertThat(numberClass, is(notNullValue()));
+        assertThat(numberClass.getName(), is("Map$Entry"));
+        assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.util.Map$Entry"));
 
     }
 
     @Test
     public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperTypeWithDolar() throws Exception {
-        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.AbstractMap$SimpleEntry");
-        final JavaType numberClass = JavaTypeFinderTest.javaTypeFinder.getType("Map$Entry", stringClass, null);
-        Assert.assertThat(numberClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(numberClass.getName(), Is.is("Map$Entry"));
-        Assert.assertThat(numberClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map$Entry"));
+        final JavaType stringClass = javaTypeFinder.getType("java.util.AbstractMap$SimpleEntry");
+        final JavaType numberClass = javaTypeFinder.getType("Map.Entry", stringClass, null);
+        assertThat(numberClass, is(notNullValue()));
+        assertThat(numberClass.getName(), is("Map$Entry"));
+        assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.util.Map$Entry"));
 
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindConcreteChildrenTypesOnCorrectOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type, ResultOrder.ASC);
+        assertThat(result.size(), is(2));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindConcreteChildrenTypesOnReverseOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type, ResultOrder.DESC);
+        assertThat(result.size(), is(2));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
     }
 
     @Test
     public void shouldFindConcreteClass() throws Exception {
-        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.lang.String");
-        Assert.assertThat(stringClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(stringClass.getName(), Is.is("String"));
-        Assert.assertThat(stringClass.getPropertyValueAsString("completeName"), Is.is("java.lang.String"));
+        final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
+        assertThat(stringClass, is(notNullValue()));
+        assertThat(stringClass.getName(), is("String"));
+        assertThat(stringClass.getPropertyValueAsString("completeName"), is("java.lang.String"));
     }
 
     @Test
     public void shouldFindConcreteInnerClass() throws Exception {
-        final SLNode entryClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.Map$Entry");
-        Assert.assertThat(entryClass, Is.is(IsNull.notNullValue()));
-        final SLNode newEntryClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.Map.Entry");
-        Assert.assertThat(newEntryClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(entryClass.getName(), Is.is("Map$Entry"));
-        Assert.assertThat(entryClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map$Entry"));
+        final SLNode entryClass = javaTypeFinder.getType("java.util.Map$Entry");
+        assertThat(entryClass, is(notNullValue()));
+        final SLNode newEntryClass = javaTypeFinder.getType("java.util.Map.Entry");
+        assertThat(newEntryClass, is(notNullValue()));
+        assertThat(entryClass.getName(), is("Map$Entry"));
+        assertThat(entryClass.getPropertyValueAsString("completeName"), is("java.util.Map$Entry"));
 
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindConcreteParentTypesOnCorrectOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getConcreteParents(type, ResultOrder.ASC);
+        assertThat(result.size(), is(3));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("Object"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindConcreteParentTypesOnReverseOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getConcreteParents(type, ResultOrder.DESC);
+        assertThat(result.size(), is(3));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("Object"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindConcreteType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        assertThat(javaTypeFinder.isConcreteType(type), is(true));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindDirectConcreteChildrenTypes() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getDirectConcreteChildren(type);
+        assertThat(result.size(), is(1));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindDirectConcreteParentTypes() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getDirectConcreteParents(type);
+        assertThat(result.size(), is(1));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindDirectInterfaceChildrenTypes() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getDirectInterfaceChildren(type);
+        assertThat(result.size(), is(1));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindDirectInterfaceParentTypes() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getDirectInterfaceParents(type);
+        assertThat(result.size(), is(1));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("View"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindInterfaceChildrenTypesOnCorrectOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type, ResultOrder.ASC);
+        assertThat(result.size(), is(2));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindInterfaceChildrenTypesOnReverseOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.View");
+        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type, ResultOrder.DESC);
+        assertThat(result.size(), is(2));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerViewImpl"));
+        assertThat(result.get(i++).getSimpleName(), is("ViewImpl"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindInterfaceParentTypesOnCorrectOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type, ResultOrder.ASC);
+        assertThat(result.size(), is(2));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("View"));
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+    }
+
+    @Test
+    @Ignore
+    public void shouldFindInterfaceParentTypesOnReverseOrder() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.impl.CustomerViewImpl");
+        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type, ResultOrder.DESC);
+        assertThat(result.size(), is(2));
+        int i = 0;
+        assertThat(result.get(i++).getSimpleName(), is("CustomerView"));
+        assertThat(result.get(i++).getSimpleName(), is("View"));
     }
 
     @Test
     public void shouldFindInterfaceType() throws Exception {
-        final SLNode mapClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.Map");
-        Assert.assertThat(mapClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(mapClass.getName(), Is.is("Map"));
-        Assert.assertThat(mapClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map"));
+        final SLNode mapClass = javaTypeFinder.getType("java.util.Map");
+        assertThat(mapClass, is(notNullValue()));
+        assertThat(mapClass.getName(), is("Map"));
+        assertThat(mapClass.getPropertyValueAsString("completeName"), is("java.util.Map"));
     }
 
     @Test
     public void shouldFindPrimitiveType() throws Exception {
-        final SLNode intClass = JavaTypeFinderTest.javaTypeFinder.getType("int");
-        Assert.assertThat(intClass, Is.is(IsNull.notNullValue()));
-        Assert.assertThat(intClass.getName(), Is.is("int"));
-        Assert.assertThat(intClass.getPropertyValueAsString("completeName"), Is.is("int"));
+        final SLNode intClass = javaTypeFinder.getType("int");
+        assertThat(intClass, is(notNullValue()));
+        assertThat(intClass.getName(), is("int"));
+        assertThat(intClass.getPropertyValueAsString("completeName"), is("int"));
     }
+
+    @Test
+    @Ignore
+    public void shouldFindTypeOfSomething() throws Exception {
+        final JavaType mapClass = javaTypeFinder.getType("java.util.Map");
+        final JavaType hashMapClass = javaTypeFinder.getType("java.util.HashMap");
+        assertThat(javaTypeFinder.isTypeOf(hashMapClass, mapClass), is(true));
+    }
+
+    @Test
+    @Ignore
+    public void shouldNotFindConcreteType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.view.CustomerView");
+        assertThat(javaTypeFinder.isConcreteType(type), is(false));
+    }
+
+    @Test
+    @Ignore
+    public void shouldNotFindConcreteTypeWhenTryingPrimitive() throws Exception {
+        final JavaType type = javaTypeFinder.getType("int");
+        assertThat(javaTypeFinder.isConcreteType(type), is(false));
+    }
+
 }
