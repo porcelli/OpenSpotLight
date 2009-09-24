@@ -54,6 +54,7 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Strings.firstLetterToLowerCase;
 import static org.openspotlight.common.util.Strings.firstLetterToUpperCase;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
+import static org.openspotlight.common.util.Strings.replaceLast;
 
 import org.junit.Test;
 import org.openspotlight.common.util.Strings;
@@ -62,73 +63,83 @@ import org.openspotlight.common.util.Strings;
  * Test class for {@link Strings}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class StringsTest {
-    
+
     @Test
     public void shouldConvertFirstCharToLowerCaseWhenLengthIsMoreThanOneCharacter() {
-        assertThat(firstLetterToLowerCase("BiggerCamelCasedWord"),
-                is("biggerCamelCasedWord"));
+        assertThat(firstLetterToLowerCase("BiggerCamelCasedWord"), is("biggerCamelCasedWord"));
     }
-    
+
     @Test
     public void shouldConvertFirstCharToLowerCaseWhenLengthIsOneCharacter() {
         assertThat(firstLetterToLowerCase("I"), is("i"));
     }
-    
+
     @Test
     public void shouldConvertFirstCharToUpperCaseWhenLengthIsMoreThanOneCharacter() {
-        assertThat(firstLetterToUpperCase("biggerCamelCasedWord"),
-                is("BiggerCamelCasedWord"));
+        assertThat(firstLetterToUpperCase("biggerCamelCasedWord"), is("BiggerCamelCasedWord"));
     }
-    
+
     @Test
     public void shouldConvertFirstCharToUpperCaseWhenLengthIsOneCharacter() {
         assertThat(firstLetterToUpperCase("i"), is("I"));
     }
-    
+
     @Test
     public void shouldDoNothingWhenLowerLengthIsZero() {
         assertThat(firstLetterToLowerCase(""), is(""));
     }
-    
+
     @Test
     public void shouldDoNothingWhenUpperLengthIsZero() {
         assertThat(firstLetterToUpperCase(""), is(""));
     }
-    
+
+    @Test( expected = IllegalArgumentException.class )
+    public void shouldNotReplaceLastStringWhenCalledWithEmptyString() throws Exception {
+        replaceLast("", "Thing", "Stuff");
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void shouldNotReplaceLastStringWhenCalledWithEmptyToReplaceString() throws Exception {
+        replaceLast("none", "", "Stuff");
+    }
+
     @Test
     public void shouldRemoveStartingString() {
-        assertThat(
-                removeBegginingFrom("beggining", "beggining will be removed"),
-                is(" will be removed"));
+        assertThat(removeBegginingFrom("beggining", "beggining will be removed"), is(" will be removed"));
     }
-    
-    @Test(expected = IllegalStateException.class)
+
+    @Test
+    public void shouldReplaceLastString() throws Exception {
+        assertThat(replaceLast("someThingAbout", "Thing", "Stuff"), is("someStuffAbout"));
+    }
+
+    @Test( expected = IllegalStateException.class )
     public void shouldThrowErrorWhenGettingBiggerBeginning() {
         removeBegginingFrom("acb", "b");
     }
-    
-    @Test(expected = IllegalStateException.class)
+
+    @Test( expected = IllegalStateException.class )
     public void shouldThrowErrorWhenGettingInvalidString() {
         removeBegginingFrom("a", "b");
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowErrorWhenGettingNulls() {
         removeBegginingFrom(null, "b");
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenLowerTheFirstLetterIsWithInvalidParameter() {
         firstLetterToLowerCase(null);
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenUpperTheFirstLetterIsWithInvalidParameter() {
         firstLetterToUpperCase(null);
     }
-    
+
 }

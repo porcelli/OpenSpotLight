@@ -100,6 +100,16 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
               orderedActiveContexts, primitiveTypes, enableBoxing, session);
     }
 
+    private SLQueryResult createGetTypeQuery( final String typeToSolve ) throws Exception {
+        final SLQuery query = this.getSession().createQuery();
+        query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                         "completeName").equalsTo().value(
+                                                                                                                                                                                          typeToSolve).typeEnd();
+        final SLQueryResult result = query.execute();
+        return result;
+
+    }
+
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
         try {
@@ -143,6 +153,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
                                                                                                                                                                               "simpleName").equalsTo().value(
                                                                                                                                                                                                              typeToSolve);
             final Collection<SLNode> justTheTargetTypes = justTheTargetTypeQuery.execute(allTypesFromSamePackages).getNodes();
+
             //FIXME finish $ logic
             //FIXME finish the loop for all link types
         } catch (final Exception e) {
@@ -164,7 +175,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
     }
 
     private SLNode internalGetNodeByAllPossibleNames( final String typeToSolve ) throws Exception {
-        SLNode result = this.internalGetType(typeToSolve);
+        SLNode result = this.internalGetType(typeToSolve, this.createGetTypeQuery(typeToSolve));
         if (result != null) {
             return result;
         }
@@ -172,7 +183,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
         while (newName.indexOf(".") != -1) {
             newName = newName.substring(0, newName.lastIndexOf(".")) + "$"
                       + newName.substring(".".length() + newName.lastIndexOf("."));
-            result = this.internalGetType(newName);
+            result = this.internalGetType(newName, this.createGetTypeQuery(typeToSolve));
             if (result != null) {
                 return result;
             }
@@ -181,12 +192,8 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
 
     }
 
-    private SLNode internalGetType( final String typeToSolve ) throws Exception {
-        final SLQuery query = this.getSession().createQuery();
-        query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                         "completeName").equalsTo().value(
-                                                                                                                                                                                          typeToSolve).typeEnd();
-        final SLQueryResult result = query.execute();
+    private SLNode internalGetType( final String typeToSolve,
+                                    final SLQueryResult result ) throws Exception {
         final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
         for (final SLContext ctx : super.getOrderedActiveContexts()) {
             resultMap.put(ctx.getID(), new ArrayList<SLNode>());
