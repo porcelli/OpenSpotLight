@@ -51,17 +51,15 @@
  */
 package org.openspotlight.bundle.dap.language.java;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
+import java.util.Arrays;
 import java.util.List;
 
+import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNull;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
-import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
@@ -85,94 +83,147 @@ public class JavaTypeFinderTest {
     static SLGraph        graph;
     static SLGraphSession session;
 
-    //FIXME not retrieving the correct type
+    // FIXME not retrieving the correct type
 
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
         final SLGraphFactory factory = new SLGraphFactoryImpl();
 
-        graph = factory.createTempGraph(true);
-        session = graph.openSession();
-        SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
-        SLContext jre15ctx = session.createContext("JRE-util-1.5");
-        SLContext crudFrameworkCtx = session.createContext("Crud-1.2");
-        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(session, jre15ctx.getRootNode(),
+        JavaTypeFinderTest.graph = factory.createTempGraph(true);
+        JavaTypeFinderTest.session = JavaTypeFinderTest.graph.openSession();
+        SLContext abstractContext = JavaTypeFinderTest.session.createContext(Constants.ABSTRACT_CONTEXT);
+        SLContext jre15ctx = JavaTypeFinderTest.session.createContext("JRE-util-1.5");
+        SLContext crudFrameworkCtx = JavaTypeFinderTest.session.createContext("Crud-1.2");
+        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(JavaTypeFinderTest.session, jre15ctx.getRootNode(),
                                                                           abstractContext.getRootNode());
-        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(session, crudFrameworkCtx.getRootNode(),
+        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(JavaTypeFinderTest.session,
+                                                                                   crudFrameworkCtx.getRootNode(),
                                                                                    abstractContext.getRootNode());
-        final JavaType objectClass = jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "Object",
-                                                                         Opcodes.ACC_PUBLIC);
-        jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
-        jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
-        jre5support.addTypeOnCurrentContext(JavaType.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
-        jre5support.addTypeOnCurrentContext(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
-        jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "String");
-        jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.util", "Map$Entry");
-        jre5support.addTypeOnAbstractContext(JavaTypeInterface.class, "java.util", "Map");
-        crudFrameworkSupport.addTypeOnCurrentContext(JavaType.class, "org.crud", "DAO", Opcodes.ACC_PUBLIC);
-        crudFrameworkSupport.addTypeOnAbstractContext(JavaTypeInterface.class, "org.crud", "DAO");
-        crudFrameworkSupport.addTypeOnAbstractContext(JavaTypeClass.class, "org.crud", "DAOImpl");
-        crudFrameworkSupport.addTypeOnAbstractContext(JavaTypeClass.class, "org.crud", "CustomList");
-        final JavaTypeClass hashMapClass = jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.util", "HashMap");
-        jre5support.addTypeOnAbstractContext(JavaTypeClass.class, "java.lang", "Number");
+        jre5support.addTypeOnCurrentContext(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.io", "File", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.util", "AbstractMap", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeClass.class, "java.util", "AbstractMap$SimpleEntry", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeInterface.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeInterface.class, "java.util", "Map", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeInterface.class, "java.io", "Serializable", Opcodes.ACC_PUBLIC);
+        jre5support.addTypeOnCurrentContext(JavaTypeInterface.class, "java.lang", "Comparable", Opcodes.ACC_PUBLIC);
+        jre5support.addExtendsLinks("java.lang", "String", "java.lang", "Object");
+        jre5support.addExtendsLinks("java.lang", "Number", "java.lang", "Object");
+        jre5support.addExtendsLinks("java.io", "File", "java.lang", "Object");
+        jre5support.addExtendsLinks("java.util", "HashMap", "java.util", "AbstractMap");
+        jre5support.addExtendsLinks("java.util", "AbstractMap", "java.lang", "Object");
+        jre5support.addImplementsLinks("java.util", "HashMap", "java.lang", "Map");
+        jre5support.addImplementsLinks("java.util", "AbstractMap", "java.lang", "Map");
+        jre5support.addImplementsLinks("java.util", "AbstractMap$SimpleEntry", "java.lang", "Map$Entry");
+        jre5support.addImplementsLinks("java.lang", "String", "java.lang", "Comparable");
+        jre5support.addImplementsLinks("java.lang", "Number", "java.lang", "Comparable");
+        jre5support.addImplementsLinks("java.lang", "String", "java.io", "Serializable");
+        jre5support.addImplementsLinks("java.lang", "Number", "java.io", "Serializable");
         jre5support.addTypeOnCurrentContext(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
-        jre5support.addTypeOnAbstractContext(JavaTypePrimitive.class, "", "int");
-        session.addLink(Extends.class, hashMapClass, objectClass, false);
 
-        session.save();
-        session.close();
-        session = graph.openSession();
-        abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
-        jre15ctx = session.getContext("JRE-util-1.5");
-        crudFrameworkCtx = session.getContext("Crud-1.2");
-        final List<SLContext> orderedActiveContexts = asList(crudFrameworkCtx, jre15ctx);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.dao", "Dao", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.controller", "Controller",
+                                                     Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.view", "View", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.dao.impl", "DaoImpl", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.controller.impl", "ControllerImpl",
+                                                     Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.view.impl", "ViewImpl", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addExtendsLinks("com.crud.dao.impl", "DaoImpl", "java.lang", "Object");
+        crudFrameworkSupport.addExtendsLinks("com.crud.controller.impl", "ControllerImpl", "java.lang", "Object");
+        crudFrameworkSupport.addExtendsLinks("com.crud.view.impl", "View", "java.lang", "Object");
+        crudFrameworkSupport.addImplementsLinks("com.crud.dao.impl", "DaoImpl", "com.crud.dao", "Dao");
+        crudFrameworkSupport.addImplementsLinks("com.crud.controller.impl", "ControllerImpl", "com.crud.controller", "Controller");
+        crudFrameworkSupport.addImplementsLinks("com.crud.view.impl", "ViewImpl", "com.crud.view", "View");
 
-        javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true, session);
+        JavaTypeFinderTest.session.save();
+        JavaTypeFinderTest.session.close();
+        JavaTypeFinderTest.session = JavaTypeFinderTest.graph.openSession();
+        abstractContext = JavaTypeFinderTest.session.getContext(Constants.ABSTRACT_CONTEXT);
+        jre15ctx = JavaTypeFinderTest.session.getContext("JRE-util-1.5");
+        crudFrameworkCtx = JavaTypeFinderTest.session.getContext("Crud-1.2");
+        final List<SLContext> orderedActiveContexts = Arrays.asList(crudFrameworkCtx, jre15ctx);
+
+        JavaTypeFinderTest.javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true,
+                                                               JavaTypeFinderTest.session);
+
+    }
+
+    @Test
+    public void shouldFindAnotherTypeOnTheSamePackageFromImplementedType() throws Exception {
+        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.lang.String");
+        final JavaType fileClass = JavaTypeFinderTest.javaTypeFinder.getType("File", stringClass, null);
+        Assert.assertThat(fileClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(fileClass.getName(), Is.is("File"));
+        Assert.assertThat(fileClass.getPropertyValueAsString("completeName"), Is.is("java.io.File"));
 
     }
 
     @Test
     public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
-        final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
-        final JavaType numberClass = javaTypeFinder.getType("Number", stringClass, null);
-        assertThat(numberClass, is(notNullValue()));
-        assertThat(numberClass.getName(), is("Number"));
-        assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.lang.Number"));
+        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.HashMap");
+        final JavaType numberClass = JavaTypeFinderTest.javaTypeFinder.getType("Number", stringClass, null);
+        Assert.assertThat(numberClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(numberClass.getName(), Is.is("Number"));
+        Assert.assertThat(numberClass.getPropertyValueAsString("completeName"), Is.is("java.lang.Number"));
+
+    }
+
+    @Test
+    public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperType() throws Exception {
+        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.HashMap");
+        final JavaType numberClass = JavaTypeFinderTest.javaTypeFinder.getType("Map$Entry", stringClass, null);
+        Assert.assertThat(numberClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(numberClass.getName(), Is.is("Map$Entry"));
+        Assert.assertThat(numberClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map$Entry"));
+
+    }
+
+    @Test
+    public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperTypeWithDolar() throws Exception {
+        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.AbstractMap$SimpleEntry");
+        final JavaType numberClass = JavaTypeFinderTest.javaTypeFinder.getType("Map$Entry", stringClass, null);
+        Assert.assertThat(numberClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(numberClass.getName(), Is.is("Map$Entry"));
+        Assert.assertThat(numberClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map$Entry"));
 
     }
 
     @Test
     public void shouldFindConcreteClass() throws Exception {
-        final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
-        assertThat(stringClass, is(notNullValue()));
-        assertThat(stringClass.getName(), is("String"));
-        assertThat(stringClass.getPropertyValueAsString("completeName"), is("java.lang.String"));
+        final JavaType stringClass = JavaTypeFinderTest.javaTypeFinder.getType("java.lang.String");
+        Assert.assertThat(stringClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(stringClass.getName(), Is.is("String"));
+        Assert.assertThat(stringClass.getPropertyValueAsString("completeName"), Is.is("java.lang.String"));
     }
 
     @Test
     public void shouldFindConcreteInnerClass() throws Exception {
-        final SLNode entryClass = javaTypeFinder.getType("java.util.Map$Entry");
-        assertThat(entryClass, is(notNullValue()));
-        final SLNode newEntryClass = javaTypeFinder.getType("java.util.Map.Entry");
-        assertThat(newEntryClass, is(notNullValue()));
-        assertThat(entryClass.getName(), is("Map$Entry"));
-        assertThat(entryClass.getPropertyValueAsString("completeName"), is("java.util.Map$Entry"));
+        final SLNode entryClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.Map$Entry");
+        Assert.assertThat(entryClass, Is.is(IsNull.notNullValue()));
+        final SLNode newEntryClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.Map.Entry");
+        Assert.assertThat(newEntryClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(entryClass.getName(), Is.is("Map$Entry"));
+        Assert.assertThat(entryClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map$Entry"));
 
     }
 
     @Test
     public void shouldFindInterfaceType() throws Exception {
-        final SLNode mapClass = javaTypeFinder.getType("java.util.Map");
-        assertThat(mapClass, is(notNullValue()));
-        assertThat(mapClass.getName(), is("Map"));
-        assertThat(mapClass.getPropertyValueAsString("completeName"), is("java.util.Map"));
+        final SLNode mapClass = JavaTypeFinderTest.javaTypeFinder.getType("java.util.Map");
+        Assert.assertThat(mapClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(mapClass.getName(), Is.is("Map"));
+        Assert.assertThat(mapClass.getPropertyValueAsString("completeName"), Is.is("java.util.Map"));
     }
 
     @Test
     public void shouldFindPrimitiveType() throws Exception {
-        final SLNode intClass = javaTypeFinder.getType("int");
-        assertThat(intClass, is(notNullValue()));
-        assertThat(intClass.getName(), is("int"));
-        assertThat(intClass.getPropertyValueAsString("completeName"), is("int"));
+        final SLNode intClass = JavaTypeFinderTest.javaTypeFinder.getType("int");
+        Assert.assertThat(intClass, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(intClass.getName(), Is.is("int"));
+        Assert.assertThat(intClass.getPropertyValueAsString("completeName"), Is.is("int"));
     }
 }

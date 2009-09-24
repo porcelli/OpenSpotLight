@@ -51,15 +51,11 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
-import static java.text.MessageFormat.format;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-import static org.openspotlight.common.util.Strings.replaceLast;
-
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +65,8 @@ import org.openspotlight.bundle.dap.language.java.metamodel.link.PackageType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
@@ -147,7 +145,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
         protected abstract SLQueryResult executeWithThisString( String s ) throws Exception;
 
         protected String getNewString() {
-            this.actualString = replaceLast(this.actualString, ".", "$");
+            this.actualString = Strings.replaceLast(this.actualString, ".", "$");
             return this.actualString;
         }
 
@@ -158,13 +156,15 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
             }
             for (final SLNode n : result.getNodes()) {
                 final List<SLNode> resultList = resultMap.get(n.getContext().getID());
-                if ((resultList != null)) {
+                if (resultList != null) {
                     resultList.add(n);
                     if (resultList.size() > 1) {
-                        logAndThrow(new IllegalStateException(
-                                                              format(
-                                                                     "Two nodes of the same type and name on the same context: node {0} (parent {2}) inside context {1}",
-                                                                     n.getName(), n.getContext().getID(), n.getParent().getName())));
+                        Exceptions.logAndThrow(new IllegalStateException(
+                                                                         MessageFormat.format(
+                                                                                              "Two nodes of the same type and name on the same context: node {0} (parent {2}) inside context {1}",
+                                                                                              n.getName(),
+                                                                                              n.getContext().getID(),
+                                                                                              n.getParent().getName())));
                     }
                 }
             }
@@ -205,24 +205,19 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
     private static final List<Class<? extends JavaType>> primitiveTypes                 = new ArrayList<Class<? extends JavaType>>();
 
     static {
-        implementationInheritanceLinks.add(Extends.class);
-        interfaceInheritanceLinks.add(Implements.class);
-        primitiveTypes.add(JavaTypePrimitive.class);
-        primitiveHierarchyLinks.add(Extends.class);//FIXME
+        JavaTypeFinder.implementationInheritanceLinks.add(Extends.class);
+        JavaTypeFinder.interfaceInheritanceLinks.add(Implements.class);
+        JavaTypeFinder.primitiveTypes.add(JavaTypePrimitive.class);
+        JavaTypeFinder.primitiveHierarchyLinks.add(Extends.class);//FIXME
 
     }
 
     public JavaTypeFinder(
                            final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
                            final boolean enableBoxing, final SLGraphSession session ) {
-        super(implementationInheritanceLinks, interfaceInheritanceLinks, primitiveHierarchyLinks, abstractContext,
-              orderedActiveContexts, primitiveTypes, enableBoxing, session);
-    }
-
-    private void fluffers( final SLQuery inheritanceTreeQuery,
-                           final Class<? extends SLLink> linkType ) throws Exception {
-        inheritanceTreeQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd().keepResult().executeXTimes();
-
+        super(JavaTypeFinder.implementationInheritanceLinks, JavaTypeFinder.interfaceInheritanceLinks,
+              JavaTypeFinder.primitiveHierarchyLinks, abstractContext, orderedActiveContexts, JavaTypeFinder.primitiveTypes,
+              enableBoxing, session);
     }
 
     @SuppressWarnings( "unchecked" )
@@ -231,11 +226,11 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
         try {
             final SLNode slNode = new SimpleGetTypeFinder(typeToSolve).getTypeByAllPossibleNames();
             if (slNode == null) {
-                throw logAndReturn(new NodeNotFoundException());
+                throw Exceptions.logAndReturn(new NodeNotFoundException());
             }
             return (T)this.getTypedNode(slNode);
         } catch (final Exception e) {
-            throw logAndReturnNew(e, NodeNotFoundException.class);
+            throw Exceptions.logAndReturnNew(e, NodeNotFoundException.class);
         }
     }
 
@@ -249,19 +244,23 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
                                                                final List<? extends JavaType> parametrizedTypes )
         throws NodeNotFoundException {
         try {
-            final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
-            inheritanceTreeQuery.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
-                                                                                                                       JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                                            "completeName").equalsTo().value(
-                                                                                                                                                                                                             activeType.getCompleteName()).typeEnd().whereEnd().keepResult();
-            for (final Class<? extends SLLink> linkType : implementationInheritanceLinks) {
-                this.fluffers(inheritanceTreeQuery, linkType);
+            final List<SLNode> inheritedTypes = new LinkedList<SLNode>();
+            inheritedTypes.add(activeType);
+            for (final Class<? extends SLLink> linkType : JavaTypeFinder.implementationInheritanceLinks) {
+                final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+                inheritanceTreeQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                 linkType.getName()).b().selectEnd().keepResult().executeXTimes();
+                final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(inheritedTypes).getNodes();
+                inheritedTypes.addAll(resultFromQuery);
             }
-            for (final Class<? extends SLLink> linkType : interfaceInheritanceLinks) {
-                this.fluffers(inheritanceTreeQuery, linkType);
+            for (final Class<? extends SLLink> linkType : JavaTypeFinder.interfaceInheritanceLinks) {
+                final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+                inheritanceTreeQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                 linkType.getName()).b().selectEnd().keepResult().executeXTimes();
+                final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(inheritedTypes).getNodes();
+                inheritedTypes.addAll(resultFromQuery);
             }
 
-            final Collection<SLNode> inheritedTypes = inheritanceTreeQuery.execute().getNodes();
             final SLQuery allTypesFromSamePackagesQuery = this.getSession().createQuery();
             allTypesFromSamePackagesQuery.selectByLinkType().type(JavaPackage.class.getName()).comma().byLink(
                                                                                                               PackageType.class.getName()).a().selectEnd();
@@ -271,13 +270,12 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
 
             final SLNode slNode = new ComplexTypeFinderQueryExecutor(typeToSolve, allTypesFromSamePackages).getTypeByAllPossibleNames();
             if (slNode == null) {
-                throw logAndReturn(new NodeNotFoundException());
+                throw Exceptions.logAndReturn(new NodeNotFoundException());
             }
             final T typed = (T)this.getTypedNode(slNode);
             return typed;
-            //FIXME finish the loop for all link types
         } catch (final Exception e) {
-            throw logAndReturnNew(e, NodeNotFoundException.class);
+            throw Exceptions.logAndReturnNew(e, NodeNotFoundException.class);
         }
     }
 
