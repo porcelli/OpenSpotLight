@@ -15,6 +15,8 @@
 				<property propertyName="private" propertyType="boolean" />
 				<property propertyName="final" propertyType="boolean" />
 				<property propertyName="protected" propertyType="boolean" />
+				<property propertyName="simpleName" propertyType="String" />
+				<property propertyName="completeName" propertyType="String" />
 			</nodeData>
 			<nodeData parentTypeName="Java Type" typeName="Class" />
 			<nodeData parentTypeName="Java Type" typeName="Interface" />

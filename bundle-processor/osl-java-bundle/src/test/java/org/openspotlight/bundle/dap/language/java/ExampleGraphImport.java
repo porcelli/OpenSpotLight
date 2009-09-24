@@ -48,79 +48,92 @@
  */
 package org.openspotlight.bundle.dap.language.java;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.objectweb.asm.Opcodes;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.DataType;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodReturns;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodThrows;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.PackageType;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataField;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataParameter;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodConstructor;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodMethod;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeEnum;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.bundle.dap.language.java.metamodel.link.*;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.*;
-import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class ExampleGraphImport {
 
     @Test
     public void shouldImportSomeData() throws Exception {
 
-        SLGraphFactory factory = new SLGraphFactoryImpl();
-        SLGraph graph = factory.createTempGraph(true);
-        SLGraphSession session = graph.openSession();
-        SLNode currentContextRootNode = session.createContext("sample").getRootNode();
-        SLNode abstractContextRootNode = session.createContext("abstractJavaContext").getRootNode();
+        final SLGraphFactory factory = new SLGraphFactoryImpl();
+        final SLGraph graph = factory.createTempGraph(true);
+        final SLGraphSession session = graph.openSession();
+        final SLNode currentContextRootNode = session.createContext("current-Ctx").getRootNode();
+        final SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
 
-        JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode, abstractContextRootNode);
+        final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode, abstractContextRootNode);
 
         // global variables to be reused for each type
         JavaType newType;
-        JavaPackage newPackage;
+        final JavaPackage newPackage;
         JavaType newSuperType;
-        JavaPackage newSuperPackage;
+        final JavaPackage newSuperPackage;
         JavaType fieldType;
-        JavaPackage fieldPackage;
+        final JavaPackage fieldPackage;
         JavaDataField field;
         JavaMethod method;
-        JavaDataParameter parameter;
-        PackageType packageTypeLink;
-        PackageType fieldPackageTypeLink;
-        DataType fieldTypeLink;
-        boolean isPublic;
-        boolean isPrivate;
-        boolean isStatic;
-        boolean isFinal;
-        boolean isProtected;
-        boolean isFieldPublic;
-        boolean isFieldPrivate;
-        boolean isFieldStatic;
-        boolean isFieldFinal;
-        boolean isFieldProtected;
-        boolean isFieldTransient;
-        boolean isFieldVolatile;
-        boolean isMethodPublic;
-        boolean isMethodPrivate;
-        boolean isMethodStatic;
-        boolean isMethodFinal;
-        boolean isMethodProtected;
-        boolean isMethodSynchronized;
-        PackageType superPackageTypeLink;
+        final JavaDataParameter parameter;
+        final PackageType packageTypeLink;
+        final PackageType fieldPackageTypeLink;
+        final DataType fieldTypeLink;
+        final boolean isPublic;
+        final boolean isPrivate;
+        final boolean isStatic;
+        final boolean isFinal;
+        final boolean isProtected;
+        final boolean isFieldPublic;
+        final boolean isFieldPrivate;
+        final boolean isFieldStatic;
+        final boolean isFieldFinal;
+        final boolean isFieldProtected;
+        final boolean isFieldTransient;
+        final boolean isFieldVolatile;
+        final boolean isMethodPublic;
+        final boolean isMethodPrivate;
+        final boolean isMethodStatic;
+        final boolean isMethodFinal;
+        final boolean isMethodProtected;
+        final boolean isMethodSynchronized;
+        final PackageType superPackageTypeLink;
         TypeDeclares typeDeclaresMethod;
         JavaType methodReturnTypeType;
         MethodReturns methodReturnsType;
-        JavaPackage methodParameterTypePackage;
+        final JavaPackage methodParameterTypePackage;
         JavaType methodParameterTypeType;
-        PackageType methodParameterTypePackageTypeLink;
+        final PackageType methodParameterTypePackageTypeLink;
         MethodParameterDefinition methodParametersType;
-        JavaPackage newExceptionPackage;
-        JavaType newExceptionType;
-        PackageType exceptionPackageTypeLink;
-        MethodThrows methodThrowsType;
-        JavaPackage methodReturnTypePackage;
-        PackageType methodReturnTypePackageTypeLink;
-        String arraySquareBrackets;
+        final JavaPackage newExceptionPackage;
+        final JavaType newExceptionType;
+        final PackageType exceptionPackageTypeLink;
+        final MethodThrows methodThrowsType;
+        final JavaPackage methodReturnTypePackage;
+        final PackageType methodReturnTypePackageTypeLink;
+        final String arraySquareBrackets;
         Extends extendsSuper;
         Implements implementsSuper;
         boolean isArray = false;
@@ -2465,6 +2478,9 @@ public class ExampleGraphImport {
         methodParametersType.setOrder(4);
         methodParametersType.setArray(isArray);
         methodParametersType.setArrayDimension(arrayDimensions);
+
+        session.close();
+        graph.shutdown();
 
     }
 }

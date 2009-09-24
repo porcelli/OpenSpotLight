@@ -51,7 +51,11 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
@@ -61,6 +65,9 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.query.SLQuery;
+import org.openspotlight.graph.query.SLQueryResult;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -76,12 +83,13 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
         implementationInheritanceLinks.add(Extends.class);
         interfaceInheritanceLinks.add(Implements.class);
         primitiveTypes.add(JavaTypePrimitive.class);
+        primitiveHierarchyLinks.add(Extends.class);//FIXME
 
     }
 
-    protected JavaTypeFinder(
-                              final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
-                              final boolean enableBoxing, final SLGraphSession session ) {
+    public JavaTypeFinder(
+                           final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
+                           final boolean enableBoxing, final SLGraphSession session ) {
         super(implementationInheritanceLinks, interfaceInheritanceLinks, primitiveHierarchyLinks, abstractContext,
               orderedActiveContexts, primitiveTypes, enableBoxing, session);
     }
@@ -90,9 +98,21 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
      * @{inheritDoc
      */
     @Override
-    public <T extends JavaType> T getType( final String typeToSolve ) {
-
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
+        try {
+            final SLQuery query = this.getSession().createQuery();
+            query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                             "completeName").equalsTo().value(
+                                                                                                                                                                                              "java.util.Collection").typeEnd().whereEnd();
+            final SLQueryResult result = query.execute();
+            final Collection<SLNode> nodes = result.getNodes();
+            final int size = nodes.size();
+            checkCondition("correctSize", nodes.size() == 1);
+            final T nextNode = (T)nodes.iterator().next();
+            return nextNode;
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, NodeNotFoundException.class);
+        }
     }
 
     /**

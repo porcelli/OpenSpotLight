@@ -71,27 +71,81 @@ public class JavaGraphNodeSupport {
     private final Map<String, JavaType> nodesFromThisContext = new TreeMap<String, JavaType>();
 
     public JavaGraphNodeSupport(
-                                 SLGraphSession session, SLNode currentContextRootNode, SLNode abstractContextRootNode ) {
+                                 final SLGraphSession session, final SLNode currentContextRootNode,
+                                 final SLNode abstractContextRootNode ) {
         this.session = session;
         this.currentContextRootNode = currentContextRootNode;
         this.abstractContextRootNode = abstractContextRootNode;
     }
 
-    public void insertFieldData( JavaDataField field,
-                                 JavaType fieldType,
-                                 int access,
-                                 boolean isArray,
-                                 int dimension ) throws Exception {
-        DataType fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
+    public <T extends JavaType> T addAfterTypeProcessing( final Class<T> nodeType,
+                                                          final String packageName,
+                                                          final String nodeName ) throws Exception {
+        if (this.nodesFromThisContext.containsKey(packageName + nodeName)) {
+            return (T)this.nodesFromThisContext.get(packageName + nodeName);
+        }
+        if (JavaTypePrimitive.class.equals(nodeType)) {
+            final T newType = this.abstractContextRootNode.addNode(nodeType, nodeName);
+            newType.setSimpleName(nodeName);
+            newType.setCompleteName(nodeName);
+            return newType;
+        }
+        final JavaPackage newPackage = this.abstractContextRootNode.addNode(JavaPackage.class, packageName);
+        final T newType = newPackage.addNode(nodeType, nodeName);
+        newType.setSimpleName(nodeName);
+        newType.setCompleteName(packageName + "." + nodeName);
+        this.session.addLink(PackageType.class, newPackage, newType, false);
+        return newType;
+    }
+
+    public <T extends JavaType> T addBeforeTypeProcessing( final Class<T> nodeType,
+                                                           final String packageName,
+                                                           final String nodeName,
+                                                           final int access ) throws Exception {
+        if (this.nodesFromThisContext.containsKey(packageName + nodeName)) {
+            return (T)this.nodesFromThisContext.get(packageName + nodeName);
+        }
+
+        final JavaPackage newPackage = this.currentContextRootNode.addNode(JavaPackage.class, packageName);
+        final T newType = newPackage.addNode(nodeType, nodeName);
+        newType.setSimpleName(nodeName);
+        newType.setCompleteName(packageName + "." + nodeName);
+        this.session.addLink(PackageType.class, newPackage, newType, false);
+        this.nodesFromThisContext.put(packageName + nodeName, newType);
+        final boolean isPublic = (access & Opcodes.ACC_PUBLIC) != 0;
+        final boolean isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
+        final boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
+        final boolean isFinal = (access & Opcodes.ACC_FINAL) != 0;
+        final boolean isProtected = (access & Opcodes.ACC_PROTECTED) != 0;
+        newType.setPublic(isPublic);
+        newType.setPrivate(isPrivate);
+        newType.setStatic(isStatic);
+        newType.setFinal(isFinal);
+        newType.setProtected(isProtected);
+
+        final JavaPackage newAbstractPackage = this.abstractContextRootNode.addNode(JavaPackage.class, packageName);
+        final JavaType newAbstractType = newAbstractPackage.addNode(JavaType.class, nodeName);
+        this.session.addLink(PackageType.class, newPackage, newType, false);
+        this.session.addLink(AbstractTypeBind.class, newAbstractType, newType, false);
+
+        return newType;
+    }
+
+    public void insertFieldData( final JavaDataField field,
+                                 final JavaType fieldType,
+                                 final int access,
+                                 final boolean isArray,
+                                 final int dimension ) throws Exception {
+        final DataType fieldTypeLink = this.session.addLink(DataType.class, field, fieldType, false);
         fieldTypeLink.setArray(isArray);
         fieldTypeLink.setArrayDimension(dimension);
-        boolean isFieldPublic = (access & Opcodes.ACC_PUBLIC) != 0;
-        boolean isFieldPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
-        boolean isFieldStatic = (access & Opcodes.ACC_STATIC) != 0;
-        boolean isFieldFinal = (access & Opcodes.ACC_FINAL) != 0;
-        boolean isFieldProtected = (access & Opcodes.ACC_PROTECTED) != 0;
-        boolean isFieldTransient = (access & Opcodes.ACC_TRANSIENT) != 0;
-        boolean isFieldVolatile = (access & Opcodes.ACC_VOLATILE) != 0;
+        final boolean isFieldPublic = (access & Opcodes.ACC_PUBLIC) != 0;
+        final boolean isFieldPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
+        final boolean isFieldStatic = (access & Opcodes.ACC_STATIC) != 0;
+        final boolean isFieldFinal = (access & Opcodes.ACC_FINAL) != 0;
+        final boolean isFieldProtected = (access & Opcodes.ACC_PROTECTED) != 0;
+        final boolean isFieldTransient = (access & Opcodes.ACC_TRANSIENT) != 0;
+        final boolean isFieldVolatile = (access & Opcodes.ACC_VOLATILE) != 0;
         field.setPublic(isFieldPublic);
         field.setPrivate(isFieldPrivate);
         field.setStatic(isFieldStatic);
@@ -101,66 +155,19 @@ public class JavaGraphNodeSupport {
         field.setVolatile(isFieldVolatile);
     }
 
-    public void setMethodData( JavaMethod method,
-                               int access ) {
-        boolean isMethodPublic = (access & Opcodes.ACC_PUBLIC) != 0;
-        boolean isMethodPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
-        boolean isMethodStatic = (access & Opcodes.ACC_STATIC) != 0;
-        boolean isMethodFinal = (access & Opcodes.ACC_FINAL) != 0;
-        boolean isMethodProtected = (access & Opcodes.ACC_PROTECTED) != 0;
-        boolean isMethodSynchronized = (access & Opcodes.ACC_SYNCHRONIZED) != 0;
+    public void setMethodData( final JavaMethod method,
+                               final int access ) {
+        final boolean isMethodPublic = (access & Opcodes.ACC_PUBLIC) != 0;
+        final boolean isMethodPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
+        final boolean isMethodStatic = (access & Opcodes.ACC_STATIC) != 0;
+        final boolean isMethodFinal = (access & Opcodes.ACC_FINAL) != 0;
+        final boolean isMethodProtected = (access & Opcodes.ACC_PROTECTED) != 0;
+        final boolean isMethodSynchronized = (access & Opcodes.ACC_SYNCHRONIZED) != 0;
         method.setPublic(isMethodPublic);
         method.setPrivate(isMethodPrivate);
         method.setStatic(isMethodStatic);
         method.setFinal(isMethodFinal);
         method.setProtected(isMethodProtected);
         method.setSynchronized(isMethodSynchronized);
-    }
-
-    public <T extends JavaType> T addBeforeTypeProcessing( Class<T> nodeType,
-                                                           String packageName,
-                                                           String nodeName,
-                                                           int access ) throws Exception {
-        if (nodesFromThisContext.containsKey(packageName + nodeName)) {
-            return (T)nodesFromThisContext.get(packageName + nodeName);
-        }
-
-        JavaPackage newPackage = currentContextRootNode.addNode(JavaPackage.class, packageName);
-        T newType = newPackage.addNode(nodeType, nodeName);
-        session.addLink(PackageType.class, newPackage, newType, false);
-        nodesFromThisContext.put(packageName + nodeName, newType);
-        boolean isPublic = (access & Opcodes.ACC_PUBLIC) != 0;
-        boolean isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
-        boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
-        boolean isFinal = (access & Opcodes.ACC_FINAL) != 0;
-        boolean isProtected = (access & Opcodes.ACC_PROTECTED) != 0;
-        newType.setPublic(isPublic);
-        newType.setPrivate(isPrivate);
-        newType.setStatic(isStatic);
-        newType.setFinal(isFinal);
-        newType.setProtected(isProtected);
-
-        JavaPackage newAbstractPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
-        JavaType newAbstractType = newAbstractPackage.addNode(JavaType.class, nodeName);
-        session.addLink(PackageType.class, newPackage, newType, false);
-        session.addLink(AbstractTypeBind.class, newAbstractType, newType, false);
-
-        return newType;
-    }
-
-    public <T extends JavaType> T addAfterTypeProcessing( Class<T> nodeType,
-                                                          String packageName,
-                                                          String nodeName ) throws Exception {
-        if (nodesFromThisContext.containsKey(packageName + nodeName)) {
-            return (T)nodesFromThisContext.get(packageName + nodeName);
-        }
-        if (JavaTypePrimitive.class.equals(nodeType)) {
-            T newType = abstractContextRootNode.addNode(nodeType, nodeName);
-            return newType;
-        }
-        JavaPackage newPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
-        T newType = newPackage.addNode(nodeType, nodeName);
-        session.addLink(PackageType.class, newPackage, newType, false);
-        return newType;
     }
 }

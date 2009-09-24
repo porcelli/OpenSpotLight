@@ -146,7 +146,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the concrete types lower higher first
      */
-    public <T extends N> List<N> getConcreteTypesLowerHigherFirst( final T type ) {
+    public <T extends N> List<N> getConcreteTypesLowerHigherFirst( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -156,7 +156,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the concrete types lower higher last
      */
-    public <T extends N> List<N> getConcreteTypesLowerHigherLast( final T type ) {
+    public <T extends N> List<N> getConcreteTypesLowerHigherLast( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -166,7 +166,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the concrete types upper higher first
      */
-    public <T extends N> List<N> getConcreteTypesUpperHigherFirst( final T type ) {
+    public <T extends N> List<N> getConcreteTypesUpperHigherFirst( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -176,7 +176,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the concrete types upper higher last
      */
-    public <T extends N> List<N> getConcreteTypesUpperHigherLast( final T type ) {
+    public <T extends N> List<N> getConcreteTypesUpperHigherLast( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -186,7 +186,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the direct child
      */
-    public <T extends N> List<N> getDirectChild( final T type ) {
+    public <T extends N> List<N> getDirectChild( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -196,7 +196,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the direct concrete parents
      */
-    public <T extends N> List<N> getDirectConcreteParents( final T type ) {
+    public <T extends N> List<N> getDirectConcreteParents( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -206,7 +206,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the direct conrete child
      */
-    public <T extends N> List<N> getDirectConreteChild( final T type ) {
+    public <T extends N> List<N> getDirectConreteChild( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -216,7 +216,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the direct interface child
      */
-    public <T extends N> List<N> getDirectInterfaceChild( final T type ) {
+    public <T extends N> List<N> getDirectInterfaceChild( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -226,7 +226,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the direct interface parents
      */
-    public <T extends N> List<N> getDirectInterfaceParents( final T type ) {
+    public <T extends N> List<N> getDirectInterfaceParents( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -236,7 +236,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the direct parents
      */
-    public <T extends N> List<N> getDirectParents( final T type ) {
+    public <T extends N> List<N> getDirectParents( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -245,7 +245,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * 
      * @return the implementation inheritance links
      */
-    protected List<Class<? extends K>> getImplementationInheritanceLinks() {
+    protected List<Class<? extends K>> getImplementationInheritanceLinks() throws LinkNotFoundException {
         return this.implementationInheritanceLinks;
     }
 
@@ -254,7 +254,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * 
      * @return the interface inheritance links
      */
-    protected List<Class<? extends K>> getInterfaceInheritanceLinks() {
+    protected List<Class<? extends K>> getInterfaceInheritanceLinks() throws LinkNotFoundException {
         return this.interfaceInheritanceLinks;
     }
 
@@ -264,7 +264,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the interface types lower higher first
      */
-    public <T extends N> List<N> getInterfaceTypesLowerHigherFirst( final T type ) {
+    public <T extends N> List<N> getInterfaceTypesLowerHigherFirst( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -274,7 +274,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the interface types lower higher last
      */
-    public <T extends N> List<N> getInterfaceTypesLowerHigherLast( final T type ) {
+    public <T extends N> List<N> getInterfaceTypesLowerHigherLast( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -284,7 +284,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the interface types upper higher first
      */
-    public <T extends N> List<N> getInterfaceTypesUpperHigherFirst( final T type ) {
+    public <T extends N> List<N> getInterfaceTypesUpperHigherFirst( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -294,7 +294,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the interface types upper higher last
      */
-    public <T extends N> List<N> getInterfaceTypesUpperHigherLast( final T type ) {
+    public <T extends N> List<N> getInterfaceTypesUpperHigherLast( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -340,7 +340,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param typeToSolve the type to solve
      * @return the type
      */
-    public abstract <T extends N> N getType( String typeToSolve );
+    public abstract <T extends N> N getType( String typeToSolve ) throws NodeNotFoundException;
 
     /**
      * Gets the type.
@@ -352,7 +352,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      */
     public abstract <T extends N, A extends N> N getType( String typeToSolve,
                                                           A activeType,
-                                                          List<? extends N> parametrizedTypes );
+                                                          List<? extends N> parametrizedTypes ) throws NodeNotFoundException;
 
     /**
      * Gets the types lower higher first.
@@ -360,7 +360,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the types lower higher first
      */
-    public <T extends N> List<N> getTypesLowerHigherFirst( final T type ) {
+    public <T extends N> List<N> getTypesLowerHigherFirst( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -370,7 +370,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the types lower higher last
      */
-    public <T extends N> List<N> getTypesLowerHigherLast( final T type ) {
+    public <T extends N> List<N> getTypesLowerHigherLast( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -380,7 +380,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the types upper higher first
      */
-    public <T extends N> List<N> getTypesUpperHigherFirst( final T type ) {
+    public <T extends N> List<N> getTypesUpperHigherFirst( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 
@@ -390,7 +390,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param type the type
      * @return the types upper higher last
      */
-    public <T extends N> List<N> getTypesUpperHigherLast( final T type ) {
+    public <T extends N> List<N> getTypesUpperHigherLast( final T type ) throws NodeNotFoundException {
         throw new UnsupportedOperationException("not implemented yet");
     }
 

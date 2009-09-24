@@ -52,6 +52,7 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for node Java Context Meta Model.
  * 
@@ -60,14 +61,34 @@ import org.openspotlight.graph.annotation.SLProperty;
 @SLDescription( "Java Context" )
 public interface JavaContext extends SLNode {
 
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
     @SLProperty
     public String getVersion();
 
+    /**
+     * Sets the version.
+     * 
+     * @param newVersion the new version
+     */
     public void setVersion( String newVersion );
 
+    /**
+     * 
+     * @{inheritDoc}
+     *
+     */
     @SLProperty
     public String getName();
 
+    /**
+     * Sets the name.
+     * 
+     * @param newName the new name
+     */
     public void setName( String newName );
 
 }
