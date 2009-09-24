@@ -67,31 +67,31 @@ import org.openspotlight.graph.SLNode;
 /**
  * The Class TypeFinder.
  */
-public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
+public abstract class TypeFinder<N extends SLNode> {
 
     /** The implementation inheritance links. */
-    private final List<Class<? extends K>> implementationInheritanceLinks;
+    private final List<Class<? extends SLLink>> implementationInheritanceLinks;
 
     /** The interface inheritance links. */
-    private final List<Class<? extends K>> interfaceInheritanceLinks;
+    private final List<Class<? extends SLLink>> interfaceInheritanceLinks;
 
     /** The primitive hierarchy links. */
-    private final List<Class<? extends K>> primitiveHierarchyLinks;
+    private final List<Class<? extends SLLink>> primitiveHierarchyLinks;
 
     /** The abstract context. */
-    private final SLContext                abstractContext;
+    private final SLContext                     abstractContext;
 
     /** The ordered active contexts. */
-    private final List<SLContext>          orderedActiveContexts;
+    private final List<SLContext>               orderedActiveContexts;
 
     /** The primitive types. */
-    private final List<Class<? extends N>> primitiveTypes;
+    private final List<Class<? extends N>>      primitiveTypes;
 
     /** The enable boxing. */
-    private final boolean                  enableBoxing;
+    private final boolean                       enableBoxing;
 
     /** The session. */
-    private final SLGraphSession           session;
+    private final SLGraphSession                session;
 
     /**
      * Instantiates a new type finder.
@@ -106,9 +106,9 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param session the session
      */
     protected TypeFinder(
-                          final List<Class<? extends K>> implementationInheritanceLinks,
-                          final List<Class<? extends K>> interfaceInheritanceLinks,
-                          final List<Class<? extends K>> primitiveHierarchyLinks, final SLContext abstractContext,
+                          final List<Class<? extends SLLink>> implementationInheritanceLinks,
+                          final List<Class<? extends SLLink>> interfaceInheritanceLinks,
+                          final List<Class<? extends SLLink>> primitiveHierarchyLinks, final SLContext abstractContext,
                           final List<SLContext> orderedActiveContexts, final List<Class<? extends N>> primitiveTypes,
                           final boolean enableBoxing, final SLGraphSession session ) {
         checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
@@ -251,7 +251,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * 
      * @return the implementation inheritance links
      */
-    protected List<Class<? extends K>> getImplementationInheritanceLinks() throws LinkNotFoundException {
+    protected List<Class<? extends SLLink>> getImplementationInheritanceLinks() throws LinkNotFoundException {
         return this.implementationInheritanceLinks;
     }
 
@@ -260,7 +260,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * 
      * @return the interface inheritance links
      */
-    protected List<Class<? extends K>> getInterfaceInheritanceLinks() throws LinkNotFoundException {
+    protected List<Class<? extends SLLink>> getInterfaceInheritanceLinks() throws LinkNotFoundException {
         return this.interfaceInheritanceLinks;
     }
 
@@ -318,7 +318,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * 
      * @return the primitive hierarchy links
      */
-    protected List<Class<? extends K>> getPrimitiveHierarchyLinks() {
+    protected List<Class<? extends SLLink>> getPrimitiveHierarchyLinks() {
         return this.primitiveHierarchyLinks;
     }
 

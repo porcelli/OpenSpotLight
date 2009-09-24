@@ -48,6 +48,7 @@
  */
 package org.openspotlight.bundle.dap.language.java.metamodel.link;
 
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
@@ -56,5 +57,5 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Method Throws" )
-public interface MethodThrows extends JavaLink {
+public interface MethodThrows extends SLLink {
 }

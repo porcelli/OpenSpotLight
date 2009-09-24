@@ -71,7 +71,7 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
 @SLDescription("${link.@linkName}")
-public interface ${className} extends ${package.@packageName?capitalize}Link {
+public interface ${className} extends SLLink {
 <#list link.property as property>
     @SLProperty
     public ${property.@propertyType} get${t.upperFirst(property.@propertyName)}();

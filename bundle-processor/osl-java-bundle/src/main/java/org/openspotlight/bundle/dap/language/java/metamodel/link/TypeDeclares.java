@@ -48,6 +48,7 @@
  */
 package org.openspotlight.bundle.dap.language.java.metamodel.link;
 
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
@@ -56,5 +57,5 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Type Declares" )
-public interface TypeDeclares extends JavaLink {
+public interface TypeDeclares extends SLLink {
 }
