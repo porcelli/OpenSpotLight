@@ -85,6 +85,8 @@ public class JavaTypeFinderTest {
     static SLGraph        graph;
     static SLGraphSession session;
 
+    //FIXME not retrieving the correct type
+
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
         final SLGraphFactory factory = new SLGraphFactoryImpl();
@@ -92,29 +94,34 @@ public class JavaTypeFinderTest {
         graph = factory.createTempGraph(true);
         session = graph.openSession();
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
-        SLContext ctx = session.createContext("JRE-util-1.5");
-        final JavaGraphNodeSupport support = new JavaGraphNodeSupport(session, ctx.getRootNode(), abstractContext.getRootNode());
-        support.setUsingCache(false);
-        final JavaType objectClass = support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
-        support.addBeforeTypeProcessing(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
-        support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
-        support.addBeforeTypeProcessing(JavaType.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
-        support.addBeforeTypeProcessing(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
-        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
-        support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
-        support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
-        final JavaTypeClass hashMapClass = support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "HashMap");
-        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "Number");
-        support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
-        support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
+        SLContext jre15ctx = session.createContext("JRE-util-1.5");
+        SLContext crudFrameworkCtx = session.createContext("Crud-1.2");
+        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(session, jre15ctx.getRootNode(),
+                                                                          abstractContext.getRootNode());
+        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(session, crudFrameworkCtx.getRootNode(),
+                                                                                   abstractContext.getRootNode());
+        final JavaType objectClass = jre5support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object",
+                                                                         Opcodes.ACC_PUBLIC);
+        jre5support.addBeforeTypeProcessing(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
+        jre5support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
+        jre5support.addBeforeTypeProcessing(JavaType.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
+        jre5support.addBeforeTypeProcessing(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
+        jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
+        jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
+        jre5support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
+        final JavaTypeClass hashMapClass = jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "HashMap");
+        jre5support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "Number");
+        jre5support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
+        jre5support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
         session.addLink(Extends.class, hashMapClass, objectClass, false);
 
         session.save();
         session.close();
         session = graph.openSession();
         abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
-        ctx = session.getContext("JRE-util-1.5");
-        final List<SLContext> orderedActiveContexts = asList(ctx);
+        jre15ctx = session.getContext("JRE-util-1.5");
+        crudFrameworkCtx = session.getContext("Crud-1.2");
+        final List<SLContext> orderedActiveContexts = asList(crudFrameworkCtx, jre15ctx);
 
         javaTypeFinder = new JavaTypeFinder(abstractContext, orderedActiveContexts, true, session);
 
@@ -123,7 +130,11 @@ public class JavaTypeFinderTest {
     @Test
     public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
         final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
-        final JavaTypeClass numberClass = javaTypeFinder.getType("Number", stringClass, null);
+        final JavaType numberClass = javaTypeFinder.getType("Number", stringClass, null);
+        final Class[] interfaces = numberClass.getClass().getInterfaces();
+        for (final Class i : interfaces) {
+            System.err.println(i.getName());
+        }
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Number"));
         assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.lang.Number"));
@@ -132,7 +143,7 @@ public class JavaTypeFinderTest {
 
     @Test
     public void shouldFindConcreteClass() throws Exception {
-        final SLNode stringClass = javaTypeFinder.getType("java.lang.String");
+        final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
         assertThat(stringClass, is(notNullValue()));
         assertThat(stringClass.getName(), is("String"));
         assertThat(stringClass.getPropertyValueAsString("completeName"), is("java.lang.String"));
