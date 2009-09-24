@@ -64,6 +64,7 @@ import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import org.openspotlight.bundle.dap.language.java.support.JavaTypeFinder;
 import org.openspotlight.graph.SLContext;
@@ -100,8 +101,8 @@ public class JavaTypeFinderTest {
         support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
         support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
         support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
-        //        support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
-        //        support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
+        support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
+        support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
 
         session.save();
         session.close();
