@@ -225,6 +225,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
 
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
         try {
@@ -232,7 +233,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
             if (slNode == null) {
                 throw logAndReturn(new NodeNotFoundException());
             }
-            return this.getTypedNode(slNode);
+            return (T)this.getTypedNode(slNode);
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
@@ -241,6 +242,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
     /**
      * @{inheritDoc
      */
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends JavaType, A extends JavaType> T getType( final String typeToSolve,
                                                                final A activeType,
@@ -271,7 +273,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
             if (slNode == null) {
                 throw logAndReturn(new NodeNotFoundException());
             }
-            final T typed = this.getTypedNode(slNode);
+            final T typed = (T)this.getTypedNode(slNode);
             return typed;
             //FIXME finish the loop for all link types
         } catch (final Exception e) {
