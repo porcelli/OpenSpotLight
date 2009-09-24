@@ -102,9 +102,6 @@ public class JavaGraphNodeSupport {
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access ) throws Exception {
-        if (this.usingCache && this.nodesFromThisContext.containsKey(packageName + nodeName)) {
-            return (T)this.nodesFromThisContext.get(packageName + nodeName);
-        }
         if (JavaTypePrimitive.class.equals(nodeType)) {
             final T newType = this.abstractContextRootNode.addNode(nodeType, nodeName);
             newType.setSimpleName(nodeName);
@@ -116,7 +113,6 @@ public class JavaGraphNodeSupport {
         newType.setSimpleName(nodeName);
         newType.setCompleteName(packageName + "." + nodeName);
         this.session.addLink(PackageType.class, newPackage, newType, false);
-        this.nodesFromThisContext.put(packageName + nodeName, newType);
         final boolean isPublic = (access & Opcodes.ACC_PUBLIC) != 0;
         final boolean isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
         final boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
