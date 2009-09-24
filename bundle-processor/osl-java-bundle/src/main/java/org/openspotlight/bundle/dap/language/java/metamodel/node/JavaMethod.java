@@ -52,6 +52,7 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for node Java Method Meta Model. {@link JavaType} should be used as parent.
  * 
@@ -60,44 +61,124 @@ import org.openspotlight.graph.annotation.SLProperty;
 @SLDescription( "Java Method" )
 public interface JavaMethod extends SLNode {
 
+    /**
+     * Gets the static.
+     * 
+     * @return the static
+     */
     @SLProperty
     public boolean getStatic();
 
+    /**
+     * Sets the static.
+     * 
+     * @param newStatic the new static
+     */
     public void setStatic( boolean newStatic );
 
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
     @SLProperty
     public String getVersion();
 
+    /**
+     * Sets the version.
+     * 
+     * @param newVersion the new version
+     */
     public void setVersion( String newVersion );
 
+    /**
+     * Gets the public.
+     * 
+     * @return the public
+     */
     @SLProperty
     public boolean getPublic();
 
+    /**
+     * Sets the public.
+     * 
+     * @param newPublic the new public
+     */
     public void setPublic( boolean newPublic );
 
+    /**
+     * Gets the protected.
+     * 
+     * @return the protected
+     */
     @SLProperty
     public boolean getProtected();
 
+    /**
+     * Sets the protected.
+     * 
+     * @param newProtected the new protected
+     */
     public void setProtected( boolean newProtected );
 
+    /**
+     * Gets the final.
+     * 
+     * @return the final
+     */
     @SLProperty
     public boolean getFinal();
 
+    /**
+     * Sets the final.
+     * 
+     * @param newFinal the new final
+     */
     public void setFinal( boolean newFinal );
 
+    /**
+     * Gets the synchronized.
+     * 
+     * @return the synchronized
+     */
     @SLProperty
     public boolean getSynchronized();
 
+    /**
+     * Sets the synchronized.
+     * 
+     * @param newSynchronized the new synchronized
+     */
     public void setSynchronized( boolean newSynchronized );
 
+    /**
+     * Gets the private.
+     * 
+     * @return the private
+     */
     @SLProperty
     public boolean getPrivate();
 
+    /**
+     * Sets the private.
+     * 
+     * @param newPrivate the new private
+     */
     public void setPrivate( boolean newPrivate );
 
+    /**
+     * Gets the simple name.
+     * 
+     * @return the simple name
+     */
     @SLProperty
     public String getSimpleName();
 
+    /**
+     * Sets the simple name.
+     * 
+     * @param newSimpleName the new simple name
+     */
     public void setSimpleName( String newSimpleName );
 
 }

@@ -15,12 +15,14 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.*;
 import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import java.util.Map;
 import java.util.TreeMap;
+import org.openspotlight.bundle.dap.language.java.Constants;
+
 
 SLGraphFactory factory = new SLGraphFactoryImpl();
 SLGraph graph = factory.createTempGraph(true);
 SLGraphSession session = graph.openSession();
-SLNode currentContextRootNode = session.createContext("sample").getRootNode();
-SLNode abstractContextRootNode = session.createContext("abstractJavaContext").getRootNode();
+SLNode currentContextRootNode = session.createContext("JRE-util-1.5").getRootNode();
+SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
 
 JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode,abstractContextRootNode);
 
@@ -85455,5 +85457,9 @@ newType = helper.addBeforeTypeProcessing(JavaTypeClass.class,"java.util", "XMLUt
 
 // finishing type java.util.XMLUtils
 // #########################################################
+session.save();
+
+session.close();
+graph.shutdown();
 
         

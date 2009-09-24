@@ -51,6 +51,7 @@ package org.openspotlight.bundle.dap.language.java.metamodel.node;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for node Java Data Field Meta Model.
  * 
@@ -59,39 +60,109 @@ import org.openspotlight.graph.annotation.SLProperty;
 @SLDescription( "Java Data Field" )
 public interface JavaDataField extends JavaData {
 
+    /**
+     * Gets the static.
+     * 
+     * @return the static
+     */
     @SLProperty
     public boolean getStatic();
 
+    /**
+     * Sets the static.
+     * 
+     * @param newStatic the new static
+     */
     public void setStatic( boolean newStatic );
 
+    /**
+     * Gets the final.
+     * 
+     * @return the final
+     */
     @SLProperty
     public boolean getFinal();
 
+    /**
+     * Sets the final.
+     * 
+     * @param newFinal the new final
+     */
     public void setFinal( boolean newFinal );
 
+    /**
+     * Gets the protected.
+     * 
+     * @return the protected
+     */
     @SLProperty
     public boolean getProtected();
 
+    /**
+     * Sets the protected.
+     * 
+     * @param newProtected the new protected
+     */
     public void setProtected( boolean newProtected );
 
+    /**
+     * Gets the transient.
+     * 
+     * @return the transient
+     */
     @SLProperty
     public boolean getTransient();
 
+    /**
+     * Sets the transient.
+     * 
+     * @param newTransient the new transient
+     */
     public void setTransient( boolean newTransient );
 
+    /**
+     * Gets the volatile.
+     * 
+     * @return the volatile
+     */
     @SLProperty
     public boolean getVolatile();
 
+    /**
+     * Sets the volatile.
+     * 
+     * @param newVolatile the new volatile
+     */
     public void setVolatile( boolean newVolatile );
 
+    /**
+     * Gets the public.
+     * 
+     * @return the public
+     */
     @SLProperty
     public boolean getPublic();
 
+    /**
+     * Sets the public.
+     * 
+     * @param newPublic the new public
+     */
     public void setPublic( boolean newPublic );
 
+    /**
+     * Gets the private.
+     * 
+     * @return the private
+     */
     @SLProperty
     public boolean getPrivate();
 
+    /**
+     * Sets the private.
+     * 
+     * @param newPrivate the new private
+     */
     public void setPrivate( boolean newPrivate );
 
 }

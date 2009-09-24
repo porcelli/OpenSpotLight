@@ -17,14 +17,16 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.*;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.*;
 import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
+import org.openspotlight.bundle.dap.language.java.Constants;
+
 import java.util.Map;
 import java.util.TreeMap;
 
 SLGraphFactory factory = new SLGraphFactoryImpl();
 SLGraph graph = factory.createTempGraph(true);
 SLGraphSession session = graph.openSession();
-SLNode currentContextRootNode = session.createContext("sample").getRootNode();
-SLNode abstractContextRootNode = session.createContext("abstractJavaContext").getRootNode();
+SLNode currentContextRootNode = session.createContext("${doc.TypeDefinitionSet.name}-${doc.TypeDefinitionSet.version}").getRootNode();
+SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
 
 JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode,abstractContextRootNode);
 
@@ -215,6 +217,10 @@ newType = helper.addBeforeTypeProcessing(JavaType${t.upperFirst(javaType.type?lo
 </#if>
 
 </#list>
+session.save();
+
+session.close();
+graph.shutdown();
         ]]></content>
     </file>
 </files>

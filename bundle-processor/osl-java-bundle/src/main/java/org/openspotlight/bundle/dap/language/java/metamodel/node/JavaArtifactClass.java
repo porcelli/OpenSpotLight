@@ -51,6 +51,7 @@ package org.openspotlight.bundle.dap.language.java.metamodel.node;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for node Java Artifact Class Meta Model.
  * 
@@ -59,9 +60,19 @@ import org.openspotlight.graph.annotation.SLProperty;
 @SLDescription( "Java Artifact Class" )
 public interface JavaArtifactClass extends JavaArtifact {
 
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
     @SLProperty
     public String getVersion();
 
+    /**
+     * Sets the version.
+     * 
+     * @param newVersion the new version
+     */
     public void setVersion( String newVersion );
 
 }

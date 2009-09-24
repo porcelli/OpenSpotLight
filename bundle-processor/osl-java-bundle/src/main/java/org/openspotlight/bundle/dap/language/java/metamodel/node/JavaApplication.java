@@ -52,6 +52,7 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for node Java Application Meta Model.
  * 
@@ -60,9 +61,19 @@ import org.openspotlight.graph.annotation.SLProperty;
 @SLDescription( "Java Application" )
 public interface JavaApplication extends SLNode {
 
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
     @SLProperty
     public String getVersion();
 
+    /**
+     * Sets the version.
+     * 
+     * @param newVersion the new version
+     */
     public void setVersion( String newVersion );
 
 }
