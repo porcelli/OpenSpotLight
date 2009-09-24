@@ -63,11 +63,16 @@ import java.util.Map;
 
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.dap.language.java.metamodel.link.JavaLink;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.ImplicitExtends;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.ImplicitReferences;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Import;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.References;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQuery;
 import org.openspotlight.graph.query.SLQueryResult;
@@ -75,11 +80,11 @@ import org.openspotlight.graph.query.SLQueryResult;
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
+public class JavaTypeFinder extends TypeFinder<JavaType> {
 
-    private static final List<Class<? extends JavaLink>> implementationInheritanceLinks = new ArrayList<Class<? extends JavaLink>>();
-    private static final List<Class<? extends JavaLink>> interfaceInheritanceLinks      = new ArrayList<Class<? extends JavaLink>>();
-    private static final List<Class<? extends JavaLink>> primitiveHierarchyLinks        = new ArrayList<Class<? extends JavaLink>>();
+    private static final List<Class<? extends SLLink>>   implementationInheritanceLinks = new ArrayList<Class<? extends SLLink>>();
+    private static final List<Class<? extends SLLink>>   interfaceInheritanceLinks      = new ArrayList<Class<? extends SLLink>>();
+    private static final List<Class<? extends SLLink>>   primitiveHierarchyLinks        = new ArrayList<Class<? extends SLLink>>();
     private static final List<Class<? extends JavaType>> primitiveTypes                 = new ArrayList<Class<? extends JavaType>>();
 
     static {
@@ -129,7 +134,20 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
             //
             //find all nodes with name = typeToSolve and linked with packages with name=
             final SLQuery query = this.getSession().createQuery();
-            //            query.selectByLinkType().type(Import.class.getName()).selectEnd().where().linkType(Import.class.getName()).
+            query.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(Import.class.getName()).b().selectEnd().selectByLinkType().type(
+                                                                                                                                                              JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                                                                                                                  References.class.getName()).b().selectEnd().selectByLinkType().type(
+                                                                                                                                                                                                                                                                                      JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                                                                                                                                                                                                                                          Extends.class.getName()).b().selectEnd().selectByLinkType().type(
+                                                                                                                                                                                                                                                                                                                                                                                                           JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                               Implements.class.getName()).b().selectEnd().selectByLinkType().type(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ImplicitExtends.class.getName()).b().selectEnd().selectByLinkType().type(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ImplicitReferences.class.getName()).b().selectEnd().executeXTimes().selectByLinkType().type(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                JavaPackage.class.getName()).comma().byLink(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            References.class.getName()).a().selectEnd();
+
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
