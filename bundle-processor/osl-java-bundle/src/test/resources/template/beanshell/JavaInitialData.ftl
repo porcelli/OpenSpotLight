@@ -31,8 +31,6 @@ JavaMethod method;
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
 newType = helper.addTypeOnAbstractContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}");
-<#else>
-//ignoring type ${javaType.packageName}${javaType.typeName}
 </#if>
 </#list>
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
@@ -56,9 +54,7 @@ newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lo
     <#elseif field.type.type.@class="PrimitiveTypeReference">
     helper.createField(newType,JavaTypePrimitive.class,"${field.type.type.packageName}","","${field.type.type.type?lower_case}",${field.access},true,${field.type.arrayDimensions});
     </#if>
-    <#else>
     </#if>
-<#else>
 </#if>
 </#list>
 <#list javaType.methods.MethodDeclaration as method>
@@ -74,7 +70,6 @@ newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lo
     <#elseif method.returnType.type.@class="PrimitiveTypeReference">
     helper.createMethodReturnType(method,JavaTypePrimitive.class,"", "${method.returnType.type.type?lower_case}",true,${method.returnType.arrayDimensions});
     </#if>
-    <#else>
     </#if>
     <#list method.thrownExceptions.SimpleTypeReference as exception>
         helper.addThrowsOnMethod(method, "${exception.packageName}","${exception.typeName}");
@@ -90,7 +85,6 @@ newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lo
 	    <#elseif parameter.dataType.type.@class="PrimitiveTypeReference">
         helper.createMethodParameter(method,JavaTypePrimitive.class,${parameter.position},"", "${parameter.dataType.type.type?lower_case}",true,${parameter.dataType.arrayDimensions}) ;
 	    </#if>
-	    <#else>
 	    </#if>
     </#list>
 <#else>
