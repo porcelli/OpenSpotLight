@@ -51,8 +51,10 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
+import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,8 +122,17 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
     @Override
     public <T extends JavaType, A extends JavaType> T getType( final String typeToSolve,
                                                                final A activeType,
-                                                               final List<? extends JavaType> parametrizedTypes ) {
-        //find all nodes with name = typeToSolve and linked with packages with name=
+                                                               final List<? extends JavaType> parametrizedTypes )
+        throws NodeNotFoundException {
+        try {
+            //by link Execute n times para achar todos os pacotes.
+            //
+            //find all nodes with name = typeToSolve and linked with packages with name=
+            final SLQuery query = this.getSession().createQuery();
+            //            query.selectByLinkType().type(Import.class.getName()).selectEnd().where().linkType(Import.class.getName()).
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, NodeNotFoundException.class);
+        }
 
         throw new UnsupportedOperationException("not implemented yet");
     }
@@ -146,9 +157,9 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
 
     private SLNode internalGetType( final String typeToSolve ) throws Exception {
         final SLQuery query = this.getSession().createQuery();
-        query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).each().property(
-                                                                                                                                              "completeName").equalsTo().value(
-                                                                                                                                                                               typeToSolve).typeEnd();
+        query.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                         "completeName").equalsTo().value(
+                                                                                                                                                                                          typeToSolve).typeEnd();
         final SLQueryResult result = query.execute();
         final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
         for (final SLContext ctx : super.getOrderedActiveContexts()) {
@@ -159,11 +170,10 @@ public class JavaTypeFinder extends TypeFinder<JavaType, JavaLink> {
             if ((resultList != null)) {
                 resultList.add(n);
                 if (resultList.size() > 1) {
-                    //FIXME uncomment this lines
-                    //                    logAndThrow(new IllegalStateException(
-                    //                                                          format(
-                    //                                                                 "Two nodes of the same type and name on the same context: node {0} (parent {2}) inside context {1}",
-                    //                                                                 n.getName(), n.getContext().getID(), n.getParent().getName())));
+                    logAndThrow(new IllegalStateException(
+                                                          format(
+                                                                 "Two nodes of the same type and name on the same context: node {0} (parent {2}) inside context {1}",
+                                                                 n.getName(), n.getContext().getID(), n.getParent().getName())));
                 }
             }
         }
