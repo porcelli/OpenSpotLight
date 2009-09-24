@@ -57,12 +57,15 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.PackageType;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.graph.SLContext;
@@ -97,10 +100,6 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
               orderedActiveContexts, primitiveTypes, enableBoxing, session);
     }
 
-    /**
-     * @{inheritDoc
-     */
-
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
         try {
@@ -108,9 +107,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
             if (slNode == null) {
                 throw logAndReturn(new NodeNotFoundException());
             }
-            @SuppressWarnings( "unchecked" )
-            final T typedNode = (T)this.getSession().getNodeByID(slNode.getID());
-            return typedNode;
+            return this.getTypedNode(slNode);
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
@@ -125,15 +122,45 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
                                                                final List<? extends JavaType> parametrizedTypes )
         throws NodeNotFoundException {
         try {
-            //by link Execute n times para achar todos os pacotes.
-            //
-            //find all nodes with name = typeToSolve and linked with packages with name=
-            final SLQuery query = this.getSession().createQuery();
+            final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+            inheritanceTreeQuery.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
+                                                                                                                       JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                            "completeName").equalsTo().value(
+                                                                                                                                                                                                             activeType.getCompleteName()).typeEnd().whereEnd().keepResult();
+            inheritanceTreeQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                             Extends.class.getName()).b().selectEnd().keepResult().executeXTimes();
+            final Collection<SLNode> inheritedTypes = inheritanceTreeQuery.execute().getNodes();
+            final SLQuery allTypesFromSamePackagesQuery = this.getSession().createQuery();
+            allTypesFromSamePackagesQuery.selectByLinkType().type(JavaPackage.class.getName()).comma().byLink(
+                                                                                                              PackageType.class.getName()).a().selectEnd();
+            allTypesFromSamePackagesQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(
+                                                                                                                      PackageType.class.getName()).b().selectEnd();
+            final Collection<SLNode> allTypesFromSamePackages = allTypesFromSamePackagesQuery.execute(inheritedTypes).getNodes();
+
+            final SLQuery justTheTargetTypeQuery = this.getSession().createQuery();
+            justTheTargetTypeQuery.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
+                                                                                                                         JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                              "simpleName").equalsTo().value(
+                                                                                                                                                                                                             typeToSolve);
+            final Collection<SLNode> justTheTargetTypes = justTheTargetTypeQuery.execute(allTypesFromSamePackages).getNodes();
+            //FIXME finish $ logic
+            //FIXME finish the loop for all link types
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
 
         throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    /**
+     * @{inheritDoc
+     */
+
+    private <T extends JavaType> T getTypedNode( final SLNode slNode ) throws Exception {
+        @SuppressWarnings( "unchecked" )
+        final T typedNode = (T)this.getSession().getNodeByID(slNode.getID());
+        return typedNode;
+
     }
 
     private SLNode internalGetNodeByAllPossibleNames( final String typeToSolve ) throws Exception {

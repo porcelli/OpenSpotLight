@@ -94,17 +94,20 @@ public class JavaTypeFinderTest {
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
         SLContext ctx = session.createContext("JRE-util-1.5");
         final JavaGraphNodeSupport support = new JavaGraphNodeSupport(session, ctx.getRootNode(), abstractContext.getRootNode());
+        support.setUsingCache(false);
         final JavaType objectClass = support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
         support.addBeforeTypeProcessing(JavaType.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
         support.addBeforeTypeProcessing(JavaType.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
+        support.addBeforeTypeProcessing(JavaType.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
         support.addBeforeTypeProcessing(JavaType.class, "java.util", "Map$Entry", Opcodes.ACC_PUBLIC);
-        final JavaTypeClass stringClass = support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
+        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "String");
         support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
         support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
+        final JavaTypeClass hashMapClass = support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "HashMap");
         support.addAfterTypeProcessing(JavaTypeInterface.class, "java.lang", "Number");
         support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
         support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
-        session.addLink(Extends.class, stringClass, objectClass, false);
+        session.addLink(Extends.class, hashMapClass, objectClass, false);
 
         session.save();
         session.close();
@@ -119,7 +122,7 @@ public class JavaTypeFinderTest {
 
     @Test
     public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
-        final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
+        final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
         final JavaTypeInterface numberClass = javaTypeFinder.getType("Number", stringClass, null);
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Number"));
