@@ -56,9 +56,13 @@ import org.openspotlight.bundle.dap.language.java.metamodel.link.AbstractTypeBin
 import org.openspotlight.bundle.dap.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.PackageType;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodConstructor;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
@@ -151,6 +155,35 @@ public class JavaGraphNodeSupport {
         this.session.addLink(AbstractTypeBind.class, newAbstractType, newType, false);
 
         return newType;
+    }
+
+    public JavaMethod createMethod( final JavaType newType,
+                                    final String methodFullName,
+                                    final String methodName,
+                                    final boolean constructor,
+                                    final int access ) throws Exception {
+        JavaMethod method;
+        if (constructor) {
+            method = newType.addNode(JavaMethodConstructor.class, "${method.fullName}");
+        } else {
+            method = newType.addNode(JavaMethodMethod.class, "${method.fullName}");
+        }
+        method.setSimpleName(methodName);
+        this.setMethodData(method, access);
+        this.session.addLink(TypeDeclares.class, newType, method, false);
+        return method;
+    }
+
+    public void createMethodReturnType( final JavaMethod method,
+                                        final Class<? extends JavaType> returnType,
+                                        final String returnPackageName,
+                                        final String returnTypeName,
+                                        final boolean array,
+                                        final int arrayDimension ) throws Exception {
+        final JavaType methodReturnType = this.addTypeOnAbstractContext(returnType, returnPackageName, returnTypeName);
+        final MethodReturns methodReturnsType = this.session.addLink(MethodReturns.class, method, methodReturnType, false);
+        methodReturnsType.setArray(array);
+        methodReturnsType.setArrayDimension(arrayDimension);
     }
 
     public void insertFieldData( final JavaDataField field,
