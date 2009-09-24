@@ -21,7 +21,7 @@
 			<nodeData parentTypeName="Java Type" typeName="Class" />
 			<nodeData parentTypeName="Java Type" typeName="Interface" />
 			<nodeData parentTypeName="Java Type" typeName="Annotation" />
-			<nodeData parentTypeName="Java Type Class" typeName="Enum" />
+			<nodeData parentTypeName="Java Type" typeName="Enum" />
 			<nodeData parentTypeName="Java Type" typeName="Primitive" />
 			<nodeData parentTypeName="" typeName="Java Data">
 				<validParent>Java Type</validParent>

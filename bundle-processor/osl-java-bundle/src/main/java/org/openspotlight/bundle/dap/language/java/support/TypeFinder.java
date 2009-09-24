@@ -51,9 +51,11 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
+import static java.util.Collections.unmodifiableList;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openspotlight.graph.SLContext;
@@ -125,7 +127,11 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
         this.interfaceInheritanceLinks = interfaceInheritanceLinks;
         this.primitiveHierarchyLinks = primitiveHierarchyLinks;
         this.abstractContext = abstractContext;
-        this.orderedActiveContexts = orderedActiveContexts;
+        final ArrayList<SLContext> all = new ArrayList<SLContext>(orderedActiveContexts);
+        if (!all.contains(abstractContext)) {
+            all.add(abstractContext);
+        }
+        this.orderedActiveContexts = unmodifiableList(all);
         this.primitiveTypes = primitiveTypes;
         this.enableBoxing = enableBoxing;
         this.session = session;
@@ -340,7 +346,7 @@ public abstract class TypeFinder<N extends SLNode, K extends SLLink> {
      * @param typeToSolve the type to solve
      * @return the type
      */
-    public abstract <T extends N> N getType( String typeToSolve ) throws NodeNotFoundException;
+    public abstract <T extends N> T getType( String typeToSolve ) throws NodeNotFoundException;
 
     /**
      * Gets the type.

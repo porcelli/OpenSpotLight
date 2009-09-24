@@ -18,9 +18,12 @@
 		<linkData linkName="Extends" linkType="A2B">
 			<description sideA="Java Type" sideB="Java Type" />
 		</linkData>
-		<linkData linkName="References" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
+        <linkData linkName="References" linkType="A2B">
+            <description sideA="Java Type" sideB="Java Type" />
+        </linkData>
+        <linkData linkName="Import" linkType="A2B">
+            <description sideA="Java Type" sideB="Java Type" />
+        </linkData>
 		<linkData linkName="JavaDoc References" linkType="A2B">
 			<description sideA="Java Type" sideB="Java Type" />
 			<description sideA="Java Method" sideB="" />
