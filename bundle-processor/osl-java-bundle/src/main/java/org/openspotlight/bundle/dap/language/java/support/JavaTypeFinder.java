@@ -219,6 +219,12 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
               orderedActiveContexts, primitiveTypes, enableBoxing, session);
     }
 
+    private void fluffers( final SLQuery inheritanceTreeQuery,
+                           final Class<? extends SLLink> linkType ) throws Exception {
+        inheritanceTreeQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd().keepResult().executeXTimes();
+
+    }
+
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
         try {
@@ -246,8 +252,13 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
                                                                                                                        JavaType.class.getName()).subTypes().each().property(
                                                                                                                                                                             "completeName").equalsTo().value(
                                                                                                                                                                                                              activeType.getCompleteName()).typeEnd().whereEnd().keepResult();
-            inheritanceTreeQuery.selectByLinkType().type(JavaType.class.getName()).subTypes().comma().byLink(
-                                                                                                             Extends.class.getName()).b().selectEnd().keepResult().executeXTimes();
+            for (final Class<? extends SLLink> linkType : implementationInheritanceLinks) {
+                this.fluffers(inheritanceTreeQuery, linkType);
+            }
+            for (final Class<? extends SLLink> linkType : interfaceInheritanceLinks) {
+                this.fluffers(inheritanceTreeQuery, linkType);
+            }
+
             final Collection<SLNode> inheritedTypes = inheritanceTreeQuery.execute().getNodes();
             final SLQuery allTypesFromSamePackagesQuery = this.getSession().createQuery();
             allTypesFromSamePackagesQuery.selectByLinkType().type(JavaPackage.class.getName()).comma().byLink(
