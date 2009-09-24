@@ -60,7 +60,7 @@ public class TestBeanShellScriptGenerationAndExecution {
     public void shouldCreateBeanShellScript() throws Exception {
         final TemplateTask task = new TemplateTask();
         task.setProject(new Project());
-        task.setExecuteBeanShellScript(true);
+        task.setExecuteBeanShellScript(false);
         task.setTemplatePath("src/test/resources/template/beanshell/");
         task.addTemplateFiles("JavaInitialData.ftl");
         final FileSet xmls = new FileSet();

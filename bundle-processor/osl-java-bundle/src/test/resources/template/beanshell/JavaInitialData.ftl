@@ -30,7 +30,7 @@ JavaMethod method;
 
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
-newType = helper.addTypeOnAbstractContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}");
+newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lower_case)}.class,"${javaType.packageName}", "${javaType.typeName}",${javaType.access});
 </#if>
 </#list>
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
@@ -47,12 +47,12 @@ newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lo
     <#if field.type.@class=="SimpleTypeReference">
 	helper.createField(newType,JavaType.class,"${field.type.packageName}","${field.type.typeName}","${field.name}",${field.access},false,0);
     <#elseif field.type.@class="PrimitiveTypeReference">
-    helper.createField(newType,JavaTypePrimitive.class,"${field.type.packageName}","","${field.type.type?lower_case}",${field.access},false,0);
+    helper.createField(newType,JavaTypePrimitive.class,"","${field.type.type?lower_case}","${field.name}",${field.access},false,0);
     <#elseif field.type.@class="ArrayTypeReferenceerence">
     <#if field.type.type.@class=="SimpleTypeReference">
     helper.createField(newType,JavaType.class,"${field.type.type.packageName}","${field.type.type.typeName}","${field.name}",${field.access},true,${field.type.arrayDimensions});
     <#elseif field.type.type.@class="PrimitiveTypeReference">
-    helper.createField(newType,JavaTypePrimitive.class,"${field.type.type.packageName}","","${field.type.type.type?lower_case}",${field.access},true,${field.type.arrayDimensions});
+    helper.createField(newType,JavaTypePrimitive.class,"","${field.type.type.type?lower_case}","${field.name}",${field.access},true,${field.type.arrayDimensions});
     </#if>
     </#if>
 </#if>
