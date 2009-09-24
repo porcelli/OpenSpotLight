@@ -51,13 +51,11 @@
  */
 package org.openspotlight.bundle.dap.language.java.support;
 
-import static java.util.Collections.unmodifiableList;
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
@@ -68,6 +66,11 @@ import org.openspotlight.graph.SLNode;
  * The Class TypeFinder.
  */
 public abstract class TypeFinder<N extends SLNode> {
+
+    public static enum ResultOrder {
+        ASC,
+        DESC
+    }
 
     /** The implementation inheritance links. */
     private final List<Class<? extends SLLink>> implementationInheritanceLinks;
@@ -111,18 +114,18 @@ public abstract class TypeFinder<N extends SLNode> {
                           final List<Class<? extends SLLink>> primitiveHierarchyLinks, final SLContext abstractContext,
                           final List<SLContext> orderedActiveContexts, final List<Class<? extends N>> primitiveTypes,
                           final boolean enableBoxing, final SLGraphSession session ) {
-        checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
-        checkNotNull("interfaceInheritanceLinks", interfaceInheritanceLinks);
-        checkNotNull("primitiveHierarchyLinks", primitiveHierarchyLinks);
-        checkNotNull("abstractContext", abstractContext);
-        checkNotNull("orderedActiveContexts", orderedActiveContexts);
-        checkNotNull("primitiveTypes", primitiveTypes);
-        checkNotNull("session", session);
-        checkCondition("implementationInheritanceLinksNotEmpty", implementationInheritanceLinks.size() > 0);
-        checkCondition("interfaceInheritanceLinksNotEmpty", interfaceInheritanceLinks.size() > 0);
-        checkCondition("primitiveHierarchyLinksNotEmpty", primitiveHierarchyLinks.size() > 0);
-        checkCondition("orderedActiveContextsNotEmpty", orderedActiveContexts.size() > 0);
-        checkCondition("primitiveTypesNotEmpty", primitiveTypes.size() > 0);
+        Assertions.checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
+        Assertions.checkNotNull("interfaceInheritanceLinks", interfaceInheritanceLinks);
+        Assertions.checkNotNull("primitiveHierarchyLinks", primitiveHierarchyLinks);
+        Assertions.checkNotNull("abstractContext", abstractContext);
+        Assertions.checkNotNull("orderedActiveContexts", orderedActiveContexts);
+        Assertions.checkNotNull("primitiveTypes", primitiveTypes);
+        Assertions.checkNotNull("session", session);
+        Assertions.checkCondition("implementationInheritanceLinksNotEmpty", implementationInheritanceLinks.size() > 0);
+        Assertions.checkCondition("interfaceInheritanceLinksNotEmpty", interfaceInheritanceLinks.size() > 0);
+        Assertions.checkCondition("primitiveHierarchyLinksNotEmpty", primitiveHierarchyLinks.size() > 0);
+        Assertions.checkCondition("orderedActiveContextsNotEmpty", orderedActiveContexts.size() > 0);
+        Assertions.checkCondition("primitiveTypesNotEmpty", primitiveTypes.size() > 0);
         this.implementationInheritanceLinks = implementationInheritanceLinks;
         this.interfaceInheritanceLinks = interfaceInheritanceLinks;
         this.primitiveHierarchyLinks = primitiveHierarchyLinks;
@@ -131,7 +134,7 @@ public abstract class TypeFinder<N extends SLNode> {
         if (!all.contains(abstractContext)) {
             all.add(abstractContext);
         }
-        this.orderedActiveContexts = unmodifiableList(all);
+        this.orderedActiveContexts = Collections.unmodifiableList(all);
         this.primitiveTypes = primitiveTypes;
         this.enableBoxing = enableBoxing;
         this.session = session;
@@ -146,104 +149,40 @@ public abstract class TypeFinder<N extends SLNode> {
         return this.abstractContext;
     }
 
-    /**
-     * Gets the concrete types lower higher first.
-     * 
-     * @param type the type
-     * @return the concrete types lower higher first
-     */
-    public <T extends N> List<N> getConcreteTypesLowerHigherFirst( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getAllChildren( final A activeType,
+                                                              final ResultOrder order ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the concrete types lower higher last.
-     * 
-     * @param type the type
-     * @return the concrete types lower higher last
-     */
-    public <T extends N> List<N> getConcreteTypesLowerHigherLast( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getAllParents( final A activeType,
+                                                             final ResultOrder order ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the concrete types upper higher first.
-     * 
-     * @param type the type
-     * @return the concrete types upper higher first
-     */
-    public <T extends N> List<N> getConcreteTypesUpperHigherFirst( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getConcreteChildren( final A activeType,
+                                                                   final ResultOrder order ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the concrete types upper higher last.
-     * 
-     * @param type the type
-     * @return the concrete types upper higher last
-     */
-    public <T extends N> List<N> getConcreteTypesUpperHigherLast( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getConcreteParents( final A activeType,
+                                                                  final ResultOrder order ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the direct child.
-     * 
-     * @param type the type
-     * @return the direct child
-     */
-    public <T extends N> List<N> getDirectChild( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getDirectConcreteChildren( final A activeType ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the direct concrete parents.
-     * 
-     * @param type the type
-     * @return the direct concrete parents
-     */
-    public <T extends N> List<N> getDirectConcreteParents( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getDirectConcreteParents( final A activeType ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the direct conrete child.
-     * 
-     * @param type the type
-     * @return the direct conrete child
-     */
-    public <T extends N> List<N> getDirectConreteChild( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getDirectInterfaceChildren( final A activeType ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the direct interface child.
-     * 
-     * @param type the type
-     * @return the direct interface child
-     */
-    public <T extends N> List<N> getDirectInterfaceChild( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the direct interface parents.
-     * 
-     * @param type the type
-     * @return the direct interface parents
-     */
-    public <T extends N> List<N> getDirectInterfaceParents( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the direct parents.
-     * 
-     * @param type the type
-     * @return the direct parents
-     */
-    public <T extends N> List<N> getDirectParents( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getDirectInterfaceParents( final A activeType ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -255,6 +194,11 @@ public abstract class TypeFinder<N extends SLNode> {
         return this.implementationInheritanceLinks;
     }
 
+    public <T extends N, A extends N> List<T> getInterfaceChildren( final A activeType,
+                                                                    final ResultOrder order ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Gets the interface inheritance links.
      * 
@@ -264,44 +208,9 @@ public abstract class TypeFinder<N extends SLNode> {
         return this.interfaceInheritanceLinks;
     }
 
-    /**
-     * Gets the interface types lower higher first.
-     * 
-     * @param type the type
-     * @return the interface types lower higher first
-     */
-    public <T extends N> List<N> getInterfaceTypesLowerHigherFirst( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the interface types lower higher last.
-     * 
-     * @param type the type
-     * @return the interface types lower higher last
-     */
-    public <T extends N> List<N> getInterfaceTypesLowerHigherLast( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the interface types upper higher first.
-     * 
-     * @param type the type
-     * @return the interface types upper higher first
-     */
-    public <T extends N> List<N> getInterfaceTypesUpperHigherFirst( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the interface types upper higher last.
-     * 
-     * @param type the type
-     * @return the interface types upper higher last
-     */
-    public <T extends N> List<N> getInterfaceTypesUpperHigherLast( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N, A extends N> List<T> getInterfaceParents( final A activeType,
+                                                                   final ResultOrder order ) throws NodeNotFoundException {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -361,43 +270,14 @@ public abstract class TypeFinder<N extends SLNode> {
                                                           List<? extends N> parametrizedTypes ) throws NodeNotFoundException;
 
     /**
-     * Gets the types lower higher first.
+     * Checks if is type of.
      * 
      * @param type the type
-     * @return the types lower higher first
+     * @param anotherType the another type
+     * @return true, if is type of
      */
-    public <T extends N> List<N> getTypesLowerHigherFirst( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the types lower higher last.
-     * 
-     * @param type the type
-     * @return the types lower higher last
-     */
-    public <T extends N> List<N> getTypesLowerHigherLast( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the types upper higher first.
-     * 
-     * @param type the type
-     * @return the types upper higher first
-     */
-    public <T extends N> List<N> getTypesUpperHigherFirst( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    /**
-     * Gets the types upper higher last.
-     * 
-     * @param type the type
-     * @return the types upper higher last
-     */
-    public <T extends N> List<N> getTypesUpperHigherLast( final T type ) throws NodeNotFoundException {
-        throw new UnsupportedOperationException("not implemented yet");
+    public <T extends N> boolean isConcreteType( final T type ) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     /**
@@ -416,7 +296,7 @@ public abstract class TypeFinder<N extends SLNode> {
      * @param anotherType the another type
      * @return true, if is type of
      */
-    public <T extends N, A extends N> boolean isTypeOf( final N type,
+    public <T extends N, A extends N> boolean isTypeOf( final T type,
                                                         final A anotherType ) {
         throw new UnsupportedOperationException("Not implemented yet");
     }

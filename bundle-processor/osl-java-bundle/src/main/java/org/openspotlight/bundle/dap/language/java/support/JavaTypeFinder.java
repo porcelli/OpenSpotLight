@@ -220,6 +220,14 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
               enableBoxing, session);
     }
 
+    @Override
+    public <T extends JavaType, A extends JavaType> List<T> getAllChildren( final A activeType,
+                                                                            final org.openspotlight.bundle.dap.language.java.support.TypeFinder.ResultOrder order )
+        throws NodeNotFoundException {
+        // TODO Auto-generated method stub
+        return super.getAllChildren(activeType, order);
+    }
+
     @SuppressWarnings( "unchecked" )
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws NodeNotFoundException {
