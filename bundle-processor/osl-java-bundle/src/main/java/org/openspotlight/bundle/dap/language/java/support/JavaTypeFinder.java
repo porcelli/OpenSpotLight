@@ -81,6 +81,32 @@ import org.openspotlight.graph.query.SLQueryResult;
  */
 public class JavaTypeFinder extends TypeFinder<JavaType> {
 
+    private class ComplexTypeFinderQueryExecutor extends TypeFinderByQueryExecutor {
+
+        private final Collection<SLNode> allTypesFromSamePackages;
+
+        public ComplexTypeFinderQueryExecutor(
+                                               final String typeToSolve, final Collection<SLNode> allTypesFromSamePackages ) {
+            super(typeToSolve);
+            this.allTypesFromSamePackages = allTypesFromSamePackages;
+        }
+
+        /**
+         * @{inheritDoc
+         */
+        @Override
+        public SLQueryResult executeWithThisString( final String s ) throws Exception {
+            final SLQuery justTheTargetTypeQuery = JavaTypeFinder.this.getSession().createQuery();
+            justTheTargetTypeQuery.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
+                                                                                                                         JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                              "simpleName").equalsTo().value(
+                                                                                                                                                                                                             s);
+            final SLQueryResult result = justTheTargetTypeQuery.execute(this.allTypesFromSamePackages);
+            return result;
+        }
+
+    }
+
     private class SimpleGetTypeFinder extends TypeFinderByQueryExecutor {
 
         /**
@@ -173,6 +199,7 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
 
     private static final List<Class<? extends SLLink>>   implementationInheritanceLinks = new ArrayList<Class<? extends SLLink>>();
     private static final List<Class<? extends SLLink>>   interfaceInheritanceLinks      = new ArrayList<Class<? extends SLLink>>();
+
     private static final List<Class<? extends SLLink>>   primitiveHierarchyLinks        = new ArrayList<Class<? extends SLLink>>();
 
     private static final List<Class<? extends JavaType>> primitiveTypes                 = new ArrayList<Class<? extends JavaType>>();
@@ -229,20 +256,16 @@ public class JavaTypeFinder extends TypeFinder<JavaType> {
                                                                                                                       PackageType.class.getName()).b().selectEnd();
             final Collection<SLNode> allTypesFromSamePackages = allTypesFromSamePackagesQuery.execute(inheritedTypes).getNodes();
 
-            final SLQuery justTheTargetTypeQuery = this.getSession().createQuery();
-            justTheTargetTypeQuery.selectByNodeType().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
-                                                                                                                         JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                                              "simpleName").equalsTo().value(
-                                                                                                                                                                                                             typeToSolve);
-            final Collection<SLNode> justTheTargetTypes = justTheTargetTypeQuery.execute(allTypesFromSamePackages).getNodes();
-
-            //FIXME finish $ logic
+            final SLNode slNode = new ComplexTypeFinderQueryExecutor(typeToSolve, allTypesFromSamePackages).getTypeByAllPossibleNames();
+            if (slNode == null) {
+                throw logAndReturn(new NodeNotFoundException());
+            }
+            final T typed = this.getTypedNode(slNode);
+            return typed;
             //FIXME finish the loop for all link types
         } catch (final Exception e) {
             throw logAndReturnNew(e, NodeNotFoundException.class);
         }
-
-        throw new UnsupportedOperationException("not implemented yet");
     }
 
     /**
