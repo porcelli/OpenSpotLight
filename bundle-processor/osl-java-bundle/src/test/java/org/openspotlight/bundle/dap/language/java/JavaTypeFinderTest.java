@@ -104,7 +104,7 @@ public class JavaTypeFinderTest {
         support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "Map$Entry");
         support.addAfterTypeProcessing(JavaTypeInterface.class, "java.util", "Map");
         final JavaTypeClass hashMapClass = support.addAfterTypeProcessing(JavaTypeClass.class, "java.util", "HashMap");
-        support.addAfterTypeProcessing(JavaTypeInterface.class, "java.lang", "Number");
+        support.addAfterTypeProcessing(JavaTypeClass.class, "java.lang", "Number");
         support.addBeforeTypeProcessing(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
         support.addAfterTypeProcessing(JavaTypePrimitive.class, "", "int");
         session.addLink(Extends.class, hashMapClass, objectClass, false);
@@ -123,7 +123,7 @@ public class JavaTypeFinderTest {
     @Test
     public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
         final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
-        final JavaTypeInterface numberClass = javaTypeFinder.getType("Number", stringClass, null);
+        final JavaTypeClass numberClass = javaTypeFinder.getType("Number", stringClass, null);
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Number"));
         assertThat(numberClass.getPropertyValueAsString("completeName"), is("java.lang.Number"));
