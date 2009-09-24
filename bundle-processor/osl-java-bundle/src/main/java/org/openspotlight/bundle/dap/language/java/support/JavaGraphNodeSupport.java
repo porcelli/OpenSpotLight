@@ -54,6 +54,8 @@ import java.util.TreeMap;
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.DataType;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.PackageType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
@@ -78,9 +80,28 @@ public class JavaGraphNodeSupport {
         this.abstractContextRootNode = abstractContextRootNode;
     }
 
-    public <T extends JavaType> T addAfterTypeProcessing( final Class<T> nodeType,
-                                                          final String packageName,
-                                                          final String nodeName ) throws Exception {
+    public void addExtendsLinks( final String packageName,
+                                 final String typeName,
+                                 final String superPackageName,
+                                 final String superTypeName ) throws Exception {
+        final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
+        final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
+        this.session.addLink(Extends.class, newType, newSuperType, false);
+    }
+
+    public void addImplementsLinks( final String packageName,
+                                    final String typeName,
+                                    final String superPackageName,
+                                    final String superTypeName ) throws Exception {
+        final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
+        final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
+        this.session.addLink(Implements.class, newType, newSuperType, false);
+
+    }
+
+    public <T extends JavaType> T addTypeOnAbstractContext( final Class<T> nodeType,
+                                                            final String packageName,
+                                                            final String nodeName ) throws Exception {
         if (this.usingCache && this.nodesFromThisContext.containsKey(packageName + nodeName)) {
             return (T)this.nodesFromThisContext.get(packageName + nodeName);
         }
@@ -98,7 +119,7 @@ public class JavaGraphNodeSupport {
         return newType;
     }
 
-    public <T extends JavaType> T addBeforeTypeProcessing( final Class<T> nodeType,
+    public <T extends JavaType> T addTypeOnCurrentContext( final Class<T> nodeType,
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access ) throws Exception {
