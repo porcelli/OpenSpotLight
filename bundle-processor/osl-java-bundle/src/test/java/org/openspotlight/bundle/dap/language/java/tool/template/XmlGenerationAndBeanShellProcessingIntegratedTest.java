@@ -69,7 +69,7 @@ public class XmlGenerationAndBeanShellProcessingIntegratedTest {
         task.addCompiledArtifacts(jreFileSet);
         task.setContextName("Dynamo");
         task.setContextVersion("1.0.1");
-        task.setXmlOutputFileName("./target/test-data/TestBeanShellScriptGenerationAndExecution/small-result.xml");
+        task.setXmlOutputFileName("./target/test-data/XmlGenerationAndBeanShellProcessingIntegratedTest/small-result.xml");
 
         task.execute();
         final TemplateTask anotherTask = new TemplateTask();
@@ -78,10 +78,10 @@ public class XmlGenerationAndBeanShellProcessingIntegratedTest {
         anotherTask.setTemplatePath("src/test/resources/template/beanshell/");
         anotherTask.addTemplateFiles("JavaInitialData.ftl");
         final FileSet xmls = new FileSet();
-        xmls.setDir(new File("target/test-data/TestBeanShellScriptGenerationAndExecution/"));
+        xmls.setDir(new File("target/test-data/XmlGenerationAndBeanShellProcessingIntegratedTest/"));
         xmls.setIncludes("small*.xml");
         anotherTask.addXmlFiles(xmls);
-        anotherTask.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
+        anotherTask.setOutputDirectory("./target/test-data/XmlGenerationAndBeanShellProcessingIntegratedTest/output/");
         anotherTask.execute();
         //        assertThat(new File(linkDir).exists(), is(true));
         //        assertThat(new File(linkDir).list().length, is(not(0)));

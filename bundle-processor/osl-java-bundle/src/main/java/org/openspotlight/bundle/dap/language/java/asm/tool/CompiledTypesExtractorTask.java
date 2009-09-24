@@ -132,6 +132,8 @@ public class CompiledTypesExtractorTask extends Task {
                 });
 
                 this.LOG.info("Starting XML Output generation.");
+                final String dirName = this.xmlOutputFileName.substring(0, this.xmlOutputFileName.lastIndexOf("/"));
+                new File(dirName).mkdirs();
                 final OutputStream outputStream = new FileOutputStream(this.xmlOutputFileName);
                 xstream.toXML(wrapper, outputStream);
                 outputStream.flush();
