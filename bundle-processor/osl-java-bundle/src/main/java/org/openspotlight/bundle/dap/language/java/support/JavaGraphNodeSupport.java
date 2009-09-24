@@ -56,7 +56,9 @@ import org.openspotlight.bundle.dap.language.java.metamodel.link.AbstractTypeBin
 import org.openspotlight.bundle.dap.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodReturns;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodThrows;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.PackageType;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaDataField;
@@ -100,6 +102,14 @@ public class JavaGraphNodeSupport {
         final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
         final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
         this.session.addLink(Implements.class, newType, newSuperType, false);
+
+    }
+
+    public void addThrowsOnMethod( final JavaMethod method,
+                                   final String exceptionPackage,
+                                   final String exceptionName ) throws Exception {
+        final JavaType newExceptionType = this.addTypeOnAbstractContext(JavaType.class, exceptionPackage, exceptionName);
+        this.session.addLink(MethodThrows.class, method, newExceptionType, false);
 
     }
 
@@ -157,6 +167,20 @@ public class JavaGraphNodeSupport {
         return newType;
     }
 
+    public JavaDataField createField( final JavaType newType,
+                                      final Class<? extends JavaType> fieldType,
+                                      final String fieldPackage,
+                                      final String fieldTypeName,
+                                      final String fieldName,
+                                      final int access,
+                                      final boolean array,
+                                      final int arrayDimensions ) throws Exception {
+        final JavaDataField field = newType.addNode(JavaDataField.class, fieldName);
+        final JavaType fieldTypeAdded = this.addTypeOnAbstractContext(fieldType, fieldPackage, fieldTypeName);
+        this.insertFieldData(field, fieldTypeAdded, access, array, arrayDimensions);
+        return field;
+    }
+
     public JavaMethod createMethod( final JavaType newType,
                                     final String methodFullName,
                                     final String methodName,
@@ -174,6 +198,22 @@ public class JavaGraphNodeSupport {
         return method;
     }
 
+    public void createMethodParameter( final JavaMethod method,
+                                       final Class<? extends JavaType> parameterType,
+                                       final int parameterOrder,
+                                       final String parameterPackage,
+                                       final String parameterTypeName,
+                                       final boolean array,
+                                       final int arrayDimensions ) throws Exception {
+
+        final JavaType methodParameterType = this.addTypeOnAbstractContext(parameterType, parameterPackage, parameterTypeName);
+        final MethodParameterDefinition methodParametersTypeLink = this.session.addLink(MethodParameterDefinition.class, method,
+                                                                                        methodParameterType, false);
+        methodParametersTypeLink.setOrder(parameterOrder);
+        methodParametersTypeLink.setArray(array);
+        methodParametersTypeLink.setArrayDimension(arrayDimensions);
+    }
+
     public void createMethodReturnType( final JavaMethod method,
                                         final Class<? extends JavaType> returnType,
                                         final String returnPackageName,
@@ -186,11 +226,11 @@ public class JavaGraphNodeSupport {
         methodReturnsType.setArrayDimension(arrayDimension);
     }
 
-    public void insertFieldData( final JavaDataField field,
-                                 final JavaType fieldType,
-                                 final int access,
-                                 final boolean isArray,
-                                 final int dimension ) throws Exception {
+    private void insertFieldData( final JavaDataField field,
+                                  final JavaType fieldType,
+                                  final int access,
+                                  final boolean isArray,
+                                  final int dimension ) throws Exception {
         final DataType fieldTypeLink = this.session.addLink(DataType.class, field, fieldType, false);
         fieldTypeLink.setArray(isArray);
         fieldTypeLink.setArrayDimension(dimension);
@@ -214,8 +254,8 @@ public class JavaGraphNodeSupport {
         return this.usingCache;
     }
 
-    public void setMethodData( final JavaMethod method,
-                               final int access ) {
+    private void setMethodData( final JavaMethod method,
+                                final int access ) {
         final boolean isMethodPublic = (access & Opcodes.ACC_PUBLIC) != 0;
         final boolean isMethodPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
         final boolean isMethodStatic = (access & Opcodes.ACC_STATIC) != 0;
@@ -233,4 +273,5 @@ public class JavaGraphNodeSupport {
     public void setUsingCache( final boolean usingCache ) {
         this.usingCache = usingCache;
     }
+
 }
