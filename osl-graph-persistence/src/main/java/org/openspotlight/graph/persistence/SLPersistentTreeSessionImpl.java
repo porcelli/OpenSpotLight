@@ -51,12 +51,17 @@ package org.openspotlight.graph.persistence;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.Version;
+import javax.jcr.version.VersionException;
 import javax.jcr.version.VersionIterator;
 
 import org.apache.log4j.Logger;
@@ -101,9 +106,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 			try {
 				rootNode = JCRUtil.getChildNode(jcrSession.getRootNode(), "osl");
 				if (rootNode == null) {
-					rootNode = jcrSession.getRootNode().addNode("osl");
-					JCRUtil.makeVersionable(rootNode);
-					JCRUtil.makeReferenceable(rootNode);
+					createRootNode();
 					jcrSession.save();
 				}
 				else {
@@ -117,7 +120,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 					}
 					if (versionNumbers.isEmpty()) {
 						rootNode.remove();
-						jcrSession.getRootNode().addNode("osl");
+						createRootNode();
+						jcrSession.save();
 					}
 					else {
 						//rootNode.restore(versionNumbers.last().toString(), true);
@@ -131,7 +135,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		}
 		return new SLPersistentNodeImpl(this, null, rootNode, eventPoster);		
 	}
-
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#close()
@@ -218,6 +222,17 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		SLPersistentQuery query = createQuery(path, SLPersistentQuery.TYPE_XPATH);
 		SLPersistentQueryResult result = query.execute();
 		return result.getRowCount() == 1 ? result.getNodes().iterator().next() : null;
+	}
+	
+	/**
+	 * Creates the root node.
+	 * 
+	 * @throws RepositoryException the repository exception
+	 */
+	private void createRootNode() throws RepositoryException {
+		rootNode = jcrSession.getRootNode().addNode("osl");
+		JCRUtil.makeVersionable(rootNode);
+		JCRUtil.makeReferenceable(rootNode);
 	}
 }
 

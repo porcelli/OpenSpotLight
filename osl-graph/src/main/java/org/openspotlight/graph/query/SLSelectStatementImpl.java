@@ -314,6 +314,8 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
 		EndImpl(SLSelectFacade selectFacade, SLSelectStatementInfo selectInfo) {
 			this.selectFacade = selectFacade;
 			this.selectInfo = selectInfo;
+			
+			
 			//this.orderBy = new SLOrderByStatementImpl();
 		}
 

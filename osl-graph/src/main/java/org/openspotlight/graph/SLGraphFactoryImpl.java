@@ -64,15 +64,20 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
  * @author Vitor Hugo Chagas
  */
 public class SLGraphFactoryImpl extends SLGraphFactory {
+	
+	private SLGraph graph;
 
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLGraphFactory#createTempGraph(boolean)
 	 */
 	public SLGraph createTempGraph(boolean removeExistent) throws SLGraphFactoryException {
 		try {
-			SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-			SLPersistentTree tree = factory.createTempPersistentTree(removeExistent);
-			return new SLGraphImpl(tree);
+			if (graph == null) {
+				SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
+				SLPersistentTree tree = factory.createTempPersistentTree(removeExistent);
+				graph = new SLGraphImpl(tree);
+			}
+			return graph;
 		}
 		catch (Exception e) {
 			throw new SLGraphFactoryException("Couldn't create SL graph.", e);

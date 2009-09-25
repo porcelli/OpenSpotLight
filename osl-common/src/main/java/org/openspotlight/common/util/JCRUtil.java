@@ -51,6 +51,7 @@ package org.openspotlight.common.util;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -67,6 +68,24 @@ import org.openspotlight.common.exception.JCRUtilException;
  * @author Vitor Hugo Chagas
  */
 public class JCRUtil {
+	
+	/**
+	 * Gets the parent.
+	 * 
+	 * @param node the node
+	 * 
+	 * @return the parent
+	 * 
+	 * @throws RepositoryException the repository exception
+	 */
+	public static Node getParent(Node node) throws RepositoryException {
+		Node parent = null;
+		try {
+			parent = node.getParent();
+		}
+		catch (ItemNotFoundException e) {}
+		return parent;
+	}
 	
 	/**
 	 * Make versionable.
