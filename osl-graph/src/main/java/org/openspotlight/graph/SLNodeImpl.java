@@ -462,11 +462,14 @@ public class SLNodeImpl implements SLNode {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
+	    //TODO isn't better to compare by getId()? -> not by getPath?
 		try {
 			if (obj == null || !(obj instanceof SLNode)) return false;
 			SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy.getInvocationHandler(obj);
-			SLNodeImpl node = (SLNodeImpl) handler.getNode();
-			return pNode.getPath().equals(node.pNode.getPath());
+//			SLNodeImpl node = (SLNodeImpl) handler.getNode();
+//            return pNode.getPath().equals(node.pNode.getPath());
+			return pNode.getID().equals(handler.getNode().getID());
+			
 		}
 		catch (SLException e) {
 			throw new RuntimeException("Error on " + this.getClass() + " equals method.", e);
