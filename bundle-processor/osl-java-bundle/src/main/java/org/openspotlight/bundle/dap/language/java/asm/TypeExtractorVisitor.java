@@ -69,8 +69,8 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
     /** The type. */
     private TypeDefinition type = null;
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.AbstractTypeVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+    /**
+     * {@inheritDoc}
      */
     public void visit( int version,
                        int access,
@@ -114,8 +114,8 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.AbstractTypeVisitor#visitField(int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
+    /**
+     * {@inheritDoc}
      */
     public FieldVisitor visitField( int access,
                                     String name,
@@ -138,8 +138,8 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.AbstractTypeVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+    /**
+     * {@inheritDoc}
      */
     public MethodVisitor visitMethod( int access,
                                       String name,
@@ -179,6 +179,24 @@ public class TypeExtractorVisitor extends AbstractTypeVisitor {
         type.getMethods().add(methodDeclaration);
 
         return null;
+    }
+
+    /**
+     * Visit inner clasz. Checks if inner class is the same of the active type, if yes the active type is an inner class.
+     * 
+     * @param name the name
+     * @param outerName the outer name
+     * @param innerName the inner name
+     * @param access the access
+     */
+    public void visitInnerClasz( String name,
+                                 String outerName,
+                                 String innerName,
+                                 int access ) {
+        Pair<String, String> packageAndType = getPackageAndTypeNames(name);
+        if ((type.getPackageName().equals(packageAndType.getK1())) && (type.getTypeName().equals(packageAndType.getK2()))) {
+            type.setInnerClass(true);
+        }
     }
 
     /**
