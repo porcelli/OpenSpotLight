@@ -66,6 +66,18 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 public class SLCommonSupport {
 	
 	/**
+	 * Gets the link type.
+	 * 
+	 * @param link the link
+	 * 
+	 * @return the link type
+	 */
+	@SuppressWarnings("unchecked")
+	public static Class<? extends SLLink> getLinkType(SLLink link) {
+		return (Class<? extends SLLink>) link.getClass().getInterfaces()[0];
+	}
+	
+	/**
 	 * Gets the user node name.
 	 * 
 	 * @param pNode the node

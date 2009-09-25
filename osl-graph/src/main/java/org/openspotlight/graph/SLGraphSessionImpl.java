@@ -97,6 +97,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		final Collection<SLGraphSessionEventListener> listeners = new ArrayList<SLGraphSessionEventListener>();
 		listeners.add(new SLObjectMarkListener());
 		listeners.add(new SLTransientObjectListener());
+		listeners.add(new SLLinkCountListener());
 		listeners.add(new SLMetadataListener());
 		this.eventPoster = new SLGraphSessionEventPosterImpl(listeners);
 		this.encoderFactory = new SLEncoderFactoryImpl();
