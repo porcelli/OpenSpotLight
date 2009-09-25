@@ -718,22 +718,25 @@ public class SLQueryImpl implements SLQuery {
 		return new Comparator<PNodeWrapper>() {
 			public int compare(PNodeWrapper nodeWrapper1, PNodeWrapper nodeWrapper2) {
 				try {
-					Integer index1 = getTypeIndex(nodeWrapper1.getTypeName());
-					Integer index2 = getTypeIndex(nodeWrapper2.getTypeName());
+					String typeName1 = nodeWrapper1.getTypeName();
+					String typeName2 = nodeWrapper2.getTypeName();
+					Integer index1 = getTypeIndex(typeName1);
+					Integer index2 = getTypeIndex(typeName2);
 					if (index1 == index2) {
 						if (nodeWrapper1.getID().equals(nodeWrapper2.getID())) {
 							return 0;
 						}
 						else {
-							
 							List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo.getOrderByTypeInfoList();
-							String propertyName = typeInfoList.get(index1).getPropertyName();
-							
+							String propertyName = index1 < typeInfoList.size() ? typeInfoList.get(index1).getPropertyName() : null;
 							Comparable<Serializable> value1 = nodeWrapper1.getPropertyValue(propertyName);
 							Comparable<Serializable> value2 = nodeWrapper2.getPropertyValue(propertyName);
-							
+							if (propertyName != null) {
+								value1 = nodeWrapper1.getPropertyValue(propertyName);
+								value2 = nodeWrapper2.getPropertyValue(propertyName);
+							}
 							if (value1 == null && value2 == null) {
-								return nodeWrapper1.getParentName().compareTo(nodeWrapper2.getParentName());
+								return nodeWrapper1.getPath().compareTo(nodeWrapper2.getPath());
 							}
 							else if (value1 == null && value2 != null) {
 								return 1;
@@ -742,7 +745,7 @@ public class SLQueryImpl implements SLQuery {
 								return -1;
 							}
 							else {
-								return value1.compareTo(propertyName);
+								return value1.compareTo((Serializable) value2);
 							}
 						}
 					}
@@ -767,8 +770,12 @@ public class SLQueryImpl implements SLQuery {
 			}
 			
 			private boolean isInstanceOf(String subTypeName, String typeName) throws SLGraphSessionException {
-				SLMetaNodeType metaNodeType = metadata.findMetaNodeType(typeName);
-				return isInstanceOf(subTypeName, metaNodeType);
+				boolean status = subTypeName.equals(typeName);
+				if (!status) {
+					SLMetaNodeType metaNodeType = metadata.findMetaNodeType(typeName);
+					status = isInstanceOf(subTypeName, metaNodeType);
+				}
+				return status; 
 			}
 			
 			private boolean isInstanceOf(String subTypeName, SLMetaNodeType metaNodeType) throws SLGraphSessionException {

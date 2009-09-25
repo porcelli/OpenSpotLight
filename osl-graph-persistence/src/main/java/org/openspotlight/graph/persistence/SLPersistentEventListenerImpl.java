@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.persistence;
 
+
 /**
  * The Class SLPersistentEventListenerImpl.
  * 
@@ -60,9 +61,11 @@ public class SLPersistentEventListenerImpl implements SLPersistentEventListener 
 	 * @see org.openspotlight.graph.persistence.SLPersistentEventListener#nodeAdded(org.openspotlight.graph.persistence.SLPersistentNodeEvent)
 	 */
 	public void nodeAdded(SLPersistentNodeEvent event) throws SLPersistentTreeSessionException {
-		event.getNode().getParent().save();
+		SLPersistentNode parent = event.getNode().getParent();
+		if (parent != null) parent.save();
+		else event.getNode().getSession().save();
 	}
-
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.persistence.SLPersistentEventListener#nodeRemoved(org.openspotlight.graph.persistence.SLPersistentNodeEvent)

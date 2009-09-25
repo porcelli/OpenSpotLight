@@ -49,6 +49,8 @@
 package org.openspotlight.graph.query;
 
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
+import org.openspotlight.graph.query.info.SLSelectStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo;
@@ -163,6 +165,12 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 		 * @see org.openspotlight.graph.query.SLWhereStatement.End#orderBy()
 		 */
 		public SLOrderByStatement orderBy() {
+			if (orderByStatement == null) {
+				SLSelectStatementInfo selectInfo = whereStatementInfo.getSelectStatementInfo();
+				SLOrderByStatementInfo orderByStatementInfo = new SLOrderByStatementInfo(selectInfo);
+				selectInfo.setOrderByStatementInfo(orderByStatementInfo);
+				orderByStatement = new SLOrderByStatementImpl(selectFacade, orderByStatementInfo);
+			}
 			return orderByStatement;
 		}
 

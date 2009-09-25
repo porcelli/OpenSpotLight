@@ -167,6 +167,7 @@ public class SLOrderByStatementImpl implements SLOrderByStatement {
 			public PropertyImpl(SLOrderByStatement orderByStatement, SLSelectFacade selectFacade, SLOrderByTypeInfo typeInfo) {
 				this.selectFacade = selectFacade;
 				this.typeInfo = typeInfo;
+				this.orderByStatement = orderByStatement;
 			}
 
 			/* (non-Javadoc)

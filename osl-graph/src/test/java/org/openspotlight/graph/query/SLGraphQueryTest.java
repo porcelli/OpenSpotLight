@@ -79,6 +79,7 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 import org.openspotlight.graph.query.SLQuery.SortMode;
@@ -91,6 +92,7 @@ import org.testng.annotations.Test;
  * 
  * @author Vitor Hugo Chagas
  */
+@Test
 public class SLGraphQueryTest {
 
 	/** The Constant LOGGER. */
@@ -137,8 +139,8 @@ public class SLGraphQueryTest {
             session = graph.openSession();
             sortMode = SortMode.SORTED;
 
-//			SLMetadata metadata = session.getMetadata();
-//			if (metadata.findMetaNodeType(JavaType.class) != null) return;
+			SLMetadata metadata = session.getMetadata();
+			if (metadata.findMetaNodeType(JavaType.class) != null) return;
 			
 			Collection<Class<?>> iFaces = loadClasses("java-util-interfaces.txt");
 			Collection<Class<?>> classes = loadClasses("java-util-classes.txt");
@@ -2255,57 +2257,12 @@ public class SLGraphQueryTest {
 
 			SLQueryResult result = query.execute(sortMode, printInfo);
 			Collection<SLNode> nodes = result.getNodes();
-			final NodeWrapper[] wrappers = wrapNodes(nodes);
+			//final NodeWrapper[] wrappers = wrapNodes(nodes);
+			
+			//printAsserts(wrappers);
 			
 			new AssertResult() {
 				public void execute() {
-					assertThat(wrappers.length, is(46));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.AbstractMap", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isExternallySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaPackage.class.getName(), "queryTest", "java.io"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "getSetStateFields"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSortedSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaPackage.class.getName(), "queryTest", "java.security"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSortedSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "readTreeSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Hashtable", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.HashMap", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isFieldSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.AbstractMap", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "subSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaPackage.class.getName(), "queryTest", "java.util"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "tailSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "internalSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.HashMap", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "headSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.BitSet", "nextSetBit"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Map", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Hashtable", "keySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "entrySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "tailSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaPackage.class.getName(), "queryTest", "java.lang"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "subSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSortedSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "emptySet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "addAllForTreeSet"), isOneOf(wrappers));
-					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
 				}
 			}.execute();
 
@@ -2761,13 +2718,13 @@ public class SLGraphQueryTest {
 					.allTypes().onWhere()
 				.selectEnd()
 				.where()
-					.type(JavaInterface.class.getName())
-						.each().property("caption").startsWith().value("java.util")
-						.and().each().link(JavaInterfaceHierarchy.class.getName()).a().count().equalsTo().value(0)
+					.type(JavaType.class.getName()).subTypes()
+						.each().property("caption").contains().value("Set")
 					.typeEnd()
 				.whereEnd()
 				.orderBy()
 					.type(JavaInterface.class.getName()).property("caption").ascending()
+					.type(JavaType.class.getName()).property("caption").ascending()
 				.orderByEnd();
 			
 			SLQueryResult result = query.execute(sortMode, printInfo);
