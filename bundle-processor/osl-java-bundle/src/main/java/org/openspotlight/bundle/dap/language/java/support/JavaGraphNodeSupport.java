@@ -314,9 +314,9 @@ public class JavaGraphNodeSupport {
                                     final int access ) throws Exception {
         JavaMethod method;
         if (constructor) {
-            method = newType.addNode(JavaMethodConstructor.class, "${method.fullName}");
+            method = newType.addNode(JavaMethodConstructor.class, methodFullName);
         } else {
-            method = newType.addNode(JavaMethodMethod.class, "${method.fullName}");
+            method = newType.addNode(JavaMethodMethod.class, methodFullName);
         }
         method.setSimpleName(methodName);
         this.setMethodData(method, access);

@@ -23,6 +23,7 @@
 			<nodeData parentTypeName="Java Type" typeName="Annotation" />
 			<nodeData parentTypeName="Java Type" typeName="Enum" />
 			<nodeData parentTypeName="Java Type" typeName="Primitive" />
+			<nodeData parentTypeName="Java Type" typeName="Parameterized" />
 			<nodeData parentTypeName="" typeName="Java Data">
 				<validParent>Java Type</validParent>
 				<validParent>Java Block</validParent>

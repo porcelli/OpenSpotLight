@@ -93,6 +93,9 @@ public class TypeDefinition {
     /** The is private. */
     private boolean                 isPrivate     = false;
 
+    /** The is inner class. */
+    private boolean                 isInnerClass  = false;
+
     /** The extends def. */
     private TypeReference           extendsDef    = null;
 
@@ -265,5 +268,23 @@ public class TypeDefinition {
      */
     public void setPrivate( boolean isPrivate ) {
         this.isPrivate = isPrivate;
+    }
+
+    /**
+     * Checks if is inner class.
+     * 
+     * @return true, if is inner class
+     */
+    public boolean isInnerClass() {
+        return isInnerClass;
+    }
+
+    /**
+     * Sets the inner class.
+     * 
+     * @param isInnerClass the new inner class
+     */
+    public void setInnerClass( boolean isInnerClass ) {
+        this.isInnerClass = isInnerClass;
     }
 }
