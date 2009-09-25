@@ -100,7 +100,7 @@ public class SLConsts {
 	/** The Constant PROPERTY_NAME_TYPE. */
 	public static final String PROPERTY_NAME_TYPE = "node.type";
 	
-	/** The Constant pROPERTY_NAME_DECODED_NAME. */
+	/** The Constant PROPERTY_NAME_DECODED_NAME. */
 	public static final String PROPERTY_NAME_DECODED_NAME = "decodedName";
 	
 	/** The Constant PROPERTY_NAME_A_NODE_ID. */
@@ -130,14 +130,20 @@ public class SLConsts {
 	/** The Constant PROPERTY_NAME_TARGET_ID. */
 	public static final String PROPERTY_NAME_TARGET_ID = "targetID";
 	
-	/** The Constant PROPERTY_NAME_SOURCE_TYPE. */
+	/** The Constant PROPERTY_NAME_SOURCE_TYPE_HASH. */
 	public static final String PROPERTY_NAME_SOURCE_TYPE_HASH = "sourceTypeHash";
 	
-	/** The Constant PROPERTY_NAME_TARGET_TYPE. */
+	/** The Constant PROPERTY_NAME_TARGET_TYPE_HASH. */
 	public static final String PROPERTY_NAME_TARGET_TYPE_HASH = "targetTypeHash";
 	
 	/** The Constant PROPERTY_NAME_LINK_TYPE_HASH. */
 	public static final String PROPERTY_NAME_LINK_TYPE_HASH = "linkTypeHash";
+	
+	/** The Constant PROPERTY_NAME_SOURCE_COUNT. */
+	public static final String PROPERTY_NAME_SOURCE_COUNT = "sourceCount";
+	
+	/** The Constant PROPERTY_NAME_TARGET_COUNT. */
+	public static final String PROPERTY_NAME_TARGET_COUNT = "targetCount";
 	
 	/** The Constant PROPERTY_PREFIX_INTERNAL. */
 	public static final String PROPERTY_PREFIX_INTERNAL = "internal";

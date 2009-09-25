@@ -46,68 +46,33 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotligAllht.graph.query.info;
 
 /**
- * The listener interface for receiving SLGraphSessionEvent events.
- * The class that is interested in processing a SLGraphSessionEvent
- * event implements this interface, and the object created
- * with that class is registered with a component using the
- * component's <code>addSLGraphSessionEventListener<code> method. When
- * the SLGraphSessionEvent event occurs, that object's appropriate
- * method is invoked.
+ * The Class AllTypesInfo.
  * 
- * @see SLGraphSessionEventEvent
+ * @author Vitor Hugo Chagas
  */
-public interface SLGraphSessionEventListener {
+public class SLAllTypesInfo {
+	
+	/** The on where. */
+	private boolean onWhere;
 
 	/**
-	 * Before save.
+	 * Checks if is on where.
 	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @return true, if is on where
 	 */
-	public void beforeSave(SLGraphSessionEvent event) throws SLGraphSessionException;
+	public boolean isOnWhere() {
+		return onWhere;
+	}
 
 	/**
-	 * Link added.
+	 * Sets the on where.
 	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @param onWhere the new on where
 	 */
-	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException;
-
-	/**
-	 * Link property set.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void linkPropertySet(SLLinkPropertyEvent event) throws SLGraphSessionException;
-
-	/**
-	 * Node added.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException;
-
-	/**
-	 * Node property set.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void nodePropertySet(SLNodePropertyEvent event) throws SLGraphSessionException;
-
-	/**
-	 * Session cleaned.
-	 */
-	public void sessionCleaned();
+	public void setOnWhere(boolean onWhere) {
+		this.onWhere = onWhere;
+	}
 }

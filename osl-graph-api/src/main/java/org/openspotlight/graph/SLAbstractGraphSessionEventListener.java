@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph;
 
-
 /**
  * The listener interface for receiving SLAbstractGraphSessionEvent events.
  * The class that is interested in processing a SLAbstractGraphSessionEvent
@@ -59,7 +58,6 @@ package org.openspotlight.graph;
  * method is invoked.
  * 
  * @see SLAbstractGraphSessionEventEvent
- * @author Vitor Hugo Chagas
  */
 public abstract class SLAbstractGraphSessionEventListener implements SLGraphSessionEventListener {
 	
@@ -87,5 +85,10 @@ public abstract class SLAbstractGraphSessionEventListener implements SLGraphSess
 	 * @see org.openspotlight.graph.SLGraphSessionEventListener#linkPropertySet(org.openspotlight.graph.SLLinkPropertyEvent)
 	 */
 	public void linkPropertySet(SLLinkPropertyEvent event) throws SLGraphSessionException {}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSessionEventListener#sessionCleaned()
+	 */
+	public void sessionCleaned() {}
 
 }
