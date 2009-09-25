@@ -188,8 +188,8 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 	 * 
 	 * @throws SLGraphFactoryException the SL graph factory exception
 	 */
-	<V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty) throws SLGraphFactoryException {
-		return new SLNodePropertyImpl<V>(node, persistentProperty);
+	<V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty, SLGraphSessionEventPoster eventPoster) throws SLGraphFactoryException {
+		return new SLNodePropertyImpl<V>(node, persistentProperty, eventPoster);
 	}
 }
 

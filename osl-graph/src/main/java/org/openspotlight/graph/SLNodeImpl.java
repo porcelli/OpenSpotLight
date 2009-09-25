@@ -75,7 +75,7 @@ import org.openspotlight.graph.util.ProxyUtil;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLNodeImpl implements SLNode {
+public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	
 	/** The context. */
 	private SLContext context;
@@ -104,6 +104,13 @@ public class SLNodeImpl implements SLNode {
 		this.eventPoster = eventPoster;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLPNodeGetter#getPNode()
+	 */
+	public SLPersistentNode getPNode() {
+		return pNode;
+	}
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLNode#getSession()
@@ -298,7 +305,7 @@ public class SLNodeImpl implements SLNode {
 			SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
 			Class<? extends SLNode> nodeType = getNodeType(pNode);
 			SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-			SLNodeProperty<V> property = factory.createProperty(nodeProxy, pProperty);
+			SLNodeProperty<V> property = factory.createProperty(nodeProxy, pProperty, eventPoster);
 			SLNodePropertyEvent event = new SLNodePropertyEvent(SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property, pProperty);
 			eventPoster.post(event);
 			return property;
@@ -350,7 +357,7 @@ public class SLNodeImpl implements SLNode {
 			if (pProperty != null) {
 				SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
 				SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-				property = factory.createProperty(nodeProxy, pProperty);
+				property = factory.createProperty(nodeProxy, pProperty, eventPoster);
 			}
 		}
 		catch (SLInvalidPersistentPropertyTypeException e) {
@@ -384,7 +391,7 @@ public class SLNodeImpl implements SLNode {
 			Set<SLPersistentProperty<Serializable>> persistentProperties = pNode.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
 			for (SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
 				SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-				SLNodeProperty<Serializable> property = factory.createProperty(nodeProxy, persistentProperty);
+				SLNodeProperty<Serializable> property = factory.createProperty(nodeProxy, persistentProperty, eventPoster);
 				properties.add(property);
 			}
 			return properties;
@@ -465,11 +472,8 @@ public class SLNodeImpl implements SLNode {
 	    //TODO isn't better to compare by getId()? -> not by getPath?
 		try {
 			if (obj == null || !(obj instanceof SLNode)) return false;
-			SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy.getInvocationHandler(obj);
-//			SLNodeImpl node = (SLNodeImpl) handler.getNode();
-//            return pNode.getPath().equals(node.pNode.getPath());
-			return pNode.getID().equals(handler.getNode().getID());
-			
+			SLPersistentNode pNode = SLCommonSupport.getPNode((SLNode) obj);
+			return this.pNode.getID().equals(pNode.getID());
 		}
 		catch (SLException e) {
 			throw new RuntimeException("Error on " + this.getClass() + " equals method.", e);

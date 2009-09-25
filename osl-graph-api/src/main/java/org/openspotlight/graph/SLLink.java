@@ -81,6 +81,15 @@ public interface SLLink extends Comparable<SLLink> {
 	public static final int DIRECTION_ANY = DIRECTION_UNI | DIRECTION_UNI_REVERSAL | DIRECTION_BI;
 	
 	/**
+	 * Gets the link type.
+	 * 
+	 * @return the link type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public Class<? extends SLLink> getLinkType() throws SLGraphSessionException;
+		
+	/**
 	 * Gets the session.
 	 * 
 	 * @return the session

@@ -48,21 +48,121 @@
  */
 package org.openspotlight.graph.query;
 
-
 /**
  * The Interface SLOrderByStatement.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLOrderByStatement extends SLStatement {
+public interface SLOrderByStatement {
 	
 	/**
 	 * Type.
 	 * 
 	 * @param typeName the type name
 	 * 
-	 * @return the sL order by statement
+	 * @return the type
 	 */
-	public SLOrderByStatement type(String typeName);
+	public Type type(String typeName);
+	
+	/**
+	 * Order by end.
+	 * 
+	 * @return the end
+	 */
+	public End orderByEnd();
+	
+	/**
+	 * The Interface Type.
+	 * 
+	 * @author Vitor Hugo Chagas
+	 */
+	public static interface Type {
+		
+		/**
+		 * Sub types.
+		 * 
+		 * @return the type
+		 */
+		public Type subTypes();
+		
+		/**
+		 * Property.
+		 * 
+		 * @param name the name
+		 * 
+		 * @return the property
+		 */
+		public Property property(String name);
+		
+		/**
+		 * The Interface Property.
+		 * 
+		 * @author Vitor Hugo Chagas
+		 */
+		public static interface Property {
+			
+			/**
+			 * Ascending.
+			 * 
+			 * @return the sL order by statement
+			 */
+			public SLOrderByStatement ascending();
+			
+			/**
+			 * Descending.
+			 * 
+			 * @return the sL order by statement
+			 */
+			public SLOrderByStatement descending();
+			
+			/**
+			 * Order by end.
+			 * 
+			 * @return the end
+			 */
+			public End orderByEnd();
+			
+		}
+	}
+	
+	/**
+	 * The Interface End.
+	 * 
+	 * @author Vitor Hugo Chagas
+	 */
+	public static interface End extends SLSelectFacade {
+		
+		/**
+		 * Keep result.
+		 * 
+		 * @return the end
+		 */
+		public End keepResult();
+		
+		/**
+		 * Execute x times.
+		 * 
+		 * @return the end
+		 */
+		public End executeXTimes();
+		
+		/**
+		 * Execute x times.
+		 * 
+		 * @param x the x
+		 * 
+		 * @return the end
+		 */
+		public End executeXTimes(int x);
+		
+		/**
+		 * Collator.
+		 * 
+		 * @param strength the strength
+		 * 
+		 * @return the end
+		 */
+		public End collator(int strength);
+	}
 
 }

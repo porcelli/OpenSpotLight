@@ -50,6 +50,7 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 
+import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 
 /**
@@ -62,11 +63,23 @@ public class SLNodePropertyEvent extends SLGraphSessionEvent {
 	/** The Constant TYPE_NODE_PROPERTY_SET. */
 	public static final int TYPE_NODE_PROPERTY_SET = 1;
 	
+	/** The Constant TYPE_NODE_PROPERTY_REMOVED. */
+	public static final int TYPE_NODE_PROPERTY_REMOVED = 2;
+	
 	/** The property. */
 	private SLNodeProperty<? extends Serializable> property;
 	
 	/** The p property. */
 	private SLPersistentProperty<? extends Serializable> pProperty;
+	
+	/** The p node. */
+	private SLPersistentNode pNode;
+	
+	/** The property name. */
+	private String propertyName;
+	
+	/** The string. */
+	private boolean string;
 
 	/**
 	 * Instantiates a new sL node property event.
@@ -97,5 +110,29 @@ public class SLNodePropertyEvent extends SLGraphSessionEvent {
 	 */
 	public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
 		return pProperty;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
+	public SLPersistentNode getPNode() {
+		return pNode;
+	}
+
+	public void setPNode(SLPersistentNode node) {
+		pNode = node;
+	}
+
+	public boolean isString() {
+		return string;
+	}
+
+	public void setString(boolean string) {
+		this.string = string;
 	}
 }

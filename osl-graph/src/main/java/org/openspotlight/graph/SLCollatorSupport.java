@@ -63,6 +63,47 @@ import org.openspotlight.graph.annotation.SLCollator;
 public class SLCollatorSupport {
 	
 	/**
+	 * Gets the collator prop name.
+	 * 
+	 * @param name the name
+	 * @param collatorStrength the collator strength
+	 * 
+	 * @return the collator prop name
+	 */
+	public static String getCollatorPropName(String name, int collatorStrength) {
+		String propName = null;
+		switch (collatorStrength) {
+		case Collator.PRIMARY:
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_PRIMARY);
+			break;
+		case Collator.SECONDARY:
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_SECONDARY);			
+			break;
+		case Collator.TERTIARY:
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_TERTIARY);			
+			break;
+		default:
+			propName = SLCommonSupport.toUserPropertyName(name);
+			break;
+		}
+		return propName;
+	}
+
+	/**
+	 * Gets the collator key.
+	 * 
+	 * @param strength the strength
+	 * @param value the value
+	 * 
+	 * @return the collator key
+	 */
+	public static String getCollatorKey(int strength, String value) {
+		Collator collator = Collator.getInstance(Locale.US);
+		collator.setStrength(strength);
+		return new String(collator.getCollationKey(value).toByteArray());
+	}
+	
+	/**
 	 * Gets the property collator.
 	 * 
 	 * @param nodeType the node type

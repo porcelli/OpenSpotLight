@@ -255,7 +255,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 		EndImpl(SLSelectFacade selectFacade, SLSelectByNodeTypeInfo selectInfo) {
 			this.selectFacade = selectFacade;
 			this.selectInfo = selectInfo;
-			this.orderBy = new SLOrderByStatementImpl();
+			//this.orderBy = new SLOrderByStatementImpl();
 		}
 
 		/* (non-Javadoc)
@@ -320,6 +320,13 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
 		 */
 		public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
 			return selectFacade.selectByLinkCount();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.openspotlight.graph.query.SLSelectFacade#select()
+		 */
+		public SLSelectStatement select() throws SLGraphSessionException {
+			return selectFacade.select();
 		}
 	}
 

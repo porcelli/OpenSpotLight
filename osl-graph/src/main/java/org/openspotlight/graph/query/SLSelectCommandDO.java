@@ -72,6 +72,9 @@ public class SLSelectCommandDO {
 	/** The tree session. */
 	private SLPersistentTreeSession treeSession;
 	
+	/** The collator strength. */
+	private int collatorStrength;
+	
 	/**
 	 * Gets the metadata.
 	 * 
@@ -142,5 +145,23 @@ public class SLSelectCommandDO {
 	 */
 	public void setPreviousNodeWrappers(Collection<PNodeWrapper> previousNodeWrappers) {
 		this.previousNodeWrappers = previousNodeWrappers;
+	}
+
+	/**
+	 * Gets the collator strength.
+	 * 
+	 * @return the collator strength
+	 */
+	public int getCollatorStrength() {
+		return collatorStrength;
+	}
+
+	/**
+	 * Sets the collator strength.
+	 * 
+	 * @param collatorStrength the new collator strength
+	 */
+	public void setCollatorStrength(int collatorStrength) {
+		this.collatorStrength = collatorStrength;
 	}
 }

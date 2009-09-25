@@ -72,6 +72,11 @@ public abstract class SLAbstractGraphSessionEventListener implements SLGraphSess
 	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {}
 	
 	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSessionEventListener#linkRemoved(org.openspotlight.graph.SLLinkEvent)
+	 */
+	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException {}
+	
+	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLGraphSessionEventListener#nodeAdded(org.openspotlight.graph.SLNodeEvent)
 	 */
 	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException {}
@@ -82,6 +87,11 @@ public abstract class SLAbstractGraphSessionEventListener implements SLGraphSess
 	public void nodePropertySet(SLNodePropertyEvent event) throws SLGraphSessionException {}
 	
 	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLGraphSessionEventListener#nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
+	 */
+	public void nodePropertyRemoved(SLNodePropertyEvent event) throws SLGraphSessionException {}
+	
+	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLGraphSessionEventListener#linkPropertySet(org.openspotlight.graph.SLLinkPropertyEvent)
 	 */
 	public void linkPropertySet(SLLinkPropertyEvent event) throws SLGraphSessionException {}
@@ -90,5 +100,4 @@ public abstract class SLAbstractGraphSessionEventListener implements SLGraphSess
 	 * @see org.openspotlight.graph.SLGraphSessionEventListener#sessionCleaned()
 	 */
 	public void sessionCleaned() {}
-
 }

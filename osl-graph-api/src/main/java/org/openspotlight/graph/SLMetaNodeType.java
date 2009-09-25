@@ -51,7 +51,7 @@ package org.openspotlight.graph;
 import java.util.Collection;
 
 /**
- * The Interface SLMetaNode.
+ * The Interface SLMetaNodeType.
  * 
  * @author Vitor Hugo Chagas
  */
@@ -97,20 +97,31 @@ public interface SLMetaNodeType extends SLMetaElement {
 	public SLMetaNodeProperty getMetaProperty(String name) throws SLGraphSessionException;
 	
 	/**
-	 * Gets the meta node.
+	 * Gets the sub meta node type.
 	 * 
 	 * @param nodeClass the node class
 	 * 
-	 * @return the meta node
+	 * @return the sub meta node type
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public SLMetaNodeType getSubMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
 	
 	/**
-	 * Gets the meta nodes.
+	 * Gets the sub meta node type.
 	 * 
-	 * @return the meta nodes
+	 * @param name the name
+	 * 
+	 * @return the sub meta node type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLMetaNodeType getSubMetaNodeType(String name) throws SLGraphSessionException;
+	
+	/**
+	 * Gets the sub meta node types.
+	 * 
+	 * @return the sub meta node types
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */

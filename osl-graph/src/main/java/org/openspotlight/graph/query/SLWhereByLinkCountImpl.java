@@ -198,6 +198,10 @@ public class SLWhereByLinkCountImpl implements SLWhereByLinkCount {
 		public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
 			return selectFacade.selectByLinkCount();
 		}
+
+		public SLSelectStatement select() throws SLGraphSessionException {
+			return selectFacade.select();
+		}
 	}
 
 	/**

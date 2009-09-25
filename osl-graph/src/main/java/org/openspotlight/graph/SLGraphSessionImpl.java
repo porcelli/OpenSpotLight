@@ -57,6 +57,11 @@ import java.util.TreeSet;
 
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.annotation.SLLinkAttribute;
+import org.openspotlight.graph.listeners.SLCollatorListener;
+import org.openspotlight.graph.listeners.SLLinkCountListener;
+import org.openspotlight.graph.listeners.SLMetadataListener;
+import org.openspotlight.graph.listeners.SLObjectMarkListener;
+import org.openspotlight.graph.listeners.SLTransientObjectListener;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -98,6 +103,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		listeners.add(new SLObjectMarkListener());
 		listeners.add(new SLTransientObjectListener());
 		listeners.add(new SLLinkCountListener());
+		listeners.add(new SLCollatorListener());
 		listeners.add(new SLMetadataListener());
 		this.eventPoster = new SLGraphSessionEventPosterImpl(listeners);
 		this.encoderFactory = new SLEncoderFactoryImpl();
@@ -124,6 +130,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
 			SLPersistentNode linkNode = null;
 
+			boolean changedToBidirectional = false;
 			final boolean allowsMultiple = this.allowsMultiple(linkClass);
 			final boolean allowsChangeToBidirecional = this.allowsChangeToBidirecional(linkClass);
 
@@ -134,10 +141,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final SLPersistentNode pairKeyNode = this.getPairKeyNode(linkClass, source, target);
 			final int direction = this.getDirection(source, target, bidirecional);
 
-			boolean status = false;
+			boolean newLink = false;
 
 			if (allowsMultiple) {
-				status = true;
+				newLink = true;
 			}
 			else {
 
@@ -147,28 +154,34 @@ public class SLGraphSessionImpl implements SLGraphSession {
 					if (allowsChangeToBidirecional) {
 						linkNode = this.findUniqueLinkNode(pairKeyNode);
 						if (linkNode == null) {
-							status = true;
+							newLink = true;
 						}
 						else {
 							final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION);
 							if (directionProp.getValue() != SLConsts.DIRECTION_BOTH) {
 								directionProp.setValue(SLConsts.DIRECTION_BOTH);
+								changedToBidirectional = true;
 							}
 						}
 					}
 					else {
-						status = true;
+						newLink = true;
 					}
 				}
 			}
 
-			if (status) {
+			if (newLink) {
 				linkNode = this.addLinkNode(pairKeyNode, linkClass, source, target, direction);
 			}
 
 			final SLLink link = new SLLinkImpl(this, linkNode, this.eventPoster);
 			final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
-			this.eventPoster.post(new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode, persistenceMode));
+			SLLinkEvent event = new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode, persistenceMode);
+			event.setSource(source);
+			event.setTarget(target);
+			event.setNewLink(newLink);
+			event.setChangedToBidirectional(changedToBidirectional);
+			this.eventPoster.post(event);
 			return linkProxy;
 		}
 		catch (final SLException e) {

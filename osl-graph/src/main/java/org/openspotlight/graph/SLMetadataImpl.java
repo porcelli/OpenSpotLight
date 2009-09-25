@@ -109,6 +109,27 @@ public class SLMetadataImpl implements SLMetadata {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetadata#findMetaNodeTypeByDescription(java.lang.String)
+	 */
+	public SLMetaNodeType findMetaNodeTypeByDescription(String description) throws SLGraphSessionException {
+		try {
+			StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
+			StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description, "']");
+			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
+			SLPersistentQueryResult result = query.execute();
+			SLMetaNodeType metaNode = null;
+			if (result.getRowCount() == 1) {
+				SLPersistentNode pMetaNode = result.getNodes().iterator().next();
+				metaNode = new SLMetaNodeTypeImpl(this, pMetaNode);
+			}
+			return metaNode;
+		}
+		catch (SLException e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve meta node.", e);
+		}
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLMetadata#getMetaNodesTypes()
 	 */
 	public Collection<SLMetaNodeType> getMetaNodesTypes() throws SLGraphSessionException {
@@ -144,9 +165,37 @@ public class SLMetadataImpl implements SLMetadata {
 	 * @see org.openspotlight.graph.SLMetadata#getMetaLinkType(java.lang.Class)
 	 */
 	public SLMetaLinkType getMetaLinkType(Class<? extends SLLink> linkType) throws SLGraphSessionException {
+		return getMetaLinkType(linkType.getName());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetadata#getMetaLinkType(java.lang.String)
+	 */
+	public SLMetaLinkType getMetaLinkType(String name) throws SLGraphSessionException {
 		try {
 			StringBuilder statement = new StringBuilder();
-			statement.append("//osl/metadata/links/").append(linkType.getName());
+			statement.append("//osl/metadata/links/").append(name);
+			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
+			SLPersistentQueryResult result = query.execute();
+			SLMetaLinkType metaLinkType = null;
+			if (result.getRowCount() == 1) {
+				metaLinkType = new SLMetaLinkTypeImpl(this, result.getNodes().iterator().next());
+			}
+			return metaLinkType;
+		}
+		catch (SLException e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve meta link type.", e);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetadata#getMetaLinkTypeByDescription(java.lang.String)
+	 */
+	public SLMetaLinkType getMetaLinkTypeByDescription(String description) throws SLGraphSessionException {
+		try {
+			StringBuilder statement = new StringBuilder();
+			statement.append("//osl/metadata/links/*");
+			StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description, "']");
 			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
 			SLPersistentQueryResult result = query.execute();
 			SLMetaLinkType metaLinkType = null;

@@ -61,7 +61,6 @@ import org.openspotlight.graph.query.SLConditionalOperatorType;
 import org.openspotlight.graph.query.SLRelationalOperatorType;
 import org.openspotlight.graph.query.SLSideType;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLWhereByLinkTypeInfo.
  * 

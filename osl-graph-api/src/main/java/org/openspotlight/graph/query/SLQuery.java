@@ -151,5 +151,19 @@ public interface SLQuery extends SLSelectFacade {
 	 * @throws SLQueryException the SL query exception
 	 */
 	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+	
+	/**
+	 * Gets the collator strength.
+	 * 
+	 * @return the collator strength
+	 */
+	public int getCollatorStrength();
+	
+	/**
+	 * Sets the collator strength.
+	 * 
+	 * @param collatorStrength the new collator strength
+	 */
+	public void setCollatorStrength(int collatorStrength);
 }
 

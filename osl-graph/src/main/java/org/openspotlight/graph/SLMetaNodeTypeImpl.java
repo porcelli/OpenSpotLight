@@ -134,9 +134,16 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
 	 * @see org.openspotlight.graph.SLMetaNode#getMetaNode(java.lang.Class)
 	 */
 	public SLMetaNodeType getSubMetaNodeType(final Class<? extends SLNode> nodeClass) throws SLGraphSessionException {
+		return  getSubMetaNodeType(nodeClass.getName());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLMetaNodeType#getSubMetaNodeType(java.lang.String)
+	 */
+	public SLMetaNodeType getSubMetaNodeType(String name) throws SLGraphSessionException {
 		try {
 			SLMetaNodeType metaNode = null;
-			final SLPersistentNode pChildMetaNode = this.pMetaNode.getNode(nodeClass.getName());
+			final SLPersistentNode pChildMetaNode = this.pMetaNode.getNode(name);
 			if (pChildMetaNode != null) {
 				metaNode = new SLMetaNodeTypeImpl(this.metadata, pChildMetaNode);
 			}

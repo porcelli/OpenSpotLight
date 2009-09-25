@@ -143,6 +143,6 @@ public abstract class SLGraphFactory extends AbstractFactory {
 	 * 
 	 * @throws SLGraphFactoryException the SL graph factory exception
 	 */
-	abstract <V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty) throws SLGraphFactoryException;
+	abstract <V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty, SLGraphSessionEventPoster eventPoster) throws SLGraphFactoryException;
 	
 }
