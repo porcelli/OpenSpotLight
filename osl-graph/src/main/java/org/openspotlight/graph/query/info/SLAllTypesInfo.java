@@ -49,14 +49,40 @@
 package org.openspotlight.graph.query.info;
 
 /**
- * The Class AllTypesInfo.
+ * The Class SLAllTypesInfo.
  * 
  * @author Vitor Hugo Chagas
  */
 public class SLAllTypesInfo {
+
+	/** The select info. */
+	private SLSelectStatementInfo selectInfo;
 	
 	/** The on where. */
 	private boolean onWhere;
+	
+	/**
+	 * Instantiates a new sL all types info.
+	 */
+	public SLAllTypesInfo() {}
+	
+	/**
+	 * Instantiates a new sL all types info.
+	 * 
+	 * @param selectInfo the select info
+	 */
+	public SLAllTypesInfo(SLSelectStatementInfo selectInfo) {
+		this.selectInfo = selectInfo;
+	}
+	
+	/**
+	 * Gets the select statement info.
+	 * 
+	 * @return the select statement info
+	 */
+	public SLSelectStatementInfo getSelectStatementInfo() {
+		return selectInfo;
+	}
 
 	/**
 	 * Checks if is on where.

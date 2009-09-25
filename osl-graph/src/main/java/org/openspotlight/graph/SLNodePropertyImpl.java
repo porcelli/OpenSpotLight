@@ -52,6 +52,7 @@ import java.io.Serializable;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
@@ -69,7 +70,10 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	private SLNode node;
 	
 	/** The persistent property. */
-	private SLPersistentProperty<V> persistentProperty;
+	private SLPersistentProperty<V> pProperty;
+	
+	/** The event poster. */
+	private SLGraphSessionEventPoster eventPoster;
 	
 	/**
 	 * Instantiates a new sL node property impl.
@@ -77,9 +81,10 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	 * @param node the node
 	 * @param persistentProperty the persistent property
 	 */
-	public SLNodePropertyImpl(SLNode node, SLPersistentProperty<V> persistentProperty) {
+	public SLNodePropertyImpl(SLNode node, SLPersistentProperty<V> persistentProperty, SLGraphSessionEventPoster eventPoster) {
 		this.node = node;
-		this.persistentProperty = persistentProperty;
+		this.pProperty = persistentProperty;
+		this.eventPoster = eventPoster;
 	}
 
 	//@Override
@@ -96,7 +101,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	 */
 	public String getName() throws SLGraphSessionException {
 		try {
-			return SLCommonSupport.toSimplePropertyName(persistentProperty.getName());
+			return SLCommonSupport.toSimplePropertyName(pProperty.getName());
 		}
 		catch (SLPersistentTreeSessionException e) {
 			throw new SLGraphSessionException("Error on attempt to retrieve the property name.", e);
@@ -109,7 +114,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	 */
 	public V getValue() throws SLInvalidNodePropertyTypeException, SLGraphSessionException {
 		try {
-			return persistentProperty.getValue();
+			return pProperty.getValue();
 		}
 		catch (SLInvalidPersistentPropertyTypeException e) {
 			throw new SLInvalidNodePropertyTypeException(e);
@@ -133,7 +138,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	 */
 	public void setValue(V value) throws SLGraphSessionException {
 		try {
-			persistentProperty.setValue(value);
+			pProperty.setValue(value);
 		}
 		catch (SLPersistentTreeSessionException e) {
 			throw new SLGraphSessionException("Error on attempt to set the property value.", e);
@@ -146,7 +151,15 @@ public class SLNodePropertyImpl<V extends Serializable> implements SLNodePropert
 	 */
 	public void remove() throws SLGraphSessionException {
 		try {
-			persistentProperty.remove();
+			SLPersistentNode pNode = pProperty.getNode();
+			String name = SLCommonSupport.toSimplePropertyName(getName());
+			boolean string = pProperty.getValue() instanceof String;
+			pProperty.remove();
+			SLNodePropertyEvent event = new SLNodePropertyEvent(SLNodePropertyEvent.TYPE_NODE_PROPERTY_REMOVED, this, pProperty);
+			event.setPropertyName(name);
+			event.setString(string);
+			event.setPNode(pNode);
+			eventPoster.post(event);
 		}
 		catch (SLPersistentTreeSessionException e) {
 			throw new SLGraphSessionException("Error on attempt to remove property.", e);

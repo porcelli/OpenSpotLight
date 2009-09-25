@@ -65,9 +65,10 @@ import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.info.SLSelectInfo;
+import org.openspotlight.graph.query.info.SLSelectStatementInfo;
 
 /**
- * The Class SLSelectCommandSupport.
+ * The Class SLQuerySupport.
  * 
  * @author Vitor Hugo Chagas
  */
@@ -130,6 +131,18 @@ public class SLQuerySupport {
 	static SLSelectInfo getSelectInfo(SLSelect select) {
 		SLSelectInfoGetter getter = (SLSelectInfoGetter) select;
 		return getter.getSelectInfo();
+	}
+	
+	/**
+	 * Gets the select statement info.
+	 * 
+	 * @param select the select
+	 * 
+	 * @return the select statement info
+	 */
+	static SLSelectStatementInfo getSelectStatementInfo(SLSelect select) {
+		SLSelectStatementInfoGetter getter = (SLSelectStatementInfoGetter) select;
+		return getter.getSelectStatementInfo();
 	}
 	
 	/**

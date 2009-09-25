@@ -53,6 +53,7 @@ import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
+import org.openspotlight.graph.query.info.SLSelectStatementInfo;
 
 /**
  * The Class SLSelectAbstractCommand.
@@ -77,7 +78,7 @@ public abstract class SLSelectAbstractCommand {
 	 * 
 	 * @return the execute command
 	 */
-	public static SLSelectAbstractCommand getExecuteCommand(SLSelect select, SLSelectInfo selectInfo, SLSelectCommandDO commandDO) {
+	public static SLSelectAbstractCommand getCommand(SLSelect select, SLSelectInfo selectInfo, SLSelectCommandDO commandDO) {
 		SLSelectAbstractCommand command = null;
 		if (select instanceof SLSelectByNodeType) {
 			SLSelectByNodeTypeInfo selectByNodeTypeInfo = SLSelectByNodeTypeInfo.class.cast(selectInfo);
@@ -90,6 +91,15 @@ public abstract class SLSelectAbstractCommand {
 		else if (select instanceof SLSelectByLinkCount) {
 			SLSelectByLinkCountInfo selectByLinkCountInfo = SLSelectByLinkCountInfo.class.cast(selectInfo);
 			command = new SLSelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
+		}
+		else if (select instanceof SLSelectStatement) {
+			SLSelectStatementInfo selectStatementInfo = SLSelectStatementInfo.class.cast(selectInfo);
+			if (selectStatementInfo.getByLinkInfoList().isEmpty()) {
+				command = new SLSelectByNodeTypeCommand(selectStatementInfo, commandDO);
+			}
+			else {
+				command = new SLSelectByLinkTypeCommand(selectStatementInfo, commandDO);
+			}
 		}
 		return command;
 	}

@@ -48,30 +48,46 @@
  */
 package org.openspotlight.graph.query;
 
+import java.io.Serializable;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLRecursiveMode;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
+import org.openspotlight.graph.query.info.SLOrderByTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectByLinkInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
+import org.openspotlight.graph.query.info.SLSelectStatementInfo;
+import org.openspotlight.graph.query.info.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
+import org.openspotlight.graph.query.info.SLWhereStatementInfo;
+import org.openspotlight.graph.query.info.SLWhereTypeInfo;
+import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
+import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
+import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
+import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
 import org.openspotlight.graph.util.ProxyUtil;
 
 /**
@@ -95,6 +111,9 @@ public class SLQueryImpl implements SLQuery {
 	
 	/** The selects. */
 	private List<SLSelect> selects = new ArrayList<SLSelect>();
+	
+	/** The collator strength. */
+	private int collatorStrength = Collator.IDENTICAL;
 	
 	/**
 	 * Instantiates a new sL query impl.
@@ -131,6 +150,15 @@ public class SLQueryImpl implements SLQuery {
 	 */
 	public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
 		SLSelectByLinkCount select = new SLSelectByLinkCountImpl(this);
+		selects.add(select);
+		return select;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLSelectFacade#select()
+	 */
+	public SLSelectStatement select() throws SLGraphSessionException {
+		SLSelectStatement select = new SLSelectStatementImpl(this);
 		selects.add(select);
 		return select;
 	}
@@ -175,6 +203,8 @@ public class SLQueryImpl implements SLQuery {
 	 */
 	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
 		
+		validateSelects();
+		
 		try {
 			
 			Collection<PNodeWrapper> selectNodeWrappers = null;
@@ -187,26 +217,34 @@ public class SLQueryImpl implements SLQuery {
 			Set<PNodeWrapper> wrappers = SLQuerySupport.getNodeWrappers(treeSession, inputNodesIDs);
 			commandDO.setPreviousNodeWrappers(wrappers);
 			
-			if (sortMode.equals(SortMode.SORTED)) {
-				Comparator<PNodeWrapper> comparator = getPNodeWrapperComparator();
-				resultNodeWrappers = new TreeSet<PNodeWrapper>(comparator);
+			SLOrderByStatementInfo orderByStatementInfo = getLastSelectOrderByStatementInfo();
+			if (orderByStatementInfo == null) {
+				if (sortMode.equals(SortMode.SORTED)) {
+					Comparator<PNodeWrapper> comparator = getPNodeWrapperComparator();
+					resultNodeWrappers = new TreeSet<PNodeWrapper>(comparator);
+				}
+				else {
+					resultNodeWrappers = new HashSet<PNodeWrapper>();	
+				}
 			}
 			else {
-				resultNodeWrappers = new HashSet<PNodeWrapper>();
+				Comparator<PNodeWrapper> comparator = getOrderByPNodeWrapperComparator(orderByStatementInfo);
+				resultNodeWrappers = new TreeSet<PNodeWrapper>(comparator);
 			}
 			
 			for (SLSelect select : selects) {
 				
-				SLSelectInfo selectInfo = SLQuerySupport.getSelectInfo(select);
-				Integer xTimes = selectInfo.getXTimes() == null ? 1 : selectInfo.getXTimes();
-				SLSelectAbstractCommand command = SLSelectAbstractCommand.getExecuteCommand(select, selectInfo, commandDO);
+				SLSelectStatementInfo selectStatementInfo = SLQuerySupport.getSelectStatementInfo(select);
+				Integer xTimes = selectStatementInfo.getXTimes() == null ? 1 : selectStatementInfo.getXTimes();
+				SLSelectAbstractCommand command = SLSelectAbstractCommand.getCommand(select, selectStatementInfo, commandDO);
+				commandDO.setCollatorStrength(getCollatorStrength(selectStatementInfo));
 				
 				if (xTimes == SLSelectInfo.INDIFINITE) {
-					print(showSLQL, selectInfo);
+					print(showSLQL, selectStatementInfo);
 					do {
 						command.execute();
 						selectNodeWrappers = commandDO.getNodeWrappers();
-						if (selectInfo.isKeepResult()) {
+						if (selectStatementInfo.isKeepResult()) {
 							resultNodeWrappers.addAll(selectNodeWrappers);
 						}
 						commandDO.setPreviousNodeWrappers(selectNodeWrappers);
@@ -214,7 +252,7 @@ public class SLQueryImpl implements SLQuery {
 					while (!selectNodeWrappers.isEmpty());
 				}
 				else {
-					print(showSLQL, selectInfo);
+					print(showSLQL, selectStatementInfo);
 					for (int i = 0; i < xTimes; i++) {
 						command.execute();
 						selectNodeWrappers = commandDO.getNodeWrappers();
@@ -224,7 +262,7 @@ public class SLQueryImpl implements SLQuery {
 							}
 							break;
 						}
-						if (selectInfo.isKeepResult()) {
+						if (selectStatementInfo.isKeepResult()) {
 							resultNodeWrappers.addAll(selectNodeWrappers);
 						}
 						commandDO.setPreviousNodeWrappers(selectNodeWrappers);
@@ -249,6 +287,45 @@ public class SLQueryImpl implements SLQuery {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#getCollatorStrength()
+	 */
+	public int getCollatorStrength() {
+		return collatorStrength;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.query.SLQuery#setCollatorStrength(int)
+	 */
+	public void setCollatorStrength(int collatorStrength) {
+		this.collatorStrength = collatorStrength;
+	}
+	
+	/**
+	 * Gets the last select order by statement info.
+	 * 
+	 * @return the last select order by statement info
+	 */
+	private SLOrderByStatementInfo getLastSelectOrderByStatementInfo() {
+		SLOrderByStatementInfo orderByStatementInfo = null;
+		if (!selects.isEmpty()) {
+			SLSelectStatementInfo selectStatementInfo = SLQuerySupport.getSelectStatementInfo(selects.get(selects.size() - 1));
+			orderByStatementInfo = selectStatementInfo.getOrderByStatementInfo(); 
+		}
+		return orderByStatementInfo;
+	}
+	
+	/**
+	 * Gets the collator strength.
+	 * 
+	 * @param selectStatementInfo the select statement info
+	 * 
+	 * @return the collator strength
+	 */
+	private int getCollatorStrength(SLSelectStatementInfo selectStatementInfo) {
+		return selectStatementInfo.getCollatorStrength() == null ? getCollatorStrength() : selectStatementInfo.getCollatorStrength();  
+	}
+
 	/**
 	 * Prints the.
 	 * 
@@ -262,47 +339,344 @@ public class SLQueryImpl implements SLQuery {
 	}
 	
 	/**
-	 * Validate.
+	 * Validate selects.
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 * @throws SLQueryException the SL query exception
+	 */
+	private void validateSelects() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+		try {
+			for (SLSelect select : selects) {
+				SLSelectStatementInfo selectStatementInfo = SLQuerySupport.getSelectStatementInfo(select);
+				validateSelectStatementInfoBeforeNormalization(selectStatementInfo);
+				normalizeSelectStatementInfo(selectStatementInfo);
+				validateSelectStatementInfoAfterNormalization(selectStatementInfo);
+			}
+		}
+		catch (SLInvalidQuerySyntaxException e) {
+			throw e;
+		}
+		catch (SLInvalidQueryElementException e) {
+			throw e;
+		}
+		catch (SLGraphSessionException e) {
+			throw new SLQueryException("Error on attempt to validate select information.", e);
+		}
+	}
+	
+	/**
+	 * Validate select statement info before normalization.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private void validateSelectStatementInfoBeforeNormalization(SLSelectStatementInfo selectInfo) throws SLGraphSessionException {
+		validateSelectType(selectInfo);
+		validateAllTypes(selectInfo);
+		validateTypesExsistence(selectInfo);
+		validateWhereStatements(selectInfo);
+	}
+	
+	/**
+	 * Validate select statement info after normalization.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 */
+	private void validateSelectStatementInfoAfterNormalization(SLSelectStatementInfo selectInfo) throws SLInvalidQueryElementException {
+		validateNodeTypesOnWhere(selectInfo);
+		validateLinkTypesOnWhere(selectInfo);
+	}
+
+	/**
+	 * Validate link types on where.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 */
+	private void validateLinkTypesOnWhere(SLSelectStatementInfo selectInfo) throws SLInvalidQueryElementException {
+		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+		if (whereInfo != null) {
+			Set<SLSelectByLinkInfo> byLinkInfoSet = new HashSet<SLSelectByLinkInfo>(selectInfo.getByLinkInfoList());
+			for (SLWhereLinkTypeInfo whereLinkTypeInfo : whereInfo.getWhereLinkTypeInfoList()) {
+				if (!byLinkInfoSet.contains(new SLSelectByLinkInfo(whereLinkTypeInfo.getName()))) {
+					throw new SLInvalidQueryElementException("Link type not present in select by link clause: " + whereLinkTypeInfo.getName());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Validate node types on where.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 */
+	private void validateNodeTypesOnWhere(SLSelectStatementInfo selectInfo) throws SLInvalidQueryElementException {
+		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+		if (whereInfo != null) {
+			Set<SLSelectTypeInfo> selectTypeInfoSet = new HashSet<SLSelectTypeInfo>(selectInfo.getTypeInfoList());
+			for (SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
+				if (!selectTypeInfoSet.contains(new SLSelectTypeInfo(whereTypeInfo.getName()))) {
+					throw new SLInvalidQueryElementException("Node type not present in select clause: " + whereTypeInfo.getName());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Validate types exsistence.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private void validateTypesExsistence(SLSelectStatementInfo selectInfo) throws SLInvalidQueryElementException, SLGraphSessionException {
+		for (SLSelectTypeInfo selectTypeInfo : selectInfo.getTypeInfoList()) {
+			if (!nodeTypeExists(selectTypeInfo.getName())) {
+				throw new SLInvalidQueryElementException("Node type on select clause not found: " + selectTypeInfo.getName());
+			}
+		}
+		for (SLSelectByLinkInfo byLinkInfo : selectInfo.getByLinkInfoList()) {
+			if (!linkTypeExists(byLinkInfo.getName())) {
+				throw new SLInvalidQueryElementException("Link type on select by link clause not found: " + byLinkInfo.getName());
+			}
+		}
+		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+		if (whereInfo != null) {
+			for (SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
+				if (!nodeTypeExists(whereTypeInfo.getName())) {
+					throw new SLInvalidQueryElementException("Node type on where clause not found: " + whereTypeInfo.getName());	
+				}
+			}
+			for (SLWhereLinkTypeInfo linkTypeInfo : whereInfo.getWhereLinkTypeInfoList()) {
+				if (!linkTypeExists(linkTypeInfo.getName())) {
+					throw new SLInvalidQueryElementException("Link type on where clause not found: " + linkTypeInfo.getName());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Link type exists.
+	 * 
+	 * @param name the name
+	 * 
+	 * @return true, if successful
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private boolean linkTypeExists(String name) throws SLGraphSessionException {
+		return metadata.getMetaLinkType(name) != null || metadata.getMetaLinkTypeByDescription(name) != null;
+	}
+	
+	/**
+	 * Node type exists.
+	 * 
+	 * @param name the name
+	 * 
+	 * @return true, if successful
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private boolean nodeTypeExists(String name) throws SLGraphSessionException {
+		return metadata.findMetaNodeType(name) != null || metadata.findMetaNodeTypeByDescription(name) != null;
+	}
+
+	/**
+	 * Validate all types.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 */
+	private void validateAllTypes(SLSelectStatementInfo selectInfo) throws SLInvalidQueryElementException {
+		if (selectInfo.getAllTypes() != null) {
+			if (!selectInfo.getTypeInfoList().isEmpty()) {
+				throw new SLInvalidQueryElementException("When all types (*) or all types on where (**) are used, no type can be specifically used on select clause.");
+			}
+			SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+			if (whereInfo != null) {
+				if (selectInfo.getAllTypes().isOnWhere() && whereInfo.getWhereTypeInfoList().isEmpty()) {
+					throw new SLInvalidQueryElementException("When all types on where (**)  is used, at least on type filter on where clause must be used.");
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Validate select type.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLInvalidQueryElementException the SL invalid query element exception
+	 */
+	private void validateSelectType(SLSelectStatementInfo selectInfo) throws SLInvalidQueryElementException {
+		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+		if (whereInfo != null) {
+			if (selectInfo.getByLinkInfoList().isEmpty()) {
+				if (!whereInfo.getWhereLinkTypeInfoList().isEmpty()) {
+					throw new SLInvalidQueryElementException("Link types on where clause can only be used if 'by link' is used on select clause.");
+				}
+			}
+			else {
+				if (!whereInfo.getWhereTypeInfoList().isEmpty()) {
+					throw new SLInvalidQueryElementException("Node types cannot be used on where clause if 'by link' is used on select, however, link type filters are allowed instead.");	
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Validate where statements.
 	 * 
 	 * @param selectInfo the select info
 	 * 
 	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException the SL invalid query element exception
-	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	private void validate(SLSelectByNodeTypeInfo selectInfo) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLGraphSessionException {
-
-		/**
-		List<SLWhereTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
-		for (SLWhereTypeInfo typeInfo : typeInfoList) {
-			if (metadata.findMetaNodeType(typeInfo.getName()) == null) {
-				throw new SLInvalidQueryElementException("Invalid select type: " + typeInfo.getName());
+	private void validateWhereStatements(SLSelectStatementInfo selectInfo) throws SLInvalidQuerySyntaxException {
+		SLWhereStatementInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
+		if (whereStatementInfo != null) {
+			for (SLWhereTypeInfo whereTypeInfo : whereStatementInfo.getWhereTypeInfoList()) {
+				validateTypeStatementInfo(whereTypeInfo.getTypeStatementInfo());
+			}
+			for (SLWhereLinkTypeInfo whereTypeInfo : whereStatementInfo.getWhereLinkTypeInfoList()) {
+				validateLinkTypeStatementInfo(whereTypeInfo.getLinkTypeStatementInfo());
 			}
 		}
-		//validateWhereStatement(selectInfo.getWhereStatementInfo());
-		**/
 	}
 	
 	/**
-	 * Validate where statement.
+	 * Validate type statement info.
 	 * 
-	 * @param whereStatementInfo the where statement info
+	 * @param typeStatementInfo the type statement info
 	 * 
 	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
 	 */
-	private void validateWhereStatement(SLTypeStatementInfo whereStatementInfo) throws SLInvalidQuerySyntaxException {
-		if (whereStatementInfo == null) return;
-		if (!whereStatementInfo.isClosed()) {
+	private void validateTypeStatementInfo(SLTypeStatementInfo typeStatementInfo) throws SLInvalidQuerySyntaxException {
+		if (typeStatementInfo == null) return;
+		if (!typeStatementInfo.isClosed()) {
 			SLInvalidQuerySyntaxException e = new SLInvalidQuerySyntaxException("bracket must be closed.");
-			e.setStackTrace(whereStatementInfo.getOpenBraceStackTrace());
+			e.setStackTrace(typeStatementInfo.getOpenBraceStackTrace());
 			throw e;
 		}
-		List<SLConditionInfo> conditionInfoList = whereStatementInfo.getConditionInfoList();
-		for (SLConditionInfo conditionInfo : conditionInfoList) {
+		List<SLTypeConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
+		for (SLTypeConditionInfo conditionInfo : conditionInfoList) {
 			if (conditionInfo.getInnerStatementInfo() != null) {
-				validateWhereStatement(conditionInfo.getInnerStatementInfo());
+				validateTypeStatementInfo(conditionInfo.getInnerStatementInfo());
 			}
 		}
+	}
+
+	/**
+	 * Validate link type statement info.
+	 * 
+	 * @param linkTypeStatementInfo the link type statement info
+	 * 
+	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+	 */
+	private void validateLinkTypeStatementInfo(SLLinkTypeStatementInfo linkTypeStatementInfo) throws SLInvalidQuerySyntaxException {
+		if (linkTypeStatementInfo == null) return;
+		if (!linkTypeStatementInfo.isClosed()) {
+			SLInvalidQuerySyntaxException e = new SLInvalidQuerySyntaxException("bracket must be closed.");
+			e.setStackTrace(linkTypeStatementInfo.getOpenBraceStackTrace());
+			throw e;
+		}
+		List<SLLinkTypeConditionInfo> conditionInfoList = linkTypeStatementInfo.getConditionInfoList();
+		for (SLLinkTypeConditionInfo conditionInfo : conditionInfoList) {
+			if (conditionInfo.getInnerStatementInfo() != null) {
+				validateLinkTypeStatementInfo(conditionInfo.getInnerStatementInfo());
+			}
+		}
+	}
+	
+	/**
+	 * Normalize select statement info.
+	 * 
+	 * @param selectInfo the select info
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private void normalizeSelectStatementInfo(SLSelectStatementInfo selectInfo) throws SLGraphSessionException {
+		
+		Set<SLSelectTypeInfo> selectTypeInfoSet = new HashSet<SLSelectTypeInfo>();
+		if (selectInfo.getAllTypes() != null) {
+			if (selectInfo.getAllTypes().isOnWhere()) {
+				List<SLWhereTypeInfo> whereTypeInfoList = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
+				for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoList) {
+					Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+					for (SLMetaNodeType metaNodeType : metaNodeTypes) {
+						SLSelectTypeInfo selectTypeInfo = new SLSelectTypeInfo(selectInfo, metaNodeType.getTypeName());
+						selectTypeInfoSet.add(selectTypeInfo);
+					}
+				}
+			}
+			else {
+				Collection<SLMetaNodeType> metaNodeTypes = metadata.getMetaNodesTypes(SLRecursiveMode.RECURSIVE);
+				for (SLMetaNodeType metaNodeType : metaNodeTypes) {
+					SLSelectTypeInfo selectTypeInfo = new SLSelectTypeInfo(selectInfo, metaNodeType.getTypeName());
+					selectTypeInfoSet.add(selectTypeInfo);
+				}
+			}
+		}
+		else {
+			for (SLSelectTypeInfo selectTypeInfo : selectInfo.getTypeInfoList()) {
+				Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(selectTypeInfo.getName(), selectTypeInfo.isSubTypes());
+				for (SLMetaNodeType metaNodeType : metaNodeTypes) {
+					SLSelectTypeInfo current = new SLSelectTypeInfo(selectInfo, metaNodeType.getTypeName());
+					selectTypeInfoSet.add(current);
+				}
+			}
+		}
+		selectInfo.getTypeInfoList().clear();
+		selectInfo.getTypeInfoList().addAll(selectTypeInfoSet);
+		
+		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
+		
+		if (whereInfo != null) {
+			Set<SLWhereTypeInfo> whereTypeInfoSet = new HashSet<SLWhereTypeInfo>();
+			for (SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
+				Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+				for (SLMetaNodeType metaNodeType : metaNodeTypes) {
+					SLWhereTypeInfo current = SerializationUtil.clone(whereTypeInfo);
+					current.setName(metaNodeType.getTypeName());
+					current.setSubTypes(false);
+					whereTypeInfoSet.add(current);
+				}
+			}
+			whereInfo.getWhereTypeInfoList().clear();
+			whereInfo.getWhereTypeInfoList().addAll(whereTypeInfoSet);
+		}
+	}
+	
+	/**
+	 * Gets the meta node types.
+	 * 
+	 * @param name the name
+	 * @param subTypes the sub types
+	 * 
+	 * @return the meta node types
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	private Collection<SLMetaNodeType> getMetaNodeTypes(String name, boolean subTypes) throws SLGraphSessionException {
+		Collection<SLMetaNodeType> metaNodeTypes = new ArrayList<SLMetaNodeType>();
+		SLMetaNodeType metaNodeType = metadata.findMetaNodeTypeByDescription(name);
+		if (metaNodeType == null) metaNodeType = metadata.findMetaNodeType(name);
+		metaNodeTypes.add(metaNodeType);
+		if (subTypes) {
+			Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType.getSubMetaNodeTypes();
+			for (SLMetaNodeType subMetaNodeType : subMetaNodeTypes) {
+				metaNodeTypes.add(subMetaNodeType);
+			}
+		}
+		return metaNodeTypes;
 	}
 	
 	/**
@@ -332,7 +706,90 @@ public class SLQueryImpl implements SLQuery {
 			}
 		};
 	}
+	
+	/**
+	 * Gets the order by p node wrapper comparator.
+	 * 
+	 * @param orderByStatementInfo the order by statement info
+	 * 
+	 * @return the order by p node wrapper comparator
+	 */
+	private Comparator<PNodeWrapper> getOrderByPNodeWrapperComparator(final SLOrderByStatementInfo orderByStatementInfo) {
+		return new Comparator<PNodeWrapper>() {
+			public int compare(PNodeWrapper nodeWrapper1, PNodeWrapper nodeWrapper2) {
+				try {
+					Integer index1 = getTypeIndex(nodeWrapper1.getTypeName());
+					Integer index2 = getTypeIndex(nodeWrapper2.getTypeName());
+					if (index1 == index2) {
+						if (nodeWrapper1.getID().equals(nodeWrapper2.getID())) {
+							return 0;
+						}
+						else {
+							
+							List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo.getOrderByTypeInfoList();
+							String propertyName = typeInfoList.get(index1).getPropertyName();
+							
+							Comparable<Serializable> value1 = nodeWrapper1.getPropertyValue(propertyName);
+							Comparable<Serializable> value2 = nodeWrapper2.getPropertyValue(propertyName);
+							
+							if (value1 == null && value2 == null) {
+								return nodeWrapper1.getParentName().compareTo(nodeWrapper2.getParentName());
+							}
+							else if (value1 == null && value2 != null) {
+								return 1;
+							}
+							else if (value1 != null && value2 == null) {
+								return -1;
+							}
+							else {
+								return value1.compareTo(propertyName);
+							}
+						}
+					}
+					else {
+						return index1.compareTo(index2);
+					}
+				}
+				catch (SLException e) {
+					throw new SLRuntimeException("Error on attempt on order by comparator.", e);
+				}
+			}
+			
+			private int getTypeIndex(String typeName) throws SLGraphSessionException {
+				List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo.getOrderByTypeInfoList();
+				for (int i = 0; i < typeInfoList.size(); i++) {
+					SLOrderByTypeInfo typeInfo = typeInfoList.get(i);
+					if (isInstanceOf(typeName, typeInfo.getTypeName())) {
+						return i;
+					}
+				}
+				return typeInfoList.size();
+			}
+			
+			private boolean isInstanceOf(String subTypeName, String typeName) throws SLGraphSessionException {
+				SLMetaNodeType metaNodeType = metadata.findMetaNodeType(typeName);
+				return isInstanceOf(subTypeName, metaNodeType);
+			}
+			
+			private boolean isInstanceOf(String subTypeName, SLMetaNodeType metaNodeType) throws SLGraphSessionException {
+				boolean status = false;
+				SLMetaNodeType subMetaNodeType = metaNodeType.getSubMetaNodeType(subTypeName);
+				if (subMetaNodeType == null) {
+					Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType.getSubMetaNodeTypes();
+					for (SLMetaNodeType current : subMetaNodeTypes) {
+						status = isInstanceOf(subTypeName, current);
+						if (status) break;
+					}
+				}
+				else {
+					status = true;
+				}
+				return status;
+			}
+		};
+	}
 }
+
 
 class PNodeWrapper {
 	
@@ -342,6 +799,7 @@ class PNodeWrapper {
 	private String name;
 	private String path;
 	private String parentName;
+	private Map<String, Comparable<Serializable>> propertyValueMap = new HashMap<String, Comparable<Serializable>>();
 	
 	PNodeWrapper(SLPersistentNode pNode) {
 		this.pNode = pNode;
@@ -350,6 +808,17 @@ class PNodeWrapper {
 	PNodeWrapper(SLPersistentNode pNode, String typeName) {
 		this.pNode = pNode;
 		this.typeName = typeName;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Comparable<Serializable> getPropertyValue(String name) throws SLPersistentTreeSessionException {
+		Comparable<Serializable> comparableValue = propertyValueMap.get(name);
+		if (comparableValue == null) {
+			Serializable value = SLCommonSupport.getUserPropertyAsSerializable(pNode, name);
+			if (value instanceof Comparable) comparableValue = (Comparable<Serializable>) value;
+			if (comparableValue != null) propertyValueMap.put(name, comparableValue);
+		}
+		return comparableValue;
 	}
 	
 	public SLPersistentNode getPNode() {

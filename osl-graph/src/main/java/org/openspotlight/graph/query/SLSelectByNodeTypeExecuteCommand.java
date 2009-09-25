@@ -265,7 +265,16 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 				else {
 					condition = conditionStatement.operator(AND).condition();
 				}
-				String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
+				
+				String propertyName;
+				if (conditionInfo.getPropertyName() != null) {
+					propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
+				}
+				else {
+					propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT)	+ "." + conditionInfo.getLinkTypeName().hashCode();
+					propertyName = SLCommonSupport.toInternalPropertyName(propertyName);
+				}
+				
 				condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
 			}
 			else {

@@ -90,6 +90,19 @@ public class SLLinkImpl implements SLLink {
 		this.eventPoster = eventPoster;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openspotlight.graph.SLLink#getLinkType()
+	 */
+	@SuppressWarnings("unchecked")
+	public Class<? extends SLLink> getLinkType() throws SLGraphSessionException {
+		try {
+			return (Class<? extends SLLink>) Class.forName(getLinkClassNode().getName());	
+		}
+		catch (Exception e) {
+			throw new SLGraphSessionException("Error on attempt to retrieve link type.", e);
+		}
+	}
+	
 	//@Override
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLLink#getSession()
@@ -378,9 +391,19 @@ public class SLLinkImpl implements SLLink {
 	 */
 	public void remove() throws SLGraphSessionException {
 		try {
+			SLLinkEvent event = new SLLinkEvent(SLLinkEvent.TYPE_LINK_REMOVED, this);
+			event.setBidirectional(isBidirectional());
+			if (event.isBidirectional()) {
+				event.setSides(getSides());
+			}
+			else {
+				event.setSource(getSource());
+				event.setTarget(getTarget());
+			}
 			linkNode.remove();
+			this.eventPoster.post(event);
 		}
-		catch (SLPersistentTreeSessionException e) {
+		catch (SLException e) {
 			throw new SLGraphSessionException("Error on attempt to remove link.", e);
 		}
 	}
@@ -445,19 +468,5 @@ public class SLLinkImpl implements SLLink {
 		return getPairKeyNode().getParent();
 	}
 	
-	/**
-	 * Gets the link type.
-	 * 
-	 * @return the link type
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 * @throws ClassNotFoundException the class not found exception
-	 */
-	@SuppressWarnings("unchecked")
-	private Class<? extends SLLink> getLinkType() throws SLPersistentTreeSessionException, ClassNotFoundException {
-		return (Class<? extends SLLink>) Class.forName(getLinkClassNode().getName());
-		
-	}
-
 }
 

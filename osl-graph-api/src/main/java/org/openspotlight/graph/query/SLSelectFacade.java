@@ -56,6 +56,15 @@ import org.openspotlight.graph.SLGraphSessionException;
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectFacade {
+	
+	/**
+	 * Select.
+	 * 
+	 * @return the sL select statement
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLSelectStatement select() throws SLGraphSessionException;
 
 	/**
 	 * Select by node type.

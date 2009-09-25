@@ -48,9 +48,6 @@
  */
 package org.openspotlight.graph.query;
 
-
-
-// TODO: Auto-generated Javadoc
 /**
  * The Interface SLWhereByLinkType.
  * 

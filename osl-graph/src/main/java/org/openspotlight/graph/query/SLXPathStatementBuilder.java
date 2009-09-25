@@ -167,10 +167,15 @@ public class SLXPathStatementBuilder {
 						append(statementBuffer, "not(\n", tabs1);
 					}
 				}
-				String expression = condition.relationalOperator.xPathExpression(condition.leftOperandValue, condition.rightOperandValue, condition.relationalOperatorApplyNot);
-				append(statementBuffer, expression, '\n');
-				if (condition.conditionalOperator != null && condition.conditionalOperatorApplyNot) {
-					append(statementBuffer, tabs0, ")\n");
+				if (condition.inexistent) {
+					append(statementBuffer, "not(@", condition.leftOperandValue, ")\n");
+				}
+				else {
+					String expression = condition.relationalOperator.xPathExpression(condition.leftOperandValue, condition.rightOperandValue, condition.relationalOperatorApplyNot);
+					append(statementBuffer, expression, '\n');
+					if (condition.conditionalOperator != null && condition.conditionalOperatorApplyNot) {
+						append(statementBuffer, tabs0, ")\n");
+					}
 				}
 			}
 			else {
@@ -365,6 +370,9 @@ public class SLXPathStatementBuilder {
 			/** The closed. */
 			private boolean closed = false;
 			
+			/** The inexistent. */
+			private boolean inexistent = false;
+			
 			/** The outer statement. */
 			private Statement outerStatement;
 			
@@ -431,6 +439,17 @@ public class SLXPathStatementBuilder {
 				 */
 				private LeftOperand(Condition condition) {
 					this.condition = condition;
+				}
+				
+				/**
+				 * Inexistent.
+				 * 
+				 * @return the statement
+				 */
+				public Statement inexistent() {
+					condition.closed = true;
+					condition.inexistent = true;
+					return condition.outerStatement;
 				}
 				
 				/**

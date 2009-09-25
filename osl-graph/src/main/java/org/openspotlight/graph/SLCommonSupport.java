@@ -57,6 +57,7 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.util.ProxyUtil;
 
 /**
  * The Class SLCommonSupport.
@@ -64,6 +65,18 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * @author Vitor Hugo Chagas
  */
 public class SLCommonSupport {
+	
+	/**
+	 * Gets the p node.
+	 * 
+	 * @param node the node
+	 * 
+	 * @return the p node
+	 */
+	public static SLPersistentNode getPNode(SLNode node) {
+		SLPNodeGetter getter = (SLPNodeGetter) ((node instanceof SLPNodeGetter) ? node : ProxyUtil.getNodeFromProxy(node));
+		return getter.getPNode();
+	}
 	
 	/**
 	 * Gets the link type.
@@ -75,6 +88,18 @@ public class SLCommonSupport {
 	@SuppressWarnings("unchecked")
 	public static Class<? extends SLLink> getLinkType(SLLink link) {
 		return (Class<? extends SLLink>) link.getClass().getInterfaces()[0];
+	}
+	
+	/**
+	 * Gets the node type.
+	 * 
+	 * @param node the node
+	 * 
+	 * @return the node type
+	 */
+	@SuppressWarnings("unchecked")
+	public static Class<? extends SLNode> getNodeType(SLNode node) {
+		return (Class<? extends SLNode>) node.getClass().getInterfaces()[0];
 	}
 	
 	/**
@@ -92,7 +117,7 @@ public class SLCommonSupport {
 	}
 	
 	/**
-	 * Sets the internal property.
+	 * Sets the internal string property.
 	 * 
 	 * @param pNode the node
 	 * @param propName the prop name
@@ -117,6 +142,23 @@ public class SLCommonSupport {
 	public static void setInternalIntegerProperty(SLPersistentNode pNode, String propName, Integer value) throws SLPersistentTreeSessionException {
 		String internalPropName = toInternalPropertyName(propName);
 		pNode.setProperty(Integer.class, internalPropName, value);
+	}
+	
+	/**
+	 * Gets the user property.
+	 * 
+	 * @param pNode the node
+	 * @param name the name
+	 * 
+	 * @return the user property
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	public static Serializable getUserPropertyAsSerializable(SLPersistentNode pNode, String name) throws SLPersistentTreeSessionException {
+		Serializable value = null;
+		SLPersistentProperty<Serializable> prop = getProperty(pNode, Serializable.class, toUserPropertyName(name));
+		if (prop != null) value = prop.getValue();
+		return value;
 	}
 
 	/**
@@ -212,6 +254,18 @@ public class SLCommonSupport {
 	 */
 	public static String toUserPropertyName(String name) {
 		return new StringBuilder().append(SLConsts.PROPERTY_PREFIX_USER).append('.').append(name).toString();
+	}
+
+	/**
+	 * To user property name.
+	 * 
+	 * @param name the name
+	 * @param attributeName the attribute name
+	 * 
+	 * @return the string
+	 */
+	public static String toUserPropertyName(String name, String attributeName) {
+		return new StringBuilder().append(SLConsts.PROPERTY_PREFIX_USER).append('.').append(name).append('.').append(attributeName).toString();
 	}
 	
 	/**

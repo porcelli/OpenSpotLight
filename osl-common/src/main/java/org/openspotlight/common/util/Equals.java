@@ -81,7 +81,14 @@ public class Equals {
 		if (thatObject != null && thisObjectType.isInstance(thatObject)) {
 			Field field = null;
 			try {
-				field = thisObjectType.getField(fieldName);
+				try {
+					field = thisObjectType.getDeclaredField(fieldName);
+				}
+				catch (NoSuchFieldException e) {
+				}
+				if (field == null) {
+					field = thisObjectType.getDeclaredField(fieldName);	
+				}
 				field.setAccessible(true);
 				Object value1 = field.get(thisObject);
 				Object value2 = field.get(thatObject);

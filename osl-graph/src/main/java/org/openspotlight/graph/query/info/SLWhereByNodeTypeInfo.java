@@ -668,7 +668,9 @@ public class SLWhereByNodeTypeInfo {
 					appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
 					appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
 					appendIfNotNull(buffer, propertyName,  "property \"", propertyName, "\" ");
-					appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");
+					if (linkTypeName != null) {
+						append(buffer, "link \"", linkTypeName, "\" (", side.symbol(), ") ");	
+					}
 					appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
 					if (value != null) {
 						if (value instanceof Number) {

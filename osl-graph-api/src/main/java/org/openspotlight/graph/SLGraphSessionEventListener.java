@@ -78,6 +78,15 @@ public interface SLGraphSessionEventListener {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException;
+	
+	/**
+	 * Link removed.
+	 * 
+	 * @param event the event
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException;
 
 	/**
 	 * Link property set.
@@ -105,7 +114,16 @@ public interface SLGraphSessionEventListener {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public void nodePropertySet(SLNodePropertyEvent event) throws SLGraphSessionException;
-
+	
+	/**
+	 * Node property removed.
+	 * 
+	 * @param event the event
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public void nodePropertyRemoved(SLNodePropertyEvent event) throws SLGraphSessionException;
+	
 	/**
 	 * Session cleaned.
 	 */

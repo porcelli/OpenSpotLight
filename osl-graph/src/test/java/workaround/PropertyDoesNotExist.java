@@ -1,5 +1,8 @@
 package workaround;
 
+import java.text.Collator;
+import java.util.Locale;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -10,6 +13,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
 import org.apache.jackrabbit.core.TransientRepository;
+import org.openspotlight.common.util.StringBuilderUtil;
 
 public class PropertyDoesNotExist {
 	
@@ -28,13 +32,29 @@ public class PropertyDoesNotExist {
 			catch (PathNotFoundException e) {
 			}
 			
+			Collator collator = Collator.getInstance(Locale.US);
+			collator.setStrength(Collator.PRIMARY);
+			
+			byte[] arr = collator.getCollationKey("java.util.Set").toByteArray();
+			String s = new String(arr);
+			
+			System.out.println(arr);
+			
+
+			
 			hello = root.addNode("hello");
+			hello.setProperty("caption", s);
 			//hello.setProperty("prop1", "test");
-			hello.setProperty("prop2", "test");
+			//hello.setProperty("prop2", "test");
 			
 			session.save();
 			
-			Query query = session.getWorkspace().getQueryManager().createQuery("//hello[not(@prop1) and @prop2 = 'test']", Query.XPATH);
+			StringBuilder buffer = new StringBuilder();
+			StringBuilderUtil.append(buffer, "jcr:like(@", "caption", ", '%", new String(collator.getCollationKey("SET").toByteArray()), "%')");
+			
+			String xpath = "//hello[" + buffer.toString() + "]";
+			System.out.println(xpath);
+			Query query = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
 			QueryResult result = query.execute();
 			NodeIterator iter = result.getNodes();
 			while(iter.hasNext()) {

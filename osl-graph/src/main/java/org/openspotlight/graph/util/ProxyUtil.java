@@ -51,6 +51,7 @@ package org.openspotlight.graph.util;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
+import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLLinkInvocationHandler;
 import org.openspotlight.graph.SLNode;
@@ -111,6 +112,19 @@ public class ProxyUtil {
 	 */
 	public static <T extends SLNode> T createNodeProxy(Class<T> nodeType, SLNode node) {
 		InvocationHandler handler = new SLNodeInvocationHandler(node);
+		return nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
+	}
+	
+	/**
+	 * Creates the node proxy.
+	 * 
+	 * @param node the node
+	 * 
+	 * @return the sL node
+	 */
+	public static SLNode createNodeProxy(SLNode node) {
+		InvocationHandler handler = new SLNodeInvocationHandler(node);
+		Class<? extends SLNode> nodeType = SLCommonSupport.getNodeType(node);
 		return nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
 	}
 

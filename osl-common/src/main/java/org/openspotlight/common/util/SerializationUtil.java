@@ -48,13 +48,19 @@
  */
 package org.openspotlight.common.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.openspotlight.common.exception.SerializationUtilException;
 
@@ -64,6 +70,7 @@ import org.openspotlight.common.exception.SerializationUtilException;
  * @author Vitor Hugo Chagas
  */
 public class SerializationUtil {
+
 	
 	/**
 	 * Serialize.
@@ -114,6 +121,93 @@ public class SerializationUtil {
 		}
 		finally {
 			close(ois);
+		}
+	}
+	
+	/**
+	 * Clone.
+	 * 
+	 * @param x the x
+	 * 
+	 * @return the t
+	 */
+	public static <T> T clone(T x) {
+		try {
+			return cloneX(x);
+		}
+		catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+		catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	/**
+	 * Clone x.
+	 * 
+	 * @param x the x
+	 * 
+	 * @return the t
+	 * 
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws ClassNotFoundException the class not found exception
+	 */
+	private static <T> T cloneX(T x) throws IOException, ClassNotFoundException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		CloneOutput cout = new CloneOutput(bout);
+		cout.writeObject(x);
+		byte[] bytes = bout.toByteArray();
+
+		ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
+		CloneInput cin = new CloneInput(bin, cout);
+
+		@SuppressWarnings("unchecked")
+		// thanks to Bas de Bakker for the tip!
+		T clone = (T) cin.readObject();
+		return clone;
+	}
+
+	private static class CloneOutput extends ObjectOutputStream {
+		Queue<Class<?>> classQueue = new LinkedList<Class<?>>();
+
+		CloneOutput(OutputStream out) throws IOException {
+			super(out);
+		}
+
+		@Override
+		protected void annotateClass(Class<?> c) {
+			classQueue.add(c);
+		}
+
+		@Override
+		protected void annotateProxyClass(Class<?> c) {
+			classQueue.add(c);
+		}
+	}
+
+	private static class CloneInput extends ObjectInputStream {
+		private final CloneOutput output;
+
+		CloneInput(InputStream in, CloneOutput output) throws IOException {
+			super(in);
+			this.output = output;
+		}
+
+		@Override
+		protected Class<?> resolveClass(ObjectStreamClass osc) throws IOException, ClassNotFoundException {
+			Class<?> c = output.classQueue.poll();
+			String expected = osc.getName();
+			String found = (c == null) ? null : c.getName();
+			if (!expected.equals(found)) {
+				throw new InvalidClassException("Classes desynchronized: " + "found " + found + " when expecting " + expected);
+			}
+			return c;
+		}
+
+		@Override
+		protected Class<?> resolveProxyClass(String[] interfaceNames) throws IOException, ClassNotFoundException {
+			return output.classQueue.poll();
 		}
 	}
 	

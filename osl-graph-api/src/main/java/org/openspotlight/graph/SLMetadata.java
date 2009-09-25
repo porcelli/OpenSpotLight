@@ -79,11 +79,11 @@ public interface SLMetadata {
 	public Collection<SLMetaNodeType> getMetaNodesTypes(SLRecursiveMode recursiveMode) throws SLGraphSessionException;
 	
 	/**
-	 * Gets the meta node.
+	 * Find meta node type.
 	 * 
 	 * @param nodeClass the node class
 	 * 
-	 * @return the meta node
+	 * @return the sL meta node type
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
@@ -100,6 +100,17 @@ public interface SLMetadata {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public SLMetaNodeType findMetaNodeType(String typeName) throws SLGraphSessionException;
+
+	/**
+	 * Find meta node type by description.
+	 * 
+	 * @param description the description
+	 * 
+	 * @return the sL meta node type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLMetaNodeType findMetaNodeTypeByDescription(String description) throws SLGraphSessionException;
 	
 	/**
 	 * Gets the meta link type.
@@ -111,6 +122,28 @@ public interface SLMetadata {
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	public SLMetaLinkType getMetaLinkType(Class<? extends SLLink> linkType) throws SLGraphSessionException;
+	
+	/**
+	 * Gets the meta link type.
+	 * 
+	 * @param name the name
+	 * 
+	 * @return the meta link type
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLMetaLinkType getMetaLinkType(String name) throws SLGraphSessionException;
+	
+	/**
+	 * Gets the meta link type by description.
+	 * 
+	 * @param description the description
+	 * 
+	 * @return the meta link type by description
+	 * 
+	 * @throws SLGraphSessionException the SL graph session exception
+	 */
+	public SLMetaLinkType getMetaLinkTypeByDescription(String description) throws SLGraphSessionException;
 	
 	/**
 	 * Gets the meta link types.

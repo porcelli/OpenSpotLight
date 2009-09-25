@@ -56,46 +56,55 @@ package org.openspotlight.graph;
 public class SLConsts {
 	
 	/** The Constant NODE_NAME_LINK. */
-	static final String NODE_NAME_LINK = "link";
+	public static final String NODE_NAME_LINK = "link";
 	
 	/** The Constant DIRECTION_AB. */
-	static final int DIRECTION_AB = 1;
+	public static final int DIRECTION_AB = 1;
 	
 	/** The Constant DIRECTION_BA. */
-	static final int DIRECTION_BA = 2;
+	public static final int DIRECTION_BA = 2;
 	
 	/** The Constant DIRECTION_BOTH. */
-	static final int DIRECTION_BOTH = 3;
+	public static final int DIRECTION_BOTH = 3;
 	
 	/** The Constant NODE_NAME_CONTEXTS. */
-	static final String NODE_NAME_CONTEXTS = "contexts";
+	public static final String NODE_NAME_CONTEXTS = "contexts";
 	
 	/** The Constant NODE_NAME_LINKS. */
-	static final String NODE_NAME_LINKS = "links";
+	public static final String NODE_NAME_LINKS = "links";
 	
 	/** The Constant NODE_NAME_METADATA. */
-	static final String NODE_NAME_METADATA = "metadata";
+	public static final String NODE_NAME_METADATA = "metadata";
 	
 	/** The Constant NODE_NAME_TYPES. */
-	static final String NODE_NAME_TYPES = "types";
+	public static final String NODE_NAME_TYPES = "types";
+	
+	/** The Constant PROPERTY_NAME_PRIMARY. */
+	public static final String PROPERTY_NAME_PRIMARY = "primary";
+	
+	/** The Constant PROPERTY_NAME_SECONDARY. */
+	public static final String PROPERTY_NAME_SECONDARY = "secondary";
+	
+	/** The Constant PROPERTY_NAME_TERTIARY. */
+	public static final String PROPERTY_NAME_TERTIARY = "tertiary";
 	
 	/** The Constant PROPERTY_NAME_RENDER_HINT. */
-	static final String PROPERTY_NAME_RENDER_HINT = "renderHint";
+	public static final String PROPERTY_NAME_RENDER_HINT = "renderHint";
 	
 	/** The Constant PROPERTY_NAME_DESCRIPTION. */
-	static final String PROPERTY_NAME_DESCRIPTION = "description";
+	public static final String PROPERTY_NAME_DESCRIPTION = "description";
 	
 	/** The Constant PROPERTY_NAME_META_NODE_ID. */
-	static final String PROPERTY_NAME_META_NODE_ID = "metaNodeID";
+	public static final String PROPERTY_NAME_META_NODE_ID = "metaNodeID";
 	
 	/** The Constant PROPERTY_NAME_UNIDIRECTIONAL. */
-	static final String PROPERTY_NAME_UNIDIRECTIONAL = "unidirectional";
+	public static final String PROPERTY_NAME_UNIDIRECTIONAL = "unidirectional";
 	
 	/** The Constant PROPERTY_NAME_BIDIRECTIONAL. */
-	static final String PROPERTY_NAME_BIDIRECTIONAL = "bidirectional";
+	public static final String PROPERTY_NAME_BIDIRECTIONAL = "bidirectional";
 	
 	/** The Constant PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL. */
-	static final String PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL = "allowsChangeToBidirecional";
+	public static final String PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL = "allowsChangeToBidirecional";
 	
 	/** The Constant PROPERTY_NAME_TYPE. */
 	public static final String PROPERTY_NAME_TYPE = "node.type";
