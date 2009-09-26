@@ -514,7 +514,23 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return pNode.toString();
+	    try {
+	        StringBuilder sb = new StringBuilder();
+	        sb.append(this.getName());
+	        sb.append("\n\t");
+	        sb.append("ID:");
+	        sb.append(this.getID());
+            sb.append("\n\t");
+            for (SLNodeProperty<Serializable> activeProperty : this.getProperties()) {
+                sb.append(activeProperty.getName());
+                sb.append(":");
+                sb.append(activeProperty.getValueAsString());
+                sb.append("\n\t");
+            }
+            return sb.toString();
+        } catch (SLGraphSessionException e) {
+        }
+        return pNode.toString();
 	}
 
 	/**
@@ -771,4 +787,3 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	}
 
 }
-
