@@ -5,10 +5,12 @@ import org.openspotlight.bundle.dap.language.java.Constants;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.ImplicitExtends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeParameterized;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
 import org.openspotlight.common.Pair;
@@ -88,7 +90,7 @@ public abstract class AbstractMethodResolutionTest {
     }
 
     protected void setupMethodResolver( TypeResolver<JavaType> typeResolver ) throws SLGraphFactoryException, SLGraphException {
-        this.methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, graphSession);
+        this.methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, graphSession, JavaMethod.class, TypeDeclares.class, MethodParameterDefinition.class);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( String packageName,
@@ -177,11 +179,11 @@ public abstract class AbstractMethodResolutionTest {
 
     protected JavaType createTypeParameterized( String packageName,
                                                 String className,
-                                                JavaType parentType,
+                                                SLNode parent,
                                                 JavaType extendedType,
                                                 boolean isImplicit ) throws Exception {
 
-        JavaType newType = helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, className, Opcodes.ACC_PUBLIC);
+        JavaType newType = helper.addTypeOnCurrentContext(JavaTypeParameterized.class, packageName, className, Opcodes.ACC_PUBLIC, parent);
 
         if (extendedType != null) {
             if (isImplicit) {
