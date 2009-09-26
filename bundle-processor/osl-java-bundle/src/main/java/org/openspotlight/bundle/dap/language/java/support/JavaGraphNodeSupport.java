@@ -229,11 +229,30 @@ public class JavaGraphNodeSupport {
      * @return the t
      * @throws Exception the exception
      */
-    @SuppressWarnings( "unchecked" )
     public <T extends JavaType> T addTypeOnCurrentContext( final Class<T> nodeType,
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access ) throws Exception {
+        return addTypeOnCurrentContext(nodeType, packageName, nodeName, access, null);
+    }
+
+    /**
+     * Adds the type on current context. This method should be used on current classpath elements only. The types declared outside
+     * this classpath should be added with method {@link #addTypeOnAbstractContext(Class, String, String)}.
+     * 
+     * @param nodeType the node type
+     * @param packageName the package name
+     * @param nodeName the node name
+     * @param access the access
+     * @param parentType the parent type, if null will use package as parent
+     * @return the t
+     * @throws Exception the exception
+     */
+    public <T extends JavaType> T addTypeOnCurrentContext( final Class<T> nodeType,
+                                                           final String packageName,
+                                                           final String nodeName,
+                                                           final int access,
+                                                           final SLNode parentType ) throws Exception {
         if (this.usingCache && this.nodesFromThisContext.containsKey(packageName + nodeName)) {
             return (T)this.nodesFromThisContext.get(packageName + nodeName);
         }
@@ -244,7 +263,14 @@ public class JavaGraphNodeSupport {
             return newType;
         }
         final JavaPackage newPackage = this.currentContextRootNode.addNode(JavaPackage.class, packageName);
-        final T newType = newPackage.addNode(nodeType, nodeName);
+        T newType = null;
+
+        if (parentType != null) {
+            newType = parentType.addNode(nodeType, nodeName);
+        } else {
+            newType = newPackage.addNode(nodeType, nodeName);
+        }
+
         newType.setSimpleName(nodeName);
         newType.setCompleteName(packageName + "." + nodeName);
         this.session.addLink(PackageType.class, newPackage, newType, false);
