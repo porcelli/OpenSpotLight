@@ -193,6 +193,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * Adds the link node.
 	 * 
 	 * @param pairKeyNode the pair key node
+	 * @param linkType the link type
 	 * @param source the source
 	 * @param target the target
 	 * @param direction the direction
@@ -200,7 +201,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * @return the sL persistent node
 	 * 
 	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 * @throws SLGraphSessionException 
+	 * @throws SLGraphSessionException the SL graph session exception
 	 */
 	@SuppressWarnings("unchecked")
 	private SLPersistentNode addLinkNode(final SLPersistentNode pairKeyNode, Class<? extends SLLink> linkType, SLNode source, SLNode target, final int direction) throws SLPersistentTreeSessionException, SLGraphSessionException {
@@ -335,8 +336,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * 
 	 * @return the sL persistent node
 	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 * exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
 	 */
 	private SLPersistentNode findUniqueLinkNode(final SLPersistentNode pairKeyNode) throws SLPersistentTreeSessionException {
 		return pairKeyNode.getNodes().isEmpty() ? null : pairKeyNode.getNodes().iterator().next();
@@ -507,8 +507,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * 
 	 * @return the link node by direction
 	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 * exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
 	 */
 	private SLPersistentNode getLinkNodeByDirection(final SLPersistentNode pairKeyNode, final int direction) throws SLPersistentTreeSessionException {
 		SLPersistentNode linkNode = null;
@@ -712,13 +711,16 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final SLEncoder fakeEncoder = this.getEncoderFactory().getFakeEncoder();
 			for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
 				if (node == null) {
-					node = context.getRootNode().getNode(SLNode.class, names[i], fakeEncoder);
+					SLNode rootNode = context.getRootNode();
+					Class<? extends SLNode> nodeType = getNodeType(rootNode);
+					node = context.getRootNode().getNode(nodeType, names[i], fakeEncoder);
 				}
 				else {
-					node = node.getNode(SLNode.class, names[i], fakeEncoder);
+					Class<? extends SLNode> nodeType = getNodeType(node);
+					node = node.getNode(nodeType, names[i], fakeEncoder);
 				}
 			}
-			return node;
+			return ProxyUtil.createNodeProxy(node);
 		}
 		catch (final SLPersistentNodeNotFoundException e) {
 			throw new SLNodeNotFoundException(id, e);
@@ -983,8 +985,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * 
 	 * @return the long
 	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session
-	 * exception
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
 	 */
 	private long incLinkCount(final SLPersistentNode linkKeyPairNode) throws SLPersistentTreeSessionException {
 		final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
@@ -1040,4 +1041,39 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public SLQuery createQuery() throws SLGraphSessionException {
 		return new SLQueryImpl(this, treeSession);
 	}
+	
+	/**
+	 * Gets the node type.
+	 * 
+	 * @param node the node
+	 * 
+	 * @return the node type
+	 * 
+	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 */
+	private Class<? extends SLNode> getNodeType(SLNode node) throws SLPersistentTreeSessionException {
+		SLPersistentNode pNode = SLCommonSupport.getPNode(node);
+		String typeName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
+		return getNodeType(typeName);
+	}
+	
+	/**
+	 * Gets the node type.
+	 * 
+	 * @param typeName the type name
+	 * 
+	 * @return the node type
+	 */
+	@SuppressWarnings("unchecked")
+	private Class<? extends SLNode> getNodeType(String typeName) {
+		Class<? extends SLNode> nodeType = null;
+		if (typeName != null) {
+			try {
+				return (Class<? extends SLNode>) Class.forName(typeName);
+			}
+			catch (ClassNotFoundException e) {}
+		}
+		return nodeType == null ? SLNode.class : nodeType;
+	}
+
 }
