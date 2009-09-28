@@ -785,5 +785,4 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 		}
 		return childNodes;
 	}
-
 }
