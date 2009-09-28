@@ -1334,6 +1334,8 @@ public class TestMethodResolution extends AbstractMethodResolutionTest {
         createMethod("java.lang", "Object", "wait", "wait()");
         Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(numberType, "wait", "wait(java.lang.Long$T, java.lang.String, java.lang.Long)", parameterizedType, stringType,
                                                                        longType);
+        createMethod(numberType, "xait", "xait(java.lang.Long$T, java.lang.String, java.lang.Long)", parameterizedType, stringType,
+                     longType);
         createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
                      stringType);
         createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
@@ -1392,7 +1394,7 @@ public class TestMethodResolution extends AbstractMethodResolutionTest {
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
         assertThat(foundMethod.getContext(), is(not(abstractContex)));
     }
-    
+
     @Test
     public void getMethodParameterizedByMethod() throws Exception {
         JavaType objectType = createType("java.lang", "Object", null, false);
@@ -1401,7 +1403,6 @@ public class TestMethodResolution extends AbstractMethodResolutionTest {
         JavaType integerType = createType("java.lang", "Integer", numberType, false);
         JavaType longType = createType("java.lang", "Long", numberType, false);
         JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
 
         List<JavaType> parameterList = new LinkedList<JavaType>();
         parameterList.add(stringType);
@@ -1414,9 +1415,9 @@ public class TestMethodResolution extends AbstractMethodResolutionTest {
         JavaMethodMethod method = numberType.addNode(JavaMethodMethod.class, "wait(java.lang.Long$this$T, java.lang.String, java.lang.Long)");
         method.setSimpleName("wait");
         graphSession.addLink(TypeDeclares.class, numberType, method, false);
-        
+
         JavaType parameterizedType = createTypeParameterized("java.lang", "Long$this$T", method, objectType, true);
-        
+
         SLLink link = graphSession.addLink(MethodParameterDefinition.class, method, parameterizedType, false);
         link.setProperty(Integer.class, "Order", 0);
         link = graphSession.addLink(MethodParameterDefinition.class, method, stringType, false);
