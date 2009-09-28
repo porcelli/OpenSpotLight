@@ -75,22 +75,28 @@ import org.openspotlight.graph.query.SLQueryResult;
 public class MethodResolver<T extends SLNode, M extends SLNode> {
 
     /** The type resolver. */
-    private TypeResolver<T>         typeResolver                  = null;
+    private TypeResolver<T>         typeResolver                      = null;
 
     /** The graph session. */
-    private SLGraphSession          graphSession                  = null;
+    private SLGraphSession          graphSession                      = null;
 
     /** Class that defines the method super type. */
-    private Class<? extends SLNode> methodSuperType               = null;
+    private Class<? extends SLNode> methodSuperType                   = null;
 
     /** Class that defines the link between type and method. */
-    private Class<? extends SLLink> typeMethodLink                = null;
+    private Class<? extends SLLink> typeMethodLink                    = null;
 
     /** Class that defines the link between method and its parameter types. */
-    private Class<? extends SLLink> methodParameterDefinitionLink = null;
+    private Class<? extends SLLink> methodParameterDefinitionLink     = null;
+
+    /** The property name that defines the method simple name. */
+    private String                  propertySimpleMethodName          = null;
+
+    /** The property name that defines the order of method parameter definition. */
+    private String                  propertyMethodDefinitionOrderName = null;
 
     /** The cache for fastest method resolution . */
-    private Map<String, String>     cache                         = null;
+    private Map<String, String>     cache                             = null;
 
     /**
      * Instantiates a new method resolver.
@@ -100,23 +106,31 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      * @param methodSuperType class that defines the method super type
      * @param typeMethodLink class that defines the link between type and method
      * @param methodParameterDefinitionLink class that defines the link between method and its parameter types
+     * @param propertySimpleMethodName property name that defines the order of method parameter definition
+     * @param propertyMethodDefinitionOrderName property name that defines the order of method parameter definition
      */
     public MethodResolver(
                            final TypeResolver<T> typeResolver, final SLGraphSession graphSession,
                            final Class<? extends SLNode> methodSuperType,
                            final Class<? extends SLLink> typeMethodLink,
-                           final Class<? extends SLLink> methodParameterDefinitionLink ) {
+                           final Class<? extends SLLink> methodParameterDefinitionLink,
+                           final String propertySimpleMethodName,
+                           final String propertyMethodDefinitionOrderName ) {
         checkNotNull("typeResolver", typeResolver);
         checkNotNull("graphSession", graphSession);
         checkNotNull("methodSuperType", methodSuperType);
         checkNotNull("typeMethodLink", typeMethodLink);
         checkNotNull("methodParameterDefinitionLink", methodParameterDefinitionLink);
+        checkNotEmpty("propertySimpleMethodName", propertySimpleMethodName);
+        checkNotEmpty("propertyMethodDefinitionOrderName", propertyMethodDefinitionOrderName);
 
         this.typeResolver = typeResolver;
         this.graphSession = graphSession;
         this.methodSuperType = methodSuperType;
         this.typeMethodLink = typeMethodLink;
         this.methodParameterDefinitionLink = methodParameterDefinitionLink;
+        this.propertySimpleMethodName = propertySimpleMethodName;
+        this.propertyMethodDefinitionOrderName = propertyMethodDefinitionOrderName;
         this.cache = new HashMap<String, String>();
     }
 
@@ -171,19 +185,19 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
 
         SLQuery query = graphSession.createQuery();
 
-        //FIXME: BUG! est‡ retornando todos os JavaMethods, n‹o apenas os selecionados no primeiro select
         query.select()
-             .type(methodSuperType.getName()).subTypes().comma()
-             .byLink(typeMethodLink.getName()).b()
+                 .type(methodSuperType.getName()).subTypes().comma()
+                 .byLink(typeMethodLink.getName()).b()
              .selectEnd()
              .select()
-             .type(methodSuperType.getName()).subTypes()
+                 .type(methodSuperType.getName()).subTypes()
              .selectEnd()
-             .where()
-             .type(methodSuperType.getName()).subTypes()
-             .each().link(methodParameterDefinitionLink.getName()).a().count().equalsTo().value(paramSize)
-             .typeEnd()
-             .whereEnd();
+                 .where()
+                     .type(methodSuperType.getName()).subTypes()
+                         .each().link(methodParameterDefinitionLink.getName()).a().count().equalsTo().value(paramSize).and()
+                         .each().property(propertySimpleMethodName).equalsTo().value(methodName)
+                     .typeEnd()
+                 .whereEnd();
 
         for (T activeType : typeHierarchy) {
             List<T> inputType = new LinkedList<T>();
@@ -191,14 +205,10 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
 
             SLQueryResult result = query.execute((Collection<SLNode>)inputType);
 
-            //FIXME: where cast bug fixed... : REMOVE THIS! & bug at query
+            //FIXME: where cast bug fixed..: REMOVE THIS!
             List<XM> validMethods = new LinkedList<XM>();
             for (SLNode activeMethod : result.getNodes()) {
-                //FIXME 
-                activeMethod = graphSession.getNodeByID(activeMethod.getID());
-                if (activeMethod.getParent().getID().equals(activeType.getID())) {
-                    validMethods.add((XM)activeMethod);
-                }
+                validMethods.add((XM)graphSession.getNodeByID(activeMethod.getID()));
             }
 
             if ((paramSize == 0) && (validMethods.size() > 0)) {
@@ -215,7 +225,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
                                                                                                  activeMethod);
 
                 for (SLLink methodParameterDefinition : links) {
-                    orderedParams[methodParameterDefinition.getProperty(Integer.class, "Order").getValue()] = (T)methodParameterDefinition.getTarget();
+                    orderedParams[methodParameterDefinition.getProperty(Integer.class, propertyMethodDefinitionOrderName).getValue()] = (T)methodParameterDefinition.getTarget();
                 }
 
                 boolean isValidMethod = true;
