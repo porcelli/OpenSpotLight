@@ -90,7 +90,7 @@ public abstract class AbstractMethodResolutionTest {
     }
 
     protected void setupMethodResolver( TypeResolver<JavaType> typeResolver ) throws SLGraphFactoryException, SLGraphException {
-        this.methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, graphSession, JavaMethod.class, TypeDeclares.class, MethodParameterDefinition.class);
+        this.methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, graphSession, JavaMethod.class, TypeDeclares.class, MethodParameterDefinition.class, "simpleName", "Order");
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( String packageName,
