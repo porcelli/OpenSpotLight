@@ -135,7 +135,7 @@ public class SLGraphQueryTest {
 	public void populateGraph() {
 		try {
 		    SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createTempGraph(false);
+            graph = factory.createTempGraph(true);
             session = graph.openSession();
             sortMode = SortMode.SORTED;
 
