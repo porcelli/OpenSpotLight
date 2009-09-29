@@ -60,6 +60,7 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.graph.query.JavaInterfaceHierarchy;
 
 /**
  * The Class SLMetadataImpl.
@@ -173,6 +174,12 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetaLinkType getMetaLinkType(String name) throws SLGraphSessionException {
 		try {
+			
+			
+			if (name.equals(JavaInterfaceHierarchy.class.getName())) {
+				System.out.println();
+			}
+			
 			StringBuilder statement = new StringBuilder();
 			statement.append("//osl/metadata/links/").append(name);
 			SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);

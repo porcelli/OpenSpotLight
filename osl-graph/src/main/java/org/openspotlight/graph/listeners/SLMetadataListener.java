@@ -287,7 +287,6 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void linkAdded(final SLLinkEvent event) throws SLGraphSessionException {
-
 		try {
 			final SLLink link = event.getLink();
 			final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link.getClass().getInterfaces()[0];

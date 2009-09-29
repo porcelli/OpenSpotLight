@@ -1,6 +1,7 @@
 package org.openspotlight.bundle.dap.language.java.resolver;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -11,16 +12,21 @@ import static org.mockito.Mockito.when;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
+import org.hamcrest.core.IsNot;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
 import org.testng.annotations.Test;
 
+@Test
 public class TestMethodResolution extends AbstractMethodResolutionTest {
 
     @Test( expectedExceptions = IllegalArgumentException.class )
@@ -1387,8 +1393,22 @@ public class TestMethodResolution extends AbstractMethodResolutionTest {
         when(mockTypeResolver.isTypeOf(stringType, parameterizedType)).thenReturn(true);
 
         setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
+        
+        
+        // Alexandre,
+        // Notice I've commented out the foundMethod assigment,
+        // because of a casting exception. The getMethod() method returns a JavaTypeClass,
+        // not a JavaMethodMethod (the type you're trying to cast to)
+        SLNode node = methodResolver.getMethod(integerType, "wait", parameterList);
+    	Class<?> nodeType = node.getClass().getInterfaces()[0];
+    	System.out.println("I am " + nodeType.getName());
+    	
+    	assertThat(node, not(instanceOf(JavaTypeClass.class)));
+    	assertThat(node, instanceOf(JavaMethodMethod.class));
+    	
+    	JavaMethodMethod foundMethod = (JavaMethodMethod) node;	
+    	
+    	//JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver.getMethod(integerType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
