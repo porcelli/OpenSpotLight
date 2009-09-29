@@ -444,9 +444,11 @@ public class SLQueryImpl implements SLQuery {
 			}
 		}
 		for (SLSelectByLinkInfo byLinkInfo : selectInfo.getByLinkInfoList()) {
+			/**
 			if (!linkTypeExists(byLinkInfo.getName())) {
 				throw new SLInvalidQueryElementException("Link type on select by link clause not found: " + byLinkInfo.getName());
 			}
+			**/
 		}
 		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
 		if (whereInfo != null) {
@@ -455,11 +457,13 @@ public class SLQueryImpl implements SLQuery {
 					throw new SLInvalidQueryElementException("Node type on where clause not found: " + whereTypeInfo.getName());	
 				}
 			}
+			/**
 			for (SLWhereLinkTypeInfo linkTypeInfo : whereInfo.getWhereLinkTypeInfoList()) {
 				if (!linkTypeExists(linkTypeInfo.getName())) {
 					throw new SLInvalidQueryElementException("Link type on where clause not found: " + linkTypeInfo.getName());
 				}
 			}
+			**/
 		}
 	}
 	
