@@ -712,15 +712,17 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
 				if (node == null) {
 					SLNode rootNode = context.getRootNode();
+					node = context.getRootNode().getNode(SLNode.class, names[i], fakeEncoder);
 					Class<? extends SLNode> nodeType = getNodeType(rootNode);
-					node = context.getRootNode().getNode(nodeType, names[i], fakeEncoder);
+					node = ProxyUtil.createNodeProxy(nodeType, node);
 				}
 				else {
+					node = node.getNode(SLNode.class, names[i], fakeEncoder);
 					Class<? extends SLNode> nodeType = getNodeType(node);
-					node = node.getNode(nodeType, names[i], fakeEncoder);
+					node = ProxyUtil.createNodeProxy(nodeType, node);
 				}
 			}
-			return ProxyUtil.createNodeProxy(node);
+			return node;
 		}
 		catch (final SLPersistentNodeNotFoundException e) {
 			throw new SLNodeNotFoundException(id, e);

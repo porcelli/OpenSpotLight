@@ -75,11 +75,6 @@ public class SLCommonSupport {
 	 * @return the p node
 	 */
 	public static SLPersistentNode getPNode(SLNode node) {
-		
-		if (ProxyUtil.getNodeFromProxy(node) instanceof Proxy) {
-			System.out.println();
-		}
-		
 		SLPNodeGetter getter = (SLPNodeGetter) ((node instanceof SLPNodeGetter) ? node : ProxyUtil.getNodeFromProxy(node));
 		return getter.getPNode();
 	}

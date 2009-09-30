@@ -111,8 +111,15 @@ public class ProxyUtil {
 	 * @return the t
 	 */
 	public static <T extends SLNode> T createNodeProxy(Class<T> nodeType, SLNode node) {
-		InvocationHandler handler = new SLNodeInvocationHandler(node);
-		return nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
+		T proxyNode = null;
+		if (node instanceof Proxy) {
+			proxyNode = nodeType.cast(node);
+		}
+		else {
+			InvocationHandler handler = new SLNodeInvocationHandler(node);
+			proxyNode = nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
+		}
+		return proxyNode;
 	}
 	
 	/**
@@ -123,16 +130,8 @@ public class ProxyUtil {
 	 * @return the sL node
 	 */
 	public static SLNode createNodeProxy(SLNode node) {
-		SLNode proxyNode = null;
-		if (node instanceof Proxy) {
-			proxyNode = node;
-		}
-		else {
-			InvocationHandler handler = new SLNodeInvocationHandler(node);
-			Class<? extends SLNode> nodeType = SLCommonSupport.getNodeType(node);
-			proxyNode = nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
-		}
-		return proxyNode;
+		Class<? extends SLNode> nodeType = SLCommonSupport.getNodeType(node);
+		return createNodeProxy(nodeType, node);
 	}
 
 	/**

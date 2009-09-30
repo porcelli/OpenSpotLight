@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 import java.util.LinkedList;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.hamcrest.core.IsNot;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
@@ -29,10 +31,9 @@ import org.testng.annotations.Test;
 @Test
 public class TestMethodResolution extends AbstractMethodResolutionTest {
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+	@Test( expectedExceptions = IllegalArgumentException.class )
     public void testInvalidParamsNullParams() throws Exception {
-
-        setupMethodResolver(null);
+       	setupMethodResolver(null);
         methodResolver.getMethod(null, null);
     }
 
@@ -1392,23 +1393,9 @@ public class TestMethodResolution extends AbstractMethodResolutionTest {
         when(mockTypeResolver.isTypeOf(objectType, parameterizedType)).thenReturn(true);
         when(mockTypeResolver.isTypeOf(stringType, parameterizedType)).thenReturn(true);
 
-        setupMethodResolver(mockTypeResolver);
+        setupMethodResolver(mockTypeResolver);	
         
-        
-        // Alexandre,
-        // Notice I've commented out the foundMethod assigment,
-        // because of a casting exception. The getMethod() method returns a JavaTypeClass,
-        // not a JavaMethodMethod (the type you're trying to cast to)
-        SLNode node = methodResolver.getMethod(integerType, "wait", parameterList);
-    	Class<?> nodeType = node.getClass().getInterfaces()[0];
-    	System.out.println("I am " + nodeType.getName());
-    	
-    	assertThat(node, not(instanceOf(JavaTypeClass.class)));
-    	assertThat(node, instanceOf(JavaMethodMethod.class));
-    	
-    	JavaMethodMethod foundMethod = (JavaMethodMethod) node;	
-    	
-    	//JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver.getMethod(integerType, "wait", parameterList);
+    	JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver.getMethod(integerType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
