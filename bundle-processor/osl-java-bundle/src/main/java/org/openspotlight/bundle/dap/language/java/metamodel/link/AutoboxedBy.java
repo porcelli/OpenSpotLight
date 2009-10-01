@@ -46,47 +46,16 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.dap.language.java.metamodel.node;
+package org.openspotlight.bundle.dap.language.java.metamodel.link;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface for node Java Context Meta Model.
+ * The Interface for a link between AutoboxedBy. Java Type Primitive A2B Java Type
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Java Context" )
-public interface JavaContext extends SLNode {
-
-    /**
-     * Gets the version.
-     * 
-     * @return the version
-     */
-    @SLProperty
-    public String getVersion();
-
-    /**
-     * Sets the version.
-     * 
-     * @param newVersion the new version
-     */
-    public void setVersion( String newVersion );
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getName()
-     */
-    @SLProperty
-    public String getName();
-
-    /**
-     * Sets the name.
-     * 
-     * @param newName the new name
-     */
-    public void setName( String newName );
-
+@SLDescription( "AutoboxedBy" )
+public interface AutoboxedBy extends SLLink {
 }

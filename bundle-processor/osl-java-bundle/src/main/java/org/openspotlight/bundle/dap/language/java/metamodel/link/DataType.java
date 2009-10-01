@@ -52,6 +52,7 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for a link between Data Type. Java Data A2B Java Type
  * 
@@ -59,14 +60,35 @@ import org.openspotlight.graph.annotation.SLProperty;
  */
 @SLDescription( "Data Type" )
 public interface DataType extends SLLink {
+
+    /**
+     * Gets the array.
+     * 
+     * @return the array
+     */
     @SLProperty
-    public boolean getArray();
+    public Boolean getArray();
 
-    public void setArray( boolean newArray );
+    /**
+     * Sets the array.
+     * 
+     * @param newArray the new array
+     */
+    public void setArray( Boolean newArray );
 
+    /**
+     * Gets the array dimension.
+     * 
+     * @return the array dimension
+     */
     @SLProperty
-    public int getArrayDimension();
+    public Integer getArrayDimension();
 
-    public void setArrayDimension( int newArrayDimension );
+    /**
+     * Sets the array dimension.
+     * 
+     * @param newArrayDimension the new array dimension
+     */
+    public void setArrayDimension( Integer newArrayDimension );
 
 }

@@ -6,6 +6,16 @@
 		<linkData linkName="Package - Type" linkType="A2B">
 			<description sideA="Java Package" sideB="Java Type" />
 		</linkData>
+		<linkData linkName="Autoboxes" linkType="A2B">
+			<description sideA="Java Type" sideB="Java Type Primitive" />
+		</linkData>
+		<linkData linkName="AutoboxedBy" linkType="A2B">
+			<description sideA="Java Type Primitive" sideB="Java Type" />
+		</linkData>
+		<linkData linkName="Implicit Primitive Cast" linkType="A2B">
+			<description sideA="Java Type Primitive" sideB="Java Type Primitive" />
+			<property propertyName="distance" propertyType="Integer" />
+		</linkData>
 		<linkData linkName="Artifact - Element" linkType="A2B">
 			<description sideA="Artifact" sideB="Java Type" />
 		</linkData>
@@ -17,6 +27,9 @@
 		</linkData>
 		<linkData linkName="Extends" linkType="A2B">
 			<description sideA="Java Type" sideB="Java Type" />
+		</linkData>
+		<linkData linkName="InterfaceExtends" linkType="A2B">
+			<description sideA="Java Type Interface" sideB="Java Type Interface" />
 		</linkData>
         <linkData linkName="References" linkType="A2B">
             <description sideA="Java Type" sideB="Java Type" />
@@ -48,13 +61,13 @@
 		</linkData>
 		<linkData linkName="Data Type" linkType="A2B">
 			<description sideA="Java Data" sideB="Java Type" />
-			<property propertyName="array" propertyType="boolean" />
-			<property propertyName="arrayDimension" propertyType="int" />
+			<property propertyName="array" propertyType="Boolean" />
+			<property propertyName="arrayDimension" propertyType="Integer" />
 		</linkData>
 		<linkData linkName="Method Returns" linkType="A2B">
 			<description sideA="Java Method" sideB="Java Type" />
-			<property propertyName="array" propertyType="boolean" />
-			<property propertyName="arrayDimension" propertyType="int" />
+			<property propertyName="array" propertyType="Boolean" />
+			<property propertyName="arrayDimension" propertyType="Integer" />
 		</linkData>
 		<linkData linkName="Method Throws" linkType="A2B">
 			<description sideA="Java Method" sideB="Java Type" />
@@ -109,9 +122,9 @@
 		</linkData>
 		<linkData linkName="Method Parameter Definition" linkType="A2B">
 			<description sideA="Java Method" sideB="Java Type" />
-			<property propertyName="order" propertyType="int" />
-			<property propertyName="array" propertyType="boolean" />
-			<property propertyName="arrayDimension" propertyType="int" />
+			<property propertyName="order" propertyType="Integer" />
+			<property propertyName="array" propertyType="Boolean" />
+			<property propertyName="arrayDimension" propertyType="Integer" />
 		</linkData>
 	</package>
 </root>

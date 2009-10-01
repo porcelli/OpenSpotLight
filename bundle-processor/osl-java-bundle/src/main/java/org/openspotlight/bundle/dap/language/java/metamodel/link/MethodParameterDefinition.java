@@ -53,6 +53,7 @@ import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLLinkAttribute;
 import org.openspotlight.graph.annotation.SLProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface for a link between Method Parameter Definition. Java Method A2B Java Type
  * 
@@ -61,19 +62,50 @@ import org.openspotlight.graph.annotation.SLProperty;
 @SLDescription( "Method Parameter Definition" )
 @SLLinkAttribute( value = SLLinkAttribute.ALLOWS_MULTIPLE )
 public interface MethodParameterDefinition extends SLLink {
+
+    /**
+     * Gets the order.
+     * 
+     * @return the order
+     */
     @SLProperty
-    public int getOrder();
+    public Integer getOrder();
 
-    public void setOrder( int newOrder );
+    /**
+     * Sets the order.
+     * 
+     * @param newOrder the new order
+     */
+    public void setOrder( Integer newOrder );
 
+    /**
+     * Gets the array.
+     * 
+     * @return the array
+     */
     @SLProperty
-    public boolean getArray();
+    public Boolean getArray();
 
-    public void setArray( boolean newArray );
+    /**
+     * Sets the array.
+     * 
+     * @param newArray the new array
+     */
+    public void setArray( Boolean newArray );
 
+    /**
+     * Gets the array dimension.
+     * 
+     * @return the array dimension
+     */
     @SLProperty
-    public int getArrayDimension();
+    public Integer getArrayDimension();
 
-    public void setArrayDimension( int newArrayDimension );
+    /**
+     * Sets the array dimension.
+     * 
+     * @param newArrayDimension the new array dimension
+     */
+    public void setArrayDimension( Integer newArrayDimension );
 
 }

@@ -66,14 +66,14 @@ public interface JavaDataField extends JavaData {
      * @return the static
      */
     @SLProperty
-    public boolean getStatic();
+    public Boolean getStatic();
 
     /**
      * Sets the static.
      * 
      * @param newStatic the new static
      */
-    public void setStatic( boolean newStatic );
+    public void setStatic( Boolean newStatic );
 
     /**
      * Gets the final.
@@ -81,14 +81,14 @@ public interface JavaDataField extends JavaData {
      * @return the final
      */
     @SLProperty
-    public boolean getFinal();
+    public Boolean getFinal();
 
     /**
      * Sets the final.
      * 
      * @param newFinal the new final
      */
-    public void setFinal( boolean newFinal );
+    public void setFinal( Boolean newFinal );
 
     /**
      * Gets the protected.
@@ -96,14 +96,14 @@ public interface JavaDataField extends JavaData {
      * @return the protected
      */
     @SLProperty
-    public boolean getProtected();
+    public Boolean getProtected();
 
     /**
      * Sets the protected.
      * 
      * @param newProtected the new protected
      */
-    public void setProtected( boolean newProtected );
+    public void setProtected( Boolean newProtected );
 
     /**
      * Gets the transient.
@@ -111,14 +111,14 @@ public interface JavaDataField extends JavaData {
      * @return the transient
      */
     @SLProperty
-    public boolean getTransient();
+    public Boolean getTransient();
 
     /**
      * Sets the transient.
      * 
      * @param newTransient the new transient
      */
-    public void setTransient( boolean newTransient );
+    public void setTransient( Boolean newTransient );
 
     /**
      * Gets the volatile.
@@ -126,14 +126,14 @@ public interface JavaDataField extends JavaData {
      * @return the volatile
      */
     @SLProperty
-    public boolean getVolatile();
+    public Boolean getVolatile();
 
     /**
      * Sets the volatile.
      * 
      * @param newVolatile the new volatile
      */
-    public void setVolatile( boolean newVolatile );
+    public void setVolatile( Boolean newVolatile );
 
     /**
      * Gets the public.
@@ -141,14 +141,14 @@ public interface JavaDataField extends JavaData {
      * @return the public
      */
     @SLProperty
-    public boolean getPublic();
+    public Boolean getPublic();
 
     /**
      * Sets the public.
      * 
      * @param newPublic the new public
      */
-    public void setPublic( boolean newPublic );
+    public void setPublic( Boolean newPublic );
 
     /**
      * Gets the private.
@@ -156,13 +156,13 @@ public interface JavaDataField extends JavaData {
      * @return the private
      */
     @SLProperty
-    public boolean getPrivate();
+    public Boolean getPrivate();
 
     /**
      * Sets the private.
      * 
      * @param newPrivate the new private
      */
-    public void setPrivate( boolean newPrivate );
+    public void setPrivate( Boolean newPrivate );
 
 }
