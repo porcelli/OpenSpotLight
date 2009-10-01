@@ -1,1496 +1,833 @@
 package org.openspotlight.bundle.dap.language.java.resolver;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.hamcrest.core.IsInstanceOf;
-import org.hamcrest.core.IsNot;
+import org.junit.Test;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.testng.annotations.Test;
 
-@Test
 public class TestMethodResolution extends AbstractMethodResolutionTest {
 
-	@Test( expectedExceptions = IllegalArgumentException.class )
-    public void testInvalidParamsNullParams() throws Exception {
-       	setupMethodResolver(null);
-        methodResolver.getMethod(null, null);
-    }
+    @Test( )
+    public void getMethodBetween2Matches() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
-    public void testInvalidParams() throws Exception {
-        createMethod("java.lang", "Object", "toString", "toString()");
-        JavaType abstractType = getAbstractType("java.lang", "Object");
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(integerType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
 
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(abstractType)).thenReturn(false);
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
 
-        setupMethodResolver(mockTypeResolver);
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Integer, java.lang.String, long)",
+                                                                                  numberType, stringType, longTypePrimitive);
 
-        methodResolver.getMethod(abstractType, "toString");
-    }
-
-    @Test
-    public void resolveSimpleMethod() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethod = createMethod("java.lang", "Object", "toString", "toString()");
-
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethod.getK1())).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(typeAndMethod.getK1());
-        when(mockTypeResolver.getTypesLowerHigherLast(typeAndMethod.getK1())).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeAndMethod.getK1(), "toString");
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(typeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
+    @Test( )
+    public void getMethodBetween5Matches() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(integerType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Integer, java.lang.String, long)",
+                                                                                  numberType, stringType, longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodBetween5Matches2() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Object, java.lang.Object, long)",
+                                                                                  objectType, objectType, longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodBetween5Matches3() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(integerType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType,
+                          stringType, longType);
+        this.createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(integerType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(integerType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  integerType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Object, java.lang.Object, long)",
+                                                                                  objectType, objectType, longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodBetween5Matches4() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(numberType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  numberType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Object, java.lang.Object, long)",
+                                                                                  objectType, objectType, longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodBetween5Matches5() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(numberType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  integerType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Object, java.lang.Object, long)",
+                                                                                  objectType, objectType, longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodBetween5Matches6() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(longType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(numberType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  numberType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Object, java.lang.Object, long)",
+                                                                                  objectType, objectType, longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodBetween5MatchesBoxing() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(longTypePrimitive);
+        parameterList.add(longTypePrimitive);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Long, java.lang.Long, java.lang.Long)",
+                                                                                  longType, longType, longType);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( expected = SLBundleException.class )
+    public void getMethodBetween5MatchesBoxingNotAllowed() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(longTypePrimitive);
+        parameterList.add(longTypePrimitive);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        this.methodResolver.getMethod(integerType, "wait", parameterList);
+    }
+
+    @Test( expected = SLBundleException.class )
+    public void getMethodInfinitiLooping() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(integerType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", numberType, stringType, longType);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(nullValue()));
+    }
+
+    @Test( )
+    public void getMethodOneSimpleTypeParameterWithHierarchy() throws Exception {
+
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaTypePrimitive longType = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(integerType);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(objectType, "wait", "wait(java.lang.Number)",
+                                                                                  numberType);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodParameterizedByClass() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
+        final JavaType parameterizedType = this.createTypeParameterized("java.lang", "Long$T", longType, objectType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  numberType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Long$T, java.lang.String, java.lang.Long)",
+                                                                                  parameterizedType, stringType, longType);
+        this.createMethod(numberType, "xait", "xait(java.lang.Long$T, java.lang.String, java.lang.Long)", parameterizedType,
+                          stringType, longType);
+        this.createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodParameterizedByMethod() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+        parameterList.add(stringType);
+        parameterList.add(longTypePrimitive);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+
+        //Start code to build Method Parameterized Type
+        final JavaMethodMethod method = numberType.addNode(JavaMethodMethod.class,
+                                                           "wait(java.lang.Long$this$T, java.lang.String, java.lang.Long)");
+        method.setSimpleName("wait");
+        this.graphSession.addLink(TypeDeclares.class, numberType, method, false);
+
+        final JavaType parameterizedType = this.createTypeParameterized("java.lang", "Long$this$T", method, objectType, true);
+
+        SLLink link = this.graphSession.addLink(MethodParameterDefinition.class, method, parameterizedType, false);
+        link.setProperty(Integer.class, "Order", 0);
+        link = this.graphSession.addLink(MethodParameterDefinition.class, method, stringType, false);
+        link.setProperty(Integer.class, "Order", 1);
+        link = this.graphSession.addLink(MethodParameterDefinition.class, method, longType, false);
+        link.setProperty(Integer.class, "Order", 2);
+
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = new Pair<JavaType, JavaMethod>(numberType, method);
+        //Method End
+
+        this.createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType,
+                          stringType, stringType);
+        this.createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType,
+                          longType);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
+                          longTypePrimitive);
+
+        this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        this.createMethod(numberType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
+                          longTypePrimitive);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodSeveralTypeParameter() throws Exception {
+
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaTypePrimitive longType = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(integerType);
+        parameterList.add(stringType);
+        parameterList.add(longType);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Number, java.lang.String, long)",
+                                                                                  numberType, stringType, longType);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(objectType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( )
+    public void getMethodSeveralTypeParameterHierarchy() throws Exception {
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaTypePrimitive longType = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(integerType);
+        parameterList.add(stringType);
+        parameterList.add(longType);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Number, java.lang.String, long)",
+                                                                                  numberType, stringType, longType);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+
+        assertThat(foundMethod, is(notNullValue()));
+        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+    }
+
+    @Test( expected = SLBundleException.class )
+    public void notFoundMethodOneSimpleTypeParameterWithHierarchy() throws Exception {
+
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaTypePrimitive longType = this.createPrimitiveType("long");
+
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        parameterList.add(stringType);
+
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(objectType, "wait", "wait(java.lang.Number)",
+                                                                                  numberType);
+
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(objectType, "wait", parameterList);
+
+        assertThat(foundMethod, is(nullValue()));
+    }
+
+    @Test( )
     public void resolveExtendedMethod() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethodObject = createMethod("java.lang", "Object", "toString", "toString()");
-        Pair<JavaType, JavaMethod> typeAndMethodSLObject = createMethod("org.openspotlight", "SLObject", "toString", "toString()");
+        final Pair<JavaType, JavaMethod> typeAndMethodObject = this.createMethod("java.lang", "Object", "toString", "toString()");
+        final Pair<JavaType, JavaMethod> typeAndMethodSLObject = this.createMethod("org.openspotlight", "SLObject", "toString",
+                                                                                   "toString()");
 
         @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeAndMethodSLObject.getK1())).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(typeAndMethodSLObject.getK1());
-        nodesHierarchy.add(typeAndMethodObject.getK1());
-
-        when(mockTypeResolver.getTypesLowerHigherLast(typeAndMethodSLObject.getK1())).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeAndMethodSLObject.getK1(), "toString");
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeAndMethodSLObject.getK1(),
+                                                                                             "toString");
 
         assertThat(foundMethod, is(notNullValue()));
         //        assertThat(foundMethod.getID(), is(not(typeAndMethodObject.getK2().getID())));
         assertThat(foundMethod.getID(), is(typeAndMethodSLObject.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void resolveMethodOnParent() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethodObject = createMethod("java.lang", "Object", "toString", "toString()");
-        JavaType typeSLObject = createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
-
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeSLObject)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(typeSLObject);
-        nodesHierarchy.add(typeAndMethodObject.getK1());
-
-        when(mockTypeResolver.getTypesLowerHigherLast(typeSLObject)).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeSLObject, "toString");
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(typeAndMethodObject.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void resolveMethodOnParentSecondLevel() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethodObject = createMethod("java.lang", "Object", "toString", "toString()");
-        JavaType typeSLObject = createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
-        JavaType typeSLObject2 = createType("org.openspotlight", "SLObject2", typeSLObject, true);
-
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeSLObject2)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-
-        nodesHierarchy.add(typeSLObject2);
-        nodesHierarchy.add(typeSLObject);
-        nodesHierarchy.add(typeAndMethodObject.getK1());
-
-        when(mockTypeResolver.getTypesLowerHigherLast(typeSLObject2)).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeSLObject2, "toString");
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(typeAndMethodObject.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void resolveMethodOnParentFiveLevels() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethodObject = createMethod("java.lang", "Object", "toString", "toString()");
-        JavaType typeSLObject = createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
-        JavaType typeSLObject2 = createType("org.openspotlight", "SLObject2", typeSLObject, true);
-        JavaType typeSLObject3 = createType("org.openspotlight", "SLObject3", typeSLObject2, true);
-        JavaType typeSLObject4 = createType("org.openspotlight", "SLObject4", typeSLObject3, true);
-        JavaType typeSLObject5 = createType("org.openspotlight", "SLObject5", typeSLObject4, true);
-
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeSLObject5)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-
-        nodesHierarchy.add(typeSLObject5);
-        nodesHierarchy.add(typeSLObject4);
-        nodesHierarchy.add(typeSLObject3);
-        nodesHierarchy.add(typeSLObject2);
-        nodesHierarchy.add(typeSLObject);
-        nodesHierarchy.add(typeAndMethodObject.getK1());
-
-        when(mockTypeResolver.getTypesLowerHigherLast(typeSLObject5)).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeSLObject5, "toString");
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(typeAndMethodObject.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void resolveMethodOnParentFiveLevelsFoundOnThirdLevel() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethodObject = createMethod("java.lang", "Object", "toString", "toString()");
-        JavaType typeSLObject = createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
-        Pair<JavaType, JavaMethod> typeAndMethodObject2 = createMethod("org.openspotlight", "SLObject2", "toString", "toString()");
-        JavaType typeSLObject3 = createType("org.openspotlight", "SLObject3", typeAndMethodObject2.getK1(), true);
-        JavaType typeSLObject4 = createType("org.openspotlight", "SLObject4", typeSLObject3, true);
-        JavaType typeSLObject5 = createType("org.openspotlight", "SLObject5", typeSLObject4, true);
-
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeSLObject5)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-
-        nodesHierarchy.add(typeSLObject5);
-        nodesHierarchy.add(typeSLObject4);
-        nodesHierarchy.add(typeSLObject3);
-        nodesHierarchy.add(typeAndMethodObject2.getK1());
-        nodesHierarchy.add(typeSLObject);
-        nodesHierarchy.add(typeAndMethodObject.getK1());
-
-        when(mockTypeResolver.getTypesLowerHigherLast(typeSLObject5)).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeSLObject5, "toString");
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(typeAndMethodObject2.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void resolveMethodOnParentFiveLevelsFoundOnFirstLevel() throws Exception {
-        Pair<JavaType, JavaMethod> typeAndMethodObject = createMethod("java.lang", "Object", "toString", "toString()");
-        JavaType typeSLObject = createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
-        Pair<JavaType, JavaMethod> typeAndMethodObject2 = createMethod("org.openspotlight", "SLObject2", "toString", "toString()");
-        JavaType typeSLObject3 = createType("org.openspotlight", "SLObject3", typeAndMethodObject2.getK1(), true);
-        JavaType typeSLObject4 = createType("org.openspotlight", "SLObject4", typeSLObject3, true);
-        Pair<JavaType, JavaMethod> typeAndMethodObject5 = createMethod("org.openspotlight", "SLObject5", "toString", "toString()");
-
-        @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeAndMethodObject5.getK1())).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-
-        nodesHierarchy.add(typeAndMethodObject5.getK1());
-        nodesHierarchy.add(typeSLObject4);
-        nodesHierarchy.add(typeSLObject3);
-        nodesHierarchy.add(typeAndMethodObject2.getK1());
-        nodesHierarchy.add(typeSLObject);
-        nodesHierarchy.add(typeAndMethodObject.getK1());
-
-        when(mockTypeResolver.getTypesLowerHigherLast(typeAndMethodObject5.getK1())).thenReturn(nodesHierarchy);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeAndMethodObject5.getK1(), "toString");
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(typeAndMethodObject5.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
+    @Test( )
     public void resolveMethodOnePrimitiveParameter() throws Exception {
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        JavaTypePrimitive typeParameter = createPrimitiveType("long");
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
+        final JavaTypePrimitive typeParameter = this.createPrimitiveType("long");
         parameterList.add(typeParameter);
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> typeAndMethod = createMethod("java.lang", "Object", "wait", "wait(long)", typeParameter);
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> typeAndMethod = this.createMethod("java.lang", "Object", "wait", "wait(long)",
+                                                                           typeParameter);
 
-        JavaType stringParameter = createType("java.lang", "String", typeAndMethod.getK1(), true);
-        Pair<JavaType, JavaMethod> wrongTypeAndMethod = createMethod("java.lang", "Object", "wait", "wait(java.lang.String)",
-                                                                     stringParameter);
+        final JavaType stringParameter = this.createType("java.lang", "String", typeAndMethod.getK1(), true);
+        final Pair<JavaType, JavaMethod> wrongTypeAndMethod = this.createMethod("java.lang", "Object", "wait",
+                                                                                "wait(java.lang.String)", stringParameter);
 
         @SuppressWarnings( "unchecked" )
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(typeAndMethod.getK1())).thenReturn(true);
-        when(mockTypeResolver.isContreteType(typeParameter)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(typeAndMethod.getK1());
-        when(mockTypeResolver.getTypesLowerHigherLast(typeAndMethod.getK1())).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isTypeOf(typeParameter, typeParameter)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringParameter, stringParameter)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(typeAndMethod.getK1(), "wait", parameterList);
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeAndMethod.getK1(), "wait",
+                                                                                             parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
         assertThat(foundMethod.getID(), is(not(wrongTypeAndMethod.getK2().getID())));
         assertThat(foundMethod.getID(), is(typeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
+    @Test( )
     public void resolveMethodOneSimpleTypeParameter() throws Exception {
 
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaTypePrimitive longType = createPrimitiveType("long");
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaTypePrimitive longType = this.createPrimitiveType("long");
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
         parameterList.add(integerType);
 
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod("java.lang", "Object", "wait", "wait(java.lang.Integer)",
-                                                                       parameterList.get(0));
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod("java.lang", "Object", "wait",
+                                                                                  "wait(java.lang.Integer)", parameterList.get(0));
 
-        Pair<JavaType, JavaMethod> wrongTypeAndMethod = createMethod("java.lang", "Object", "wait", "wait(java.lang.String)",
-                                                                     stringType);
+        final Pair<JavaType, JavaMethod> wrongTypeAndMethod = this.createMethod("java.lang", "Object", "wait",
+                                                                                "wait(java.lang.String)", stringType);
 
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(objectType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(objectType, "wait", parameterList);
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(objectType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
         assertThat(foundMethod.getID(), is(not(wrongTypeAndMethod.getK2().getID())));
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
+    @Test( )
     public void resolveMethodOneSimpleTypeParameterWithHierarchy() throws Exception {
 
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaTypePrimitive longType = createPrimitiveType("long");
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaTypePrimitive longType = this.createPrimitiveType("long");
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
         parameterList.add(integerType);
 
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod("java.lang", "Object", "wait", "wait(java.lang.Number)",
-                                                                       numberType);
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod("java.lang", "Object", "wait",
+                                                                                  "wait(java.lang.Number)", numberType);
 
-        Pair<JavaType, JavaMethod> wrongTypeAndMethod = createMethod("java.lang", "Object", "wait", "wait(java.lang.String)",
-                                                                     stringType);
+        final Pair<JavaType, JavaMethod> wrongTypeAndMethod = this.createMethod("java.lang", "Object", "wait",
+                                                                                "wait(java.lang.String)", stringType);
 
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(objectType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(objectType, "wait", parameterList);
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(objectType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
         assertThat(foundMethod.getID(), is(not(wrongTypeAndMethod.getK2().getID())));
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test( expectedExceptions = SLBundleException.class )
-    public void notFoundMethodOneSimpleTypeParameterWithHierarchy() throws Exception {
+    @Test( )
+    public void resolveMethodOnParent() throws Exception {
+        final Pair<JavaType, JavaMethod> typeAndMethodObject = this.createMethod("java.lang", "Object", "toString", "toString()");
+        final JavaType typeSLObject = this.createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
 
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaTypePrimitive longType = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait", "wait(java.lang.Number)", numberType);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(objectType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(objectType, "wait", parameterList);
-
-        assertThat(foundMethod, is(nullValue()));
-    }
-
-    @Test
-    public void getMethodOneSimpleTypeParameterWithHierarchy() throws Exception {
-
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaTypePrimitive longType = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(integerType);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait", "wait(java.lang.Number)", numberType);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
+        @SuppressWarnings( "unchecked" )
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeSLObject, "toString");
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(typeAndMethodObject.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void getMethodSeveralTypeParameter() throws Exception {
+    @Test( )
+    public void resolveMethodOnParentFiveLevels() throws Exception {
+        final Pair<JavaType, JavaMethod> typeAndMethodObject = this.createMethod("java.lang", "Object", "toString", "toString()");
+        final JavaType typeSLObject = this.createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
+        final JavaType typeSLObject2 = this.createType("org.openspotlight", "SLObject2", typeSLObject, true);
+        final JavaType typeSLObject3 = this.createType("org.openspotlight", "SLObject3", typeSLObject2, true);
+        final JavaType typeSLObject4 = this.createType("org.openspotlight", "SLObject4", typeSLObject3, true);
+        final JavaType typeSLObject5 = this.createType("org.openspotlight", "SLObject5", typeSLObject4, true);
 
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaTypePrimitive longType = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(integerType);
-        parameterList.add(stringType);
-        parameterList.add(longType);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Number, java.lang.String, long)",
-                                                                       numberType, stringType, longType);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(objectType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-
-        when(mockTypeResolver.countParents(objectType)).thenReturn(0);
-        when(mockTypeResolver.countParents(stringType)).thenReturn(1);
-        when(mockTypeResolver.countParents(numberType)).thenReturn(1);
-        when(mockTypeResolver.countParents(integerType)).thenReturn(2);
-        when(mockTypeResolver.countParents(longType)).thenReturn(0);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(objectType, "wait", parameterList);
+        @SuppressWarnings( "unchecked" )
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeSLObject5, "toString");
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(typeAndMethodObject.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void getMethodSeveralTypeParameterHierarchy() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaTypePrimitive longType = createPrimitiveType("long");
+    @Test( )
+    public void resolveMethodOnParentFiveLevelsFoundOnFirstLevel() throws Exception {
+        final Pair<JavaType, JavaMethod> typeAndMethodObject = this.createMethod("java.lang", "Object", "toString", "toString()");
+        final JavaType typeSLObject = this.createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
+        final Pair<JavaType, JavaMethod> typeAndMethodObject2 = this.createMethod("org.openspotlight", "SLObject2", "toString",
+                                                                                  "toString()");
+        final JavaType typeSLObject3 = this.createType("org.openspotlight", "SLObject3", typeAndMethodObject2.getK1(), true);
+        final JavaType typeSLObject4 = this.createType("org.openspotlight", "SLObject4", typeSLObject3, true);
+        final Pair<JavaType, JavaMethod> typeAndMethodObject5 = this.createMethod("org.openspotlight", "SLObject5", "toString",
+                                                                                  "toString()");
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(integerType);
-        parameterList.add(stringType);
-        parameterList.add(longType);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Number, java.lang.String, long)",
-                                                                       numberType, stringType, longType);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
+        @SuppressWarnings( "unchecked" )
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeAndMethodObject5.getK1(),
+                                                                                             "toString");
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(typeAndMethodObject5.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void getMethodBetween2Matches() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
+    @Test( )
+    public void resolveMethodOnParentFiveLevelsFoundOnThirdLevel() throws Exception {
+        final Pair<JavaType, JavaMethod> typeAndMethodObject = this.createMethod("java.lang", "Object", "toString", "toString()");
+        final JavaType typeSLObject = this.createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
+        final Pair<JavaType, JavaMethod> typeAndMethodObject2 = this.createMethod("org.openspotlight", "SLObject2", "toString",
+                                                                                  "toString()");
+        final JavaType typeSLObject3 = this.createType("org.openspotlight", "SLObject3", typeAndMethodObject2.getK1(), true);
+        final JavaType typeSLObject4 = this.createType("org.openspotlight", "SLObject4", typeSLObject3, true);
+        final JavaType typeSLObject5 = this.createType("org.openspotlight", "SLObject5", typeSLObject4, true);
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(integerType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Integer, java.lang.String, long)",
-                                                                       numberType, stringType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(longType);
-        when(mockTypeResolver.getTypesLowerHigherLast(longType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
+        @SuppressWarnings( "unchecked" )
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeSLObject5, "toString");
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(typeAndMethodObject2.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void getMethodBetween5Matches() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
+    @Test( )
+    public void resolveMethodOnParentSecondLevel() throws Exception {
+        final Pair<JavaType, JavaMethod> typeAndMethodObject = this.createMethod("java.lang", "Object", "toString", "toString()");
+        final JavaType typeSLObject = this.createType("org.openspotlight", "SLObject", typeAndMethodObject.getK1(), true);
+        final JavaType typeSLObject2 = this.createType("org.openspotlight", "SLObject2", typeSLObject, true);
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(integerType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Integer, java.lang.String, long)",
-                                                                       numberType, stringType, longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(longType);
-        when(mockTypeResolver.getTypesLowerHigherLast(longType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
+        @SuppressWarnings( "unchecked" )
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeSLObject2, "toString");
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(typeAndMethodObject.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void getMethodBetween5Matches2() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
+    @Test( )
+    public void resolveSimpleMethod() throws Exception {
+        final Pair<JavaType, JavaMethod> typeAndMethod = this.createMethod("java.lang", "Object", "toString", "toString()");
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Object, java.lang.Object, long)",
-                                                                       objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
+        @SuppressWarnings( "unchecked" )
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeAndMethod.getK1(), "toString");
 
         assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        assertThat(foundMethod.getID(), is(typeAndMethod.getK2().getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test
-    public void getMethodBetween5MatchesBoxing() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(longTypePrimitive);
-        parameterList.add(longTypePrimitive);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Long, java.lang.Long, java.lang.Long)",
-                                                                       longType, longType, longType);
-
-        createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test( expectedExceptions = SLBundleException.class )
-    public void getMethodBetween5MatchesBoxingNotAllowed() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(longTypePrimitive);
-        parameterList.add(longTypePrimitive);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        methodResolver.getMethod(integerType, "wait", parameterList);
-    }
-
-    @Test
-    public void getMethodBetween5Matches3() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(integerType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(integerType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(integerType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(integerType, "wait",
-                                                                       "wait(java.lang.Object, java.lang.Object, long)",
-                                                                       objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void getMethodBetween5Matches4() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(numberType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(numberType, "wait",
-                                                                       "wait(java.lang.Object, java.lang.Object, long)",
-                                                                       objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void getMethodBetween5Matches5() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(numberType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        createMethod(numberType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(integerType, "wait",
-                                                                       "wait(java.lang.Object, java.lang.Object, long)",
-                                                                       objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test
-    public void getMethodBetween5Matches6() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, false);
-        JavaType longType = createType("java.lang", "Long", numberType, false);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(longType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(numberType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-        createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(numberType, "wait",
-                                                                       "wait(java.lang.Object, java.lang.Object, long)",
-                                                                       objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-    }
-
-    @Test( expectedExceptions = SLBundleException.class )
-    public void getMethodInfinitiLooping() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(integerType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
-
-        createMethod(objectType, "wait", "wait(java.lang.Integer, java.lang.String, long)", numberType, stringType, longType);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(longType);
-        when(mockTypeResolver.getTypesLowerHigherLast(longType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(nullValue()));
-    }
-
-    @Test
+    @Test( )
     public void testCache() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, true);
-        JavaType longType = createType("java.lang", "Long", numberType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
+        final JavaType objectType = this.createType("java.lang", "Object", null, false);
+        final JavaType stringType = this.createType("java.lang", "String", objectType, true);
+        final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
+        final List<JavaType> parameterList = new LinkedList<JavaType>();
         parameterList.add(integerType);
         parameterList.add(stringType);
         parameterList.add(longTypePrimitive);
 
-        createMethod("java.lang", "Object", "wait", "wait()");
-        createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
-                     longType);
+        this.createMethod("java.lang", "Object", "wait", "wait()");
+        this.createMethod(objectType, "wait", "wait(java.lang.Number, java.lang.String, java.lang.Long)", numberType, stringType,
+                          longType);
 
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(objectType, "wait",
-                                                                       "wait(java.lang.Integer, java.lang.String, long)",
-                                                                       numberType, stringType, longTypePrimitive);
+        final Pair<JavaType, JavaMethod> correctTypeAndMethod = this.createMethod(
+                                                                                  objectType,
+                                                                                  "wait",
+                                                                                  "wait(java.lang.Integer, java.lang.String, long)",
+                                                                                  numberType, stringType, longTypePrimitive);
 
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(integerType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(objectType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(longType);
-        when(mockTypeResolver.getTypesLowerHigherLast(longType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-        String uniqueId = methodResolver.getUniqueId(integerType, "wait", parameterList);
+        final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
+        final String uniqueId = this.methodResolver.getUniqueId(integerType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
-        assertThat(methodResolver.getCache().get(uniqueId), is(notNullValue()));
-        assertThat(methodResolver.getCache().get(uniqueId), is(foundMethod.getID()));
+        assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
+        assertThat(this.methodResolver.getCache().get(uniqueId), is(notNullValue()));
+        assertThat(this.methodResolver.getCache().get(uniqueId), is(foundMethod.getID()));
     }
 
-    @Test
-    public void getMethodParameterizedByClass() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, false);
-        JavaType longType = createType("java.lang", "Long", numberType, false);
-        JavaType parameterizedType = createTypeParameterized("java.lang", "Long$T", longType, objectType, true);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
+    @Test( expected = IllegalArgumentException.class )
+    public void testInvalidParams() throws Exception {
+        this.createMethod("java.lang", "Object", "toString", "toString()");
+        final JavaType abstractType = this.getAbstractType("java.lang", "Object");
 
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = createMethod(numberType, "wait", "wait(java.lang.Long$T, java.lang.String, java.lang.Long)", parameterizedType, stringType,
-                                                                       longType);
-        createMethod(numberType, "xait", "xait(java.lang.Long$T, java.lang.String, java.lang.Long)", parameterizedType, stringType,
-                     longType);
-        createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        createMethod(numberType, "wait",
-                     "wait(java.lang.Object, java.lang.Object, long)",
-                     objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(parameterizedType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(parameterizedType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(objectType, parameterizedType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, parameterizedType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);	
-        
-    	JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+        this.methodResolver.getMethod(abstractType, "toString");
     }
 
-    @Test
-    public void getMethodParameterizedByMethod() throws Exception {
-        JavaType objectType = createType("java.lang", "Object", null, false);
-        JavaType stringType = createType("java.lang", "String", objectType, true);
-        JavaType numberType = createType("java.lang", "Number", objectType, true);
-        JavaType integerType = createType("java.lang", "Integer", numberType, false);
-        JavaType longType = createType("java.lang", "Long", numberType, false);
-        JavaTypePrimitive longTypePrimitive = createPrimitiveType("long");
-
-        List<JavaType> parameterList = new LinkedList<JavaType>();
-        parameterList.add(stringType);
-        parameterList.add(stringType);
-        parameterList.add(longTypePrimitive);
-
-        createMethod("java.lang", "Object", "wait", "wait()");
-
-        //Start code to build Method Parameterized Type
-        JavaMethodMethod method = numberType.addNode(JavaMethodMethod.class, "wait(java.lang.Long$this$T, java.lang.String, java.lang.Long)");
-        method.setSimpleName("wait");
-        graphSession.addLink(TypeDeclares.class, numberType, method, false);
-
-        JavaType parameterizedType = createTypeParameterized("java.lang", "Long$this$T", method, objectType, true);
-
-        SLLink link = graphSession.addLink(MethodParameterDefinition.class, method, parameterizedType, false);
-        link.setProperty(Integer.class, "Order", 0);
-        link = graphSession.addLink(MethodParameterDefinition.class, method, stringType, false);
-        link.setProperty(Integer.class, "Order", 1);
-        link = graphSession.addLink(MethodParameterDefinition.class, method, longType, false);
-        link.setProperty(Integer.class, "Order", 2);
-
-        Pair<JavaType, JavaMethod> correctTypeAndMethod = new Pair<JavaType, JavaMethod>(numberType, method);
-        //Method End
-
-        createMethod(numberType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(objectType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(integerType, "wait", "wait(java.lang.String, java.lang.String, java.lang.String)", stringType, stringType,
-                     stringType);
-        createMethod(numberType, "wait", "wait(java.lang.Long, java.lang.Long, java.lang.Long)", longType, longType, longType);
-
-        createMethod(numberType, "wait", "wait(java.lang.Integer, java.lang.String, long)", integerType, stringType,
-                     longTypePrimitive);
-
-        createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
-                     longTypePrimitive);
-
-        createMethod(numberType, "wait",
-                     "wait(java.lang.Object, java.lang.Object, long)",
-                     objectType, objectType, longTypePrimitive);
-
-        TypeResolver<JavaType> mockTypeResolver = mock(TypeResolver.class);
-
-        List<JavaType> nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy = new LinkedList<JavaType>();
-        nodesHierarchy.add(integerType);
-        nodesHierarchy.add(numberType);
-        nodesHierarchy.add(objectType);
-        when(mockTypeResolver.getTypesLowerHigherLast(integerType)).thenReturn(nodesHierarchy);
-
-        when(mockTypeResolver.isContreteType(objectType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(integerType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(stringType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(longType)).thenReturn(true);
-        when(mockTypeResolver.isContreteType(parameterizedType)).thenReturn(true);
-
-        when(mockTypeResolver.isTypeOf(objectType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, stringType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, integerType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(integerType, numberType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(numberType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longTypePrimitive, longType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, longTypePrimitive)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(longType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(parameterizedType, objectType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(objectType, parameterizedType)).thenReturn(true);
-        when(mockTypeResolver.isTypeOf(stringType, parameterizedType)).thenReturn(true);
-
-        setupMethodResolver(mockTypeResolver);
-
-        JavaMethodMethod foundMethod = (JavaMethodMethod)methodResolver.getMethod(integerType, "wait", parameterList);
-
-        assertThat(foundMethod, is(notNullValue()));
-        assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
-        assertThat(foundMethod.getContext(), is(not(abstractContex)));
+    @Test( expected = IllegalArgumentException.class )
+    public void testInvalidParamsNullParams() throws Exception {
+        this.methodResolver.getMethod(null, null);
     }
 }

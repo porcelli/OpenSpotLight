@@ -51,7 +51,7 @@ package org.openspotlight.bundle.dap.language.java.metamodel.node;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node Java Type Primitive Meta Model.
+ * The Interface for node Java Type Parameterized Meta Model.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */

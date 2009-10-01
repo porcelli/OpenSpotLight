@@ -49,9 +49,9 @@
 /**
  * 
  */
-package org.openspotlight.bundle.dap.language.java.support;
+package org.openspotlight.bundle.dap.language.java.resolver;
 
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -59,12 +59,12 @@ import org.openspotlight.common.exception.SLException;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public class NodeNotFoundException extends SLException {
+public class InternalJavaFinderError extends SLRuntimeException {
 
     /**
      * Instantiates a new node not found exception.
      */
-    public NodeNotFoundException() {
+    public InternalJavaFinderError() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -74,8 +74,8 @@ public class NodeNotFoundException extends SLException {
      * 
      * @param message the message
      */
-    public NodeNotFoundException(
-                                  final String message ) {
+    public InternalJavaFinderError(
+                                    final String message ) {
         super(message);
         // TODO Auto-generated constructor stub
     }
@@ -86,8 +86,8 @@ public class NodeNotFoundException extends SLException {
      * @param message the message
      * @param cause the cause
      */
-    public NodeNotFoundException(
-                                  final String message, final Throwable cause ) {
+    public InternalJavaFinderError(
+                                    final String message, final Throwable cause ) {
         super(message, cause);
         // TODO Auto-generated constructor stub
     }
@@ -97,8 +97,8 @@ public class NodeNotFoundException extends SLException {
      * 
      * @param cause the cause
      */
-    public NodeNotFoundException(
-                                  final Throwable cause ) {
+    public InternalJavaFinderError(
+                                    final Throwable cause ) {
         super(cause);
         // TODO Auto-generated constructor stub
     }

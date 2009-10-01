@@ -49,7 +49,7 @@
 /**
  * 
  */
-package org.openspotlight.bundle.dap.language.java.support;
+package org.openspotlight.bundle.dap.language.java.resolver;
 
 import org.openspotlight.common.exception.SLException;
 

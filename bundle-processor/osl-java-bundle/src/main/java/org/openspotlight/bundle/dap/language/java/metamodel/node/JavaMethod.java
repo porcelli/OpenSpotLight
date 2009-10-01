@@ -67,14 +67,14 @@ public interface JavaMethod extends SLNode {
      * @return the static
      */
     @SLProperty
-    public boolean getStatic();
+    public Boolean getStatic();
 
     /**
      * Sets the static.
      * 
      * @param newStatic the new static
      */
-    public void setStatic( boolean newStatic );
+    public void setStatic( Boolean newStatic );
 
     /**
      * Gets the version.
@@ -97,14 +97,14 @@ public interface JavaMethod extends SLNode {
      * @return the public
      */
     @SLProperty
-    public boolean getPublic();
+    public Boolean getPublic();
 
     /**
      * Sets the public.
      * 
      * @param newPublic the new public
      */
-    public void setPublic( boolean newPublic );
+    public void setPublic( Boolean newPublic );
 
     /**
      * Gets the protected.
@@ -112,14 +112,14 @@ public interface JavaMethod extends SLNode {
      * @return the protected
      */
     @SLProperty
-    public boolean getProtected();
+    public Boolean getProtected();
 
     /**
      * Sets the protected.
      * 
      * @param newProtected the new protected
      */
-    public void setProtected( boolean newProtected );
+    public void setProtected( Boolean newProtected );
 
     /**
      * Gets the final.
@@ -127,14 +127,14 @@ public interface JavaMethod extends SLNode {
      * @return the final
      */
     @SLProperty
-    public boolean getFinal();
+    public Boolean getFinal();
 
     /**
      * Sets the final.
      * 
      * @param newFinal the new final
      */
-    public void setFinal( boolean newFinal );
+    public void setFinal( Boolean newFinal );
 
     /**
      * Gets the synchronized.
@@ -142,14 +142,14 @@ public interface JavaMethod extends SLNode {
      * @return the synchronized
      */
     @SLProperty
-    public boolean getSynchronized();
+    public Boolean getSynchronized();
 
     /**
      * Sets the synchronized.
      * 
      * @param newSynchronized the new synchronized
      */
-    public void setSynchronized( boolean newSynchronized );
+    public void setSynchronized( Boolean newSynchronized );
 
     /**
      * Gets the private.
@@ -157,14 +157,14 @@ public interface JavaMethod extends SLNode {
      * @return the private
      */
     @SLProperty
-    public boolean getPrivate();
+    public Boolean getPrivate();
 
     /**
      * Sets the private.
      * 
      * @param newPrivate the new private
      */
-    public void setPrivate( boolean newPrivate );
+    public void setPrivate( Boolean newPrivate );
 
     /**
      * Gets the simple name.

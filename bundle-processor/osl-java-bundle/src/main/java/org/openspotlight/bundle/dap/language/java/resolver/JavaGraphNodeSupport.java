@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.dap.language.java.support;
+package org.openspotlight.bundle.dap.language.java.resolver;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
@@ -57,9 +57,13 @@ import java.util.TreeMap;
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.dap.language.java.Constants;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.AbstractTypeBind;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.AutoboxedBy;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.Autoboxes;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.ImplicitPrimitiveCast;
+import org.openspotlight.bundle.dap.language.java.metamodel.link.InterfaceExtends;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodThrows;
@@ -71,9 +75,12 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodConst
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
+import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 
 /**
@@ -144,7 +151,8 @@ public class JavaGraphNodeSupport {
                                  final String superTypeName ) throws Exception {
         final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
         final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
-        this.session.addLink(Extends.class, newType, newSuperType, false);
+        final Class<? extends SLLink> linkClass = newType instanceof JavaTypeInterface ? InterfaceExtends.class : Extends.class;
+        this.session.addLink(linkClass, newType, newSuperType, false);
     }
 
     /**
@@ -162,8 +170,18 @@ public class JavaGraphNodeSupport {
                                     final String superTypeName ) throws Exception {
         final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
         final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
-        this.session.addLink(Implements.class, newType, newSuperType, false);
+        final Class<? extends SLLink> linkClass = newType instanceof JavaTypeInterface ? InterfaceExtends.class : Implements.class;
+        this.session.addLink(linkClass, newType, newSuperType, false);
 
+    }
+
+    private void addImplicitPrimitiveCast( final String typeName,
+                                           final String superTypeName,
+                                           final int distance ) throws Exception {
+        final JavaType type = this.addTypeOnCurrentContext(JavaTypePrimitive.class, "", typeName, Opcodes.ACC_PUBLIC);
+        final JavaType superType = this.addTypeOnCurrentContext(JavaTypePrimitive.class, "", superTypeName, Opcodes.ACC_PUBLIC);
+        final ImplicitPrimitiveCast link = this.session.addLink(ImplicitPrimitiveCast.class, type, superType, false);
+        link.setDistance(distance);
     }
 
     /**
@@ -464,6 +482,62 @@ public class JavaGraphNodeSupport {
         method.setFinal(isMethodFinal);
         method.setProtected(isMethodProtected);
         method.setSynchronized(isMethodSynchronized);
+    }
+
+    public void setupJavaTypesOnCurrentContext() throws Exception {
+        this.setupWrapperAndPrimitive("byte", "java.lang", "Byte");
+        this.setupWrapperAndPrimitive("short", "java.lang", "Short");
+        this.setupWrapperAndPrimitive("int", "java.lang", "Integer");
+        this.setupWrapperAndPrimitive("long", "java.lang", "Long");
+        this.setupWrapperAndPrimitive("float", "java.lang", "Float");
+        this.setupWrapperAndPrimitive("double", "java.lang", "Double");
+        this.setupWrapperAndPrimitive("char", "java.lang", "Character");
+        this.setupWrapperAndPrimitive("boolean", "java.lang", "Boolean");
+
+        /* 
+         * here all possible conversions needs to be created because it's not possible to find all the links between the types. 
+         * For example, the double d = 'c' doesn't work.
+         */
+
+        // byte implicit conversions
+        this.addImplicitPrimitiveCast("byte", "short", 1);
+        this.addImplicitPrimitiveCast("byte", "int", 2);
+        this.addImplicitPrimitiveCast("byte", "long", 3);
+        this.addImplicitPrimitiveCast("byte", "float", 4);
+        this.addImplicitPrimitiveCast("byte", "double", 5);
+
+        // short implicit conversions
+        this.addImplicitPrimitiveCast("short", "int", 1);
+        this.addImplicitPrimitiveCast("short", "long", 2);
+        this.addImplicitPrimitiveCast("short", "float", 3);
+        this.addImplicitPrimitiveCast("short", "double", 4);
+
+        // int implicit conversions
+        this.addImplicitPrimitiveCast("int", "long", 1);
+        this.addImplicitPrimitiveCast("int", "float", 2);
+        this.addImplicitPrimitiveCast("int", "double", 3);
+
+        // char and int implicit conversions
+        this.addImplicitPrimitiveCast("int", "char", 4);
+        this.addImplicitPrimitiveCast("char", "int", 1);
+
+        // long implicit conversions
+        this.addImplicitPrimitiveCast("long", "float", 1);
+        this.addImplicitPrimitiveCast("long", "double", 2);
+
+        // float implicit conversions
+        this.addImplicitPrimitiveCast("float", "double", 1);
+
+    }
+
+    private void setupWrapperAndPrimitive( final String primitiveName,
+                                           final String wrapperPackage,
+                                           final String wrapperClass ) throws Exception {
+        final JavaType wrapper = this.addTypeOnCurrentContext(JavaTypeClass.class, wrapperPackage, wrapperClass,
+                                                              Opcodes.ACC_PUBLIC);
+        final JavaType primitive = this.addTypeOnAbstractContext(JavaTypePrimitive.class, "", primitiveName);
+        this.session.addLink(Autoboxes.class, wrapper, primitive, false);
+        this.session.addLink(AutoboxedBy.class, primitive, wrapper, false);
     }
 
     /**

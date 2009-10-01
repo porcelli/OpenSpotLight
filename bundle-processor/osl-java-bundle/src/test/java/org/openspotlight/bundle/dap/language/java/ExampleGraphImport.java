@@ -54,7 +54,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
-import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
+import org.openspotlight.bundle.dap.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
