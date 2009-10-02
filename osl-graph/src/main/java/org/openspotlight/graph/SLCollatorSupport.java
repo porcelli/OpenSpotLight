@@ -54,6 +54,8 @@ import java.util.Locale;
 
 import org.openspotlight.graph.annotation.SLCollator;
 
+import com.ibm.icu.text.Normalizer;
+
 
 /**
  * The Class SLCollatorSupport.
@@ -63,24 +65,51 @@ import org.openspotlight.graph.annotation.SLCollator;
 public class SLCollatorSupport {
 	
 	/**
-	 * Gets the collator prop name.
+	 * Gets the collator key prop name.
 	 * 
 	 * @param name the name
 	 * @param collatorStrength the collator strength
 	 * 
-	 * @return the collator prop name
+	 * @return the collator key prop name
 	 */
-	public static String getCollatorPropName(String name, int collatorStrength) {
+	public static String getCollatorKeyPropName(String name, int collatorStrength) {
 		String propName = null;
 		switch (collatorStrength) {
 		case Collator.PRIMARY:
-			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_PRIMARY);
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_PRIMARY_KEY);
 			break;
 		case Collator.SECONDARY:
-			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_SECONDARY);			
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_SECONDARY_KEY);			
 			break;
 		case Collator.TERTIARY:
-			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_TERTIARY);			
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_TERTIARY_KEY);			
+			break;
+		default:
+			propName = SLCommonSupport.toUserPropertyName(name);
+			break;
+		}
+		return propName;
+	}
+
+	/**
+	 * Gets the collator description prop name.
+	 * 
+	 * @param name the name
+	 * @param collatorStrength the collator strength
+	 * 
+	 * @return the collator description prop name
+	 */
+	public static String getCollatorDescriptionPropName(String name, int collatorStrength) {
+		String propName = null;
+		switch (collatorStrength) {
+		case Collator.PRIMARY:
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_PRIMARY_DESCRIPTION);
+			break;
+		case Collator.SECONDARY:
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_SECONDARY_DESCRIPTION);			
+			break;
+		case Collator.TERTIARY:
+			propName = SLCommonSupport.toUserPropertyName(name, SLConsts.PROPERTY_NAME_TERTIARY_DESCRIPTION);			
 			break;
 		default:
 			propName = SLCommonSupport.toUserPropertyName(name);
@@ -101,6 +130,40 @@ public class SLCollatorSupport {
 		Collator collator = Collator.getInstance(Locale.US);
 		collator.setStrength(strength);
 		return new String(collator.getCollationKey(value).toByteArray());
+	}
+	
+	
+	/**
+	 * Gets the collator description.
+	 * 
+	 * @param strength the strength
+	 * @param value the value
+	 * 
+	 * @return the collator description
+	 */
+	public static String getCollatorDescription(int strength, String value) {
+		switch (strength) {
+		case Collator.IDENTICAL:
+			return value;
+		case Collator.PRIMARY:
+			return removeAccents(value);
+		case Collator.SECONDARY:
+			return value.toLowerCase();
+		case Collator.TERTIARY:
+			return removeAccents(value).toLowerCase();
+		}
+		return null;
+	}
+	
+	/**
+	 * Removes the accents.
+	 * 
+	 * @param text the text
+	 * 
+	 * @return the string
+	 */
+	public static String removeAccents(String text) {
+	    return Normalizer.decompose(text, false, 0).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 	
 	/**

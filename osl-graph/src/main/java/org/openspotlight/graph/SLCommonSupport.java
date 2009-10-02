@@ -49,7 +49,6 @@
 package org.openspotlight.graph;
 
 import java.io.Serializable;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 import org.openspotlight.graph.annotation.SLLinkAttribute;
