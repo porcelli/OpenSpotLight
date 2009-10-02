@@ -306,9 +306,6 @@ public class SLWhereLinkTypeInfo {
 			/** The link type info. */
 			private SLWhereLinkTypeInfo linkTypeInfo;
 			
-			/** The type info. */
-			private SLWhereLinkTypeInfo typeInfo; 
-			
 			/** The relational operator. */
 			private SLRelationalOperatorType relationalOperator;
 			

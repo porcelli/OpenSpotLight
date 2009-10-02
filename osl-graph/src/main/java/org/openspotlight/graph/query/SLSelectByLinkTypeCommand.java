@@ -262,7 +262,7 @@ public class SLSelectByLinkTypeCommand extends SLSelectAbstractCommand {
 				propStatement.condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
 				int collatorStrength = commandDO.getCollatorStrength();
 				if (conditionInfo.getValue() instanceof String && collatorStrength != Collator.IDENTICAL) {
-					propertyName = SLCollatorSupport.getCollatorPropName(conditionInfo.getPropertyName(), commandDO.getCollatorStrength());
+					propertyName = SLCollatorSupport.getCollatorKeyPropName(conditionInfo.getPropertyName(), commandDO.getCollatorStrength());
 					String value = SLCollatorSupport.getCollatorKey(commandDO.getCollatorStrength(), conditionInfo.getValue().toString());
 					propStatement.operator(OR).condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(value);
 				}

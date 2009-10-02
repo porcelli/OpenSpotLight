@@ -79,14 +79,23 @@ public class SLConsts {
 	/** The Constant NODE_NAME_TYPES. */
 	public static final String NODE_NAME_TYPES = "types";
 	
-	/** The Constant PROPERTY_NAME_PRIMARY. */
-	public static final String PROPERTY_NAME_PRIMARY = "primary";
+	/** The Constant PROPERTY_NAME_PRIMARY_KEY. */
+	public static final String PROPERTY_NAME_PRIMARY_KEY = "primaryKey";
 	
-	/** The Constant PROPERTY_NAME_SECONDARY. */
-	public static final String PROPERTY_NAME_SECONDARY = "secondary";
+	/** The Constant PROPERTY_NAME_SECONDARY_KEY. */
+	public static final String PROPERTY_NAME_SECONDARY_KEY = "secondaryKey";
 	
-	/** The Constant PROPERTY_NAME_TERTIARY. */
-	public static final String PROPERTY_NAME_TERTIARY = "tertiary";
+	/** The Constant PROPERTY_NAME_TERTIARY_KEY. */
+	public static final String PROPERTY_NAME_TERTIARY_KEY = "tertiaryKey";
+	
+	/** The Constant PROPERTY_NAME_PRIMARY_DESCRIPTION. */
+	public static final String PROPERTY_NAME_PRIMARY_DESCRIPTION = "primaryDescription";
+	
+	/** The Constant PROPERTY_NAME_SECONDARY_DESCRIPTION. */
+	public static final String PROPERTY_NAME_SECONDARY_DESCRIPTION = "secondaryDescription";
+	
+	/** The Constant PROPERTY_NAME_TERTIARY_DESCRIPTION. */
+	public static final String PROPERTY_NAME_TERTIARY_DESCRIPTION = "tertiaryDescription";
 	
 	/** The Constant PROPERTY_NAME_RENDER_HINT. */
 	public static final String PROPERTY_NAME_RENDER_HINT = "renderHint";

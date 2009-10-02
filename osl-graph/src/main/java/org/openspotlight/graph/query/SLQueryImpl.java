@@ -84,6 +84,7 @@ import org.openspotlight.graph.query.info.SLSelectTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo;
+import org.openspotlight.graph.query.info.SLOrderByTypeInfo.OrderType;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
@@ -443,13 +444,13 @@ public class SLQueryImpl implements SLQuery {
 				throw new SLInvalidQueryElementException("Node type on select clause not found: " + selectTypeInfo.getName());
 			}
 		}
+		/**
 		for (SLSelectByLinkInfo byLinkInfo : selectInfo.getByLinkInfoList()) {
-			/**
 			if (!linkTypeExists(byLinkInfo.getName())) {
 				throw new SLInvalidQueryElementException("Link type on select by link clause not found: " + byLinkInfo.getName());
 			}
-			**/
 		}
+		**/
 		SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
 		if (whereInfo != null) {
 			for (SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
@@ -476,7 +477,7 @@ public class SLQueryImpl implements SLQuery {
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	private boolean linkTypeExists(String name) throws SLGraphSessionException {
+	boolean linkTypeExists(String name) throws SLGraphSessionException {
 		return metadata.getMetaLinkType(name) != null || metadata.getMetaLinkTypeByDescription(name) != null;
 	}
 	
@@ -732,25 +733,28 @@ public class SLQueryImpl implements SLQuery {
 						}
 						else {
 							List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo.getOrderByTypeInfoList();
-							String propertyName = index1 < typeInfoList.size() ? typeInfoList.get(index1).getPropertyName() : null;
+							SLOrderByTypeInfo typeInfo = typeInfoList.get(index1);
+							String propertyName = index1 < typeInfoList.size() ? typeInfo.getPropertyName() : null;
 							Comparable<Serializable> value1 = nodeWrapper1.getPropertyValue(propertyName);
 							Comparable<Serializable> value2 = nodeWrapper2.getPropertyValue(propertyName);
 							if (propertyName != null) {
 								value1 = nodeWrapper1.getPropertyValue(propertyName);
 								value2 = nodeWrapper2.getPropertyValue(propertyName);
 							}
+							int compareValue;
 							if (value1 == null && value2 == null) {
-								return nodeWrapper1.getPath().compareTo(nodeWrapper2.getPath());
+								compareValue = nodeWrapper1.getPath().compareTo(nodeWrapper2.getPath());
 							}
 							else if (value1 == null && value2 != null) {
-								return 1;
+								compareValue =  1;
 							}
 							else if (value1 != null && value2 == null) {
-								return -1;
+								compareValue = -1;
 							}
 							else {
-								return value1.compareTo((Serializable) value2);
+								compareValue =  value1.compareTo((Serializable) value2);
 							}
+							return normalizeCompareValue(compareValue, typeInfo.getOrderType());
 						}
 					}
 					else {
@@ -760,6 +764,10 @@ public class SLQueryImpl implements SLQuery {
 				catch (SLException e) {
 					throw new SLRuntimeException("Error on attempt on order by comparator.", e);
 				}
+			}
+			
+			private int normalizeCompareValue(int value, OrderType orderType) {
+				return orderType.equals(OrderType.ASCENDING) ? value : -value;
 			}
 			
 			private int getTypeIndex(String typeName) throws SLGraphSessionException {
@@ -800,7 +808,6 @@ public class SLQueryImpl implements SLQuery {
 		};
 	}
 }
-
 
 class PNodeWrapper {
 	
