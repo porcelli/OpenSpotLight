@@ -146,11 +146,11 @@ public class SLCollatorSupport {
 		case Collator.IDENTICAL:
 			return value;
 		case Collator.PRIMARY:
-			return removeAccents(value);
+			return removeAccents(value).toLowerCase();
 		case Collator.SECONDARY:
 			return value.toLowerCase();
 		case Collator.TERTIARY:
-			return removeAccents(value).toLowerCase();
+			return removeAccents(value);
 		}
 		return null;
 	}
