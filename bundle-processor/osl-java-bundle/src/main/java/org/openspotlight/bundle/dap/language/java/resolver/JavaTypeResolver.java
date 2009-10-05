@@ -86,6 +86,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.common.util.InvocationCacheFactory;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
@@ -239,6 +240,22 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
         concreteTypes.add(JavaTypeClass.class);
         concreteTypes.add(JavaTypeEnum.class);
 
+    }
+
+    @SuppressWarnings( {"cast", "boxing"} )
+    public static JavaTypeResolver createNewCached( final SLContext abstractContext,
+                                              final List<SLContext> orderedActiveContexts,
+                                              final boolean enableBoxing,
+                                              final SLGraphSession session ) {
+        final JavaTypeResolver cached = (JavaTypeResolver)InvocationCacheFactory.createIntoCached(JavaTypeResolver.class,
+                                                                                                  new Class<?>[] {
+                                                                                                      SLContext.class,
+                                                                                                      List.class, boolean.class,
+                                                                                                      SLGraphSession.class},
+                                                                                                  new Object[] {abstractContext,
+                                                                                                      orderedActiveContexts,
+                                                                                                      enableBoxing, session});
+        return cached;
     }
 
     public JavaTypeResolver(

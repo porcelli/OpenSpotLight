@@ -21,8 +21,8 @@
 		</dependency>
 		<!-- bean utils-->
 		<dependency>
-		  <groupId>commons-beanutils</groupId>
-		  <artifactId>commons-beanutils</artifactId>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 
 		<!-- Java Concurrency in Practice annotations -->
@@ -59,6 +59,10 @@
 			<groupId>javax.jcr</groupId>
 			<artifactId>jcr</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2</version>
+		</dependency>
 	</dependencies>
 </project>
