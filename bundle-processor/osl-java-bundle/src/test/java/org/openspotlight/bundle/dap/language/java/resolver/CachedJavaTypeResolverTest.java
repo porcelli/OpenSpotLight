@@ -53,7 +53,6 @@ package org.openspotlight.bundle.dap.language.java.resolver;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.Util.createCached;
 
 import java.util.Arrays;
 import java.util.List;
@@ -119,9 +118,9 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
         final List<SLContext> orderedActiveContexts = Arrays.asList(crudFrameworkCtx, jre15ctx);
         final List<SLContext> orderedActiveContextsFor14 = Arrays.asList(crudFrameworkCtx, jre14ctx);
 
-        javaTypeFinder = createCached(new JavaTypeResolver(abstractContext, orderedActiveContexts, true, session));
-        java14TypeFinder = createCached(new JavaTypeResolver(abstractContext, orderedActiveContextsFor14, false, session));
-        anotherCachedJavaTypeFinder = createCached(new JavaTypeResolver(abstractContext, orderedActiveContexts, true, session));
+        javaTypeFinder = JavaTypeResolver.createNewCached(abstractContext, orderedActiveContexts, true, session);
+        java14TypeFinder = JavaTypeResolver.createNewCached(abstractContext, orderedActiveContextsFor14, false, session);
+        anotherCachedJavaTypeFinder = JavaTypeResolver.createNewCached(abstractContext, orderedActiveContexts, true, session);
 
     }
 
