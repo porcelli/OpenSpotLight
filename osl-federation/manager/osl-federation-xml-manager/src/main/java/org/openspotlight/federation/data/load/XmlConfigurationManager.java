@@ -133,6 +133,11 @@ public class XmlConfigurationManager implements ConfigurationManager {
         this.inputStream = null;
     }
 
+    public void closeResources() {
+        // TODO Auto-generated method stub
+
+    }
+
     @SuppressWarnings( "unchecked" )
     private void createEachXmlNode( final Element element,
                                     final ConfigurationNode configurationNode ) throws SLException {

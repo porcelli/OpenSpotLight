@@ -25,6 +25,7 @@
 			<artifactId>osl-federation-core</artifactId>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph</artifactId>
