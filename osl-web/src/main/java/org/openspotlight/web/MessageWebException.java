@@ -1,4 +1,4 @@
-package org.openspotlight.web.command;
+package org.openspotlight.web;
 
 public class MessageWebException extends WebException {
 

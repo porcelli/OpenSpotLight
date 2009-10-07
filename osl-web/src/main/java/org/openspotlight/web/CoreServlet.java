@@ -22,7 +22,6 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.web.command.WebCommand;
-import org.openspotlight.web.command.WebException;
 import org.openspotlight.web.command.WebCommand.WebCommandContext;
 
 public class CoreServlet extends HttpServlet {
