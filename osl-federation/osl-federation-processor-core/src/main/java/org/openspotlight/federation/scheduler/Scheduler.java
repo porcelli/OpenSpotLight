@@ -62,6 +62,7 @@ import org.openspotlight.common.LazyType;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Schedulable;
@@ -80,276 +81,239 @@ import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
- * This interface is to be used on Scheduler implementations to execute the
- * {@link BundleProcessor} on specified interfals.
- * 
- * Inside this Interface there's also some helper classes and a factory class
- * with the default implementation.
+ * This interface is to be used on Scheduler implementations to execute the {@link BundleProcessor} on specified interfals. Inside
+ * this Interface there's also some helper classes and a factory class with the default implementation.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public interface Scheduler {
 
-	/**
-	 * Sets the bundle processor manager.
-	 * 
-	 * @param bundleProcessorManager
-	 *            the new bundle processor manager
-	 */
-	public void setBundleProcessorManager(
-			BundleProcessorManager bundleProcessorManager);
+    /**
+     * A factory class used to create default instances of {@link Scheduler}.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     */
+    public static final class Factory {
 
-	/**
-	 * Load or reload the configuration.
-	 * 
-	 * @param configurationManager
-	 *            the configuration provider
-	 * 
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 */
-	public void loadConfiguration(ConfigurationManager configurationManager)
-			throws ConfigurationException;
+        /**
+         * {@link Scheduler} implementation using Quartz.
+         * 
+         * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+         */
+        private static enum QuartzScheduler implements Scheduler {
 
-	/**
-	 * Shutdown the execution scheduling.
-	 * 
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 */
-	public void shutdown() throws ConfigurationException;
+            /** Default instance. */
+            INSTANCE;
 
-	/**
-	 * Starts the execution scheduling.
-	 * 
-	 * @throws JobExecutionException
-	 *             the job execution exception
-	 */
-	public void start() throws JobExecutionException;
+            /**
+             * The Enum JobDataKeys.
+             */
+            private static enum JobDataKeys {
 
-	/**
-	 * Fire immediate execution for a {@link Schedulable} node.
-	 * 
-	 * @param bundles
-	 *            the bundles
-	 * 
-	 * @throws JobExecutionException
-	 *             the job execution exception
-	 */
-	public <T extends ConfigurationNode> void fireImmediateExecution(
-			Bundle... bundles) throws JobExecutionException;
+                /** The BUNDLE processor manager. */
+                BUNDLE_PROCESSOR_MANAGER,
+                /** The BUNDLE to process id. */
+                BUNDLE_TO_PROCESS_ID,
+                /** The CONFIGURATION manager. */
+                CONFIGURATION_MANAGER,
+                /** The BUNDLE version id. */
+                BUNDLE_VERSION_ID;
+            }
 
-	/**
-	 * A factory class used to create default instances of {@link Scheduler}.
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 */
-	public static final class Factory {
+            /**
+             * The Class OslJob.
+             */
+            private static class OslJob implements Job {
 
-		/**
-		 * Creates the scheduler.
-		 * 
-		 * @return the scheduler
-		 */
-		public static Scheduler createScheduler() {
-			return QuartzScheduler.INSTANCE;
-		}
+                /**
+                 * {@inheritDoc}
+                 */
+                public void execute( final JobExecutionContext ctx ) throws org.quartz.JobExecutionException {
+                    try {
+                        final JobDataMap dataMap = ctx.getJobDetail().getJobDataMap();
+                        final BundleProcessorManager bundleProcessorManager = (BundleProcessorManager)dataMap.get(JobDataKeys.BUNDLE_PROCESSOR_MANAGER);
+                        final String bundleId = (String)dataMap.get(JobDataKeys.BUNDLE_TO_PROCESS_ID);
+                        final String versionId = (String)dataMap.get(JobDataKeys.BUNDLE_VERSION_ID);
+                        final ConfigurationManager manager = (ConfigurationManager)dataMap.get(JobDataKeys.CONFIGURATION_MANAGER);
+                        final Configuration configuration = manager.load(LazyType.LAZY);
+                        final Bundle bundle = manager.findNodeByUuidAndVersion(configuration, Bundle.class, bundleId, versionId);
 
-		/**
-		 * {@link Scheduler} implementation using Quartz.
-		 * 
-		 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-		 */
-		private static enum QuartzScheduler implements Scheduler {
+                        bundleProcessorManager.processBundles(Arrays.asList(bundle));
+                    } catch (final Exception e) {
+                        throw logAndReturnNew(e, org.quartz.JobExecutionException.class);
+                    }
+                }
 
-			/** Default instance. */
-			INSTANCE;
+            }
 
-			/** The scheduler. */
-			private final org.quartz.Scheduler scheduler;
+            /** The scheduler. */
+            private final org.quartz.Scheduler       scheduler;
 
-			/**
-			 * Instantiates a new quartz scheduler.
-			 */
-			private QuartzScheduler() {
-				try {
-					this.scheduler = new StdSchedulerFactory().getScheduler();
-				} catch (SchedulerException e) {
-					throw logAndReturnNew(e, ConfigurationException.class);
-				}
-			}
+            /** The configuration provider. */
+            private ConfigurationManager             configurationManager;
 
-			/**
-			 * {@inheritDoc}
-			 */
-			public <T extends ConfigurationNode> void fireImmediateExecution(
-					Bundle... bundles) throws JobExecutionException {
-				try {
-					for (Bundle b : bundles) {
-						long startTime = System.currentTimeMillis() + 1000L;
-						Date date = new Date(startTime);
-						SimpleTrigger trigger = new SimpleTrigger("only once: "
-								+ date + " " + b.toString(), null, date, null,
-								0, 0L);
-						JobDetail detail = createJob(b);
-						scheduler.scheduleJob(detail, trigger);
-					}
-				} catch (Exception e) {
-					throw logAndReturnNew(e, JobExecutionException.class);
-				}
-			}
+            private final List<Pair<String, String>> jobEntries = new ArrayList<Pair<String, String>>();
 
-			/**
-			 * The Class OslJob.
-			 */
-			private static class OslJob implements Job {
+            /** The bundle processor manager. */
+            private BundleProcessorManager           bundleProcessorManager;
 
-				/**
-				 * {@inheritDoc}
-				 */
-				public void execute(JobExecutionContext ctx)
-						throws org.quartz.JobExecutionException {
-					try {
-						JobDataMap dataMap = ctx.getJobDetail().getJobDataMap();
-						BundleProcessorManager bundleProcessorManager = (BundleProcessorManager) dataMap
-								.get(JobDataKeys.BUNDLE_PROCESSOR_MANAGER);
-						String bundleId = (String) dataMap
-								.get(JobDataKeys.BUNDLE_TO_PROCESS_ID);
-						String versionId = (String) dataMap
-								.get(JobDataKeys.BUNDLE_VERSION_ID);
-						ConfigurationManager manager = (ConfigurationManager) dataMap
-								.get(JobDataKeys.CONFIGURATION_MANAGER);
-						Configuration configuration = manager
-								.load(LazyType.LAZY);
-						Bundle bundle = manager.findNodeByUuidAndVersion(
-								configuration, Bundle.class, bundleId,
-								versionId);
+            /**
+             * Instantiates a new quartz scheduler.
+             */
+            private QuartzScheduler() {
+                try {
+                    this.scheduler = new StdSchedulerFactory().getScheduler();
+                } catch (final SchedulerException e) {
+                    throw logAndReturnNew(e, ConfigurationException.class);
+                }
+            }
 
-						bundleProcessorManager.processBundles(Arrays
-								.asList(bundle));
-					} catch (Exception e) {
-						throw logAndReturnNew(e,
-								org.quartz.JobExecutionException.class);
-					}
-				}
+            /**
+             * Creates the job.
+             * 
+             * @param bundle the bundle
+             * @return the job detail
+             */
+            private synchronized JobDetail createJob( final Bundle bundle ) {
+                final String name = bundle.getInstanceMetadata().getPath();
+                final String group = bundle.getInstanceMetadata().getDefaultParent().getInstanceMetadata().getPath();
+                final JobDetail detail = new JobDetail(name, group, OslJob.class);
+                jobEntries.add(new Pair<String, String>(name, group));
+                final String uniqueId = bundle.getInstanceMetadata().getSavedUniqueId();
+                assert uniqueId != null;
+                final JobDataMap detailMap = detail.getJobDataMap();
+                detailMap.put(JobDataKeys.BUNDLE_TO_PROCESS_ID, uniqueId);
+                detailMap.put(JobDataKeys.BUNDLE_PROCESSOR_MANAGER, bundleProcessorManager);
+                detailMap.put(JobDataKeys.CONFIGURATION_MANAGER, configurationManager);
+                // FIXME not using the version id here
+                return detail;
+            }
 
-			}
+            /**
+             * {@inheritDoc}
+             */
+            public <T extends ConfigurationNode> void fireImmediateExecution( final Bundle... bundles )
+                throws JobExecutionException {
+                try {
+                    for (final Bundle b : bundles) {
+                        final long startTime = System.currentTimeMillis() + 1000L;
+                        final Date date = new Date(startTime);
+                        final SimpleTrigger trigger = new SimpleTrigger("only once: " + date + " " + b.toString(), null, date,
+                                                                        null, 0, 0L);
+                        final JobDetail detail = createJob(b);
+                        scheduler.scheduleJob(detail, trigger);
+                    }
+                } catch (final Exception e) {
+                    throw logAndReturnNew(e, JobExecutionException.class);
+                }
+            }
 
-			/** The configuration provider. */
-			private ConfigurationManager configurationManager;
+            /**
+             * {@inheritDoc}
+             */
+            public synchronized void loadConfiguration( final ConfigurationManager newConfigurationManager )
+                throws ConfigurationException {
+                try {
+                    this.configurationManager = newConfigurationManager;
+                    for (final Pair<String, String> entry : jobEntries) {
+                        this.scheduler.deleteJob(entry.getK1(), entry.getK2());
+                    }
+                    final Configuration configuration = configurationManager.load(LazyType.LAZY);
+                    final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
+                    for (final Bundle bundle : bundles) {
+                        for (final ScheduleData data : bundle.getScheduleDataForThisBundle()) {
 
-			/**
-			 * The Enum JobDataKeys.
-			 */
-			private static enum JobDataKeys {
+                            final JobDetail detail = createJob(bundle);
 
-				/** The BUNDLE processor manager. */
-				BUNDLE_PROCESSOR_MANAGER,
-				/** The BUNDLE to process id. */
-				BUNDLE_TO_PROCESS_ID,
-				/** The CONFIGURATION manager. */
-				CONFIGURATION_MANAGER,
-				/** The BUNDLE version id. */
-				BUNDLE_VERSION_ID;
-			}
+                            final CronTrigger trigger = new CronTrigger(data.getDescription(), bundle.getName(),
+                                                                        bundle.getRootGroup().getName(), bundle.getName(),
+                                                                        data.getCronInformation());
+                            scheduler.scheduleJob(detail, trigger);
+                        }
+                    }
+                } catch (final Exception e) {
+                    logAndThrowNew(e, ConfigurationException.class);
+                }
 
-			private List<Pair<String, String>> jobEntries = new ArrayList<Pair<String, String>>();
+            }
 
-			/**
-			 * Creates the job.
-			 * 
-			 * @param bundle
-			 *            the bundle
-			 * 
-			 * @return the job detail
-			 */
-			private synchronized JobDetail createJob(Bundle bundle) {
-				String name = bundle.getInstanceMetadata().getPath();
-				String group = bundle.getInstanceMetadata().getDefaultParent()
-						.getInstanceMetadata().getPath();
-				JobDetail detail = new JobDetail(name, group, OslJob.class);
-				jobEntries.add(new Pair<String, String>(name, group));
-				String uniqueId = bundle.getInstanceMetadata()
-						.getSavedUniqueId();
-				assert uniqueId != null;
-				JobDataMap detailMap = detail.getJobDataMap();
-				detailMap.put(JobDataKeys.BUNDLE_TO_PROCESS_ID, uniqueId);
-				detailMap.put(JobDataKeys.BUNDLE_PROCESSOR_MANAGER,
-						bundleProcessorManager);
-				detailMap.put(JobDataKeys.CONFIGURATION_MANAGER,
-						configurationManager);
-				// FIXME not using the version id here
-				return detail;
-			}
+            /**
+             * {@inheritDoc}
+             */
+            public void setBundleProcessorManager( final BundleProcessorManager bundleProcessorManager ) {
+                this.bundleProcessorManager = bundleProcessorManager;
+            }
 
-			/**
-			 * {@inheritDoc}
-			 */
-			public synchronized void loadConfiguration(
-					ConfigurationManager newConfigurationManager)
-					throws ConfigurationException {
-				try {
-					this.configurationManager = newConfigurationManager;
-					for (Pair<String, String> entry : jobEntries) {
-						this.scheduler.deleteJob(entry.getK1(), entry.getK2());
-					}
-					Configuration configuration = configurationManager
-							.load(LazyType.LAZY);
-					Set<Bundle> bundles = ConfigurationNodes
-							.findAllNodesOfType(configuration, Bundle.class);
-					for (Bundle bundle : bundles) {
-						for (ScheduleData data : bundle
-								.getScheduleDataForThisBundle()) {
+            /**
+             * {@inheritDoc}
+             */
+            public void shutdown() throws ConfigurationException {
+                try {
+                    scheduler.shutdown(true);
+                } catch (final SchedulerException e) {
+                    throw logAndReturnNew(e, ConfigurationException.class);
+                }
+            }
 
-							JobDetail detail = createJob(bundle);
+            /**
+             * {@inheritDoc}
+             */
+            public void start() throws JobExecutionException {
+                try {
+                    scheduler.start();
+                } catch (final SchedulerException e) {
+                    throw logAndReturnNew(e, ConfigurationException.class);
+                }
+            }
 
-							CronTrigger trigger = new CronTrigger(data
-									.getDescription(), bundle.getName(), bundle
-									.getRootGroup().getName(),
-									bundle.getName(), data.getCronInformation());
-							scheduler.scheduleJob(detail, trigger);
-						}
-					}
-				} catch (Exception e) {
-					logAndThrowNew(e, ConfigurationException.class);
-				}
+        }
 
-			}
+        /**
+         * Creates the scheduler.
+         * 
+         * @return the scheduler
+         */
+        public static Scheduler createScheduler() {
+            return QuartzScheduler.INSTANCE;
+        }
+    }
 
-			/** The bundle processor manager. */
-			private BundleProcessorManager bundleProcessorManager;
+    /**
+     * Fire immediate execution for a {@link Schedulable} node.
+     * 
+     * @param bundles the bundles
+     * @throws JobExecutionException the job execution exception
+     */
+    public <T extends ConfigurationNode> void fireImmediateExecution( Bundle... bundles ) throws JobExecutionException;
 
-			/**
-			 * {@inheritDoc}
-			 */
-			public void setBundleProcessorManager(
-					BundleProcessorManager bundleProcessorManager) {
-				this.bundleProcessorManager = bundleProcessorManager;
-			}
+    /**
+     * Load or reload the configuration.
+     * 
+     * @param configurationManager the configuration provider
+     * @throws ConfigurationException the configuration exception
+     */
+    public void loadConfiguration( ConfigurationManager configurationManager )
+        throws ConfigurationException, NoConfigurationYetException;
 
-			/**
-			 * {@inheritDoc}
-			 */
-			public void shutdown() throws ConfigurationException {
-				try {
-					scheduler.shutdown(true);
-				} catch (SchedulerException e) {
-					throw logAndReturnNew(e, ConfigurationException.class);
-				}
-			}
+    /**
+     * Sets the bundle processor manager.
+     * 
+     * @param bundleProcessorManager the new bundle processor manager
+     */
+    public void setBundleProcessorManager( BundleProcessorManager bundleProcessorManager );
 
-			/**
-			 * {@inheritDoc}
-			 */
-			public void start() throws JobExecutionException {
-				try {
-					scheduler.start();
-				} catch (SchedulerException e) {
-					throw logAndReturnNew(e, ConfigurationException.class);
-				}
-			}
+    /**
+     * Shutdown the execution scheduling.
+     * 
+     * @throws ConfigurationException the configuration exception
+     */
+    public void shutdown() throws ConfigurationException;
 
-		}
-	}
+    /**
+     * Starts the execution scheduling.
+     * 
+     * @throws JobExecutionException the job execution exception
+     */
+    public void start() throws JobExecutionException;
 
 }

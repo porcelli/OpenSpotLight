@@ -7,22 +7,22 @@ public abstract class WebException extends Exception {
      */
     private static final long serialVersionUID = -9092082090455398421L;
 
-    private WebException() {
+    public WebException() {
         super();
     }
 
-    private WebException(
-                          final String message ) {
+    public WebException(
+                         final String message ) {
         super(message);
     }
 
-    private WebException(
-                          final String message, final Throwable cause ) {
+    public WebException(
+                         final String message, final Throwable cause ) {
         super(message, cause);
     }
 
-    private WebException(
-                          final Throwable cause ) {
+    public WebException(
+                         final Throwable cause ) {
         super(cause);
     }
 
