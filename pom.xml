@@ -162,9 +162,9 @@
 			</dependency>
 
 			<dependency>
-			  <groupId>org.antlr</groupId>
-			  <artifactId>antlr</artifactId>
-			  <version>3.2</version>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr</artifactId>
+				<version>3.2</version>
 			</dependency>
 			<!-- dna federation dependencies -->
 			<dependency>
@@ -319,15 +319,15 @@
 				<version>2.7.7</version>
 			</dependency>
 			<dependency>
-			  <groupId>org.antlr</groupId>
-			  <artifactId>maven-gunit-plugin</artifactId>
-			  <version>3.2</version>
+				<groupId>org.antlr</groupId>
+				<artifactId>maven-gunit-plugin</artifactId>
+				<version>3.2</version>
 			</dependency>
 			<dependency>
-			  <groupId>org.antlr</groupId>
-			  <artifactId>gunit</artifactId>
-			  <version>3.2</version>
-			  <scope>test</scope>
+				<groupId>org.antlr</groupId>
+				<artifactId>gunit</artifactId>
+				<version>3.2</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>
@@ -559,7 +559,12 @@
 				<artifactId>servlet-api</artifactId>
 				<version>2.5</version>
 			</dependency>
-
+			<dependency>
+				<groupId>net.sf.json-lib</groupId>
+				<artifactId>json-lib</artifactId>
+				<version>2.3</version>
+				<classifier>jdk15</classifier>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>

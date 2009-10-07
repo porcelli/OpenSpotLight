@@ -72,12 +72,6 @@ public class CoreServlet extends HttpServlet {
 
     private final CommandLoader loader           = new CommandLoader();
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-        super.destroy();
-    }
-
     protected void doAction( final HttpServletRequest req,
                              final HttpServletResponse resp ) {
         try {
