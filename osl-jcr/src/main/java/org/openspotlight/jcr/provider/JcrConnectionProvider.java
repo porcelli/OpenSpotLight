@@ -26,7 +26,8 @@ public abstract class JcrConnectionProvider {
 
         @Override
         public void closeRepository() {
-
+            final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl)this.repository;
+            repositoryCasted.shutdown();
         }
 
         @Override

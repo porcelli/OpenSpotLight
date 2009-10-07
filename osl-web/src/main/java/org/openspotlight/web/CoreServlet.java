@@ -45,7 +45,7 @@ public class CoreServlet extends HttpServlet {
         public synchronized WebCommand loadCommand( final String actionName ) {
             try {
                 String newActionName = actionName;
-                String className = this.properties.getProperty(actionName);
+                String className = actionName != null ? this.properties.getProperty(actionName) : null;
                 if (className == null) {
                     newActionName = "invalidAction";
                 }
