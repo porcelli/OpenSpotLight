@@ -3,12 +3,15 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
-  <servlet>
-  	<servlet-class>org.openspotlight.web.CoreServlet</servlet-class>
-  	<servlet-name>core servlet</servlet-name>
-  	<load-on-startup>1</load-on-startup>
-  </servlet>
+	<display-name>Archetype Created Web Application</display-name>
+	<listener>
+		<listener-class>org.openspotlight.web.OslContextListener</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>core servlet</servlet-name>
+		<servlet-class>org.openspotlight.web.CoreServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>core servlet</servlet-name>
 		<url-pattern>/*</url-pattern>
