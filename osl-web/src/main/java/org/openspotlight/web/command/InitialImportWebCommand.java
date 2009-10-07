@@ -16,6 +16,8 @@ import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
 import org.openspotlight.federation.util.MarkAllAsDirtyVisitor;
+import org.openspotlight.web.MessageWebException;
+import org.openspotlight.web.WebException;
 
 public class InitialImportWebCommand implements WebCommand {
 
@@ -25,18 +27,17 @@ public class InitialImportWebCommand implements WebCommand {
         try {
             final Session jcrSession = context.getJcrSession();
             final ConfigurationManager manager = new JcrSessionConfigurationManager(jcrSession);
-            Configuration configuration = null;
             final String forceReloadString = parameters.get("forceReload");
             final boolean forceReload = forceReloadString == null ? false : Boolean.valueOf(forceReloadString);
             boolean firstTime = false;
             try {
-                configuration = manager.load(LazyType.LAZY);
+                manager.load(LazyType.LAZY);
             } catch (final NoConfigurationYetException e) {
                 firstTime = true;
             }
             boolean reloaded = false;
             if (firstTime || forceReload) {
-                configuration = this.saveXmlOnJcr(manager);
+                this.saveXmlOnJcr(manager);
                 reloaded = true;
             }
             return "{message:'" + (reloaded ? "was" : "was not") + " reloaded'}";

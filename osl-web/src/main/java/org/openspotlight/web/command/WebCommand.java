@@ -6,6 +6,7 @@ import javax.jcr.Session;
 
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.web.WebException;
 
 public interface WebCommand {
 

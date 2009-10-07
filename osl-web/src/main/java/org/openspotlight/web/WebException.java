@@ -1,4 +1,4 @@
-package org.openspotlight.web.command;
+package org.openspotlight.web;
 
 public abstract class WebException extends Exception {
 
