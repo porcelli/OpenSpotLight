@@ -2,27 +2,37 @@ package org.openspotlight.web.command;
 
 import java.util.Map;
 
+import javax.jcr.Session;
+
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public interface WebCommand {
 
     public static class WebCommandContext {
-        private final SLGraphSession        session;
+        private final SLGraphSession        graphSession;
         private final JcrConnectionProvider provider;
+        private volatile Session            jcrSession;
 
         public WebCommandContext(
                                   final SLGraphSession session, final JcrConnectionProvider provider ) {
-            this.session = session;
+            this.graphSession = session;
             this.provider = provider;
         }
 
-        protected JcrConnectionProvider getProvider() {
-            return this.provider;
+        public SLGraphSession getGraphSession() {
+            return this.graphSession;
         }
 
-        protected SLGraphSession getSession() {
-            return this.session;
+        public Session getJcrSession() {
+            if (this.jcrSession == null) {
+                this.jcrSession = this.provider.openSession();
+            }
+            return this.jcrSession;
+        }
+
+        public JcrConnectionProvider getProvider() {
+            return this.provider;
         }
 
     }

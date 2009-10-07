@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jcr.Repository;
+import javax.jcr.Session;
 
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
@@ -46,6 +47,18 @@ public abstract class JcrConnectionProvider {
             return this.repository;
         }
 
+        @Override
+        public Session openSession() {
+            try {
+                final Repository repo = this.openRepository();
+                Session session;
+                session = repo.login(this.getData().getCredentials());
+                return session;
+            } catch (final Exception e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            }
+        }
+
     }
 
     private static Map<JcrConnectionDescriptor, JcrConnectionProvider> cache = new ConcurrentHashMap<JcrConnectionDescriptor, JcrConnectionProvider>();
@@ -67,8 +80,8 @@ public abstract class JcrConnectionProvider {
 
     private final JcrConnectionDescriptor data;
 
-    private JcrConnectionProvider(
-                                   final JcrConnectionDescriptor data ) {
+    JcrConnectionProvider(
+                           final JcrConnectionDescriptor data ) {
         this.data = data;
     }
 
@@ -79,4 +92,6 @@ public abstract class JcrConnectionProvider {
     }
 
     public abstract Repository openRepository();
+
+    public abstract Session openSession();
 }
