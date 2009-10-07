@@ -77,7 +77,7 @@ import org.openspotlight.graph.query.SLQueryResult;
 public class MethodResolver<T extends SLNode, M extends SLNode> {
 
     /** The type resolver. */
-    private TypeResolver<T>           typeResolver                      = null;
+    private TypeResolver<T>         typeResolver                      = null;
 
     /** The graph session. */
     private SLGraphSession          graphSession                      = null;
@@ -250,7 +250,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      */
     public <XM extends M> XM getMethod( final T type,
                                         final String methodName ) throws SLGraphSessionException, SLBundleException {
-        return this.getMethod(type, methodName, null);
+        return this.<XM>getMethod(type, methodName, null);
     }
 
     /**
@@ -281,7 +281,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
             paramSize = paramTypes.size();
         }
 
-        final XM chachedMethod = this.getCachedData(type, methodName, paramTypes);
+        final XM chachedMethod = this.<XM>getCachedData(type, methodName, paramTypes);
 
         if (chachedMethod != null) {
             return chachedMethod;

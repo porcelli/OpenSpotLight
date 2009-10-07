@@ -9,15 +9,21 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.ClassPathResource;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.web.command.WebCommand;
 import org.openspotlight.web.command.WebException;
+import org.openspotlight.web.command.WebCommand.WebCommandContext;
 
 public class CoreServlet extends HttpServlet {
 
@@ -59,27 +65,48 @@ public class CoreServlet extends HttpServlet {
         }
     }
 
-    private final CommandLoader loader = new CommandLoader();
+    /**
+     * 
+     */
+    private static final long   serialVersionUID = -909328553298519604L;
+
+    private final CommandLoader loader           = new CommandLoader();
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        super.destroy();
+    }
 
     protected void doAction( final HttpServletRequest req,
-                             final HttpServletResponse resp ) throws ServletException, IOException {
-        final String action = req.getParameter("action");
-        final WebCommand command = this.loader.loadCommand(action);
-        final Map<String, String> parameters = new TreeMap<String, String>();
-        final Enumeration<?> names = req.getParameterNames();
-        while (names.hasMoreElements()) {
-            final String name = (String)names.nextElement();
-            parameters.put(name, req.getParameter(name));
-        }
-
-        String result;
+                             final HttpServletResponse resp ) {
         try {
-            result = command.execute(parameters);
-        } catch (final WebException e) {
-            result = e.toJsonString();
+            final String action = req.getParameter("action");
+            final WebCommand command = this.loader.loadCommand(action);
+            final Map<String, String> parameters = new TreeMap<String, String>();
+            final Enumeration<?> names = req.getParameterNames();
+            while (names.hasMoreElements()) {
+                final String name = (String)names.nextElement();
+                parameters.put(name, req.getParameter(name));
+            }
+            final SLGraph graph = OslServletContextSupport.getGraphFrom(this.getServletContext());
+            final JcrConnectionProvider provider = OslServletContextSupport.getJcrConnectionFrom(this.getServletContext());
+            final SLGraphSession session = graph.openSession();
+            final WebCommandContext context = new WebCommandContext(session, provider);
+
+            String result;
+            try {
+                result = command.execute(context, parameters);
+            } catch (final WebException e) {
+                result = e.toJsonString();
+            } finally {
+                session.close();
+            }
+            resp.getOutputStream().print(result);
+            resp.getOutputStream().flush();
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
         }
-        resp.getOutputStream().print(result);
-        resp.getOutputStream().flush();
     }
 
     @Override
@@ -92,5 +119,12 @@ public class CoreServlet extends HttpServlet {
     protected void doPost( final HttpServletRequest req,
                            final HttpServletResponse resp ) throws ServletException, IOException {
         this.doAction(req, resp);
+    }
+
+    @Override
+    public void init( final ServletConfig config ) throws ServletException {
+        config.getServletContext();
+
+        super.init(config);
     }
 }
