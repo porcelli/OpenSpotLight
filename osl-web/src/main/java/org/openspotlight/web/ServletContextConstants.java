@@ -1,6 +1,7 @@
 package org.openspotlight.web;
 
 public interface ServletContextConstants {
-    String PROVIDER = "provider";
-    String GRAPH    = "graph";
+    String PROVIDER  = "provider";
+    String GRAPH     = "graph";
+    String SCHEDULER = "scheduler";
 }

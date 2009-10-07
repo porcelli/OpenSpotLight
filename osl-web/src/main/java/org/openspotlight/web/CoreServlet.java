@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.ClassPathResource;
+import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.web.command.WebCommand;
 import org.openspotlight.web.command.WebCommand.WebCommandContext;
@@ -73,7 +73,12 @@ public class CoreServlet extends HttpServlet {
 
     protected void doAction( final HttpServletRequest req,
                              final HttpServletResponse resp ) {
+        WebCommandContext context = null;
         try {
+            final SLGraph graph = OslServletContextSupport.getGraphFrom(this.getServletContext());
+            final JcrConnectionProvider provider = OslServletContextSupport.getJcrConnectionFrom(this.getServletContext());
+            final Scheduler scheduler = OslServletContextSupport.getSchedulerFrom(this.getServletContext());
+            context = new WebCommandContext(graph, provider, scheduler);
             final String action = req.getParameter("action");
             final WebCommand command = this.loader.loadCommand(action);
             final Map<String, String> parameters = new TreeMap<String, String>();
@@ -82,23 +87,21 @@ public class CoreServlet extends HttpServlet {
                 final String name = (String)names.nextElement();
                 parameters.put(name, req.getParameter(name));
             }
-            final SLGraph graph = OslServletContextSupport.getGraphFrom(this.getServletContext());
-            final JcrConnectionProvider provider = OslServletContextSupport.getJcrConnectionFrom(this.getServletContext());
-            final SLGraphSession session = graph.openSession();
-            final WebCommandContext context = new WebCommandContext(session, provider);
 
             String result;
             try {
                 result = command.execute(context, parameters);
             } catch (final WebException e) {
                 result = e.toJsonString();
-            } finally {
-                session.close();
             }
             resp.getOutputStream().print(result);
             resp.getOutputStream().flush();
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
+        } finally {
+            if (context != null) {
+                context.closeResources();
+            }
         }
     }
 

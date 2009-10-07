@@ -53,29 +53,24 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.openspotlight.common.LazyType;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Schedulable;
 import org.openspotlight.federation.data.impl.ScheduleData;
-import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessor;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.quartz.CronTrigger;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
@@ -100,59 +95,22 @@ public interface Scheduler {
          * 
          * @author Luiz Fernando Teston - feu.teston@caravelatech.com
          */
-        private static enum QuartzScheduler implements Scheduler {
+        static enum QuartzScheduler implements Scheduler {
 
             /** Default instance. */
             INSTANCE;
+            private ConfigurationManagerProvider     provider;
 
-            /**
-             * The Enum JobDataKeys.
-             */
-            private static enum JobDataKeys {
+            static final String                      BUNDLE_PROCESSOR_MANAGER       = "bundle_processor_manager";
 
-                /** The BUNDLE processor manager. */
-                BUNDLE_PROCESSOR_MANAGER,
-                /** The BUNDLE to process id. */
-                BUNDLE_TO_PROCESS_ID,
-                /** The CONFIGURATION manager. */
-                CONFIGURATION_MANAGER,
-                /** The BUNDLE version id. */
-                BUNDLE_VERSION_ID;
-            }
-
-            /**
-             * The Class OslJob.
-             */
-            private static class OslJob implements Job {
-
-                /**
-                 * {@inheritDoc}
-                 */
-                public void execute( final JobExecutionContext ctx ) throws org.quartz.JobExecutionException {
-                    try {
-                        final JobDataMap dataMap = ctx.getJobDetail().getJobDataMap();
-                        final BundleProcessorManager bundleProcessorManager = (BundleProcessorManager)dataMap.get(JobDataKeys.BUNDLE_PROCESSOR_MANAGER);
-                        final String bundleId = (String)dataMap.get(JobDataKeys.BUNDLE_TO_PROCESS_ID);
-                        final String versionId = (String)dataMap.get(JobDataKeys.BUNDLE_VERSION_ID);
-                        final ConfigurationManager manager = (ConfigurationManager)dataMap.get(JobDataKeys.CONFIGURATION_MANAGER);
-                        final Configuration configuration = manager.load(LazyType.LAZY);
-                        final Bundle bundle = manager.findNodeByUuidAndVersion(configuration, Bundle.class, bundleId, versionId);
-
-                        bundleProcessorManager.processBundles(Arrays.asList(bundle));
-                    } catch (final Exception e) {
-                        throw logAndReturnNew(e, org.quartz.JobExecutionException.class);
-                    }
-                }
-
-            }
+            static final String                      BUNDLE_TO_PROCESS_ID           = "bundle_to_process_id";
+            static final String                      CONFIGURATION_MANAGER_PROVIDER = "configuration_manager_provider";
+            static final String                      BUNDLE_VERSION_ID              = "bundle_version_id";
 
             /** The scheduler. */
             private final org.quartz.Scheduler       scheduler;
 
-            /** The configuration provider. */
-            private ConfigurationManager             configurationManager;
-
-            private final List<Pair<String, String>> jobEntries = new ArrayList<Pair<String, String>>();
+            private final List<Pair<String, String>> jobEntries                     = new ArrayList<Pair<String, String>>();
 
             /** The bundle processor manager. */
             private BundleProcessorManager           bundleProcessorManager;
@@ -174,7 +132,7 @@ public interface Scheduler {
              * @param bundle the bundle
              * @return the job detail
              */
-            private synchronized JobDetail createJob( final Bundle bundle ) {
+            private synchronized JobDetail createJobDetail( final Bundle bundle ) {
                 final String name = bundle.getInstanceMetadata().getPath();
                 final String group = bundle.getInstanceMetadata().getDefaultParent().getInstanceMetadata().getPath();
                 final JobDetail detail = new JobDetail(name, group, OslJob.class);
@@ -182,9 +140,9 @@ public interface Scheduler {
                 final String uniqueId = bundle.getInstanceMetadata().getSavedUniqueId();
                 assert uniqueId != null;
                 final JobDataMap detailMap = detail.getJobDataMap();
-                detailMap.put(JobDataKeys.BUNDLE_TO_PROCESS_ID, uniqueId);
-                detailMap.put(JobDataKeys.BUNDLE_PROCESSOR_MANAGER, bundleProcessorManager);
-                detailMap.put(JobDataKeys.CONFIGURATION_MANAGER, configurationManager);
+                detailMap.put(BUNDLE_TO_PROCESS_ID, uniqueId);
+                detailMap.put(BUNDLE_PROCESSOR_MANAGER, this.bundleProcessorManager);
+                detailMap.put(CONFIGURATION_MANAGER_PROVIDER, this.provider);
                 // FIXME not using the version id here
                 return detail;
             }
@@ -200,7 +158,7 @@ public interface Scheduler {
                         final Date date = new Date(startTime);
                         final SimpleTrigger trigger = new SimpleTrigger("only once: " + date + " " + b.toString(), null, date,
                                                                         null, 0, 0L);
-                        final JobDetail detail = createJob(b);
+                        final JobDetail detail = createJobDetail(b);
                         scheduler.scheduleJob(detail, trigger);
                     }
                 } catch (final Exception e) {
@@ -211,19 +169,17 @@ public interface Scheduler {
             /**
              * {@inheritDoc}
              */
-            public synchronized void loadConfiguration( final ConfigurationManager newConfigurationManager )
-                throws ConfigurationException {
+            public synchronized void loadConfiguration( final Configuration configuration ) throws ConfigurationException {
                 try {
-                    this.configurationManager = newConfigurationManager;
+
                     for (final Pair<String, String> entry : jobEntries) {
                         this.scheduler.deleteJob(entry.getK1(), entry.getK2());
                     }
-                    final Configuration configuration = configurationManager.load(LazyType.LAZY);
                     final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
                     for (final Bundle bundle : bundles) {
                         for (final ScheduleData data : bundle.getScheduleDataForThisBundle()) {
 
-                            final JobDetail detail = createJob(bundle);
+                            final JobDetail detail = createJobDetail(bundle);
 
                             final CronTrigger trigger = new CronTrigger(data.getDescription(), bundle.getName(),
                                                                         bundle.getRootGroup().getName(), bundle.getName(),
@@ -242,6 +198,10 @@ public interface Scheduler {
              */
             public void setBundleProcessorManager( final BundleProcessorManager bundleProcessorManager ) {
                 this.bundleProcessorManager = bundleProcessorManager;
+            }
+
+            public void setConfigurationManagerProvider( final ConfigurationManagerProvider provider ) {
+                this.provider = provider;
             }
 
             /**
@@ -292,8 +252,7 @@ public interface Scheduler {
      * @param configurationManager the configuration provider
      * @throws ConfigurationException the configuration exception
      */
-    public void loadConfiguration( ConfigurationManager configurationManager )
-        throws ConfigurationException, NoConfigurationYetException;
+    public void loadConfiguration( Configuration configuration ) throws ConfigurationException;
 
     /**
      * Sets the bundle processor manager.
@@ -301,6 +260,8 @@ public interface Scheduler {
      * @param bundleProcessorManager the new bundle processor manager
      */
     public void setBundleProcessorManager( BundleProcessorManager bundleProcessorManager );
+
+    public void setConfigurationManagerProvider( ConfigurationManagerProvider provider );
 
     /**
      * Shutdown the execution scheduling.

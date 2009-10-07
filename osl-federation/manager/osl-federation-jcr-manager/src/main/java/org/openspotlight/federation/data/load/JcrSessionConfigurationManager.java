@@ -533,6 +533,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         this.initDataInsideSession();
     }
 
+    public void closeResources() {
+        this.session.logout();
+    }
+
     private Node create( final Node parentNode,
                          final String nodePath,
                          final String keyPropertyName,

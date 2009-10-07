@@ -255,6 +255,8 @@ public interface ConfigurationManager {
      */
     public static final String DEFAULT_OSL_PREFIX = "osl"; //$NON-NLS-1$
 
+    public void closeResources();
+
     /**
      * Finds a node by its given unique data.
      * 
