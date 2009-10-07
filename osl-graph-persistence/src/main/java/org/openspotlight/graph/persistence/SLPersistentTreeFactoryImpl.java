@@ -48,15 +48,13 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.io.File;
+import static org.openspotlight.common.util.Files.delete;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
-import javax.jcr.SimpleCredentials;
 
-import org.apache.jackrabbit.core.RepositoryImpl;
-import org.apache.jackrabbit.core.config.RepositoryConfig;
-import org.openspotlight.common.util.ClassPathResource;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLPersistentTreeFactoryImpl.
@@ -65,43 +63,34 @@ import org.openspotlight.common.util.ClassPathResource;
  */
 public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeFactory#createPersistentTree()
-	 */
-	public SLPersistentTree createTempPersistentTree(boolean removeExistent) throws SLPersistentTreeFactoryException {
-		try {
-			if (removeExistent) {
-				deleteDir(new File("/tmp/repository"));
-			}
-			Credentials credentials = new SimpleCredentials("username", "password".toCharArray());
-			RepositoryConfig config = RepositoryConfig.create(ClassPathResource.getResourceFromClassPath("repository.xml"), "/tmp/repository");
-			Repository repo = RepositoryImpl.create(config);
-			return new SLPersistentTreeImpl(repo, credentials);
-		}
-		catch (Exception e) {
-			throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
-		}
-	}
-	
-	/**
-	 * Delete dir.
-	 * 
-	 * @param dir the dir
-	 * 
-	 * @return true, if successful
-	 */
-	public boolean deleteDir(File dir) {
-		if (dir.isDirectory()) {
-			String[] children = dir.list();
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteDir(new File(dir, children[i]));
-				if (!success) {
-					return false;
-				}
-			}
-		}
-		return dir.delete();
-	}
-}
+    @Override
+    public SLPersistentTree createPersistentTree( final JcrConnectionProvider provider ) throws SLPersistentTreeFactoryException {
+        try {
+            final Credentials credentials = provider.getData().getCredentials();
+            final Repository repo = provider.openRepository();
+            return new SLPersistentTreeImpl(repo, credentials);
+        } catch (final Exception e) {
+            throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
+        }
+    }
 
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeFactory#createPersistentTree()
+     */
+    @Override
+    public SLPersistentTree createTempPersistentTree( final boolean removeExistent ) throws SLPersistentTreeFactoryException {
+        try {
+            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            if (removeExistent) {
+                delete(provider.getData().getConfigurationDirectory());
+            }
+            final Credentials credentials = provider.getData().getCredentials();
+            final Repository repo = provider.openRepository();
+            return new SLPersistentTreeImpl(repo, credentials);
+        } catch (final Exception e) {
+            throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
+        }
+    }
+
+}

@@ -50,21 +50,9 @@
 			<artifactId>osl-federation-dna-filesystem-loader</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Apache Jackrabbit (JCR Implementation) -->
 		<dependency>
-			<groupId>org.apache.jackrabbit</groupId>
-			<artifactId>jackrabbit-core</artifactId>
-			<!-- Exclude these since they are included in JDK 1.5 -->
-			<exclusions>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>xerces</groupId>
-					<artifactId>xercesImpl</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-jcr</artifactId>
 		</dependency>
 		<!-- Test dependencies -->
 		<dependency>

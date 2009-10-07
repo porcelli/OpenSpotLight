@@ -54,95 +54,95 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * A factory for creating SLGraph objects.
  */
 public abstract class SLGraphFactory extends AbstractFactory {
-	
-	/**
-	 * Creates a new SLGraph object.
-	 * 
-	 * @param removeExistent the remove existent
-	 * 
-	 * @return the SL graph
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	public abstract SLGraph createTempGraph(boolean removeExistent) throws SLGraphFactoryException;
-	
 
-	/**
-	 * Creates a new SLGraph object.
-	 * 
-	 * @param treeSession the tree session
-	 * 
-	 * @return the SL graph session
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	abstract SLGraphSession createGraphSession(SLPersistentTreeSession treeSession) throws SLGraphFactoryException;
+    public abstract SLGraph createGraph( JcrConnectionProvider provider ) throws SLGraphFactoryException;
 
-	/**
-	 * Creates a new SLGraph object.
-	 * 
-	 * @param context the context
-	 * @param persistentNode the persistent node
-	 * @param eventPoster the event poster
-	 * 
-	 * @return the SL node
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	abstract SLNode createNode(SLContext context, SLPersistentNode persistentNode, SLGraphSessionEventPoster eventPoster)	throws SLGraphFactoryException;
+    /**
+     * Creates a new SLGraph object.
+     * 
+     * @param treeSession the tree session
+     * @return the SL graph session
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    abstract SLGraphSession createGraphSession( SLPersistentTreeSession treeSession ) throws SLGraphFactoryException;
 
-	/**
-	 * Creates a new SLGraph object.
-	 * 
-	 * @param context the context
-	 * @param parent the parent
-	 * @param persistentNode the persistent node
-	 * @param eventPoster the event poster
-	 * 
-	 * @return the SL node
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	abstract SLNode createNode(SLContext context, SLNode parent, SLPersistentNode persistentNode, SLGraphSessionEventPoster eventPoster) throws SLGraphFactoryException;
+    /**
+     * Creates a new SLGraph object.
+     * 
+     * @param clazz the clazz
+     * @param context the context
+     * @param parent the parent
+     * @param persistentNode the persistent node
+     * @return the T
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    abstract <T extends SLNode> T createNode( Class<T> clazz,
+                                              SLContext context,
+                                              SLNode parent,
+                                              SLPersistentNode persistentNode ) throws SLGraphFactoryException;
 
-	/**
-	 * Creates a new SLGraph object.
-	 * 
-	 * @param clazz the clazz
-	 * @param context the context
-	 * @param parent the parent
-	 * @param persistentNode the persistent node
-	 * 
-	 * @return the T
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	abstract <T extends SLNode> T createNode(Class<T> clazz, SLContext context, SLNode parent, SLPersistentNode persistentNode) throws SLGraphFactoryException;
+    /**
+     * Creates a new SLGraph object.
+     * 
+     * @param context the context
+     * @param parent the parent
+     * @param persistentNode the persistent node
+     * @param eventPoster the event poster
+     * @return the SL node
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    abstract SLNode createNode( SLContext context,
+                                SLNode parent,
+                                SLPersistentNode persistentNode,
+                                SLGraphSessionEventPoster eventPoster ) throws SLGraphFactoryException;
 
-	/**
-	 * Gets the context impl class.
-	 * 
-	 * @return the context impl class
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	abstract Class<? extends SLContext> getContextImplClass() throws SLGraphFactoryException;
-	
-	/**
-	 * Creates a new SLGraph object.
-	 * 
-	 * @param node the node
-	 * @param persistentProperty the persistent property
-	 * 
-	 * @return the SL node property< v>
-	 * 
-	 * @throws SLGraphFactoryException the SL graph factory exception
-	 */
-	abstract <V extends Serializable> SLNodeProperty<V> createProperty(SLNode node, SLPersistentProperty<V> persistentProperty, SLGraphSessionEventPoster eventPoster) throws SLGraphFactoryException;
-	
+    /**
+     * Creates a new SLGraph object.
+     * 
+     * @param context the context
+     * @param persistentNode the persistent node
+     * @param eventPoster the event poster
+     * @return the SL node
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    abstract SLNode createNode( SLContext context,
+                                SLPersistentNode persistentNode,
+                                SLGraphSessionEventPoster eventPoster ) throws SLGraphFactoryException;
+
+    /**
+     * Creates a new SLGraph object.
+     * 
+     * @param node the node
+     * @param persistentProperty the persistent property
+     * @return the SL node property< v>
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    abstract <V extends Serializable> SLNodeProperty<V> createProperty( SLNode node,
+                                                                        SLPersistentProperty<V> persistentProperty,
+                                                                        SLGraphSessionEventPoster eventPoster )
+        throws SLGraphFactoryException;
+
+    /**
+     * Creates a new SLGraph object.
+     * 
+     * @param removeExistent the remove existent
+     * @return the SL graph
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    public abstract SLGraph createTempGraph( boolean removeExistent ) throws SLGraphFactoryException;
+
+    /**
+     * Gets the context impl class.
+     * 
+     * @return the context impl class
+     * @throws SLGraphFactoryException the SL graph factory exception
+     */
+    abstract Class<? extends SLContext> getContextImplClass() throws SLGraphFactoryException;
+
 }

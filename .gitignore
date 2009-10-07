@@ -6,9 +6,16 @@
 .metadata
 .settings
 .wtpmodules
+.pmd
+
+#emacs bkp
+*~
 
 # Maven generated folders
+temp-testng-customsuite.xml
+test-output
 target
+bin
 
 # General folders
 local
