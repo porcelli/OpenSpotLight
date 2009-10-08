@@ -124,9 +124,9 @@ public interface DetailedLogger {
                 try {
                     Node logNode;
                     try {
-                        logNode = this.session.getRootNode().getNode("/osl:log");
+                        logNode = this.session.getRootNode().getNode("osl:log");
                     } catch (final PathNotFoundException pnfe) {
-                        logNode = this.session.getRootNode().addNode("/osl:log");
+                        logNode = this.session.getRootNode().addNode("osl:log");
                     }
                     final Node entry = logNode.addNode("logEntry");
                     entry.setProperty("type", type.name());
@@ -135,7 +135,6 @@ public interface DetailedLogger {
                     if (detailedMessage != null) {
                         entry.setProperty("detailedMessage", detailedMessage);
                     }
-                    entry.save();
                     final List<LoggedObjectInformation> loggedObjectHierarchyList = LoggedObjectInformation.getHierarchyFrom(
                                                                                                                              node,
                                                                                                                              anotherNodes);
@@ -145,8 +144,8 @@ public interface DetailedLogger {
                         objectInfo.setProperty("friendlyDescription", info.getFriendlyDescription());
                         objectInfo.setProperty("uniqueId", info.getUniqueId());
                         objectInfo.setProperty("order", info.getOrder());
-                        objectInfo.save();
                     }
+                    this.session.save();
                 } catch (final Exception e) {
                     throw logAndReturnNew(e, SLRuntimeException.class);
                 }
@@ -185,7 +184,7 @@ public interface DetailedLogger {
                 LogableObject parent = getParent(o);
                 while (parent != null) {
                     result.add(parent);
-                    parent = getParent(o);
+                    parent = getParent(parent);
                 }
                 return result;
             }
