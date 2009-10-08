@@ -474,6 +474,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                                     final ConfigurationNode configurationNode,
                                     final Map<String, Class<?>> propertyTypes,
                                     final String keyPropertyName ) throws RepositoryException, ConfigurationException, Exception {
+        configurationNode.getInstanceMetadata().setSavedUniqueId(jcrNode.getUUID());
         final PropertyIterator propertyIterator = jcrNode.getProperties();
         while (propertyIterator.hasNext()) {
             final Property prop = propertyIterator.nextProperty();
@@ -740,6 +741,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
 
             rootNode.getInstanceMetadata().getSharedData().markAsSaved();
+            rootNode.getInstanceMetadata().setSavedUniqueId(rootJcrNode.getUUID());
             return rootNode;
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
