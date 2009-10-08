@@ -3,6 +3,7 @@ package org.openspotlight.federation.log;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
@@ -39,6 +40,9 @@ public interface DetailedLogger {
 
         private ErrorCode(
                            final int code, final String description ) {
+            assert code > 0;
+            assert description != null;
+            assert description.trim().length() > 0;
             this.code = code;
             this.description = description;
             this.toStringDescription = "ErrorCode: " + this.code + " " + this.description;
@@ -122,6 +126,10 @@ public interface DetailedLogger {
                              final LogableObject node,
                              final LogableObject... anotherNodes ) {
                 try {
+                    checkNotNull("type", type);
+                    checkNotNull("errorCode", errorCode);
+                    checkNotEmpty("message", message);
+                    checkNotNull("node", node);
                     Node logNode;
                     try {
                         logNode = this.session.getRootNode().getNode("osl:log");
@@ -248,6 +256,9 @@ public interface DetailedLogger {
                 } else {
                     throw logAndReturn(new IllegalArgumentException());
                 }
+                checkNotEmpty("uniqueId", this.uniqueId);
+                checkNotEmpty("friendlyDescription", this.friendlyDescription);
+                checkNotEmpty("className", this.className);
             }
 
             public String getFriendlyDescription() {

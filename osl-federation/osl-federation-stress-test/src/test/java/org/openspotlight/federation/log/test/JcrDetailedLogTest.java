@@ -64,7 +64,7 @@ public class JcrDetailedLogTest {
     public void setup() throws Exception {
         this.session = provider.openSession();
         this.logger = DetailedLogger.Factory.createJcrDetailedLogger(this.session);
-        this.graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(this.provider);
+        this.graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(provider);
         this.configurationManager = new JcrSessionConfigurationManager(this.session);
         this.graphSession = this.graph.openSession();
         this.ctx = this.graphSession.getContext("test");
