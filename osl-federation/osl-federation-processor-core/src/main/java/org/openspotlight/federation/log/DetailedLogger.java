@@ -10,15 +10,20 @@ import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.jcr.LogableObject;
@@ -75,7 +80,27 @@ public interface DetailedLogger {
     public static final class Factory {
 
         private static final class JcrDetailedLogger implements DetailedLogger {
-            private final Session session;
+            private final Session       session;
+
+            private static final String NODE_LOG                                = "osl:log";
+
+            private static final String NODE_LOG_ENTRY                          = "osl:logEntry";
+
+            private static final String NODE_OBJ_INFO                           = "osl:objectInfo";
+
+            private static final String PROPERTY_LOG_ENTRY__EVENT_TYPE          = "osl:eventType";
+            private static final String PROPERTY_LOG_ENTRY__DATE                = "osl:date";
+
+            private static final String PROPERTY_LOG_ENTRY__ERROR_CODE          = "osl:errorCode";
+
+            private static final String PROPERTY_LOG_ENTRY__MESSAGE             = "osl:message";
+
+            private static final String PROPERTY_LOG_ENTRY__DETAILED_MESSAGE    = "osl:detailedMessage";
+
+            private static final String PROPERTY_OBJ_INFO__TYPE_NAME            = "osl:typeName";
+            private static final String PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION = "osl:friendlyDescription";
+            private static final String PROPERTY_OBJ_INFO__UNIQUE_ID            = "osl:uniqueId";
+            private static final String PROPERTY_OBJ_INFO__ORDER                = "osl:order";
 
             public JcrDetailedLogger(
                                       final Session session ) {
@@ -106,8 +131,64 @@ public interface DetailedLogger {
                                                        final ErrorCode code,
                                                        final Date start,
                                                        final Date end ) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Not implemented yet");
+                try {
+                    final StringBuilder xpath = new StringBuilder(MessageFormat.format("//{0}/{1}", NODE_LOG, NODE_LOG_ENTRY));
+                    if (code != null || eventType != null || start != null || end != null) {
+                        boolean hasWhere = false;
+                        xpath.append("[@");
+                        if (eventType != null) {
+                            xpath.append(PROPERTY_LOG_ENTRY__EVENT_TYPE);
+                            xpath.append("=\"");
+                            xpath.append(eventType.name());
+                            xpath.append("\"");
+                        }
+                        if (code != null) {
+                            if (hasWhere) {
+                                xpath.append(" and ");
+                            }
+                            hasWhere = true;
+                            xpath.append(PROPERTY_LOG_ENTRY__ERROR_CODE);
+                            xpath.append("=\"");
+                            xpath.append(code.name());
+                            xpath.append("\"");
+                        }
+                        xpath.append("]");
+
+                    }
+                    if (object != null) {
+                        xpath.append('/');
+                        xpath.append(NODE_OBJ_INFO);
+                        xpath.append("[@");
+                        xpath.append(PROPERTY_OBJ_INFO__UNIQUE_ID);
+                        xpath.append("=\"");
+                        xpath.append(new LoggedObjectInformation(0, object).getUniqueId());
+                        xpath.append("\"");
+                        xpath.append("]");
+                    }
+                    final Query query = this.session.getWorkspace().getQueryManager().createQuery(xpath.toString(), Query.XPATH);
+                    final QueryResult result = query.execute();
+                    final NodeIterator nodeIterator = result.getNodes();
+                    final List<LogEntry> logEntries = new LinkedList<LogEntry>();
+                    Node node;
+                    while (nodeIterator.hasNext()) {
+                        node = nodeIterator.nextNode();
+                        if (object != null) {
+                            node = node.getParent();
+                        }
+                        final ErrorCode errorCode = ErrorCode.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__ERROR_CODE).getString());
+                        final Date date = node.getProperty(PROPERTY_LOG_ENTRY__DATE).getDate().getTime();
+                        final EventType type = EventType.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__EVENT_TYPE).getString());
+                        final String message = node.getProperty(PROPERTY_LOG_ENTRY__MESSAGE).getString();
+                        final String detailedMessage = node.getProperty(PROPERTY_LOG_ENTRY__DETAILED_MESSAGE).getString();
+                        final List<LoggedObjectInformation> nodes = new ArrayList<LoggedObjectInformation>();
+                        final LogEntry entry = new LogEntry(errorCode, date, type, message, detailedMessage, nodes);
+                        logEntries.add(entry);
+
+                    }
+                    return logEntries;
+                } catch (final Exception e) {
+                    throw logAndReturnNew(e, SLRuntimeException.class);
+                }
             }
 
             public void log( final EventType type,
@@ -132,26 +213,25 @@ public interface DetailedLogger {
                     checkNotNull("node", node);
                     Node logNode;
                     try {
-                        logNode = this.session.getRootNode().getNode("osl:log");
+                        logNode = this.session.getRootNode().getNode(NODE_LOG);
                     } catch (final PathNotFoundException pnfe) {
-                        logNode = this.session.getRootNode().addNode("osl:log");
+                        logNode = this.session.getRootNode().addNode(NODE_LOG);
                     }
-                    final Node entry = logNode.addNode("logEntry");
-                    entry.setProperty("type", type.name());
-                    entry.setProperty("errorCode", errorCode.name());
-                    entry.setProperty("message", message);
-                    if (detailedMessage != null) {
-                        entry.setProperty("detailedMessage", detailedMessage);
-                    }
+                    final Node entry = logNode.addNode(NODE_LOG_ENTRY);
+                    entry.setProperty(PROPERTY_LOG_ENTRY__EVENT_TYPE, type.name());
+                    entry.setProperty(PROPERTY_LOG_ENTRY__ERROR_CODE, errorCode.name());
+                    entry.setProperty(PROPERTY_LOG_ENTRY__MESSAGE, message);
+                    entry.setProperty(PROPERTY_LOG_ENTRY__DATE, Calendar.getInstance());
+                    entry.setProperty(PROPERTY_LOG_ENTRY__DETAILED_MESSAGE, detailedMessage != null ? detailedMessage : message);
                     final List<LoggedObjectInformation> loggedObjectHierarchyList = LoggedObjectInformation.getHierarchyFrom(
                                                                                                                              node,
                                                                                                                              anotherNodes);
                     for (final LoggedObjectInformation info : loggedObjectHierarchyList) {
-                        final Node objectInfo = entry.addNode("objectInfo");
-                        objectInfo.setProperty("type", info.getTypeName());
-                        objectInfo.setProperty("friendlyDescription", info.getFriendlyDescription());
-                        objectInfo.setProperty("uniqueId", info.getUniqueId());
-                        objectInfo.setProperty("order", info.getOrder());
+                        final Node objectInfo = entry.addNode(NODE_OBJ_INFO);
+                        objectInfo.setProperty(PROPERTY_OBJ_INFO__TYPE_NAME, info.getTypeName());
+                        objectInfo.setProperty(PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION, info.getFriendlyDescription());
+                        objectInfo.setProperty(PROPERTY_OBJ_INFO__UNIQUE_ID, info.getUniqueId());
+                        objectInfo.setProperty(PROPERTY_OBJ_INFO__ORDER, info.getOrder());
                     }
                     this.session.save();
                 } catch (final Exception e) {
@@ -236,8 +316,8 @@ public interface DetailedLogger {
 
             private final String className;
 
-            private LoggedObjectInformation(
-                                             final int order, final LogableObject object ) {
+            LoggedObjectInformation(
+                                     final int order, final LogableObject object ) {
                 this.order = order;
                 if (object instanceof SLNode) {
                     final SLNode node = (SLNode)object;

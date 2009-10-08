@@ -15,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
@@ -36,12 +37,15 @@ public class JcrDetailedLogTest {
 
     @BeforeClass
     public static void setupProvider() throws Exception {
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
         provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
     }
 
     @AfterClass
     public static void shutdownProvider() throws Exception {
-        provider.closeRepository();
+        if (provider != null) {
+            provider.closeRepository();
+        }
     }
 
     private DetailedLogger               logger;
@@ -59,6 +63,8 @@ public class JcrDetailedLogTest {
     private Configuration                configuration;
 
     private Group                        group;
+
+    private static boolean               logged = false;
 
     @Before
     public void setup() throws Exception {
@@ -78,29 +84,14 @@ public class JcrDetailedLogTest {
         this.configurationManager.save(this.configuration);
         this.configuration = this.configurationManager.load(LazyType.EAGER);
         this.group = this.configuration.getRepositoryByName("OSL Group").getGroupByName("OSL Root Group");
+        this.shouldLogSomeInformation();
     }
 
     @SuppressWarnings( "boxing" )
     @Test
     public void shouldCreateAndRetrieveLogInformationByDateInterval() throws Exception {
-        this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
-
-        List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
-        assertThat(result.size(), is(2));
-        assertThat(result.get(0).getType(), is(EventType.INFO));
-
-        result = this.logger.findLogByErrorCode(ErrorCode.NO_ERROR_CODE);
-        assertThat(result.size(), is(3));
-
-        result = this.logger.findLogByLogableObject(this.slNode1);
-        assertThat(result.size(), is(2));
-
-        result = this.logger.findLogByEventType(EventType.INFO);
-        assertThat(result.size(), is(3));
-
-        result = this.logger.findLogByDateInterval(new DateTime("2000-01-01").toDate(), new DateTime("2010-01-01").toDate());
+        final List<LogEntry> result = this.logger.findLogByDateInterval(new DateTime("2000-01-01").toDate(),
+                                                                        new DateTime("2010-01-01").toDate());
         assertThat(result.size(), is(3));
 
     }
@@ -108,10 +99,6 @@ public class JcrDetailedLogTest {
     @SuppressWarnings( "boxing" )
     @Test
     public void shouldCreateAndRetrieveLogInformationByErrorCode() throws Exception {
-        this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
-
         final List<LogEntry> result = this.logger.findLogByErrorCode(ErrorCode.NO_ERROR_CODE);
         assertThat(result.size(), is(3));
 
@@ -120,10 +107,6 @@ public class JcrDetailedLogTest {
     @SuppressWarnings( "boxing" )
     @Test
     public void shouldCreateAndRetrieveLogInformationByEventType() throws Exception {
-        this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
-
         final List<LogEntry> result = this.logger.findLogByEventType(EventType.INFO);
         assertThat(result.size(), is(3));
 
@@ -132,10 +115,6 @@ public class JcrDetailedLogTest {
     @SuppressWarnings( "boxing" )
     @Test
     public void shouldCreateAndRetrieveLogInformationByLogableObject() throws Exception {
-        this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
-
         List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
         assertThat(result.size(), is(2));
         assertThat(result.get(0).getType(), is(EventType.INFO));
@@ -146,15 +125,23 @@ public class JcrDetailedLogTest {
     }
 
     @Test
-    public void shouldCreateLogInformation() throws Exception {
-        this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.group);
-        this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
+    public void shouldLogSomeInformation() throws Exception {
+        if (!logged) {
+            this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
+            this.logger.log(EventType.INFO, "Yeah!", this.group);
+            this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
+            logged = true;
+        }
     }
 
     @After
     public void shutdown() throws Exception {
-        this.graphSession.close();
-        this.session.logout();
+
+        if (this.graphSession != null) {
+            this.graphSession.close();
+        }
+        if (this.session != null) {
+            this.session.logout();
+        }
     }
 }
