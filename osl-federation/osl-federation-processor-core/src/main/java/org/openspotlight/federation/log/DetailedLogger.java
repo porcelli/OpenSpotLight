@@ -145,6 +145,22 @@ public interface DetailedLogger {
                 }
             }
 
+            public String getClassName() {
+                return this.className;
+            }
+
+            public String getFriendlyDescription() {
+                return this.friendlyDescription;
+            }
+
+            public int getOrder() {
+                return this.order;
+            }
+
+            public String getUniqueId() {
+                return this.uniqueId;
+            }
+
         }
 
         private final EventType                     type;
