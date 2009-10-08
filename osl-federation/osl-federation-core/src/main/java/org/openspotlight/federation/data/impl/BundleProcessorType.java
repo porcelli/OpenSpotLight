@@ -58,87 +58,90 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * This {@link BundleProcessorType} describes all valid classes that can process
- * this type of bundle. This should be done by configuration, so for
- * "java bundles" for instance is possible to add a few processor types. This
- * {@link BundleProcessorType} classes should implement the
- * {@link BundleProcessor} interface.
+ * This {@link BundleProcessorType} describes all valid classes that can process this type of bundle. This should be done by
+ * configuration, so for "java bundles" for instance is possible to add a few processor types. This {@link BundleProcessorType}
+ * classes should implement the {@link BundleProcessor} interface.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 @ThreadSafe
-@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "className", keyPropertyType = String.class, validParentTypes = { Bundle.class })
+@StaticMetadata( propertyNames = {"active"}, propertyTypes = {Boolean.class}, keyPropertyName = "className", keyPropertyType = String.class, validParentTypes = {Bundle.class} )
 public final class BundleProcessorType implements ConfigurationNode {
-    
-    private static final String ACTIVE = "active"; //$NON-NLS-1$
-    
+
+    private static final String    ACTIVE           = "active";             //$NON-NLS-1$
+
     private final InstanceMetadata instanceMetadata;
-    
-    static final long serialVersionUID = -3606246260530743008L;
-    
+
+    static final long              serialVersionUID = -3606246260530743008L;
+
     /**
      * Creates a project within a other project.
      * 
      * @param bundle
      * @param className
      */
-    public BundleProcessorType(final Bundle bundle, final String className) {
+    public BundleProcessorType(
+                                final Bundle bundle, final String className ) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, className);
         checkCondition("noBundleProcessor", //$NON-NLS-1$
-                bundle.getInstanceMetadata().getChildByKeyValue(
-                        BundleProcessorType.class, className) == null);
+                       bundle.getInstanceMetadata().getChildByKeyValue(BundleProcessorType.class, className) == null);
         bundle.getInstanceMetadata().addChild(this);
-        
+
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public final int compareTo(final ConfigurationNode o) {
+    public final int compareTo( final ConfigurationNode o ) {
         return this.instanceMetadata.compare(this, o);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
-    public final boolean equals(final Object obj) {
+    public final boolean equals( final Object obj ) {
         return this.instanceMetadata.equals(obj);
     }
-    
+
     /**
-     * 
      * @return active property
      */
     public final Boolean getActive() {
         return this.instanceMetadata.getProperty(ACTIVE);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public final InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
     }
-    
+
     /**
      * The class name for a valid bundle processor for this byndle type.
      * 
      * @return the class name
      */
     public String getName() {
-        return (String) this.instanceMetadata.getKeyPropertyValue();
+        return (String)this.instanceMetadata.getKeyPropertyValue();
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
+    }
+
     /**
      * Sets the active property.
      * 
      * @param active
      */
-    public final void setActive(final Boolean active) {
+    public final void setActive( final Boolean active ) {
         this.instanceMetadata.setProperty(ACTIVE, active);
     }
-    
+
 }
