@@ -52,6 +52,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-federation-configuration-example</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-jcr</artifactId>
 		</dependency>
 		<!-- Test dependencies -->
