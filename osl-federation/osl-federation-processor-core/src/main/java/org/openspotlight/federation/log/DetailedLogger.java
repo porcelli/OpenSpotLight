@@ -27,6 +27,7 @@ import javax.jcr.query.QueryResult;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.jcr.LogableObject;
+import org.openspotlight.common.util.Dates;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraphSessionException;
@@ -152,6 +153,27 @@ public interface DetailedLogger {
                             xpath.append(code.name());
                             xpath.append("\"");
                         }
+                        if (start != null) {
+                            if (hasWhere) {
+                                xpath.append(" and ");
+                            }
+                            hasWhere = true;
+                            xpath.append(PROPERTY_LOG_ENTRY__DATE);
+                            xpath.append(" >= xs:dateTime('");
+                            xpath.append(Dates.stringFromDate(start));
+                            xpath.append("T00:00:00.000Z')");
+                        }
+                        if (end != null) {
+                            if (hasWhere) {
+                                xpath.append(" and ");
+                            }
+                            hasWhere = true;
+                            xpath.append(PROPERTY_LOG_ENTRY__DATE);
+                            xpath.append(" <= xs:dateTime('");
+                            xpath.append(Dates.stringFromDate(end));
+                            xpath.append("T00:00:00.000Z')");
+                        }
+
                         xpath.append("]");
 
                     }
@@ -182,7 +204,9 @@ public interface DetailedLogger {
                         final String detailedMessage = node.getProperty(PROPERTY_LOG_ENTRY__DETAILED_MESSAGE).getString();
                         final List<LoggedObjectInformation> nodes = new ArrayList<LoggedObjectInformation>();
                         final LogEntry entry = new LogEntry(errorCode, date, type, message, detailedMessage, nodes);
-                        logEntries.add(entry);
+                        if (!logEntries.contains(entry)) {
+                            logEntries.add(entry);
+                        }
 
                     }
                     return logEntries;
