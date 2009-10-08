@@ -1,6 +1,7 @@
 package org.openspotlight.federation.log.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -87,43 +88,6 @@ public class JcrDetailedLogTest {
         this.shouldLogSomeInformation();
     }
 
-    @SuppressWarnings( "boxing" )
-    @Test
-    public void shouldCreateAndRetrieveLogInformationByDateInterval() throws Exception {
-        final List<LogEntry> result = this.logger.findLogByDateInterval(new DateTime("2000-01-01").toDate(),
-                                                                        new DateTime("2010-01-01").toDate());
-        assertThat(result.size(), is(3));
-
-    }
-
-    @SuppressWarnings( "boxing" )
-    @Test
-    public void shouldCreateAndRetrieveLogInformationByErrorCode() throws Exception {
-        final List<LogEntry> result = this.logger.findLogByErrorCode(ErrorCode.NO_ERROR_CODE);
-        assertThat(result.size(), is(3));
-
-    }
-
-    @SuppressWarnings( "boxing" )
-    @Test
-    public void shouldCreateAndRetrieveLogInformationByEventType() throws Exception {
-        final List<LogEntry> result = this.logger.findLogByEventType(EventType.INFO);
-        assertThat(result.size(), is(3));
-
-    }
-
-    @SuppressWarnings( "boxing" )
-    @Test
-    public void shouldCreateAndRetrieveLogInformationByLogableObject() throws Exception {
-        List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
-        assertThat(result.size(), is(2));
-        assertThat(result.get(0).getType(), is(EventType.INFO));
-
-        result = this.logger.findLogByLogableObject(this.slNode1);
-        assertThat(result.size(), is(2));
-
-    }
-
     @Test
     public void shouldLogSomeInformation() throws Exception {
         if (!logged) {
@@ -132,6 +96,51 @@ public class JcrDetailedLogTest {
             this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
             logged = true;
         }
+    }
+
+    @SuppressWarnings( "boxing" )
+    @Test
+    public void shouldRetrieveLogInformationByAnotherLogableObject() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByLogableObject(this.slNode1);
+        assertThat(result.size(), is(2));
+        assertThat(result.get(0).getType(), is(EventType.INFO));
+        assertThat(result.get(0).getNodes().size(), is(not(0)));
+        assertThat(result.get(0).getNodes().size(), is(not(1)));
+    }
+
+    @SuppressWarnings( "boxing" )
+    @Test
+    public void shouldRetrieveLogInformationByDateInterval() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByDateInterval(new DateTime("2000-01-01").toDate(),
+                                                                        new DateTime("2010-01-01").toDate());
+        assertThat(result.size(), is(3));
+
+    }
+
+    @SuppressWarnings( "boxing" )
+    @Test
+    public void shouldRetrieveLogInformationByErrorCode() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByErrorCode(ErrorCode.NO_ERROR_CODE);
+        assertThat(result.size(), is(3));
+
+    }
+
+    @SuppressWarnings( "boxing" )
+    @Test
+    public void shouldRetrieveLogInformationByEventType() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByEventType(EventType.INFO);
+        assertThat(result.size(), is(3));
+
+    }
+
+    @SuppressWarnings( "boxing" )
+    @Test
+    public void shouldRetrieveLogInformationByLogableObject() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
+        assertThat(result.size(), is(2));
+        assertThat(result.get(0).getType(), is(EventType.INFO));
+        assertThat(result.get(0).getNodes().size(), is(not(0)));
+        assertThat(result.get(0).getNodes().size(), is(not(1)));
     }
 
     @After

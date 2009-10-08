@@ -206,6 +206,18 @@ public interface DetailedLogger {
                         final LogEntry entry = new LogEntry(errorCode, date, type, message, detailedMessage, nodes);
                         if (!logEntries.contains(entry)) {
                             logEntries.add(entry);
+                            final NodeIterator children = node.getNodes(NODE_OBJ_INFO);
+                            Node objectInfo;
+                            while (children.hasNext()) {
+                                objectInfo = children.nextNode();
+                                final int order = (int)objectInfo.getProperty(PROPERTY_OBJ_INFO__ORDER).getLong();
+                                final String uniqueId = objectInfo.getProperty(PROPERTY_OBJ_INFO__UNIQUE_ID).getString();
+                                final String className = objectInfo.getProperty(PROPERTY_OBJ_INFO__TYPE_NAME).getString();
+                                final String friendlyDescription = objectInfo.getProperty(PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION).getString();
+                                final LoggedObjectInformation info = new LoggedObjectInformation(order, uniqueId, className,
+                                                                                                 friendlyDescription);
+                                nodes.add(info);
+                            }
                         }
 
                     }
@@ -365,6 +377,19 @@ public interface DetailedLogger {
                 checkNotEmpty("className", this.className);
             }
 
+            LoggedObjectInformation(
+                                     final int order, final String uniqueId, final String className,
+                                     final String friendlyDescription ) {
+                checkNotEmpty("uniqueId", uniqueId);
+                checkNotEmpty("friendlyDescription", friendlyDescription);
+                checkNotEmpty("className", className);
+                this.order = order;
+                this.uniqueId = uniqueId;
+                this.friendlyDescription = friendlyDescription;
+                this.className = className;
+
+            }
+
             public String getFriendlyDescription() {
                 return this.friendlyDescription;
             }
@@ -400,7 +425,7 @@ public interface DetailedLogger {
             this.type = type;
             this.message = message;
             this.detailedMessage = detailedMessage;
-            this.nodes = nodes;
+            this.nodes = Collections.unmodifiableList(nodes);
             this.date = date;
             this.hashCode = hashOf(this.type, this.message, this.detailedMessage, this.nodes, this.date, this.errorCode);
         }
