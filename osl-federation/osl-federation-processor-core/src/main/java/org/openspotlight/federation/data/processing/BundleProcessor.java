@@ -53,7 +53,6 @@ import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.util.Set;
 
@@ -62,7 +61,6 @@ import javax.jcr.Session;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.MutableType;
-import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -157,11 +155,12 @@ public interface BundleProcessor<T extends Artifact> {
          */
         public void processFinished() {
             this.configurationManager.save(this.rootGroup.getRepository().getConfiguration());
-            try {
-                this.session.save();
-            } catch (final SLGraphSessionException e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
+            //            try {
+            //                //FIXME throws exeption here
+            //                //this.session.save();
+            //            } catch (final SLGraphSessionException e) {
+            //                throw logAndReturnNew(e, ConfigurationException.class);
+            //            }
             this.configurationManager.closeResources();
             this.session.close();
         }

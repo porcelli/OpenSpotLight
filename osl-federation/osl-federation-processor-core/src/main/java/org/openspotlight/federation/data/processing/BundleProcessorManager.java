@@ -190,11 +190,12 @@ public final class BundleProcessorManager {
                     this.mutableProcessingGroup.getArtifactsWithError().add(this.targetArtifact);
                     break;
             }
+
             if (this.callBack != null) {
                 this.callBack.artifactProcessingFinalized(this.targetArtifact, this.immutableProcessingGroup, this.graphContext,
                                                           ret);
-                this.graphContext.processFinished();
             }
+            this.graphContext.processFinished();
 
             return ret;
         }
@@ -631,7 +632,6 @@ public final class BundleProcessorManager {
 
                 for (final FinalizationContext<? extends Artifact> context : finalizationContexts) {
                     if (context != null) {
-                        context.getGraphContext().processFinished();
 
                         context.getProcessor().globalProcessingFinalized(context.getBundleProcessingGroup(),
                                                                          context.getGraphContext());
