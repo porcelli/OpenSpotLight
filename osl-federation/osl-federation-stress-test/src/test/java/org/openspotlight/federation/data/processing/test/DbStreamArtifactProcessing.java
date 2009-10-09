@@ -82,6 +82,7 @@ public class DbStreamArtifactProcessing {
 
     @BeforeClass
     public static void setupH2() throws Exception {
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
         Files.delete("./target/test-data/DbStreamArtifactProcessing/h2/");
         final Configuration configuration = createH2DbConfiguration("DbStreamArtifactProcessing");
         final DbBundle bundle = (DbBundle)configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$

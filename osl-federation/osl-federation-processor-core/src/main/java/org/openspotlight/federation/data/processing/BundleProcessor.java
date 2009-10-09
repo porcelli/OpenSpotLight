@@ -51,6 +51,7 @@ package org.openspotlight.federation.data.processing;
 
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
@@ -69,9 +70,11 @@ import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLogger;
 import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLEncoder;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLUUIDEncoder;
 
 /**
  * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
@@ -100,6 +103,8 @@ public interface BundleProcessor<T extends Artifact> {
         private final DetailedLogger       logger;
         private final Group                rootGroup;
 
+        private final SLEncoder            encoder = new SLUUIDEncoder();
+
         public BundleProcessingContext(
                                         final SLGraphSession graphSession, final Session jcrSession, final Group rootGroup,
                                         final ConfigurationManager configurationManager ) throws SLGraphException {
@@ -108,17 +113,21 @@ public interface BundleProcessor<T extends Artifact> {
             checkNotNull("jcrSession", jcrSession);
             checkNotNull("configurationManager", configurationManager);
             checkNotNull("rootGroup", rootGroup);
-
-            final String contextId = rootGroup.getInstanceMetadata().getPath();
-            SLContext tempContext = this.session.getContext(contextId);
-            if (tempContext == null) {
-                tempContext = this.session.createContext(contextId);
-            }
-            this.context = tempContext;
             this.session = graphSession;
             this.configurationManager = configurationManager;
             this.logger = DetailedLogger.Factory.createJcrDetailedLogger(jcrSession);
             this.rootGroup = rootGroup;
+            final String contextId = this.encoder.encode(rootGroup.getInstanceMetadata().getPath());
+            SLContext tempContext = null;
+            try {
+                tempContext = this.session.getContext(contextId);
+            } catch (final Exception e) {
+                catchAndLog(e);
+            }
+            if (tempContext == null) {
+                tempContext = this.session.createContext(contextId);
+            }
+            this.context = tempContext;
         }
 
         public ConfigurationManager getConfigurationManager() {
@@ -153,8 +162,8 @@ public interface BundleProcessor<T extends Artifact> {
             } catch (final SLGraphSessionException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }
-            this.session.close();
             this.configurationManager.closeResources();
+            this.session.close();
         }
 
         /**
