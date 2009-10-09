@@ -25,7 +25,7 @@
 			<artifactId>osl-federation-processor-core</artifactId>
 			<scope>compile</scope>
 		</dependency>
-        <!-- Test dependencies -->
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
@@ -40,6 +40,10 @@
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 		</dependency>
 	</dependencies>
 </project>
