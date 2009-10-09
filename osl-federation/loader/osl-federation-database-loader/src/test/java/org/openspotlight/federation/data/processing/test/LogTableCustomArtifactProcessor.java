@@ -67,14 +67,14 @@ public class LogTableCustomArtifactProcessor implements
     
     public void globalProcessingFinalized(
             final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-            final GraphContext graphContext) {
+            final BundleProcessingContext graphContext) {
         // nothing to do
         
     }
     
     public ProcessingStartAction globalProcessingStarted(
             final BundleProcessingGroup<CustomArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
+            final BundleProcessingContext graphContext)
             throws BundleProcessingFatalException {
         
         return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
@@ -83,7 +83,7 @@ public class LogTableCustomArtifactProcessor implements
     public ProcessingAction processArtifact(
             final CustomArtifact targetArtifact,
             final BundleProcessingGroup<CustomArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
+            final BundleProcessingContext graphContext)
             throws BundleProcessingNonFatalException,
             BundleProcessingFatalException {
         if (targetArtifact instanceof TableArtifact) {

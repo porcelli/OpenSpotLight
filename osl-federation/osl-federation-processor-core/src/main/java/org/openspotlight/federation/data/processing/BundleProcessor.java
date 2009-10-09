@@ -50,477 +50,374 @@
 package org.openspotlight.federation.data.processing;
 
 import static java.util.Collections.unmodifiableSet;
-import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.util.Set;
 
+import javax.jcr.Session;
+
 import net.jcip.annotations.ThreadSafe;
 
-import org.openspotlight.common.LazyType;
 import org.openspotlight.common.MutableType;
+import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
+import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.log.DetailedLogger;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
 
 /**
- * This interface abstracts the bundle processing capabilite. It receive
- * notification about all artifact events. With this events, this interface
- * implementation should process all artifacts that needs processing.
- * 
- * All new types of {@link BundleProcessor} to be used inside an OSL instance
- * should be also inside {@link Configuration} for this instance.
- * 
- * The better scenario to implement this class is with a stateless class with
- * all logic to process just the target artifact inside the
- * {@link BundleProcessingGroup}. Other parameters are passed on the context
- * just for convenience.
- * 
- * Please, implement one of the child interfaces that extended this
- * {@link BundleProcessor} interface.
+ * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
+ * this interface implementation should process all artifacts that needs processing. All new types of {@link BundleProcessor} to
+ * be used inside an OSL instance should be also inside {@link Configuration} for this instance. The better scenario to implement
+ * this class is with a stateless class with all logic to process just the target artifact inside the
+ * {@link BundleProcessingGroup}. Other parameters are passed on the context just for convenience. Please, implement one of the
+ * child interfaces that extended this {@link BundleProcessor} interface.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * @param <T>
- *            Artifact type for this bundle processor
- * 
+ * @param <T> Artifact type for this bundle processor
  */
 public interface BundleProcessor<T extends Artifact> {
 
-	/**
-	 * Processing context with all information needed to process an artifact.
-	 * The most important attributes inside this class are target artifact and
-	 * graph session. The main objective here is to get information for the
-	 * target artifact and create information inside graph session.
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
-	 * @param <T>
-	 */
-	@ThreadSafe
-	public static class BundleProcessingGroup<T> {
-		private final Set<T> addedArtifacts;
-		private final Set<T> allValidArtifacts;
-		private final Set<T> alreadyProcessedArtifacts;
-		private final Set<T> artifactsWithError;
-		private final Bundle bundle;
-		private final Set<T> excludedArtifacts;
-		private final Set<T> ignoredArtifacts;
-		private final Set<T> modifiedArtifacts;
-		private final Set<T> notProcessedArtifacts;
+    /**
+     * Graph context to be possible to add or change Graph utility objects without changing the bundle processing interface.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     */
+    @ThreadSafe
+    public static class BundleProcessingContext {
 
-		/**
-		 * Constructor to initialize all mandatory fields
-		 * 
-		 * @param bundle
-		 * @param addedArtifacts
-		 * @param excludedArtifacts
-		 * @param ignoredArtifacts
-		 * @param artifactsWithError
-		 * @param modifiedArtifacts
-		 * @param allValidArtifacts
-		 * @param notProcessedArtifacts
-		 * @param alreadyProcessedArtifacts
-		 * @param mutableType
-		 */
-		public BundleProcessingGroup(final Bundle bundle,
-				final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
-				final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
-				final Set<T> modifiedArtifacts, final Set<T> allValidArtifacts,
-				final Set<T> notProcessedArtifacts,
-				final Set<T> alreadyProcessedArtifacts,
-				final MutableType mutableType) {
-			checkNotNull("bundle", bundle); //$NON-NLS-1$
-			checkNotNull("addedArtifacts", addedArtifacts);//$NON-NLS-1$
-			checkNotNull("excludedArtifacts", excludedArtifacts);//$NON-NLS-1$
-			checkNotNull("ignoredArtifacts", ignoredArtifacts);//$NON-NLS-1$
-			checkNotNull("artifactsWithError", artifactsWithError);//$NON-NLS-1$
-			checkNotNull("modifiedArtifacts", modifiedArtifacts);//$NON-NLS-1$
-			checkNotNull("allValidArtifacts", allValidArtifacts);//$NON-NLS-1$
-			checkNotNull("notProcessedArtifacts", notProcessedArtifacts);//$NON-NLS-1$
-			checkNotNull("alreadyProcessedArtifacts", alreadyProcessedArtifacts);//$NON-NLS-1$
+        private final SLContext            context;
+        private final SLGraphSession       session;
+        private final ConfigurationManager configurationManager;
+        private final DetailedLogger       logger;
+        private final Group                rootGroup;
 
-			this.bundle = bundle;
-			switch (mutableType) {
-			case IMMUTABLE:
-				this.addedArtifacts = unmodifiableSet(addedArtifacts);
-				this.excludedArtifacts = unmodifiableSet(excludedArtifacts);
-				this.ignoredArtifacts = unmodifiableSet(ignoredArtifacts);
-				this.artifactsWithError = unmodifiableSet(artifactsWithError);
-				this.modifiedArtifacts = unmodifiableSet(modifiedArtifacts);
-				this.allValidArtifacts = unmodifiableSet(allValidArtifacts);
-				this.notProcessedArtifacts = unmodifiableSet(notProcessedArtifacts);
-				this.alreadyProcessedArtifacts = unmodifiableSet(alreadyProcessedArtifacts);
-				break;
-			case MUTABLE:
-				this.addedArtifacts = addedArtifacts;
-				this.excludedArtifacts = excludedArtifacts;
-				this.ignoredArtifacts = ignoredArtifacts;
-				this.artifactsWithError = artifactsWithError;
-				this.modifiedArtifacts = modifiedArtifacts;
-				this.allValidArtifacts = allValidArtifacts;
-				this.notProcessedArtifacts = notProcessedArtifacts;
-				this.alreadyProcessedArtifacts = alreadyProcessedArtifacts;
-				break;
-			default:
-				throw logAndReturn(new IllegalStateException(
-						"unexpected MutableType")); //$NON-NLS-1$
-			}
+        public BundleProcessingContext(
+                                        final SLGraphSession graphSession, final Session jcrSession, final Group rootGroup,
+                                        final ConfigurationManager configurationManager ) throws SLGraphException {
 
-		}
+            checkNotNull("graphSession", graphSession);
+            checkNotNull("jcrSession", jcrSession);
+            checkNotNull("configurationManager", configurationManager);
+            checkNotNull("rootGroup", rootGroup);
 
-		/**
-		 * 
-		 * @return all added artifacts.
-		 */
-		public Set<T> getAddedArtifacts() {
-			return this.addedArtifacts;
-		}
+            final String contextId = rootGroup.getInstanceMetadata().getPath();
+            SLContext tempContext = this.session.getContext(contextId);
+            if (tempContext == null) {
+                tempContext = this.session.createContext(contextId);
+            }
+            this.context = tempContext;
+            this.session = graphSession;
+            this.configurationManager = configurationManager;
+            this.logger = DetailedLogger.Factory.createJcrDetailedLogger(jcrSession);
+            this.rootGroup = rootGroup;
+        }
 
-		/**
-		 * 
-		 * @return all valid artifacts
-		 */
-		public Set<T> getAllValidArtifacts() {
-			return this.allValidArtifacts;
-		}
+        public ConfigurationManager getConfigurationManager() {
+            return this.configurationManager;
+        }
 
-		/**
-		 * 
-		 * @return all already processed artifacts
-		 */
-		public Set<T> getAlreadyProcessedArtifacts() {
-			return this.alreadyProcessedArtifacts;
-		}
+        public SLContext getContext() {
+            return this.context;
+        }
 
-		/**
-		 * 
-		 * @return artifacts with error
-		 */
-		public Set<T> getArtifactsWithError() {
-			return this.artifactsWithError;
-		}
+        public DetailedLogger getLogger() {
+            return this.logger;
+        }
 
-		/**
-		 * 
-		 * @return the parent bundle for all this artifacts
-		 */
-		public Bundle getBundle() {
-			return this.bundle;
-		}
+        public Group getRootGroup() {
+            return this.rootGroup;
+        }
 
-		/**
-		 * 
-		 * @return all excluded artifacts
-		 */
-		public Set<T> getExcludedArtifacts() {
-			return this.excludedArtifacts;
-		}
+        public SLGraphSession getSession() {
+            return this.session;
+        }
 
-		/**
-		 * 
-		 * @return all ignored artifacts
-		 */
-		public Set<T> getIgnoredArtifacts() {
-			return this.ignoredArtifacts;
-		}
+        /**
+         * Callback method to be used by {@link BundleProcessor}. Do not use this.
+         * 
+         * @throws SLGraphSessionException
+         */
+        public void processFinished() {
+            this.configurationManager.save(this.rootGroup.getRepository().getConfiguration());
+            try {
+                this.session.save();
+            } catch (final SLGraphSessionException e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            }
+            this.session.close();
+            this.configurationManager.closeResources();
+        }
 
-		/**
-		 * 
-		 * @return all modified artifacts
-		 */
-		public Set<T> getModifiedArtifacts() {
-			return this.modifiedArtifacts;
-		}
+        /**
+         * Callback method to be used by {@link BundleProcessor}. Do not use this.
+         */
+        public void processStarted() {
+            //
+        }
 
-		/**
-		 * 
-		 * @return all processed artifacts
-		 */
-		public Set<T> getNotProcessedArtifacts() {
-			return this.notProcessedArtifacts;
-		}
+    }
 
-	}
+    /**
+     * Processing context with all information needed to process an artifact. The most important attributes inside this class are
+     * target artifact and graph session. The main objective here is to get information for the target artifact and create
+     * information inside graph session.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     * @param <T>
+     */
+    @ThreadSafe
+    public static class BundleProcessingGroup<T> {
+        private final Set<T> addedArtifacts;
+        private final Set<T> allValidArtifacts;
+        private final Set<T> alreadyProcessedArtifacts;
+        private final Set<T> artifactsWithError;
+        private final Bundle bundle;
+        private final Set<T> excludedArtifacts;
+        private final Set<T> ignoredArtifacts;
+        private final Set<T> modifiedArtifacts;
+        private final Set<T> notProcessedArtifacts;
 
-	/**
-	 * Graph context to be possible to add or change Graph utility objects
-	 * without changing the bundle processing interface.
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
-	 */
-	@ThreadSafe
-	public static class GraphContext {
+        /**
+         * Constructor to initialize all mandatory fields
+         * 
+         * @param bundle
+         * @param addedArtifacts
+         * @param excludedArtifacts
+         * @param ignoredArtifacts
+         * @param artifactsWithError
+         * @param modifiedArtifacts
+         * @param allValidArtifacts
+         * @param notProcessedArtifacts
+         * @param alreadyProcessedArtifacts
+         * @param mutableType
+         */
+        public BundleProcessingGroup(
+                                      final Bundle bundle, final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
+                                      final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
+                                      final Set<T> modifiedArtifacts, final Set<T> allValidArtifacts,
+                                      final Set<T> notProcessedArtifacts, final Set<T> alreadyProcessedArtifacts,
+                                      final MutableType mutableType ) {
+            checkNotNull("bundle", bundle); //$NON-NLS-1$
+            checkNotNull("addedArtifacts", addedArtifacts);//$NON-NLS-1$
+            checkNotNull("excludedArtifacts", excludedArtifacts);//$NON-NLS-1$
+            checkNotNull("ignoredArtifacts", ignoredArtifacts);//$NON-NLS-1$
+            checkNotNull("artifactsWithError", artifactsWithError);//$NON-NLS-1$
+            checkNotNull("modifiedArtifacts", modifiedArtifacts);//$NON-NLS-1$
+            checkNotNull("allValidArtifacts", allValidArtifacts);//$NON-NLS-1$
+            checkNotNull("notProcessedArtifacts", notProcessedArtifacts);//$NON-NLS-1$
+            checkNotNull("alreadyProcessedArtifacts", alreadyProcessedArtifacts);//$NON-NLS-1$
 
-		private final SLGraph graph;
+            this.bundle = bundle;
+            switch (mutableType) {
+                case IMMUTABLE:
+                    this.addedArtifacts = unmodifiableSet(addedArtifacts);
+                    this.excludedArtifacts = unmodifiableSet(excludedArtifacts);
+                    this.ignoredArtifacts = unmodifiableSet(ignoredArtifacts);
+                    this.artifactsWithError = unmodifiableSet(artifactsWithError);
+                    this.modifiedArtifacts = unmodifiableSet(modifiedArtifacts);
+                    this.allValidArtifacts = unmodifiableSet(allValidArtifacts);
+                    this.notProcessedArtifacts = unmodifiableSet(notProcessedArtifacts);
+                    this.alreadyProcessedArtifacts = unmodifiableSet(alreadyProcessedArtifacts);
+                    break;
+                case MUTABLE:
+                    this.addedArtifacts = addedArtifacts;
+                    this.excludedArtifacts = excludedArtifacts;
+                    this.ignoredArtifacts = ignoredArtifacts;
+                    this.artifactsWithError = artifactsWithError;
+                    this.modifiedArtifacts = modifiedArtifacts;
+                    this.allValidArtifacts = allValidArtifacts;
+                    this.notProcessedArtifacts = notProcessedArtifacts;
+                    this.alreadyProcessedArtifacts = alreadyProcessedArtifacts;
+                    break;
+                default:
+                    throw logAndReturn(new IllegalStateException("unexpected MutableType")); //$NON-NLS-1$
+            }
 
-		private SLGraphSession graphSession;
+        }
 
-		private SLContext localContext;
+        /**
+         * @return all added artifacts.
+         */
+        public Set<T> getAddedArtifacts() {
+            return this.addedArtifacts;
+        }
 
-		private final GraphContext parentGraphContext;
+        /**
+         * @return all valid artifacts
+         */
+        public Set<T> getAllValidArtifacts() {
+            return this.allValidArtifacts;
+        }
 
-		private final Group rootGroup;
+        /**
+         * @return all already processed artifacts
+         */
+        public Set<T> getAlreadyProcessedArtifacts() {
+            return this.alreadyProcessedArtifacts;
+        }
 
-		/**
-		 * Constructor with final mandatory fields to create {@link Artifact}
-		 * unique {@link GraphContext} instances.
-		 * 
-		 * @param graph
-		 * @param lazy
-		 * @param parent
-		 * @throws SLGraphException
-		 * 
-		 */
-		/**
-		 * @param graph
-		 * @param lazy
-		 * @param parent
-		 * @param rootGroup
-		 * @throws SLGraphException
-		 */
-		public GraphContext(final SLGraph graph, final LazyType lazy,
-				final GraphContext parent, final Group rootGroup)
-				throws SLGraphException {
-			checkNotNull("graph", graph); //$NON-NLS-1$
-			checkNotNull("lazy", lazy); //$NON-NLS-1$
-			checkNotNull("parent", parent); //$NON-NLS-1$
-			checkNotNull("rootGroup", rootGroup); //$NON-NLS-1$
-			checkCondition(
-					"rootGroupConfiguredAsRoot", rootGroup.getGraphRoot().booleanValue()); //$NON-NLS-1$
-			checkCondition("sameRootGroup", parent.rootGroup.equals(rootGroup)); //$NON-NLS-1$
-			this.rootGroup = rootGroup;
-			this.graph = graph;
-			if (LazyType.EAGER.equals(lazy)) {
-				openSession();
-			}
-			this.parentGraphContext = parent;
-		}
+        /**
+         * @return artifacts with error
+         */
+        public Set<T> getArtifactsWithError() {
+            return this.artifactsWithError;
+        }
 
-		/**
-		 * Constructor with final mandatory fields.
-		 * 
-		 * @param graph
-		 *            the graph
-		 * @param lazy
-		 *            the lazy
-		 * @param rootGroup
-		 *            the root group
-		 * 
-		 * @throws SLGraphException
-		 *             the SL graph exception
-		 */
-		public GraphContext(final SLGraph graph, final LazyType lazy,
-				final Group rootGroup) throws SLGraphException {
-			checkNotNull("graph", graph); //$NON-NLS-1$
-			checkNotNull("lazy", lazy); //$NON-NLS-1$
-			checkNotNull("rootGroup", rootGroup); //$NON-NLS-1$
-			checkCondition(
-					"rootGroupConfiguredAsRoot", rootGroup.getGraphRoot().booleanValue()); //$NON-NLS-1$
-			this.rootGroup = rootGroup;
-			this.graph = graph;
-			this.parentGraphContext = null;
-			if (LazyType.EAGER.equals(lazy)) {
-				openSession();
-			}
-		}
+        /**
+         * @return the parent bundle for all this artifacts
+         */
+        public Bundle getBundle() {
+            return this.bundle;
+        }
 
-		/**
-		 * 
-		 * @return the graph session
-		 * @throws SLGraphException
-		 */
-		public SLContext getGlobalContext() throws SLGraphException {
-			if (this.parentGraphContext == null) {
-				return getLocalContext();
-			}
-			return this.parentGraphContext.getLocalContext();
+        /**
+         * @return all excluded artifacts
+         */
+        public Set<T> getExcludedArtifacts() {
+            return this.excludedArtifacts;
+        }
 
-		}
+        /**
+         * @return all ignored artifacts
+         */
+        public Set<T> getIgnoredArtifacts() {
+            return this.ignoredArtifacts;
+        }
 
-		/**
-		 * 
-		 * @return the graph session
-		 * @throws SLGraphException
-		 */
-		public SLContext getLocalContext() throws SLGraphException {
-			if (this.graphSession == null) {
-				openSession();
-			}
-			return this.localContext;
-		}
+        /**
+         * @return all modified artifacts
+         */
+        public Set<T> getModifiedArtifacts() {
+            return this.modifiedArtifacts;
+        }
 
-		/**
-		 * Opens the session.
-		 * 
-		 * @throws SLGraphException
-		 */
-		private synchronized void openSession() throws SLGraphException {
-			if (this.graphSession == null) {
-				this.graphSession = this.graph.openSession();
-				this.localContext = this.graphSession.getContext(this.rootGroup
-						.getInstanceMetadata().getPath());
-			}
-		}
+        /**
+         * @return all processed artifacts
+         */
+        public Set<T> getNotProcessedArtifacts() {
+            return this.notProcessedArtifacts;
+        }
 
-		/**
-		 * Callback method to be used by {@link BundleProcessor}. Do not use
-		 * this.
-		 */
-		public void processFinished() {
-			//
-		}
+    }
 
-		/**
-		 * Callback method to be used by {@link BundleProcessor}. Do not use
-		 * this.
-		 */
-		public void processStarted() {
-			//
-		}
+    /**
+     * This enum is the return of
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext)} method. The return types
+     * are used for statistical information. The normal return value for
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext)} must be
+     * {@link ProcessingAction#ARTIFACT_PROCESSED}.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     */
+    public static enum ProcessingAction {
+        /**
+         * Artifact ignored. This artifact should not be processed by this {@link BundleProcessor}.
+         */
+        ARTIFACT_IGNORED,
+        /**
+         * Artifact processed by this {@link BundleProcessor}.
+         */
+        ARTIFACT_PROCESSED,
+        /**
+         * There's an error processing this artifact by this {@link BundleProcessor}.
+         */
+        ERROR_PROCESSING_ARTIFACT,
 
-	}
+    }
 
-	/**
-	 * This enum is the return of
-	 * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, GraphContext)}
-	 * method. The return types are used for statistical information. The normal
-	 * return value for
-	 * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, GraphContext)}
-	 * must be {@link ProcessingAction#ARTIFACT_PROCESSED}.
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
-	 */
-	public static enum ProcessingAction {
-		/**
-		 * Artifact ignored. This artifact should not be processed by this
-		 * {@link BundleProcessor}.
-		 */
-		ARTIFACT_IGNORED,
-		/**
-		 * Artifact processed by this {@link BundleProcessor}.
-		 */
-		ARTIFACT_PROCESSED,
-		/**
-		 * There's an error processing this artifact by this
-		 * {@link BundleProcessor}.
-		 */
-		ERROR_PROCESSING_ARTIFACT,
+    /**
+     * This enum is the return type of
+     * {@link BundleProcessor#globalProcessingStarted(BundleProcessingGroup, BundleProcessingContext)} method. Depending of the
+     * return value, is possible to change the behavior of artifact processing for this execution. The common behavior should be
+     * returning {@link #PROCESS_EACH_ONE_NEW}.
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     */
+    public static enum ProcessingStartAction {
+        /**
+         * For some reason was really, really easy to process all artifacts on a simple loop without threads and so on. So, in
+         * this situations, process all artifacts and return this constant value and the {@link BundleProcessor} will know that
+         * everything is ok.
+         */
+        ALL_PROCESSING_ALREADY_DONE,
+        /**
+         * This constant tells the {@link BundleProcessor} that some fatal condition happened. It's the same as throwing an
+         * exception.
+         */
+        FATAL_ERROR_ON_START_PROCESSING,
+        /**
+         * For a reason, it's not convenient to process the artifacts rigth now. So, with this constant as a return type, all the
+         * artifacts are ignored.
+         */
+        IGNORE_ALL,
+        /**
+         * For a reason, all artifacts processed on a previous running are invalid for now. So, it need to be run on all new
+         * artifacts and the old ones. This constant tells the {@link BundleProcessor} to do that.
+         */
+        PROCESS_ALL_AGAIN,
+        /**
+         * This constant tells the {@link BundleProcessor} to use the contents of
+         * {@link BundleProcessor.BundleProcessingGroup#getNotProcessedArtifacts()} as a input to be processed on the each item
+         * phase.
+         */
+        PROCESS_CUSTOMIZED_LIST,
 
-	}
+        /**
+         * This should be the normal return for
+         * {@link BundleProcessor#globalProcessingStarted(BundleProcessingGroup, GraphContext)} . This constant tells the
+         * {@link BundleProcessor} to process all the added artifact ou modified artifact. This artifacts are called new, because
+         * they wasn't present on previous runnings.
+         */
+        PROCESS_EACH_ONE_NEW
+    }
 
-	/**
-	 * This enum is the return type of
-	 * {@link BundleProcessor#globalProcessingStarted(BundleProcessingGroup, GraphContext)}
-	 * method. Depending of the return value, is possible to change the behavior
-	 * of artifact processing for this execution. The common behavior should be
-	 * returning {@link #PROCESS_EACH_ONE_NEW}.
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
-	 */
-	public static enum ProcessingStartAction {
-		/**
-		 * For some reason was really, really easy to process all artifacts on a
-		 * simple loop without threads and so on. So, in this situations,
-		 * process all artifacts and return this constant value and the
-		 * {@link BundleProcessor} will know that everything is ok.
-		 */
-		ALL_PROCESSING_ALREADY_DONE,
-		/**
-		 * This constant tells the {@link BundleProcessor} that some fatal
-		 * condition happened. It's the same as throwing an exception.
-		 */
-		FATAL_ERROR_ON_START_PROCESSING,
-		/**
-		 * For a reason, it's not convenient to process the artifacts rigth now.
-		 * So, with this constant as a return type, all the artifacts are
-		 * ignored.
-		 */
-		IGNORE_ALL,
-		/**
-		 * For a reason, all artifacts processed on a previous running are
-		 * invalid for now. So, it need to be run on all new artifacts and the
-		 * old ones. This constant tells the {@link BundleProcessor} to do that.
-		 */
-		PROCESS_ALL_AGAIN,
-		/**
-		 * This constant tells the {@link BundleProcessor} to use the contents
-		 * of
-		 * {@link BundleProcessor.BundleProcessingGroup#getNotProcessedArtifacts()}
-		 * as a input to be processed on the each item phase.
-		 */
-		PROCESS_CUSTOMIZED_LIST,
+    /**
+     * Callback method to inform that all the processing finalized.
+     * 
+     * @param bundleProcessingGroup
+     * @param graphContext
+     */
+    public void globalProcessingFinalized( BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+                                           BundleProcessingContext graphContext );
 
-		/**
-		 * This should be the normal return for
-		 * {@link BundleProcessor#globalProcessingStarted(BundleProcessingGroup, GraphContext)}
-		 * . This constant tells the {@link BundleProcessor} to process all the
-		 * added artifact ou modified artifact. This artifacts are called new,
-		 * because they wasn't present on previous runnings.
-		 */
-		PROCESS_EACH_ONE_NEW
-	}
+    /**
+     * This method will be called once, before the threads creation to process all the artifacts. This return is very important,
+     * because with this is possible to change the behavior of this {@link BundleProcessor} execution for its {@link Bundle}. Take
+     * a look on the {@link ProcessingStartAction} documentation. The common behavior should be returning
+     * {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
+     * 
+     * @param bundleProcessingGroup with lists of all processed attributes and so on
+     * @param graphContext with all convenient object for graph manipulation
+     * @return {@link ProcessingStartAction} to set the behavior of the {@link BundleProcessor}
+     * @throws BundleProcessingFatalException if a fatal error has happened
+     */
+    public ProcessingStartAction globalProcessingStarted( BundleProcessingGroup<T> bundleProcessingGroup,
+                                                          BundleProcessingContext graphContext )
+        throws BundleProcessingFatalException;
 
-	/**
-	 * Callback method to inform that all the processing finalized.
-	 * 
-	 * @param bundleProcessingGroup
-	 * @param graphContext
-	 */
-	public void globalProcessingFinalized(
-			BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-			GraphContext graphContext);
-
-	/**
-	 * This method will be called once, before the threads creation to process
-	 * all the artifacts. This return is very important, because with this is
-	 * possible to change the behavior of this {@link BundleProcessor} execution
-	 * for its {@link Bundle}. Take a look on the {@link ProcessingStartAction}
-	 * documentation. The common behavior should be returning
-	 * {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
-	 * 
-	 * @param bundleProcessingGroup
-	 *            with lists of all processed attributes and so on
-	 * @param graphContext
-	 *            with all convenient object for graph manipulation
-	 * @return {@link ProcessingStartAction} to set the behavior of the
-	 *         {@link BundleProcessor}
-	 * @throws BundleProcessingFatalException
-	 *             if a fatal error has happened
-	 */
-	public ProcessingStartAction globalProcessingStarted(
-			BundleProcessingGroup<T> bundleProcessingGroup,
-			GraphContext graphContext) throws BundleProcessingFatalException;
-
-	/**
-	 * Method to process a target artifact. This method should be called a lot
-	 * of times by concurrent threads, so this class should be stateless.
-	 * 
-	 * @param targetArtifact
-	 *            the artifact to be processed
-	 * @param bundleProcessingGroup
-	 *            with lists of all processed attributes and so on
-	 * @param graphContext
-	 *            with all convenient object for graph manipulation
-	 * @return {@link ProcessingAction#ARTIFACT_PROCESSED} if this method
-	 *         processed this artifact anyway.
-	 * @throws BundleProcessingNonFatalException
-	 *             if a error on the current artifact has happened
-	 * @throws BundleProcessingFatalException
-	 *             if a fatal error has happened
-	 */
-	public ProcessingAction processArtifact(T targetArtifact,
-			BundleProcessingGroup<T> bundleProcessingGroup,
-			GraphContext graphContext)
-			throws BundleProcessingNonFatalException,
-			BundleProcessingFatalException;
+    /**
+     * Method to process a target artifact. This method should be called a lot of times by concurrent threads, so this class
+     * should be stateless.
+     * 
+     * @param targetArtifact the artifact to be processed
+     * @param bundleProcessingGroup with lists of all processed attributes and so on
+     * @param graphContext with all convenient object for graph manipulation
+     * @return {@link ProcessingAction#ARTIFACT_PROCESSED} if this method processed this artifact anyway.
+     * @throws BundleProcessingNonFatalException if a error on the current artifact has happened
+     * @throws BundleProcessingFatalException if a fatal error has happened
+     */
+    public ProcessingAction processArtifact( T targetArtifact,
+                                             BundleProcessingGroup<T> bundleProcessingGroup,
+                                             BundleProcessingContext graphContext )
+        throws BundleProcessingNonFatalException, BundleProcessingFatalException;
 
 }

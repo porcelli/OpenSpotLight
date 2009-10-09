@@ -38,8 +38,9 @@ public class OslContextListener implements ServletContextListener, ServletContex
             final Session jcrSession = provider.openSession();
             ConfigurationSupport.initializeConfiguration(false, jcrSession);
             jcrSession.logout();
-            scheduler.setBundleProcessorManager(new BundleProcessorManager(graph));
-            scheduler.setConfigurationManagerProvider(new JcrConfigurationManagerProvider(provider));
+            final JcrConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
+            scheduler.setBundleProcessorManager(new BundleProcessorManager(provider, configurationManagerProvider));
+            scheduler.setConfigurationManagerProvider(configurationManagerProvider);
             scheduler.start();
             arg0.getServletContext().setAttribute(SCHEDULER, scheduler);
             arg0.getServletContext().setAttribute(PROVIDER, provider);
