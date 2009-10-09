@@ -463,7 +463,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 final String[] propKeys = staticMetadata.propertyNames();
                 final Class<?>[] propValues = staticMetadata.propertyTypes();
                 final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
-                loadNodeProperties(jcrNode, newNode, propertyTypes, staticMetadata.keyPropertyName());
+                loadNodeProperties(jcrChild, newNode, propertyTypes, staticMetadata.keyPropertyName());
             }
 
         }
