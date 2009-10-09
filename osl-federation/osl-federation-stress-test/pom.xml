@@ -54,13 +54,20 @@
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph</artifactId>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
+			
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-configuration-example</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-jcr</artifactId>
@@ -79,6 +86,11 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-federation-configuration-example</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
