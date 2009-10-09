@@ -631,9 +631,10 @@ public final class BundleProcessorManager {
 
                 for (final FinalizationContext<? extends Artifact> context : finalizationContexts) {
                     if (context != null) {
+                        context.getGraphContext().processFinished();
+
                         context.getProcessor().globalProcessingFinalized(context.getBundleProcessingGroup(),
                                                                          context.getGraphContext());
-                        context.getGraphContext().processFinished();
                     }
                 }
             } finally {
