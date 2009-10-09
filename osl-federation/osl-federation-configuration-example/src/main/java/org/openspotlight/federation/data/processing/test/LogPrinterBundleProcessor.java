@@ -78,7 +78,7 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
 	 */
 	public void globalProcessingFinalized(
 			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
+			final BundleProcessingContext graphContext) {
 		// nothing to do here
 	}
 
@@ -88,7 +88,7 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
 	 */
 	public final ProcessingStartAction globalProcessingStarted(
 			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
+			final BundleProcessingContext graphContext) {
 		return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
 	}
 
@@ -99,7 +99,7 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
 	public ProcessingAction processArtifact(
 			final StreamArtifact targetArtifact,
 			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
+			final BundleProcessingContext graphContext) {
 		this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
 		count.incrementAndGet();
 		return ProcessingAction.ARTIFACT_PROCESSED;

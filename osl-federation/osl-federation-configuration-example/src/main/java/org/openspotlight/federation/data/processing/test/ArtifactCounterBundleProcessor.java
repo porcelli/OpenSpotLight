@@ -97,13 +97,13 @@ public class ArtifactCounterBundleProcessor implements
 
 	public void globalProcessingFinalized(
 			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
+			final BundleProcessingContext graphContext) {
 		//
 	}
 
 	public ProcessingStartAction globalProcessingStarted(
 			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
+			final BundleProcessingContext graphContext) {
 		LAST_GROUP = bundleProcessingGroup;
 		PROCESSED_ARTIFACTS.clear();
 		return DEFAULT_START_ACTION;
@@ -112,7 +112,7 @@ public class ArtifactCounterBundleProcessor implements
 	public ProcessingAction processArtifact(
 			final StreamArtifact targetArtifact,
 			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
+			final BundleProcessingContext graphContext) {
 		PROCESSED_ARTIFACTS.add(targetArtifact);
 		return ProcessingAction.ARTIFACT_PROCESSED;
 	}
