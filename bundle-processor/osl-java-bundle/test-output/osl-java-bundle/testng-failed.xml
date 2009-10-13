@@ -1,0 +1,30 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="5" skipfailedinvocationCounts="false" verbose="1" name="Failed suite [osl-java-bundle]" junit="false" parallel="false" annotations="JDK">
+  <test name="org.openspotlight.bundle.dap.language.java.resolver.TestIntegratedMethodResolution(failed)" junit="false" parallel="false" annotations="JDK">
+    <classes>
+      <class name="org.openspotlight.bundle.dap.language.java.resolver.TestIntegratedMethodResolution">
+        <methods>
+          <include name="getMethodParameterizedByMethod"/>
+          <include name="getMethodSeveralTypeParameter"/>
+          <include name="testCache"/>
+          <include name="getMethodBetween5Matches4"/>
+          <include name="afterTest"/>
+          <include name="finish"/>
+          <include name="getMethodBetween5Matches5"/>
+          <include name="setupGraphSession"/>
+          <include name="getMethodBetween2Matches"/>
+          <include name="init"/>
+          <include name="getMethodOneSimpleTypeParameterWithHierarchy"/>
+          <include name="resolveMethodOneSimpleTypeParameterWithHierarchy"/>
+          <include name="getMethodParameterizedByClass"/>
+          <include name="getMethodBetween5Matches"/>
+          <include name="getMethodBetween5Matches6"/>
+          <include name="getMethodBetween5Matches3"/>
+          <include name="getMethodBetween5MatchesBoxing"/>
+          <include name="getMethodSeveralTypeParameterHierarchy"/>
+          <include name="getMethodBetween5Matches2"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>

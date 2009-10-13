@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="osl-java-bundle">
+  <test verbose="2" name="org.openspotlight.bundle.dap.language.java.resolver.TestIntegratedMethodResolution" annotations="JDK">
+    <classes>
+      <class name="org.openspotlight.bundle.dap.language.java.resolver.TestIntegratedMethodResolution"/>
+    </classes>
+  </test>
+</suite>
