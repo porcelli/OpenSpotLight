@@ -214,6 +214,7 @@ import java.util.Set;
 	private boolean isgUnitTest = true;
 	private Set<String> defineMessageVariableSet = new HashSet<String>();
 	private Set<String> defineDomainVariableSet = new HashSet<String>();
+	private String defineTargetTreeResult = null;
 
 	public void setIsTesting(boolean isTesting){
 		this.isgUnitTest = isTesting;
@@ -270,6 +271,10 @@ import java.util.Set;
 	public boolean hasErrors() {
 		return !errors.isEmpty();
 	}
+	
+	public String getDefineTargetTreeResult(){
+		return defineTargetTreeResult;
+	}
 }
 
 compilationUnit
@@ -289,7 +294,7 @@ scope	{
 		defineOutput?
 		defineMessage*
 		defineDominValues*
-		(defineTarget {$compilationUnit::hasDefineTarget = true;} )? 
+		(defineTarget {$compilationUnit::hasDefineTarget = true; defineTargetTreeResult = ((CommonTree)$defineTarget.tree).toStringTree().toLowerCase();} )? 
 		(select {$compilationUnit::selectCount++;})+ EOF
 	->	^(VT_COMPILATION_UNIT
 			useCollatorLevel?
