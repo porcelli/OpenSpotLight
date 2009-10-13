@@ -52,24 +52,29 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 
 public interface SLQLQuery extends Serializable {
+
+    public String getId();
+
+    public String getOutputModelName();
 
     public boolean isTarget();
 
     public boolean hasTarget();
 
+    public SLQLQuery getTarget();
+
     public boolean hasVariables();
 
     public boolean hasOutputModel();
 
-    public String getOutputModelName();
+    public Collection<SLQLVariable> getVariables();
 
-    public Collection<String> getVariables();
-
-    public boolean isValid();
-
-    public Collection<SLNode> execute( Map<String, ?> variableValues,
-                                       Collection<SLNode> inputNodes );
+    public Collection<SLNode> execute( final SLGraphSession session,
+                                       final Map<String, ?> variableValues,
+                                       final Collection<SLNode> inputNodes ) throws SLGraphSessionException;
 }

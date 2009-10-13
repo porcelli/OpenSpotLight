@@ -54,6 +54,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SLQLQueryInfo {
+    private String                   id                  = null;
+    private String                   targetUniqueId      = null;
     private Set<String>              intVariables        = new HashSet<String>();
     private Set<String>              decVariables        = new HashSet<String>();
     private Set<String>              boolVariables       = new HashSet<String>();
@@ -173,5 +175,21 @@ public class SLQLQueryInfo {
 
     public void setOutputModelName( String outputModelName ) {
         this.outputModelName = outputModelName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId( String id ) {
+        this.id = id;
+    }
+
+    public String getTargetUniqueId() {
+        return targetUniqueId;
+    }
+
+    public void setTargetUniqueId( String targetUniqueId ) {
+        this.targetUniqueId = targetUniqueId;
     }
 }

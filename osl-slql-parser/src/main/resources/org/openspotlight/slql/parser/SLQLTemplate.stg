@@ -50,22 +50,24 @@ group SLQL;
 
 compilationUnit(selects, generalCollatorLevel) ::= 
 <<
-	if(!isValid(variables)){
-		throw new InvalidParameterException();
-	}
-
+	validate(session, variableValues, inputNodes);
+	
 	SLQuery query = session.createQuery();
 	<generalCollatorLevel>
 	query<selects>;
-
+	
 	SLQueryResult result = null;
-	if (inputNodes != null && inputNodes.size() > 0){
-		result = query.execute(inputNodes);
+	if (inputNodes != null) {
+	    result = query.execute(inputNodes);
 	} else {
-		result = query.execute();
+	    result = query.execute();
 	}
-
+	
 	return result.getNodes();
+
+	if(!isValid(variables)){
+		throw new InvalidParameterException();
+	}
 >>
 
 generalCollatorLevel(collatorLevel) ::= "query.setCollatorStrength(<collatorLevel>);"
@@ -167,22 +169,20 @@ offset(expr)		::= ".offset(<expr>)"
 
 defineTargetWithSelect(select) ::= 
 <<
+	validate(session, variableValues, inputNodes);
+	
 	SLQuery query = session.createQuery();
 	query<select>;
 
-	SLQueryResult result = null;
-	result = query.execute();
-
-	return result.getNodes();
+	return query.execute().getNodes();
 >>
 
 defineTarget(nodeType) ::= 
 <<
+	validate(session, variableValues, inputNodes);
+	
 	SLQuery query = session.createQuery();
 	query.select()<nodeType>.selectEnd();
 
-	SLQueryResult result = null;
-	result = query.execute();
-
-	return result.getNodes();
+	return query.execute().getNodes();
 >>

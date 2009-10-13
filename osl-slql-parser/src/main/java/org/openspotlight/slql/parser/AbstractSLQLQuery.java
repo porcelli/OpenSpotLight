@@ -54,81 +54,139 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 
 public abstract class AbstractSLQLQuery implements SLQLQuery {
 
-    private static final long              serialVersionUID = 5945900887330334999L;
+    private static final long           serialVersionUID = 5945900887330334999L;
 
-    protected SLGraphSession               session          = null;
-    protected Map<String, SLQLVariable<?>> variables        = null;
-    protected SLQLQuery                    targetQuery      = null;
+    protected Map<String, SLQLVariable> variables        = null;
+    protected SLQLQuery                 targetQuery      = null;
+    protected String                    id               = null;
+    protected String                    outputModelName  = null;
+    protected boolean                   isTarget         = false;
+    protected SLQLQuery                 target           = null;
 
     public AbstractSLQLQuery(
-                              SLGraphSession session,
-                              Set<SLQLVariable<?>> variables ) {
-        Assertions.checkNotNull("session", session);
+                              final String id, final Set<SLQLVariable> variables, final String outputModelName,
+                              final boolean isTarget,
+                              final SLQLQuery target ) {
+        Assertions.checkNotNull("isTarget", isTarget);
+        Assertions.checkNotEmpty("id", id);
 
-        this.session = session;
-        if (variables != null) {
-            for (SLQLVariable<?> slqlVariable : variables) {
+        this.id = id;
+        this.isTarget = isTarget;
+        this.target = target;
+
+        if (outputModelName != null && outputModelName.trim().length() > 0) {
+            this.outputModelName = outputModelName;
+        }
+
+        if (variables != null && variables.size() > 0) {
+            for (SLQLVariable slqlVariable : variables) {
                 this.variables.put(slqlVariable.getName(), slqlVariable);
             }
         }
     }
 
-    public abstract Collection<SLNode> execute( Map<String, ?> variableValues,
-                                                Collection<SLNode> inputNodes );
+    public abstract Collection<SLNode> execute( final SLGraphSession session,
+                                                final Map<String, ?> variableValues,
+                                                final Collection<SLNode> inputNodes ) throws SLGraphSessionException;
+
+    public String getId() {
+        return id;
+    }
 
     public String getOutputModelName() {
-        return null;
+        return outputModelName;
     }
 
-    public boolean isValid() {
-        return true;
-    }
-
-    public Collection<String> getVariables() {
+    public Collection<SLQLVariable> getVariables() {
         return null;
     }
 
     public boolean hasOutputModel() {
-        return false;
+        return outputModelName != null;
     }
 
     public boolean isTarget() {
-        return false;
+        return isTarget;
     }
 
     public boolean hasTarget() {
-        return false;
+        return target != null;
+    }
+
+    public SLQLQuery getTarget() {
+        return target;
     }
 
     public boolean hasVariables() {
-        return false;
+        return variables != null;
     }
 
-    protected void setupVariableValues( Map<String, ?> variableValues ) {
+    protected void validate( final SLGraphSession session,
+                             final Map<String, ?> variableValues,
+                             final Collection<SLNode> inputNodes ) {
+        Assertions.checkNotNull("session", session);
+
+        if (this.hasVariables()) {
+            Assertions.checkNotEmpty("variableValues", variableValues);
+        } else {
+            Assertions.checkNullMandatory("variableValues", variableValues);
+        }
+
+        if (this.hasTarget()) {
+            Assertions.checkNotEmpty("inputNodes", inputNodes);
+        } else {
+            Assertions.checkNullMandatory("inputNodes", inputNodes);
+        }
+
+        for (Entry<String, ?> activeVariableValue : variableValues.entrySet()) {
+            if (variables.containsKey(activeVariableValue.getKey())) {
+                SLQLVariable activeVar = variables.get(activeVariableValue.getKey());
+                activeVar.setValue(activeVariableValue.getValue());
+            } else {
+                Exceptions.logAndThrow(new IllegalArgumentException("Variable Not Found"));
+            }
+        }
+    }
+
+    protected void setupVariableValues( final Map<String, ?> variableValues ) {
         for (Entry<String, ?> variableNameAndValue : variableValues.entrySet()) {
-            SLQLVariable<?> variable = variables.get(variableNameAndValue.getKey());
+            SLQLVariable variable = variables.get(variableNameAndValue.getKey());
             variable.setValue(variableNameAndValue.getValue());
         }
     }
 
-    protected boolean getBooleanValue( String variableName ) {
+    protected boolean getBooleanValue( final String variableName ) {
+        if (variables.containsKey(variableName)) {
+            return ((SLQLVariableBoolean)variables.get(variableName)).getValue();
+        }
         return false;
     }
 
-    protected double getDecValue( String variableName ) {
-        return 0;
+    protected float getDecValue( final String variableName ) {
+        if (variables.containsKey(variableName)) {
+            return ((SLQLVariableFloat)variables.get(variableName)).getValue();
+        }
+        return -1;
     }
 
-    protected int getIntValue( String variableName ) {
-        return 0;
+    protected int getIntValue( final String variableName ) {
+        if (variables.containsKey(variableName)) {
+            return ((SLQLVariableInteger)variables.get(variableName)).getValue();
+        }
+        return -1;
     }
 
-    protected String getStringValue( String variableName ) {
-        return null;
+    protected String getStringValue( final String variableName ) {
+        if (variables.containsKey(variableName)) {
+            return ((SLQLVariableString)variables.get(variableName)).getValue();
+        }
+        return "";
     }
 }

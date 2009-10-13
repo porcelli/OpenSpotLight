@@ -1,35 +1,19 @@
 package org.openspotlight.slql.parser;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-public class SLQLVariable<DT> {
+import org.openspotlight.common.util.Exceptions;
 
-    private String  name           = null;
-    private String  displayMessage = null;
-    private Set<DT> domainValue    = new HashSet<DT>();
-    private DT      value          = null;
+public abstract class SLQLVariable {
+
+    protected String name           = null;
+    protected String displayMessage = null;
+    protected Object value          = null;
 
     public SLQLVariable(
                          String name ) {
         this.name = name;
         this.displayMessage = name;
-    }
-
-    public void addDomainValue( DT value ) {
-        domainValue.add(value);
-    }
-
-    public boolean hasDomainValues() {
-        if (domainValue.size() == 0){
-            return false;
-        }
-        return true;
-    }
-
-    public Collection<DT> getDomainValues() {
-        return domainValue;
     }
 
     public String getDisplayMessage() {
@@ -40,34 +24,39 @@ public class SLQLVariable<DT> {
         this.displayMessage = displayMessage;
     }
 
-    public boolean isValidValue( DT value ) {
-        if (!hasDomainValues()) {
-            return true;
-        }
-        if (domainValue.contains(value)) {
-            return true;
-        }
-        return false;
-    }
-
     public String getName() {
         return name;
     }
 
     @Override
     public boolean equals( Object obj ) {
-        if (obj instanceof SLQLVariable<?>) {
-            return name.equalsIgnoreCase(((SLQLVariable<?>)obj).getName());
+        if (obj instanceof SLQLVariable) {
+            return name.equalsIgnoreCase(((SLQLVariable)obj).getName());
         }
         return false;
     }
 
-    @SuppressWarnings( "unchecked" )
     public void setValue( Object value ) {
-        this.value = (DT)value;
+        if (isValidValue(value)) {
+            this.value = (Integer)value;
+        } else {
+            Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
+        }
     }
 
-    public DT getValue() {
-        return (DT)value;
+    public void addAllDomainValue( Collection<Object> values ){
+        for (Object activeValue : values) {
+            addDomainValue(activeValue);
+        }
     }
+
+    public abstract void addDomainValue( Object value );
+
+    public abstract boolean hasDomainValues();
+
+    public abstract boolean isValidValue( Object value );
+
+    public abstract Collection<?> getDomainValues();
+
+    public abstract Object getValue();
 }
