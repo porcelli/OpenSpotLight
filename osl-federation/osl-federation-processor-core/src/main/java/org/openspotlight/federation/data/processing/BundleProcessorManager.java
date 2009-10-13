@@ -75,9 +75,6 @@ import org.openspotlight.common.LazyType;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
@@ -85,6 +82,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext;
@@ -357,27 +355,28 @@ public final class BundleProcessorManager {
      * @param excludedArtifacts
      * @param modifiedArtifacts
      */
-    @SuppressWarnings( "unchecked" )
     private static <T extends Artifact> void findArtifactsByChangeType( final Bundle bundle,
                                                                         final Set<T> allValidArtifacts,
-                                                                        final List<ItemChangeEvent<ConfigurationNode>> nodeChanges,
                                                                         final Set<T> addedArtifacts,
                                                                         final Set<T> excludedArtifacts,
                                                                         final Set<T> modifiedArtifacts ) {
-        for (final ItemChangeEvent<ConfigurationNode> change : nodeChanges) {
-            if (change.getNewItem() != null && allValidArtifacts.contains(change.getNewItem())) {
-                if (ItemChangeType.ADDED.equals(change.getType())) {
-                    addedArtifacts.add((T)change.getNewItem());
-                } else if (ItemChangeType.CHANGED.equals(change.getType())) {
-                    modifiedArtifacts.add((T)change.getNewItem());
-                }
-            } else {
-                if (ItemChangeType.EXCLUDED.equals(change.getType())
-                    && bundle.equals(change.getOldItem().getInstanceMetadata().getDefaultParent())) {
-                    if (change.getOldItem() instanceof Artifact) {
-                        excludedArtifacts.add((T)change.getOldItem());
-                    }
-                }
+        for (final T artifact : allValidArtifacts) {
+            final Status status = artifact.getStatus();
+            switch (status) {
+                case ALREADY_PROCESSED:
+                    break;
+                case CHANGED:
+                    modifiedArtifacts.add(artifact);
+                    break;
+                case EXCLUDED:
+                    excludedArtifacts.add(artifact);
+                    break;
+                case INCLUDED:
+                    addedArtifacts.add(artifact);
+                    break;
+
+                default:
+                    throw logAndReturn(new IllegalStateException());
             }
         }
     }
@@ -561,7 +560,6 @@ public final class BundleProcessorManager {
         throws BundleProcessingFatalException {
 
         final Set<T> allValidArtifacts = findAllNodesOfType(bundle, mappedProcessor.getArtifactType());
-        final List<ItemChangeEvent<ConfigurationNode>> nodeChanges = bundle.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave();
         final Set<T> addedArtifacts = new HashSet<T>();
         final Set<T> excludedArtifacts = new HashSet<T>();
         final Set<T> modifiedArtifacts = new HashSet<T>();
@@ -569,7 +567,7 @@ public final class BundleProcessorManager {
         final Set<T> alreadyProcessedArtifacts = new CopyOnWriteArraySet<T>();
         final Set<T> ignoredArtifacts = new CopyOnWriteArraySet<T>();
         final Set<T> artifactsWithError = new CopyOnWriteArraySet<T>();
-        findArtifactsByChangeType(bundle, allValidArtifacts, nodeChanges, addedArtifacts, excludedArtifacts, modifiedArtifacts);
+        findArtifactsByChangeType(bundle, allValidArtifacts, addedArtifacts, excludedArtifacts, modifiedArtifacts);
         notProcessedArtifacts.addAll(addedArtifacts);
         notProcessedArtifacts.addAll(modifiedArtifacts);
         for (final BundleProcessor<?> processor : processors) {

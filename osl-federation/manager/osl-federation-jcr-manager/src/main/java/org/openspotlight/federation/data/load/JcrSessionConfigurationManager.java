@@ -80,7 +80,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
@@ -122,51 +122,51 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
-    private class JcrDataLoader implements DataLoader {
+    private static class JcrDataLoader implements DataLoader {
 
         /**
          * Value from a cache map to control lazy loading.
          * 
          * @author Luiz Fernando Teston - feu.teston@caravelatech.com
          */
-        private class LazyStatus {
-            private boolean    childrenLoaded   = false;
-            private final Node jcrNode;
-            private boolean    propertiesLoaded = false;
+
+        private static class LazyStatus {
+
+            private final AtomicReference<LoadingStatus> propertyLoadingStatus;
+
+            private final AtomicReference<LoadingStatus> childrenLoadingStatus;
+
+            private final Node                           jcrNode;
 
             public LazyStatus(
                                final Node jcrNode ) {
                 this.jcrNode = jcrNode;
+                this.propertyLoadingStatus = new AtomicReference<LoadingStatus>(LoadingStatus.NEEDS_LOAD);
+                this.childrenLoadingStatus = new AtomicReference<LoadingStatus>(LoadingStatus.NEEDS_LOAD);
+            }
+
+            public AtomicReference<LoadingStatus> getChildrenLoadingStatus() {
+                return this.childrenLoadingStatus;
             }
 
             public Node getJcrNode() {
                 return this.jcrNode;
             }
 
-            public boolean isChildrenLoaded() {
-                return this.childrenLoaded;
+            public AtomicReference<LoadingStatus> getPropertyLoadingStatus() {
+                return this.propertyLoadingStatus;
             }
 
-            public boolean isPropertiesLoaded() {
-                return this.propertiesLoaded;
-            }
-
-            public void setChildrenLoaded( final boolean childrenLoaded ) {
-                this.childrenLoaded = childrenLoaded;
-            }
-
-            public void setPropertiesLoaded( final boolean propertiesLoaded ) {
-                this.propertiesLoaded = propertiesLoaded;
-            }
         }
 
-        private final Map<ConfigurationNode, LazyStatus> lazyCache         = new HashMap<ConfigurationNode, LazyStatus>();
+        private static enum LoadingStatus {
+            NEEDS_LOAD,
+            LOADING,
+            LOADED
+        }
 
-        private final AtomicBoolean                      loadingChildren   = new AtomicBoolean(false);
+        private final Map<ConfigurationNode, LazyStatus> lazyCache = new HashMap<ConfigurationNode, LazyStatus>();
 
-        private final AtomicBoolean                      loadingProperties = new AtomicBoolean(false);
-
-        @SuppressWarnings( "hiding" )
         private final Session                            session;
 
         /**
@@ -191,24 +191,38 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             return lazyCacheForTarget;
         }
 
-        public synchronized void loadChildren( final ConfigurationNode targetNode ) {
-            if (this.loadingChildren.get()) {
-                return;
-            }
+        public void loadChildren( final ConfigurationNode targetNode ) {
             try {
-                LazyStatus lazyCacheForTarget = this.lazyCache.get(targetNode);
-                final boolean needsLoad = lazyCacheForTarget == null || !lazyCacheForTarget.isChildrenLoaded();
-                if (needsLoad) {
-                    this.loadingChildren.set(true);
-                    try {
-                        if (lazyCacheForTarget == null) {
-                            lazyCacheForTarget = this.createLazyStatus(targetNode);
-                        }
-                        loadChildrenNodes(lazyCacheForTarget.getJcrNode(), targetNode, LazyType.LAZY);
-                        lazyCacheForTarget.setChildrenLoaded(true);
-                    } finally {
-                        this.loadingChildren.set(false);
+                LazyStatus lazyCacheForTarget;
+                synchronized (this.lazyCache) {
+                    lazyCacheForTarget = this.lazyCache.get(targetNode);
+                    if (lazyCacheForTarget == null) {
+                        lazyCacheForTarget = this.createLazyStatus(targetNode);
                     }
+                }
+                switch (lazyCacheForTarget.getChildrenLoadingStatus().get()) {
+                    case NEEDS_LOAD:
+                        try {
+                            lazyCacheForTarget.getChildrenLoadingStatus().set(LoadingStatus.LOADING);
+                            loadChildrenNodes(lazyCacheForTarget.getJcrNode(), targetNode, LazyType.LAZY);
+                        } finally {
+                            lazyCacheForTarget.getChildrenLoadingStatus().set(LoadingStatus.LOADED);
+                        }
+                        break;
+                    case LOADING:
+                        //                        for (final StackTraceElement e : Thread.currentThread().getStackTrace()) {
+                        //                            System.err.println("LOADING " + e);
+                        //                        }
+                        //                        loop: while (true) {
+                        //                            if (lazyCacheForTarget.getChildrenLoadingStatus().get().equals(LoadingStatus.LOADED)) {
+                        //                                break loop;
+                        //                            }
+                        //                            Thread.sleep(250);
+                        //                        }
+                        break;
+                    case LOADED:
+
+                        break;
                 }
 
             } catch (final Exception e) {
@@ -216,30 +230,41 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
         }
 
-        public synchronized void loadProperties( final ConfigurationNode targetNode ) {
-            if (this.loadingProperties.get()) {
-                return;
-            }
+        public void loadProperties( final ConfigurationNode targetNode ) {
             try {
-                LazyStatus lazyCacheForTarget = this.lazyCache.get(targetNode);
-                final boolean needsLoad = lazyCacheForTarget == null || !lazyCacheForTarget.isPropertiesLoaded();
-                if (needsLoad) {
-                    try {
-                        this.loadingProperties.set(true);
-
-                        if (lazyCacheForTarget == null) {
-                            lazyCacheForTarget = this.createLazyStatus(targetNode);
-                        }
-                        final String[] propKeys = targetNode.getInstanceMetadata().getStaticMetadata().propertyNames();
-                        final Class<?>[] propValues = targetNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
-                        final String keyPropertyName = targetNode.getInstanceMetadata().getStaticMetadata().keyPropertyName();
-                        final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
-                        loadNodeProperties(lazyCacheForTarget.getJcrNode(), targetNode, propertyTypes, keyPropertyName);
-                        lazyCacheForTarget.setPropertiesLoaded(true);
-                    } finally {
-                        this.loadingProperties.set(false);
+                LazyStatus lazyCacheForTarget;
+                synchronized (this.lazyCache) {
+                    lazyCacheForTarget = this.lazyCache.get(targetNode);
+                    if (lazyCacheForTarget == null) {
+                        lazyCacheForTarget = this.createLazyStatus(targetNode);
                     }
                 }
+                switch (lazyCacheForTarget.getPropertyLoadingStatus().get()) {
+                    case NEEDS_LOAD:
+                        try {
+                            lazyCacheForTarget.getPropertyLoadingStatus().set(LoadingStatus.LOADING);
+                            final String[] propKeys = targetNode.getInstanceMetadata().getStaticMetadata().propertyNames();
+                            final Class<?>[] propValues = targetNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
+                            final String keyPropertyName = targetNode.getInstanceMetadata().getStaticMetadata().keyPropertyName();
+                            final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
+                            loadNodeProperties(lazyCacheForTarget.getJcrNode(), targetNode, propertyTypes, keyPropertyName);
+                        } finally {
+                            lazyCacheForTarget.getPropertyLoadingStatus().set(LoadingStatus.LOADED);
+                        }
+                        break;
+                    case LOADING:
+                        //                        loop: while (true) {
+                        //                            if (lazyCacheForTarget.getPropertyLoadingStatus().get().equals(LoadingStatus.LOADED)) {
+                        //                                break loop;
+                        //                            }
+                        //                            Thread.sleep(250);
+                        //                        }
+                        break;
+                    case LOADED:
+
+                        break;
+                }
+
             } catch (final Exception e) {
                 logAndThrowNew(e, SLRuntimeException.class);
             }
@@ -459,11 +484,6 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
             if (LazyType.EAGER.equals(lazyType)) {
                 loadChildrenAndProperties(jcrChild, newNode, staticMetadata);
-            } else {
-                final String[] propKeys = staticMetadata.propertyNames();
-                final Class<?>[] propValues = staticMetadata.propertyTypes();
-                final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
-                loadNodeProperties(jcrChild, newNode, propertyTypes, staticMetadata.keyPropertyName());
             }
 
         }

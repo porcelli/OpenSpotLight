@@ -14,7 +14,12 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
  * 
  * @author feu
  */
-public class ArtifactStatusUpdateVisitor implements ItemEventListener<ConfigurationNode> {
+public enum ArtifactStatusUpdateVisitor implements ItemEventListener<ConfigurationNode> {
+
+    /**
+     * Single instance
+     */
+    INSTANCE;
 
     /**
      * {@inheritDoc}
