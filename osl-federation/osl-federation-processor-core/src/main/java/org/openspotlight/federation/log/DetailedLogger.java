@@ -46,7 +46,7 @@ public interface DetailedLogger {
 
         private ErrorCode(
                            final int code, final String description ) {
-            assert code > 0;
+            assert code >= 0;
             assert description != null;
             assert description.trim().length() > 0;
             this.code = code;

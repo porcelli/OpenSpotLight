@@ -156,12 +156,12 @@ public interface BundleProcessor<T extends Artifact> {
         public void processFinished() {
             this.configurationManager.save(this.rootGroup.getRepository().getConfiguration());
             //            try {
-            //                //FIXME throws exeption here
-            //                //this.session.save();
+            //                //FIXME throws exeption here. Maybe it should have anything to do with multithread execution...
+            //                this.session.save();
             //            } catch (final SLGraphSessionException e) {
             //                throw logAndReturnNew(e, ConfigurationException.class);
             //            }
-            this.configurationManager.closeResources();
+            //            this.configurationManager.closeResources();
             this.session.close();
         }
 

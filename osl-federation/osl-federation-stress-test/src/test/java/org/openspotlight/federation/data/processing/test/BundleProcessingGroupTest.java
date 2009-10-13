@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
@@ -26,34 +27,23 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 @SuppressWarnings( "all" )
 public class BundleProcessingGroupTest {
 
-    final int addedSize        = 5;
-    final int allArtifactsSize = this.addedSize + this.changedSize + this.notChangedSize;
-    final int changedSize      = 2;
-    final int excludedSize     = 3;
-    final int newArtifactsSize = this.addedSize + this.changedSize;
-    final int notChangedSize   = 4;
+    private static Bundle bundle;
 
-    private Repository createDirtyRepository() throws Exception {
-        final Configuration configuration = new Configuration();
-        configuration.setNumberOfParallelThreads(Integer.valueOf(4));
-        final Repository repository = new Repository(configuration, "repository");
-        repository.setActive(Boolean.TRUE);
-        final Group project = new Group(repository, "project");
-        project.setGraphRoot(Boolean.TRUE);
-        project.setActive(Boolean.TRUE);
-        final Bundle bundle = new Bundle(project, "bundle");
-        bundle.setActive(Boolean.TRUE);
-        new BundleProcessorType(bundle, "org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
-        new StreamArtifact(bundle, "notChangedAtAllArtifact1");
-        new StreamArtifact(bundle, "notChangedAtAllArtifact2");
-        new StreamArtifact(bundle, "notChangedAtAllArtifact3");
-        new StreamArtifact(bundle, "notChangedAtAllArtifact4");
-        final StreamArtifact excluded1 = new StreamArtifact(bundle, "excluded1");
-        final StreamArtifact excluded2 = new StreamArtifact(bundle, "excluded2");
-        final StreamArtifact excluded3 = new StreamArtifact(bundle, "excluded3");
-        final StreamArtifact changedArtifact1 = new StreamArtifact(bundle, "changedArtifact1");
-        final StreamArtifact changedArtifact2 = new StreamArtifact(bundle, "changedArtifact2");
-        configuration.getInstanceMetadata().getSharedData().markAsSaved();
+    final int             addedSize        = 5;
+
+    final int             allArtifactsSize = this.addedSize + this.changedSize + this.notChangedSize;
+    final int             changedSize      = 2;
+    final int             excludedSize     = 3;
+    final int             newArtifactsSize = this.addedSize + this.changedSize;
+    final int             notChangedSize   = 4;
+
+    private Repository createDirtyRepository( final Bundle bundle ) throws Exception {
+        final StreamArtifact excluded1 = bundle.getStreamArtifactByName("excluded1");
+        final StreamArtifact excluded2 = bundle.getStreamArtifactByName("excluded2");
+        final StreamArtifact excluded3 = bundle.getStreamArtifactByName("excluded3");
+        final StreamArtifact changedArtifact1 = bundle.getStreamArtifactByName("changedArtifact1");
+        final StreamArtifact changedArtifact2 = bundle.getStreamArtifactByName("changedArtifact2");
+
         new StreamArtifact(bundle, "included1");
         new StreamArtifact(bundle, "included2");
         new StreamArtifact(bundle, "included3");
@@ -65,7 +55,41 @@ public class BundleProcessingGroupTest {
         bundle.removeStreamArtifact(excluded2);
         bundle.removeStreamArtifact(excluded3);
 
-        return repository;
+        return bundle.getRepository();
+    }
+
+    @Before
+    public void setupTemporaryRepository() throws Exception {
+        ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_ALL_AGAIN);
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
+        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        final Configuration configuration = new Configuration();
+        configuration.setNumberOfParallelThreads(Integer.valueOf(4));
+        final Repository repository = new Repository(configuration, "repository");
+        repository.setActive(Boolean.TRUE);
+        final Group project = new Group(repository, "project");
+        project.setGraphRoot(Boolean.TRUE);
+        project.setActive(Boolean.TRUE);
+        bundle = new Bundle(project, "bundle");
+        bundle.setActive(Boolean.TRUE);
+        new BundleProcessorType(bundle, "org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
+        new StreamArtifact(bundle, "notChangedAtAllArtifact1");
+        new StreamArtifact(bundle, "notChangedAtAllArtifact2");
+        new StreamArtifact(bundle, "notChangedAtAllArtifact3");
+        new StreamArtifact(bundle, "notChangedAtAllArtifact4");
+        final StreamArtifact excluded1 = new StreamArtifact(bundle, "excluded1");
+        final StreamArtifact excluded2 = new StreamArtifact(bundle, "excluded2");
+        final StreamArtifact excluded3 = new StreamArtifact(bundle, "excluded3");
+        final StreamArtifact changedArtifact1 = new StreamArtifact(bundle, "changedArtifact1");
+        final StreamArtifact changedArtifact2 = new StreamArtifact(bundle, "changedArtifact2");
+
+        configurationManager.save(configuration);
+        assertThat(configuration.getInstanceMetadata().getSharedData().getDirtyNodes().size(), is(0));
+        assertThat(configuration.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(0));
+
     }
 
     @Test
@@ -76,9 +100,9 @@ public class BundleProcessingGroupTest {
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
-        final Repository repository = this.createDirtyRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        final Repository repository = this.createDirtyRepository(bundle);
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
         manager.processBundles(bundles);
@@ -97,9 +121,9 @@ public class BundleProcessingGroupTest {
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
-        final Repository repository = this.createDirtyRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        final Repository repository = this.createDirtyRepository(bundle);
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
         manager.processBundles(bundles);
@@ -115,9 +139,9 @@ public class BundleProcessingGroupTest {
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
-        final Repository repository = this.createDirtyRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        final Repository repository = this.createDirtyRepository(bundle);
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
@@ -134,9 +158,9 @@ public class BundleProcessingGroupTest {
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
-        final Repository repository = this.createDirtyRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        final Repository repository = this.createDirtyRepository(bundle);
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
@@ -154,9 +178,9 @@ public class BundleProcessingGroupTest {
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
-        final Repository repository = this.createDirtyRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        final Repository repository = this.createDirtyRepository(bundle);
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
