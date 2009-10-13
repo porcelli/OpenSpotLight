@@ -20,26 +20,34 @@ public abstract class JcrConnectionProvider {
 
         private Repository repository;
 
+        private boolean    repositoryClosed = true;
+
         public JackRabbitConnectionProvider(
                                              final JcrConnectionDescriptor data ) {
             super(data);
         }
 
         @Override
-        public void closeRepository() {
+        public synchronized void closeRepository() {
+            if (this.getData().equals(DefaultJcrDescriptor.TEMP_DESCRIPTOR)) {
+                return;
+            }
             final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl)this.repository;
             repositoryCasted.shutdown();
+            this.repositoryClosed = true;
         }
 
         @Override
         public synchronized Repository openRepository() {
-            if (this.repository == null) {
+            if (this.repository == null || this.repositoryClosed) {
                 try {
+
                     final RepositoryConfig config = RepositoryConfig.create(
                                                                             ClassPathResource.getResourceFromClassPath(this.getData().getXmlClasspathLocation()),
                                                                             this.getData().getConfigurationDirectory());
 
                     this.repository = RepositoryImpl.create(config);
+                    this.repositoryClosed = false;
                 } catch (final Exception e) {
                     throw logAndReturnNew(e, ConfigurationException.class);
                 }
