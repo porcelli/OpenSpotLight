@@ -61,134 +61,148 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * This is the root node of the configuration classes that contains the
- * following structure. 
- * 
- * This structure are used to pass the artifacts to the parser. All the classes
- * are thread save by default.
+ * This is the root node of the configuration classes that contains the following structure. This structure are used to pass the
+ * artifacts to the parser. All the classes are thread save by default.
  * 
  * @see ConfigurationNode
- * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings( "unchecked" )
 @ThreadSafe
-@StaticMetadata(validChildrenTypes = Repository.class, propertyNames = "numberOfParallelThreads", propertyTypes = Integer.class)
+@StaticMetadata( validChildrenTypes = Repository.class, propertyNames = {"numberOfParallelThreads", "maxResultListSize"}, propertyTypes = {
+    Integer.class, Integer.class} )
 public final class Configuration implements ConfigurationNode {
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5615522050633506216L;
-    
+
+    /** The Constant serialVersionUID. */
+    private static final long      serialVersionUID           = -5615522050633506216L;
+
+    /** The instance metadata. */
     private final InstanceMetadata instanceMetadata;
-    
-    private static final String NUMBER_OF_PARALLEL_THREADS = "numberOfParallelThreads"; //$NON-NLS-1$
-    
+
+    /** The Constant NUMBER_OF_PARALLEL_THREADS. */
+    private static final String    NUMBER_OF_PARALLEL_THREADS = "numberOfParallelThreads"; //$NON-NLS-1$
+
+    /** The Constant MAX_RESULT_LIST_SIZE. */
+    private static final String    MAX_RESULT_LIST_SIZE       = "maxResultListSize";      //$NON-NLS-1$
+
     /**
-     * Default constructor
+     * Default constructor.
      */
     public Configuration() {
         this.instanceMetadata = createRoot(this);
         this.instanceMetadata.getSharedData().fireNodeChange(null, this);
-        
+
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public final int compareTo(final ConfigurationNode o) {
+    public final int compareTo( final ConfigurationNode o ) {
         return this.instanceMetadata.compare(this, o);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
-    public final boolean equals(final Object obj) {
+    public final boolean equals( final Object obj ) {
         return this.instanceMetadata.equals(obj);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public final InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
     }
-    
+
     /**
+     * Gets the max result list size.
+     * 
+     * @return the max result list size
+     */
+    public Integer getMaxResultListSize() {
+        return this.instanceMetadata.getProperty(MAX_RESULT_LIST_SIZE);
+    }
+
+    /**
+     * Gets the number of parallel threads.
      * 
      * @return the number of parallel threads for this repository processing
      */
     public final Integer getNumberOfParallelThreads() {
         return this.instanceMetadata.getProperty(NUMBER_OF_PARALLEL_THREADS);
     }
-    
+
     /**
+     * Gets the repositories.
      * 
      * @return all repositories
      */
     public final Collection<Repository> getRepositories() {
         return this.instanceMetadata.getChildrensOfType(Repository.class);
     }
-    
+
     /**
      * Returns a repository by its name.
      * 
-     * @param name
+     * @param name the name
      * @return a repository
      */
-    public final Repository getRepositoryByName(final String name) {
+    public final Repository getRepositoryByName( final String name ) {
         return this.instanceMetadata.getChildByKeyValue(Repository.class, name);
     }
-    
+
     /**
+     * Gets the repository names.
      * 
      * @return all repository names
      */
     public final Set<String> getRepositoryNames() {
-        return (Set<String>) this.instanceMetadata
-                .getKeyFromChildrenOfTypes(Repository.class);
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(Repository.class);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
     public final int hashCode() {
         return this.instanceMetadata.hashCode();
     }
-    
+
     /**
-     * Removes a given repository
+     * Removes a given repository.
      * 
-     * @param repository
+     * @param repository the repository
      */
-    public final void removeRepository(final Repository repository) {
+    public final void removeRepository( final Repository repository ) {
         this.instanceMetadata.removeChild(repository);
     }
-    
+
+    /**
+     * Sets the max result list size.
+     * 
+     * @param maxResultListSize the new max result list size
+     */
+    public void setMaxResultListSize( final Integer maxResultListSize ) {
+        this.instanceMetadata.setProperty(MAX_RESULT_LIST_SIZE, maxResultListSize);
+    }
+
     /**
      * Sets the number of parallel threads.
      * 
-     * @param numberOfParallelThreads
+     * @param numberOfParallelThreads the number of parallel threads
      */
-    public final void setNumberOfParallelThreads(
-            final Integer numberOfParallelThreads) {
-        this.instanceMetadata.setProperty(NUMBER_OF_PARALLEL_THREADS,
-                numberOfParallelThreads);
+    public final void setNumberOfParallelThreads( final Integer numberOfParallelThreads ) {
+        this.instanceMetadata.setProperty(NUMBER_OF_PARALLEL_THREADS, numberOfParallelThreads);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
     public final String toString() {
         return this.instanceMetadata.toString();
     }
-    
+
 }
