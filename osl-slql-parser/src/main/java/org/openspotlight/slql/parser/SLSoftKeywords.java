@@ -87,5 +87,7 @@ public interface SLSoftKeywords {
     public static final String BY        = "by";
     public static final String LIMIT     = "limit";
     public static final String OFFSET    = "offset";
+    public static final String ASC       = "asc";
+    public static final String DESC      = "desc";
 
 }

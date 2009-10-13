@@ -446,8 +446,8 @@ orderByGroupNode
 	;
 
 propertyReference
-	:	property_key propertyName (ak=asc_key|dk=desc_key)?
-		-> {$ak == null && $dk == null}? ^(property_key propertyName ASC_VK)
+	:	property_key propertyName (asc_key|desc_key)?
+		-> {$asc_key.tree == null && $desc_key.tree == null}? ^(property_key propertyName ASC_VK)
 		->  ^(property_key propertyName asc_key? desc_key?)
 	;
 
