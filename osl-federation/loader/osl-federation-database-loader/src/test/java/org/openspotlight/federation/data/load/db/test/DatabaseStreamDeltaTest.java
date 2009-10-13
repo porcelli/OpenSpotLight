@@ -67,174 +67,143 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 
 /**
  * Test for class {@link DatabaseArtifactLoader}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DatabaseStreamDeltaTest {
 
-	@BeforeClass
-	public static void loadDriver() throws Exception {
-		forName("org.h2.Driver");
-	}
+    @BeforeClass
+    public static void loadDriver() throws Exception {
+        forName("org.h2.Driver");
+    }
 
-	private DatabaseStreamLoader artifactLoader;
-	private Configuration configuration;
+    private DatabaseStreamLoader artifactLoader;
+    private Configuration        configuration;
 
-	@Before
-	public void cleanDatabase() throws Exception {
-		delete("./target/test-data/DatabaseArtifactLoaderTest/h2");
-	}
+    @Before
+    public void cleanDatabase() throws Exception {
+        delete("./target/test-data/DatabaseArtifactLoaderTest/h2");
+    }
 
-	@Before
-	public void createArtifactLoader() {
-		this.artifactLoader = new DatabaseStreamLoader();
-	}
+    @Before
+    public void createArtifactLoader() {
+        this.artifactLoader = new DatabaseStreamLoader();
+    }
 
-	@Test
-	public void shouldListenChangesOnStreams() throws Exception {
+    @Test
+    public void shouldListenChangesOnStreams() throws Exception {
 
-		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getGroupByName("h2 Group")
-				.getBundleByName("H2 Connection");
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db");
-		final SharedData sharedData = bundle.getInstanceMetadata()
-				.getSharedData();
+        final DbBundle bundle = (DbBundle)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
+                                                                                                                    "H2 Repository").getGroupByName(
+                                                                                                                                                    "h2 Group").getBundleByName(
+                                                                                                                                                                                "H2 Connection");
+        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db");
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
 
-		Connection connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db",
-				"sa", "");
-		connection
-				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
+        Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db", "sa", "");
+        connection.prepareStatement(
+                                    "create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
 
-		connection
-				.prepareStatement(
-						"create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"")
-				.execute();
+        connection.prepareStatement(
+                                    "create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"").execute();
 
-		connection.commit();
-		connection.close();
+        connection.commit();
+        connection.close();
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		sharedData.markAsSaved();
-		assertThat(sharedData.getDirtyNodes().size(), is(0));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(0));
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
+        assertThat(sharedData.getDirtyNodes().size(), is(0));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(0));
 
-		connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db",
-				"sa", "");
-		connection.prepareStatement("drop trigger exampleTrigger ").execute();
+        connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db", "sa", "");
+        connection.prepareStatement("drop trigger exampleTrigger ").execute();
 
-		connection
-				.prepareStatement(
-						"create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2AnotherTrigger\"")
-				.execute();
-		connection.commit();
-		connection.close();
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		Set<ConfigurationNode> dirty = sharedData.getDirtyNodes();
-		assertThat(sharedData.getDirtyNodes().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-				is(ItemChangeType.CHANGED));
-	}
+        connection.prepareStatement(
+                                    "create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2AnotherTrigger\"").execute();
+        connection.commit();
+        connection.close();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        final Set<ConfigurationNode> dirty = sharedData.getDirtyNodes();
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
+    }
 
-	@Test
-	public void shouldListenExclusionsOnStreams() throws Exception {
-		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getGroupByName("h2 Group")
-				.getBundleByName("H2 Connection");
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db");
-		final SharedData sharedData = bundle.getInstanceMetadata()
-				.getSharedData();
+    @Test
+    public void shouldListenExclusionsOnStreams() throws Exception {
+        final DbBundle bundle = (DbBundle)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
+                                                                                                                    "H2 Repository").getGroupByName(
+                                                                                                                                                    "h2 Group").getBundleByName(
+                                                                                                                                                                                "H2 Connection");
+        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db");
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
 
-		Connection connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db",
-				"sa", "");
-		connection
-				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
+        Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db", "sa", "");
+        connection.prepareStatement(
+                                    "create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
 
-		connection
-				.prepareStatement(
-						"create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"")
-				.execute();
-		connection.commit();
-		connection.close();
+        connection.prepareStatement(
+                                    "create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"").execute();
+        connection.commit();
+        connection.close();
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		sharedData.markAsSaved();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
 
-		connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db",
-				"sa", "");
-		connection.prepareStatement("drop trigger exampleTrigger ").execute();
-		connection.commit();
-		connection.close();
+        connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db", "sa", "");
+        connection.prepareStatement("drop trigger exampleTrigger ").execute();
+        connection.commit();
+        connection.close();
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		assertThat(sharedData.getDirtyNodes().size(), is(0));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-				is(ItemChangeType.EXCLUDED));
-	}
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
+        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+        assertThat(changed.getStatus(), is(Status.EXCLUDED));
 
-	@Test
-	public void shouldListenInclusionsOnStreams() throws Exception {
-		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getGroupByName("h2 Group")
-				.getBundleByName("H2 Connection");
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+    }
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+    @Test
+    public void shouldListenInclusionsOnStreams() throws Exception {
+        final DbBundle bundle = (DbBundle)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
+                                                                                                                    "H2 Repository").getGroupByName(
+                                                                                                                                                    "h2 Group").getBundleByName(
+                                                                                                                                                                                "H2 Connection");
+        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 
-		final SharedData sharedData = bundle.getInstanceMetadata()
-				.getSharedData();
-		Connection connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
-				"sa", "");
-		connection
-				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
-		connection.commit();
-		connection.close();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
+        Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
+        connection.prepareStatement(
+                                    "create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+        connection.commit();
+        connection.close();
 
-		sharedData.markAsSaved();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
-				"sa", "");
-		connection
-				.prepareStatement(
-						"create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"")
-				.execute();
-		connection.commit();
-		connection.close();
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
 
-		assertThat(sharedData.getDirtyNodes().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-				is(ItemChangeType.ADDED));
+        connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
+        connection.prepareStatement(
+                                    "create trigger exampleTrigger before insert on exampleTable for each row call \"org.openspotlight.federation.data.load.db.test.H2Trigger\"").execute();
+        connection.commit();
+        connection.close();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-	}
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.ADDED));
+
+    }
 
 }

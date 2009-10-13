@@ -1,6 +1,7 @@
 package org.openspotlight.federation.data.processing.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -51,9 +52,9 @@ public class BundleProcessingGroupTest {
         new StreamArtifact(bundle, "included5");
         changedArtifact1.setDataSha1("changed!");
         changedArtifact2.setDataSha1("changed!");
-        bundle.removeStreamArtifact(excluded1);
-        bundle.removeStreamArtifact(excluded2);
-        bundle.removeStreamArtifact(excluded3);
+        bundle.markStreamArtifactAsRemoved(excluded1);
+        bundle.markStreamArtifactAsRemoved(excluded2);
+        bundle.markStreamArtifactAsRemoved(excluded3);
 
         return bundle.getRepository();
     }
@@ -103,14 +104,20 @@ public class BundleProcessingGroupTest {
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.createDirtyRepository(bundle);
         final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        assertThat(repository.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(not(0)));
         configurationManager.save(repository.getConfiguration());
+        assertThat(repository.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(0));
         configurationManager.closeResources();
         manager.processBundles(bundles);
         final BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor.getLastGroup();
-        assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
-        assertThat(lastGroup.getExcludedArtifacts().size(), is(this.excludedSize));
-        assertThat(lastGroup.getModifiedArtifacts().size(), is(this.changedSize));
-        assertThat(lastGroup.getAllValidArtifacts().size(), is(this.allArtifactsSize));
+        try {
+            assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
+            assertThat(lastGroup.getExcludedArtifacts().size(), is(this.excludedSize));
+            assertThat(lastGroup.getModifiedArtifacts().size(), is(this.changedSize));
+            assertThat(lastGroup.getAllValidArtifacts().size(), is(this.allArtifactsSize));
+        } finally {
+            configurationManager.closeResources();
+        }
     }
 
     @Test
@@ -128,7 +135,11 @@ public class BundleProcessingGroupTest {
         configurationManager.closeResources();
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        assertThat(processed.size(), is(this.allArtifactsSize));
+        try {
+            assertThat(processed.size(), is(this.allArtifactsSize));
+        } finally {
+            configurationManager.closeResources();
+        }
     }
 
     @Test
@@ -147,7 +158,11 @@ public class BundleProcessingGroupTest {
 
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        assertThat(processed.size(), is(0));
+        try {
+            assertThat(processed.size(), is(0));
+        } finally {
+            configurationManager.closeResources();
+        }
     }
 
     @Test
@@ -166,8 +181,11 @@ public class BundleProcessingGroupTest {
 
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        assertThat(processed.size(), is(0));
-
+        try {
+            assertThat(processed.size(), is(0));
+        } finally {
+            configurationManager.closeResources();
+        }
     }
 
     @Test
@@ -186,7 +204,11 @@ public class BundleProcessingGroupTest {
 
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        assertThat(processed.size(), is(this.newArtifactsSize));
+        try {
+            assertThat(processed.size(), is(this.newArtifactsSize));
+        } finally {
+            configurationManager.closeResources();
+        }
     }
 
 }

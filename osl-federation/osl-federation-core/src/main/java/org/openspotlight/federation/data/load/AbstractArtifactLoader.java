@@ -509,7 +509,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 							&& !namesToProcess.contains(name)) {
 						final StreamArtifact artifactToDelete = bundle
 								.getStreamArtifactByName(name);
-						bundle.removeStreamArtifact(artifactToDelete);
+						bundle.markStreamArtifactAsRemoved(artifactToDelete);
 					}
 				}
 				final Set<CustomArtifact> artifactsToRemove = new HashSet<CustomArtifact>();
@@ -529,7 +529,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
 					}
 				}
 				for (final CustomArtifact artifactToDelete : artifactsToRemove) {
-					bundle.removeCustomArtifact(artifactToDelete);
+					bundle.markCustomArtifactAsRemoved(artifactToDelete);
 				}
 				ignoreCount += innerResult.getIgnoredNames().size();
 

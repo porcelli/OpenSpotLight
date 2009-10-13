@@ -68,141 +68,128 @@ import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 
 /**
  * Test for class {@link FileSystemArtifactLoader}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
 
-	@Override
-	@Before
-	public void createArtifactLoader() {
-		this.artifactLoader = new FileSystemArtifactLoader();
-	}
+    @Override
+    @Before
+    public void createArtifactLoader() {
+        this.artifactLoader = new FileSystemArtifactLoader();
+    }
 
-	@Override
-	@Before
-	public void createConfiguration() throws Exception {
-		this.configuration = new Configuration();
-		final Repository repository = new Repository(this.configuration,
-				this.REPOSITORY_NAME);
-		this.configuration.setNumberOfParallelThreads(4);
-		final Group project = new Group(repository, this.PROJECT_NAME);
-		final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
-		final String basePath = new File("../../../").getCanonicalPath() + "/";
-		bundle.setInitialLookup(basePath);
-		final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-				"osl-federation/loader/osl-federation-filesystem-loader/");
-		new Included(artifactMapping, "src/main/java/**/*.java");
-	}
+    @Override
+    @Before
+    public void createConfiguration() throws Exception {
+        this.configuration = new Configuration();
+        final Repository repository = new Repository(this.configuration, this.REPOSITORY_NAME);
+        this.configuration.setNumberOfParallelThreads(4);
+        final Group project = new Group(repository, this.PROJECT_NAME);
+        final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
+        final String basePath = new File("../../../").getCanonicalPath() + "/";
+        bundle.setInitialLookup(basePath);
+        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
+                                                                    "osl-federation/loader/osl-federation-filesystem-loader/");
+        new Included(artifactMapping, "src/main/java/**/*.java");
+    }
 
-	public Bundle createConfigurationForChangeListen() throws Exception {
-		this.configuration = new Configuration();
-		final Repository repository = new Repository(this.configuration,
-				"Local target folder");
-		this.configuration.setNumberOfParallelThreads(4);
-		final Group project = new Group(repository, "Osl Federation");
-		final Bundle bundle = new Bundle(project, "Target folder");
-		final String basePath = new File("../../../").getCanonicalPath() + "/";
-		bundle.setInitialLookup(basePath);
-		final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-				"osl-federation/loader/osl-federation-filesystem-loader/");
-		new Included(artifactMapping,
-				"target/test-data/FileSystemArtifactLoaderTest/*");
-		return bundle;
-	}
+    public Bundle createConfigurationForChangeListen() throws Exception {
+        this.configuration = new Configuration();
+        final Repository repository = new Repository(this.configuration, "Local target folder");
+        this.configuration.setNumberOfParallelThreads(4);
+        final Group project = new Group(repository, "Osl Federation");
+        final Bundle bundle = new Bundle(project, "Target folder");
+        final String basePath = new File("../../../").getCanonicalPath() + "/";
+        bundle.setInitialLookup(basePath);
+        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
+                                                                    "osl-federation/loader/osl-federation-filesystem-loader/");
+        new Included(artifactMapping, "target/test-data/FileSystemArtifactLoaderTest/*");
+        return bundle;
+    }
 
-	@Test
-	public void shouldListenChanges() throws Exception {
-		new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
-		final File textFile = new File(
-				"target/test-data/FileSystemArtifactLoaderTest/willBeChanged");
-		FileOutputStream fos = new FileOutputStream(textFile);
-		fos.write("new text content".getBytes());
-		fos.flush();
-		fos.close();
+    @Test
+    public void shouldListenChanges() throws Exception {
+        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        final File textFile = new File("target/test-data/FileSystemArtifactLoaderTest/willBeChanged");
+        FileOutputStream fos = new FileOutputStream(textFile);
+        fos.write("new text content".getBytes());
+        fos.flush();
+        fos.close();
 
-		final Bundle bundle = this.createConfigurationForChangeListen();
-		final SharedData sharedData = bundle.getInstanceMetadata()
-				.getSharedData();
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		sharedData.markAsSaved();
+        final Bundle bundle = this.createConfigurationForChangeListen();
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
 
-		fos = new FileOutputStream(textFile);
-		fos.write("changed text content".getBytes());
-		fos.flush();
-		fos.close();
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+        fos = new FileOutputStream(textFile);
+        fos.write("changed text content".getBytes());
+        fos.flush();
+        fos.close();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		assertThat(sharedData.getDirtyNodes().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-				is(ItemChangeType.CHANGED));
-		textFile.delete();
-	}
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
+        textFile.delete();
+    }
 
-	@Test
-	public void shouldListenExclusions() throws Exception {
-		new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
-		final File textFile = new File(
-				"target/test-data/FileSystemArtifactLoaderTest/willBeExcluded");
-		final FileOutputStream fos = new FileOutputStream(textFile);
-		fos.write("new text content".getBytes());
-		fos.flush();
-		fos.close();
+    @Test
+    public void shouldListenExclusions() throws Exception {
+        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+        final File textFile = new File("target/test-data/FileSystemArtifactLoaderTest/willBeExcluded");
+        final FileOutputStream fos = new FileOutputStream(textFile);
+        fos.write("new text content".getBytes());
+        fos.flush();
+        fos.close();
 
-		final Bundle bundle = this.createConfigurationForChangeListen();
-		final SharedData sharedData = bundle.getInstanceMetadata()
-				.getSharedData();
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		sharedData.markAsSaved();
+        final Bundle bundle = this.createConfigurationForChangeListen();
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
 
-		assertThat(textFile.delete(), is(true));
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+        assertThat(textFile.delete(), is(true));
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		assertThat(sharedData.getDirtyNodes().size(), is(0));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-				is(ItemChangeType.EXCLUDED));
-	}
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
+        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+        assertThat(changed.getStatus(), is(Status.EXCLUDED));
+    }
 
-	@Test
-	public void shouldListenInclusions() throws Exception {
-		new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
+    @Test
+    public void shouldListenInclusions() throws Exception {
+        new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
 
-		final Bundle bundle = this.createConfigurationForChangeListen();
-		final SharedData sharedData = bundle.getInstanceMetadata()
-				.getSharedData();
-		new File("target/test-data/FileSystemArtifactLoaderTest/newTextFile")
-				.delete();
+        final Bundle bundle = this.createConfigurationForChangeListen();
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
+        new File("target/test-data/FileSystemArtifactLoaderTest/newTextFile").delete();
 
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		sharedData.markAsSaved();
-		final File textFile = new File(
-				"target/test-data/FileSystemArtifactLoaderTest/newTextFile");
-		final FileOutputStream fos = new FileOutputStream(textFile);
-		fos.write("new text content".getBytes());
-		fos.flush();
-		fos.close();
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        sharedData.markAsSaved();
+        final File textFile = new File("target/test-data/FileSystemArtifactLoaderTest/newTextFile");
+        final FileOutputStream fos = new FileOutputStream(textFile);
+        fos.write("new text content".getBytes());
+        fos.flush();
+        fos.close();
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-		final StreamArtifact sa = (StreamArtifact) sharedData.getDirtyNodes()
-				.iterator().next();
+        final StreamArtifact sa = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
 
-		for (final ItemChangeEvent<ConfigurationNode> change : sharedData
-				.getNodeChangesSinceLastSave()) {
-			System.out.println(change.getType() + " " + change.getNewItem());
-		}
-		assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-				is(ItemChangeType.ADDED));
-		assertThat(sharedData.getDirtyNodes().size(), is(1));
-		assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
+        for (final ItemChangeEvent<ConfigurationNode> change : sharedData.getNodeChangesSinceLastSave()) {
+            System.out.println(change.getType() + " " + change.getNewItem());
+        }
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.ADDED));
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
+        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
 
-	}
+    }
 
 }
