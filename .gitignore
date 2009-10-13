@@ -9,6 +9,7 @@
 
 # Maven generated folders
 target
+test-output
 
 # General folders
 local
@@ -24,3 +25,4 @@ nbproject
 *.ipr
 *.iws
 *.iml
+*testng-customsuite.xml
