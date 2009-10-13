@@ -580,12 +580,12 @@ orderBy:
 
 <<order by 
 	org.test.JavaType property myPropertyName, property xxx>>
-	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType (property myPropertyName) (property xxx)))
+	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType (property myPropertyName ASC_VK) (property xxx ASC_VK)))
 
 <<order by 
 	org.test.JavaType property myPropertyName, property otherProperty,
 	org.test.JavaPackage property otherProperty, property myProperty>>
-	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType (property myPropertyName) (property otherProperty)) (VT_GROUP_BY_NODE_TYPE org.test.JavaPackage (property otherProperty) (property myProperty)))
+	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType (property myPropertyName ASC_VK) (property otherProperty ASC_VK)) (VT_GROUP_BY_NODE_TYPE org.test.JavaPackage (property otherProperty ASC_VK) (property myProperty ASC_VK)))
 
 <<order by org.test.JavaType, org.test.JavaPackage >>
 	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType) (VT_GROUP_BY_NODE_TYPE org.test.JavaPackage))

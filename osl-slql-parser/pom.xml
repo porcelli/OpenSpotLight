@@ -15,6 +15,10 @@
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-api</artifactId>
+		</dependency>
 		<!-- External dependencies -->
 		<dependency>
 			<groupId>org.antlr</groupId>
