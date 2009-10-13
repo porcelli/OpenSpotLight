@@ -51,45 +51,31 @@ package org.openspotlight.federation.data;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.jcr.LogableObject;
+
 /**
- * Interface to abstract the ConfigurationNode. The configuration node is used
- * on configuration purposes and also to load the artifacts that will be
- * processed by the parsers on OSL.
- * 
- * It has a lot of methods to make possible to discover each node characteristic
- * without using reflection.
- * 
- * This interface has some mandatory methods just to tell the parent and
- * children classes. This methods needs to be used inside the implementation to
- * verify if the parent classes passed on constructor or the children classes
- * are correct or not.
- * 
- * So, why do we need to to a lot of stuff like this instead of just using
- * simple java beans? There's a lot of good reasons to do that. First of all, it
- * contains the listener infrastructure to observe property and node changes.
- * Another reason is that the default implementation is by default thread safe.
- * As these configuration nodes should be used by a lot of parses at the same
- * time, it is mandatory to these classes to be thread safe.
- * 
- * There's a few mandatory conditions to the {@link ConfigurationNode} work
- * well. The first one is that the package should be the same of the current
- * root node. The second one is that the constructors parameters should be in a
- * order that the parent node is the first parameter and the key value is the
- * second one. The third condition is that the node should have an static
- * property named staticMetadata as an public attribute.
+ * Interface to abstract the ConfigurationNode. The configuration node is used on configuration purposes and also to load the
+ * artifacts that will be processed by the parsers on OSL. It has a lot of methods to make possible to discover each node
+ * characteristic without using reflection. This interface has some mandatory methods just to tell the parent and children
+ * classes. This methods needs to be used inside the implementation to verify if the parent classes passed on constructor or the
+ * children classes are correct or not. So, why do we need to to a lot of stuff like this instead of just using simple java beans?
+ * There's a lot of good reasons to do that. First of all, it contains the listener infrastructure to observe property and node
+ * changes. Another reason is that the default implementation is by default thread safe. As these configuration nodes should be
+ * used by a lot of parses at the same time, it is mandatory to these classes to be thread safe. There's a few mandatory
+ * conditions to the {@link ConfigurationNode} work well. The first one is that the package should be the same of the current root
+ * node. The second one is that the constructors parameters should be in a order that the parent node is the first parameter and
+ * the key value is the second one. The third condition is that the node should have an static property named staticMetadata as an
+ * public attribute.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-public interface ConfigurationNode extends Comparable<ConfigurationNode>,
-        Serializable {
-    
+public interface ConfigurationNode extends Comparable<ConfigurationNode>, Serializable, LogableObject {
+
     /**
-     * This instance metadata groups all data needed to save, retrieve and
-     * listen modifications on a node.
+     * This instance metadata groups all data needed to save, retrieve and listen modifications on a node.
      * 
      * @return the instance metadata
      */
     public InstanceMetadata getInstanceMetadata();
-    
+
 }

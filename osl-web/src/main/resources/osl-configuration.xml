@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration numberOfParallelThreads="4">
+	<repository name="OSL Group" active="true">
+		<group name="OSL Root Group" graphRoot="true" active="true">
+			<group name="OSL Commons Library" active="true">
+				<bundle name="java source for OSL Bundle" initialLookup="/Users/feu/GIT/OpenSpotLight/"
+					active="true">
+					<bundleProcessorType
+						className="org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor"
+						active="true" />
+					<artifactMapping relative="osl-common/">
+						<included name="src/main/java/**/*.java" />
+						<included name="src/test/java/**/*.java" />
+					</artifactMapping>
+				</bundle>
+			</group>
+			<group name="OSL Graph Library" active="true">
+				<javaBundle name="java source for OSL Bundle"
+					initialLookup="/Users/feu/GIT/OpenSpotLight/" active="true">
+					<bundleProcessorType
+						className="org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor"
+						active="true" />
+					<artifactMapping relative="osl-graph/">
+						<included name="src/main/java/**/*.java" />
+						<included name="src/test/java/**/*.java" />
+					</artifactMapping>
+				</javaBundle>
+			</group>
+			<group name="OSL Federation Library" active="true">
+				<javaBundle name="java source for OSL Bundle"
+					initialLookup="/Users/feu/GIT/OpenSpotLight/" active="true">
+					<bundleProcessorType
+						className="org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor"
+						active="true" />
+					<artifactMapping
+						relative="osl-federation/loader/osl-federation-filesystem-loader/">
+						<included name="src/main/java/**/*.java" />
+						<included name="src/test/java/**/*.java" />
+					</artifactMapping>
+				</javaBundle>
+			</group>
+		</group>
+	</repository>
+</configuration>

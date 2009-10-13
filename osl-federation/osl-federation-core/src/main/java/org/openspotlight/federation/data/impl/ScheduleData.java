@@ -58,120 +58,107 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * This class describes data for a bundle execution. The syntax for the cron
- * information should be the same used on quartz.
+ * This class describes data for a bundle execution. The syntax for the cron information should be the same used on quartz.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata(propertyNames = { "description" }, propertyTypes = {
-		Boolean.class, String.class }, keyPropertyName = "cronInformation", keyPropertyType = String.class, validParentTypes = {
-		Group.class, Bundle.class })
+@StaticMetadata( propertyNames = {"description"}, propertyTypes = {Boolean.class, String.class}, keyPropertyName = "cronInformation", keyPropertyType = String.class, validParentTypes = {
+    Group.class, Bundle.class} )
 public class ScheduleData implements ConfigurationNode {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 6442133367229609182L;
+    /** The Constant serialVersionUID. */
+    private static final long      serialVersionUID = 6442133367229609182L;
 
-	/**
-	 * Gets the description.
-	 * 
-	 * @return the description
-	 */
-	public String getDescription() {
-		return this.instanceMetadata.getProperty(DESCRIPTION);
-	}
+    /** The Constant DESCRIPTION. */
+    private static final String    DESCRIPTION      = "description";       //$NON-NLS-1$
 
-	/**
-	 * Sets the description.
-	 * 
-	 * @param description
-	 *            the new description
-	 */
-	public void setDescription(String description) {
-		this.instanceMetadata.setProperty(DESCRIPTION, description);
-	}
+    /** The instance metadata. */
+    private final InstanceMetadata instanceMetadata;
 
-	/** The Constant DESCRIPTION. */
-	private static final String DESCRIPTION = "description"; //$NON-NLS-1$
+    /**
+     * creates a Schedule Data inside this bundle. The syntax for the cron information should be the same used on quartz.
+     * 
+     * @param bundle the bundle
+     * @param cronInformation the cron information
+     */
+    public ScheduleData(
+                         final Bundle bundle, final String cronInformation ) {
+        this.instanceMetadata = createWithKeyProperty(this, bundle, cronInformation);
+        checkCondition("noScheduleData", //$NON-NLS-1$
+                       bundle.getBundleByName(cronInformation) == null);
+        bundle.getInstanceMetadata().addChild(this);
+    }
 
-	/** The instance metadata. */
-	private final InstanceMetadata instanceMetadata;
+    /**
+     * creates a Schedule Data inside this project. The syntax for the cron information should be the same used on quartz.
+     * 
+     * @param group the group
+     * @param cronInformation the cron information
+     */
+    public ScheduleData(
+                         final Group group, final String cronInformation ) {
+        this.instanceMetadata = createWithKeyProperty(this, group, cronInformation);
+        checkCondition("noScheduleData", //$NON-NLS-1$
+                       group.getBundleByName(cronInformation) == null);
+        group.getInstanceMetadata().addChild(this);
+    }
 
-	/**
-	 * creates a Schedule Data inside this project. The syntax for the cron
-	 * information should be the same used on quartz.
-	 * 
-	 * @param group
-	 *            the group
-	 * @param cronInformation
-	 *            the cron information
-	 */
-	public ScheduleData(final Group group, final String cronInformation) {
-		this.instanceMetadata = createWithKeyProperty(this, group,
-				cronInformation);
-		checkCondition("noScheduleData", //$NON-NLS-1$
-				group.getBundleByName(cronInformation) == null);
-		group.getInstanceMetadata().addChild(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final int compareTo( final ConfigurationNode o ) {
+        return this.instanceMetadata.compare(this, o);
+    }
 
-	/**
-	 * creates a Schedule Data inside this bundle.
-	 * 
-	 * The syntax for the cron information should be the same used on quartz.
-	 * 
-	 * @param bundle
-	 *            the bundle
-	 * @param cronInformation
-	 *            the cron information
-	 */
-	public ScheduleData(final Bundle bundle, final String cronInformation) {
-		this.instanceMetadata = createWithKeyProperty(this, bundle,
-				cronInformation);
-		checkCondition("noScheduleData", //$NON-NLS-1$
-				bundle.getBundleByName(cronInformation) == null);
-		bundle.getInstanceMetadata().addChild(this);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals( final Object obj ) {
+        return this.instanceMetadata.equals(obj);
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	public final int compareTo(final ConfigurationNode o) {
-		return this.instanceMetadata.compare(this, o);
-	}
+    /**
+     * Gets the cron information.
+     * 
+     * @return the cron information
+     */
+    public String getCronInformation() {
+        return (String)this.instanceMetadata.getKeyPropertyValue();
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final boolean equals(final Object obj) {
-		return this.instanceMetadata.equals(obj);
-	}
+    /**
+     * Gets the description.
+     * 
+     * @return the description
+     */
+    public String getDescription() {
+        return this.instanceMetadata.getProperty(DESCRIPTION);
+    }
 
-	/**
-	 * Gets the cron information.
-	 * 
-	 * @return the cron information
-	 */
-	public String getCronInformation() {
-		return (String) this.instanceMetadata.getKeyPropertyValue();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public InstanceMetadata getInstanceMetadata() {
+        return this.instanceMetadata;
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final int hashCode() {
-		return this.instanceMetadata.hashCode();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public InstanceMetadata getInstanceMetadata() {
-		return instanceMetadata;
-	}
+    /**
+     * Sets the description.
+     * 
+     * @param description the new description
+     */
+    public void setDescription( final String description ) {
+        this.instanceMetadata.setProperty(DESCRIPTION, description);
+    }
 
 }
