@@ -90,7 +90,7 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifac
         checkCondition("noCustomArtifact", //$NON-NLS-1$
                        bundle.getCustomArtifactByName(relativeName) == null);
         bundle.getInstanceMetadata().addChild(this);
-        this.instanceMetadata.setPropertyIgnoringListener("status", Status.ALREADY_PROCESSED);
+        this.instanceMetadata.setProperty(STATUS, Status.ALREADY_PROCESSED);
     }
 
     /**

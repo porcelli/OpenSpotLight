@@ -1,13 +1,12 @@
 package org.openspotlight.federation.data.processing.test;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
@@ -15,6 +14,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
@@ -28,39 +28,15 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 @SuppressWarnings( "all" )
 public class BundleProcessingGroupTest {
 
-    private static Bundle bundle;
+    final int addedSize        = 5;
 
-    final int             addedSize        = 5;
+    final int allArtifactsSize = this.addedSize + this.changedSize + this.notChangedSize;
+    final int changedSize      = 2;
+    final int excludedSize     = 3;
+    final int newArtifactsSize = this.addedSize + this.changedSize;
+    final int notChangedSize   = 4;
 
-    final int             allArtifactsSize = this.addedSize + this.changedSize + this.notChangedSize;
-    final int             changedSize      = 2;
-    final int             excludedSize     = 3;
-    final int             newArtifactsSize = this.addedSize + this.changedSize;
-    final int             notChangedSize   = 4;
-
-    private Repository createDirtyRepository( final Bundle bundle ) throws Exception {
-        final StreamArtifact excluded1 = bundle.getStreamArtifactByName("excluded1");
-        final StreamArtifact excluded2 = bundle.getStreamArtifactByName("excluded2");
-        final StreamArtifact excluded3 = bundle.getStreamArtifactByName("excluded3");
-        final StreamArtifact changedArtifact1 = bundle.getStreamArtifactByName("changedArtifact1");
-        final StreamArtifact changedArtifact2 = bundle.getStreamArtifactByName("changedArtifact2");
-
-        new StreamArtifact(bundle, "included1");
-        new StreamArtifact(bundle, "included2");
-        new StreamArtifact(bundle, "included3");
-        new StreamArtifact(bundle, "included4");
-        new StreamArtifact(bundle, "included5");
-        changedArtifact1.setDataSha1("changed!");
-        changedArtifact2.setDataSha1("changed!");
-        bundle.markStreamArtifactAsRemoved(excluded1);
-        bundle.markStreamArtifactAsRemoved(excluded2);
-        bundle.markStreamArtifactAsRemoved(excluded3);
-
-        return bundle.getRepository();
-    }
-
-    @Before
-    public void setupTemporaryRepository() throws Exception {
+    private Repository setupTemporaryRepository() throws Exception {
         ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_ALL_AGAIN);
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
@@ -74,22 +50,32 @@ public class BundleProcessingGroupTest {
         final Group project = new Group(repository, "project");
         project.setGraphRoot(Boolean.TRUE);
         project.setActive(Boolean.TRUE);
-        bundle = new Bundle(project, "bundle");
+        final Bundle bundle = new Bundle(project, "bundle");
         bundle.setActive(Boolean.TRUE);
+
         new BundleProcessorType(bundle, "org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
+
         new StreamArtifact(bundle, "notChangedAtAllArtifact1");
         new StreamArtifact(bundle, "notChangedAtAllArtifact2");
         new StreamArtifact(bundle, "notChangedAtAllArtifact3");
         new StreamArtifact(bundle, "notChangedAtAllArtifact4");
-        final StreamArtifact excluded1 = new StreamArtifact(bundle, "excluded1");
-        final StreamArtifact excluded2 = new StreamArtifact(bundle, "excluded2");
-        final StreamArtifact excluded3 = new StreamArtifact(bundle, "excluded3");
-        final StreamArtifact changedArtifact1 = new StreamArtifact(bundle, "changedArtifact1");
-        final StreamArtifact changedArtifact2 = new StreamArtifact(bundle, "changedArtifact2");
 
-        configurationManager.save(configuration);
-        assertThat(configuration.getInstanceMetadata().getSharedData().getDirtyNodes().size(), is(0));
-        assertThat(configuration.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(0));
+        new StreamArtifact(bundle, "excluded1").setStatus(Status.EXCLUDED);
+        new StreamArtifact(bundle, "excluded2").setStatus(Status.EXCLUDED);
+        new StreamArtifact(bundle, "excluded3").setStatus(Status.EXCLUDED);
+
+        new StreamArtifact(bundle, "changedArtifact1").setStatus(Status.CHANGED);
+        new StreamArtifact(bundle, "changedArtifact2").setStatus(Status.CHANGED);
+
+        new StreamArtifact(bundle, "included1").setStatus(Status.INCLUDED);
+        new StreamArtifact(bundle, "included2").setStatus(Status.INCLUDED);
+        new StreamArtifact(bundle, "included3").setStatus(Status.INCLUDED);
+        new StreamArtifact(bundle, "included4").setStatus(Status.INCLUDED);
+        new StreamArtifact(bundle, "included5").setStatus(Status.INCLUDED);
+        for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
+            assertThat(sa.getStatus(), is(notNullValue()));
+        }
+        return bundle.getRepository();
 
     }
 
@@ -102,22 +88,23 @@ public class BundleProcessingGroupTest {
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
-        final Repository repository = this.createDirtyRepository(bundle);
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
-        assertThat(repository.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(not(0)));
+        final Repository repository = this.setupTemporaryRepository();
+
         configurationManager.save(repository.getConfiguration());
-        assertThat(repository.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(0));
         configurationManager.closeResources();
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        for (final Bundle bundle : bundles) {
+            for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
+                assertThat(sa.getStatus(), is(notNullValue()));
+            }
+        }
         manager.processBundles(bundles);
         final BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor.getLastGroup();
-        try {
-            assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
-            assertThat(lastGroup.getExcludedArtifacts().size(), is(this.excludedSize));
-            assertThat(lastGroup.getModifiedArtifacts().size(), is(this.changedSize));
-            assertThat(lastGroup.getAllValidArtifacts().size(), is(this.allArtifactsSize));
-        } finally {
-            configurationManager.closeResources();
-        }
+        assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
+        assertThat(lastGroup.getExcludedArtifacts().size(), is(this.excludedSize));
+        assertThat(lastGroup.getModifiedArtifacts().size(), is(this.changedSize));
+        assertThat(lastGroup.getAllValidArtifacts().size(), is(this.allArtifactsSize));
+
     }
 
     @Test
@@ -129,17 +116,14 @@ public class BundleProcessingGroupTest {
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
-        final Repository repository = this.createDirtyRepository(bundle);
+        final Repository repository = this.setupTemporaryRepository();
         final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        try {
-            assertThat(processed.size(), is(this.allArtifactsSize));
-        } finally {
-            configurationManager.closeResources();
-        }
+
+        assertThat(processed.size(), is(this.allArtifactsSize));
     }
 
     @Test
@@ -151,18 +135,14 @@ public class BundleProcessingGroupTest {
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
-        final Repository repository = this.createDirtyRepository(bundle);
+        final Repository repository = this.setupTemporaryRepository();
         final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        try {
-            assertThat(processed.size(), is(0));
-        } finally {
-            configurationManager.closeResources();
-        }
+        assertThat(processed.size(), is(0));
     }
 
     @Test
@@ -174,18 +154,14 @@ public class BundleProcessingGroupTest {
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
-        final Repository repository = this.createDirtyRepository(bundle);
+        final Repository repository = this.setupTemporaryRepository();
         final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        try {
-            assertThat(processed.size(), is(0));
-        } finally {
-            configurationManager.closeResources();
-        }
+        assertThat(processed.size(), is(0));
     }
 
     @Test
@@ -197,18 +173,14 @@ public class BundleProcessingGroupTest {
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
-        final Repository repository = this.createDirtyRepository(bundle);
+        final Repository repository = this.setupTemporaryRepository();
         final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
         manager.processBundles(bundles);
         final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
-        try {
-            assertThat(processed.size(), is(this.newArtifactsSize));
-        } finally {
-            configurationManager.closeResources();
-        }
+        assertThat(processed.size(), is(this.newArtifactsSize));
     }
 
 }
