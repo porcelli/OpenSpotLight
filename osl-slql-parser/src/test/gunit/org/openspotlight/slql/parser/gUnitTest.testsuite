@@ -301,7 +301,24 @@ defineTarget:
 "define target = \"testeTarget\" result;"
 	FAIL
 
+<<define target = 
+	select * by link * by link org.test.PackageDeclaresType (a); >>
+	FAIL
+
 "define target = testeTarget;"
+	OK
+
+"define target = select *;"
+	OK
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue"; >>
+	OK
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result; >>
 	OK
 
 "define target = testeTarget keep result;"
@@ -312,6 +329,19 @@ defineTarget:
 
 "define target = testeTarget keep result;"
 	-> (define target testeTarget keep result)
+
+"define target = select *;"
+	-> (define target (select *))
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue"; >>
+	-> (define target (select ** (where (VT_GROUP_BY_NODE_TYPE org.test.Something (property (== myProperty "TesteValue"))))))
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result; >>
+	-> (define target (select ** (where (VT_GROUP_BY_NODE_TYPE org.test.Something (property (== myProperty "TesteValue")))) keep result))
 
 
 /**
@@ -810,18 +840,6 @@ select org.test.JavaType.*, org.test.JavaMethod.*
 
 compilationUnit:
 <<
-select org.test.JavaType.*
-	where
-		org.test.JavaType.*
-			property myPropertyName == "someValue" && 
-			link org.test.JavaTypeDeclares (b) > 2
-keep result
-order by
-	org.test.JavaTypeClass, org.test.JavaTypeInterface
-use collator level secondary;>>
-	FAIL
-
-<<
 define output = generalDiaram;
 use collator level primary;
 define target = org.test.Package.*;
@@ -926,6 +944,18 @@ select * by link org.test.PackageDeclaresType (a);>>
 	FAIL
 
 <<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+keep result
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface
+use collator level secondary;>>
+	OK
+
+<<
 select org.test.Package;
 select * by link org.test.PackageDeclaresType (a);>>
 	OK
@@ -969,6 +999,35 @@ define output = generalDiaram;
 define message $teste = "enter with some data";
 define domain values $teste = "value1", "value2";
 define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select *;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select ** 
+		where org.test.Something property myProperty == "TesteValue";
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result;
 select * by link org.test.PackageDeclaresType (a);>>
 	OK
 

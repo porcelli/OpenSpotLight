@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
- grammar SLQL;
+grammar SLQL;
 
 options {
 	output=AST;
@@ -59,6 +59,8 @@ tokens {
 	VT_EXECUTING_TIMES;
 	VT_LINK_DIRECTIONS;
 	
+	ASC_VK;
+	DESC_VK;
 	WHERE_VK;
 	LINK_VK;
 	VALUES_VK;
@@ -208,9 +210,14 @@ import java.util.Set;
 @parser::members {
 	private List<SLQueryLanguageParserException> errors = new ArrayList<SLQueryLanguageParserException>();
 	private SLQueryLanguageParserExceptionFactory errorMessageFactory = new SLQueryLanguageParserExceptionFactory(tokenNames);
+	private boolean isInsideDefineTarget = false;
 	private boolean isgUnitTest = true;
 	private Set<String> defineMessageVariableSet = new HashSet<String>();
 	private Set<String> defineDomainVariableSet = new HashSet<String>();
+
+	public void setIsTesting(boolean isTesting){
+		this.isgUnitTest = isTesting;
+	}
 
 	private boolean validateIdentifierKey(String text) {
 		return validateLT(1, text);
@@ -304,8 +311,10 @@ defineOutput
 	;
 
 defineTarget
-	:	define_target_key ASSIGN nodeType keep_result_key? SEMICOLON
-		-> ^(define_target_key nodeType keep_result_key?)
+@after	{
+	isInsideDefineTarget = false;
+}	:	define_target_key {isInsideDefineTarget = true;} ASSIGN (nodeType keep_result_key? SEMICOLON|select) 
+		-> ^(define_target_key nodeType? keep_result_key? select?)
 	;
 
 defineMessage
@@ -354,6 +363,9 @@ scope {
 	if ($select::hasDoubleStar && !$select::hasWhereClause){
 		errors.add(errorMessageFactory.createInvalidDoubleStarException());
 	}
+	if (isInsideDefineTarget == true && $select::hasByLink) {
+		errors.add(errorMessageFactory.createDefineTargetWithByLinkException());
+	}
 	if ($compilationUnit != null && $compilationUnit.size() > 0 && 
 		$compilationUnit::selectCount == 0 && !$select::hasByLink &&
 		$compilationUnit::hasDefineTarget) {
@@ -370,7 +382,8 @@ scope {
 		where?
 		executing?
 		limitOffset?
-		(keep_result_key|orderBy)?
+		keep_result_key?
+		orderBy?
 		useCollatorLevel?
 		SEMICOLON
 	-> ^(select_key 
@@ -433,7 +446,9 @@ orderByGroupNode
 	;
 
 propertyReference
-	:	property_key^ propertyName
+	:	property_key propertyName (ak=asc_key|dk=desc_key)?
+		-> {$ak == null && $dk == null}? ^(property_key propertyName ASC_VK)
+		->  ^(property_key propertyName asc_key? desc_key?)
 	;
 
 booleanExpr
@@ -599,6 +614,16 @@ keep_result_key
 	String text = "";
 }	:	{(validateIdentifierKey(SLSoftKeywords.KEEP) && validateLT(2, SLSoftKeywords.RESULT))}?=>  ID ID {text = $text;}
 		-> KEEP_RESULT_VK[$start, text]
+	;
+
+asc_key
+	:	{(validateIdentifierKey(SLSoftKeywords.ASC))}?=>	ID
+		-> ASC_VK[$ID]
+	;
+
+desc_key
+	:	{(validateIdentifierKey(SLSoftKeywords.DESC))}?=>	ID
+		-> DESC_VK[$ID]
 	;
 
 select_key
