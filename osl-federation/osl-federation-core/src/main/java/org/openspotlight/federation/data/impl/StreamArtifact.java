@@ -61,6 +61,7 @@ import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformationType;
 
 /**
@@ -70,8 +71,8 @@ import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformatio
  */
 @ThreadSafe
 @StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, validChildrenTypes = {SyntaxInformation.class}, propertyNames = {
-    "name", "dataSha1", "UUID", "version", "data"}, propertyTypes = {String.class, String.class, String.class, String.class,
-    InputStream.class} )
+    "name", "dataSha1", "UUID", "version", "data", "status"}, propertyTypes = {String.class, String.class, String.class,
+    String.class, InputStream.class, Status.class} )
 public final class StreamArtifact implements ConfigurationNode, GeneratedNode, Artifact {
 
     /**
@@ -80,6 +81,8 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode, A
     private static final long      serialVersionUID = -889016915372708085L;
 
     private static final String    DATA             = "data";              //$NON-NLS-1$
+
+    private static final String    STATUS           = "status";            //$NON-NLS-1$
 
     private static final String    DATA_SHA1        = "dataSha1";          //$NON-NLS-1$
 
@@ -97,6 +100,7 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode, A
         checkCondition("noStreamArtifact", //$NON-NLS-1$
                        bundle.getStreamArtifactByName(relativeName) == null);
         bundle.getInstanceMetadata().addChild(this);
+        this.instanceMetadata.setPropertyIgnoringListener("status", Status.ALREADY_PROCESSED);
     }
 
     /**
@@ -190,6 +194,10 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode, A
         return (String)this.instanceMetadata.getKeyPropertyValue();
     }
 
+    public Status getStatus() {
+        return this.instanceMetadata.getProperty(STATUS);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -228,6 +236,10 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode, A
      */
     public void setDataSha1( final String dataSha1 ) {
         this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
+    }
+
+    public void setStatus( final Status status ) {
+        this.instanceMetadata.setProperty(STATUS, status);
     }
 
     /**
