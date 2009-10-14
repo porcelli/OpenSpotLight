@@ -66,7 +66,6 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
-import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.InputStream;
@@ -90,7 +89,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
@@ -505,28 +503,28 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                                     final Map<String, Class<?>> propertyTypes,
                                     final String keyPropertyName ) throws RepositoryException, ConfigurationException, Exception {
         configurationNode.getInstanceMetadata().setSavedUniqueId(jcrNode.getUUID());
-        final PropertyIterator propertyIterator = jcrNode.getProperties();
-        while (propertyIterator.hasNext()) {
-            final Property prop = propertyIterator.nextProperty();
-            final String propertyIdentifier = prop.getName();
-
-            if (propertyHelper.isPropertyNode(propertyIdentifier)) {
-                final String propertyName = removeBegginingFrom(DEFAULT_OSL_PREFIX + ":", propertyIdentifier); //$NON-NLS-1$
-                if (keyPropertyName != null && keyPropertyName.equals(propertyName)) {
-                    continue;
-                }
-                final Class<?> propertyClass = propertyTypes.get(propertyName);
-                if (propertyClass != null && Serializable.class.isAssignableFrom(propertyClass)) {
-                    final Serializable value = (Serializable)getProperty(jcrNode, propertyIdentifier, propertyClass);
-                    configurationNode.getInstanceMetadata().setPropertyIgnoringListener(propertyName, value);
-                } else if (propertyClass != null && InputStream.class.isAssignableFrom(propertyClass)) {
-                    final InputStream value = (InputStream)getProperty(jcrNode, propertyIdentifier, propertyClass);
-                    configurationNode.getInstanceMetadata().setStreamProperty(propertyName, value);
-                }
-
+        for (final Map.Entry<String, Class<?>> entry : propertyTypes.entrySet()) {
+            if (keyPropertyName != null && keyPropertyName.equals(entry.getKey())) {
+                continue;
             }
-        }
 
+            try {
+                jcrNode.getProperty(DEFAULT_OSL_PREFIX + ":" + entry.getKey());
+            } catch (final PathNotFoundException e) {
+                continue;
+                //that's okay. There's no such property
+            }
+            if (Serializable.class.isAssignableFrom(entry.getValue())) {
+                final Serializable value = (Serializable)getProperty(jcrNode, DEFAULT_OSL_PREFIX + ":" + entry.getKey(),
+                                                                     entry.getValue());
+                configurationNode.getInstanceMetadata().setPropertyIgnoringListener(entry.getKey(), value);
+            } else if (InputStream.class.isAssignableFrom(entry.getValue())) {
+                final InputStream value = (InputStream)getProperty(jcrNode, DEFAULT_OSL_PREFIX + ":" + entry.getKey(),
+                                                                   entry.getValue());
+                configurationNode.getInstanceMetadata().setStreamProperty(entry.getKey(), value);
+            }
+
+        }
     }
 
     private static ConfigurationNode loadOneChild( final ConfigurationNode parentNode,

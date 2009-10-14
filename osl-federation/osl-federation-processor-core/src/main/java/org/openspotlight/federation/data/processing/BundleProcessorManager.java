@@ -363,7 +363,11 @@ public final class BundleProcessorManager {
                                                                         final Set<T> excludedArtifacts,
                                                                         final Set<T> modifiedArtifacts ) {
         for (final T artifact : allValidArtifacts) {
-            final Status status = artifact.getStatus();
+            Status status = artifact.getStatus();
+            if (status == null) {
+                artifact.setStatus(Status.INCLUDED);
+                status = Status.INCLUDED;
+            }
             switch (status) {
                 case ALREADY_PROCESSED:
                     break;

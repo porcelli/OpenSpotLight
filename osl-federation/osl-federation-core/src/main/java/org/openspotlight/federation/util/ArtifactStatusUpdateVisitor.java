@@ -48,7 +48,7 @@ public enum ArtifactStatusUpdateVisitor implements ItemEventListener<Configurati
                 default:
                     throw logAndReturn(new IllegalStateException());
             }
-            artifact.getInstanceMetadata().setProperty("status", newStatus);
+            artifact.getInstanceMetadata().setPropertyIgnoringListener("status", newStatus);
         }
     }
 
