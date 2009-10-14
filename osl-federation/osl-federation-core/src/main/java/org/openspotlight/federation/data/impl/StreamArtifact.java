@@ -100,7 +100,7 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode, A
         checkCondition("noStreamArtifact", //$NON-NLS-1$
                        bundle.getStreamArtifactByName(relativeName) == null);
         bundle.getInstanceMetadata().addChild(this);
-        this.instanceMetadata.setProperty(STATUS, Status.ALREADY_PROCESSED);
+        //        this.instanceMetadata.setProperty(STATUS, Status.ALREADY_PROCESSED);
     }
 
     /**

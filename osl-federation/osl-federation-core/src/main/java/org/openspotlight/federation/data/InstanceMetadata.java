@@ -91,7 +91,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.openspotlight.common.util.Reflection.InheritanceType;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
-import org.openspotlight.federation.util.ArtifactStatusUpdateVisitor;
 
 /**
  * This type guards the {@link ConfigurationNode} instance metadata, using the {@link StaticMetadata} to validate the internal
@@ -772,7 +771,7 @@ public interface InstanceMetadata {
             final BasicInstanceMetadata metadata = new BasicInstanceMetadata(
                                                                              owner.getClass().getAnnotation(StaticMetadata.class),
                                                                              new SharedData(), null, null, owner);
-            metadata.getSharedData().addNodeListener(ArtifactStatusUpdateVisitor.INSTANCE);
+            //            metadata.getSharedData().addNodeListener(ArtifactStatusUpdateVisitor.INSTANCE);
             return metadata;
 
         }
