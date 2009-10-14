@@ -507,13 +507,21 @@ public final class BundleProcessorManager {
                 case ALL_PROCESSING_ALREADY_DONE:
                 case IGNORE_ALL:
                 case FATAL_ERROR_ON_START_PROCESSING:
+                    notProcessedArtifacts.clear();
+                    copyOfnotProcessedArtifacts.clear();
                     processor.globalProcessingFinalized(immutableGroup, startingGraphContext);
                     return (CreateProcessorActionsResult<T>)emptyResult;
                 case PROCESS_ALL_AGAIN:
+
                     copyOfnotProcessedArtifacts.clear();
                     copyOfnotProcessedArtifacts.addAll(allValidArtifacts);
                     break;
                 case PROCESS_EACH_ONE_NEW:
+
+                    copyOfnotProcessedArtifacts.clear();
+                    copyOfnotProcessedArtifacts.addAll(addedArtifacts);
+                    copyOfnotProcessedArtifacts.addAll(modifiedArtifacts);
+                    break;
                 case PROCESS_CUSTOMIZED_LIST:
                     break;
                 default:
@@ -596,6 +604,7 @@ public final class BundleProcessorManager {
                 finalizationContexts.add(result.getFinalizationContext());
             }
         }
+
     }
 
     /**
