@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.impl.Bundle;
@@ -36,8 +37,14 @@ public class BundleProcessingGroupTest {
     final int newArtifactsSize = this.addedSize + this.changedSize;
     final int notChangedSize   = 4;
 
+    @Before
+    public void resetCounter() throws Exception {
+        ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(null);
+        ArtifactCounterBundleProcessor.getProcessedArtifacts().clear();
+        ArtifactCounterBundleProcessor.setLastGroup(null);
+    }
+
     private Repository setupTemporaryRepository() throws Exception {
-        ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.PROCESS_ALL_AGAIN);
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
@@ -186,6 +193,8 @@ public class BundleProcessingGroupTest {
     public void shouldProcessAnyArtifacts() throws Exception {
 
         ArtifactCounterBundleProcessor.setDefaultProcessingStartAction(ProcessingStartAction.ALL_PROCESSING_ALREADY_DONE);
+        assertThat(ArtifactCounterBundleProcessor.getDefaultProcessingStartAction(),
+                   is(ProcessingStartAction.ALL_PROCESSING_ALREADY_DONE));
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
