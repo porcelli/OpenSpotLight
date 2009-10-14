@@ -128,9 +128,9 @@ public abstract class AbstractSLQLQuery implements SLQLQuery {
         return variables != null;
     }
 
-    protected void validate( final SLGraphSession session,
-                             final Map<String, ?> variableValues,
-                             final Collection<SLNode> inputNodes ) {
+    protected void validateAndInit( final SLGraphSession session,
+                                    final Map<String, ?> variableValues,
+                                    final Collection<SLNode> inputNodes ) {
         Assertions.checkNotNull("session", session);
 
         if (this.hasVariables()) {
@@ -145,12 +145,14 @@ public abstract class AbstractSLQLQuery implements SLQLQuery {
             Assertions.checkNullMandatory("inputNodes", inputNodes);
         }
 
-        for (Entry<String, ?> activeVariableValue : variableValues.entrySet()) {
-            if (variables.containsKey(activeVariableValue.getKey())) {
-                SLQLVariable activeVar = variables.get(activeVariableValue.getKey());
-                activeVar.setValue(activeVariableValue.getValue());
-            } else {
-                Exceptions.logAndThrow(new IllegalArgumentException("Variable Not Found"));
+        if (variableValues != null && variableValues.size() > 0) {
+            for (Entry<String, ?> activeVariableValue : variableValues.entrySet()) {
+                if (variables.containsKey(activeVariableValue.getKey())) {
+                    SLQLVariable activeVar = variables.get(activeVariableValue.getKey());
+                    activeVar.setValue(activeVariableValue.getValue());
+                } else {
+                    Exceptions.logAndThrow(new IllegalArgumentException("Variable Not Found"));
+                }
             }
         }
     }

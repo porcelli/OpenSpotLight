@@ -50,24 +50,22 @@ group SLQL;
 
 compilationUnit(selects, generalCollatorLevel) ::= 
 <<
-	validate(session, variableValues, inputNodes);
+{
+	validateAndInit($1, $2, $3);
 	
-	SLQuery query = session.createQuery();
+	org.openspotlight.graph.query.SLQuery query = $1.createQuery();
 	<generalCollatorLevel>
 	query<selects>;
 	
-	SLQueryResult result = null;
-	if (inputNodes != null) {
-	    result = query.execute(inputNodes);
+	org.openspotlight.graph.query.SLQueryResult result = null;
+	if ($3 != null) {
+	    result = query.execute($3);
 	} else {
 	    result = query.execute();
 	}
-	
-	return result.getNodes();
 
-	if(!isValid(variables)){
-		throw new InvalidParameterException();
-	}
+	return result.getNodes();
+}
 >>
 
 generalCollatorLevel(collatorLevel) ::= "query.setCollatorStrength(<collatorLevel>);"
@@ -169,20 +167,24 @@ offset(expr)		::= ".offset(<expr>)"
 
 defineTargetWithSelect(select) ::= 
 <<
-	validate(session, variableValues, inputNodes);
+{
+	validateAndInit($1, $2, $3);
 	
-	SLQuery query = session.createQuery();
+	org.openspotlight.graph.query.SLQuery query = $1.createQuery();
 	query<select>;
 
 	return query.execute().getNodes();
+}
 >>
 
 defineTarget(nodeType) ::= 
 <<
-	validate(session, variableValues, inputNodes);
+{
+	validateAndInit($1, $2, $3);
 	
-	SLQuery query = session.createQuery();
+	org.openspotlight.graph.query.SLQuery query = $1.createQuery();
 	query.select()<nodeType>.selectEnd();
 
 	return query.execute().getNodes();
+}
 >>
