@@ -60,7 +60,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Dates.dateFromString;
 import static org.openspotlight.common.util.Dates.stringFromDate;
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
@@ -397,8 +397,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         try {
             jcrProperty = jcrNode.getProperty(propertyName);
         } catch (final Exception e) {
-            catchAndLog(e);
-            return null;
+            throw logAndReturn(e);
         }
         if (Boolean.class.equals(propertyClass)) {
             value = jcrProperty.getBoolean();
@@ -421,10 +420,14 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 value = dateFromString(jcrProperty.getString());
             }
         } else if (propertyClass.isEnum()) {
+            final String propertyAsString = jcrProperty.getString();
+            if (propertyAsString == null) {
+                return null;
+            }
             final Field[] flds = propertyClass.getDeclaredFields();
             for (final Field f : flds) {
                 if (f.isEnumConstant()) {
-                    if (f.getName().equals(propertyName)) {
+                    if (f.getName().equals(propertyAsString)) {
                         value = f.get(null);
                         break;
                     }
