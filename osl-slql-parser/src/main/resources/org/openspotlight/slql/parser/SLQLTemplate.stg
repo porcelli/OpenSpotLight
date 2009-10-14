@@ -88,7 +88,7 @@ nodeTypes(firstType, moreTypes)	::= "<firstType><moreTypes>"
 nodeType(typeName)				::= ".type(\"<typeName>\")"
 nodeTypeWithSubTypes(typeName)	::= ".type(\"<typeName>\").subTypes()"
 
-startWithCommaNodeType(nodeType)	::= ".comma().<nodeType>"
+startWithCommaNodeType(nodeType)	::= ".comma()<nodeType>"
 
 moreNodeTypes(nodeTypes)	::= "<nodeTypes>"
 

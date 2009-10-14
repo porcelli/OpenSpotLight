@@ -239,6 +239,7 @@ public class SLQLQueryBuilder {
     protected void createNewQueryClass( String className,
                                         String executeContent ) throws SLQueryLanguageParserException {
         try {
+//            System.out.println("executeContent: " + executeContent);
             ClassPool pool = ClassPool.getDefault();
 
             CtClass superClass = pool.get(AbstractSLQLQuery.class.getName());
