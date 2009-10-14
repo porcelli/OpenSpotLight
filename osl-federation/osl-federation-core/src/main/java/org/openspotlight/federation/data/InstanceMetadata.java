@@ -504,9 +504,9 @@ public interface InstanceMetadata {
                         final String path = currentOwner.getClass().getSimpleName()
                                             + (currentOwner.getInstanceMetadata().getKeyPropertyValue() != null ? "["
                                                                                                                   + currentOwner.getInstanceMetadata().getStaticMetadata().keyPropertyName()
-                                                                                                                  + "="
+                                                                                                                  + "='"
                                                                                                                   + currentOwner.getInstanceMetadata().getKeyPropertyValue()
-                                                                                                                  + "]" : "");
+                                                                                                                  + "']" : "");
                         paths.add(path);
                         currentOwner = currentOwner.getInstanceMetadata().getDefaultParent();
                     }

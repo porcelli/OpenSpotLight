@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -44,7 +45,7 @@ public class BundleProcessingGroupTest {
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Configuration configuration = new Configuration();
-        configuration.setNumberOfParallelThreads(Integer.valueOf(4));
+        configuration.setNumberOfParallelThreads(Integer.valueOf(1));
         final Repository repository = new Repository(configuration, "repository");
         repository.setActive(Boolean.TRUE);
         final Group project = new Group(repository, "project");
@@ -75,6 +76,36 @@ public class BundleProcessingGroupTest {
         for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
             assertThat(sa.getStatus(), is(notNullValue()));
         }
+
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
+        boolean hasProcessed = false;
+        boolean hasChanged = false;
+        boolean hasExcluded = false;
+        boolean hasIncluded = false;
+        for (final Bundle b : bundles) {
+            for (final StreamArtifact sa : b.getStreamArtifacts()) {
+                assertThat(sa.getStatus(), is(notNullValue()));
+                switch (sa.getStatus()) {
+                    case ALREADY_PROCESSED:
+                        hasProcessed = true;
+                        break;
+                    case CHANGED:
+                        hasChanged = true;
+                        break;
+                    case EXCLUDED:
+                        hasExcluded = true;
+                        break;
+                    case INCLUDED:
+                        hasIncluded = true;
+                        break;
+                }
+            }
+        }
+        assertThat(hasProcessed, is(true));
+        assertThat(hasChanged, is(true));
+        assertThat(hasExcluded, is(true));
+        assertThat(hasIncluded, is(true));
+
         return bundle.getRepository();
 
     }
@@ -91,15 +122,38 @@ public class BundleProcessingGroupTest {
         final Repository repository = this.setupTemporaryRepository();
 
         configurationManager.save(repository.getConfiguration());
-        configurationManager.closeResources();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Configuration newConfiguration = configurationManager.load(LazyType.EAGER);
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(newConfiguration, Bundle.class);
+        boolean hasProcessed = false;
+        boolean hasChanged = false;
+        boolean hasExcluded = false;
+        boolean hasIncluded = false;
         for (final Bundle bundle : bundles) {
             for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
                 assertThat(sa.getStatus(), is(notNullValue()));
+                switch (sa.getStatus()) {
+                    case ALREADY_PROCESSED:
+                        hasProcessed = true;
+                        break;
+                    case CHANGED:
+                        hasChanged = true;
+                        break;
+                    case EXCLUDED:
+                        hasExcluded = true;
+                        break;
+                    case INCLUDED:
+                        hasIncluded = true;
+                        break;
+                }
             }
         }
+        assertThat(hasProcessed, is(true));
+        assertThat(hasChanged, is(true));
+        assertThat(hasExcluded, is(true));
+        assertThat(hasIncluded, is(true));
         manager.processBundles(bundles);
         final BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor.getLastGroup();
+        configurationManager.closeResources();
         assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
         assertThat(lastGroup.getExcludedArtifacts().size(), is(this.excludedSize));
         assertThat(lastGroup.getModifiedArtifacts().size(), is(this.changedSize));

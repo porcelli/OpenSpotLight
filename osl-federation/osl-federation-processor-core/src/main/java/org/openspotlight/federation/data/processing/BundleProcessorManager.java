@@ -93,6 +93,8 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BundleProcessorManager} is the class reposable to get an {@link Configuration} and to process all {@link Artifact
@@ -410,6 +412,8 @@ public final class BundleProcessorManager {
 
     private final ConfigurationManagerProvider configurationManagerProvider;
 
+    private final Logger                       logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * Constructor to initialize jcr connection provider
      * 
@@ -560,6 +564,10 @@ public final class BundleProcessorManager {
         throws BundleProcessingFatalException {
 
         final Set<T> allValidArtifacts = findAllNodesOfType(bundle, mappedProcessor.getArtifactType());
+        if (allValidArtifacts.size() == 0) {
+            this.logger.warn("There's no artifact to process on bundle " + bundle.getInstanceMetadata().getPath());
+        }
+
         final Set<T> addedArtifacts = new HashSet<T>();
         final Set<T> excludedArtifacts = new HashSet<T>();
         final Set<T> modifiedArtifacts = new HashSet<T>();
@@ -570,6 +578,7 @@ public final class BundleProcessorManager {
         findArtifactsByChangeType(bundle, allValidArtifacts, addedArtifacts, excludedArtifacts, modifiedArtifacts);
         notProcessedArtifacts.addAll(addedArtifacts);
         notProcessedArtifacts.addAll(modifiedArtifacts);
+        allValidArtifacts.removeAll(excludedArtifacts);
         for (final BundleProcessor<?> processor : processors) {
             if (mappedProcessor.getProcessorType().isInstance(processor)) {
                 final CreateProcessorActionsResult<T> result = this.createProcessorActions(bundle, allValidArtifacts,
