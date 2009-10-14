@@ -73,14 +73,15 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
@@ -99,7 +100,6 @@ import javax.jcr.version.Version;
 
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.data.StaticMetadata;
@@ -123,151 +123,105 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     private static class JcrDataLoader implements DataLoader {
+        private static class LoadCommand {
+            private final ConfigurationNode configurationNode;
+            private final Node              jcrNode;
+            private boolean                 propertiesLoaded = false;
+            private boolean                 childrenLoaded   = false;
 
-        /**
-         * Value from a cache map to control lazy loading.
-         * 
-         * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-         */
-
-        private static class LazyStatus {
-
-            private final AtomicReference<LoadingStatus> propertyLoadingStatus;
-
-            private final AtomicReference<LoadingStatus> childrenLoadingStatus;
-
-            private final Node                           jcrNode;
-
-            public LazyStatus(
-                               final Node jcrNode ) {
+            LoadCommand(
+                         final ConfigurationNode configurationNode, final Node jcrNode ) {
+                super();
+                this.configurationNode = configurationNode;
                 this.jcrNode = jcrNode;
-                this.propertyLoadingStatus = new AtomicReference<LoadingStatus>(LoadingStatus.NEEDS_LOAD);
-                this.childrenLoadingStatus = new AtomicReference<LoadingStatus>(LoadingStatus.NEEDS_LOAD);
             }
 
-            public AtomicReference<LoadingStatus> getChildrenLoadingStatus() {
-                return this.childrenLoadingStatus;
+            public void loadChildren() throws Exception {
+                if (this.childrenLoaded) {
+                    return;
+                }
+
+                loadChildrenNodes(this.jcrNode, this.configurationNode, LazyType.LAZY);
+
+                this.childrenLoaded = true;
             }
 
-            public Node getJcrNode() {
-                return this.jcrNode;
-            }
+            public void loadProperties() throws Exception {
+                if (this.propertiesLoaded) {
+                    return;
+                }
 
-            public AtomicReference<LoadingStatus> getPropertyLoadingStatus() {
-                return this.propertyLoadingStatus;
+                final String[] propKeys = this.configurationNode.getInstanceMetadata().getStaticMetadata().propertyNames();
+                final Class<?>[] propValues = this.configurationNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
+                final String keyPropertyName = this.configurationNode.getInstanceMetadata().getStaticMetadata().keyPropertyName();
+                final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
+                loadNodeProperties(this.jcrNode, this.configurationNode, propertyTypes, keyPropertyName);
+
+                this.propertiesLoaded = true;
             }
 
         }
 
-        private static enum LoadingStatus {
-            NEEDS_LOAD,
-            LOADING,
-            LOADED
-        }
+        private final Session                             session;
 
-        private final Map<ConfigurationNode, LazyStatus> lazyCache = new HashMap<ConfigurationNode, LazyStatus>();
-
-        private final Session                            session;
+        private final Map<ConfigurationNode, LoadCommand> nodeCache = new HashMap<ConfigurationNode, LoadCommand>();
 
         /**
          * Constructor to initialize the lazy loading for this two corresponding root nodes.
          * 
          * @param configurationNode
-         * @param jcrNode
+         * @param jcrRootNode
          * @throws RepositoryException
          */
         public JcrDataLoader(
-                              final ConfigurationNode configurationNode, final Node jcrNode ) throws RepositoryException {
-            this.session = jcrNode.getSession();
-            this.lazyCache.put(configurationNode, new LazyStatus(jcrNode));
+                              final Configuration configurationRootNode, final Node jcrRootNode, final Session session )
+            throws RepositoryException {
+
+            this.nodeCache.put(configurationRootNode, new LoadCommand(configurationRootNode, jcrRootNode));
+            this.session = session;
+
         }
 
-        private LazyStatus createLazyStatus( final ConfigurationNode targetNode ) throws Exception {
-            LazyStatus lazyCacheForTarget;
-            final String xpath = XpathSupport.getCompleteXpathFor(targetNode);
-            final Node jcrNodeForTarget = JcrSupport.findUnique(this.session, xpath);
-            lazyCacheForTarget = new LazyStatus(jcrNodeForTarget);
-            this.lazyCache.put(targetNode, lazyCacheForTarget);
-            return lazyCacheForTarget;
+        private void fillCommandCache( final ConfigurationNode configurationNode ) throws Exception {
+            final List<ConfigurationNode> allParentNodes = new LinkedList<ConfigurationNode>();
+            allParentNodes.add(configurationNode);
+            ConfigurationNode parent = configurationNode.getInstanceMetadata().getDefaultParent();
+            while (!this.nodeCache.containsKey(parent)) {
+                allParentNodes.add(parent);
+                parent = configurationNode.getInstanceMetadata().getDefaultParent();
+            }
+            Collections.reverse(allParentNodes);
+            for (final ConfigurationNode node : allParentNodes) {
+                final String xpath = XpathSupport.getCompleteXpathFor(node);
+                final Node jcrNode = JcrSupport.findUnique(this.session, xpath);
+                this.nodeCache.put(node, new LoadCommand(node, jcrNode));
+            }
+        }
+
+        private LoadCommand getLoadCommandFor( final ConfigurationNode configurationNode ) throws Exception {
+            if (this.nodeCache.containsKey(configurationNode)) {
+                return this.nodeCache.get(configurationNode);
+            }
+            this.fillCommandCache(configurationNode);
+            return this.nodeCache.get(configurationNode);
+
         }
 
         public void loadChildren( final ConfigurationNode targetNode ) {
             try {
-                LazyStatus lazyCacheForTarget;
-                synchronized (this.lazyCache) {
-                    lazyCacheForTarget = this.lazyCache.get(targetNode);
-                    if (lazyCacheForTarget == null) {
-                        lazyCacheForTarget = this.createLazyStatus(targetNode);
-                    }
-                }
-                switch (lazyCacheForTarget.getChildrenLoadingStatus().get()) {
-                    case NEEDS_LOAD:
-                        try {
-                            lazyCacheForTarget.getChildrenLoadingStatus().set(LoadingStatus.LOADING);
-                            loadChildrenNodes(lazyCacheForTarget.getJcrNode(), targetNode, LazyType.LAZY);
-                        } finally {
-                            lazyCacheForTarget.getChildrenLoadingStatus().set(LoadingStatus.LOADED);
-                        }
-                        break;
-                    case LOADING:
-                        //                        for (final StackTraceElement e : Thread.currentThread().getStackTrace()) {
-                        //                            System.err.println("LOADING " + e);
-                        //                        }
-                        //                        loop: while (true) {
-                        //                            if (lazyCacheForTarget.getChildrenLoadingStatus().get().equals(LoadingStatus.LOADED)) {
-                        //                                break loop;
-                        //                            }
-                        //                            Thread.sleep(250);
-                        //                        }
-                        break;
-                    case LOADED:
-
-                        break;
-                }
-
+                this.getLoadCommandFor(targetNode).loadChildren();
             } catch (final Exception e) {
-                logAndThrowNew(e, SLRuntimeException.class);
+                throw logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
         public void loadProperties( final ConfigurationNode targetNode ) {
             try {
-                LazyStatus lazyCacheForTarget;
-                synchronized (this.lazyCache) {
-                    lazyCacheForTarget = this.lazyCache.get(targetNode);
-                    if (lazyCacheForTarget == null) {
-                        lazyCacheForTarget = this.createLazyStatus(targetNode);
-                    }
-                }
-                switch (lazyCacheForTarget.getPropertyLoadingStatus().get()) {
-                    case NEEDS_LOAD:
-                        try {
-                            lazyCacheForTarget.getPropertyLoadingStatus().set(LoadingStatus.LOADING);
-                            final String[] propKeys = targetNode.getInstanceMetadata().getStaticMetadata().propertyNames();
-                            final Class<?>[] propValues = targetNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
-                            final String keyPropertyName = targetNode.getInstanceMetadata().getStaticMetadata().keyPropertyName();
-                            final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
-                            loadNodeProperties(lazyCacheForTarget.getJcrNode(), targetNode, propertyTypes, keyPropertyName);
-                        } finally {
-                            lazyCacheForTarget.getPropertyLoadingStatus().set(LoadingStatus.LOADED);
-                        }
-                        break;
-                    case LOADING:
-                        //                        loop: while (true) {
-                        //                            if (lazyCacheForTarget.getPropertyLoadingStatus().get().equals(LoadingStatus.LOADED)) {
-                        //                                break loop;
-                        //                            }
-                        //                            Thread.sleep(250);
-                        //                        }
-                        break;
-                    case LOADED:
-
-                        break;
-                }
-
+                this.getLoadCommandFor(targetNode).loadProperties();
             } catch (final Exception e) {
-                logAndThrowNew(e, SLRuntimeException.class);
+                throw logAndReturnNew(e, ConfigurationException.class);
             }
+
         }
 
     }
@@ -754,7 +708,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 this.setUuidData(rootJcrNode, rootNode);
 
             } else if (LazyType.LAZY.equals(lazyType)) {
-                final JcrDataLoader dataLoader = new JcrDataLoader(rootNode, rootJcrNode);
+                final JcrDataLoader dataLoader = new JcrDataLoader(rootNode, rootJcrNode, this.session);
                 rootNode.getInstanceMetadata().getSharedData().setDataLoader(dataLoader);
             } else {
                 logAndThrow(new IllegalArgumentException("Invalid lazyType")); //$NON-NLS-1$
