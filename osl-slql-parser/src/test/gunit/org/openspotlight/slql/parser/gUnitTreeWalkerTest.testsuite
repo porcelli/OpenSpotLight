@@ -207,6 +207,18 @@ defineTarget walks defineTarget:
 "define target = testeTarget keep result;"
 	OK
 
+"define target = select *;"
+	OK
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue"; >>
+	OK
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result; >>
+	OK
 
 /**
  * test Define Message
@@ -657,4 +669,33 @@ select org.test.JavaType.*
 order by
 	org.test.JavaTypeClass, org.test.JavaTypeInterface;
 select *;	>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select *;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select ** 
+		where org.test.Something property myProperty == "TesteValue";
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result;
+select * by link org.test.PackageDeclaresType (a);>>
 	OK

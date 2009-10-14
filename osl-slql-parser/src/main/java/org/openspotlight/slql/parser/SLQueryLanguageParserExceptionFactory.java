@@ -149,6 +149,10 @@ public class SLQueryLanguageParserExceptionFactory {
                                                   "invalid use of double star (**)", -1, -1, -1, null);
     }
 
+    public SLQueryLanguageParserException createDefineTargetWithByLinkException() {
+        return new SLQueryLanguageParserException("ERR 115",
+                                                  "invalid use of by link in define target", -1, -1, -1, null);
+    }
     
     /**
      * This will take a RecognitionException, and create a sensible error message out of it
