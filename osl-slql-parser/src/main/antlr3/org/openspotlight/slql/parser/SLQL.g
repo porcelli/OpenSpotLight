@@ -249,6 +249,10 @@ import java.util.Set;
 		state.errorRecovery = true;
 	
 		errors.add(errorMessageFactory.createSLQueryLanguageException(ex));
+		
+		if (isgUnitTest){
+			throw new RuntimeException();
+		}
 	}
 	
 	/** return the raw DroolsParserException errors */
@@ -551,7 +555,8 @@ graphicModel
 linkType
 @init{
 	StringBuilder sb = new StringBuilder();
-}	:	tn=typeName {sb.append($tn.cleanText);} (DOT {sb.append(".");} tn2=typeName {sb.append($tn2.cleanText);})*
+}
+	:	tn=typeName {sb.append($tn.cleanText);} (DOT {sb.append(".");} tn2=typeName {sb.append($tn2.cleanText);})*
 	-> LINK_TYPE_NAME[$start, sb.toString()]
 	;
 

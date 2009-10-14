@@ -1,0 +1,7 @@
+select org.openspotlight.graph.query.JavaType.*
+	where 
+		org.openspotlight.graph.query.JavaType.*
+			property caption *... "java.util" &&
+			(	property caption <*> "Set" 	||
+				property caption <*> "List"	||
+				property caption <*> "Map" );
