@@ -1,0 +1,8 @@
+select org.openspotlight.graph.query.JavaInterface
+	where 
+		org.openspotlight.graph.query.JavaInterface
+			property caption == "java.util.Collection"
+	keep result;
+
+select org.openspotlight.graph.query.JavaTypeMethod
+	by link org.openspotlight.graph.query.TypeContainsMethod (b);
