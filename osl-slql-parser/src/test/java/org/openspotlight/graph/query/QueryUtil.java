@@ -64,7 +64,7 @@ import org.openspotlight.graph.SLNode;
 public class QueryUtil {
 
 	/** The Constant LOGGER. */
-	static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+	static final Logger LOGGER = Logger.getLogger(SLQLQueryTest.class);
 	
 	/**
 	 * Prints the result.

@@ -895,7 +895,7 @@ public class SLGraphQueryTest {
 				
 				.select()
 					.type(JavaTypeMethod.class.getName()).comma()
-					.byLink(TypeContainsMethod.class.getName()).a()
+					.byLink(TypeContainsMethod.class.getName()).b()
 				.selectEnd();
 				
 			SLQueryResult result = query.execute(sortMode, printInfo);
@@ -3134,6 +3134,53 @@ public class SLGraphQueryTest {
 		}
 	}
 
+	   /**
+     * Test select types from java util package.
+     */
+    @Test
+    public void testMultipleEnclosedBrackets() {
+        
+        try {
+
+            SLQuery query = session.createQuery();
+            
+            query
+                .select()
+                    .type(JavaType.class.getName()).subTypes()
+                .selectEnd()
+
+                .where()
+                    .type(JavaType.class.getName()).subTypes()
+                        .each().property("caption").startsWith().value("java.util").and()
+                           .openBracket()
+                               .each().property("caption").contains().value("Stack").or()
+                               .openBracket()
+                                   .each().property("caption").contains().value("Currency")
+                               .closeBracket()
+                           .closeBracket()
+                    .typeEnd()
+                .whereEnd();
+            
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            Collection<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(2));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
+                }
+            }.execute();
+
+            printResult(nodes);
+
+        }
+        catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+	
 	/**
 	 * The main method.
 	 * 

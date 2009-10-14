@@ -689,7 +689,7 @@ public interface SLWhereStatement {
 							 * @return the relational operator
 							 */
 							public RelationalOperator and();
-							
+
 							/**
 							 * Type end.
 							 * 

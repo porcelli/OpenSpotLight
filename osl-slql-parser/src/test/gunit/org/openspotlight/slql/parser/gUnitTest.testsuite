@@ -1121,3 +1121,15 @@ order by
 	org.test.JavaTypeClass, org.test.JavaTypeInterface;
 select *;	>>
 	OK
+
+<<
+select org.openspotlight.graph.query.JavaInterface
+	where 
+		org.openspotlight.graph.query.JavaInterface
+			property caption *... "java.util.Collection";
+
+select org.openspotlight.graph.query.JavaTypeMethod 
+by link 
+	org.openspotlight.graph.query.TypeContainsMethod (a);
+>>
+	OK

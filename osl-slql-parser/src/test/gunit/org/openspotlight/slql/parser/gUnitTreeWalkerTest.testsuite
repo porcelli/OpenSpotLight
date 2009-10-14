@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-gunit SLQLWalker walks SLQL;
+gunit SLQLTestWalker walks SLQL;
 
 @header{
 package org.openspotlight.slql.parser;
@@ -698,4 +698,16 @@ define domain values $teste = "value1", "value2";
 define target = select ** 
 		where org.test.Something property myProperty == "TesteValue" keep result;
 select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+select org.openspotlight.graph.query.JavaInterface
+	where 
+		org.openspotlight.graph.query.JavaInterface
+			property caption *... "java.util.Collection";
+
+select org.openspotlight.graph.query.JavaTypeMethod 
+by link 
+	org.openspotlight.graph.query.TypeContainsMethod (a);
+>>
 	OK
