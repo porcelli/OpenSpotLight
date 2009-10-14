@@ -15,7 +15,15 @@
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-api</artifactId>
+		</dependency>
 		<!-- External dependencies -->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>

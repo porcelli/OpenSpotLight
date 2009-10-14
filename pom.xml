@@ -320,6 +320,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>
+				<artifactId>stringtemplate</artifactId>
+				<version>3.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.antlr</groupId>
 				<artifactId>maven-gunit-plugin</artifactId>
 				<version>3.2</version>
 			</dependency>
@@ -333,12 +338,6 @@
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr-runtime</artifactId>
 				<version>3.2</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.antlr</groupId>
-						<artifactId>stringtemplate</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>javax.transaction</groupId>

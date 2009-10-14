@@ -895,7 +895,7 @@ public class SLGraphQueryTest {
 				
 				.select()
 					.type(JavaTypeMethod.class.getName()).comma()
-					.byLink(TypeContainsMethod.class.getName()).b()
+					.byLink(TypeContainsMethod.class.getName()).a()
 				.selectEnd();
 				
 			SLQueryResult result = query.execute(sortMode, printInfo);
@@ -3108,7 +3108,7 @@ public class SLGraphQueryTest {
 		try {
 			
 			SLQuery query = session.createQuery();
-			
+
 			query
 				.select()
 					.allTypes().onWhere()

@@ -209,6 +209,7 @@ public class SLQueryImpl implements SLQuery {
 		try {
 			
 			Collection<PNodeWrapper> selectNodeWrappers = null;
+			//here is the result
 			Collection<PNodeWrapper> resultNodeWrappers = null;
 
 			SLSelectCommandDO commandDO = new SLSelectCommandDO();
@@ -229,6 +230,7 @@ public class SLQueryImpl implements SLQuery {
 				}
 			}
 			else {
+			    //TODO check it later
 				Comparator<PNodeWrapper> comparator = getOrderByPNodeWrapperComparator(orderByStatementInfo);
 				resultNodeWrappers = new TreeSet<PNodeWrapper>(comparator);
 			}
@@ -311,7 +313,7 @@ public class SLQueryImpl implements SLQuery {
 		SLOrderByStatementInfo orderByStatementInfo = null;
 		if (!selects.isEmpty()) {
 			SLSelectStatementInfo selectStatementInfo = SLQuerySupport.getSelectStatementInfo(selects.get(selects.size() - 1));
-			orderByStatementInfo = selectStatementInfo.getOrderByStatementInfo(); 
+			orderByStatementInfo = selectStatementInfo.getOrderByStatementInfo();
 		}
 		return orderByStatementInfo;
 	}

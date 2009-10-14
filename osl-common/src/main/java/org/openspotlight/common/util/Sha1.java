@@ -61,12 +61,23 @@ import org.openspotlight.common.exception.SLException;
  * Class with sha1 signature method.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class Sha1 {
-    
-    private static final Digester DIGESTER = new Digester("SHA-1");//$NON-NLS-1$
-    
+
+    private static final Digester DIGESTER = new Digester("SHA-1"); //$NON-NLS-1$
+
+    /**
+     * A syntax sugar method that returns a sha-1 signature for that content.
+     * 
+     * @param content
+     * @return a byte array representing the signature
+     * @throws SLException
+     */
+    public static byte[] getSha1Signature( final String content )
+        throws SLException {
+        return getSha1Signature(content.getBytes());
+    }
+
     /**
      * Returns a sha-1 signature for that content.
      * 
@@ -74,8 +85,8 @@ public class Sha1 {
      * @return a byte array representing the signature
      * @throws SLException
      */
-    public static byte[] getSha1Signature(final byte[] content)
-            throws SLException {
+    public static byte[] getSha1Signature( final byte[] content )
+        throws SLException {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
             return DIGESTER.digest(content);
@@ -83,7 +94,19 @@ public class Sha1 {
             throw logAndReturnNew(e, SLException.class);
         }
     }
-    
+
+    /**
+     * A syntax sugar method that returns a sha-1 signature for that content as a base64 string.
+     * 
+     * @param content
+     * @return a base64 string representing the signature
+     * @throws SLException
+     */
+    public static String getSha1SignatureEncodedAsBase64( final String content )
+        throws SLException {
+        return getSha1SignatureEncodedAsBase64(content.getBytes());
+    }
+
     /**
      * Returns a sha-1 signature for that content as a base64 string.
      * 
@@ -91,8 +114,8 @@ public class Sha1 {
      * @return a base64 string representing the signature
      * @throws SLException
      */
-    public static String getSha1SignatureEncodedAsBase64(final byte[] content)
-            throws SLException {
+    public static String getSha1SignatureEncodedAsBase64( final byte[] content )
+        throws SLException {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
             final byte[] sha1 = getSha1Signature(content);
@@ -102,13 +125,13 @@ public class Sha1 {
             throw logAndReturnNew(e, SLException.class);
         }
     }
-    
+
     /**
      * Should not be instantiated
      */
     private Sha1() {
         logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
     }
-    
+
 }
