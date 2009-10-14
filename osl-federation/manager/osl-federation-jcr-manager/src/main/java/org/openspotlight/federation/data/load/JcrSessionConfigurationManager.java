@@ -123,39 +123,82 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     private static class JcrDataLoader implements DataLoader {
+        private static class CacheLoadingListener implements LoadingListener {
+            private final Map<ConfigurationNode, LoadCommand> nodeCache;
+
+            public CacheLoadingListener(
+                                         final Map<ConfigurationNode, LoadCommand> nodeCache ) {
+                this.nodeCache = nodeCache;
+            }
+
+            public void loading( final ConfigurationNode configurationNode,
+                                 final Node jcrNode ) {
+                if (!this.nodeCache.containsKey(configurationNode)) {
+                    this.nodeCache.put(configurationNode, new LoadCommand(configurationNode, jcrNode, this, this.nodeCache));
+                }
+
+            }
+        }
+
         private static class LoadCommand {
-            private final ConfigurationNode configurationNode;
-            private final Node              jcrNode;
-            private boolean                 propertiesLoaded = false;
-            private boolean                 childrenLoaded   = false;
+            private boolean                           loadingChildren   = false;
+            private boolean                           loadingProperties = false;
+            private final ConfigurationNode           configurationNode;
+            private final Node                        jcrNode;
+            private boolean                           propertiesLoaded  = false;
+            private boolean                           childrenLoaded    = false;
+            private final LoadingListener             listener;
+            final Map<ConfigurationNode, LoadCommand> nodeCache;
 
             LoadCommand(
-                         final ConfigurationNode configurationNode, final Node jcrNode ) {
+                         final ConfigurationNode configurationNode, final Node jcrNode, final LoadingListener listener,
+                         final Map<ConfigurationNode, LoadCommand> nodeCache ) {
                 super();
                 this.configurationNode = configurationNode;
                 this.jcrNode = jcrNode;
+                this.listener = listener;
+                this.nodeCache = nodeCache;
+
             }
 
-            public void loadChildren() throws Exception {
-                if (this.childrenLoaded) {
-                    return;
-                }
-
-                loadChildrenNodes(this.jcrNode, this.configurationNode, LazyType.LAZY);
-
-                this.childrenLoaded = true;
-            }
-
-            public void loadProperties() throws Exception {
-                if (this.propertiesLoaded) {
-                    return;
-                }
-
+            private void internalLoadProperties() throws RepositoryException, Exception {
                 final String[] propKeys = this.configurationNode.getInstanceMetadata().getStaticMetadata().propertyNames();
                 final Class<?>[] propValues = this.configurationNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
                 final String keyPropertyName = this.configurationNode.getInstanceMetadata().getStaticMetadata().keyPropertyName();
                 final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
                 loadNodeProperties(this.jcrNode, this.configurationNode, propertyTypes, keyPropertyName);
+            }
+
+            public void loadChildren() throws Exception {
+                if (this.childrenLoaded || this.loadingChildren) {
+                    return;
+                }
+                this.loadingChildren = true;
+                this.loadParent();
+                loadChildrenNodes(this.jcrNode, this.configurationNode, LazyType.LAZY, this.listener);
+
+                this.loadingChildren = false;
+                this.childrenLoaded = true;
+            }
+
+            private void loadParent() throws Exception {
+                final ConfigurationNode parent = this.configurationNode.getInstanceMetadata().getDefaultParent();
+
+                if (parent != null) {
+                    final LoadCommand parentCommand = this.nodeCache.get(parent);
+                    parentCommand.loadChildren();
+                }
+            }
+
+            public void loadProperties() throws Exception {
+                if (this.propertiesLoaded || this.loadingProperties) {
+                    return;
+                }
+                this.loadingProperties = true;
+                this.loadParent();
+
+                this.internalLoadProperties();
+                this.loadingProperties = false;
 
                 this.propertiesLoaded = true;
             }
@@ -165,6 +208,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         private final Session                             session;
 
         private final Map<ConfigurationNode, LoadCommand> nodeCache = new HashMap<ConfigurationNode, LoadCommand>();
+        private final LoadingListener                     listener;
 
         /**
          * Constructor to initialize the lazy loading for this two corresponding root nodes.
@@ -176,8 +220,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         public JcrDataLoader(
                               final Configuration configurationRootNode, final Node jcrRootNode, final Session session )
             throws RepositoryException {
-
-            this.nodeCache.put(configurationRootNode, new LoadCommand(configurationRootNode, jcrRootNode));
+            this.listener = new CacheLoadingListener(this.nodeCache);
+            this.nodeCache.put(configurationRootNode, new LoadCommand(configurationRootNode, jcrRootNode, this.listener,
+                                                                      this.nodeCache));
             this.session = session;
 
         }
@@ -194,7 +239,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             for (final ConfigurationNode node : allParentNodes) {
                 final String xpath = XpathSupport.getCompleteXpathFor(node);
                 final Node jcrNode = JcrSupport.findUnique(this.session, xpath);
-                this.nodeCache.put(node, new LoadCommand(node, jcrNode));
+                this.nodeCache.put(node, new LoadCommand(node, jcrNode, this.listener, this.nodeCache));
             }
         }
 
@@ -273,6 +318,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
             return foundNode;
         }
+    }
+
+    private static interface LoadingListener {
+        public void loading( ConfigurationNode configurationNode,
+                             Node jcrNode );
     }
 
     /**
@@ -410,12 +460,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         final Class<?>[] propValues = configurationNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
         final Map<String, Class<?>> propertyTypes = map(ofKeys(propKeys), andValues(propValues));
         loadNodeProperties(jcrNode, configurationNode, propertyTypes, staticMetadata.keyPropertyName());
-        loadChildrenNodes(jcrNode, configurationNode, LazyType.EAGER);
+        loadChildrenNodes(jcrNode, configurationNode, LazyType.EAGER, null);
     }
 
     static void loadChildrenNodes( final Node jcrNode,
                                    final ConfigurationNode parentNode,
-                                   final LazyType lazyType )
+                                   final LazyType lazyType,
+                                   final LoadingListener listener )
         throws PathNotFoundException, RepositoryException, ConfigurationException, Exception {
         NodeIterator children;
         try {
@@ -435,7 +486,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final Class<ConfigurationNode> nodeClass = classHelper.getNodeClassFromName(jcrChild.getName());
             final StaticMetadata staticMetadata = classHelper.getStaticMetadataFromClass(nodeClass);
             final ConfigurationNode newNode = loadOneChild(parentNode, jcrChild, staticMetadata, nodeClass);
-
+            if (listener != null) {
+                listener.loading(newNode, jcrChild);
+            }
             if (LazyType.EAGER.equals(lazyType)) {
                 loadChildrenAndProperties(jcrChild, newNode, staticMetadata);
             }
