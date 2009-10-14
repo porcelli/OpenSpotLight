@@ -507,7 +507,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             if (keyPropertyName != null && keyPropertyName.equals(entry.getKey())) {
                 continue;
             }
-
+            if (entry.getKey().length() == 0) {
+                continue;
+            }
             try {
                 jcrNode.getProperty(DEFAULT_OSL_PREFIX + ":" + entry.getKey());
             } catch (final PathNotFoundException e) {
