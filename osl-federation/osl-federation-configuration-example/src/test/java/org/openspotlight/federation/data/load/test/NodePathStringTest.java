@@ -58,24 +58,23 @@ import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.impl.Bundle;
 
 /**
- * Just a test to verify if the method {@link InstanceMetadata#getPath()} is
- * working.
+ * Just a test to verify if the method {@link InstanceMetadata#getPath()} is working.
  */
 public class NodePathStringTest {
 
-	/**
-	 * Should get correct path string.
-	 */
-	@Test
-	public void shouldGetCorrectString() {
-		final Bundle exampleBundle = createOracleOciDbConfiguration()
-				.getRepositoryByName("oracle Repository").getGroupByName(
-						"oracle Group").getBundleByName("oracle Connection");
-		final String path = exampleBundle.getInstanceMetadata().getPath();
-		assertThat(
-				path,
-				is("/Configuration/Repository[name=oracle Repository]/Group[name=oracle Group]/DbBundle[name=oracle Connection]"));
+    /**
+     * Should get correct path string.
+     */
+    @Test
+    public void shouldGetCorrectString() {
+        final Bundle exampleBundle = createOracleOciDbConfiguration().getRepositoryByName("oracle Repository").getGroupByName(
+                                                                                                                              "oracle Group").getBundleByName(
+                                                                                                                                                              "oracle Connection");
+        final String path = exampleBundle.getInstanceMetadata().getPath();
+        assertThat(
+                   path,
+                   is("/Configuration/Repository[name='oracle Repository']/Group[name='oracle Group']/DbBundle[name='oracle Connection']"));
 
-	}
+    }
 
 }
