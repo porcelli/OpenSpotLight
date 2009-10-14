@@ -1,4 +1,4 @@
-package org.openspotlight.slql.parser;
+package org.openspotlight.graph.query;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +14,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
+import org.openspotlight.slql.parser.SLQLLexer;
+import org.openspotlight.slql.parser.SLQLParser;
+import org.openspotlight.slql.parser.SLQLQueryInfo;
+import org.openspotlight.slql.parser.SLQLWalker;
+import org.openspotlight.slql.parser.SLQueryLanguageParserException;
 
 public class TestSLQLWalker {
 

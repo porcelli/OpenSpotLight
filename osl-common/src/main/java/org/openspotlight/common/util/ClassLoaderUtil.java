@@ -66,13 +66,11 @@ public class ClassLoaderUtil {
      * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
      * 
      * @param packageName The base package
-     * 
      * @return The classes
-     * 
      * @throws ClassNotFoundException the class not found exception
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static Class<?>[] getClasses(String packageName) throws ClassNotFoundException, IOException {
+    public static Class<?>[] getClasses( String packageName ) throws ClassNotFoundException, IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         assert classLoader != null;
         String path = packageName.replace('.', '/');
@@ -88,18 +86,17 @@ public class ClassLoaderUtil {
         }
         return classes.toArray(new Class[classes.size()]);
     }
-   
+
     /**
      * Recursive method used to find all classes in a given directory and subdirs.
      * 
-     * @param directory   The base directory
+     * @param directory The base directory
      * @param packageName The package name for classes found inside the base directory
-     * 
      * @return The classes
-     * 
      * @throws ClassNotFoundException the class not found exception
      */
-    private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+    private static List<Class<?>> findClasses( File directory,
+                                               String packageName ) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         if (!directory.exists()) {
             return classes;
@@ -109,11 +106,40 @@ public class ClassLoaderUtil {
             if (file.isDirectory()) {
                 assert !file.getName().contains(".");
                 classes.addAll(findClasses(file, packageName + "." + file.getName()));
-            } 
-            else if (file.getName().endsWith(".class")) {
+            } else if (file.getName().endsWith(".class")) {
                 classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
             }
         }
         return classes;
     }
+
+    /**
+     * Method used to check is some class exists at JVM.
+     * 
+     * @param className The class name to check if it is already lives on JVM.
+     * @return True is class exists, False otherwise.
+     */
+    public static boolean existsClass( String className ) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Method used to return some class that exists at JVM.
+     * 
+     * @param className The class name.
+     * @return If class exists returns it, otherwise returns null.
+     */
+    public static Class<?> getClass( String className ) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
 }

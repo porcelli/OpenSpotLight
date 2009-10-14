@@ -51,18 +51,29 @@ package org.openspotlight.slql.parser;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtConstructor;
+import javassist.CtMethod;
+import javassist.CtNewConstructor;
+import javassist.CtNewMethod;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.stringtemplate.StringTemplateGroup;
+import org.openspotlight.common.util.ClassLoaderUtil;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.common.util.Sha1;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
 
 public class SLQLQueryBuilder {
 
@@ -76,21 +87,58 @@ public class SLQLQueryBuilder {
 
         Set<SLQLVariable> variables = buildVariableCollection(queryInfo);
 
-        return buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), target);
+        return buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), target, queryInfo.getContent());
     }
 
-    private SLQLQuery buildQuery( String id,
-                                  Set<SLQLVariable> variables,
-                                  String outputModelName,
-                                  SLQLQuery target ) {
-        // TODO Auto-generated method stub
-        return null;
+    private SLQLQuery buildQuery( final String id,
+                                  final Set<SLQLVariable> variables,
+                                  final String outputModelName,
+                                  final SLQLQuery target,
+                                  final String executeContent ) throws SLQueryLanguageParserException {
+        try {
+            String className = getClassName(id);
+
+            if (!ClassLoaderUtil.existsClass(className)) {
+                createNewQueryClass(className, executeContent);
+            }
+
+            @SuppressWarnings( "unchecked" )
+            Class<AbstractSLQLQuery> queryResult = (Class<AbstractSLQLQuery>)ClassLoaderUtil.getClass(className);
+
+            Constructor<AbstractSLQLQuery> constr;
+            constr = queryResult.getConstructor(String.class, Set.class, String.class,
+                                                boolean.class, SLQLQuery.class);
+            return constr.newInstance(id, variables, outputModelName, false, target);
+
+        } catch (Exception e) {
+            throw new SLQueryLanguageParserException(e);
+        }
     }
 
-    private SLQLQuery buildTargetQuery( String targetUniqueId,
-                                        String defineTargetContent ) {
-        // TODO Auto-generated method stub
-        return null;
+    private SLQLQuery buildTargetQuery( final String targetUniqueId,
+                                        final String defineTargetContent ) throws SLQueryLanguageParserException {
+        try {
+            String className = getClassName(targetUniqueId);
+
+            if (!ClassLoaderUtil.existsClass(className)) {
+                createNewQueryClass(className, defineTargetContent);
+            }
+
+            @SuppressWarnings( "unchecked" )
+            Class<AbstractSLQLQuery> queryResult = (Class<AbstractSLQLQuery>)ClassLoaderUtil.getClass(className);
+
+            Constructor<AbstractSLQLQuery> constr;
+            constr = queryResult.getConstructor(String.class, Set.class, String.class,
+                                                boolean.class, SLQLQuery.class);
+            return constr.newInstance(targetUniqueId, null, null, true, null);
+
+        } catch (Exception e) {
+            throw new SLQueryLanguageParserException(e);
+        }
+    }
+
+    private String getClassName( String id ) {
+        return "org.openspotlight.slql.parser.SLQLQuery$A" + id;
     }
 
     private enum SLQLVariableDataType {
@@ -166,11 +214,11 @@ public class SLQLQueryBuilder {
             }
             CommonTree result = (CommonTree)parser.compilationUnit().tree;
 
-            String uniqueId = Sha1.getSha1SignatureEncodedAsBase64(result.toStringTree().toLowerCase());
+            String uniqueId = Sha1.getSha1SignatureEncodedAsHexa(result.toStringTree().toLowerCase());
 
             String targetUniqueId = null;
             if (parser.getDefineTargetTreeResult() != null) {
-                targetUniqueId = Sha1.getSha1SignatureEncodedAsBase64(parser.getDefineTargetTreeResult());
+                targetUniqueId = Sha1.getSha1SignatureEncodedAsHexa(parser.getDefineTargetTreeResult());
             }
 
             CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(result);
@@ -188,56 +236,29 @@ public class SLQLQueryBuilder {
         }
     }
 
-    //    import java.lang.reflect.Method;
-    //    import javassist.ClassPool;
-    //    import javassist.CtClass;
-    //    import javassist.CtConstructor;
-    //    import javassist.CtField;
-    //    import javassist.CtMethod;
-    //    /** Parameter types for call with no parameters. */
-    //    private static final CtClass[] NO_ARGS  = {};
-    //
-    //    /** Parameter types for call with single int value. */
-    //    private static final CtClass[] INT_ARGS = {CtClass.intType};
-    //
-    //    protected byte[] createNewQuery( Class tclas,
-    //                                   Method gmeth,
-    //                                   Method smeth,
-    //                                   String cname ) throws Exception {
-    //
-    //        // build generator for the new class
-    //        String tname = tclas.getName();
-    //        ClassPool pool = ClassPool.getDefault();
-    //        CtClass clas = pool.makeClass(cname);
-    //        clas.addInterface(pool.get("SLQuery"));
-    //        CtClass target = pool.get(tname);
-    //
-    //        // add target object field to class
-    //        CtField field = new CtField(target, "m_target", clas);
-    //        clas.addField(field);
-    //
-    //        // add public default constructor method to class
-    //        CtConstructor cons = new CtConstructor(NO_ARGS, clas);
-    //        cons.setBody(";");
-    //        clas.addConstructor(cons);
-    //
-    //        // add public setTarget method
-    //        CtMethod meth = new CtMethod(CtClass.voidType, "setTarget",
-    //                                     new CtClass[] {pool.get("java.lang.Object")}, clas);
-    //        meth.setBody("m_target = (" + tclas.getName() + ")$1;");
-    //        clas.addMethod(meth);
-    //
-    //        // add public getValue method
-    //        meth = new CtMethod(CtClass.intType, "getValue", NO_ARGS, clas);
-    //        meth.setBody("return m_target." + gmeth.getName() + "();");
-    //        clas.addMethod(meth);
-    //
-    //        // add public setValue method
-    //        meth = new CtMethod(CtClass.voidType, "setValue", INT_ARGS, clas);
-    //        meth.setBody("m_target." + smeth.getName() + "($1);");
-    //        clas.addMethod(meth);
-    //
-    //        // return binary representation of completed class
-    //        return clas.toBytecode();
-    //    }
+    protected void createNewQueryClass( String className,
+                                        String executeContent ) throws SLQueryLanguageParserException {
+        try {
+            ClassPool pool = ClassPool.getDefault();
+
+            CtClass superClass = pool.get(AbstractSLQLQuery.class.getName());
+            CtClass clas = pool.makeClass(className, superClass);
+
+            CtClass[] CONSTRUCTOR_ARGS = {pool.get(String.class.getName()), pool.get(Set.class.getName()), pool.get(String.class.getName()), CtClass.booleanType, pool.get(SLQLQuery.class.getName())};
+            CtClass[] NO_ARGS = {};
+
+            CtConstructor newConstructor = CtNewConstructor.make(CONSTRUCTOR_ARGS, NO_ARGS, clas);
+            clas.addConstructor(newConstructor);
+
+            CtClass[] EXECUTE_ARGS = {pool.get(SLGraphSession.class.getName()), pool.get(Map.class.getName()), pool.get(Collection.class.getName())};
+            CtClass[] EXECUTE_THROWS = {pool.get(SLGraphSessionException.class.getName())};
+
+            CtMethod newMethod = CtNewMethod.make(pool.get(Collection.class.getName()), "execute", EXECUTE_ARGS, EXECUTE_THROWS, executeContent, clas);
+            clas.addMethod(newMethod);
+
+            clas.toClass(SLQLQueryBuilder.class.getClassLoader(), SLQLQueryBuilder.class.getProtectionDomain());
+        } catch (Exception e) {
+            throw new SLQueryLanguageParserException(e);
+        }
+    }
 }

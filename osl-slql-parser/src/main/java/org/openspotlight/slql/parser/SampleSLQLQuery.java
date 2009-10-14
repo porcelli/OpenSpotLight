@@ -21,17 +21,17 @@ public class SampleSLQLQuery extends AbstractSLQLQuery {
     }
 
     @Override
-    public Collection<SLNode> execute( final SLGraphSession session,
-                                       final Map<String, ?> variableValues,
-                                       final Collection<SLNode> inputNodes ) throws SLGraphSessionException {
-        validate(session, variableValues, inputNodes);
+    public Collection<SLNode> execute( final SLGraphSession $1,
+                                       final Map<String, ?> $2,
+                                       final Collection<SLNode> $3 ) throws SLGraphSessionException {
+        validateAndInit($1, $2, $3);
 
-        SLQuery query = session.createQuery();
+        SLQuery query = $1.createQuery();
         query.select().allTypes().onWhere().selectEnd().where().type("myType").each().property("myProperty").equalsTo().value("TesteValue").typeEnd().whereEnd();
 
         SLQueryResult result = null;
-        if (inputNodes != null) {
-            result = query.execute(inputNodes);
+        if ($3 != null) {
+            result = query.execute($3);
         } else {
             result = query.execute();
         }
