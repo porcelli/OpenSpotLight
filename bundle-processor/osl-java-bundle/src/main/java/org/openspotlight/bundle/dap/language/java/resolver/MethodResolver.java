@@ -66,7 +66,8 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLQuery;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 
 /**
@@ -247,9 +248,10 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      * @return the found method
      * @throws SLGraphSessionException general graph session exception
      * @throws SLBundleException if method not found.
+     * @throws SLInvalidQuerySyntaxException 
      */
     public <XM extends M> XM getMethod( final T type,
-                                        final String methodName ) throws SLGraphSessionException, SLBundleException {
+                                        final String methodName ) throws SLGraphSessionException, SLBundleException, SLInvalidQuerySyntaxException {
         return this.<XM>getMethod(type, methodName, null);
     }
 
@@ -262,10 +264,11 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      * @return the method
      * @throws SLGraphSessionException general graph session exception
      * @throws SLBundleException if method not found.
+     * @throws SLInvalidQuerySyntaxException
      */
     public <XM extends M> XM getMethod( final T type,
                                         final String methodName,
-                                        final List<T> paramTypes ) throws SLGraphSessionException, SLBundleException {
+                                        final List<T> paramTypes ) throws SLGraphSessionException, SLBundleException, SLInvalidQuerySyntaxException {
         checkNotNull("type", type);
         checkNotEmpty("methodName", methodName);
 
@@ -291,7 +294,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
         final List<T> typeHierarchy = this.typeResolver.getAllParents(type, ResultOrder.ASC,
                                                                       IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
-        final SLQuery query = this.graphSession.createQuery();
+        final SLQueryApi query = this.graphSession.createQueryApi();
 
         query.select().type(this.methodSuperType.getName()).subTypes().comma().byLink(this.typeMethodLink.getName()).b().selectEnd().select().type(
                                                                                                                                                    this.methodSuperType.getName()).subTypes().selectEnd().where().type(
