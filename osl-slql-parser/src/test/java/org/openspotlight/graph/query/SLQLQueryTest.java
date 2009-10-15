@@ -83,9 +83,9 @@ import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
-import org.openspotlight.slql.parser.SLQLQuery;
-import org.openspotlight.slql.parser.SLQLQueryBuilder;
-import org.openspotlight.slql.parser.SLQueryLanguageParserException;
+import org.openspotlight.graph.query.parser.SLQLQuery;
+import org.openspotlight.graph.query.parser.SLQLQueryBuilder;
+import org.openspotlight.graph.query.parser.SLQueryLanguageParserException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -1613,911 +1613,512 @@ public class SLQLQueryTest {
         printResult(nodes);
     }
 
-    //	
-    //	/**
-    //	 * Test select all types.
-    //	 */
-    //	@Test
-    //	public void testSelectAllTypes() {
-    //		
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes()
-    //				.selectEnd()
-    //				
-    //				.where()
-    //					.type(JavaType.class.getName()).subTypes()
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //					.type(JavaTypeMethod.class.getName())
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd();
-    //
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			//final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			//printAsserts(wrappers);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //FIXME check results here
+    /**
+     * Test select all types.
+     */
+    @Test
+    public void testSelectAllTypes() throws SLQueryLanguageParserException, SLGraphSessionException {
 
-    //				}
-    //			}.execute();
-    //
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //	
-    //	/**
-    //	 * Test select all types on where.
-    //	 */
-    //	@Test
-    //	public void testSelectAllTypesOnWhere() {
-    //		
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //					.type(JavaTypeMethod.class.getName())
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd();
-    //
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(37));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isExternallySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.AbstractMap", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "getSetStateFields"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSortedSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSortedSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "readTreeSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Hashtable", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.HashMap", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isFieldSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.AbstractMap", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "subSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "tailSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.HashMap", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "internalSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "headSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.BitSet", "nextSetBit"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Map", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Hashtable", "keySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "entrySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "tailSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "subSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSortedSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "emptySet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "addAllForTreeSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
-    //				}
-    //			}.execute();
-    //
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //		
-    //	/**
-    //	 * Test not relational operator.
-    //	 */
-    //	@Test
-    //	public void testNotRelationalOperator() {
-    //		
-    //		try {
-    //
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").not().contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd();
-    //
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(17));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.EventListener"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Enumeration"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
-    //				}
-    //			}.execute();
-    //
-    //			printResult(nodes);
-    //			
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	/**
-    //	 * Test not conditional operator.
-    //	 */
-    //	@Test
-    //	public void testNotConditionalOperator() {
-    //		
-    //		try {
-    //
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //
-    //				.where()
-    //					.type(JavaType.class.getName()).subTypes()
-    //						.each().property("caption").contains().value("Set")
-    //						.and().not()
-    //							.openBracket()
-    //								.each().property("caption").contains().value("Hash")
-    //								.or().each().property("caption").contains().value("Bit")
-    //							.closeBracket()
-    //					.typeEnd()
-    //				.whereEnd();
-    //
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(4));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
-    //				}
-    //			}.execute();
-    //
-    //			printResult(nodes);
-    //			
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	/**
-    //	 * Test select date methods.
-    //	 */
-    //	@Test
-    //	public void testSelectDateMethods() {
-    //		try {
-    //
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				
-    //				.where()
-    //					.type(JavaClass.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.Date")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				
-    //				.select()
-    //					.type(JavaTypeMethod.class.getName()).comma()
-    //					.byLink(TypeContainsMethod.class.getName()).b()
-    //				.selectEnd();
-    //				
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(36));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "after"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "readObject"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setMonth"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "before"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setMinutes"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "parse"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "toString"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), isOneOf(wrappers));
-    //				}
-    //			}.execute();
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //	
-    //	/**
-    //	 * Test select by link count.
-    //	 */
-    //	@Test
-    //	public void testSelectByLinkCount() {
-    //		try {
-    //
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaType.class.getName()).subTypes()
-    //						.each().property("caption").contains().value("Set")
-    //						.or().each().property("caption").contains().value("List")
-    //						.or().each().property("caption").contains().value("Map")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				
-    //				.select()
-    //					.allTypes()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaType.class.getName()).subTypes()
-    //						.each().property("caption").not().contains().value("Sorted")
-    //						.and().each().link(TypeContainsMethod.class.getName()).a().count().greaterThan().value(3)
-    //						.and().each().link(TypeContainsMethod.class.getName()).a().count().lesserOrEqualThan().value(12)
-    //					.typeEnd()
-    //				.whereEnd();
-    //				
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(4));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
-    //				}
-    //			}.execute();
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	/**
-    //	 * Test select order by ascending.
-    //	 */
-    //	@Test
-    //	public void testSelectOrderByAscending() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.orderBy()
-    //					.type(JavaInterface.class.getName()).property("caption").ascending()
-    //				.orderByEnd();
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(2));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[0]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), is(wrappers[1]));
-    //				}
-    //			}.execute();
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	/**
-    //	 * Test select order by descending.
-    //	 */
-    //	@Test
-    //	public void testSelectOrderByDescending() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaClass.class.getName())
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.orderBy()
-    //					.type(JavaClass.class.getName()).property("caption").descending()
-    //				.orderByEnd();
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(5));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[0]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), is(wrappers[1]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[3]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[4]));
-    //				}
-    //			}.execute();
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //	
-    //	@Test
-    //	public void testSelectOrderByAscendingAndDescending() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaType.class.getName()).subTypes()
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.orderBy()
-    //					.type(JavaInterface.class.getName()).property("caption").ascending()
-    //					.type(JavaClass.class.getName()).property("caption").descending()
-    //				.orderByEnd();
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(7));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[0]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), is(wrappers[1]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[3]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[4]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[5]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), is(wrappers[6]));
-    //				}
-    //			}.execute();
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectOrderByCrossType() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaType.class.getName()).subTypes()
-    //						.each().property("caption").contains().value("Set")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.orderBy()
-    //					.type(JavaType.class.getName()).property("caption")
-    //				.orderByEnd();
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			new AssertResult() {
-    //				public void execute() {
-    //					assertThat(wrappers.length, is(7));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[0]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), is(wrappers[1]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[3]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[4]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[5]));
-    //					assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), is(wrappers[6]));
-    //				}
-    //			}.execute();
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //
-    //	/**
-    //	 * Test select collator primary change accent.
-    //	 */
-    //	@Test
-    //	public void testSelectByCollatorKeyPrimaryChangeAccent() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.Çollection")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.PRIMARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeyPrimaryChangeCase() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.CollecTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.PRIMARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeyPrimaryChangeAccentAndCase() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.ÇollécTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.PRIMARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //	
-    //	/**
-    //	 * Test select collator primary change accent.
-    //	 */
-    //	@Test
-    //	public void testSelectByCollatorKeySecondaryChangeAccent() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.Çollection")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.SECONDARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(0));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeySecondaryChangeCase() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.CollecTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.SECONDARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeySecondaryChangeAccentAndCase() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.ÇollécTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.SECONDARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(0));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeyTertiaryChangeAccent() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.Çollection")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.TERTIARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(0));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeyTertiaryChangeCase() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.CollecTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.TERTIARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(0));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorKeyTertiaryChangeAccentAndCase() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").equalsTo().value("java.util.ÇollécTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.TERTIARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(0));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //	
-    //	@Test
-    //	public void testSelectByCollatorDescriptionPrimary() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").contains().value("çollecTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.PRIMARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //
-    //	@Test
-    //	public void testSelectByCollatorDescriptionSecondary() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //			
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").contains().value("CollecTION")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.SECONDARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
-    //	
-    //	@Test
-    //	public void testSelectByCollatorDescriptionTertiary() {
-    //		try {
-    //			
-    //			SLQuery query = session.createQuery();
-    //
-    //			query
-    //				.select()
-    //					.allTypes().onWhere()
-    //				.selectEnd()
-    //				.where()
-    //					.type(JavaInterface.class.getName())
-    //						.each().property("caption").contains().value("Çollection")
-    //					.typeEnd()
-    //				.whereEnd()
-    //				.collator(Collator.TERTIARY);
-    //			
-    //			SLQueryResult result = query.execute(sortMode, printInfo);
-    //			Collection<SLNode> nodes = result.getNodes();
-    //			final NodeWrapper[] wrappers = wrapNodes(nodes);
-    //			
-    //			assertThat(wrappers.length, is(1));
-    //			assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
-    //			
-    //			printResult(nodes);
-    //		}
-    //		catch (SLException e) {
-    //			LOGGER.error(e.getMessage(), e);
-    //		}
-    //	}
+        String slqlInput = getResourceContent("SelectAllTypes.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                //FIXME check results here
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select all types on where.
+     */
+    @Test
+    public void testSelectAllTypesOnWhere() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectAllTypesOnWhere.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(37));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isExternallySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.AbstractMap", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "getSetStateFields"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSortedSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSortedSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "readTreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Hashtable", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.HashMap", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isFieldSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "isSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.AbstractMap", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "subSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.SortedSet", "tailSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.HashMap", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Calendar", "internalSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "headSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.BitSet", "nextSetBit"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Map", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Hashtable", "keySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "entrySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "tailSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeSet", "subSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSortedSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Collections", "emptySet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.TreeMap", "addAllForTreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test not relational operator.
+     */
+    @Test
+    public void testNotRelationalOperator() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("NotRelationalOperator.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(17));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.EventListener"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Enumeration"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test not conditional operator.
+     */
+    @Test
+    public void testNotConditionalOperator() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("NotConditionalOperator.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select date methods.
+     */
+    @Test
+    public void testSelectDateMethods() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectDateMethods.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(36));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "after"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "readObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setMonth"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "before"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "setMinutes"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "parse"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "toString"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select by link count.
+     */
+    @Test
+    public void testSelectByLinkCount() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByLinkCount.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select order by ascending.
+     */
+    @Test
+    public void testSelectOrderByAscending() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectOrderByAscending.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(2));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[0]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), is(wrappers[1]));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select order by descending.
+     */
+    @Test
+    public void testSelectOrderByDescending() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectOrderByDescending.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(5));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[0]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), is(wrappers[1]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[3]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[4]));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectOrderByAscendingAndDescending() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectOrderByAscendingAndDescending.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(7));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[0]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), is(wrappers[1]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[3]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[4]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[5]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), is(wrappers[6]));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectOrderByCrossType() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectOrderByCrossType.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(7));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[0]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), is(wrappers[1]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[3]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[4]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[5]));
+                assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), is(wrappers[6]));
+            }
+        }.execute();
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select collator primary change accent.
+     */
+    @Test
+    public void testSelectByCollatorKeyPrimaryChangeAccent() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeyPrimaryChangeAccent.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeyPrimaryChangeCase() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeyPrimaryChangeCase.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeyPrimaryChangeAccentAndCase()
+        throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeyPrimaryChangeAccentAndCase.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
+
+    /**
+     * Test select collator primary change accent.
+     */
+    @Test
+    public void testSelectByCollatorKeySecondaryChangeAccent() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeySecondaryChangeAccent.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(0));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeySecondaryChangeCase() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeySecondaryChangeCase.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeySecondaryChangeAccentAndCase()
+        throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeySecondaryChangeAccentAndCase.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(0));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeyTertiaryChangeAccent() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeyTertiaryChangeAccent.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(0));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeyTertiaryChangeCase() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeyTertiaryChangeCase.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(0));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorKeyTertiaryChangeAccentAndCase()
+        throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorKeyTertiaryChangeAccentAndCase.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(0));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorDescriptionPrimary() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorDescriptionPrimary.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorDescriptionSecondary() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorDescriptionSecondary.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
+
+    @Test
+    public void testSelectByCollatorDescriptionTertiary() throws SLQueryLanguageParserException, SLGraphSessionException {
+
+        String slqlInput = getResourceContent("SelectByCollatorDescriptionTertiary.slql");
+        SLQLQuery query = queryBuilder.build(slqlInput);
+
+        Collection<SLNode> nodes = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+        assertThat(wrappers.length, is(1));
+        assertThat(new NodeWrapper(org.openspotlight.graph.query.JavaInterface.class.getName(), "java.util", "java.util.Collection"), is(wrappers[0]));
+
+        printResult(nodes);
+    }
 
     /**
      * The main method.

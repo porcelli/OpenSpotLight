@@ -1,0 +1,13 @@
+select **
+	where
+		org.openspotlight.graph.query.JavaType.*
+			property caption <*> "Set" 	||
+			property caption <*> "List" ||
+			property caption <*> "Map";
+
+select *
+	where
+		org.openspotlight.graph.query.JavaType.*
+			property caption !<*> "Sorted" &&
+			link org.openspotlight.graph.query.TypeContainsMethod (a) > 3 &&
+			link org.openspotlight.graph.query.TypeContainsMethod (a) <= 12;

@@ -46,72 +46,35 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.graph.query.parser;
 
-package org.openspotlight.common.util;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLNode;
 
-import java.io.InputStream;
+public interface SLQLQuery extends Serializable {
 
-import org.openspotlight.common.exception.SLException;
+    public String getId();
 
-/**
- * Class for resource loading.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- */
-public class ClassPathResource {
+    public String getOutputModelName();
 
-    /**
-     * Loads a resource from the current classpath.
-     * 
-     * @param artifactName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath( final String artifactName )
-        throws SLException {
-        checkNotEmpty("location", artifactName); //$NON-NLS-1$
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                                       .getResourceAsStream(artifactName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                                    .getResourceAsStream(artifactName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(artifactName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+    public boolean isTarget();
 
-    /**
-     * Loads a resource from the current classpath.
-     * 
-     * @param resourceName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath( Class<?> clasz,
-                                                        final String resourceName )
-        throws SLException {
-        checkNotEmpty("location", resourceName); //$NON-NLS-1$
-        try {
-            InputStream stream = clasz.getResourceAsStream(resourceName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                                    .getResourceAsStream(resourceName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(resourceName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+    public boolean hasTarget();
+
+    public SLQLQuery getTarget();
+
+    public boolean hasVariables();
+
+    public boolean hasOutputModel();
+
+    public Collection<SLQLVariable> getVariables();
+
+    public Collection<SLNode> execute( final SLGraphSession session,
+                                       final Map<String, ?> variableValues,
+                                       final Collection<SLNode> inputNodes ) throws SLGraphSessionException;
 }
