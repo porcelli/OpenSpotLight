@@ -56,26 +56,27 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Bundle;
 
 /**
- * The {@link ArtifactLoaderGroup} class is itself a {@link ArtifactLoader} that
- * groups all the valid Artifact loaders and execute all of that in order.
+ * The {@link ArtifactLoaderGroup} class is itself a {@link ArtifactLoader} that groups all the valid Artifact loaders and execute
+ * all of that in order.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class ArtifactLoaderGroup implements ArtifactLoader {
-    
+
+    /** The artifact loaders. */
     private final ArtifactLoader[] artifactLoaders;
-    
+
     /**
      * Constructor with varargs for mandatory Artifact loaders.
      * 
      * @param artifactLoaders
      */
-    public ArtifactLoaderGroup(final ArtifactLoader... artifactLoaders) {
+    public ArtifactLoaderGroup(
+                                final ArtifactLoader... artifactLoaders ) {
         checkEachParameterNotNull("artifactLoaders", artifactLoaders); //$NON-NLS-1$
         this.artifactLoaders = artifactLoaders;
     }
-    
+
     /**
      * Executes each Artifact loader in order on the passed bundle.
      * 
@@ -83,15 +84,13 @@ public class ArtifactLoaderGroup implements ArtifactLoader {
      * @return a count for the artifact loading
      * @throws ConfigurationException
      */
-    public ArtifactProcessingCount loadArtifactsFromMappings(final Bundle bundle)
-            throws ConfigurationException {
+    public ArtifactProcessingCount loadArtifactsFromMappings( final Bundle bundle ) throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         long loadCount = 0;
         long ignoreCount = 0;
         long errorCount = 0;
         for (final ArtifactLoader ArtifactLoader : this.artifactLoaders) {
-            final ArtifactProcessingCount result = ArtifactLoader
-                    .loadArtifactsFromMappings(bundle);
+            final ArtifactProcessingCount result = ArtifactLoader.loadArtifactsFromMappings(bundle);
             checkNotNull("result", result); //$NON-NLS-1$
             loadCount += result.getLoadCount();
             ignoreCount += result.getIgnoreCount();

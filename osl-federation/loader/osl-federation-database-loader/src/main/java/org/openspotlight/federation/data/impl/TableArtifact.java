@@ -57,135 +57,127 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 
 /**
  * {@link CustomArtifact} associated with table metadata.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 @ThreadSafe
-@StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-		Bundle.class, Group.class }, propertyNames = { "UUID", "version",
-		"tableName", "catalogName", "schemaName" }, propertyTypes = {
-		String.class, String.class, String.class, String.class, String.class }, validChildrenTypes = Column.class)
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, propertyNames = {
+    "UUID", "version", "tableName", "catalogName", "schemaName", "status"}, propertyTypes = {String.class, String.class,
+    String.class, String.class, String.class, Status.class}, validChildrenTypes = Column.class )
 public class TableArtifact extends CustomArtifact {
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 7433764721674625809L;
-	private static final String TABLE_NAME = "tableName"; //$NON-NLS-1$
-	private static final String CATALOG_NAME = "catalogName"; //$NON-NLS-1$
-	private static final String SCHEMA_NAME = "schemaName"; //$NON-NLS-1$
+    private static final long      serialVersionUID = 7433764721674625809L;
+    private static final String    TABLE_NAME       = "tableName";         //$NON-NLS-1$
+    private static final String    CATALOG_NAME     = "catalogName";       //$NON-NLS-1$
+    private static final String    SCHEMA_NAME      = "schemaName";        //$NON-NLS-1$
 
-	private final InstanceMetadata instanceMetadata;
+    private final InstanceMetadata instanceMetadata;
 
-	/**
-	 * Creates a table artifact inside a bundle. The relative name should be in
-	 * the format CATALOG_NAME/SCHEMA_NAME/TABLE/TABLE_NAME. Note that the
-	 * /TABLE/ is a constant determining the artifact type.
-	 * 
-	 * @param bundle
-	 * @param relativeName
-	 */
-	public TableArtifact(final Bundle bundle, final String relativeName) {
-		super(bundle, relativeName);
-		this.instanceMetadata = super.getInstanceMetadata();
-		this.loadProperties();
-	}
+    /**
+     * Creates a table artifact inside a bundle. The relative name should be in the format
+     * CATALOG_NAME/SCHEMA_NAME/TABLE/TABLE_NAME. Note that the /TABLE/ is a constant determining the artifact type.
+     * 
+     * @param bundle
+     * @param relativeName
+     */
+    public TableArtifact(
+                          final Bundle bundle, final String relativeName ) {
+        super(bundle, relativeName);
+        this.instanceMetadata = super.getInstanceMetadata();
+        this.loadProperties();
+    }
 
-	/**
-	 * Creates a table artifact inside a project. The relative name should be in
-	 * the format CATALOG_NAME/SCHEMA_NAME/TABLE/TABLE_NAME. Note that the
-	 * /TABLE/ is a constant determining the artifact type.
-	 * 
-	 * @param project
-	 * @param relativeName
-	 */
-	public TableArtifact(final Group project, final String relativeName) {
-		super(project, relativeName);
-		this.instanceMetadata = super.getInstanceMetadata();
-		this.loadProperties();
-	}
+    /**
+     * Creates a table artifact inside a project. The relative name should be in the format
+     * CATALOG_NAME/SCHEMA_NAME/TABLE/TABLE_NAME. Note that the /TABLE/ is a constant determining the artifact type.
+     * 
+     * @param project
+     * @param relativeName
+     */
+    public TableArtifact(
+                          final Group project, final String relativeName ) {
+        super(project, relativeName);
+        this.instanceMetadata = super.getInstanceMetadata();
+        this.loadProperties();
+    }
 
-	/**
-	 * 
-	 * @return the catalog name
-	 */
-	public String getCatalogName() {
-		return this.instanceMetadata.getProperty(CATALOG_NAME);
-	}
+    /**
+     * @return the catalog name
+     */
+    public String getCatalogName() {
+        return this.instanceMetadata.getProperty(CATALOG_NAME);
+    }
 
-	/**
-	 * Returns a column by its name.
-	 * 
-	 * @param name
-	 * @return an column
-	 */
-	public final Column getColumnByName(final String name) {
-		return this.instanceMetadata.getChildByKeyValue(Column.class, name);
-	}
+    /**
+     * Returns a column by its name.
+     * 
+     * @param name
+     * @return an column
+     */
+    public final Column getColumnByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(Column.class, name);
+    }
 
-	/**
-	 * 
-	 * @return all column names
-	 */
-	@SuppressWarnings("unchecked")
-	public final Set<String> getColumnNames() {
-		return (Set<String>) this.instanceMetadata
-				.getKeyFromChildrenOfTypes(Column.class);
-	}
+    /**
+     * @return all column names
+     */
+    @SuppressWarnings( "unchecked" )
+    public final Set<String> getColumnNames() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(Column.class);
+    }
 
-	/**
-	 * 
-	 * @return all columns
-	 */
-	public final Collection<Column> getColumns() {
-		return this.instanceMetadata.getChildrensOfType(Column.class);
-	}
+    /**
+     * @return all columns
+     */
+    public final Collection<Column> getColumns() {
+        return this.instanceMetadata.getChildrensOfType(Column.class);
+    }
 
-	/**
-	 * 
-	 * @return the schema name
-	 */
-	public String getSchemaName() {
-		return this.instanceMetadata.getProperty(SCHEMA_NAME);
-	}
+    /**
+     * @return the schema name
+     */
+    public String getSchemaName() {
+        return this.instanceMetadata.getProperty(SCHEMA_NAME);
+    }
 
-	/**
-	 * 
-	 * @return the table name
-	 */
-	public String getTableName() {
-		return this.instanceMetadata.getProperty(TABLE_NAME);
-	}
+    /**
+     * @return the table name
+     */
+    public String getTableName() {
+        return this.instanceMetadata.getProperty(TABLE_NAME);
+    }
 
-	/**
-	 * Loads the property based on the relative name.
-	 */
-	private void loadProperties() {
-		final StringTokenizer tok = new StringTokenizer(this.getRelativeName(),
-				"/"); //$NON-NLS-1$
-		if (tok.countTokens() == 4) {
-			this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
-			this.instanceMetadata.setProperty(CATALOG_NAME, tok.nextToken());
-			tok.nextToken();// puts away its table type
-			this.instanceMetadata.setProperty(TABLE_NAME, tok.nextToken());
-		} else {
+    /**
+     * Loads the property based on the relative name.
+     */
+    private void loadProperties() {
+        final StringTokenizer tok = new StringTokenizer(this.getRelativeName(), "/"); //$NON-NLS-1$
+        if (tok.countTokens() == 4) {
+            this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
+            this.instanceMetadata.setProperty(CATALOG_NAME, tok.nextToken());
+            tok.nextToken();// puts away its table type
+            this.instanceMetadata.setProperty(TABLE_NAME, tok.nextToken());
+        } else {
 
-			this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
-			tok.nextToken();// puts away its table type
-			this.instanceMetadata.setProperty(TABLE_NAME, tok.nextToken());
-		}
-	}
+            this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
+            tok.nextToken();// puts away its table type
+            this.instanceMetadata.setProperty(TABLE_NAME, tok.nextToken());
+        }
+    }
 
-	/**
-	 * removes a given column from this repository.
-	 * 
-	 * @param column
-	 */
-	public final void removeColumn(final Column column) {
-		this.instanceMetadata.removeChild(column);
-	}
+    /**
+     * removes a given column from this repository.
+     * 
+     * @param column
+     */
+    public final void removeColumn( final Column column ) {
+        this.instanceMetadata.removeChild(column);
+    }
 
 }

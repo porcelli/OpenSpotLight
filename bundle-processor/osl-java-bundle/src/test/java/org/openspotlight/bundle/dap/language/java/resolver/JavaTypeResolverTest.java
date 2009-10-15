@@ -179,6 +179,7 @@ public class JavaTypeResolverTest {
      * 
      * @throws Exception the exception
      */
+    @SuppressWarnings( "deprecation" )
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
         final SLGraphFactory factory = new SLGraphFactoryImpl();
@@ -215,8 +216,8 @@ public class JavaTypeResolverTest {
         final List<SLContext> orderedActiveContexts = Arrays.asList(crudFrameworkCtx, jre15ctx);
         final List<SLContext> orderedActiveContextsFor14 = Arrays.asList(crudFrameworkCtx, jre14ctx);
 
-        javaTypeFinder = new JavaTypeResolver(abstractContext, orderedActiveContexts, true, session);
-        java14TypeFinder = new JavaTypeResolver(abstractContext, orderedActiveContextsFor14, false, session);
+        javaTypeFinder = JavaTypeResolver.createNewUncachedAndSlow(abstractContext, orderedActiveContexts, true, session);
+        java14TypeFinder = JavaTypeResolver.createNewUncachedAndSlow(abstractContext, orderedActiveContextsFor14, false, session);
     }
 
     @AfterClass

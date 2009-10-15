@@ -106,10 +106,11 @@ public interface InstanceMetadata {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static interface ConfigurationNodeVisitor {
+
         /**
-         * Method called durring node visiting
+         * Method called durring node visiting.
          * 
-         * @param node
+         * @param node the node
          */
         public void visitNode( ConfigurationNode node );
     }
@@ -125,7 +126,7 @@ public interface InstanceMetadata {
          * Load all properties from the given node. Should not repeat the heavy operations when requested to load some children
          * that is already loaded.
          * 
-         * @param targetNode
+         * @param targetNode the target node
          */
         public void loadChildren( ConfigurationNode targetNode );
 
@@ -133,7 +134,7 @@ public interface InstanceMetadata {
          * Load all properties from the given node. Should not repeat the heavy operations when requested to load some children
          * that is already loaded.
          * 
-         * @param targetNode
+         * @param targetNode the target node
          */
         public void loadProperties( ConfigurationNode targetNode );
 
@@ -164,10 +165,10 @@ public interface InstanceMetadata {
                 /**
                  * Just add new children if the current level is not equal max levels.
                  * 
-                 * @param n
-                 * @param currenctlyAddedNodes
-                 * @param limit
-                 * @param visitor
+                 * @param n the n
+                 * @param currenctlyAddedNodes the currenctly added nodes
+                 * @param limit the limit
+                 * @param visitor the visitor
                  */
                 private static void fillChildren( final ConfigurationNode n,
                                                   final LinkedList<ConfigurationNode> currenctlyAddedNodes,
@@ -189,9 +190,9 @@ public interface InstanceMetadata {
                 /**
                  * It will visit children nodes until the current level is equal the max levels.
                  * 
-                 * @param n
-                 * @param visitor
-                 * @param maxLevels
+                 * @param n the n
+                 * @param visitor the visitor
+                 * @param maxLevels the max levels
                  */
                 public static void fillQueue( final ConfigurationNode n,
                                               final ConfigurationNodeVisitor visitor,
@@ -209,6 +210,12 @@ public interface InstanceMetadata {
 
                 }
 
+                /**
+                 * It counts how many parents this node have.
+                 * 
+                 * @param n the n
+                 * @return the depth
+                 */
                 private static int getDepth( final ConfigurationNode n ) {
                     ConfigurationNode c = n.getInstanceMetadata().getDefaultParent();
                     int i = 0;
@@ -221,78 +228,56 @@ public interface InstanceMetadata {
 
             }
 
-            /**
-             * Children node map that contains the children classes and a map with its entries.
-             */
+            /** Children node map that contains the children classes and a map with its entries. */
             private final Map<Class<?>, Map<Serializable, ConfigurationNode>>        children            = new ConcurrentHashMap<Class<?>, Map<Serializable, ConfigurationNode>>();
 
-            /**
-             * volatile field to be used on {@link #toString()} method
-             */
+            /** volatile field to be used on {@link #toString()} method. */
             private volatile String                                                  description         = null;
 
-            /**
-             * hashCode cache
-             */
+            /** hashCode cache. */
             private volatile int                                                     hashcode            = 0;
 
-            /**
-             * The key property value.
-             */
+            /** The key property value. */
             private final Serializable                                               keyPropertyValue;
 
-            /**
-             * Property map.
-             */
+            /** Property map. */
             private final Map<Class<? extends ConfigurationNode>, ConfigurationNode> nodeProperties      = new ConcurrentHashMap<Class<? extends ConfigurationNode>, ConfigurationNode>();
 
-            /**
-             * mandatory owner node
-             */
+            /** mandatory owner node. */
             private final ConfigurationNode                                          owner;
 
-            /**
-             * optional parent node
-             */
+            /** optional parent node. */
             private final ConfigurationNode                                          parent;
 
+            /** Path string evaluated in a lazy way. */
             private volatile String                                                  pathString          = null;
 
-            /**
-             * Property map.
-             */
+            /** Property map. */
             private final Map<String, Object>                                        properties          = new ConcurrentHashMap<String, Object>();
 
-            /**
-             * Name and type map for properties.
-             */
+            /** Name and type map for properties. */
             final Map<String, Class<?>>                                              propertyTypes;
 
+            /** The uuid. */
             private String                                                           savedUniqueId;
 
-            /**
-             * Shared data to use on listener infrastructure.
-             */
+            /** Shared data to use on listener infrastructure. */
             private final SharedData                                                 sharedData;
 
-            /**
-             * Type metadata.
-             */
+            /** Type metadata. */
             private final StaticMetadata                                             staticMetadata;
 
-            /**
-             * Transient property map. This properties won't be saved.
-             */
+            /** Transient property map. This properties won't be saved. */
             private final Map<String, Object>                                        transientProperties = new ConcurrentHashMap<String, Object>();
 
             /**
              * Constructor with mandatory fields.
              * 
-             * @param staticMetadata
-             * @param sharedData
-             * @param keyPropertyValue
-             * @param parent
-             * @param owner
+             * @param staticMetadata the static metadata
+             * @param sharedData the shared data
+             * @param keyPropertyValue the key property value
+             * @param parent the parent
+             * @param owner the owner
              */
             public BasicInstanceMetadata(
                                           final StaticMetadata staticMetadata, final SharedData sharedData,
@@ -327,6 +312,13 @@ public interface InstanceMetadata {
                 addChild(child, true);
             }
 
+            /**
+             * internal method to add child nodes.
+             * 
+             * @param <N> node type
+             * @param child the child
+             * @param fireEvent the fire event
+             */
             private <N extends ConfigurationNode> void addChild( final N child,
                                                                  final boolean fireEvent ) {
                 checkNotNull("child", child); //$NON-NLS-1$
@@ -503,9 +495,9 @@ public interface InstanceMetadata {
                         final String path = currentOwner.getClass().getSimpleName()
                                             + (currentOwner.getInstanceMetadata().getKeyPropertyValue() != null ? "["
                                                                                                                   + currentOwner.getInstanceMetadata().getStaticMetadata().keyPropertyName()
-                                                                                                                  + "="
+                                                                                                                  + "='"
                                                                                                                   + currentOwner.getInstanceMetadata().getKeyPropertyValue()
-                                                                                                                  + "]" : "");
+                                                                                                                  + "']" : "");
                         paths.add(path);
                         currentOwner = currentOwner.getInstanceMetadata().getDefaultParent();
                     }
@@ -585,6 +577,8 @@ public interface InstanceMetadata {
 
             /**
              * Hash code that uses the same field of the equals method.
+             * 
+             * @return the int
              */
             @Override
             public final int hashCode() {
@@ -754,12 +748,13 @@ public interface InstanceMetadata {
             }
         }
 
+        /** Empty type. */
         private static final Class<?>[] EMPTY_TYPE = new Class<?>[] {ConfigurationNode.class};
 
         /**
          * Creates a dynamic metadata for a root node.
          * 
-         * @param owner
+         * @param owner the owner
          * @return a new root dynamic metadata
          */
         public static InstanceMetadata createRoot( final ConfigurationNode owner ) {
@@ -771,6 +766,7 @@ public interface InstanceMetadata {
             final BasicInstanceMetadata metadata = new BasicInstanceMetadata(
                                                                              owner.getClass().getAnnotation(StaticMetadata.class),
                                                                              new SharedData(), null, null, owner);
+            //            metadata.getSharedData().addNodeListener(ArtifactStatusUpdateVisitor.INSTANCE);
             return metadata;
 
         }
@@ -778,7 +774,7 @@ public interface InstanceMetadata {
         /**
          * Creates a new child root node with a key property. This node should be the most common.
          * 
-         * @param <K> key property type
+         * @param <K> key type
          * @param owner the node itself
          * @param parentNode node parent
          * @param keyPropertyValue the key value
@@ -820,23 +816,27 @@ public interface InstanceMetadata {
      * in a one visit, because it stores the found nodes inside an attribute. The easier way is to use the static method
      * {@link ConfigurationNodes#findAllNodesOfType(ConfigurationNode, Class)} method.
      * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * @param <T> type of nodes that should be found
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static class FindAllNodesVisitor<T extends ConfigurationNode> implements ConfigurationNodeVisitor {
 
+        /** The found nodes. */
         private final Set<T>       foundNodes = new HashSet<T>();
 
+        /** The key. */
         private final Serializable key;
 
+        /** The type class. */
         private final Class<T>     typeClass;
 
+        /** The valid. */
         private boolean            valid      = true;
 
         /**
          * Constructor with target type class to be found.
          * 
-         * @param newTypeClass
+         * @param newTypeClass the new type class
          */
         public FindAllNodesVisitor(
                                     final Class<T> newTypeClass ) {
@@ -848,8 +848,8 @@ public interface InstanceMetadata {
         /**
          * Constructor with target type class to be found.
          * 
-         * @param newTypeClass
-         * @param key
+         * @param newTypeClass the new type class
+         * @param key the key
          */
         public FindAllNodesVisitor(
                                     final Class<T> newTypeClass, final Serializable key ) {
@@ -860,7 +860,7 @@ public interface InstanceMetadata {
         }
 
         /**
-         * Return the found nodes and invalidate this visitor
+         * Return the found nodes and invalidate this visitor.
          * 
          * @return all found nodes of a given type
          */
@@ -895,33 +895,27 @@ public interface InstanceMetadata {
      * change node and property values inside its listeners</b>. It can result in unexpected results such as dead locks since the
      * list of changes are synchronized and setting a new value will try to add a new change to the list of changes.
      * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * @param <T> the item type been changed
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static class ItemChangeEvent<T extends Comparable<T>> implements Comparable<ItemChangeEvent<T>>, Serializable {
 
+        /** The Constant serialVersionUID. */
         private static final long    serialVersionUID = 1291076849217066265L;
 
+        /** The description. */
         private volatile String      description      = null;
 
-        /**
-         * {@link #hashCode()} return.
-         */
+        /** {@link #hashCode()} return. */
         private final int            hashcode;
 
-        /**
-         * The item value after change.
-         */
+        /** The item value after change. */
         private final T              newItem;
 
-        /**
-         * The item value before change.
-         */
+        /** The item value before change. */
         private final T              oldItem;
 
-        /**
-         * Type of change event.
-         */
+        /** Type of change event. */
         private final ItemChangeType type;
 
         /**
@@ -951,6 +945,9 @@ public interface InstanceMetadata {
 
         /**
          * {@link Object#equals(Object)} implementation.
+         * 
+         * @param o the o
+         * @return true, if equals
          */
         @Override
         @SuppressWarnings( "unchecked" )
@@ -994,12 +991,17 @@ public interface InstanceMetadata {
 
         /**
          * {@link Object#hashCode()} implementation.
+         * 
+         * @return the int
          */
         @Override
         public int hashCode() {
             return this.hashcode;
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
         @Override
         public String toString() {
             String result = this.description;
@@ -1018,31 +1020,29 @@ public interface InstanceMetadata {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public enum ItemChangeType {
-        /**
-         * inclusion event
-         */
+
+        /** inclusion event. */
         ADDED,
-        /**
-         * update event
-         */
+
+        /** update event. */
         CHANGED,
-        /**
-         * delete event
-         */
+
+        /** delete event. */
         EXCLUDED
     }
 
     /**
      * Listener interface to be used on listener infrastructure for node and property changes.
      * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * @param <T> the type been listened
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public interface ItemEventListener<T extends Comparable<T>> {
+
         /**
          * The notification method that will be called to tell about a new change event that happened.
          * 
-         * @param event
+         * @param event the event
          */
         void changeEventHappened( ItemChangeEvent<T> event );
     }
@@ -1056,34 +1056,27 @@ public interface InstanceMetadata {
      */
     public static class PropertyValue implements Comparable<PropertyValue> {
 
-        /**
-         * return to the {@link #hashCode()} method.
-         */
+        /** return to the {@link #hashCode()} method. */
         private final int               hashcode;
 
-        /**
-         * Node that owns it property.
-         */
+        /** Node that owns it property. */
         private final ConfigurationNode owner;
-        /**
-         * The name of the property.
-         */
+
+        /** The name of the property. */
         private final String            propertyName;
-        /**
-         * The value of the property.
-         */
+
+        /** The value of the property. */
         private final Serializable      propertyValue;
-        /**
-         * return to the {@link #toString()} method.
-         */
+
+        /** return to the {@link #toString()} method. */
         private final String            toString;
 
         /**
          * Constructor to set all the final fields.
          * 
-         * @param propertyName
-         * @param propertyValue
-         * @param owner
+         * @param propertyName the property name
+         * @param propertyValue the property value
+         * @param owner the owner
          */
         public PropertyValue(
                               final String propertyName, final Serializable propertyValue, final ConfigurationNode owner ) {
@@ -1107,6 +1100,9 @@ public interface InstanceMetadata {
 
         /**
          * {@link Object#equals(Object)} implementation.
+         * 
+         * @param o the o
+         * @return true, if equals
          */
         @Override
         public boolean equals( final Object o ) {
@@ -1150,6 +1146,8 @@ public interface InstanceMetadata {
 
         /**
          * {@link Object#hashCode()} implementation.
+         * 
+         * @return the int
          */
         @Override
         public int hashCode() {
@@ -1158,6 +1156,8 @@ public interface InstanceMetadata {
 
         /**
          * {@link Object#toString()} implementation.
+         * 
+         * @return the string
          */
         @Override
         public String toString() {
@@ -1185,16 +1185,19 @@ public interface InstanceMetadata {
          */
         private static class ListenerHandle {
 
+            /** The listener. */
             private final ItemEventListener<ConfigurationNode> listener;
 
+            /** The parent. */
             private final ConfigurationNode                    parent;
 
+            /** The type. */
             private final Class<? extends ConfigurationNode>   type;
 
             /**
              * Constructor for simple listener.
              * 
-             * @param listener
+             * @param listener the listener
              */
             public ListenerHandle(
                                    final ItemEventListener<ConfigurationNode> listener ) {
@@ -1206,8 +1209,8 @@ public interface InstanceMetadata {
             /**
              * Constructor for listeners for a given type.
              * 
-             * @param listener
-             * @param type
+             * @param listener the listener
+             * @param type the type
              */
             public ListenerHandle(
                                    final ItemEventListener<ConfigurationNode> listener,
@@ -1220,8 +1223,8 @@ public interface InstanceMetadata {
             /**
              * Constructor for listeners for a given parent.
              * 
-             * @param listener
-             * @param parent
+             * @param listener the listener
+             * @param parent the parent
              */
             public ListenerHandle(
                                    final ItemEventListener<ConfigurationNode> listener, final ConfigurationNode parent ) {
@@ -1230,12 +1233,19 @@ public interface InstanceMetadata {
                 this.parent = parent;
             }
 
+            /**
+             * Gets the listener.
+             * 
+             * @return the listener
+             */
             public ItemEventListener<ConfigurationNode> getListener() {
                 return this.listener;
             }
 
             /**
-             * @param changeEvent
+             * Gets the target item.
+             * 
+             * @param changeEvent the change event
              * @return the target item inside the {@link ItemChangeEvent}
              */
             private ConfigurationNode getTargetItem( final ItemChangeEvent<ConfigurationNode> changeEvent ) {
@@ -1250,7 +1260,9 @@ public interface InstanceMetadata {
             }
 
             /**
-             * @param changeEvent
+             * Should accept.
+             * 
+             * @param changeEvent the change event
              * @return true if this event should notify its listener
              */
             public boolean shouldAccept( final ItemChangeEvent<ConfigurationNode> changeEvent ) {
@@ -1276,13 +1288,13 @@ public interface InstanceMetadata {
 
         }
 
-        /**
-         * dirty flag for all nodes of the current graph.
-         */
+        /** dirty flag for all nodes of the current graph. */
         private final AtomicBoolean                            dirtyFlag         = new AtomicBoolean(false);
 
+        /** The dirty nodes. */
         private final Set<ConfigurationNode>                   dirtyNodes        = new CopyOnWriteArraySet<ConfigurationNode>();
 
+        /** The loader. */
         private DataLoader                                     loader            = null;
 
         /**
@@ -1291,19 +1303,16 @@ public interface InstanceMetadata {
          */
         private final List<ItemChangeEvent<ConfigurationNode>> nodeChangeCache   = new CopyOnWriteArrayList<ItemChangeEvent<ConfigurationNode>>();
 
-        /**
-         * All the node listeners for all nodes of the current graph.
-         */
+        /** All the node listeners for all nodes of the current graph. */
         private final List<ListenerHandle>                     nodeListeners     = new CopyOnWriteArrayList<ListenerHandle>();
-        /**
-         * All the property listeners for all nodes of the current graph.
-         */
+
+        /** All the property listeners for all nodes of the current graph. */
         private final List<ItemEventListener<PropertyValue>>   propertyListeners = new CopyOnWriteArrayList<ItemEventListener<PropertyValue>>();
 
         /**
          * Adds an event listener for node changes.
          * 
-         * @param listener
+         * @param listener the listener
          */
         public final void addNodeListener( final ItemEventListener<ConfigurationNode> listener ) {
             this.nodeListeners.add(new ListenerHandle(listener));
@@ -1312,8 +1321,8 @@ public interface InstanceMetadata {
         /**
          * Adds an event listener for node changes of a given type.
          * 
-         * @param listener
-         * @param parent
+         * @param listener the listener
+         * @param parent the parent
          */
         public final void addNodeListenerForAGivenParent( final ItemEventListener<ConfigurationNode> listener,
                                                           final ConfigurationNode parent ) {
@@ -1323,8 +1332,8 @@ public interface InstanceMetadata {
         /**
          * Adds an event listener for node changes of a given type.
          * 
-         * @param listener
-         * @param type
+         * @param listener the listener
+         * @param type the type
          */
         public final void addNodeListenerForAGivenType( final ItemEventListener<ConfigurationNode> listener,
                                                         final Class<? extends ConfigurationNode> type ) {
@@ -1334,7 +1343,7 @@ public interface InstanceMetadata {
         /**
          * Adds an event listener for property changes.
          * 
-         * @param listener
+         * @param listener the listener
          */
         public final void addPropertyListener( final ItemEventListener<PropertyValue> listener ) {
             this.propertyListeners.add(listener);
@@ -1380,7 +1389,7 @@ public interface InstanceMetadata {
          * synchronized on the notification part that is common for all nodes of the current graph. This method will mark the
          * dirty flag that is common for all the nodes of the current graph.
          * 
-         * @param owner
+         * @param owner the owner
          * @param propertyName the name of the property.
          * @param oldValue the convenient values of the property before the change.
          * @param newValue the convenient values of the property after the change.
@@ -1418,6 +1427,8 @@ public interface InstanceMetadata {
         }
 
         /**
+         * Gets the dirty nodes.
+         * 
          * @return the current dirty nodes
          */
         public Set<ConfigurationNode> getDirtyNodes() {
@@ -1425,6 +1436,8 @@ public interface InstanceMetadata {
         }
 
         /**
+         * Gets the node changes since last save.
+         * 
          * @return all changes since last save operation
          */
         public List<ItemChangeEvent<ConfigurationNode>> getNodeChangesSinceLastSave() {
@@ -1443,7 +1456,7 @@ public interface InstanceMetadata {
         /**
          * Check if the node is dirty since its last save.
          * 
-         * @param node
+         * @param node the node
          * @return true if this node is dirty
          */
         public boolean isNodeDirty( final ConfigurationNode node ) {
@@ -1492,7 +1505,7 @@ public interface InstanceMetadata {
         /**
          * Removes the node change event listener.
          * 
-         * @param listener
+         * @param listener the listener
          */
         public final void removeNodeListener( final ItemEventListener<ConfigurationNode> listener ) {
             final List<ListenerHandle> toRemove = new ArrayList<ListenerHandle>();
@@ -1509,7 +1522,7 @@ public interface InstanceMetadata {
         /**
          * Removes the property change event listener.
          * 
-         * @param listener
+         * @param listener the listener
          */
         public final void removePropertyListener( final ItemEventListener<PropertyValue> listener ) {
             this.propertyListeners.remove(listener);
@@ -1518,7 +1531,7 @@ public interface InstanceMetadata {
         /**
          * Sets a data loader on a node for lazy evaluation purposes.
          * 
-         * @param loader
+         * @param loader the loader
          */
         public void setDataLoader( final DataLoader loader ) {
             checkNotNull("loader", loader); //$NON-NLS-1$
@@ -1532,15 +1545,14 @@ public interface InstanceMetadata {
      * Accepts a {@link ConfigurationNodeVisitor} on this node and all its children. Repare that the parent wont be visited by
      * this method. If there's a need to visit all nodes, call this method on the root parent.
      * 
-     * @param visitor
+     * @param visitor the visitor
      */
     public void accept( ConfigurationNodeVisitor visitor );
 
     /**
      * Adds a child witch should be used as a set of childs. It must have a key property.
      * 
-     * @param <N> child type
-     * @param child
+     * @param child the child
      */
     public <N extends ConfigurationNode> void addChild( N child );
 
@@ -1548,16 +1560,15 @@ public interface InstanceMetadata {
      * Adds a child witch should be used as a set of childs. It must have a key property. It also would not fire any listener
      * events.
      * 
-     * @param <N> child type
-     * @param child
+     * @param child the child
      */
     public <N extends ConfigurationNode> void addChildIgnoringListener( N child );
 
     /**
-     * To be used on {@link Comparable} interface
+     * To be used on {@link Comparable} interface.
      * 
-     * @param configuration
-     * @param o
+     * @param configuration the configuration
+     * @param o the o
      * @return an int compatible with {@link Comparable} interface
      */
     public int compare( ConfigurationNode configuration,
@@ -1566,9 +1577,8 @@ public interface InstanceMetadata {
     /**
      * Returns a given child by its type and key.
      * 
-     * @param <N> type of child
-     * @param childClass
-     * @param key
+     * @param childClass the child class
+     * @param key the key
      * @return A given child by its key or null when not found
      */
     public <N extends ConfigurationNode> N getChildByKeyValue( Class<N> childClass,
@@ -1577,7 +1587,6 @@ public interface InstanceMetadata {
     /**
      * Returns a collection of children for a given type.
      * 
-     * @param <N> type of children to be returned
      * @param childClass type of children to be returned
      * @return all children of a given type
      */
@@ -1593,7 +1602,7 @@ public interface InstanceMetadata {
     /**
      * Returns a set of all keys for a given type, since multiple types needs to have a key property.
      * 
-     * @param childClass
+     * @param childClass the child class
      * @return key for each child of a given type
      */
     public Set<? extends Serializable> getKeyFromChildrenOfTypes( Class<? extends ConfigurationNode> childClass );
@@ -1616,7 +1625,6 @@ public interface InstanceMetadata {
     /**
      * The property as a node returned by its type.
      * 
-     * @param <N> type of node for this property
      * @param type of node for this property
      * @return a node
      */
@@ -1635,8 +1643,7 @@ public interface InstanceMetadata {
      * of throw an exception. Note that a kind of node could have more than one single type of parent. A node can be inserted
      * inside more than one kind of node.
      * 
-     * @param <N> parent node type
-     * @param parentType
+     * @param parentType the parent type
      * @return the parent node
      */
     public <N extends ConfigurationNode> N getParent( Class<N> parentType );
@@ -1658,7 +1665,6 @@ public interface InstanceMetadata {
     /**
      * This returns a binary property. This property has the hability to be saved on persist operations on configuration nodes.
      * 
-     * @param <N> type of a property that should be valid and {@link Serializable}
      * @param name of a valid property
      * @return a property
      */
@@ -1697,13 +1703,14 @@ public interface InstanceMetadata {
      * This property is a kind of property that will not be saved on save operations. So, it doesn't have any restriction (such as
      * must be serializable).
      * 
-     * @param <N> type of the property
      * @param name of the property
      * @return a transient property
      */
     public <N> N getTransientProperty( String name );
 
     /**
+     * Checks if is dirty.
+     * 
      * @return true if this node is dirty.
      */
     public boolean isDirty();
@@ -1711,7 +1718,6 @@ public interface InstanceMetadata {
     /**
      * Removes all children nodes of a given type from this object.
      * 
-     * @param <N> type of the child
      * @param type of child to be removed
      */
     <N extends ConfigurationNode> void removeAllChildrenOfType( Class<N> type );
@@ -1719,7 +1725,6 @@ public interface InstanceMetadata {
     /**
      * Removes a child node from this object, wich should be its parent.
      * 
-     * @param <N> type of the child
      * @param child to be removed
      */
     <N extends ConfigurationNode> void removeChild( N child );
@@ -1727,7 +1732,6 @@ public interface InstanceMetadata {
     /**
      * Sets a node property. See {@link #getNodeProperty(Class)}.
      * 
-     * @param <N>
      * @param type of the property that should be a {@link ConfigurationNode} in this case
      * @param value of the property
      */
@@ -1737,7 +1741,6 @@ public interface InstanceMetadata {
     /**
      * Sets a normal property. See {@link #setProperty(String, Serializable)}.
      * 
-     * @param <N> type of the property that should be {@link Serializable}
      * @param name of the property
      * @param value of the property
      */
@@ -1747,7 +1750,6 @@ public interface InstanceMetadata {
     /**
      * Sets a normal property, but dont notify the listener. See {@link #setProperty(String, Serializable)}.
      * 
-     * @param <N> type of the property that should be {@link Serializable}
      * @param name of the property
      * @param value of the property
      */
@@ -1757,13 +1759,13 @@ public interface InstanceMetadata {
     /**
      * Sets the unique id. This method should be used only by {@link ConfigurationManager managers}.
      * 
-     * @param id
+     * @param id the id
      * @throws IllegalStateException if someone try to set its id for a second tyme.
      */
     public void setSavedUniqueId( String id );
 
     /**
-     * Sets a bynary property
+     * Sets a bynary property.
      * 
      * @param name of the property
      * @param value of the property
@@ -1774,7 +1776,6 @@ public interface InstanceMetadata {
     /**
      * Sets a transient property. See {@link #getTransientProperty(String)}.
      * 
-     * @param <N> type of transient property
      * @param name of the transient property
      * @param value of the transient property
      */

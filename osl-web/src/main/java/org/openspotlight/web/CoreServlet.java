@@ -24,13 +24,25 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.web.command.WebCommand;
 import org.openspotlight.web.command.WebCommand.WebCommandContext;
 
+/**
+ * The Class CoreServlet is used to load {@link WebCommand web commands} by its actions.
+ */
 public class CoreServlet extends HttpServlet {
 
+    /**
+     * The Class CommandLoader.
+     */
     private static class CommandLoader {
 
+        /** The properties. */
         private final Properties              properties;
+
+        /** The command cache. */
         private final Map<String, WebCommand> commandCache = new TreeMap<String, WebCommand>();
 
+        /**
+         * Instantiates a new command loader.
+         */
         public CommandLoader() {
             try {
                 final InputStream inputStream = ClassPathResource.getResourceFromClassPath("actions.properties");
@@ -41,6 +53,12 @@ public class CoreServlet extends HttpServlet {
             }
         }
 
+        /**
+         * Load command.
+         * 
+         * @param actionName the action name
+         * @return the web command
+         */
         public synchronized WebCommand loadCommand( final String actionName ) {
             try {
                 String newActionName = actionName;
@@ -64,13 +82,18 @@ public class CoreServlet extends HttpServlet {
         }
     }
 
-    /**
-     * 
-     */
+    /** The Constant serialVersionUID. */
     private static final long   serialVersionUID = -909328553298519604L;
 
+    /** The loader. */
     private final CommandLoader loader           = new CommandLoader();
 
+    /**
+     * Do action.
+     * 
+     * @param req the req
+     * @param resp the resp
+     */
     protected void doAction( final HttpServletRequest req,
                              final HttpServletResponse resp ) {
         WebCommandContext context = null;
@@ -105,18 +128,27 @@ public class CoreServlet extends HttpServlet {
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     protected void doGet( final HttpServletRequest req,
                           final HttpServletResponse resp ) throws ServletException, IOException {
         this.doAction(req, resp);
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     @Override
     protected void doPost( final HttpServletRequest req,
                            final HttpServletResponse resp ) throws ServletException, IOException {
         this.doAction(req, resp);
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+     */
     @Override
     public void init( final ServletConfig config ) throws ServletException {
         config.getServletContext();

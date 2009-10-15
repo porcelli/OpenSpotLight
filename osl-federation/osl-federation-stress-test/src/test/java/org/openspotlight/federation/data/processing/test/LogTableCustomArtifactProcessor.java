@@ -47,58 +47,54 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.impl;
+package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.federation.data.ConfigurationNode;
+import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.Column;
+import org.openspotlight.federation.data.impl.CustomArtifact;
+import org.openspotlight.federation.data.impl.TableArtifact;
+import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
+import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
+import org.openspotlight.federation.data.processing.CustomArtifactBundleProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Just a marker interface to describe an artifact, but also contaim some methods to identify this artifact in a unique way.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- */
-public interface Artifact extends ConfigurationNode {
-
-    /**
-     * Key properties to load an artifact in a unique way
-     * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     */
-    public static enum KeyProperties {
-        /**
-         * unique identifier (on jcr)
-         */
-        UUID,
-        /**
-         * version of the artifact. It is versionated inside the {@link Configuration}
-         */
-        version
+@SuppressWarnings("all")
+public class LogTableCustomArtifactProcessor implements
+        CustomArtifactBundleProcessor {
+    
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    
+    public void globalProcessingFinalized(
+            final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+            final BundleProcessingContext graphContext) {
+        // nothing to do
+        
     }
-
-    /**
-     * This type shows every possible status for artifacts.
-     * 
-     * @author feu
-     */
-    public static enum Status {
-
-        CHANGED,
-        INCLUDED,
-        EXCLUDED,
-        ALREADY_PROCESSED
-
+    
+    public ProcessingStartAction globalProcessingStarted(
+            final BundleProcessingGroup<CustomArtifact> bundleProcessingGroup,
+            final BundleProcessingContext graphContext)
+            throws BundleProcessingFatalException {
+        
+        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
     }
-
-    public Status getStatus();
-
-    /**
-     * @return the unique id for this node
-     */
-    public String getUUID();
-
-    /**
-     * @return the version name of this node.
-     */
-    public String getVersionName();
-
-    public void setStatus( Status newStatus );
+    
+    public ProcessingAction processArtifact(
+            final CustomArtifact targetArtifact,
+            final BundleProcessingGroup<CustomArtifact> bundleProcessingGroup,
+            final BundleProcessingContext graphContext)
+            throws BundleProcessingNonFatalException,
+            BundleProcessingFatalException {
+        if (targetArtifact instanceof TableArtifact) {
+            final TableArtifact table = (TableArtifact) targetArtifact;
+            this.logger.warn(table.getTableName());
+            for (final Column c : table.getColumns()) {
+                this.logger.warn("    " + c.getName());
+            }
+            
+        }
+        return ProcessingAction.ARTIFACT_PROCESSED;
+    }
+    
 }

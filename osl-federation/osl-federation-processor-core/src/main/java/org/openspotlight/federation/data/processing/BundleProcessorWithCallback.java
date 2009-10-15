@@ -52,56 +52,39 @@ package org.openspotlight.federation.data.processing;
 import org.openspotlight.federation.data.impl.Artifact;
 
 /**
- * This interface will change a little bit the behavior of an
- * {@link BundleProcessor} implementation. When a bundle processor implement
- * this interface, the {@link BundleProcessor.GraphContext} used on a processing
- * task will be create for each artifact processing.
+ * This interface create some callback methods to be called durring bundle processor phase.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
- * @param <T>
- *            artifact type
+ * @param <T> artifact type
  */
-public interface BundleProcessorWithCallback<T extends Artifact> extends
-        BundleProcessor<T> {
-    
+public interface BundleProcessorWithCallback<T extends Artifact> extends BundleProcessor<T> {
+
     /**
      * Callback method to notify that the target artifact is finalized.
      * 
-     * @param targetArtifact
-     *            the artifact to be processed
-     * @param bundleProcessingGroup
-     *            with lists of all processed attributes and so on
-     * @param graphContext
-     *            with all convenient object for graph manipulation
-     * @param returnStatus
-     *            the {@link BundleProcessor.ProcessingAction} returned by
-     *            {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, GraphContext)
-     *            processing method}
+     * @param targetArtifact the artifact to be processed
+     * @param bundleProcessingGroup with lists of all processed attributes and so on
+     * @param graphContext with all convenient object for graph manipulation
+     * @param returnStatus the {@link BundleProcessor.ProcessingAction} returned by
+     *        {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext) processing method}
      */
-    public void artifactProcessingFinalized(T targetArtifact,
-            BundleProcessingGroup<T> bundleProcessingGroup,
-            GraphContext graphContext, ProcessingAction returnStatus);
-    
+    public void artifactProcessingFinalized( T targetArtifact,
+                                             BundleProcessingGroup<T> bundleProcessingGroup,
+                                             BundleProcessingContext graphContext,
+                                             ProcessingAction returnStatus );
+
     /**
-     * Callback method to notify that the target artifact is about to be
-     * processed.
+     * Callback method to notify that the target artifact is about to be processed.
      * 
-     * @param targetArtifact
-     *            the artifact to be processed
-     * @param bundleProcessingGroup
-     *            with lists of all processed attributes and so on
-     * @param graphContext
-     *            with all convenient object for graph manipulation
-     * @throws BundleProcessingNonFatalException
-     *             if a error on the current artifact has happened
-     * @throws BundleProcessingFatalException
-     *             if a fatal error has happened
+     * @param targetArtifact the artifact to be processed
+     * @param bundleProcessingGroup with lists of all processed attributes and so on
+     * @param graphContext with all convenient object for graph manipulation
+     * @throws BundleProcessingNonFatalException if a error on the current artifact has happened
+     * @throws BundleProcessingFatalException if a fatal error has happened
      */
-    public void artifactProcessingStarted(T targetArtifact,
-            BundleProcessingGroup<T> bundleProcessingGroup,
-            GraphContext graphContext)
-            throws BundleProcessingNonFatalException,
-            BundleProcessingFatalException;
-    
+    public void artifactProcessingStarted( T targetArtifact,
+                                           BundleProcessingGroup<T> bundleProcessingGroup,
+                                           BundleProcessingContext graphContext )
+        throws BundleProcessingNonFatalException, BundleProcessingFatalException;
+
 }

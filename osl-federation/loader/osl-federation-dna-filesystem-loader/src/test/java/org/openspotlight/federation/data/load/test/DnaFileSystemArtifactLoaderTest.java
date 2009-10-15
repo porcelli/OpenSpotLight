@@ -64,148 +64,128 @@ import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Group;
+import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
-import org.openspotlight.federation.data.load.DnaArtifactLoader;
 
 /**
  * Test for class {@link DnaFileSystemArtifactLoader}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
-    
+
     @Override
     @Before
     public void createArtifactLoader() {
         this.artifactLoader = new DNAFileSystemArtifactLoader();
     }
-    
+
     @Override
     @Before
     public void createConfiguration() throws Exception {
         this.configuration = new Configuration();
-        final Repository repository = new Repository(this.configuration,
-                this.REPOSITORY_NAME);
+        final Repository repository = new Repository(this.configuration, this.REPOSITORY_NAME);
         this.configuration.setNumberOfParallelThreads(4);
         final Group project = new Group(repository, this.PROJECT_NAME);
         final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
-        final String basePath = new File("../osl-federation-dna-filesystem-loader/")
-                .getCanonicalPath()
-                + "/";
+        final String basePath = new File("../osl-federation-dna-filesystem-loader/").getCanonicalPath() + "/";
         bundle.setInitialLookup(basePath);
-        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-                "src/");
+        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle, "src/");
         new Included(artifactMapping, "main/java/**/*.java");
     }
-    
+
     public Bundle createConfigurationForChangeListen() throws Exception {
         this.configuration = new Configuration();
-        final Repository repository = new Repository(this.configuration,
-                "Local target folder");
+        final Repository repository = new Repository(this.configuration, "Local target folder");
         this.configuration.setNumberOfParallelThreads(4);
         final Group project = new Group(repository, "Osl Federation");
         final Bundle bundle = new Bundle(project, "Target folder");
         final String basePath = new File(
-                "../osl-federation-dna-filesystem-loader/target/test-data/DnaFileSystemArtifactLoaderTest/")
-                .getCanonicalPath()
-                + "/";
+                                         "../osl-federation-dna-filesystem-loader/target/test-data/DnaFileSystemArtifactLoaderTest/").getCanonicalPath()
+                                + "/";
         bundle.setInitialLookup(basePath);
-        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
-                "aFolder/");
+        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle, "aFolder/");
         new Included(artifactMapping, "*.txt");
         return bundle;
     }
-    
+
     @Test
     public void shouldListenChanges() throws Exception {
-        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
-                .mkdirs();
-        final File textFile = new File(
-                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeChanged.txt");
+        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/").mkdirs();
+        final File textFile = new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeChanged.txt");
         FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
         fos.close();
-        
+
         final Bundle bundle = this.createConfigurationForChangeListen();
-        final SharedData sharedData = bundle.getInstanceMetadata()
-                .getSharedData();
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
         sharedData.markAsSaved();
-        
+
         fos = new FileOutputStream(textFile);
         fos.write("changed text content".getBytes());
         fos.flush();
         fos.close();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
-        
+
         assertThat(sharedData.getDirtyNodes().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-                is(ItemChangeType.CHANGED));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
         textFile.delete();
     }
-    
+
     @Test
     public void shouldListenExclusions() throws Exception {
-        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
-                .mkdirs();
-        final File textFile = new File(
-                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeExcluded.txt");
+        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/").mkdirs();
+        final File textFile = new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeExcluded.txt");
         final FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
         fos.close();
-        
+
         final Bundle bundle = this.createConfigurationForChangeListen();
-        final SharedData sharedData = bundle.getInstanceMetadata()
-                .getSharedData();
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
         sharedData.markAsSaved();
-        
+
         assertThat(textFile.delete(), is(true));
         this.artifactLoader.loadArtifactsFromMappings(bundle);
-        
-        assertThat(sharedData.getDirtyNodes().size(), is(0));
+
+        assertThat(sharedData.getDirtyNodes().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-                is(ItemChangeType.EXCLUDED));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
+        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+        assertThat(changed.getStatus(), is(Status.EXCLUDED));
     }
-    
+
     @Test
     public void shouldListenInclusions() throws Exception {
-        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/")
-                .mkdirs();
-        final File textFile = new File(
-                "target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/newTextFile.txt");
+        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/").mkdirs();
+        final File textFile = new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/newTextFile.txt");
         final FileOutputStream fos = new FileOutputStream(textFile);
         fos.write("new text content".getBytes());
         fos.flush();
         fos.close();
-        
+
         final Bundle bundle = this.createConfigurationForChangeListen();
-        final SharedData sharedData = bundle.getInstanceMetadata()
-                .getSharedData();
+        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
         sharedData.markAsSaved();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
-        final StreamArtifact sa = (StreamArtifact) sharedData.getDirtyNodes()
-                .iterator().next();
-        
-        for (final ItemChangeEvent<ConfigurationNode> change : sharedData
-                .getNodeChangesSinceLastSave()) {
+        final StreamArtifact sa = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+
+        for (final ItemChangeEvent<ConfigurationNode> change : sharedData.getNodeChangesSinceLastSave()) {
             System.out.println(change.getType() + " " + change.getNewItem());
         }
-        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(),
-                is(ItemChangeType.ADDED));
+        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.ADDED));
         assertThat(sharedData.getDirtyNodes().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-        
+
     }
-    
+
 }

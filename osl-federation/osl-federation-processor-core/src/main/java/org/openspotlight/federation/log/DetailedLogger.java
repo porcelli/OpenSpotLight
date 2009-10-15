@@ -33,20 +33,47 @@ import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInfo
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 
+// TODO: Auto-generated Javadoc
+/**
+ * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}
+ * subtypes or {@link ConfigurationNode} subtypes.
+ * 
+ * @author feu
+ */
 public interface DetailedLogger {
 
+    /**
+     * The ErrorCode describes some special kind of errors.
+     */
     public static enum ErrorCode {
+
+        /** NO_ERROR_CODE */
         NO_ERROR_CODE(0, "No error code"),
+
+        /** ERR_001 */
         ERR_001(1, "Example error #1"),
+
+        /** ERR_002 */
         ERR_002(2, "Example error #2");
 
+        /** The code. */
         private final int    code;
+
+        /** The description. */
         private final String description;
+
+        /** The to string description. */
         private final String toStringDescription;
 
+        /**
+         * Instantiates a new error code.
+         * 
+         * @param code the code
+         * @param description the description
+         */
         private ErrorCode(
                            final int code, final String description ) {
-            assert code > 0;
+            assert code >= 0;
             assert description != null;
             assert description.trim().length() > 0;
             this.code = code;
@@ -54,10 +81,20 @@ public interface DetailedLogger {
             this.toStringDescription = "ErrorCode: " + this.code + " " + this.description;
         }
 
+        /**
+         * Gets the code.
+         * 
+         * @return the code
+         */
         public int getCode() {
             return this.code;
         }
 
+        /**
+         * Gets the description.
+         * 
+         * @return the description
+         */
         public String getDescription() {
             return this.description;
         }
@@ -69,40 +106,62 @@ public interface DetailedLogger {
 
     }
 
-    public static enum EventType {
-        TRACE,
-        DEBUG,
-        INFO,
-        WARN,
-        ERROR,
-        FATAL
-    }
-
+    /**
+     * The Factory used to create {@link DetailedLogger}.
+     */
     public static final class Factory {
 
+        /**
+         * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on Jcr. This kind of logger was implemented
+         * 'by hand' instead of using {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be possible to
+         * log the log. If it's necessary this implementation could be changed on the future.
+         */
         private static final class JcrDetailedLogger implements DetailedLogger {
+
+            /** The session. */
             private final Session       session;
 
+            /** The Constant NODE_LOG. */
             private static final String NODE_LOG                                = "osl:log";
 
+            /** The Constant NODE_LOG_ENTRY. */
             private static final String NODE_LOG_ENTRY                          = "osl:logEntry";
 
+            /** The Constant NODE_OBJ_INFO. */
             private static final String NODE_OBJ_INFO                           = "osl:objectInfo";
 
+            /** The Constant PROPERTY_LOG_ENTRY__EVENT_TYPE. */
             private static final String PROPERTY_LOG_ENTRY__EVENT_TYPE          = "osl:eventType";
+
+            /** The Constant PROPERTY_LOG_ENTRY__DATE. */
             private static final String PROPERTY_LOG_ENTRY__DATE                = "osl:date";
 
+            /** The Constant PROPERTY_LOG_ENTRY__ERROR_CODE. */
             private static final String PROPERTY_LOG_ENTRY__ERROR_CODE          = "osl:errorCode";
 
+            /** The Constant PROPERTY_LOG_ENTRY__MESSAGE. */
             private static final String PROPERTY_LOG_ENTRY__MESSAGE             = "osl:message";
 
+            /** The Constant PROPERTY_LOG_ENTRY__DETAILED_MESSAGE. */
             private static final String PROPERTY_LOG_ENTRY__DETAILED_MESSAGE    = "osl:detailedMessage";
 
+            /** The Constant PROPERTY_OBJ_INFO__TYPE_NAME. */
             private static final String PROPERTY_OBJ_INFO__TYPE_NAME            = "osl:typeName";
+
+            /** The Constant PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION. */
             private static final String PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION = "osl:friendlyDescription";
+
+            /** The Constant PROPERTY_OBJ_INFO__UNIQUE_ID. */
             private static final String PROPERTY_OBJ_INFO__UNIQUE_ID            = "osl:uniqueId";
+
+            /** The Constant PROPERTY_OBJ_INFO__ORDER. */
             private static final String PROPERTY_OBJ_INFO__ORDER                = "osl:order";
 
+            /**
+             * Instantiates a new jcr detailed logger.
+             * 
+             * @param session the session
+             */
             public JcrDetailedLogger(
                                       final Session session ) {
                 checkNotNull("session", session);
@@ -110,24 +169,39 @@ public interface DetailedLogger {
                 this.session = session;
             }
 
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#findLogByDateInterval(java.util.Date, java.util.Date)
+             */
             public List<LogEntry> findLogByDateInterval( final Date start,
                                                          final Date end ) {
                 return findLogByParameters(null, null, null, start, end);
             }
 
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#findLogByErrorCode(org.openspotlight.federation.log.DetailedLogger.ErrorCode)
+             */
             public List<LogEntry> findLogByErrorCode( final ErrorCode code ) {
                 return findLogByParameters(null, null, code, null, null);
             }
 
-            public List<LogEntry> findLogByEventType( final EventType eventType ) {
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#findLogByEventType(org.openspotlight.federation.log.DetailedLogger.EventType)
+             */
+            public List<LogEntry> findLogByEventType( final LogEventType eventType ) {
                 return findLogByParameters(eventType, null, null, null, null);
             }
 
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#findLogByLogableObject(org.openspotlight.common.jcr.LogableObject)
+             */
             public List<LogEntry> findLogByLogableObject( final LogableObject object ) {
                 return findLogByParameters(null, object, null, null, null);
             }
 
-            public List<LogEntry> findLogByParameters( final EventType eventType,
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#findLogByParameters(org.openspotlight.federation.log.DetailedLogger.EventType, org.openspotlight.common.jcr.LogableObject, org.openspotlight.federation.log.DetailedLogger.ErrorCode, java.util.Date, java.util.Date)
+             */
+            public List<LogEntry> findLogByParameters( final LogEventType eventType,
                                                        final LogableObject object,
                                                        final ErrorCode code,
                                                        final Date start,
@@ -199,7 +273,7 @@ public interface DetailedLogger {
                         }
                         final ErrorCode errorCode = ErrorCode.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__ERROR_CODE).getString());
                         final Date date = node.getProperty(PROPERTY_LOG_ENTRY__DATE).getDate().getTime();
-                        final EventType type = EventType.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__EVENT_TYPE).getString());
+                        final LogEventType type = LogEventType.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__EVENT_TYPE).getString());
                         final String message = node.getProperty(PROPERTY_LOG_ENTRY__MESSAGE).getString();
                         final String detailedMessage = node.getProperty(PROPERTY_LOG_ENTRY__DETAILED_MESSAGE).getString();
                         final List<LoggedObjectInformation> nodes = new ArrayList<LoggedObjectInformation>();
@@ -227,7 +301,10 @@ public interface DetailedLogger {
                 }
             }
 
-            public void log( final EventType type,
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#log(org.openspotlight.federation.log.DetailedLogger.EventType, org.openspotlight.federation.log.DetailedLogger.ErrorCode, java.lang.String, org.openspotlight.common.jcr.LogableObject, org.openspotlight.common.jcr.LogableObject[])
+             */
+            public void log( final LogEventType type,
                              final ErrorCode errorCode,
                              final String message,
                              final LogableObject node,
@@ -236,7 +313,10 @@ public interface DetailedLogger {
 
             }
 
-            public void log( final EventType type,
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#log(org.openspotlight.federation.log.DetailedLogger.EventType, org.openspotlight.federation.log.DetailedLogger.ErrorCode, java.lang.String, java.lang.String, org.openspotlight.common.jcr.LogableObject, org.openspotlight.common.jcr.LogableObject[])
+             */
+            public void log( final LogEventType type,
                              final ErrorCode errorCode,
                              final String message,
                              final String detailedMessage,
@@ -275,7 +355,10 @@ public interface DetailedLogger {
                 }
             }
 
-            public void log( final EventType type,
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#log(org.openspotlight.federation.log.DetailedLogger.EventType, java.lang.String, org.openspotlight.common.jcr.LogableObject, org.openspotlight.common.jcr.LogableObject[])
+             */
+            public void log( final LogEventType type,
                              final String message,
                              final LogableObject node,
                              final LogableObject... anotherNodes ) {
@@ -283,7 +366,10 @@ public interface DetailedLogger {
 
             }
 
-            public void log( final EventType type,
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.log.DetailedLogger#log(org.openspotlight.federation.log.DetailedLogger.EventType, java.lang.String, java.lang.String, org.openspotlight.common.jcr.LogableObject, org.openspotlight.common.jcr.LogableObject[])
+             */
+            public void log( final LogEventType type,
                              final String message,
                              final String detailedMessage,
                              final LogableObject node,
@@ -294,14 +380,33 @@ public interface DetailedLogger {
 
         }
 
+        /**
+         * Creates the jcr detailed logger.
+         * 
+         * @param session the session
+         * @return the detailed logger
+         */
         public static DetailedLogger createJcrDetailedLogger( final Session session ) {
             return new JcrDetailedLogger(session);
         }
     }
 
+    /**
+     * The Class LogEntry is used to represent a new log entry.
+     */
     public static class LogEntry {
+
+        /**
+         * The Class LoggedObjectInformation is used to represent objects related to a given log.
+         */
         public static class LoggedObjectInformation {
 
+            /**
+             * Gets the hierarchy from.
+             * 
+             * @param o the o
+             * @return the hierarchy from
+             */
             private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
                 final List<LogableObject> result = new LinkedList<LogableObject>();
                 result.add(o);
@@ -313,6 +418,13 @@ public interface DetailedLogger {
                 return result;
             }
 
+            /**
+             * Gets the hierarchy from.
+             * 
+             * @param node the node
+             * @param anotherNodes the another nodes
+             * @return the hierarchy from
+             */
             public static List<LoggedObjectInformation> getHierarchyFrom( final LogableObject node,
                                                                           final LogableObject... anotherNodes ) {
                 final List<LogableObject> nodes = new LinkedList<LogableObject>();
@@ -328,6 +440,12 @@ public interface DetailedLogger {
                 return result;
             }
 
+            /**
+             * Gets the parent.
+             * 
+             * @param o the o
+             * @return the parent
+             */
             private static LogableObject getParent( final LogableObject o ) {
                 if (o instanceof SLNode) {
                     final SLNode node = (SLNode)o;
@@ -344,14 +462,24 @@ public interface DetailedLogger {
                 }
             }
 
+            /** The order. */
             private final int    order;
 
+            /** The unique id. */
             private final String uniqueId;
 
+            /** The friendly description. */
             private final String friendlyDescription;
 
+            /** The class name. */
             private final String className;
 
+            /**
+             * Instantiates a new logged object information.
+             * 
+             * @param order the order
+             * @param object the object
+             */
             LoggedObjectInformation(
                                      final int order, final LogableObject object ) {
                 this.order = order;
@@ -377,6 +505,14 @@ public interface DetailedLogger {
                 checkNotEmpty("className", this.className);
             }
 
+            /**
+             * Instantiates a new logged object information.
+             * 
+             * @param order the order
+             * @param uniqueId the unique id
+             * @param className the class name
+             * @param friendlyDescription the friendly description
+             */
             LoggedObjectInformation(
                                      final int order, final String uniqueId, final String className,
                                      final String friendlyDescription ) {
@@ -390,36 +526,77 @@ public interface DetailedLogger {
 
             }
 
+            /**
+             * Gets the friendly description.
+             * 
+             * @return the friendly description
+             */
             public String getFriendlyDescription() {
                 return this.friendlyDescription;
             }
 
+            /**
+             * Gets the order.
+             * 
+             * @return the order
+             */
             public int getOrder() {
                 return this.order;
             }
 
+            /**
+             * Gets the type name.
+             * 
+             * @return the type name
+             */
             public String getTypeName() {
                 return this.className;
             }
 
+            /**
+             * Gets the unique id.
+             * 
+             * @return the unique id
+             */
             public String getUniqueId() {
                 return this.uniqueId;
             }
 
         }
 
+        /** The error code. */
         private final ErrorCode                     errorCode;
 
-        private final EventType                     type;
+        /** The type. */
+        private final LogEventType                  type;
 
+        /** The message. */
         private final String                        message;
+
+        /** The detailed message. */
         private final String                        detailedMessage;
+
+        /** The nodes. */
         private final List<LoggedObjectInformation> nodes;
+
+        /** The date. */
         private final Date                          date;
+
+        /** The hash code. */
         private final int                           hashCode;
 
+        /**
+         * Instantiates a new log entry.
+         * 
+         * @param errorCode the error code
+         * @param date the date
+         * @param type the type
+         * @param message the message
+         * @param detailedMessage the detailed message
+         * @param nodes the nodes
+         */
         private LogEntry(
-                          final ErrorCode errorCode, final Date date, final EventType type, final String message,
+                          final ErrorCode errorCode, final Date date, final LogEventType type, final String message,
                           final String detailedMessage, final List<LoggedObjectInformation> nodes ) {
             this.errorCode = errorCode;
             this.type = type;
@@ -430,6 +607,9 @@ public interface DetailedLogger {
             this.hashCode = hashOf(this.type, this.message, this.detailedMessage, this.nodes, this.date, this.errorCode);
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
         @Override
         public boolean equals( final Object obj ) {
             if (obj == this) {
@@ -443,30 +623,63 @@ public interface DetailedLogger {
                                 andOf(that.type, that.message, that.detailedMessage, that.nodes, that.date, that.errorCode));
         }
 
+        /**
+         * Gets the date.
+         * 
+         * @return the date
+         */
         public Date getDate() {
             return this.date;
         }
 
+        /**
+         * Gets the detailed message.
+         * 
+         * @return the detailed message
+         */
         public String getDetailedMessage() {
             return this.detailedMessage;
         }
 
+        /**
+         * Gets the error code.
+         * 
+         * @return the error code
+         */
         public ErrorCode getErrorCode() {
             return this.errorCode;
         }
 
+        /**
+         * Gets the message.
+         * 
+         * @return the message
+         */
         public String getMessage() {
             return this.message;
         }
 
+        /**
+         * Gets the nodes.
+         * 
+         * @return the nodes
+         */
         public List<LoggedObjectInformation> getNodes() {
             return this.nodes;
         }
 
-        public EventType getType() {
+        /**
+         * Gets the type.
+         * 
+         * @return the type
+         */
+        public LogEventType getType() {
             return this.type;
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
         @Override
         public int hashCode() {
             return this.hashCode;
@@ -474,40 +687,135 @@ public interface DetailedLogger {
 
     }
 
+    /**
+     * The EventType.
+     */
+    public static enum LogEventType {
+
+        /** The TRACE. */
+        TRACE,
+
+        /** The DEBUG. */
+        DEBUG,
+
+        /** The INFO. */
+        INFO,
+
+        /** The WARN. */
+        WARN,
+
+        /** The ERROR. */
+        ERROR,
+
+        /** The FATAL. */
+        FATAL
+    }
+
+    /**
+     * Find log by date interval.
+     * 
+     * @param start the start
+     * @param end the end
+     * @return the list< log entry>
+     */
     public List<LogEntry> findLogByDateInterval( Date start,
                                                  Date end );
 
+    /**
+     * Find log by error code.
+     * 
+     * @param code the code
+     * @return the list< log entry>
+     */
     public List<LogEntry> findLogByErrorCode( ErrorCode code );
 
-    public List<LogEntry> findLogByEventType( EventType eventType );
+    /**
+     * Find log by event type.
+     * 
+     * @param eventType the event type
+     * @return the list< log entry>
+     */
+    public List<LogEntry> findLogByEventType( LogEventType eventType );
 
+    /**
+     * Find log by logable object.
+     * 
+     * @param object the object
+     * @return the list< log entry>
+     */
     public List<LogEntry> findLogByLogableObject( LogableObject object );
 
-    public List<LogEntry> findLogByParameters( EventType eventType,
+    /**
+     * Find log by parameters.
+     * 
+     * @param eventType the event type
+     * @param object the object
+     * @param code the code
+     * @param start the start
+     * @param end the end
+     * @return the list< log entry>
+     */
+    public List<LogEntry> findLogByParameters( LogEventType eventType,
                                                LogableObject object,
                                                ErrorCode code,
                                                Date start,
                                                Date end );
 
-    public void log( EventType type,
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param errorCode the error code
+     * @param detailedMessage the detailed message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( LogEventType type,
                      ErrorCode errorCode,
                      String detailedMessage,
                      LogableObject node,
                      LogableObject... anotherNodes );
 
-    public void log( EventType type,
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param errorCode the error code
+     * @param message the message
+     * @param detailedMessage the detailed message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( LogEventType type,
                      ErrorCode errorCode,
                      String message,
                      String detailedMessage,
                      LogableObject node,
                      LogableObject... anotherNodes );
 
-    public void log( EventType type,
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param message the message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( LogEventType type,
                      String message,
                      LogableObject node,
                      LogableObject... anotherNodes );
 
-    public void log( EventType type,
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param message the message
+     * @param detailedMessage the detailed message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( LogEventType type,
                      String message,
                      String detailedMessage,
                      LogableObject node,

@@ -65,84 +65,85 @@ import java.util.Date;
  * Helper class to deal with dates
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class Dates {
-    
-    private static final DateFormat DF = getDateInstance();
+    /**
+     * Common date format.
+     */
+    private static final DateFormat DF  = getDateInstance();
+
+    /**
+     * Common date time format.
+     */
     private static final DateFormat DTF = getDateInstance();
     static {
         final String df = Messages.getString("Dates.defaultFormat"); //$NON-NLS-1$
         final String dtf = Messages.getString("Dates.defaultDateTimeFormat"); //$NON-NLS-1$
-        ((SimpleDateFormat) DF).applyPattern(df);
-        ((SimpleDateFormat) DTF).applyPattern(dtf);
+        ((SimpleDateFormat)DF).applyPattern(df);
+        ((SimpleDateFormat)DTF).applyPattern(dtf);
     }
-    
+
     /**
      * Creates a date using the default date format
      * 
      * @param dateString
      * @return a new date
      */
-    public static Date dateFromString(final String dateString) {
+    public static Date dateFromString( final String dateString ) {
         checkNotEmpty("dateString", dateString); //$NON-NLS-1$
         try {
             return DF.parse(dateString);
         } catch (final Exception e) {
             catchAndLog(e);
-            throw logAndReturn(new IllegalArgumentException(format(Messages
-                    .getString("Dates.invalidDateFormat"), dateString))); //$NON-NLS-1$
+            throw logAndReturn(new IllegalArgumentException(format(Messages.getString("Dates.invalidDateFormat"), dateString))); //$NON-NLS-1$
         }
     }
-    
+
     /**
      * Creates a date using the default date time format
      * 
      * @param dateString
      * @return a new date
      */
-    public static Date dateTimeFromString(final String dateString) {
+    public static Date dateTimeFromString( final String dateString ) {
         checkNotEmpty("dateString", dateString); //$NON-NLS-1$
         try {
             return DTF.parse(dateString);
         } catch (final Exception e) {
             catchAndLog(e);
-            throw logAndReturn(new IllegalArgumentException(format(Messages
-                    .getString("Dates.invalidDateFormat"), dateString))); //$NON-NLS-1$
+            throw logAndReturn(new IllegalArgumentException(format(Messages.getString("Dates.invalidDateFormat"), dateString))); //$NON-NLS-1$
         }
     }
-    
+
     /**
      * Returns a string using the date passed on argument and the default format
      * 
      * @param date
      * @return a formatted string
      */
-    public static String stringFromDate(final Date date) {
+    public static String stringFromDate( final Date date ) {
         checkNotNull("date", date); //$NON-NLS-1$
         return DF.format(date);
-        
+
     }
-    
+
     /**
-     * Returns a string using the date passed on argument and the default date
-     * time format
+     * Returns a string using the date passed on argument and the default date time format
      * 
      * @param date
      * @return a formatted string
      */
-    public static String stringFromDateTime(final Date date) {
+    public static String stringFromDateTime( final Date date ) {
         checkNotNull("date", date); //$NON-NLS-1$
         return DTF.format(date);
-        
+
     }
-    
+
     /**
      * Should not be instantiated
      */
     private Dates() {
-        logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
-    
+
 }

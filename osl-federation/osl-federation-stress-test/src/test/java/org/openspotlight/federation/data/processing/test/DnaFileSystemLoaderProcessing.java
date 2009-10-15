@@ -52,75 +52,67 @@ package org.openspotlight.federation.data.processing.test;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidDnaSvnConnectorConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidDnaFileConnectorConfiguration;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
-import org.openspotlight.federation.data.load.DNASvnArtifactLoader;
+import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
+import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader.ArtifactProcessingCount;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
-import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
+import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.federation.data.util.JcrConfigurationManagerProvider;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-@SuppressWarnings("all")
-@Ignore
-public class DnaSvnLoaderProcessing {
+@SuppressWarnings( "all" )
+public class DnaFileSystemLoaderProcessing {
 
-	public static Configuration loadAllFilesFromThisConfiguration(
-			final Configuration configuration) throws Exception {
-		final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
-				new DNASvnArtifactLoader());
-		final Set<Bundle> bundles = findAllNodesOfType(configuration,
-				Bundle.class);
-		for (final Bundle bundle : bundles) {
-			final ArtifactProcessingCount count = group
-					.loadArtifactsFromMappings(bundle);
-			assertThat(count.getErrorCount(), is(0L));
-		}
-		return configuration;
+    public static Configuration loadAllFilesFromThisConfiguration( final Configuration configuration ) throws Exception {
+        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(new DNAFileSystemArtifactLoader());
+        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
+        for (final Bundle bundle : bundles) {
+            final ArtifactProcessingCount count = group.loadArtifactsFromMappings(bundle);
+            assertThat(count.getErrorCount(), is(0L));
+        }
+        return configuration;
 
-	}
+    }
 
-	@Test
-	public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
-		final Configuration configuration = this
-				.loadAllFilesFromThisConfiguration(createOslValidDnaSvnConnectorConfiguration("DnaSvnLoaderProcessing"));
-		final Set<Bundle> bundles = findAllNodesOfType(configuration,
-				Bundle.class);
-		for (final Bundle bundle : bundles) {
-			assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
-		}
-	}
+    @Test
+    public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
+        final Configuration configuration = this.loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
+        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
+        for (final Bundle bundle : bundles) {
+            assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
+        }
+    }
 
-	@Test
-	public void shouldProcessAllValidOslSourceCode() throws Exception {
-		final Configuration configuration = this
-				.loadAllFilesFromThisConfiguration(createOslValidDnaSvnConnectorConfiguration("DnaSvnLoaderProcessing"));
-		final SLGraph graph = mock(SLGraph.class);
-		final SLGraphSession session = mock(SLGraphSession.class);
-		when(graph.openSession()).thenReturn(session);
+    @Test
+    public void shouldProcessAllValidOslSourceCode() throws Exception {
+        final Configuration configuration = this.loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
+        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        configurationManager.save(configuration);
+        configurationManager.closeResources();
 
-		final BundleProcessorManager manager = new BundleProcessorManager(graph);
-		final GraphContext graphContext = mock(GraphContext.class);
-		final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
-				StreamArtifact.class);
-		final Repository repository = configuration
-				.getRepositoryByName("OSL Group");
-		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
-				Bundle.class);
-		manager.processBundles(bundles);
-		assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
-	}
+        final BundleProcessingContext graphContext = mock(BundleProcessingContext.class);
+        final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration, StreamArtifact.class);
+        final Repository repository = configuration.getRepositoryByName("OSL Group");
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        manager.processBundles(bundles);
+        assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
+    }
 
 }

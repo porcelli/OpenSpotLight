@@ -57,114 +57,113 @@ import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 
 /**
- * A Custom artifact is an artifact with hierarchical data. So, this artifact is
- * easily represented with Jcr structure instead of bytes to be parsed.
+ * A Custom artifact is an artifact with hierarchical data. So, this artifact is easily represented with Jcr structure instead of
+ * bytes to be parsed.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 @ThreadSafe
-@StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Group.class }, propertyNames = { "UUID", "version" }, propertyTypes = {
-        String.class, String.class })
-public class CustomArtifact implements ConfigurationNode, GeneratedNode,
-        Artifact {
-    
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, propertyNames = {
+    "UUID", "version", "status"}, propertyTypes = {String.class, String.class, Status.class} )
+public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifact {
+
     /**
 	 * 
 	 */
-    private static final long serialVersionUID = -889016915372708085L;
-    
+    private static final long      serialVersionUID = -889016915372708085L;
+    private static final String    STATUS           = "status";            //$NON-NLS-1$
+
     private final InstanceMetadata instanceMetadata;
-    
+
     /**
      * Creates a stream artifact inside a bundle.
      * 
      * @param bundle
      * @param relativeName
      */
-    public CustomArtifact(final Bundle bundle, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(this, bundle,
-                relativeName);
+    public CustomArtifact(
+                           final Bundle bundle, final String relativeName ) {
+        this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
         checkCondition("noCustomArtifact", //$NON-NLS-1$
-                bundle.getCustomArtifactByName(relativeName) == null);
+                       bundle.getCustomArtifactByName(relativeName) == null);
         bundle.getInstanceMetadata().addChild(this);
+        this.instanceMetadata.setProperty(STATUS, Status.ALREADY_PROCESSED);
     }
-    
+
     /**
      * Constructor to create a stream artifact inside a project.
      * 
      * @param project
      * @param relativeName
      */
-    public CustomArtifact(final Group project, final String relativeName) {
-        this.instanceMetadata = createWithKeyProperty(this, project,
-                relativeName);
+    public CustomArtifact(
+                           final Group project, final String relativeName ) {
+        this.instanceMetadata = createWithKeyProperty(this, project, relativeName);
         checkCondition("noCustomArtifact", //$NON-NLS-1$
-                project.getCustomArtifactByName(relativeName) == null);
+                       project.getCustomArtifactByName(relativeName) == null);
         project.getInstanceMetadata().addChild(this);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
-    public int compareTo(final ConfigurationNode o) {
+    public int compareTo( final ConfigurationNode o ) {
         return this.instanceMetadata.compare(this, o);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
-    public final boolean equals(final Object obj) {
+    public final boolean equals( final Object obj ) {
         return this.instanceMetadata.equals(obj);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     public InstanceMetadata getInstanceMetadata() {
         return this.instanceMetadata;
     }
-    
+
     /**
-     * 
      * @return the relative name for this artifact.
      */
     public String getRelativeName() {
-        return (String) this.instanceMetadata.getKeyPropertyValue();
+        return (String)this.instanceMetadata.getKeyPropertyValue();
     }
-    
+
+    public Status getStatus() {
+        return this.instanceMetadata.getProperty(STATUS);
+    }
+
     /**
-     * 
      * {@inheritDoc}
      */
     public String getUUID() {
-        return this.instanceMetadata.getProperty(Artifact.KeyProperties.UUID
-                .toString());
+        return this.instanceMetadata.getProperty(Artifact.KeyProperties.UUID.toString());
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     public String getVersionName() {
-        return this.instanceMetadata.getProperty(Artifact.KeyProperties.version
-                .toString());
+        return this.instanceMetadata.getProperty(Artifact.KeyProperties.version.toString());
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
     public final int hashCode() {
         return this.instanceMetadata.hashCode();
     }
-    
+
+    public void setStatus( final Status status ) {
+        this.instanceMetadata.setProperty(STATUS, status);
+    }
+
 }

@@ -14,15 +14,38 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.web.WebException;
 
+/**
+ * The Interface WebCommand.
+ */
 public interface WebCommand {
 
+    /**
+     * The Class WebCommandContext.
+     */
     public static class WebCommandContext {
+
+        /** The graph session. */
         private volatile SLGraphSession     graphSession;
+
+        /** The provider. */
         private final JcrConnectionProvider provider;
+
+        /** The jcr session. */
         private volatile Session            jcrSession;
+
+        /** The scheduler. */
         private final Scheduler             scheduler;
+
+        /** The graph. */
         private final SLGraph               graph;
 
+        /**
+         * Instantiates a new web command context.
+         * 
+         * @param graph the graph
+         * @param provider the provider
+         * @param scheduler the scheduler
+         */
         public WebCommandContext(
                                   final SLGraph graph, final JcrConnectionProvider provider, final Scheduler scheduler ) {
             this.graph = graph;
@@ -30,6 +53,9 @@ public interface WebCommand {
             this.scheduler = scheduler;
         }
 
+        /**
+         * Close resources.
+         */
         public void closeResources() {
             if (graphSession != null) {
                 this.graphSession.close();
@@ -41,6 +67,11 @@ public interface WebCommand {
             }
         }
 
+        /**
+         * Gets the graph session.
+         * 
+         * @return the graph session
+         */
         public SLGraphSession getGraphSession() {
             if (this.graphSession == null) {
                 try {
@@ -52,6 +83,11 @@ public interface WebCommand {
             return this.graphSession;
         }
 
+        /**
+         * Gets the jcr session.
+         * 
+         * @return the jcr session
+         */
         public Session getJcrSession() {
             if (this.jcrSession == null) {
                 this.jcrSession = this.provider.openSession();
@@ -59,16 +95,34 @@ public interface WebCommand {
             return this.jcrSession;
         }
 
+        /**
+         * Gets the provider.
+         * 
+         * @return the provider
+         */
         public JcrConnectionProvider getProvider() {
             return this.provider;
         }
 
+        /**
+         * Gets the scheduler.
+         * 
+         * @return the scheduler
+         */
         public Scheduler getScheduler() {
             return this.scheduler;
         }
 
     }
 
+    /**
+     * Execute.
+     * 
+     * @param context the context
+     * @param parameters the parameters
+     * @return the string
+     * @throws WebException the web exception
+     */
     String execute( WebCommandContext context,
                     Map<String, String> parameters ) throws WebException;
 

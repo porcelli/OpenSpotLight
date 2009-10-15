@@ -10,14 +10,46 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
+/**
+ * This factory is used to create lazy behavior on method invocations. For the first method invocation with some of the
+ * parameters, the target method is called, and its response is cached. So, on the next invocations with the same parameters, the
+ * result is returned from the cache. It is possible to instantiate the new cached instance if there's a default constructor. Also
+ * it's possible to call any constructor. The only restriction is: the target class MUST BE NON FINAL. It caches returned objects
+ * and also thrown exceptions. It caches only public method invocations.
+ * 
+ * @author feu
+ */
 public final class InvocationCacheFactory {
+
+    /**
+     * Internal cache factory class. It uses CGLib inside to subclass the target class.
+     * 
+     * @author feu
+     */
     private static class CachedInterceptor implements MethodInterceptor {
 
+        /**
+         * Parameter key to be used as a key inside the cache map for method invocation.
+         * 
+         * @author feu
+         */
         private static final class Key {
+
+            /** The hashcode. */
             private final int      hashcode;
+
+            /** The parameters. */
             private final Object[] parameters;
+
+            /** The key. */
             private final String   key;
 
+            /**
+             * Constructor with final fields.
+             * 
+             * @param key the key
+             * @param parameters the parameters
+             */
             public Key(
                         final String key, final Object... parameters ) {
                 if (parameters == null) {
@@ -69,9 +101,19 @@ public final class InvocationCacheFactory {
 
         }
 
+        /**
+         * This class is used to wrap thrown exceptions.
+         */
         private static final class ThrowableWrapped {
+
+            /** The throwable. */
             final Throwable throwable;
 
+            /**
+             * Instantiates a new throwable wrapped.
+             * 
+             * @param toWrap the to wrap
+             */
             public ThrowableWrapped(
                                      final Throwable toWrap ) {
                 this.throwable = toWrap;
@@ -79,11 +121,25 @@ public final class InvocationCacheFactory {
             }
         }
 
+        /**
+         * This enum specifies the behavior applied on the new object. It should behave like a wrapped object when the default
+         * constructor is used, or like enhanced object when the non default constructor is called.
+         */
         enum UseEnhanced {
+
+            /** use enhanced. */
             USE_ENHANCED,
+
+            /** use wrapped. */
             USE_WRAPPED
         }
 
+        /**
+         * Gets the method unique name.
+         * 
+         * @param arg1 the arg1
+         * @return the method unique name
+         */
         private static String getMethodUniqueName( final Method arg1 ) {
             final Class<?>[] parameterTypes = arg1.getParameterTypes();
             final StringBuilder nameBuff = new StringBuilder();
@@ -100,6 +156,13 @@ public final class InvocationCacheFactory {
             return nameBuff.toString();
         }
 
+        /**
+         * Checks if is equals in a null pointer safe way.
+         * 
+         * @param o1 the o1
+         * @param o2 the o2
+         * @return true, if is equals
+         */
         static boolean isEquals( final Object o1,
                                  final Object o2 ) {
             if (o1 == o2) {
@@ -114,16 +177,26 @@ public final class InvocationCacheFactory {
             return o1.equals(o2);
         }
 
+        /** The use enhanced method. */
         private final UseEnhanced      useEnhancedMethod;
 
+        /** The source. */
         private Object                 source;
 
+        /** The cache. */
         private final Map<Key, Object> cache      = new HashMap<Key, Object>();
 
+        /** The Constant NULL_VALUE. */
         private static final Object    NULL_VALUE = new Object();
 
+        /** The Constant VOID_VALUE. */
         private static final Object    VOID_VALUE = new Object();
 
+        /**
+         * Instantiates a new cached interceptor using the behavior described on {@link UseEnhanced}.
+         * 
+         * @param useEnhancedMethod the use enhanced method
+         */
         public CachedInterceptor(
                                   final UseEnhanced useEnhancedMethod ) {
             this.useEnhancedMethod = useEnhancedMethod;
@@ -179,6 +252,17 @@ public final class InvocationCacheFactory {
 
         }
 
+        /**
+         * Invoke the method itself.
+         * 
+         * @param method the method
+         * @param parameters the parameters
+         * @param proxy the proxy
+         * @return the object
+         * @throws Throwable the throwable
+         * @throws IllegalAccessException the illegal access exception
+         * @throws InvocationTargetException the invocation target exception
+         */
         private Object invoke( final Method method,
                                final Object[] parameters,
                                final MethodProxy proxy ) throws Throwable, IllegalAccessException, InvocationTargetException {
@@ -194,12 +278,26 @@ public final class InvocationCacheFactory {
             return value;
         }
 
+        /**
+         * Sets the source.
+         * 
+         * @param source the new source
+         */
         public void setSource( final Object source ) {
             this.source = source;
         }
 
     }
 
+    /**
+     * Creates a new InvocationCache object.
+     * 
+     * @param <T> the type been subclassed.
+     * @param superClass the super class
+     * @param argumentTypes the argument types
+     * @param arguments the arguments
+     * @return the T
+     */
     public static <T> T createIntoCached( final Class<T> superClass,
                                           final Class<?>[] argumentTypes,
                                           final Object[] arguments ) {
@@ -213,6 +311,13 @@ public final class InvocationCacheFactory {
         return wrapped;
     }
 
+    /**
+     * Wrap into cached.
+     * 
+     * @param <T> the type been subclassed.
+     * @param toWrap the to wrap
+     * @return the t
+     */
     public static <T> T wrapIntoCached( final T toWrap ) {
         final CachedInterceptor interceptor = new CachedInterceptor(CachedInterceptor.UseEnhanced.USE_WRAPPED);
         interceptor.setSource(toWrap);
@@ -224,6 +329,9 @@ public final class InvocationCacheFactory {
         return wrapped;
     }
 
+    /**
+     * do not create a new cache factory.
+     */
     private InvocationCacheFactory() {
         throw new UnsupportedOperationException();
     }

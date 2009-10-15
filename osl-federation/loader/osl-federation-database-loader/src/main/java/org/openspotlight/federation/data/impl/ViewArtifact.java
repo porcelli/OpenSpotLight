@@ -52,50 +52,48 @@ package org.openspotlight.federation.data.impl;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 
 /**
  * {@link CustomArtifact} associated with view metadata.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 @ThreadSafe
-@StaticMetadata(keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Group.class }, propertyNames = { "UUID", "version",
-        "tableName", "catalogName", "schemaName" }, propertyTypes = {
-        String.class, String.class, String.class, String.class, String.class }, validChildrenTypes = Column.class)
-public class ViewArtifact extends TableArtifact{
-    
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, propertyNames = {
+    "UUID", "version", "tableName", "catalogName", "schemaName", "status"}, propertyTypes = {String.class, String.class,
+    String.class, String.class, String.class, Status.class}, validChildrenTypes = Column.class )
+public class ViewArtifact extends TableArtifact {
+
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 4646664494463275726L;
+    private static final long serialVersionUID = 4646664494463275726L;
 
-	/**
-     * Creates a table artifact inside a bundle. The relative name should be in
-     * the format CATALOG_NAME/SCHEMA_NAME/VIEW/VIEW_NAME. Note that the
-     * /TABLE/ is a constant determining the artifact type.
+    /**
+     * Creates a table artifact inside a bundle. The relative name should be in the format
+     * CATALOG_NAME/SCHEMA_NAME/VIEW/VIEW_NAME. Note that the /TABLE/ is a constant determining the artifact type.
      * 
      * @param bundle
      * @param relativeName
      */
-    public ViewArtifact(final Bundle bundle, final String relativeName) {
+    public ViewArtifact(
+                         final Bundle bundle, final String relativeName ) {
         super(bundle, relativeName);
-        
+
     }
-    
+
     /**
-     * Creates a table artifact inside a project. The relative name should be in
-     * the format CATALOG_NAME/SCHEMA_NAME/VIEW/VIEW_NAME. Note that the
-     * /TABLE/ is a constant determining the artifact type.
+     * Creates a table artifact inside a project. The relative name should be in the format
+     * CATALOG_NAME/SCHEMA_NAME/VIEW/VIEW_NAME. Note that the /TABLE/ is a constant determining the artifact type.
      * 
      * @param project
      * @param relativeName
      */
-    public ViewArtifact(final Group project, final String relativeName) {
+    public ViewArtifact(
+                         final Group project, final String relativeName ) {
         super(project, relativeName);
-        
+
     }
-    
-    
+
 }

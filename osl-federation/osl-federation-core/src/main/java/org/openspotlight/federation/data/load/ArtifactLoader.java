@@ -60,126 +60,118 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.Bundle;
 
 /**
- * Artifact loader is the interface witch abstract the Artifact loading stuff,
- * such as reading a Artifact from its source and adding it to the configuration
- * meta data.
- * 
- * Each Artifact mapping has an syntax to match some bunch of Artifact using ant
- * style syntax with * and so on. So, the Artifact loader can decide if it
- * should load or not some type of Artifact, and based on mapping it should take
- * decisions if it knows any form to load the Artifacts that match the mapping
- * that it receives.
- * 
- * The Artifact loader has the responsibility to resolve each mapping.
+ * Artifact loader is the interface witch abstract the Artifact loading stuff, such as reading a Artifact from its source and
+ * adding it to the configuration meta data. Each Artifact mapping has an syntax to match some bunch of Artifact using ant style
+ * syntax with * and so on. So, the Artifact loader can decide if it should load or not some type of Artifact, and based on
+ * mapping it should take decisions if it knows any form to load the Artifacts that match the mapping that it receives. The
+ * Artifact loader has the responsibility to resolve each mapping.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public interface ArtifactLoader {
-    
+
     /**
-     * Returns the count for each possible action during a Artifact load, such
-     * as load, ignore and error.
+     * Returns the count for each possible action during a Artifact load, such as load, ignore and error.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * 
      */
-    public final class ArtifactProcessingCount implements
-            Comparable<ArtifactProcessingCount> {
-        
-        /**
-         * Representes a artifact processing witch just loaded one artifact.
-         */
-        public static final ArtifactProcessingCount ONE_LOADED = new ArtifactProcessingCount(
-                1, 0, 0);
-        /**
-         * Representes a artifact processing witch just ignored one artifact.
-         */
-        public static final ArtifactProcessingCount ONE_IGNORED = new ArtifactProcessingCount(
-                0, 1, 0);
-        
-        /**
-         * Representes a artifact processing witch just got an error loading one
-         * artifact.
-         */
-        public static final ArtifactProcessingCount ONE_ERROR = new ArtifactProcessingCount(
-                0, 0, 1);
-        
-        private final long loadCount;
-        
-        private final long ignoreCount;
-        private final long errorCount;
-        private final int hashCode;
-        private final String description;
-        
+    public final class ArtifactProcessingCount implements Comparable<ArtifactProcessingCount> {
+
+        /** Representes a artifact processing witch just loaded one artifact. */
+        public static final ArtifactProcessingCount ONE_LOADED  = new ArtifactProcessingCount(1, 0, 0);
+
+        /** Representes a artifact processing witch just ignored one artifact. */
+        public static final ArtifactProcessingCount ONE_IGNORED = new ArtifactProcessingCount(0, 1, 0);
+
+        /** Representes a artifact processing witch just got an error loading one artifact. */
+        public static final ArtifactProcessingCount ONE_ERROR   = new ArtifactProcessingCount(0, 0, 1);
+
+        /** The load count. */
+        private final long                          loadCount;
+
+        /** The ignore count. */
+        private final long                          ignoreCount;
+
+        /** The error count. */
+        private final long                          errorCount;
+
+        /** The hash code. */
+        private final int                           hashCode;
+
+        /** The description. */
+        private final String                        description;
+
         /**
          * Creates an processing data based on load counts for artifact loading.
          * 
-         * @param loadCount
-         * @param ignoreCount
-         * @param errorCount
+         * @param loadCount the load count
+         * @param ignoreCount the ignore count
+         * @param errorCount the error count
          */
-        @SuppressWarnings("boxing")
-        public ArtifactProcessingCount(final long loadCount,
-                final long ignoreCount, final long errorCount) {
+        @SuppressWarnings( "boxing" )
+        public ArtifactProcessingCount(
+                                        final long loadCount, final long ignoreCount, final long errorCount ) {
             this.loadCount = loadCount;
             this.ignoreCount = ignoreCount;
             this.errorCount = errorCount;
             this.hashCode = hashOf(loadCount, ignoreCount, errorCount);
-            this.description = format(Messages
-                    .getString("ArtifactLoader.loadDescription"), //$NON-NLS-1$
-                    loadCount, ignoreCount, errorCount);
+            this.description = format(Messages.getString("ArtifactLoader.loadDescription"), //$NON-NLS-1$
+                                      loadCount, ignoreCount, errorCount);
         }
-        
+
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings("boxing")
-        public int compareTo(final ArtifactProcessingCount that) {
-            return compareAll(of(this.loadCount, this.ignoreCount,
-                    this.errorCount), andOf(that.loadCount, that.ignoreCount,
-                    that.errorCount));
+        @SuppressWarnings( "boxing" )
+        public int compareTo( final ArtifactProcessingCount that ) {
+            return compareAll(of(this.loadCount, this.ignoreCount, this.errorCount), andOf(that.loadCount, that.ignoreCount,
+                                                                                           that.errorCount));
         }
-        
+
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings("boxing")
+        @SuppressWarnings( "boxing" )
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals( final Object o ) {
             if (o == this) {
                 return true;
             }
             if (!(o instanceof ArtifactProcessingCount)) {
                 return false;
             }
-            final ArtifactProcessingCount that = (ArtifactProcessingCount) o;
-            return eachEquality(of(this.loadCount, this.ignoreCount,
-                    this.errorCount), andOf(that.loadCount, that.ignoreCount,
-                    that.errorCount));
+            final ArtifactProcessingCount that = (ArtifactProcessingCount)o;
+            return eachEquality(of(this.loadCount, this.ignoreCount, this.errorCount), andOf(that.loadCount, that.ignoreCount,
+                                                                                             that.errorCount));
         }
-        
+
         /**
+         * Gets the error count.
+         * 
          * @return the error count
          */
         public long getErrorCount() {
             return this.errorCount;
         }
-        
+
         /**
+         * Gets the ignore count.
+         * 
          * @return the loading count
          */
         public long getIgnoreCount() {
             return this.ignoreCount;
         }
-        
+
         /**
+         * Gets the load count.
+         * 
          * @return the loading count
          */
         public long getLoadCount() {
             return this.loadCount;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -187,7 +179,7 @@ public interface ArtifactLoader {
         public int hashCode() {
             return this.hashCode;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -196,15 +188,14 @@ public interface ArtifactLoader {
             return this.description;
         }
     }
-    
+
     /**
      * Loads all the Artifacts contained from each ArtifactMapping.
      * 
-     * @param bundle
+     * @param bundle the bundle
      * @return the loading count
-     * @throws ConfigurationException
+     * @throws ConfigurationException the configuration exception
      */
-    public ArtifactProcessingCount loadArtifactsFromMappings(Bundle bundle)
-            throws ConfigurationException;
-    
+    public ArtifactProcessingCount loadArtifactsFromMappings( Bundle bundle ) throws ConfigurationException;
+
 }
