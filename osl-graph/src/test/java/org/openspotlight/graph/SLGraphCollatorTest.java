@@ -4,11 +4,6 @@ import java.text.Collator;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -17,6 +12,11 @@ import org.openspotlight.graph.test.domain.JavaClassNode;
 import org.openspotlight.graph.test.domain.JavaMethodNode;
 import org.openspotlight.graph.test.domain.SQLElement;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class SLGraphCollatorTest {
 
@@ -37,14 +37,14 @@ public class SLGraphCollatorTest {
 		graph.shutdown();
 	}
 
-	@Before
+	@BeforeMethod
 	public void beforeTest() throws SLGraphException {
 		if (session == null) {
 			session = graph.openSession();
 		}
 	}
 
-	@After
+	@AfterMethod
 	public void afterTest() throws SLGraphSessionException {
 		session.clear();
 	}
