@@ -54,6 +54,7 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -214,6 +215,8 @@ public class SLQLQueryBuilder {
             }
             CommonTree result = (CommonTree)parser.compilationUnit().tree;
 
+            System.out.println("Tree Result: " + result.toStringTree().toLowerCase());
+            
             String uniqueId = Sha1.getSha1SignatureEncodedAsHexa(result.toStringTree().toLowerCase());
 
             String targetUniqueId = null;
@@ -239,7 +242,7 @@ public class SLQLQueryBuilder {
     protected void createNewQueryClass( String className,
                                         String executeContent ) throws SLQueryLanguageParserException {
         try {
-            //            System.out.println("executeContent: " + executeContent);
+            System.out.println("executeContent: " + executeContent);
             ClassPool pool = ClassPool.getDefault();
 
             CtClass superClass = pool.get(AbstractSLQLQuery.class.getName());
@@ -251,10 +254,10 @@ public class SLQLQueryBuilder {
             CtConstructor newConstructor = CtNewConstructor.make(CONSTRUCTOR_ARGS, NO_ARGS, clas);
             clas.addConstructor(newConstructor);
 
-            CtClass[] EXECUTE_ARGS = {pool.get(SLGraphSession.class.getName()), pool.get(Map.class.getName()), pool.get(Collection.class.getName())};
+            CtClass[] EXECUTE_ARGS = {pool.get(SLGraphSession.class.getName()), pool.get(Map.class.getName()), pool.get(List.class.getName())};
             CtClass[] EXECUTE_THROWS = {pool.get(SLGraphSessionException.class.getName())};
 
-            CtMethod newMethod = CtNewMethod.make(pool.get(Collection.class.getName()), "execute", EXECUTE_ARGS, EXECUTE_THROWS, executeContent, clas);
+            CtMethod newMethod = CtNewMethod.make(pool.get(List.class.getName()), "execute", EXECUTE_ARGS, EXECUTE_THROWS, executeContent, clas);
             clas.addMethod(newMethod);
 
             clas.toClass(SLQLQueryBuilder.class.getClassLoader(), SLQLQueryBuilder.class.getProtectionDomain());

@@ -277,7 +277,7 @@ public class SLQueryImpl implements SLQuery {
 				resultNodeWrappers.addAll(selectNodeWrappers);	
 			}
 
-			Collection<SLNode> nodes = new ArrayList<SLNode>();
+			List<SLNode> nodes = new ArrayList<SLNode>();
 			for (PNodeWrapper pNodeWrapper : resultNodeWrappers) {
 				SLNode node = session.getNodeByID(pNodeWrapper.getID());
 				SLNode nodeProxy = ProxyUtil.createNodeProxy(SLNode.class, node);

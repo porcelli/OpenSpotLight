@@ -46,36 +46,13 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
-
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLProperty;
+package org.openspotlight.graph.test.domain;
 
 /**
- * The Interface JavaType.
+ * The Interface JavaInterface.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaType extends SLNode {
-	
-	/**
-	 * Gets the caption.
-	 * 
-	 * @return the caption
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getCaption() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the caption.
-	 * 
-	 * @param caption the new caption
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setCaption(String caption) throws SLGraphSessionException;
+public interface JavaInterface extends JavaType {
 
 }

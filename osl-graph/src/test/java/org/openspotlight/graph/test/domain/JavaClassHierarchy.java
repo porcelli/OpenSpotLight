@@ -46,36 +46,15 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.test.domain;
 
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
- * The Interface TypeContainsMethod.
+ * The Interface JavaClassHierarchy.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface TypeContainsMethod extends SLLink {
-	
-	/**
-	 * Gets the tag.
-	 * 
-	 * @return the tag
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getTag() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the tag.
-	 * 
-	 * @param tag the new tag
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setTag(Integer tag) throws SLGraphSessionException;
+public interface JavaClassHierarchy extends SLLink {
 
 }

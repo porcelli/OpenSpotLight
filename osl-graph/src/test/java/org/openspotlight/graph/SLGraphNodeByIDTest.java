@@ -53,8 +53,8 @@ import static org.hamcrest.Matchers.is;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.query.JavaInterface;
 import org.openspotlight.graph.query.SLGraphQueryTest;
+import org.openspotlight.graph.test.domain.JavaInterface;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

@@ -114,19 +114,21 @@ executing(times)	::= ".executeXTimes(<times>)"
 
 whereGroupByNodeType(nodeType,expr)	::= "<nodeType><expr>.typeEnd()"
 
-booleanAndOperator(lhs,rhs)	::= "<lhs>.and().openBracket()<rhs>.closeBracket()"
-booleanOrOperator(lhs,rhs)	::= "<lhs>.or().openBracket()<rhs>.closeBracket()"
+booleanAndOperator(lhs,rhs)			::= "<lhs>.and().openBracket()<rhs>.closeBracket()"
+booleanOrOperator(lhs,rhs)			::= "<lhs>.or().openBracket()<rhs>.closeBracket()"
+negatedBooleanAndOperator(lhs,rhs)	::= "<lhs>.and().not().openBracket()<rhs>.closeBracket()"
+negatedBooleanOrOperator(lhs,rhs)	::= "<lhs>.or().not().openBracket()<rhs>.closeBracket()"
 
-negatedOperator(expr)	::= ".not()<expr>"
 
 whereProperty(operator, propertyName, value)	::= ".each().property(\"<propertyName>\")<operator>.value(<value>)"
-whereLinkCount(operator, linkName, direction, value)	::= ".each().link(\"<linkName>\")<direction>.count()<operator>.value(<value>)"
+whereLinkCount(operator, linkName, linkDirections, value)	::= ".each().link(\"<linkName>\")<linkDirections>.count()<operator>.value(<value>)"
 
 operator(op)	::= "<op>"
 
 startsWithOperator()		::= ".startsWith()"
 endsWithOperator()			::= ".endsWith()"
 containsOperator()			::= ".contains()"
+notContainsOperator()		::= ".not().contains()"
 equalsOperator()			::= ".equalsTo()"
 greaterOperator()			::= ".greaterThan()"
 lesserOperator()			::= ".lesserThan()"
@@ -141,8 +143,8 @@ trueValue()		::= "true"
 falseValue()	::= "false"
 
 stringValue(value)	::= "<value>"
-intValue(value)		::= "<value>" 
-decValue(value)		::= "<value>"
+intValue(value)		::= "new Integer(<value>)" 
+decValue(value)		::= "new Float(<value>)"
 
 
 booleanVariableValue(variableName)	::= "getBooleanValue(\"<variableName>\")"

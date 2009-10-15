@@ -444,9 +444,8 @@ offset
 	;
 
 orderBy
-	:	order_by_key
-		orderByGroupNode (COMMA orderByGroupNode)*
-	-> ^(order_by_key orderByGroupNode+)
+	:	order_by_key^
+		orderByGroupNode (COMMA! orderByGroupNode)*
 	;
 
 orderByGroupNode
@@ -461,11 +460,7 @@ propertyReference
 	;
 
 booleanExpr
-	:	negatedExpr ((AND_OPERATOR^|OR_OPERATOR^) negatedExpr)*
-	;
-
-negatedExpr
-	:	(NEGATED_OPERATOR^)? expr
+	:	expr ((AND_OPERATOR^|OR_OPERATOR^) NEGATED_OPERATOR? expr)*
 	;
 
 expr
@@ -500,6 +495,7 @@ stringOperator
 	:	STARTS_WITH
 	|	ENDS_WITH
 	|	CONTAINS
+	|	NOT_CONTAINS
 	;
 
 numericOperator
@@ -756,6 +752,10 @@ STARTS_WITH
 
 ENDS_WITH
 	:	'...*'
+	;
+
+NOT_CONTAINS
+	:	'!<*>'
 	;
 
 CONTAINS

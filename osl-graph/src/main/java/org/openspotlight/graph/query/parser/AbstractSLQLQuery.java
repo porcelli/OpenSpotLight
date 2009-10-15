@@ -49,6 +49,7 @@
 package org.openspotlight.graph.query.parser;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -92,9 +93,9 @@ public abstract class AbstractSLQLQuery implements SLQLQuery {
         }
     }
 
-    public abstract Collection<SLNode> execute( final SLGraphSession session,
-                                                final Map<String, ?> variableValues,
-                                                final Collection<SLNode> inputNodes ) throws SLGraphSessionException;
+    public abstract List<SLNode> execute( final SLGraphSession session,
+                                          final Map<String, ?> variableValues,
+                                          final List<SLNode> inputNodes ) throws SLGraphSessionException;
 
     public String getId() {
         return id;
@@ -130,7 +131,7 @@ public abstract class AbstractSLQLQuery implements SLQLQuery {
 
     protected void validateAndInit( final SLGraphSession session,
                                     final Map<String, ?> variableValues,
-                                    final Collection<SLNode> inputNodes ) {
+                                    final List<SLNode> inputNodes ) {
         Assertions.checkNotNull("session", session);
 
         if (this.hasVariables()) {

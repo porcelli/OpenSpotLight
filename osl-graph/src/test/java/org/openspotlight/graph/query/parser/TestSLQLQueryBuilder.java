@@ -1,4 +1,4 @@
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.query.parser;
 
 import java.io.IOException;
 
