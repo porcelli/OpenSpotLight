@@ -256,7 +256,7 @@ orderBy
 orderByGroupByNodeType
 @init	{
 	int propertyCount = 0;
-}	:	^(VT_GROUP_BY_NODE_TYPE nodeType ({propertyCount++;}pr+=propertyReference[propertyCount])*)
+}	:	^(VT_GROUP_BY_NODE_TYPE nodeType (pr+=propertyReference[propertyCount]{propertyCount++;})*)
 		-> orderByGroupByNodeType(nodeType={$nodeType.st}, properties={$pr} )
 	;
 
@@ -266,13 +266,8 @@ selectCollatorLevel
 	;
 
 propertyReference[int propertyCount]
-@init	{
-boolean beginsWithComma = true;
-}	:	^(PROPERTY PROPERTY_NAME orderType)
-	{	if(propertyCount > 0){
-			beginsWithComma = true;
-		}	}
-		-> {beginsWithComma}? commaOrderProperty(propertyName={$PROPERTY_NAME.text}, orderType={$orderType.st})
+	:	^(PROPERTY PROPERTY_NAME orderType)
+		-> {(propertyCount > 0)}? commaOrderProperty(propertyName={$PROPERTY_NAME.text}, orderType={$orderType.st})
 		-> orderProperty(propertyName={$PROPERTY_NAME.text}, orderType={$orderType.st})
 	;
 
@@ -282,12 +277,12 @@ orderType
 	;
 
 expr
-	:	^(AND_OPERATOR lhs=expr rhs=expr)
-		-> booleanAndOperator(lhs={$lhs.st}, rhs={$rhs.st})
-	|	^(OR_OPERATOR lhs=expr rhs=expr)
-		-> booleanOrOperator(lhs={$lhs.st}, rhs={$rhs.st})
-	|	^(NEGATED_OPERATOR nexpr=expr)
-		-> negatedOperator(expr={$nexpr.st})
+	:	^(AND_OPERATOR lhs=expr NEGATED_OPERATOR? rhs=expr)
+		-> {$NEGATED_OPERATOR == null}? booleanAndOperator(lhs={$lhs.st}, rhs={$rhs.st})
+		-> negatedBooleanAndOperator(lhs={$lhs.st}, rhs={$rhs.st})
+	|	^(OR_OPERATOR lhs=expr NEGATED_OPERATOR? rhs=expr)
+		-> {$NEGATED_OPERATOR == null}? booleanOrOperator(lhs={$lhs.st}, rhs={$rhs.st})
+		-> negatedBooleanOrOperator(lhs={$lhs.st}, rhs={$rhs.st})
 	|	^(PROPERTY ^(operator PROPERTY_NAME valueExpr))
 		 -> whereProperty(operator={$operator.st}, propertyName={$PROPERTY_NAME.text}, value={$valueExpr.st})
 	|	^(LINK_VK ^(numericOperator LINK_TYPE_NAME linkDirections numericValue))
@@ -317,6 +312,7 @@ stringOperator
 	:	STARTS_WITH			-> startsWithOperator()
 	|	ENDS_WITH			-> endsWithOperator()
 	|	CONTAINS			-> containsOperator()
+	|	NOT_CONTAINS		-> notContainsOperator()
 	;
 
 numericOperator

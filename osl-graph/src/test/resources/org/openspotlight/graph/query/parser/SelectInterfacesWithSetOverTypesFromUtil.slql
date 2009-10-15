@@ -1,9 +1,9 @@
-select org.openspotlight.graph.query.JavaType.*
+select org.openspotlight.graph.test.domain.JavaType.*
 	where 
-		org.openspotlight.graph.query.JavaType.*
+		org.openspotlight.graph.test.domain.JavaType.*
 			property caption *... "java.util";
 
-select org.openspotlight.graph.query.JavaInterface
+select org.openspotlight.graph.test.domain.JavaInterface
 	where 
-		org.openspotlight.graph.query.JavaInterface
+		org.openspotlight.graph.test.domain.JavaInterface
 			property caption <*> "Set";

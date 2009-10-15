@@ -1,6 +1,6 @@
 select **
 	where
-		org.openspotlight.graph.query.JavaType.*
+		org.openspotlight.graph.test.domain.JavaType.*
 			property caption <*> "Set" &&
 			!(	property caption <*> "Hash" ||
 				property caption <*> "Bit" );

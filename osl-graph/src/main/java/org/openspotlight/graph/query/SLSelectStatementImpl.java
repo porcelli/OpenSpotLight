@@ -362,7 +362,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
 		/* (non-Javadoc)
 		 * @see org.openspotlight.graph.query.SLSelectStatement.End#executeXTimes(int)
 		 */
-		public End executeXTimes(int x) {
+		public End executeXTimes(Integer x) {
 			selectInfo.setXTimes(x);
 			return this;
 		}

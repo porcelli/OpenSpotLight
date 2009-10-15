@@ -46,15 +46,15 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.test.domain;
 
 import org.openspotlight.graph.SLLink;
 
 /**
- * The Interface JavaClassHierarchy.
+ * The Interface MethodContainsParam.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaClassHierarchy extends SLLink {
+public interface MethodContainsParam extends SLLink {
 
 }

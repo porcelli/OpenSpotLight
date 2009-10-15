@@ -50,6 +50,7 @@ package org.openspotlight.graph.query.parser;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.openspotlight.graph.SLGraphSession;
@@ -74,7 +75,7 @@ public interface SLQLQuery extends Serializable {
 
     public Collection<SLQLVariable> getVariables();
 
-    public Collection<SLNode> execute( final SLGraphSession session,
-                                       final Map<String, ?> variableValues,
-                                       final Collection<SLNode> inputNodes ) throws SLGraphSessionException;
+    public List<SLNode> execute( final SLGraphSession session,
+                                 final Map<String, ?> variableValues,
+                                 final List<SLNode> inputNodes ) throws SLGraphSessionException;
 }

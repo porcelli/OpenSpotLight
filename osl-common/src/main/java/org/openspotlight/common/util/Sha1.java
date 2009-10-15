@@ -157,6 +157,7 @@ public class Sha1 {
             s.append(Integer.toHexString(parteAlta | parteBaixa));
         }
         return s.toString();
+    }
 
     /**
      * Should not be instantiated

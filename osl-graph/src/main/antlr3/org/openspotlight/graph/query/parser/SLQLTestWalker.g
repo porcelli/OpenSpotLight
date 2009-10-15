@@ -218,9 +218,8 @@ orderType
 	;
 
 expr
-	:	^(AND_OPERATOR expr expr)
-	|	^(OR_OPERATOR expr expr)
-	|	^(NEGATED_OPERATOR expr)
+	:	^(AND_OPERATOR expr NEGATED_OPERATOR? expr)
+	|	^(OR_OPERATOR expr NEGATED_OPERATOR? expr)
 	|	^(PROPERTY ^(operator PROPERTY_NAME valueExpr))
 	|	^(LINK_VK ^(numericOperator LINK_TYPE_NAME linkDirections numericValue))
 	;
@@ -248,6 +247,7 @@ stringOperator
 	:	STARTS_WITH
 	|	ENDS_WITH
 	|	CONTAINS
+	|	NOT_CONTAINS
 	;
 
 numericOperator

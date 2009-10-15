@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.openspotlight.graph.SLNode;
 
@@ -66,6 +66,6 @@ public interface SLQueryResult {
 	 * 
 	 * @throws SLQueryException the SL query exception
 	 */
-	public Collection<SLNode> getNodes() throws SLQueryException;
+	public List<SLNode> getNodes() throws SLQueryException;
 
 }

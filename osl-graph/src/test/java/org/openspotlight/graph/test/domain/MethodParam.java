@@ -46,13 +46,15 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.test.domain;
+
+import org.openspotlight.graph.SLNode;
 
 /**
- * The Interface JavaInterface.
+ * The Interface MethodParam.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaInterface extends JavaType {
+public interface MethodParam extends SLNode {
 
 }

@@ -1,7 +1,7 @@
 select **
 	where
-		org.openspotlight.graph.query.JavaType.*
+		org.openspotlight.graph.test.domain.JavaType.*
 			property caption <*> "Set"
-	ordery by
-		org.openspotlight.graph.query.JavaType
+	order by
+		org.openspotlight.graph.test.domain.JavaType
 			property caption asc;
