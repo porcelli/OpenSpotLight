@@ -116,7 +116,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -150,7 +150,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -199,7 +199,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectAllJavaClasses() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -276,7 +276,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -372,7 +372,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -465,7 +465,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -514,7 +514,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -569,7 +569,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -636,7 +636,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectInterfacesWithSetOverTypesFromUtil() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -684,7 +684,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectInterfacesWithSetOverTypesFromUtilWithKeepResult() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -787,7 +787,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectCollectionMethods() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -842,7 +842,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectCollectionMethodsWithKeepResult() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -900,7 +900,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectUtilTypesAndColletionMethods() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1020,7 +1020,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectTypesFromMethodsWithGet() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1092,7 +1092,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectTypesFromMethodsWithGetWithKeepResult() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1305,7 +1305,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1471,7 +1471,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1636,7 +1636,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagLesserOrEqualTo50() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1681,7 +1681,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagGreaterThan50() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1726,7 +1726,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectAllDateMethods() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1765,7 +1765,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagLesserOrEqualTo30OrGreaterOrEqualTo70() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1811,7 +1811,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagBetween30And70() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1858,7 +1858,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1905,7 +1905,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -1960,7 +1960,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2023,7 +2023,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2076,7 +2076,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2129,7 +2129,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2170,7 +2170,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2247,7 +2247,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2303,7 +2303,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
             query
                  .select()
                  .allTypes().onWhere()
@@ -2349,7 +2349,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethods() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2426,7 +2426,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByLinkCount() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2478,7 +2478,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByAscending() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2518,7 +2518,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByDescending() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2558,7 +2558,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByAscendingAndDescending() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2602,7 +2602,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByCrossType() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2647,7 +2647,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyPrimaryChangeAccent() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2677,7 +2677,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyPrimaryChangeCase() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2707,7 +2707,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyPrimaryChangeAccentAndCase() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2740,7 +2740,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeySecondaryChangeAccent() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2769,7 +2769,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeySecondaryChangeCase() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2799,7 +2799,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeySecondaryChangeAccentAndCase() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2828,7 +2828,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyTertiaryChangeAccent() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2857,7 +2857,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyTertiaryChangeCase() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2886,7 +2886,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyTertiaryChangeAccentAndCase() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2915,7 +2915,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorDescriptionPrimary() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2945,7 +2945,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorDescriptionSecondary() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -2975,7 +2975,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorDescriptionTertiary() {
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()
@@ -3006,7 +3006,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            SLQuery query = session.createQuery();
+            SLQueryApi query = session.createQueryApi();
 
             query
                  .select()

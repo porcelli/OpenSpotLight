@@ -114,10 +114,10 @@ import java.util.Map;
 }
 
 @members {
-	private SLQLQueryInfo queryInfo = new SLQLQueryInfo();
+	private SLQueryTextInternalInfo queryInfo = new SLQueryTextInternalInfo();
 }
 
-compilationUnit returns [SLQLQueryInfo queryInfoReturn]
+compilationUnit returns [SLQueryTextInternalInfo queryInfoReturn]
 	:	enclosedCompilationUnit
 	{	queryInfo.setContent($enclosedCompilationUnit.st.toString());
 		$queryInfoReturn = queryInfo;	}

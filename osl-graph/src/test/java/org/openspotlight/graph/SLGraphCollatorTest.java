@@ -12,6 +12,10 @@ import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLink;
+import org.openspotlight.graph.test.domain.JavaClassNode;
+import org.openspotlight.graph.test.domain.JavaMethodNode;
+import org.openspotlight.graph.test.domain.SQLElement;
 import org.testng.Assert;
 
 public class SLGraphCollatorTest {

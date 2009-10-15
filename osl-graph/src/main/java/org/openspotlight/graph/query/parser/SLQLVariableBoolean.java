@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.graph.query.SLQLVariable;
+
 public class SLQLVariableBoolean extends SLQLVariable {
 
     Set<Boolean> domainValue = new HashSet<Boolean>(2);

@@ -58,7 +58,7 @@ import org.openspotlight.graph.SLNode;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQuery extends SLSelectFacade {
+public interface SLQuery {
 	
 	/**
 	 * The Enum SortMode.
@@ -79,10 +79,11 @@ public interface SLQuery extends SLSelectFacade {
 	 * 
 	 * @return the sL query result
 	 * 
-	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-	 * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
 	 */
-	public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 	
 	/**
 	 * Execute.
@@ -94,7 +95,7 @@ public interface SLQuery extends SLSelectFacade {
 	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLQueryResult execute(Collection<SLNode> inputNodes) throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	public SLQueryResult execute(Collection<SLNode> inputNodes) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 	
 	/**
 	 * Execute.
@@ -103,10 +104,11 @@ public interface SLQuery extends SLSelectFacade {
 	 * 
 	 * @return the sL query result
 	 * 
-	 * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-	 * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
 	 */
-	public SLQueryResult execute(String[] inputNodesIDs) throws SLInvalidQuerySyntaxException, SLGraphSessionException;
+	public SLQueryResult execute(String[] inputNodesIDs) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 	
 	/**
 	 * Execute.
@@ -150,20 +152,5 @@ public interface SLQuery extends SLSelectFacade {
 	 * @throws SLInvalidQueryElementException the SL invalid query element exception
 	 * @throws SLQueryException the SL query exception
 	 */
-	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
-	
-	/**
-	 * Gets the collator strength.
-	 * 
-	 * @return the collator strength
-	 */
-	public int getCollatorStrength();
-	
-	/**
-	 * Sets the collator strength.
-	 * 
-	 * @param collatorStrength the new collator strength
-	 */
-	public void setCollatorStrength(int collatorStrength);
+	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode, boolean showSLQL) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;	
 }
-

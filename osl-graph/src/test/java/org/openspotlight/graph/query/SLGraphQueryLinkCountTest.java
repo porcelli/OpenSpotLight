@@ -145,7 +145,7 @@ public class SLGraphQueryLinkCountTest {
     	try {
     		
     		String id = findIFaceID(java.util.Map.class);
-    		SLQuery query = session.createQuery();
+    		SLQueryApi query = session.createQueryApi();
 
     		query
     			.select()
@@ -183,7 +183,7 @@ public class SLGraphQueryLinkCountTest {
     		Collection<SLNode> inputNodes = new ArrayList<SLNode>();
     		inputNodes.add(node);
     		
-    		SLQuery query = session.createQuery();
+    		SLQueryApi query = session.createQueryApi();
 
     		query
     			.select()
@@ -217,9 +217,10 @@ public class SLGraphQueryLinkCountTest {
      * @return the string
      * 
      * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidQuerySyntaxException 
      */
-    private String findIFaceID(Class<?> type) throws SLGraphSessionException {
-		SLQuery query = session.createQuery();
+    private String findIFaceID(Class<?> type) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+		SLQueryApi query = session.createQueryApi();
 		query
 			.select()
 				.allTypes().onWhere()
