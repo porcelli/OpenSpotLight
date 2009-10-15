@@ -82,8 +82,8 @@ import org.openspotlight.graph.SLUUIDEncoder;
  * {@link BundleProcessingGroup}. Other parameters are passed on the context just for convenience. Please, implement one of the
  * child interfaces that extended this {@link BundleProcessor} interface.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @param <T> Artifact type for this bundle processor
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public interface BundleProcessor<T extends Artifact> {
 
@@ -95,14 +95,33 @@ public interface BundleProcessor<T extends Artifact> {
     @ThreadSafe
     public static class BundleProcessingContext {
 
+        /** The context. */
         private final SLContext            context;
+
+        /** The session. */
         private final SLGraphSession       session;
+
+        /** The configuration manager. */
         private final ConfigurationManager configurationManager;
+
+        /** The logger. */
         private final DetailedLogger       logger;
+
+        /** The root group. */
         private final Group                rootGroup;
 
+        /** The encoder. */
         private final SLEncoder            encoder = new SLUUIDEncoder();
 
+        /**
+         * Instantiates a new bundle processing context.
+         * 
+         * @param graphSession the graph session
+         * @param jcrSession the jcr session
+         * @param rootGroup the root group
+         * @param configurationManager the configuration manager
+         * @throws SLGraphException the SL graph exception
+         */
         public BundleProcessingContext(
                                         final SLGraphSession graphSession, final Session jcrSession, final Group rootGroup,
                                         final ConfigurationManager configurationManager ) throws SLGraphException {
@@ -128,22 +147,47 @@ public interface BundleProcessor<T extends Artifact> {
             this.context = tempContext;
         }
 
+        /**
+         * Gets the configuration manager.
+         * 
+         * @return the configuration manager
+         */
         public ConfigurationManager getConfigurationManager() {
             return this.configurationManager;
         }
 
+        /**
+         * Gets the context.
+         * 
+         * @return the context
+         */
         public SLContext getContext() {
             return this.context;
         }
 
+        /**
+         * Gets the logger.
+         * 
+         * @return the logger
+         */
         public DetailedLogger getLogger() {
             return this.logger;
         }
 
+        /**
+         * Gets the root group.
+         * 
+         * @return the root group
+         */
         public Group getRootGroup() {
             return this.rootGroup;
         }
 
+        /**
+         * Gets the session.
+         * 
+         * @return the session
+         */
         public SLGraphSession getSession() {
             return this.session;
         }
@@ -179,34 +223,52 @@ public interface BundleProcessor<T extends Artifact> {
      * target artifact and graph session. The main objective here is to get information for the target artifact and create
      * information inside graph session.
      * 
+     * @param <T> *
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * @param <T>
      */
     @ThreadSafe
     public static class BundleProcessingGroup<T> {
+
+        /** The added artifacts. */
         private final Set<T> addedArtifacts;
+
+        /** The all valid artifacts. */
         private final Set<T> allValidArtifacts;
+
+        /** The already processed artifacts. */
         private final Set<T> alreadyProcessedArtifacts;
+
+        /** The artifacts with error. */
         private final Set<T> artifactsWithError;
+
+        /** The bundle. */
         private final Bundle bundle;
+
+        /** The excluded artifacts. */
         private final Set<T> excludedArtifacts;
+
+        /** The ignored artifacts. */
         private final Set<T> ignoredArtifacts;
+
+        /** The modified artifacts. */
         private final Set<T> modifiedArtifacts;
+
+        /** The not processed artifacts. */
         private final Set<T> notProcessedArtifacts;
 
         /**
-         * Constructor to initialize all mandatory fields
+         * Constructor to initialize all mandatory fields.
          * 
-         * @param bundle
-         * @param addedArtifacts
-         * @param excludedArtifacts
-         * @param ignoredArtifacts
-         * @param artifactsWithError
-         * @param modifiedArtifacts
-         * @param allValidArtifacts
-         * @param notProcessedArtifacts
-         * @param alreadyProcessedArtifacts
-         * @param mutableType
+         * @param bundle the bundle
+         * @param addedArtifacts the added artifacts
+         * @param excludedArtifacts the excluded artifacts
+         * @param ignoredArtifacts the ignored artifacts
+         * @param artifactsWithError the artifacts with error
+         * @param modifiedArtifacts the modified artifacts
+         * @param allValidArtifacts the all valid artifacts
+         * @param notProcessedArtifacts the not processed artifacts
+         * @param alreadyProcessedArtifacts the already processed artifacts
+         * @param mutableType the mutable type
          */
         public BundleProcessingGroup(
                                       final Bundle bundle, final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
@@ -253,6 +315,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the added artifacts.
+         * 
          * @return all added artifacts.
          */
         public Set<T> getAddedArtifacts() {
@@ -260,6 +324,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the all valid artifacts.
+         * 
          * @return all valid artifacts
          */
         public Set<T> getAllValidArtifacts() {
@@ -267,6 +333,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the already processed artifacts.
+         * 
          * @return all already processed artifacts
          */
         public Set<T> getAlreadyProcessedArtifacts() {
@@ -274,6 +342,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the artifacts with error.
+         * 
          * @return artifacts with error
          */
         public Set<T> getArtifactsWithError() {
@@ -281,6 +351,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the bundle.
+         * 
          * @return the parent bundle for all this artifacts
          */
         public Bundle getBundle() {
@@ -288,6 +360,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the excluded artifacts.
+         * 
          * @return all excluded artifacts
          */
         public Set<T> getExcludedArtifacts() {
@@ -295,6 +369,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the ignored artifacts.
+         * 
          * @return all ignored artifacts
          */
         public Set<T> getIgnoredArtifacts() {
@@ -302,6 +378,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the modified artifacts.
+         * 
          * @return all modified artifacts
          */
         public Set<T> getModifiedArtifacts() {
@@ -309,6 +387,8 @@ public interface BundleProcessor<T extends Artifact> {
         }
 
         /**
+         * Gets the not processed artifacts.
+         * 
          * @return all processed artifacts
          */
         public Set<T> getNotProcessedArtifacts() {
@@ -327,17 +407,14 @@ public interface BundleProcessor<T extends Artifact> {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static enum ProcessingAction {
-        /**
-         * Artifact ignored. This artifact should not be processed by this {@link BundleProcessor}.
-         */
+
+        /** Artifact ignored. This artifact should not be processed by this {@link BundleProcessor}. */
         ARTIFACT_IGNORED,
-        /**
-         * Artifact processed by this {@link BundleProcessor}.
-         */
+
+        /** Artifact processed by this {@link BundleProcessor}. */
         ARTIFACT_PROCESSED,
-        /**
-         * There's an error processing this artifact by this {@link BundleProcessor}.
-         */
+
+        /** There's an error processing this artifact by this {@link BundleProcessor}. */
         ERROR_PROCESSING_ARTIFACT,
 
     }
@@ -351,27 +428,32 @@ public interface BundleProcessor<T extends Artifact> {
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static enum ProcessingStartAction {
+
         /**
          * For some reason was really, really easy to process all artifacts on a simple loop without threads and so on. So, in
          * this situations, process all artifacts and return this constant value and the {@link BundleProcessor} will know that
          * everything is ok.
          */
         ALL_PROCESSING_ALREADY_DONE,
+
         /**
          * This constant tells the {@link BundleProcessor} that some fatal condition happened. It's the same as throwing an
          * exception.
          */
         FATAL_ERROR_ON_START_PROCESSING,
+
         /**
          * For a reason, it's not convenient to process the artifacts rigth now. So, with this constant as a return type, all the
          * artifacts are ignored.
          */
         IGNORE_ALL,
+
         /**
          * For a reason, all artifacts processed on a previous running are invalid for now. So, it need to be run on all new
          * artifacts and the old ones. This constant tells the {@link BundleProcessor} to do that.
          */
         PROCESS_ALL_AGAIN,
+
         /**
          * This constant tells the {@link BundleProcessor} to use the contents of
          * {@link BundleProcessor.BundleProcessingGroup#getNotProcessedArtifacts()} as a input to be processed on the each item
@@ -391,8 +473,8 @@ public interface BundleProcessor<T extends Artifact> {
     /**
      * Callback method to inform that all the processing finalized.
      * 
-     * @param bundleProcessingGroup
-     * @param graphContext
+     * @param bundleProcessingGroup the bundle processing group
+     * @param graphContext the graph context
      */
     public void globalProcessingFinalized( BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
                                            BundleProcessingContext graphContext );

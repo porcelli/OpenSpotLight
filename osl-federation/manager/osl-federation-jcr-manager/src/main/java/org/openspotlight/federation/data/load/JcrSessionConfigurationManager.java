@@ -116,19 +116,35 @@ import org.openspotlight.federation.data.util.ParentNumberComparator;
 public class JcrSessionConfigurationManager implements ConfigurationManager {
 
     /**
-     * Class to control the Lazy Loading for {@link JcrSessionConfigurationManager} when the loading is {@link LazyType#LAZY}
+     * Class to control the Lazy Loading for {@link JcrSessionConfigurationManager} when the loading is {@link LazyType#LAZY}.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     private static class JcrDataLoader implements DataLoader {
+
+        /**
+         * Just a listener to create the load commands on demand.
+         * 
+         * @author feu
+         */
         private static class CacheLoadingListener implements LoadingListener {
+
+            /** The node cache. */
             private final Map<ConfigurationNode, LoadCommand> nodeCache;
 
+            /**
+             * Instantiates a new cache loading listener.
+             * 
+             * @param nodeCache the node cache
+             */
             public CacheLoadingListener(
                                          final Map<ConfigurationNode, LoadCommand> nodeCache ) {
                 this.nodeCache = nodeCache;
             }
 
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.data.load.JcrSessionConfigurationManager.LoadingListener#loading(org.openspotlight.federation.data.ConfigurationNode, javax.jcr.Node)
+             */
             public void loading( final ConfigurationNode configurationNode,
                                  final Node jcrNode ) {
                 if (!this.nodeCache.containsKey(configurationNode)) {
@@ -138,16 +154,46 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
         }
 
+        /**
+         * This class should be a 'lazy command'. When it needs to load children or properties, it just load. If it's not needed,
+         * it does nothing.
+         * 
+         * @author feu
+         */
         private static class LoadCommand {
+
+            /** The loading children. */
             private boolean                           loadingChildren   = false;
+
+            /** The loading properties. */
             private boolean                           loadingProperties = false;
+
+            /** The configuration node. */
             private final ConfigurationNode           configurationNode;
+
+            /** The jcr node. */
             private final Node                        jcrNode;
+
+            /** The properties loaded. */
             private boolean                           propertiesLoaded  = false;
+
+            /** The children loaded. */
             private boolean                           childrenLoaded    = false;
+
+            /** The listener. */
             private final LoadingListener             listener;
+
+            /** The node cache. */
             final Map<ConfigurationNode, LoadCommand> nodeCache;
 
+            /**
+             * Instantiates a new load command.
+             * 
+             * @param configurationNode the configuration node
+             * @param jcrNode the jcr node
+             * @param listener the listener
+             * @param nodeCache the node cache
+             */
             LoadCommand(
                          final ConfigurationNode configurationNode, final Node jcrNode, final LoadingListener listener,
                          final Map<ConfigurationNode, LoadCommand> nodeCache ) {
@@ -159,6 +205,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
             }
 
+            /**
+             * Internal load properties.
+             * 
+             * @throws RepositoryException the repository exception
+             * @throws Exception the exception
+             */
             private void internalLoadProperties() throws RepositoryException, Exception {
                 final String[] propKeys = this.configurationNode.getInstanceMetadata().getStaticMetadata().propertyNames();
                 final Class<?>[] propValues = this.configurationNode.getInstanceMetadata().getStaticMetadata().propertyTypes();
@@ -167,6 +219,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 loadNodeProperties(this.jcrNode, this.configurationNode, propertyTypes, keyPropertyName);
             }
 
+            /**
+             * Load children.
+             * 
+             * @throws Exception the exception
+             */
             public void loadChildren() throws Exception {
                 if (this.childrenLoaded || this.loadingChildren) {
                     return;
@@ -179,6 +236,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 this.childrenLoaded = true;
             }
 
+            /**
+             * Load parent.
+             * 
+             * @throws Exception the exception
+             */
             private void loadParent() throws Exception {
                 final ConfigurationNode parent = this.configurationNode.getInstanceMetadata().getDefaultParent();
 
@@ -188,6 +250,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 }
             }
 
+            /**
+             * Load properties.
+             * 
+             * @throws Exception the exception
+             */
             public void loadProperties() throws Exception {
                 if (this.propertiesLoaded || this.loadingProperties) {
                     return;
@@ -203,17 +270,22 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
         }
 
+        /** The session. */
         private final Session                             session;
 
+        /** The node cache. */
         private final Map<ConfigurationNode, LoadCommand> nodeCache = new HashMap<ConfigurationNode, LoadCommand>();
+
+        /** The listener. */
         private final LoadingListener                     listener;
 
         /**
          * Constructor to initialize the lazy loading for this two corresponding root nodes.
          * 
-         * @param configurationNode
-         * @param jcrRootNode
-         * @throws RepositoryException
+         * @param jcrRootNode the jcr root node
+         * @param configurationRootNode the configuration root node
+         * @param session the session
+         * @throws RepositoryException the repository exception
          */
         public JcrDataLoader(
                               final Configuration configurationRootNode, final Node jcrRootNode, final Session session )
@@ -225,6 +297,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
         }
 
+        /**
+         * Fill command cache.
+         * 
+         * @param configurationNode the configuration node
+         * @throws Exception the exception
+         */
         private void fillCommandCache( final ConfigurationNode configurationNode ) throws Exception {
             final List<ConfigurationNode> allParentNodes = new LinkedList<ConfigurationNode>();
             allParentNodes.add(configurationNode);
@@ -241,6 +319,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
         }
 
+        /**
+         * Gets the load command for.
+         * 
+         * @param configurationNode the configuration node
+         * @return the load command for
+         * @throws Exception the exception
+         */
         private LoadCommand getLoadCommandFor( final ConfigurationNode configurationNode ) throws Exception {
             if (this.nodeCache.containsKey(configurationNode)) {
                 return this.nodeCache.get(configurationNode);
@@ -250,6 +335,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
         }
 
+        /* (non-Javadoc)
+         * @see org.openspotlight.federation.data.InstanceMetadata.DataLoader#loadChildren(org.openspotlight.federation.data.ConfigurationNode)
+         */
         public void loadChildren( final ConfigurationNode targetNode ) {
             try {
                 this.getLoadCommandFor(targetNode).loadChildren();
@@ -258,6 +346,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             }
         }
 
+        /* (non-Javadoc)
+         * @see org.openspotlight.federation.data.InstanceMetadata.DataLoader#loadProperties(org.openspotlight.federation.data.ConfigurationNode)
+         */
         public void loadProperties( final ConfigurationNode targetNode ) {
             try {
                 this.getLoadCommandFor(targetNode).loadProperties();
@@ -277,12 +368,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     private static class JcrSupport {
 
         /**
-         * Find all nodes by using a xpath query
+         * Find all nodes by using a xpath query.
          * 
-         * @param session
-         * @param xpath
+         * @param session the session
+         * @param xpath the xpath
          * @return a node iterator
-         * @throws Exception
+         * @throws Exception the exception
          */
         public static NodeIterator findAll( final Session session,
                                             final String xpath ) throws Exception {
@@ -295,8 +386,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         /**
          * Find a node using a xpath query.
          * 
-         * @param session
-         * @param xpath
+         * @param session the session
+         * @param xpath the xpath
          * @return null when no items found, or the jcr item instead
          * @throws Exception if more than one item was found, or if anything wrong happened
          */
@@ -318,13 +409,29 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
 
+    /**
+     * The listener interface for receiving loading events. The class that is interested in processing a loading event implements
+     * this interface, and the object created with that class is registered with a component using the component's
+     * <code>addLoadingListener<code> method. When
+     * the loading event occurs, that object's appropriate
+     * method is invoked.
+     * 
+     * @see LoadingEvent
+     */
     private static interface LoadingListener {
+
+        /**
+         * Loading.
+         * 
+         * @param configurationNode the configuration node
+         * @param jcrNode the jcr node
+         */
         public void loading( ConfigurationNode configurationNode,
                              Node jcrNode );
     }
 
     /**
-     * This helper class can create xpath to find the {@link Node Jcr Node} corresponding to a unique {@link ConfigurationNode}
+     * This helper class can create xpath to find the {@link Node Jcr Node} corresponding to a unique {@link ConfigurationNode}.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
@@ -333,8 +440,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         /**
          * Fill the string buffer at the beginning using the node data.
          * 
-         * @param xpath
-         * @param node
+         * @param xpath the xpath
+         * @param node the node
          * @throws Exception on conversion errors
          */
         private static void fillXpathFromNode( final StringBuilder xpath,
@@ -353,9 +460,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
 
         /**
-         * @param node
+         * Gets the complete xpath for.
+         * 
+         * @param node the node
          * @return a complete filled xpath based on node data and also its parent's data.
-         * @throws Exception
+         * @throws Exception the exception
          */
         static String getCompleteXpathFor( final ConfigurationNode node ) throws Exception {
             ConfigurationNode c = node;
@@ -370,21 +479,23 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
 
+    /** The Constant classHelper. */
     static final NodeClassHelper             classHelper    = new NodeClassHelper();
 
+    /** The Constant NS_DESCRIPTION. */
     private static final String              NS_DESCRIPTION = "www.openspotlight.org";  //$NON-NLS-1$
 
+    /** The Constant propertyHelper. */
     private static final PropertyEntryHelper propertyHelper = new PropertyEntryHelper();
 
     /**
-     * Reads an property on jcr node
+     * Reads an property on jcr node.
      * 
-     * @param <T>
-     * @param jcrNode
-     * @param propertyName
-     * @param propertyClass
-     * @return
-     * @throws Exception
+     * @param jcrNode the jcr node
+     * @param propertyName the property name
+     * @param propertyClass the property class
+     * @return the property
+     * @throws Exception the exception
      */
     @SuppressWarnings( {"boxing", "unchecked"} )
     private static <T> T getProperty( final Node jcrNode,
@@ -447,12 +558,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
 
     /**
-     * Loads the newly created node and also it's properties and it's children
+     * Loads the newly created node and also it's properties and it's children.
      * 
-     * @param jcrNode
-     * @param configurationNode
-     * @param staticMetadata
-     * @throws Exception
+     * @param jcrNode the jcr node
+     * @param configurationNode the configuration node
+     * @param staticMetadata the static metadata
+     * @throws Exception the exception
      */
     private static void loadChildrenAndProperties( final Node jcrNode,
                                                    final ConfigurationNode configurationNode,
@@ -464,6 +575,18 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         loadChildrenNodes(jcrNode, configurationNode, LazyType.EAGER, null);
     }
 
+    /**
+     * Load children nodes.
+     * 
+     * @param jcrNode the jcr node
+     * @param parentNode the parent node
+     * @param lazyType the lazy type
+     * @param listener the listener
+     * @throws PathNotFoundException the path not found exception
+     * @throws RepositoryException the repository exception
+     * @throws ConfigurationException the configuration exception
+     * @throws Exception the exception
+     */
     static void loadChildrenNodes( final Node jcrNode,
                                    final ConfigurationNode parentNode,
                                    final LazyType lazyType,
@@ -498,6 +621,17 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
     }
 
+    /**
+     * Load node properties.
+     * 
+     * @param jcrNode the jcr node
+     * @param configurationNode the configuration node
+     * @param propertyTypes the property types
+     * @param keyPropertyName the key property name
+     * @throws RepositoryException the repository exception
+     * @throws ConfigurationException the configuration exception
+     * @throws Exception the exception
+     */
     static void loadNodeProperties( final Node jcrNode,
                                     final ConfigurationNode configurationNode,
                                     final Map<String, Class<?>> propertyTypes,
@@ -529,6 +663,16 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
 
+    /**
+     * Load one child.
+     * 
+     * @param parentNode the parent node
+     * @param jcrChild the jcr child
+     * @param staticMetadataForChild the static metadata for child
+     * @param childNodeClass the child node class
+     * @return the configuration node
+     * @throws Exception the exception
+     */
     private static ConfigurationNode loadOneChild( final ConfigurationNode parentNode,
                                                    final Node jcrChild,
                                                    final StaticMetadata staticMetadataForChild,
@@ -545,16 +689,14 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         return newNode;
     }
 
-    /**
-     * JCR session
-     */
+    /** JCR session. */
     private final Session session;
 
     /**
      * Constructor. It's mandatory that the session is valid during object liveness.
      * 
      * @param session valid session
-     * @throws ConfigurationException
+     * @throws ConfigurationException the configuration exception
      */
     public JcrSessionConfigurationManager(
                                            final Session session ) throws ConfigurationException {
@@ -564,10 +706,24 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         this.initDataInsideSession();
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.federation.data.load.ConfigurationManager#closeResources()
+     */
     public void closeResources() {
         this.session.logout();
     }
 
+    /**
+     * Creates the.
+     * 
+     * @param parentNode the parent node
+     * @param nodePath the node path
+     * @param keyPropertyName the key property name
+     * @param keyPropertyValue the key property value
+     * @param keyPropertyType the key property type
+     * @return the node
+     * @throws Exception the exception
+     */
     private Node create( final Node parentNode,
                          final String nodePath,
                          final String keyPropertyName,
@@ -591,14 +747,14 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     /**
      * Method to create nodes on jcr only when necessary.
      * 
-     * @param parentJcrNode
-     * @param currentNode
-     * @param nodePath
-     * @param keyPropertyName
-     * @param keyPropertyValue
-     * @param keyPropertyType
-     * @return
-     * @throws ConfigurationException
+     * @param parentJcrNode the parent jcr node
+     * @param currentNode the current node
+     * @param nodePath the node path
+     * @param keyPropertyName the key property name
+     * @param keyPropertyValue the key property value
+     * @param keyPropertyType the key property type
+     * @return the node
+     * @throws ConfigurationException the configuration exception
      */
     private Node createIfDontExists( final Node parentJcrNode,
                                      final ConfigurationNode currentNode,
@@ -628,6 +784,19 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
 
+    /**
+     * Fill result for each item.
+     * 
+     * @param root the root
+     * @param node the node
+     * @param nodeType the node type
+     * @param result the result
+     * @throws RepositoryException the repository exception
+     * @throws ItemNotFoundException the item not found exception
+     * @throws AccessDeniedException the access denied exception
+     * @throws ConfigurationException the configuration exception
+     * @throws Exception the exception
+     */
     private <T> void fillResultForEachItem( final ConfigurationNode root,
                                             final Node node,
                                             final Class<T> nodeType,
@@ -725,7 +894,7 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      * Just create the "osl" prefix if that one doesn't exists, and after that created the node "osl:configuration" if that
      * doesn't exists.
      * 
-     * @throws ConfigurationException
+     * @throws ConfigurationException the configuration exception
      */
     private void initDataInsideSession() throws ConfigurationException {
         try {
@@ -779,11 +948,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
 
     /**
-     * Verify if the prefix "osl" exists
+     * Verify if the prefix "osl" exists.
      * 
-     * @param namespaceRegistry
+     * @param namespaceRegistry the namespace registry
      * @return true if exists
-     * @throws RepositoryException
+     * @throws RepositoryException the repository exception
      */
     private boolean prefixExists( final NamespaceRegistry namespaceRegistry ) throws RepositoryException {
         final String[] prefixes = namespaceRegistry.getPrefixes();
@@ -797,6 +966,12 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         return hasFound;
     }
 
+    /**
+     * Removes the node.
+     * 
+     * @param oldItem the old item
+     * @throws Exception the exception
+     */
     private void removeNode( final ConfigurationNode oldItem ) throws Exception {
         assert oldItem != null;
         final String pathToFind = XpathSupport.getCompleteXpathFor(oldItem);
@@ -887,6 +1062,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
 
+    /**
+     * Save properties.
+     * 
+     * @param configurationNode the configuration node
+     * @param innerNewJcrNode the inner new jcr node
+     * @throws Exception the exception
+     */
     private void saveProperties( final ConfigurationNode configurationNode,
                                  final Node innerNewJcrNode ) throws Exception {
         final Map<String, Object> properties = configurationNode.getInstanceMetadata().getProperties();
@@ -899,13 +1081,13 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
     }
 
     /**
-     * Sets an property on a jcr node
+     * Sets an property on a jcr node.
      * 
-     * @param jcrNode
-     * @param propertyName
-     * @param propertyClass
-     * @param value
-     * @throws Exception
+     * @param jcrNode the jcr node
+     * @param propertyName the property name
+     * @param propertyClass the property class
+     * @param value the value
+     * @throws Exception the exception
      */
     @SuppressWarnings( "boxing" )
     private void setProperty( final Node jcrNode,
@@ -945,6 +1127,14 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         }
     }
 
+    /**
+     * Sets the uuid data.
+     * 
+     * @param rootJcrNode the root jcr node
+     * @param rootNode the root node
+     * @throws RepositoryException the repository exception
+     * @throws UnsupportedRepositoryOperationException the unsupported repository operation exception
+     */
     private void setUuidData( final Node rootJcrNode,
                               final Configuration rootNode ) throws RepositoryException, UnsupportedRepositoryOperationException {
         final Set<Artifact> artifacts = findAllNodesOfType(rootNode, Artifact.class);
