@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.slql.parser.SLQLQuery;
-import org.openspotlight.slql.parser.SLQLQueryBuilder;
+import org.openspotlight.graph.query.parser.SLQLQuery;
+import org.openspotlight.graph.query.parser.SLQLQueryBuilder;
 
 public class TestSLQLQueryBuilder {
 

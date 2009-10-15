@@ -1,0 +1,4 @@
+select **
+	where
+		org.openspotlight.graph.query.JavaInterface
+			property caption !<*> "Set";
