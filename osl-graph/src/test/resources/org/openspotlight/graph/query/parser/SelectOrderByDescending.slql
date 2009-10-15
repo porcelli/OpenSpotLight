@@ -1,0 +1,7 @@
+select **
+	where
+		org.openspotlight.graph.query.JavaClass
+			property caption <*> "Set"
+	ordery by
+		org.openspotlight.graph.query.JavaInterface
+			property caption desc;

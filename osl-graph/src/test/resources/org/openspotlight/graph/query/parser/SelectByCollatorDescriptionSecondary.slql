@@ -1,0 +1,5 @@
+select **
+	where
+		org.openspotlight.graph.query.JavaInterface
+			property caption <*> "CollecTION"
+	use collator level secondary;

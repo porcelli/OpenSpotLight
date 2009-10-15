@@ -8,6 +8,9 @@
 .wtpmodules
 .pmd
 
+#ANTLR temp files
+*.tokens
+
 #emacs bkp
 *~
 

@@ -1,0 +1,17 @@
+select org.openspotlight.graph.query.JavaInterface
+	where
+		org.openspotlight.graph.query.JavaInterface
+			property caption == "java.util.SortedSet"
+	keep result;
+
+select org.openspotlight.graph.query.JavaInterface
+	by link org.openspotlight.graph.query.JavaInterfaceHierarchy (b)
+	keep result;
+
+select org.openspotlight.graph.query.JavaInterface
+	by link org.openspotlight.graph.query.JavaInterfaceHierarchy (b)
+	keep result;
+
+select org.openspotlight.graph.query.JavaInterface
+	by link org.openspotlight.graph.query.JavaInterfaceHierarchy (b)
+	keep result;

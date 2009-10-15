@@ -271,7 +271,7 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 		 * @see org.openspotlight.graph.query.SLWhereStatement.Type#each()
 		 */
 		public Each each() {
-			SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo);
+			SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
 			typeInfo.setTypeStatementInfo(whereStatementInfo);
 			SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
 			return new EachImpl(whereStatement, conditionInfo);
@@ -305,7 +305,7 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 			 * @see org.openspotlight.graph.query.SLWhereStatement.Type.SubTypes#each()
 			 */
 			public Each each() {
-				SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo);
+				SLTypeStatementInfo whereStatementInfo = new SLTypeStatementInfo(typeInfo, null);
 				typeInfo.setTypeStatementInfo(whereStatementInfo);
 				SLTypeConditionInfo conditionInfo = whereStatementInfo.addCondition();
 				return new EachImpl(whereStatement, conditionInfo);
@@ -317,7 +317,7 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 		 * 
 		 * @author Vitor Hugo Chagas
 		 */
-		public static class EachImpl implements Each {
+		public static class EachImpl implements Each, OuterEachGetter<Each> {
 
 			/** The where statement. */
 			private SLWhereStatement whereStatement;
@@ -349,6 +349,13 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 				this.whereStatement = whereStatement;
 				this.conditionInfo = conditionInfo;
 				this.outerEach = outerEach;
+			}
+			
+			/* (non-Javadoc)
+			 * @see org.openspotlight.graph.query.OuterEachGetter#getOuterEach()
+			 */
+			public Each getOuterEach() {
+				return outerEach;
 			}
 
 			/* (non-Javadoc)
@@ -687,7 +694,8 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 								 * @see org.openspotlight.graph.query.SLWhereStatement.Type.Each.Property.Operator.Value#closeBracket()
 								 */
 								public CloseBracket closeBracket() {
-									conditionInfo.getOuterStatementInfo().setClosed(true);
+									SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
+									statementInfo.setClosed(true);
 									return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
 								}
 								
@@ -746,7 +754,7 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 									 * @see org.openspotlight.graph.query.SLWhereStatement.Type.Each.Property.Operator.Value.RelationalOperator#openBracket()
 									 */
 									public OpenBracket openBracket() {
-										SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(conditionInfo.getTypeInfo());
+										SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(conditionInfo.getTypeInfo(), conditionInfo.getOuterStatementInfo());
 										conditionInfo.setInnerStatementInfo(newStatementInfo);
 										SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
 										Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
@@ -808,6 +816,19 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 										this.whereStatement = whereStatement;
 										this.outerEach = outerEach;
 										this.conditionInfo = conditionInfo;
+									}
+									
+									/* (non-Javadoc)
+									 * @see org.openspotlight.graph.query.SLWhereStatement.Type.Each.Link.Side.Count.Operator.Value.CloseBracket#closeBracket()
+									 */
+									@SuppressWarnings("unchecked")
+									public CloseBracket closeBracket() {
+										int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
+										SLTypeConditionInfo outerConditionInfo = conditionInfo.getOuterStatementInfo().getConditionInfoList().get(size - 1);
+										SLTypeStatementInfo outerStatementInfo = outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
+										outerStatementInfo.setClosed(true);
+										OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
+										return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
 									}
 									
 									/* (non-Javadoc)
@@ -1099,7 +1120,8 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 						 * @see org.openspotlight.graph.query.SLWhereStatement.Type.Each.Property.Operator.Value#closeBracket()
 						 */
 						public CloseBracket closeBracket() {
-							conditionInfo.getOuterStatementInfo().setClosed(true);
+							SLTypeStatementInfo statementInfo = conditionInfo.getOuterStatementInfo();
+							statementInfo.setClosed(true);
 							return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
 						}
 						
@@ -1158,7 +1180,7 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 							 * @see org.openspotlight.graph.query.SLWhereStatement.Type.Each.Property.Operator.Value.RelationalOperator#openBracket()
 							 */
 							public OpenBracket openBracket() {
-								SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(conditionInfo.getTypeInfo());
+								SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(conditionInfo.getTypeInfo(), conditionInfo.getOuterStatementInfo());
 								conditionInfo.setInnerStatementInfo(newStatementInfo);
 								SLTypeConditionInfo newConditionInfo = newStatementInfo.addCondition();
 								Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
@@ -1220,6 +1242,19 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 								this.whereStatement = whereStatement;
 								this.outerEach = outerEach;
 								this.conditionInfo = conditionInfo;
+							}
+							
+							/* (non-Javadoc)
+							 * @see org.openspotlight.graph.query.SLWhereStatement.Type.Each.Link.Side.Count.Operator.Value.CloseBracket#closeBracket()
+							 */
+							@SuppressWarnings("unchecked")
+							public CloseBracket closeBracket() {
+								int size = conditionInfo.getOuterStatementInfo().getConditionInfoList().size();
+								SLTypeConditionInfo outerConditionInfo = conditionInfo.getOuterStatementInfo().getConditionInfoList().get(size - 1);
+								SLTypeStatementInfo outerStatementInfo = outerConditionInfo.getOuterStatementInfo().getOuterStatementInfo();
+								outerStatementInfo.setClosed(true);
+								OuterEachGetter<Each> getter = OuterEachGetter.class.cast(outerEach);
+								return new CloseBracketImpl(whereStatement, getter.getOuterEach(), outerConditionInfo);
 							}
 							
 							/* (non-Javadoc)
@@ -1707,6 +1742,14 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 							}
 							
 							/* (non-Javadoc)
+							 * @see org.openspotlight.graph.query.SLWhereStatement.LinkType.Each.Property.Operator.Value.CloseBracket#closeBracket()
+							 */
+							public CloseBracket closeBracket() {
+								conditionInfo.getOuterStatementInfo().setClosed(true);
+								return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
+							}
+							
+							/* (non-Javadoc)
 							 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.CloseBracket#or()
 							 */
 							public RelationalOperator or() {
@@ -1739,4 +1782,10 @@ public class SLWhereStatementImpl implements SLWhereStatement {
 			}
 		}
 	}
+
+}
+
+interface OuterEachGetter<E> {
+	
+	public E getOuterEach();
 }

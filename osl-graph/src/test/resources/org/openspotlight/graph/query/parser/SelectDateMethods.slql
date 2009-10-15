@@ -1,0 +1,8 @@
+select **
+	where
+		org.openspotlight.graph.query.JavaClass
+			property caption == "java.util.Date";
+
+select org.openspotlight.graph.query.JavaTypeMethod
+	by link
+		org.openspotlight.graph.query.TypeContainsMethod (b);

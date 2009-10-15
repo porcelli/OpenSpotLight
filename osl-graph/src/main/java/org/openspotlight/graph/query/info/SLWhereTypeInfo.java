@@ -176,15 +176,19 @@ public class SLWhereTypeInfo implements Serializable {
 		/** The open brace stack trace. */
 		private StackTraceElement[] openBraceStackTrace;
 		
+		/** The outer statement info. */
+		private SLTypeStatementInfo outerStatementInfo;
+		
 		/**
 		 * Instantiates a new sL type statement info.
 		 * 
 		 * @param typeInfo the type info
 		 */
-		public SLTypeStatementInfo(SLWhereTypeInfo typeInfo) {
+		public SLTypeStatementInfo(SLWhereTypeInfo typeInfo, SLTypeStatementInfo outerStatementInfo) {
 			setOpened(true);
 			conditionInfoList = new ArrayList<SLTypeConditionInfo>();
 			this.typeInfo = typeInfo;
+			this.outerStatementInfo = outerStatementInfo;
 		}
 
 		/**
@@ -644,6 +648,14 @@ public class SLWhereTypeInfo implements Serializable {
 			public void setConditionalNotOperator(boolean conditionalNotOperator) {
 				this.conditionalNotOperator = conditionalNotOperator;
 			}
+		}
+
+		public SLTypeStatementInfo getOuterStatementInfo() {
+			return outerStatementInfo;
+		}
+
+		public void setOuterStatementInfo(SLTypeStatementInfo outerStatementInfo) {
+			this.outerStatementInfo = outerStatementInfo;
 		}
 	}
 }
