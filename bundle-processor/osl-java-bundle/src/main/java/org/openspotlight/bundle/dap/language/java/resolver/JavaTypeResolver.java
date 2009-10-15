@@ -95,67 +95,24 @@ import org.openspotlight.graph.query.SLQuery;
 import org.openspotlight.graph.query.SLQueryResult;
 
 /**
- * The Class JavaTypeResolver.
+ * The Class JavaTypeResolver is a {@link TypeResolver} used for Java Programming Language.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 
     /**
-     * The Class ComplexTypeFinderQueryExecutor.
+     * The Class {@link ByNameTypeFinder} executes a simple by name query
      */
-    private class ComplexTypeFinderQueryExecutor extends TypeFinderByQueryExecutor {
-
-        /** The all types from same packages. */
-        private final Collection<SLNode> allTypesFromSamePackages;
-
-        /**
-         * Instantiates a new complex type finder query executor.
-         * 
-         * @param typeToSolve the type to solve
-         * @param allTypesFromSamePackages the all types from same packages
-         */
-        public ComplexTypeFinderQueryExecutor(
-                                               final String typeToSolve, final Collection<SLNode> allTypesFromSamePackages ) {
-            super(typeToSolve);
-            this.allTypesFromSamePackages = allTypesFromSamePackages;
-        }
-
-        /**
-         * Execute with this string.
-         * 
-         * @param s the s
-         * @return the SL query result
-         * @throws Exception the exception
-         * @{inheritDoc
-         */
-        @Override
-        public SLQueryResult executeWithThisString( final String s ) throws Exception {
-            final SLQuery justTheTargetTypeQuery = JavaTypeResolver.this.getSession().createQuery();
-            justTheTargetTypeQuery.select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
-                                                                                                               JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                                    "simpleName").equalsTo().value(
-                                                                                                                                                                                                   s).typeEnd().whereEnd();
-            final SLQueryResult result = justTheTargetTypeQuery.execute(this.allTypesFromSamePackages);
-            return result;
-        }
-
-    }
-
-    // FIXME cache
-
-    /**
-     * The Class SimpleGetTypeFinder.
-     */
-    private class SimpleGetTypeFinder extends TypeFinderByQueryExecutor {
+    private class ByNameTypeFinder extends DolarReplacerQueryExecutor {
 
         /**
          * The Constructor.
          * 
          * @param s the s
          */
-        public SimpleGetTypeFinder(
-                                    final String s ) {
+        public ByNameTypeFinder(
+                                 final String s ) {
             super(s);
         }
 
@@ -181,9 +138,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     }
 
     /**
-     * The Class TypeFinderByQueryExecutor.
+     * This class executes a query replacing the dolar character '$' by dot to fill the way that Java Programming Language works.
      */
-    private abstract class TypeFinderByQueryExecutor {
+    private abstract class DolarReplacerQueryExecutor {
 
         /** The first string. */
         private final String firstString;
@@ -192,12 +149,12 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
         private String       actualString;
 
         /**
-         * Instantiates a new type finder by query executor.
+         * Instantiates a new dolar replacer query executor.
          * 
          * @param s the s
          */
-        public TypeFinderByQueryExecutor(
-                                          final String s ) {
+        public DolarReplacerQueryExecutor(
+                                           final String s ) {
             this.firstString = s;
             this.actualString = s;
         }
@@ -280,6 +237,47 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 
     }
 
+    /**
+     * The Class ComplexTypeFinderQueryExecutor .
+     */
+    private class TypesFromTheSamePackageQueryExecutor extends DolarReplacerQueryExecutor {
+
+        /** The all types from same packages. */
+        private final Collection<SLNode> allTypesFromSamePackages;
+
+        /**
+         * Instantiates a new complex type finder query executor.
+         * 
+         * @param typeToSolve the type to solve
+         * @param allTypesFromSamePackages the all types from same packages
+         */
+        public TypesFromTheSamePackageQueryExecutor(
+                                                     final String typeToSolve, final Collection<SLNode> allTypesFromSamePackages ) {
+            super(typeToSolve);
+            this.allTypesFromSamePackages = allTypesFromSamePackages;
+        }
+
+        /**
+         * Execute with this string.
+         * 
+         * @param s the s
+         * @return the SL query result
+         * @throws Exception the exception
+         * @{inheritDoc
+         */
+        @Override
+        public SLQueryResult executeWithThisString( final String s ) throws Exception {
+            final SLQuery justTheTargetTypeQuery = JavaTypeResolver.this.getSession().createQuery();
+            justTheTargetTypeQuery.select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
+                                                                                                               JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                    "simpleName").equalsTo().value(
+                                                                                                                                                                                                   s).typeEnd().whereEnd();
+            final SLQueryResult result = justTheTargetTypeQuery.execute(this.allTypesFromSamePackages);
+            return result;
+        }
+
+    }
+
     /** The Constant implementationInheritanceLinks. */
     private static final Set<Class<? extends SLLink>> implementationInheritanceLinks     = new LinkedHashSet<Class<? extends SLLink>>();
 
@@ -301,6 +299,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     /** The Constant concreteTypes. */
     private static final Set<Class<?>>                concreteTypes                      = new LinkedHashSet<Class<?>>();
 
+    /*
+     * Here the link behavior is defined. This static block is so much important because it can define the ordering behavior on the queries. 
+     * It defines also the link priority.
+     * 
+     */
     static {
         JavaTypeResolver.implementationInheritanceLinks.add(Extends.class);
         JavaTypeResolver.implementationInheritanceLinks.add(ImplicitExtends.class);
@@ -317,7 +320,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     }
 
     /**
-     * Creates the new cached.
+     * Creates the new cached java type finder.
      * 
      * @param abstractContext the abstract context
      * @param orderedActiveContexts the ordered active contexts
@@ -326,10 +329,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @return the java type resolver
      */
     @SuppressWarnings( {"cast", "boxing"} )
-    public static JavaTypeResolver createNewCached( final SLContext abstractContext,
-                                                    final List<SLContext> orderedActiveContexts,
-                                                    final boolean enableBoxing,
-                                                    final SLGraphSession session ) {
+    public static TypeResolver<JavaType> createNewCached( final SLContext abstractContext,
+                                                          final List<SLContext> orderedActiveContexts,
+                                                          final boolean enableBoxing,
+                                                          final SLGraphSession session ) {
         final JavaTypeResolver cached = (JavaTypeResolver)InvocationCacheFactory.createIntoCached(JavaTypeResolver.class,
                                                                                                   new Class<?>[] {
                                                                                                       SLContext.class,
@@ -342,16 +345,35 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     }
 
     /**
-     * Instantiates a new java type resolver.
+     * Creates the new uncached and slow java type finder. Normaly its better to use the method
+     * {@link #createNewCached(SLContext, List, boolean, SLGraphSession)}. This method is here only to be used on tests.
+     * 
+     * @param abstractContext the abstract context
+     * @param orderedActiveContexts the ordered active contexts
+     * @param enableBoxing the enable boxing
+     * @param session the session
+     * @return the java type resolver
+     */
+    @Deprecated
+    public static TypeResolver<JavaType> createNewUncachedAndSlow( final SLContext abstractContext,
+                                                                   final List<SLContext> orderedActiveContexts,
+                                                                   final boolean enableBoxing,
+                                                                   final SLGraphSession session ) {
+        return new JavaTypeResolver(abstractContext, orderedActiveContexts, enableBoxing, session);
+    }
+
+    /**
+     * Instantiates a new java type resolver. Normaly should be better to use the static factory method
+     * {@link #createNewCached(SLContext, List, boolean, SLGraphSession)}.
      * 
      * @param abstractContext the abstract context
      * @param orderedActiveContexts the ordered active contexts
      * @param enableBoxing the enable boxing
      * @param session the session
      */
-    public JavaTypeResolver(
-                             final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
-                             final boolean enableBoxing, final SLGraphSession session ) {
+    protected JavaTypeResolver(
+                                final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
+                                final boolean enableBoxing, final SLGraphSession session ) {
         super(implementationInheritanceLinks, interfaceInheritanceLinks, primitiveHierarchyLinks, abstractContext,
               orderedActiveContexts, primitiveTypes, concreteTypes, enableBoxing, session);
 
@@ -643,7 +665,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                                                                           final ResultOrder order,
                                                                           final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        return this.getAllChildrenByAllLinkTypes(activeType, order, JavaTypeClass.class, includedResult, //FIXME enuns
+        return this.getAllChildrenByAllLinkTypes(activeType, order, JavaTypeClass.class, includedResult,
                                                  Recursive.FULLY_RECURSIVE);
     }
 
@@ -900,7 +922,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> T getType( final String typeToSolve ) throws InternalJavaFinderError {
         try {
-            final SLNode slNode = new SimpleGetTypeFinder(typeToSolve).getTypeByAllPossibleNames();
+            final SLNode slNode = new ByNameTypeFinder(typeToSolve).getTypeByAllPossibleNames();
             if (slNode == null) {
                 throw logAndReturn(new InternalJavaFinderError());
             }
@@ -948,7 +970,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                                                                                                             PackageType.class.getName()).b().selectEnd();
             final Collection<SLNode> allTypesFromSamePackages = allTypesFromSamePackagesQuery.execute(inheritedTypes).getNodes();
 
-            final SLNode slNode = new ComplexTypeFinderQueryExecutor(typeToSolve, allTypesFromSamePackages).getTypeByAllPossibleNames();
+            final SLNode slNode = new TypesFromTheSamePackageQueryExecutor(typeToSolve, allTypesFromSamePackages).getTypeByAllPossibleNames();
             if (slNode == null) {
                 throw logAndReturn(new InternalJavaFinderError());
             }
@@ -1063,7 +1085,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     }
 
     /**
-     * Order.
+     * Order the result
      * 
      * @param order the order
      * @param typedInheritedTypes the typed inherited types

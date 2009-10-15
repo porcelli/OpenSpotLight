@@ -10,8 +10,14 @@ import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.util.ConfigurationSupport;
 
+/**
+ * The Class InitialImportWebCommand.
+ */
 public class InitialImportWebCommand implements WebCommand {
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.web.command.WebCommand#execute(org.openspotlight.web.command.WebCommand.WebCommandContext, java.util.Map)
+     */
     @SuppressWarnings( "boxing" )
     public String execute( final WebCommandContext context,
                            final Map<String, String> parameters ) throws WebException {
