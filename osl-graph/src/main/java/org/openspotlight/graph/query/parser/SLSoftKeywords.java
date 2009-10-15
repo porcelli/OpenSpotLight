@@ -46,72 +46,48 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.common.util;
-
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-
-import java.io.InputStream;
-
-import org.openspotlight.common.exception.SLException;
+package org.openspotlight.graph.query.parser;
 
 /**
- * Class for resource loading.
+ * This class stores all soft keywords used by sl-ql parser.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * @author porcelli
  */
-public class ClassPathResource {
+public interface SLSoftKeywords {
 
-    /**
-     * Loads a resource from the current classpath.
-     * 
-     * @param artifactName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath( final String artifactName )
-        throws SLException {
-        checkNotEmpty("location", artifactName); //$NON-NLS-1$
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                                       .getResourceAsStream(artifactName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                                    .getResourceAsStream(artifactName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(artifactName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+    public static final String SELECT    = "select";
+    public static final String DEFINE    = "define";
+    public static final String LINK      = "link";
+    public static final String OUTPUT    = "output";
+    public static final String KEEP      = "keep";
+    public static final String USE       = "use";
+    public static final String PRIMARY   = "primary";
+    public static final String N         = "n";
+    public static final String PROPERTY  = "property";
+    public static final String TERTIARY  = "tertiary";
+    public static final String SECONDARY = "secondary";
+    public static final String IDENTICAL = "identical";
+    public static final String TRUE      = "true";
+    public static final String NULL      = "null";
+    public static final String FALSE     = "false";
+    public static final String WHERE     = "where";
+    public static final String TARGET    = "target";
+    public static final String MESSAGE   = "message";
+    public static final String DOMAIN    = "domain";
+    public static final String VALUES    = "values";
+    public static final String A         = "a";
+    public static final String B         = "b";
+    public static final String BOTH      = "both";
+    public static final String EXECUTING = "executing";
+    public static final String TIMES     = "times";
+    public static final String COLLATOR  = "collator";
+    public static final String LEVEL     = "level";
+    public static final String RESULT    = "result";
+    public static final String ORDER     = "order";
+    public static final String BY        = "by";
+    public static final String LIMIT     = "limit";
+    public static final String OFFSET    = "offset";
+    public static final String ASC       = "asc";
+    public static final String DESC      = "desc";
 
-    /**
-     * Loads a resource from the current classpath.
-     * 
-     * @param resourceName
-     * @return a input stream from classpath
-     * @throws SLException
-     */
-    public static InputStream getResourceFromClassPath( Class<?> clasz,
-                                                        final String resourceName )
-        throws SLException {
-        checkNotEmpty("location", resourceName); //$NON-NLS-1$
-        try {
-            InputStream stream = clasz.getResourceAsStream(resourceName);
-            if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                                    .getResourceAsStream(resourceName);
-            }
-            if (stream == null) {
-                stream = ClassPathResource.class.getResourceAsStream(resourceName);
-            }
-            return stream;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
 }

@@ -115,15 +115,48 @@ public class Sha1 {
     }
 
     /**
-     * A syntax sugar method that returns a sha-1 signature for that content as a base64 string.
+     * A syntax sugar method that returns a sha-1 signature for that content as an Hexa string.
      * 
      * @param content
      * @return a base64 string representing the signature
      * @throws SLException
      */
+    public static String getSha1SignatureEncodedAsHexa( final String content )
+        throws SLException {
+        return getSha1SignatureEncodedAsHexa(content.getBytes());
+    }
+
     public static String getSha1SignatureEncodedAsBase64( final String content ) throws SLException {
         return getSha1SignatureEncodedAsBase64(content.getBytes());
     }
+
+    /**
+     * Returns a sha-1 signature for that content as an Hexa string.
+     * 
+     * @param content
+     * @return a base64 string representing the signature
+     * @throws SLException
+     */
+    public static String getSha1SignatureEncodedAsHexa( final byte[] content )
+        throws SLException {
+        checkNotNull("content", content);//$NON-NLS-1$
+        try {
+            final byte[] sha1 = getSha1Signature(content);
+            return toHexa(sha1);
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, SLException.class);
+        }
+    }
+
+    private static String toHexa( byte[] bytes ) {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            int parteAlta = ((bytes[i] >> 4) & 0xf) << 4;
+            int parteBaixa = bytes[i] & 0xf;
+            if (parteAlta == 0) s.append('0');
+            s.append(Integer.toHexString(parteAlta | parteBaixa));
+        }
+        return s.toString();
 
     /**
      * Should not be instantiated

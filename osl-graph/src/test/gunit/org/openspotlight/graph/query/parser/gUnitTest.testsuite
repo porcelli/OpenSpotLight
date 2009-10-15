@@ -1,0 +1,1135 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governana de TI de C—digo Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribui‹o de direito autoral declarada e atribu’da pelo autor.
+ * Todas as contribui›es de terceiros est‹o distribu’das sob licena da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa Ž software livre; voc pode redistribu’-lo e/ou modific‡-lo sob os 
+ * termos da Licena Pœblica Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa Ž distribu’do na expectativa de que seja œtil, porŽm, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia impl’cita de COMERCIABILIDADE OU ADEQUA‚ÌO A UMA
+ * FINALIDADE ESPECêFICA. Consulte a Licena Pœblica Geral Menor do GNU para mais detalhes.  
+ * 
+ * Voc deve ter recebido uma c—pia da Licena Pœblica Geral Menor do GNU junto com este
+ * programa; se n‹o, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
+gunit SLQL;
+
+@header{
+package org.openspotlight.graph.query.parser;
+}
+
+
+/**
+ * test Node Type Name
+ */
+nodeType:
+"org test here"
+	FAIL
+
+"[org ]test here"
+	FAIL
+
+"[org].test here"
+	FAIL
+
+"test"
+	OK
+
+"Test"
+	OK
+
+"org.openspotLight.Test"
+	OK
+
+"org.openspotLight.Test.*"
+	OK
+
+"[Separated Name].*"
+	OK
+
+"[Separated Name]"
+	OK
+
+"[Separated Name].[Other Name]"
+	OK
+
+"[Separated Name].[Other Name].*"
+	OK
+
+"[Separated Name].[Other Name].[Last Name].*"
+	OK
+
+"org.[test here]"
+	OK
+
+"org.[test here].*"
+	OK
+
+"test"
+	-> "test"
+
+"Test"
+	-> "Test"
+
+"org.openspotLight.Test"
+	-> "org.openspotLight.Test"
+
+"org.openspotLight.Test.*"
+	-> "org.openspotLight.Test"
+
+"[Separated Name].*"
+	-> "Separated Name"
+
+"[Separated Name]"
+	-> "Separated Name"
+
+"[Separated Name].[Other Name]"
+	-> "Separated Name.Other Name"
+
+"[Separated Name].[Other Name].*"
+	-> "Separated Name.Other Name"
+
+"[Separated Name].[Other Name].[Last Name].*"
+	-> "Separated Name.Other Name.Last Name"
+
+"org.[test here]"
+	-> "org.test here"
+
+"org.[test here].*"
+	-> "org.test here"
+
+/**
+ * test Link Type Name
+ */
+linkType:
+"[LinkTest with spaces].*"
+	FAIL
+
+"org.[openspotLight].Test aa"
+	FAIL
+
+"org.openspotLight.Test"
+	OK
+
+"org.openspotLight.LinkTest"
+	OK
+
+"[LinkTest with spaces]"
+	OK
+
+"[LinkTest with spaces].[teste]"
+	OK
+
+"[LinkTest with spaces].teste"
+	OK
+
+"[LinkTest with spaces].[teste].[a]"
+	OK
+
+"[LinkTest with spaces].teste.any"
+	OK
+
+"[LinkTest with spaces].teste.a"
+	OK
+
+"org.openspotLight.Test"
+	-> "org.openspotLight.Test"
+
+"org.openspotLight.LinkTest"
+	-> "org.openspotLight.LinkTest"
+
+"[LinkTest with spaces]"
+	-> "LinkTest with spaces"
+
+"[LinkTest with spaces].[teste]"
+	-> "LinkTest with spaces.teste"
+
+"[LinkTest with spaces].teste"
+	-> "LinkTest with spaces.teste"
+
+"[LinkTest with spaces].[teste].[a]"
+	-> "LinkTest with spaces.teste.a"
+
+"[LinkTest with spaces].teste.any"
+	-> "LinkTest with spaces.teste.any"
+
+"[LinkTest with spaces].teste.a"
+	-> "LinkTest with spaces.teste.a"
+
+/**
+ * test Collator Level
+ */
+useCollatorLevel:
+
+"use collator level any"
+	FAIL
+
+"use collator level \"none\""
+	FAIL
+
+"use collator level 1"
+	FAIL
+
+"use collator level 1.2"
+	FAIL
+
+"use collator level ?"
+	FAIL
+
+"use collator level identical" 
+	OK
+
+"use collator level primary"
+	OK
+
+"use collator level secondary"
+	OK
+
+"use collator level tertiary"
+	OK
+
+"use collator level identical"
+	-> (VT_COLLATOR_LEVEL identical)
+
+"use collator level primary"
+	-> (VT_COLLATOR_LEVEL primary)
+
+"use collator level secondary"
+	-> (VT_COLLATOR_LEVEL secondary)
+
+"use collator level tertiary"
+	-> (VT_COLLATOR_LEVEL tertiary)
+
+/**
+ * test Define Output
+ */
+defineOutput:
+
+"define output = \"error\";"
+	FAIL
+
+"define output = generalDiagram"
+	FAIL
+
+"define output = generalDiagram;"
+	OK
+
+"define output = [composed name];"
+	OK
+
+"define output = [composed name].something;"
+	OK
+
+"define output = org.something.ClassName;"
+	OK
+
+"define output = org.[something].test;"
+	OK
+
+"define output = org.[something with space].test;"
+	OK
+
+"define output = generalDiagram;"
+	-> "generalDiagram"
+
+"define output = [composed name];"
+	-> "composed name"
+
+"define output = [composed name].something;"
+	-> "composed name.something"
+
+"define output = org.something.ClassName;"
+	-> "org.something.ClassName"
+
+"define output = org.[something].test;"
+	-> "org.something.test"
+
+"define output = org.[something with space].test;"
+	-> "org.something with space.test"
+
+/**
+ * test Define Target
+ */
+defineTarget:
+
+"define target = testeTarget"
+	FAIL
+
+"define target = ;"
+	FAIL
+
+"define target = keep result;"
+	FAIL
+
+"define target = \"testeTarget\""
+	FAIL
+
+"define target = \"testeTarget\" result;"
+	FAIL
+
+<<define target = 
+	select * by link * by link org.test.PackageDeclaresType (a); >>
+	FAIL
+
+"define target = testeTarget;"
+	OK
+
+"define target = select *;"
+	OK
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue"; >>
+	OK
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result; >>
+	OK
+
+"define target = testeTarget keep result;"
+	OK
+
+"define target = testeTarget;"
+	-> (define target testeTarget)
+
+"define target = testeTarget keep result;"
+	-> (define target testeTarget keep result)
+
+"define target = select *;"
+	-> (define target (select *))
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue"; >>
+	-> (define target (select ** (where (VT_GROUP_BY_NODE_TYPE org.test.Something (property (== myProperty "TesteValue"))))))
+
+<<define target = 
+	select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result; >>
+	-> (define target (select ** (where (VT_GROUP_BY_NODE_TYPE org.test.Something (property (== myProperty "TesteValue")))) keep result))
+
+
+/**
+ * test Define Message
+ */
+defineMessage:
+
+"define message teste = \"entre com um valor\";"
+	FAIL
+
+"define message teste = teste;"
+	FAIL
+
+"define message #teste = teste"
+	FAIL
+
+"define message #teste = teste;"
+	FAIL
+
+"define message $teste = \"entre com um valor\""
+	FAIL
+
+"define message @teste = \"entre com um valor\""
+	FAIL
+
+"define message &teste = \"entre com um valor\""
+	FAIL
+
+"define message #teste = \"entre com um valor\""
+	FAIL
+
+"define message $teste = \"entre com um valor\";"
+	OK
+
+"define message @teste = \"entre com um valor\";"
+	OK
+
+"define message &teste = \"entre com um valor\";"
+	OK
+
+"define message #teste = \"entre com um valor\";"
+	OK
+
+"define message $teste = \"entre com um valor\";"
+	-> (define message $teste "entre com um valor")
+
+"define message @teste = \"entre com um valor\";"
+	-> (define message @teste "entre com um valor")
+
+"define message &teste = \"entre com um valor\";"
+	-> (define message &teste "entre com um valor")
+
+"define message #teste = \"entre com um valor\";"
+	-> (define message #teste "entre com um valor")
+
+/**
+ * test Define Domain Values
+ */
+defineDominValues:
+
+"define domain values $teste = \"teste1\""
+	FAIL
+
+"define domain values #teste = 1"
+	FAIL
+
+"define domain values &teste = 1"
+	FAIL
+
+"define domain values &teste = 1.1"
+	FAIL
+
+"define domain values $teste = \"teste1\", \"teste2\", \"teste3\""
+	FAIL
+
+"define domain values #teste = 1,2,3,14"
+	FAIL
+
+"define domain values &teste = 1.1,2,33.3,4"
+	FAIL
+
+"define domain values $teste = 123;"
+	FAIL
+
+"define domain values $teste = 123, 12;"
+	FAIL
+
+"define domain values #teste = 12.2;"
+	FAIL
+
+"define domain values #teste = 12.2, 12.33;"
+	FAIL
+
+"define domain values #teste = \"sss\";"
+	FAIL
+
+"define domain values #teste = \"sss\", \"sss2\";"
+	FAIL
+
+"define domain values &teste = \"sss\";"
+	FAIL
+
+"define domain values &teste = \"sss\", \"sss2\";"
+	FAIL
+
+"define domain values $teste = \"teste1\" ;"
+	OK
+
+"define domain values $teste = \"1\" ;"
+	OK
+
+"define domain values #teste = 1 ;"
+	OK
+
+"define domain values &teste = 1 ;"
+	OK
+
+"define domain values &teste = 1.1 ;"
+	OK
+
+"define domain values $teste = \"1\", \"2\", \"12\" ;"
+	OK
+
+"define domain values $teste = \"teste1\", \"teste2\", \"teste3\" ;"
+	OK
+
+"define domain values #teste = 1,2,3,14 ;"
+	OK
+
+"define domain values &teste = 1.1,2,33.3,4 ;"
+	OK
+
+"define domain values $teste = \"teste1\" ;"
+	-> (define domain $teste "teste1")
+
+"define domain values #teste = 1 ;"
+	-> (define domain #teste 1)
+
+"define domain values &teste = 1 ;"
+	-> (define domain &teste 1)
+
+"define domain values &teste = 1.1 ;"
+	-> (define domain &teste 1.1)
+
+"define domain values $teste = \"teste1\", \"teste2\", \"teste3\" ;"
+	-> (define domain $teste "teste1" "teste2" "teste3")
+
+"define domain values #teste = 1,2,3,14 ;"
+	-> (define domain #teste 1 2 3 14)
+
+"define domain values &teste = 1.1,2,33.3,4 ;"
+	-> (define domain &teste 1.1 2 33.3 4)
+
+/**
+ * test Executing *
+ */
+executing:
+"executing X times"
+	FAIL
+
+"executing 1.2 times"
+	FAIL
+
+"executing $test times"
+	FAIL
+
+"executing @test times"
+	FAIL
+
+"executing &test times"
+	FAIL
+
+"executing 1 times;"
+	FAIL
+
+"executing #test times;"
+	FAIL
+
+"executing n times;"
+	FAIL
+
+"executing 1, 100 times"
+	FAIL
+
+"executing 1, #test times"
+	FAIL
+
+"executing 1, n times"
+	FAIL
+
+"executing 1 times"
+	OK
+
+"executing 100 times"
+	OK
+
+"executing #test times"
+	OK
+
+"executing n times"
+	OK
+
+"executing 1 times"
+	-> (VT_EXECUTING_TIMES 1)
+
+"executing 100 times"
+	-> (VT_EXECUTING_TIMES 100)
+
+"executing #test times"
+	-> (VT_EXECUTING_TIMES #test)
+
+"executing n times"
+	-> (VT_EXECUTING_TIMES n)
+
+/**
+ * test OrderBy
+ */
+orderBy:
+<<order by org.test.JavaType>>
+	OK
+
+<<order by 
+	org.test.JavaType property myPropertyName, property xxx>>
+	OK
+
+<<order by 
+	org.test.JavaType property myPropertyName, property otherProperty,
+	org.test.JavaPackage property otherProperty, property myProperty>>
+	OK
+
+<<order by org.test.JavaType, org.test.JavaPackage >>
+	OK
+
+<<order by org.test.JavaType >>
+	->  (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType))
+
+<<order by 
+	org.test.JavaType property myPropertyName, property xxx>>
+	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType (property myPropertyName ASC_VK) (property xxx ASC_VK)))
+
+<<order by 
+	org.test.JavaType property myPropertyName, property otherProperty,
+	org.test.JavaPackage property otherProperty, property myProperty>>
+	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType (property myPropertyName ASC_VK) (property otherProperty ASC_VK)) (VT_GROUP_BY_NODE_TYPE org.test.JavaPackage (property otherProperty ASC_VK) (property myProperty ASC_VK)))
+
+<<order by org.test.JavaType, org.test.JavaPackage >>
+	-> (order by (VT_GROUP_BY_NODE_TYPE org.test.JavaType) (VT_GROUP_BY_NODE_TYPE org.test.JavaPackage))
+
+/**
+ * test Selects
+ */
+select:
+
+"select **, org.test.JavaType;"
+	FAIL
+
+"select *, org.test.JavaType, org.test.JavaType;"
+	FAIL
+
+"select by link org.test.LinkTypeA;"
+	FAIL
+
+<<select 
+where
+	org.test.JavaType 
+	(	property myProperty == "TesteValue" &&
+		property myOtherProperty == @myBooleanVar ) ||
+		link org.test.PackageDeclaresType (b) == 1;>>
+	FAIL
+
+"select executing n times;"
+	FAIL
+
+//EXECUTING TIMES JUST ALLOWED WHEN USING BY LINK
+"select * executing n times;"
+	FAIL
+
+"select * executing 10 times;"
+	FAIL
+
+"select * executing #test times;"
+	FAIL
+
+"select * executing &test times;"
+	FAIL
+
+"select org.test.JavaType executing n times;"
+	FAIL
+
+<<select **
+where
+	org.test.JavaType 
+	(	property myProperty == "TesteValue" &&
+		property myOtherProperty == @myBooleanVar ) ||
+		link org.test.PackageDeclaresType (b) == 1
+executing n times;>>
+	FAIL
+
+//CANNOT USE DOUBLE START WITHOUT WHERE CLAUSE
+"select **;"
+	FAIL
+
+//CANNOT USE WHERE WITH BY LINK
+<<
+select * by link org.test.PackageDeclaresType (a), org.test.TypeDeclaresMethod (b)
+where
+	org.test.JavaType 
+	(	property myProperty == "TesteValue" &&
+		property myOtherProperty == @myBooleanVar ) ||
+		link org.test.PackageDeclaresType (b) == 1
+;>>
+	FAIL
+
+<<
+select **
+where myType property myProperty == true
+limit $test2 offset 10
+;>>
+	FAIL
+
+<<
+select **
+where myType property myProperty == true
+limit &test2 offset &test3
+;>>
+	FAIL
+
+<<
+select **
+where myType property myProperty == true
+offset 10
+;>>
+	FAIL
+
+
+"select *;"
+	OK
+
+"select * keep result;"
+	OK
+
+"select * keep result use collator level primary;"
+	OK
+
+"select * use collator level primary;"
+	OK
+
+<<
+select **
+where myType property myProperty == "TesteValue"
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == 1
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == 1.1
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == @teste
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == #teste
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == $teste
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == &teste
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == true
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == true
+limit 10
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == true
+limit 10 offset 11
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == true
+limit #test offset #test2
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == true
+limit #test2 offset 10
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == false
+;>>
+	OK
+
+<<
+select **
+where myType property myProperty == null
+;>>
+	OK
+
+"select nodeType1;"
+	OK
+
+"select nodeType2, nodeType3;"
+	OK
+
+//WE WILL NOT CHECK TYPES DURING PARSER
+<<
+select nodeType2, nodeType3
+where nodeType1 property myProperty == 3;>>
+	OK
+
+//WE WILL NOT CHECK TYPES DURING PARSER
+<<
+select nodeType1.*, nodeType3
+where nodeType2 property myProperty == 3;>>
+	OK
+
+<<
+select *
+where myType property myProperty == "TesteValue"
+;>>
+	OK
+
+<<
+select org.test.JavaType
+where 
+	org.test.JavaType 
+	(	property myProperty == "TesteValue" &&
+		property myOtherProperty == @myBooleanVar ) ||
+		link org.test.PackageDeclaresType (b) == 1
+;>>
+	OK
+
+<<
+select **
+where 
+	org.test.JavaType 
+	(	property myProperty == "TesteValue" &&
+		property myOtherProperty == @myBooleanVar ) ||
+		link org.test.PackageDeclaresType (b) == 1
+	org.test.JavaPackage 
+	(	property myPropertyOfPackage == "something" &&
+		property myOtherPropertyOfPackage == $someOtherValue ) ||
+		link org.test.PackageDeclaresType (a) > 10
+
+;>>
+	OK
+
+
+<<
+select * by link org.test.PackageDeclaresType (a), org.test.TypeDeclaresMethod (b) 
+;>>
+	OK
+
+<<
+select org.test.JavaType.*, org.test.JavaMethod.* 
+	by link org.test.PackageDeclaresType (a), org.test.TypeDeclaresMethod (a,b) 
+;>>
+	OK
+
+compilationUnit:
+<<
+define output = generalDiaram;
+use collator level primary;
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	FAIL
+
+<<
+define target = org.test.Package.*;
+define output = generalDiaram;
+use collator level primary;
+select * by link org.test.PackageDeclaresType (a);>>
+	FAIL
+
+<<
+define target = org.test.Package.*;
+define output = generalDiaram;
+use collator level primary;
+select *;>>
+	FAIL
+
+<<
+define message $teste = "entre com um valor";
+define target = org.test.Package.*;
+define output = generalDiaram;
+use collator level primary;
+select *;>>
+	FAIL
+
+<<
+define target = org.test.Package.*;
+define message $teste = "entre com um valor";
+define output = generalDiaram;
+use collator level primary;
+select *;>>
+	FAIL
+
+<<
+define target = org.test.Package.*;
+define domain values $teste = "entre com um valor";
+define output = generalDiaram;
+use collator level primary;
+select *;>>
+	FAIL
+
+//FIRST SELECT CAN'T USE BY LINK WITHOUT DEFINE TARGET
+"select * by link org.test.PackageDeclaresType (b)"
+	FAIL
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+select * by link org.test.PackageDeclaresType (a);>>
+	FAIL
+
+//AFTER DEFINE TARGET, THE FIRST SELECT SHOULD USE BY LINK
+<<
+define target = org.test.Package.*;
+select *;>>
+	FAIL
+
+<<
+define target = org.test.Package.*;
+select org.test.Package;>>
+	FAIL
+
+<<
+define target = org.test.Package.*;
+select org.test.Package.*;>>
+	FAIL
+
+//DO NOT ALLOW SET MORE THAN ONCE MESSAGES OR DOMAINS
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define message $teste = "enter with some data again";
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	FAIL
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "enter with some data again", "domain";
+define domain values $teste = "enter with some data again", "domain";
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	FAIL
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define message $teste = "enter with some data 2";
+define domain values $teste = "enter with some data again", "domain";
+define domain values $teste = "enter with some data again", "domain";
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	FAIL
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+keep result
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface
+use collator level secondary;>>
+	OK
+
+<<
+select org.test.Package;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+define target = org.test.Package;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define message $teste2 = "enter with some data";
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = org.test.Package.*;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select *;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select ** 
+		where org.test.Something property myProperty == "TesteValue";
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+use collator level primary;
+define output = generalDiaram;
+define message $teste = "enter with some data";
+define domain values $teste = "value1", "value2";
+define target = select ** 
+		where org.test.Something property myProperty == "TesteValue" keep result;
+select * by link org.test.PackageDeclaresType (a);>>
+	OK
+
+<<
+select org.test.JavaType.* ;>>
+	OK
+
+<<
+select org.test.JavaType.*
+where
+	org.test.JavaType.*
+		property myPropertyName == "someValue" && 
+		link org.test.JavaTypeDeclares (b) > 2
+	 ;>>
+	OK
+
+<<
+select org.test.JavaType.*
+where
+	org.test.JavaType.*
+		property myPropertyName == "someValue" && 
+		link org.test.JavaTypeDeclares (b) > 2
+order by
+	org.test.JavaType.*
+		property myPropertyName;>>
+	OK
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface;>>
+	OK
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface
+use collator level secondary;>>
+	OK
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface
+use collator level secondary;>>
+	OK
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+limit 10
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface
+use collator level secondary;>>
+	OK
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+limit 10 offset 11
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface
+use collator level secondary;>>
+	OK
+
+<<
+select org.test.JavaType.*
+	where
+		org.test.JavaType.*
+			property myPropertyName == "someValue" && 
+			link org.test.JavaTypeDeclares (b) > 2
+order by
+	org.test.JavaTypeClass, org.test.JavaTypeInterface;
+select *;	>>
+	OK
+
+<<
+select org.openspotlight.graph.query.JavaInterface
+	where 
+		org.openspotlight.graph.query.JavaInterface
+			property caption *... "java.util.Collection";
+
+select org.openspotlight.graph.query.JavaTypeMethod 
+by link 
+	org.openspotlight.graph.query.TypeContainsMethod (a);
+>>
+	OK

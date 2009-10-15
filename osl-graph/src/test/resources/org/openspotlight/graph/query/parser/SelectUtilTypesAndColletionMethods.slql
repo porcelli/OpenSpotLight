@@ -1,0 +1,12 @@
+select org.openspotlight.graph.query.JavaPackage, org.openspotlight.graph.query.JavaType.*
+	where
+		org.openspotlight.graph.query.JavaType
+			property caption == "java.util"
+		org.openspotlight.graph.query.JavaType.*
+			property caption == "java.util.Collection";
+
+
+select org.openspotlight.graph.query.JavaType.*, org.openspotlight.graph.query.JavaTypeMethod
+	by link
+		org.openspotlight.graph.query.TypeContainsMethod (b),
+		org.openspotlight.graph.query.PackageContainsType (b);

@@ -404,6 +404,13 @@ public interface SLWhereStatement {
 								public static interface CloseBracket {
 									
 									/**
+									 * Close bracket.
+									 * 
+									 * @return the close bracket
+									 */
+									public CloseBracket closeBracket();
+									
+									/**
 									 * Or.
 									 * 
 									 * @return the relational operator
@@ -675,6 +682,13 @@ public interface SLWhereStatement {
 						 * @author Vitor Hugo Chagas
 						 */
 						public static interface CloseBracket {
+							
+							/**
+							 * Close bracket.
+							 * 
+							 * @return the close bracket
+							 */
+							public CloseBracket closeBracket();
 							
 							/**
 							 * Or.
@@ -971,6 +985,13 @@ public interface SLWhereStatement {
 						 * @author Vitor Hugo Chagas
 						 */
 						public static interface CloseBracket {
+							
+							/**
+							 * Close bracket.
+							 * 
+							 * @return the close bracket
+							 */
+							public CloseBracket closeBracket();
 							
 							/**
 							 * Or.

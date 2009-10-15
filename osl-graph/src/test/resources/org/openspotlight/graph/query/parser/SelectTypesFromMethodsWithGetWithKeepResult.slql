@@ -1,0 +1,8 @@
+select org.openspotlight.graph.query.JavaTypeMethod
+	where
+		org.openspotlight.graph.query.JavaTypeMethod
+			property caption *... "get"
+	keep result;
+
+select org.openspotlight.graph.query.JavaType.*
+	by link org.openspotlight.graph.query.TypeContainsMethod (a);

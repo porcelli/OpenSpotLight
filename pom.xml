@@ -67,7 +67,6 @@
 	</pluginRepositories>
 	<modules>
 		<module>osl-common</module>
-		<module>osl-slql-parser</module>
 		<module>osl-jcr</module>
 		<module>osl-web</module>
 		<module>osl-graph-api</module>
@@ -172,7 +171,12 @@
 				<artifactId>osl-java-bundle-initial-import</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
-
+			<!-- parsing and code generation dependencies -->
+			<dependency>
+				<groupId>jboss</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.4.ga</version>
+			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr</artifactId>
