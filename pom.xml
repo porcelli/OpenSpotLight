@@ -72,6 +72,8 @@
 		<module>osl-web</module>
 		<module>osl-graph-api</module>
 		<module>osl-graph</module>
+		<module>osl-graph-client</module>
+		<module>osl-graph-server</module>
 		<module>osl-graph-import-test</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
@@ -133,6 +135,16 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-client</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-server</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
