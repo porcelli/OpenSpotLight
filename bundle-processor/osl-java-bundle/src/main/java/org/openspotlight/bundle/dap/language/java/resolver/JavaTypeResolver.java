@@ -91,7 +91,7 @@ import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLQuery;
+import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 
 /**
@@ -126,7 +126,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          */
         @Override
         protected SLQueryResult executeWithThisString( final String s ) throws Exception {
-            final SLQuery query = JavaTypeResolver.this.getSession().createQuery();
+            final SLQueryApi query = JavaTypeResolver.this.getSession().createQueryApi();
             query.select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
                                                                                                                                                    "completeName").equalsTo().value(
                                                                                                                                                                                     s).typeEnd().whereEnd();
@@ -267,7 +267,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          */
         @Override
         public SLQueryResult executeWithThisString( final String s ) throws Exception {
-            final SLQuery justTheTargetTypeQuery = JavaTypeResolver.this.getSession().createQuery();
+            final SLQueryApi justTheTargetTypeQuery = JavaTypeResolver.this.getSession().createQueryApi();
             justTheTargetTypeQuery.select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
                                                                                                                JavaType.class.getName()).subTypes().each().property(
                                                                                                                                                                     "simpleName").equalsTo().value(
@@ -568,7 +568,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     deltasFromEachType.put(linkType, new ArrayList<SLNode>());
                 }
                 for (final Class<? extends SLLink> linkType : this.allKindsOfInheritanceLinksReversed) {
-                    final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+                    final SLQueryApi inheritanceTreeQuery = this.getSession().createQueryApi();
                     inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).a().selectEnd();
                     final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(new ArrayList<SLNode>(resultSet)).getNodes();
                     for (final SLNode possibleDelta : resultFromQuery) {
@@ -847,7 +847,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     deltasFromEachType.put(linkType, new ArrayList<SLNode>());
                 }
                 for (final Class<? extends SLLink> linkType : linkTypes) {
-                    final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+                    final SLQueryApi inheritanceTreeQuery = this.getSession().createQueryApi();
                     inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd();
                     final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(new ArrayList<SLNode>(resultSet)).getNodes();
                     for (final SLNode possibleDelta : resultFromQuery) {
@@ -952,19 +952,19 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
             final List<SLNode> inheritedTypes = new LinkedList<SLNode>();
             inheritedTypes.add(activeType);
             for (final Class<? extends SLLink> linkType : JavaTypeResolver.implementationInheritanceLinks) {
-                final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+                final SLQueryApi inheritanceTreeQuery = this.getSession().createQueryApi();
                 inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd().keepResult().executeXTimes();
                 final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(inheritedTypes).getNodes();
                 inheritedTypes.addAll(resultFromQuery);
             }
             for (final Class<? extends SLLink> linkType : JavaTypeResolver.interfaceInheritanceLinks) {
-                final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+                final SLQueryApi inheritanceTreeQuery = this.getSession().createQueryApi();
                 inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd().keepResult().executeXTimes();
                 final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(inheritedTypes).getNodes();
                 inheritedTypes.addAll(resultFromQuery);
             }
 
-            final SLQuery allTypesFromSamePackagesQuery = this.getSession().createQuery();
+            final SLQueryApi allTypesFromSamePackagesQuery = this.getSession().createQueryApi();
             allTypesFromSamePackagesQuery.select().type(JavaPackage.class.getName()).comma().byLink(PackageType.class.getName()).a().selectEnd();
             allTypesFromSamePackagesQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(
                                                                                                             PackageType.class.getName()).b().selectEnd();
@@ -1010,7 +1010,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
         try {
             final ArrayList<SLNode> initial = new ArrayList<SLNode>();
             initial.add(type);
-            final SLQuery inheritanceTreeQuery = this.getSession().createQuery();
+            final SLQueryApi inheritanceTreeQuery = this.getSession().createQueryApi();
             inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd();
             final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(initial).getNodes();
             if (resultFromQuery.size() > 0) {
