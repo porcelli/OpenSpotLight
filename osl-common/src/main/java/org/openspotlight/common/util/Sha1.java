@@ -126,6 +126,13 @@ public class Sha1 {
         return getSha1SignatureEncodedAsHexa(content.getBytes());
     }
 
+    /**
+     * A syntax sugar method that returns a sha-1 signature for that content as an Base64 string.
+     * 
+     * @param content
+     * @return sha-1 base64 string
+     * @throws SLException
+     */
     public static String getSha1SignatureEncodedAsBase64( final String content ) throws SLException {
         return getSha1SignatureEncodedAsBase64(content.getBytes());
     }

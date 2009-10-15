@@ -77,14 +77,26 @@ import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryTextInternal;
 
+/**
+ * The Class SLQueryTextInternalBuilder. This class genarates, based on slql external dsl, a new instance SLQueryTextInternal.
+ * 
+ * @author porcelli
+ */
 public class SLQueryTextInternalBuilder {
 
-    private static CtClass[] CONSTRUCTOR_ARGS;
-    private static CtClass[] CONSTRUCTOR_THROWS;
-    private static CtClass[] EXECUTE_ARGS;
-    private static CtClass[] EXECUTE_THROWS;
-    private static CtClass   EXECUTE_RETURN_TYPE;
+    private CtClass[] CONSTRUCTOR_ARGS;
+    private CtClass[] CONSTRUCTOR_THROWS;
+    private CtClass[] EXECUTE_ARGS;
+    private CtClass[] EXECUTE_THROWS;
+    private CtClass   EXECUTE_RETURN_TYPE;
 
+    /**
+     * Builds the SLQueryTextInternal based on input
+     * 
+     * @param slqlText the slql text
+     * @return the sL query text internal
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
     public SLQueryTextInternal build( final String slqlText ) throws SLInvalidQuerySyntaxException {
         SLQueryTextInternalInfo queryInfo = buildQueryInfo(slqlText);
 
@@ -98,11 +110,22 @@ public class SLQueryTextInternalBuilder {
         return buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), target, queryInfo.getContent());
     }
 
+    /**
+     * Builds the query.
+     * 
+     * @param id the id
+     * @param variables the variables
+     * @param outputModelName the output model name
+     * @param target the target
+     * @param executeContent the execute content
+     * @return the sL query text internal
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
     private SLQueryTextInternal buildQuery( final String id,
-                                  final Set<SLQLVariable> variables,
-                                  final String outputModelName,
-                                  final SLQueryTextInternal target,
-                                  final String executeContent ) throws SLInvalidQuerySyntaxException {
+                                            final Set<SLQLVariable> variables,
+                                            final String outputModelName,
+                                            final SLQueryTextInternal target,
+                                            final String executeContent ) throws SLInvalidQuerySyntaxException {
         try {
             String className = getClassName(id);
 
@@ -123,8 +146,16 @@ public class SLQueryTextInternalBuilder {
         }
     }
 
+    /**
+     * Builds the target query.
+     * 
+     * @param targetUniqueId the target unique id
+     * @param defineTargetContent the define target content
+     * @return the sL query text internal
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
     private SLQueryTextInternal buildTargetQuery( final String targetUniqueId,
-                                        final String defineTargetContent ) throws SLInvalidQuerySyntaxException {
+                                                  final String defineTargetContent ) throws SLInvalidQuerySyntaxException {
         try {
             String className = getClassName(targetUniqueId);
 
@@ -145,17 +176,42 @@ public class SLQueryTextInternalBuilder {
         }
     }
 
+    /**
+     * Gets the class name.
+     * 
+     * @param id the id
+     * @return the class name
+     */
     private String getClassName( String id ) {
-        return "org.openspotlight.slql.parser.SLQLQuery$A" + id;
+        return "org.openspotlight.graph.query.SLQLQuery$A" + id;
     }
 
+    /**
+     * The Enum SLQLVariableDataType.
+     * 
+     * @author porcelli
+     */
     private enum SLQLVariableDataType {
+
+        /** The INTEGER data type. */
         INTEGER,
+
+        /** The DECIMAL data type. */
         DECIMAL,
+
+        /** The STRING data type. */
         STRING,
+
+        /** The BOOLEAN data type. */
         BOOLEAN
     }
 
+    /**
+     * Builds the variable collection.
+     * 
+     * @param queryInfo the query info
+     * @return the set< slql variable>
+     */
     private Set<SLQLVariable> buildVariableCollection( SLQueryTextInternalInfo queryInfo ) {
         Set<SLQLVariable> result = new HashSet<SLQLVariable>();
 
@@ -172,6 +228,15 @@ public class SLQueryTextInternalBuilder {
         return result;
     }
 
+    /**
+     * Gets the variables by data type.
+     * 
+     * @param dataType the data type
+     * @param variables the variables
+     * @param messageVariables the message variables
+     * @param domainVariables the domain variables
+     * @return the variables by data type
+     */
     private Collection<SLQLVariable> getVariablesByDataType( final SLQLVariableDataType dataType,
                                                              final Collection<String> variables,
                                                              final Map<String, String> messageVariables,
@@ -205,6 +270,13 @@ public class SLQueryTextInternalBuilder {
         return result;
     }
 
+    /**
+     * Builds the query info.
+     * 
+     * @param slqlText the slql text
+     * @return the sL query text internal info
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
     private SLQueryTextInternalInfo buildQueryInfo( final String slqlText ) throws SLInvalidQuerySyntaxException {
         try {
             InputStream stream = ClassPathResource.getResourceFromClassPath(getClass(), "SLQLTemplate.stg");
@@ -244,8 +316,15 @@ public class SLQueryTextInternalBuilder {
         }
     }
 
-    protected void createNewQueryClass( String className,
-                                        String executeContent ) throws SLInvalidQuerySyntaxException {
+    /**
+     * Creates the new query class.
+     * 
+     * @param className the class name
+     * @param executeContent the execute content
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
+    private void createNewQueryClass( String className,
+                                      String executeContent ) throws SLInvalidQuerySyntaxException {
         try {
 
             ClassPool pool = ClassPool.getDefault();
@@ -282,8 +361,6 @@ public class SLQueryTextInternalBuilder {
                     }
                 }
             }
-
-            //            System.out.println("executeContent: " + executeContent);
 
             CtConstructor newConstructor = CtNewConstructor.make(CONSTRUCTOR_ARGS, CONSTRUCTOR_THROWS, clas);
             clas.addConstructor(newConstructor);

@@ -54,53 +54,175 @@ import java.util.Map;
 import org.openspotlight.graph.SLNode;
 
 /**
- * The Interface SLQueryText.
+ * The Interface SLQueryText. This class is exposed to the user.
  * 
  * @author porcelli
  */
 public interface SLQueryText extends SLQuery {
 
-    public String getOutputModelName();
-
+    /**
+     * Checks for target.
+     * 
+     * @return true, if has target
+     */
     public boolean hasTarget();
 
+    /**
+     * Checks for variables.
+     * 
+     * @return true, if has variables
+     */
     public boolean hasVariables();
 
+    /**
+     * Checks for output model.
+     * 
+     * @return true, if has output model
+     */
     public boolean hasOutputModel();
 
+    /**
+     * Gets the output model name.
+     * 
+     * @return the output model name
+     */
+    public String getOutputModelName();
+
+    /**
+     * Gets the variables.
+     * 
+     * @return the variables
+     */
     public Collection<SLQLVariable> getVariables();
 
+    /**
+     * Execute.
+     * 
+     * @param variableValues the variable values
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult execute( Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes id
+     * @param variableValues the variable values
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute.
+     * 
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult execute( Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes id
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute target query. If there is no target query, returns empty result.
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult executeTarget()
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
+    /**
+     * Execute target. If there is no target query, returns empty result.
+     * 
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
     public SLQueryResult executeTarget( SortMode sortMode,
                                         boolean showSLQL )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;

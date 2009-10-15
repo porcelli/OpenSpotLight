@@ -54,22 +54,75 @@ import java.util.Map;
 
 import org.openspotlight.graph.SLGraphSession;
 
+/**
+ * The Interface SLQueryTextInternal. This class is an internal class.
+ * 
+ * @author porcelli
+ */
 public interface SLQueryTextInternal extends Serializable {
 
+    /**
+     * Gets the unique id.
+     * 
+     * @return the id
+     */
     public String getId();
 
+    /**
+     * Gets the output model name.
+     * 
+     * @return the output model name
+     */
     public String getOutputModelName();
 
+    /**
+     * Checks for target.
+     * 
+     * @return true, if successful
+     */
     public boolean hasTarget();
 
+    /**
+     * Gets the target.
+     * 
+     * @return the target
+     */
     public SLQueryTextInternal getTarget();
 
+    /**
+     * Checks for variables.
+     * 
+     * @return true, if successful
+     */
     public boolean hasVariables();
 
+    /**
+     * Checks for output model.
+     * 
+     * @return true, if successful
+     */
     public boolean hasOutputModel();
 
+    /**
+     * Gets the variables.
+     * 
+     * @return the variables
+     */
     public Collection<SLQLVariable> getVariables();
 
+    /**
+     * Execute.
+     * 
+     * @param session the session
+     * @param variableValues the variable values
+     * @param inputNodesIDs the input nodes id
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
     public SLQueryResult execute( final SLGraphSession session,
                                   final Map<String, ?> variableValues,
                                   final String[] inputNodesIDs )

@@ -132,7 +132,6 @@ public class Files {
      * Delete a file itself.
      * 
      * @param file the file
-     * @throws Exception
      */
     private static void deleteFile( final File file ) {
         checkNotNull("file", file); //$NON-NLS-1$
