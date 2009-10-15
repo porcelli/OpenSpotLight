@@ -502,6 +502,12 @@ public class AbstractGeneralQueryTest {
         }
     }
 
+    /**
+     * Gets the resource content.
+     * 
+     * @param resourceName the resource name
+     * @return the resource content
+     */
     protected String getResourceContent( final String resourceName ) {
         try {
             final InputStream in = getClass().getResourceAsStream(resourceName);
