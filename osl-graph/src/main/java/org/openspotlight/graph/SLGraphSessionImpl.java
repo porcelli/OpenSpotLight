@@ -98,7 +98,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private final SLEncoderFactory          encoderFactory;
 
     /** The slql query builder. */
-    private SLQueryTextInternalBuilder                queryBuilder;
+    private SLQueryTextInternalBuilder      queryBuilder;
 
     /**
      * Instantiates a new sL graph session impl.

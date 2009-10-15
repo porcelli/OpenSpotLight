@@ -63,16 +63,40 @@ import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryException;
 import org.openspotlight.graph.query.SLQueryResult;
 
+/**
+ * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.
+ * 
+ * @see SLQueryTextInternalBuilder
+ * @author porcelli
+ */
 public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal {
 
+    /** The Constant serialVersionUID. */
     private static final long           serialVersionUID = 5945900887330334999L;
 
+    /** The variables. */
     protected Map<String, SLQLVariable> variables        = null;
+    
+    /** The target query. */
     protected SLQueryTextInternal       targetQuery      = null;
+    
+    /** The id. */
     protected String                    id               = null;
+    
+    /** The output model name. */
     protected String                    outputModelName  = null;
+    
+    /** The target. */
     protected SLQueryTextInternal       target           = null;
 
+    /**
+     * Instantiates a new abstract sl query text internal.
+     * 
+     * @param id the id
+     * @param variables the variables
+     * @param outputModelName the output model name
+     * @param target the target
+     */
     public AbstractSLQueryTextInternal(
                                         final String id, final Set<SLQLVariable> variables, final String outputModelName,
                                         final SLQueryTextInternal target ) {
@@ -92,39 +116,72 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public abstract SLQueryResult execute( final SLGraphSession session,
                                            final Map<String, ?> variableValues,
                                            final String[] inputNodesIDs )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
 
+    /**
+     * {@inheritDoc}
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getOutputModelName() {
         return outputModelName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLQLVariable> getVariables() {
         return variables.values();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasOutputModel() {
         return outputModelName != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasTarget() {
         return target != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryTextInternal getTarget() {
         return target;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasVariables() {
         return variables != null;
     }
 
+    /**
+     * Validate and initializes the variables values.
+     * 
+     * @param session the session
+     * @param variableValues the variable values
+     * @param inputNodesIDs the input nodes i ds
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     */
     protected void validateAndInit( final SLGraphSession session,
                                     final Map<String, ?> variableValues,
                                     final String[] inputNodesIDs ) throws SLInvalidQueryElementException {
@@ -154,13 +211,13 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         }
     }
 
-    protected void setupVariableValues( final Map<String, ?> variableValues ) {
-        for (Entry<String, ?> variableNameAndValue : variableValues.entrySet()) {
-            SLQLVariable variable = variables.get(variableNameAndValue.getKey());
-            variable.setValue(variableNameAndValue.getValue());
-        }
-    }
-
+    /**
+     * Returns the variables content. If variable not found, returns false.
+     * 
+     * @param variableName the variable name
+     * 
+     * @return the boolean value
+     */
     protected boolean getBooleanValue( final String variableName ) {
         if (variables.containsKey(variableName)) {
             return ((SLQLVariableBoolean)variables.get(variableName)).getValue();
@@ -168,6 +225,13 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         return false;
     }
 
+    /**
+     * Returns the variables content. If variable not found, returns -1.
+     * 
+     * @param variableName the variable name
+     * 
+     * @return the dec value
+     */
     protected float getDecValue( final String variableName ) {
         if (variables.containsKey(variableName)) {
             return ((SLQLVariableFloat)variables.get(variableName)).getValue();
@@ -175,6 +239,13 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         return -1;
     }
 
+    /**
+     * Returns the variables content. If variable not found, returns -1.
+     * 
+     * @param variableName the variable name
+     * 
+     * @return the int value
+     */
     protected int getIntValue( final String variableName ) {
         if (variables.containsKey(variableName)) {
             return ((SLQLVariableInteger)variables.get(variableName)).getValue();
@@ -182,6 +253,13 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         return -1;
     }
 
+    /**
+     * Returns the variables content. If variable not found, returns empty string.
+     * 
+     * @param variableName the variable name
+     * 
+     * @return the string value
+     */
     protected String getStringValue( final String variableName ) {
         if (variables.containsKey(variableName)) {
             return ((SLQLVariableString)variables.get(variableName)).getValue();

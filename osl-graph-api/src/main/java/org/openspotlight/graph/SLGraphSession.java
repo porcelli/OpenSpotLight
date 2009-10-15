@@ -462,6 +462,14 @@ public interface SLGraphSession {
      */
     public SLQueryApi createQueryApi() throws SLGraphSessionException;
 
+    /**
+     * Creates the text query.
+     * @param slqlInput 
+     * 
+     * @return the sL query
+     * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidQuerySyntaxException the invalid synyax exception
+     */
     public SLQueryText createQueryText( String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException;
 
 }

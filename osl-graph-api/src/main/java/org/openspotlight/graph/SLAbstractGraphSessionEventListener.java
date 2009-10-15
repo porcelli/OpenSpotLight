@@ -49,55 +49,61 @@
 package org.openspotlight.graph;
 
 /**
- * The listener interface for receiving SLAbstractGraphSessionEvent events.
- * The class that is interested in processing a SLAbstractGraphSessionEvent
- * event implements this interface, and the object created
- * with that class is registered with a component using the
- * component's <code>addSLAbstractGraphSessionEventListener<code> method. When
- * the SLAbstractGraphSessionEvent event occurs, that object's appropriate
+ * The listener interface for receiving SLAbstractGraphSessionEvent events. The class that is interested in processing a
+ * SLAbstractGraphSessionEvent event implements this interface, and the object created with that class is registered with a
+ * component using the component's <code>SLAbstractGraphSessionEventListener<code> method. When
+ * the SLAbstractGraphSessionEventListener event occurs, that object's appropriate
  * method is invoked.
  * 
- * @see SLAbstractGraphSessionEventEvent
+ * @see SLAbstractGraphSessionEventListener
  */
 public abstract class SLAbstractGraphSessionEventListener implements SLGraphSessionEventListener {
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#beforeSave(org.openspotlight.graph.SLGraphSessionEvent)
-	 */
-	public void beforeSave(SLGraphSessionEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#linkAdded(org.openspotlight.graph.SLLinkEvent)
-	 */
-	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#linkRemoved(org.openspotlight.graph.SLLinkEvent)
-	 */
-	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#nodeAdded(org.openspotlight.graph.SLNodeEvent)
-	 */
-	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#nodePropertySet(org.openspotlight.graph.SLNodePropertyEvent)
-	 */
-	public void nodePropertySet(SLNodePropertyEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
-	 */
-	public void nodePropertyRemoved(SLNodePropertyEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#linkPropertySet(org.openspotlight.graph.SLLinkPropertyEvent)
-	 */
-	public void linkPropertySet(SLLinkPropertyEvent event) throws SLGraphSessionException {}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#sessionCleaned()
-	 */
-	public void sessionCleaned() {}
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#beforeSave(org.openspotlight.graph.SLGraphSessionEvent)
+     */
+    public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#linkAdded(org.openspotlight.graph.SLLinkEvent)
+     */
+    public void linkAdded( SLLinkEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#linkRemoved(org.openspotlight.graph.SLLinkEvent)
+     */
+    public void linkRemoved( SLLinkEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#nodeAdded(org.openspotlight.graph.SLNodeEvent)
+     */
+    public void nodeAdded( SLNodeEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#nodePropertySet(org.openspotlight.graph.SLNodePropertyEvent)
+     */
+    public void nodePropertySet( SLNodePropertyEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
+     */
+    public void nodePropertyRemoved( SLNodePropertyEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#linkPropertySet(org.openspotlight.graph.SLLinkPropertyEvent)
+     */
+    public void linkPropertySet( SLLinkPropertyEvent event ) throws SLGraphSessionException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSessionEventListener#sessionCleaned()
+     */
+    public void sessionCleaned() {
+    }
 }

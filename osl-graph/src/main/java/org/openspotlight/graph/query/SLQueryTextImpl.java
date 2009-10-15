@@ -66,34 +66,60 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     /** The Constant LOGGER. */
     static final Logger LOGGER = Logger.getLogger(SLQueryTextImpl.class);
 
+    /** The internal query. */
     private SLQueryTextInternal   query;
 
+    /**
+     * Instantiates a new SLQueryTextImpl.
+     * 
+     * @param session the session
+     * @param treeSession the tree session
+     * @param textQuery the text query
+     */
     public SLQueryTextImpl(
                             SLGraphSession session, SLPersistentTreeSession treeSession, SLQueryTextInternal textQuery ) {
         super(session, treeSession);
         this.query = textQuery;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getOutputModelName() {
         return query.getOutputModelName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLQLVariable> getVariables() {
         return query.getVariables();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasOutputModel() {
         return query.hasOutputModel();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasTarget() {
         return query.hasTarget();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasVariables() {
         return query.hasVariables();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SLQueryResult execute( String[] inputNodesIDs,
                                   SortMode sortMode,
@@ -102,23 +128,35 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
         return execute(inputNodesIDs, null, sortMode, showSLQL);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult execute( Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
         return execute((String[])null, variableValues, SortMode.NOT_SORTED, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
         return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
         return execute(inputNodesIDs, variableValues, SortMode.NOT_SORTED, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult execute( Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
@@ -126,6 +164,9 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
         return execute((String[])null, variableValues, sortMode, showSLQL);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
@@ -134,6 +175,9 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
         return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
@@ -142,10 +186,16 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
         return query.execute(session, variableValues, inputNodesIDs);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult executeTarget() throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {
         return executeTarget(SortMode.NOT_SORTED, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryResult executeTarget( SortMode sortMode,
                                         boolean showSLQL )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {

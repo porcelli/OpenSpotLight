@@ -50,11 +50,13 @@ package org.openspotlight.graph.query;
 
 import org.openspotlight.common.exception.SLException;
 
+/**
+ * This exception class represents any kind of sysntax error on queries - using api or text.
+ * 
+ * @author porcelli
+ */
 public class SLInvalidQuerySyntaxException extends SLException {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 400L;
 
     private String            errorCode        = null;
@@ -66,7 +68,7 @@ public class SLInvalidQuerySyntaxException extends SLException {
      * @see java.lang.Exception#Exception(String message)
      */
     public SLInvalidQuerySyntaxException(
-                                           final String message ) {
+                                          final String message ) {
         super(message);
     }
 
@@ -74,8 +76,8 @@ public class SLInvalidQuerySyntaxException extends SLException {
      * @see java.lang.Exception#Exception(String message, Throwable cause)
      */
     public SLInvalidQuerySyntaxException(
-                                           final String message,
-                                           final Throwable cause ) {
+                                          final String message,
+                                          final Throwable cause ) {
         super(message);
     }
 
@@ -83,7 +85,7 @@ public class SLInvalidQuerySyntaxException extends SLException {
      * @see java.lang.Exception#Exception(Throwable cause)
      */
     public SLInvalidQuerySyntaxException(
-                                           final Throwable cause ) {
+                                          final Throwable cause ) {
         super(cause);
     }
 
@@ -98,12 +100,12 @@ public class SLInvalidQuerySyntaxException extends SLException {
      * @param cause exception cause
      */
     public SLInvalidQuerySyntaxException(
-                                           String errorCode,
-                                           String message,
-                                           int lineNumber,
-                                           int column,
-                                           int offset,
-                                           Throwable cause ) {
+                                          String errorCode,
+                                          String message,
+                                          int lineNumber,
+                                          int column,
+                                          int offset,
+                                          Throwable cause ) {
         super(message, cause);
         this.errorCode = errorCode;
         this.lineNumber = lineNumber;

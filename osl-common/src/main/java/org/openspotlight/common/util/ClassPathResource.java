@@ -92,7 +92,8 @@ public class ClassPathResource {
     /**
      * Loads a resource from the current classpath.
      * 
-     * @param resourceName
+     * @param clasz class that defines the correct place to search for resource
+     * @param resourceName resource name
      * @return a input stream from classpath
      * @throws SLException
      */
