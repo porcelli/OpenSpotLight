@@ -1,29 +1,54 @@
 package org.openspotlight.federation.data;
 
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.federation.data.load.ConfigurationManager;
 
+/**
+ * This exception is thrown by the {@link ConfigurationManager} instances. This exception describes a load invocation before
+ * saving any configuration.
+ */
 public class NoConfigurationYetException extends SLException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8016348970089541307L;
+
+    /**
+     * Instantiates a new no configuration yet exception.
+     */
     public NoConfigurationYetException() {
-        // TODO Auto-generated constructor stub
     }
 
+    /**
+     * Instantiates a new no configuration yet exception.
+     * 
+     * @param message the message
+     */
     public NoConfigurationYetException(
-                                        String message ) {
+                                        final String message ) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
+    /**
+     * Instantiates a new no configuration yet exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
     public NoConfigurationYetException(
-                                        String message, Throwable cause ) {
+                                        final String message, final Throwable cause ) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
+    /**
+     * Instantiates a new no configuration yet exception.
+     * 
+     * @param cause the cause
+     */
     public NoConfigurationYetException(
-                                        Throwable cause ) {
+                                        final Throwable cause ) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

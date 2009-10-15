@@ -64,69 +64,70 @@ import org.openspotlight.common.exception.SLRuntimeException;
  */
 public class Equals {
 
-	/**
-	 * Each equality.
-	 * 
-	 * @param thisObjectType the this object type
-	 * @param thisObject the this object
-	 * @param thatObject the that object
-	 * @param fieldName the field name
-	 * 
-	 * @return true, if successful
-	 */
-	public static <T> boolean eachEquality(Class<T> thisObjectType, T thisObject, Object thatObject, String fieldName) {
-		boolean status = false;
-		Assertions.checkNotNull("this object type", thisObjectType);
-		Assertions.checkNotNull("this object", thisObject);
-		if (thatObject != null && thisObjectType.isInstance(thatObject)) {
-			Field field = null;
-			try {
-				try {
-					field = thisObjectType.getDeclaredField(fieldName);
-				}
-				catch (NoSuchFieldException e) {
-				}
-				if (field == null) {
-					field = thisObjectType.getDeclaredField(fieldName);	
-				}
-				field.setAccessible(true);
-				Object value1 = field.get(thisObject);
-				Object value2 = field.get(thatObject);
-				status = value1 == value2 || value1.equals(value2);
-			} 
-			catch (Exception e) {
-				throw new SLRuntimeException("Error on attempt to perform " + thisObjectType.getName() + " equality operation.", e);
-			}
-			finally {
-				if (field != null) {
-					field.setAccessible(false);
-				}
-			}
-		}
-		return status;
-	}
-    
+    /**
+     * Each equality.
+     * 
+     * @param <T> Type of item been comparated
+     * @param thisObjectType the this object type
+     * @param thisObject the this object
+     * @param thatObject the that object
+     * @param fieldName the field name
+     * @return true, if successful
+     */
+    public static <T> boolean eachEquality( final Class<T> thisObjectType,
+                                            final T thisObject,
+                                            final Object thatObject,
+                                            final String fieldName ) {
+        boolean status = false;
+        Assertions.checkNotNull("this object type", thisObjectType);
+        Assertions.checkNotNull("this object", thisObject);
+        if (thatObject != null && thisObjectType.isInstance(thatObject)) {
+            Field field = null;
+            try {
+                try {
+                    field = thisObjectType.getDeclaredField(fieldName);
+                } catch (final NoSuchFieldException e) {
+                }
+                if (field == null) {
+                    field = thisObjectType.getDeclaredField(fieldName);
+                }
+                field.setAccessible(true);
+                final Object value1 = field.get(thisObject);
+                final Object value2 = field.get(thatObject);
+                status = value1 == value2 || value1.equals(value2);
+            } catch (final Exception e) {
+                throw new SLRuntimeException("Error on attempt to perform " + thisObjectType.getName() + " equality operation.",
+                                             e);
+            } finally {
+                if (field != null) {
+                    field.setAccessible(false);
+                }
+            }
+        }
+        return status;
+    }
+
     /**
      * Method that call equals in a null pointer safe way.
      * 
      * @param o1 the o1
      * @param o2 the o2
-     * 
      * @return true if the two object are equal
      */
-    public static boolean eachEquality(final Object o1, final Object o2) {
+    public static boolean eachEquality( final Object o1,
+                                        final Object o2 ) {
         if (o1 == o2) {
             return true;
         }
-        if ((o1 == null) && (o2 != null)) {
+        if (o1 == null && o2 != null) {
             return false;
         }
-        if ((o2 == null) && (o1 != null)) {
+        if (o2 == null && o1 != null) {
             return false;
         }
-        return (o1 != null) && o1.equals(o2);
+        return o1 != null && o1.equals(o2);
     }
-    
+
     /**
      * Equals method to be used like this:
      * 
@@ -151,10 +152,10 @@ public class Equals {
      * 
      * @param of the of
      * @param andOf the and of
-     * 
      * @return true if all objects are equal
      */
-    public static boolean eachEquality(final Object[] of, final Object[] andOf) {
+    public static boolean eachEquality( final Object[] of,
+                                        final Object[] andOf ) {
         if (of == null) {
             if (andOf == null) {
                 return true;
@@ -170,12 +171,11 @@ public class Equals {
         }
         return true;
     }
-    
+
     /**
      * Should not be instantiated.
      */
     private Equals() {
-        logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

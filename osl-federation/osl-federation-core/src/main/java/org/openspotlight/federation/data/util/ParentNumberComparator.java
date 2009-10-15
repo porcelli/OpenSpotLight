@@ -54,28 +54,31 @@ import java.util.Comparator;
 import org.openspotlight.federation.data.ConfigurationNode;
 
 /**
- * This comparable class uses the number of parents to compare one node to
- * another. So, a node with one parent will be lower than a node with two
- * parents.
- * 
- * A simple example: It's useful when attempting to save some nodes. Its better
- * to save the parents before saving the children, for example.
+ * This comparable class uses the number of parents to compare one node to another. So, a node with one parent will be lower than
+ * a node with two parents. A simple example: It's useful when attempting to save some nodes. Its better to save the parents
+ * before saving the children, for example.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class ParentNumberComparator implements Comparator<ConfigurationNode> {
-    
+
     /**
      * {@inheritDoc}
      */
-    public int compare(final ConfigurationNode o1, final ConfigurationNode o2) {
+    public int compare( final ConfigurationNode o1,
+                        final ConfigurationNode o2 ) {
         final int countForO1 = this.countParentsFrom(o1);
         final int countForO2 = this.countParentsFrom(o2);
         return countForO1 > countForO2 ? 1 : countForO1 < countForO2 ? -1 : 1;
     }
-    
-    private int countParentsFrom(final ConfigurationNode n) {
+
+    /**
+     * Count parents from the configuration node.
+     * 
+     * @param n the n
+     * @return the count
+     */
+    private int countParentsFrom( final ConfigurationNode n ) {
         ConfigurationNode c = n.getInstanceMetadata().getDefaultParent();
         int i = 0;
         while (c != null) {
@@ -84,5 +87,5 @@ public class ParentNumberComparator implements Comparator<ConfigurationNode> {
         }
         return i;
     }
-    
+
 }

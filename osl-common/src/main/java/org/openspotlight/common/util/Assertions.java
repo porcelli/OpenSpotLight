@@ -70,7 +70,8 @@ public class Assertions {
     public static void checkCondition( final String name,
                                        final boolean condition ) {
         if (!condition) {
-            throw logAndReturn(new IllegalStateException(MessageFormat.format(
+            throw logAndReturn(new IllegalStateException(
+                                                         MessageFormat.format(
                                                                               Messages.getString("Assertions.illegalCondition"), name))); //$NON-NLS-1$
         }
     }
@@ -86,20 +87,48 @@ public class Assertions {
                                                       final T... parameters ) {
         if (parameters == null) {
             throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.notNullMandatory"), name))); //$NON-NLS-1$
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.notNullMandatory"), name))); //$NON-NLS-1$
         }
         for (final Object parameter : parameters) {
             if (parameter == null) {
                 throw logAndReturn(new IllegalArgumentException(
-                                                                MessageFormat
-                                                                             .format(
-                                                                                     Messages
-                                                                                             .getString("Assertions.notNullMandatory"), name))); //$NON-NLS-1$
+                                                                MessageFormat.format(
+                                                                                     Messages.getString("Assertions.notNullMandatory"), name))); //$NON-NLS-1$
 
             }
         }
 
+    }
+
+    /**
+     * Assert that this parameter is not empty. It will test for null and also the size of this array.
+     * 
+     * @param name of parameter
+     * @param parameter itself
+     */
+    public static void checkNotEmpty( final String name,
+                                      final Collection<?> parameter ) {
+        if (parameter == null || parameter.size() == 0) {
+            throw logAndReturn(new IllegalArgumentException(
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
+        }
+    }
+
+    /**
+     * Assert that this parameter is not empty. It will test for null and also the size of this array.
+     * 
+     * @param name of parameter
+     * @param parameter itself
+     */
+    public static void checkNotEmpty( final String name,
+                                      final Map<?, ?> parameter ) {
+        if (parameter == null || parameter.size() == 0) {
+            throw logAndReturn(new IllegalArgumentException(
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
+        }
     }
 
     /**
@@ -110,10 +139,10 @@ public class Assertions {
      */
     public static void checkNotEmpty( final String name,
                                       final String parameter ) {
-        if ((parameter == null) || (parameter.trim().length() == 0)) {
+        if (parameter == null || parameter.trim().length() == 0) {
             throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
         }
     }
 
@@ -126,40 +155,10 @@ public class Assertions {
      */
     public static <T> void checkNotEmpty( final String name,
                                           final T[] parameter ) {
-        if ((parameter == null) || (parameter.length == 0)) {
+        if (parameter == null || parameter.length == 0) {
             throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Assert that this parameter is not empty. It will test for null and also the size of this array.
-     * 
-     * @param name of parameter
-     * @param parameter itself
-     */
-    public static <T> void checkNotEmpty( final String name,
-                                          final Map<?, ?> parameter ) {
-        if ((parameter == null) || (parameter.size() == 0)) {
-            throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Assert that this parameter is not empty. It will test for null and also the size of this array.
-     * 
-     * @param name of parameter
-     * @param parameter itself
-     */
-    public static <T> void checkNotEmpty( final String name,
-                                          final Collection<?> parameter ) {
-        if ((parameter == null) || (parameter.size() == 0)) {
-            throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.notEmptyMandatory"), name))); //$NON-NLS-1$
         }
     }
 
@@ -173,8 +172,8 @@ public class Assertions {
                                      final Object parameter ) {
         if (parameter == null) {
             throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.notNullMandatory"), name))); //$NON-NLS-1$
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.notNullMandatory"), name))); //$NON-NLS-1$
         }
     }
 
@@ -188,8 +187,8 @@ public class Assertions {
                                            final Object parameter ) {
         if (parameter != null) {
             throw logAndReturn(new IllegalArgumentException(
-                                                            MessageFormat.format(Messages
-                                                                                         .getString("Assertions.nullMandatory"), name))); //$NON-NLS-1$
+                                                            MessageFormat.format(
+                                                                                 Messages.getString("Assertions.nullMandatory"), name))); //$NON-NLS-1$
         }
     }
 
@@ -197,8 +196,7 @@ public class Assertions {
      * Should not be instantiated
      */
     private Assertions() {
-        throw logAndReturn(new IllegalStateException(Messages
-                                                             .getString("invalidConstructor"))); //$NON-NLS-1$
+        throw logAndReturn(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

@@ -112,26 +112,37 @@ public final class BundleProcessorManager {
      * This callable class is used to wrap a {@link BundleProcessor} instance and to group its artifacts by the
      * {@link BundleProcessor} return type. So, it will be possible to know if an artifact was processed, ignored, and so on.
      * 
+     * @param <T> *
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * @param <T>
      */
     private static class BundleProcessorCallable<T extends Artifact> implements Callable<ProcessingAction> {
 
+        /** The bundle processor. */
         private final BundleProcessor<T>             bundleProcessor;
+
+        /** The call back. */
         private final BundleProcessorWithCallback<T> callBack;
+
+        /** The graph context. */
         private final BundleProcessingContext        graphContext;
+
+        /** The immutable processing group. */
         private final BundleProcessingGroup<T>       immutableProcessingGroup;
+
+        /** The mutable processing group. */
         private final BundleProcessingGroup<T>       mutableProcessingGroup;
+
+        /** The target artifact. */
         private final T                              targetArtifact;
 
         /**
          * Constructor to initialize final mandatory fields.
          * 
-         * @param bundleProcessor
-         * @param targetArtifact
-         * @param graphContext
-         * @param immutableProcessingGroup
-         * @param mutableProcessingGroup
+         * @param bundleProcessor the bundle processor
+         * @param targetArtifact the target artifact
+         * @param graphContext the graph context
+         * @param immutableProcessingGroup the immutable processing group
+         * @param mutableProcessingGroup the mutable processing group
          */
         public BundleProcessorCallable(
                                         final BundleProcessor<T> bundleProcessor, final T targetArtifact,
@@ -205,13 +216,23 @@ public final class BundleProcessorManager {
     /**
      * This class groups the necessary data for processing each artifact and also the {@link FinalizationContext} for each bundle.
      * 
+     * @param <T> *
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     * @param <T>
      */
     private static class CreateProcessorActionsResult<T extends Artifact> {
+
+        /** The finalization context. */
         FinalizationContext<T>                         finalizationContext;
+
+        /** The processor callables. */
         private final List<BundleProcessorCallable<T>> processorCallables;
 
+        /**
+         * Instantiates a new creates the processor actions result.
+         * 
+         * @param processorCallables the processor callables
+         * @param finalizationContext the finalization context
+         */
         public CreateProcessorActionsResult(
                                              final List<BundleProcessorCallable<T>> processorCallables,
                                              final FinalizationContext<T> finalizationContext ) {
@@ -220,10 +241,20 @@ public final class BundleProcessorManager {
             this.finalizationContext = finalizationContext;
         }
 
+        /**
+         * Gets the finalization context.
+         * 
+         * @return the finalization context
+         */
         public FinalizationContext<T> getFinalizationContext() {
             return this.finalizationContext;
         }
 
+        /**
+         * Gets the processor callables.
+         * 
+         * @return the processor callables
+         */
         public List<BundleProcessorCallable<T>> getProcessorCallables() {
             return this.processorCallables;
         }
@@ -233,14 +264,27 @@ public final class BundleProcessorManager {
     /**
      * Some necessary data for finalization callback methods.
      * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * @param <T> Artifact type
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     private static class FinalizationContext<T extends Artifact> {
+
+        /** The bundle processing group. */
         private final BundleProcessingGroup<T> bundleProcessingGroup;
+
+        /** The graph context. */
         private final BundleProcessingContext  graphContext;
+
+        /** The processor. */
         private final BundleProcessor<T>       processor;
 
+        /**
+         * Instantiates a new finalization context.
+         * 
+         * @param graphContext the graph context
+         * @param bundleProcessingGroup the bundle processing group
+         * @param processor the processor
+         */
         public FinalizationContext(
                                     final BundleProcessingContext graphContext,
                                     final BundleProcessingGroup<T> bundleProcessingGroup, final BundleProcessor<T> processor ) {
@@ -253,6 +297,8 @@ public final class BundleProcessorManager {
         }
 
         /**
+         * Gets the bundle processing group.
+         * 
          * @return the bundle processing group
          */
         public BundleProcessingGroup<T> getBundleProcessingGroup() {
@@ -260,6 +306,8 @@ public final class BundleProcessorManager {
         }
 
         /**
+         * Gets the graph context.
+         * 
          * @return the global graph context
          */
         public BundleProcessingContext getGraphContext() {
@@ -267,6 +315,8 @@ public final class BundleProcessorManager {
         }
 
         /**
+         * Gets the processor.
+         * 
          * @return the bundle processor
          */
         public BundleProcessor<T> getProcessor() {
@@ -278,14 +328,26 @@ public final class BundleProcessorManager {
     /**
      * This class is used to identify a processor by its artifact type. The processor type must have only interfaces.
      * 
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      * @param <T> target artifact type
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     private static class MappedProcessor<T extends Artifact> {
+
+        /** The artifact type. */
         private final Class<T>                            artifactType;
+
+        /** The hashcode. */
         private final int                                 hashcode;
+
+        /** The processor type. */
         private final Class<? extends BundleProcessor<T>> processorType;
 
+        /**
+         * Instantiates a new mapped processor.
+         * 
+         * @param artifactType the artifact type
+         * @param processorType the processor type
+         */
         public MappedProcessor(
                                 final Class<T> artifactType, final Class<? extends BundleProcessor<T>> processorType ) {
             checkNotNull("artifactType", artifactType); //$NON-NLS-1$
@@ -297,6 +359,9 @@ public final class BundleProcessorManager {
             this.hashcode = hashOf(artifactType, processorType);
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
         @SuppressWarnings( "unchecked" )
         @Override
         public boolean equals( final Object o ) {
@@ -311,6 +376,8 @@ public final class BundleProcessorManager {
         }
 
         /**
+         * Gets the artifact type.
+         * 
          * @return the target artifact type
          */
         public Class<T> getArtifactType() {
@@ -318,23 +385,30 @@ public final class BundleProcessorManager {
         }
 
         /**
+         * Gets the processor type.
+         * 
          * @return bundle processor type for given artifact
          */
         public Class<? extends BundleProcessor<T>> getProcessorType() {
             return this.processorType;
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
         @Override
         public int hashCode() {
             return this.hashcode;
         }
     }
 
+    /** The Constant emptyResult. */
     private static final CreateProcessorActionsResult<Artifact>   emptyResult = new CreateProcessorActionsResult<Artifact>(
                                                                                                                            new ArrayList<BundleProcessorCallable<Artifact>>(
                                                                                                                                                                             0),
                                                                                                                            null);
 
+    /** The Constant processorRegistry. */
     private static final Set<MappedProcessor<? extends Artifact>> processorRegistry;
 
     /**
@@ -349,13 +423,11 @@ public final class BundleProcessorManager {
     /**
      * This method fills the artifacts by change type.
      * 
-     * @param <T>
-     * @param bundle
-     * @param allValidArtifacts
-     * @param nodeChanges
-     * @param addedArtifacts
-     * @param excludedArtifacts
-     * @param modifiedArtifacts
+     * @param bundle the bundle
+     * @param allValidArtifacts the all valid artifacts
+     * @param addedArtifacts the added artifacts
+     * @param excludedArtifacts the excluded artifacts
+     * @param modifiedArtifacts the modified artifacts
      */
     private static <T extends Artifact> void findArtifactsByChangeType( final Bundle bundle,
                                                                         final Set<T> allValidArtifacts,
@@ -390,11 +462,11 @@ public final class BundleProcessorManager {
     /**
      * This method looks for a {@link BundleProcessor} inside the {@link Bundle} configuration.
      * 
-     * @param bundle
+     * @param bundle the bundle
      * @return a set of {@link BundleProcessor}
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws ClassNotFoundException
+     * @throws InstantiationException the instantiation exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws ClassNotFoundException the class not found exception
      */
     private static Set<BundleProcessor<?>> findConfiguredBundleProcessors( final Bundle bundle )
         throws InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -407,21 +479,23 @@ public final class BundleProcessorManager {
         return processors;
     }
 
-    /**
-     * To create {@link SLGraphSession sessions} when needed.
-     */
+    /** To create {@link SLGraphSession sessions} when needed. */
     private final SLGraph                      graph;
 
+    /** The provider. */
     private final JcrConnectionProvider        provider;
 
+    /** The configuration manager provider. */
     private final ConfigurationManagerProvider configurationManagerProvider;
 
+    /** The logger. */
     private final Logger                       logger = LoggerFactory.getLogger(this.getClass());
 
     /**
-     * Constructor to initialize jcr connection provider
+     * Constructor to initialize jcr connection provider.
      * 
-     * @param graph
+     * @param provider the provider
+     * @param configurationManagerProvider the configuration manager provider
      */
     public BundleProcessorManager(
                                    final JcrConnectionProvider provider,
@@ -443,19 +517,18 @@ public final class BundleProcessorManager {
      * because the decision to mark some artifact as ignored or processed should be done by each {@link BundleProcessor},
      * independent of the other {@link BundleProcessor} involved.
      * 
-     * @param <T>
-     * @param bundle
-     * @param allValidArtifacts
-     * @param addedArtifacts
-     * @param excludedArtifacts
-     * @param modifiedArtifacts
-     * @param notProcessedArtifacts
-     * @param alreadyProcessedArtifacts
-     * @param ignoredArtifacts
-     * @param artifactsWithError
-     * @param processor
+     * @param bundle the bundle
+     * @param allValidArtifacts the all valid artifacts
+     * @param addedArtifacts the added artifacts
+     * @param excludedArtifacts the excluded artifacts
+     * @param modifiedArtifacts the modified artifacts
+     * @param notProcessedArtifacts the not processed artifacts
+     * @param alreadyProcessedArtifacts the already processed artifacts
+     * @param ignoredArtifacts the ignored artifacts
+     * @param artifactsWithError the artifacts with error
+     * @param processor the processor
      * @return a list of {@link Callable} processor action
-     * @throws BundleProcessingFatalException
+     * @throws BundleProcessingFatalException the bundle processing fatal exception
      */
     @SuppressWarnings( "unchecked" )
     private <T extends Artifact> CreateProcessorActionsResult<T> createProcessorActions( final Bundle bundle,
@@ -558,14 +631,12 @@ public final class BundleProcessorManager {
      * This method will look on static attribute {@link #processorRegistry} to map the processor interfaces and artifact types.
      * After that mapping, it will group all processing actions depending of the type, to be processed later.
      * 
-     * @param <T> artifact type
-     * @param mappedProcessor
-     * @param allProcessActions
-     * @param finalizationContexts
-     * @param bundle
-     * @param graphContext
-     * @param processors
-     * @throws BundleProcessingFatalException
+     * @param mappedProcessor the mapped processor
+     * @param allProcessActions the all process actions
+     * @param finalizationContexts the finalization contexts
+     * @param bundle the bundle
+     * @param processors the processors
+     * @throws BundleProcessingFatalException the bundle processing fatal exception
      */
     @SuppressWarnings( "unchecked" )
     private <T extends Artifact> void groupProcessingActionsByArtifactType( final MappedProcessor<T> mappedProcessor,
@@ -611,7 +682,7 @@ public final class BundleProcessorManager {
      * Start to process this {@link Bundle} and to distribute all the processing jobs for its {@link BundleProcessor configured
      * processors}.
      * 
-     * @param bundles
+     * @param bundles the bundles
      * @throws BundleProcessingFatalException if a fatal error occurs.
      */
     @SuppressWarnings( "boxing" )

@@ -99,17 +99,26 @@ public interface Scheduler {
 
             /** Default instance. */
             INSTANCE;
+
+            /** The provider. */
             private ConfigurationManagerProvider     provider;
 
+            /** The Constant BUNDLE_PROCESSOR_MANAGER. */
             static final String                      BUNDLE_PROCESSOR_MANAGER       = "bundle_processor_manager";
 
+            /** The Constant BUNDLE_TO_PROCESS_ID. */
             static final String                      BUNDLE_TO_PROCESS_ID           = "bundle_to_process_id";
+
+            /** The Constant CONFIGURATION_MANAGER_PROVIDER. */
             static final String                      CONFIGURATION_MANAGER_PROVIDER = "configuration_manager_provider";
+
+            /** The Constant BUNDLE_VERSION_ID. */
             static final String                      BUNDLE_VERSION_ID              = "bundle_version_id";
 
             /** The scheduler. */
             private final org.quartz.Scheduler       scheduler;
 
+            /** The job entries. */
             private final List<Pair<String, String>> jobEntries                     = new ArrayList<Pair<String, String>>();
 
             /** The bundle processor manager. */
@@ -200,6 +209,9 @@ public interface Scheduler {
                 this.bundleProcessorManager = bundleProcessorManager;
             }
 
+            /* (non-Javadoc)
+             * @see org.openspotlight.federation.scheduler.Scheduler#setConfigurationManagerProvider(org.openspotlight.federation.data.load.ConfigurationManagerProvider)
+             */
             public void setConfigurationManagerProvider( final ConfigurationManagerProvider provider ) {
                 this.provider = provider;
             }
@@ -249,7 +261,7 @@ public interface Scheduler {
     /**
      * Load or reload the configuration.
      * 
-     * @param configurationManager the configuration provider
+     * @param configuration the configuration
      * @throws ConfigurationException the configuration exception
      */
     public void loadConfiguration( Configuration configuration ) throws ConfigurationException;
@@ -261,6 +273,11 @@ public interface Scheduler {
      */
     public void setBundleProcessorManager( BundleProcessorManager bundleProcessorManager );
 
+    /**
+     * Sets the configuration manager provider.
+     * 
+     * @param provider the new configuration manager provider
+     */
     public void setConfigurationManagerProvider( ConfigurationManagerProvider provider );
 
     /**
