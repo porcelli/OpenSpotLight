@@ -53,39 +53,43 @@ package org.openspotlight.common;
  * This is a simple class to store a pair of objects.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  * @param <K1>
  * @param <K2>
  */
 public class Pair<K1, K2> {
+    /**
+     * First item.
+     */
     private final K1 k1;
+    /**
+     * Second item.
+     */
     private final K2 k2;
-    
+
     /**
      * Creates a new pair using the two keys provided.
      * 
      * @param k1
      * @param k2
      */
-    public Pair(final K1 k1, final K2 k2) {
+    public Pair(
+                 final K1 k1, final K2 k2 ) {
         this.k1 = k1;
         this.k2 = k2;
     }
-    
+
     /**
-     * 
      * @return the first key
      */
     public K1 getK1() {
         return this.k1;
     }
-    
+
     /**
-     * 
      * @return the second key
      */
     public K2 getK2() {
         return this.k2;
     }
-    
+
 }

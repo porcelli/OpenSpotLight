@@ -24,8 +24,8 @@ import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 import org.openspotlight.federation.data.processing.test.ConfigurationExamples;
 import org.openspotlight.federation.log.DetailedLogger;
 import org.openspotlight.federation.log.DetailedLogger.ErrorCode;
-import org.openspotlight.federation.log.DetailedLogger.EventType;
 import org.openspotlight.federation.log.DetailedLogger.LogEntry;
+import org.openspotlight.federation.log.DetailedLogger.LogEventType;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -91,9 +91,9 @@ public class JcrDetailedLogTest {
     @Test
     public void shouldLogSomeInformation() throws Exception {
         if (!logged) {
-            this.logger.log(EventType.INFO, "hey there!", this.slNode3, this.group);
-            this.logger.log(EventType.INFO, "Yeah!", this.group);
-            this.logger.log(EventType.INFO, "Yeah!", this.slNode3);
+            this.logger.log(LogEventType.INFO, "hey there!", this.slNode3, this.group);
+            this.logger.log(LogEventType.INFO, "Yeah!", this.group);
+            this.logger.log(LogEventType.INFO, "Yeah!", this.slNode3);
             logged = true;
         }
     }
@@ -103,7 +103,7 @@ public class JcrDetailedLogTest {
     public void shouldRetrieveLogInformationByAnotherLogableObject() throws Exception {
         final List<LogEntry> result = this.logger.findLogByLogableObject(this.slNode1);
         assertThat(result.size(), is(2));
-        assertThat(result.get(0).getType(), is(EventType.INFO));
+        assertThat(result.get(0).getType(), is(LogEventType.INFO));
         assertThat(result.get(0).getNodes().size(), is(not(0)));
         assertThat(result.get(0).getNodes().size(), is(not(1)));
     }
@@ -127,20 +127,20 @@ public class JcrDetailedLogTest {
 
     @SuppressWarnings( "boxing" )
     @Test
-    public void shouldRetrieveLogInformationByEventType() throws Exception {
-        final List<LogEntry> result = this.logger.findLogByEventType(EventType.INFO);
-        assertThat(result.size(), is(3));
-
+    public void shouldRetrieveLogInformationByLogableObject() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
+        assertThat(result.size(), is(2));
+        assertThat(result.get(0).getType(), is(LogEventType.INFO));
+        assertThat(result.get(0).getNodes().size(), is(not(0)));
+        assertThat(result.get(0).getNodes().size(), is(not(1)));
     }
 
     @SuppressWarnings( "boxing" )
     @Test
-    public void shouldRetrieveLogInformationByLogableObject() throws Exception {
-        final List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
-        assertThat(result.size(), is(2));
-        assertThat(result.get(0).getType(), is(EventType.INFO));
-        assertThat(result.get(0).getNodes().size(), is(not(0)));
-        assertThat(result.get(0).getNodes().size(), is(not(1)));
+    public void shouldRetrieveLogInformationByLogEventType() throws Exception {
+        final List<LogEntry> result = this.logger.findLogByEventType(LogEventType.INFO);
+        assertThat(result.size(), is(3));
+
     }
 
     @After

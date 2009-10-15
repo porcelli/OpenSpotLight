@@ -76,16 +76,17 @@ import org.apache.commons.beanutils.converters.StringConverter;
 import org.openspotlight.common.exception.SLException;
 
 /**
- * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer
- * project http://dozer.sourceforge.net/
+ * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer project http://dozer.sourceforge.net/
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class Conversion {
-    
+
+    /**
+     * Internal map of types and converters.
+     */
     private static final Map<Class<?>, Converter> CONVERTERS = new HashMap<Class<?>, Converter>();
-    
+
     static {
         CONVERTERS.put(Date.class, new DateConverter());
         CONVERTERS.put(Integer.class, new IntegerConverter());
@@ -97,7 +98,7 @@ public class Conversion {
         CONVERTERS.put(Byte.class, new ByteConverter());
         CONVERTERS.put(String.class, new StringConverter());
         CONVERTERS.put(Float.class, new FloatConverter());
-        
+
         CONVERTERS.put(int.class, new IntegerConverter());
         CONVERTERS.put(double.class, new DoubleConverter());
         CONVERTERS.put(short.class, new ShortConverter());
@@ -106,11 +107,11 @@ public class Conversion {
         CONVERTERS.put(boolean.class, new BooleanConverter());
         CONVERTERS.put(byte.class, new ByteConverter());
         CONVERTERS.put(float.class, new FloatConverter());
-        
+
         CONVERTERS.put(BigDecimal.class, new BigDecimalConverter());
         CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
     }
-    
+
     /**
      * Returns a new converted type based on target type parameter.
      * 
@@ -120,9 +121,9 @@ public class Conversion {
      * @return a new value from a converted type
      * @throws SLException
      */
-    @SuppressWarnings("unchecked")
-    public static <E> E convert(final Object rawValue, final Class<E> targetType)
-            throws SLException {
+    @SuppressWarnings( "unchecked" )
+    public static <E> E convert( final Object rawValue,
+                                 final Class<E> targetType ) throws SLException {
         checkNotNull("targetType", targetType); //$NON-NLS-1$
         checkCondition("validTargetType", CONVERTERS.containsKey(targetType)); //$NON-NLS-1$
         if (rawValue == null) {
@@ -130,18 +131,17 @@ public class Conversion {
         }
         try {
             final Converter converter = CONVERTERS.get(targetType);
-            final E converted = (E) converter.convert(targetType, rawValue);
+            final E converted = (E)converter.convert(targetType, rawValue);
             return converted;
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLException.class);
         }
     }
-    
+
     /**
      * Should not be instantiated
      */
     private Conversion() {
-        logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

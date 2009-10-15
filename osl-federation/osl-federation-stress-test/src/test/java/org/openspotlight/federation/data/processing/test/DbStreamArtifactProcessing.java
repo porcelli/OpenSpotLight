@@ -51,73 +51,89 @@ package org.openspotlight.federation.data.processing.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
+import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
+import java.sql.Connection;
 import java.util.Set;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
+import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
-import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
+import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
+import org.openspotlight.federation.data.load.DatabaseStreamLoader;
+import org.openspotlight.federation.data.load.db.test.H2Support;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
-import org.openspotlight.federation.data.processing.BundleProcessor.GraphContext;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.federation.data.util.JcrConfigurationManagerProvider;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-@SuppressWarnings("all")
-public class FileSystemLoaderProcessing {
-    
-    public static Configuration loadAllFilesFromThisConfiguration(
-            final Configuration configuration) throws Exception {
-        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
-                new FileSystemArtifactLoader());
-        final Set<Bundle> bundles = findAllNodesOfType(configuration,
-                Bundle.class);
+@SuppressWarnings( "all" )
+public class DbStreamArtifactProcessing {
+
+    @BeforeClass
+    public static void setupH2() throws Exception {
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+        Files.delete("./target/test-data/DbStreamArtifactProcessing/h2/");
+        final Configuration configuration = createH2DbConfiguration("DbStreamArtifactProcessing");
+        final DbBundle bundle = (DbBundle)configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
+        .getGroupByName("h2 Group") //$NON-NLS-1$
+        .getBundleByName("H2 Connection"); //$NON-NLS-1$
+        final Connection conn = createConnection(bundle);
+        try {
+            H2Support.fillDatabaseArtifacts(conn);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
+    }
+
+    private Configuration loadAllArtifactsFromThisConfiguration( final Configuration configuration ) throws Exception {
+        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(new DatabaseStreamLoader());
+        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
         for (final Bundle bundle : bundles) {
             group.loadArtifactsFromMappings(bundle);
-            
+
         }
         return configuration;
-        
-    }
-    
 
-    
+    }
+
     @Test
-    public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
-        final Configuration configuration = this
-                .loadAllFilesFromThisConfiguration(createOslValidConfiguration("FileSystemLoaderProcessing"));
-        final Set<Bundle> bundles = findAllNodesOfType(configuration,
-                Bundle.class);
+    public void shouldLoadAllArtifactsFromh2SourceCode() throws Exception {
+        final Configuration configuration = this.loadAllArtifactsFromThisConfiguration(createH2DbConfiguration("DbStreamArtifactProcessing"));
+        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
         for (final Bundle bundle : bundles) {
             assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
         }
     }
-    
+
     @Test
-    public void shouldProcessAllValidOslSourceCode() throws Exception {
-        final Configuration configuration = this
-                .loadAllFilesFromThisConfiguration(createOslValidConfiguration("FileSystemLoaderProcessing"));
-        final SLGraph graph = mock(SLGraph.class);
-        final SLGraphSession session = mock(SLGraphSession.class);
-        when(graph.openSession()).thenReturn(session);
-        
-        final BundleProcessorManager manager = new BundleProcessorManager(graph);
-        final GraphContext graphContext = mock(GraphContext.class);
-        final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
-                StreamArtifact.class);
-        final Repository repository = configuration
-                .getRepositoryByName("OSL Group");
-        Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+    public void shouldProcessAllValidh2SourceCode() throws Exception {
+        final Configuration configuration = this.loadAllArtifactsFromThisConfiguration(createH2DbConfiguration("DbStreamArtifactProcessing"));
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
+        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
+        configurationManager.save(configuration);
+        configurationManager.closeResources();
+
+        final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration, StreamArtifact.class);
+        final Repository repository = configuration.getRepositoryByName("H2 Repository");
+        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
         manager.processBundles(bundles);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }
-    
+
 }

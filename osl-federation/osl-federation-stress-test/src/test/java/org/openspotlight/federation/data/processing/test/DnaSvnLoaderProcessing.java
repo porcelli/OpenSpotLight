@@ -49,52 +49,56 @@
 
 package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.Column;
-import org.openspotlight.federation.data.impl.CustomArtifact;
-import org.openspotlight.federation.data.impl.TableArtifact;
-import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
-import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
-import org.openspotlight.federation.data.processing.CustomArtifactBundleProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Ignore;
 
-@SuppressWarnings("all")
-public class LogTableCustomArtifactProcessor implements
-        CustomArtifactBundleProcessor {
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-    public void globalProcessingFinalized(
-            final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-            final GraphContext graphContext) {
-        // nothing to do
-        
-    }
-    
-    public ProcessingStartAction globalProcessingStarted(
-            final BundleProcessingGroup<CustomArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
-            throws BundleProcessingFatalException {
-        
-        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
-    }
-    
-    public ProcessingAction processArtifact(
-            final CustomArtifact targetArtifact,
-            final BundleProcessingGroup<CustomArtifact> bundleProcessingGroup,
-            final GraphContext graphContext)
-            throws BundleProcessingNonFatalException,
-            BundleProcessingFatalException {
-        if (targetArtifact instanceof TableArtifact) {
-            final TableArtifact table = (TableArtifact) targetArtifact;
-            this.logger.warn(table.getTableName());
-            for (final Column c : table.getColumns()) {
-                this.logger.warn("    " + c.getName());
-            }
-            
-        }
-        return ProcessingAction.ARTIFACT_PROCESSED;
-    }
-    
+@SuppressWarnings( "all" )
+@Ignore
+public class DnaSvnLoaderProcessing {
+
+    //	public static Configuration loadAllFilesFromThisConfiguration(
+    //			final Configuration configuration) throws Exception {
+    //		final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
+    //				new DNASvnArtifactLoader());
+    //		final Set<Bundle> bundles = findAllNodesOfType(configuration,
+    //				Bundle.class);
+    //		for (final Bundle bundle : bundles) {
+    //			final ArtifactProcessingCount count = group
+    //					.loadArtifactsFromMappings(bundle);
+    //			assertThat(count.getErrorCount(), is(0L));
+    //		}
+    //		return configuration;
+    //
+    //	}
+    //
+    //	@Test
+    //	public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
+    //		final Configuration configuration = this
+    //				.loadAllFilesFromThisConfiguration(createOslValidDnaSvnConnectorConfiguration("DnaSvnLoaderProcessing"));
+    //		final Set<Bundle> bundles = findAllNodesOfType(configuration,
+    //				Bundle.class);
+    //		for (final Bundle bundle : bundles) {
+    //			assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
+    //		}
+    //	}
+    //
+    //	@Test
+    //	public void shouldProcessAllValidOslSourceCode() throws Exception {
+    //		final Configuration configuration = this
+    //				.loadAllFilesFromThisConfiguration(createOslValidDnaSvnConnectorConfiguration("DnaSvnLoaderProcessing"));
+    //		final SLGraph graph = mock(SLGraph.class);
+    //		final SLGraphSession session = mock(SLGraphSession.class);
+    //		when(graph.openSession()).thenReturn(session);
+    //
+    //		final BundleProcessorManager manager = new BundleProcessorManager(graph);
+    //		final BundleProcessingContext graphContext = mock(BundleProcessingContext.class);
+    //		final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration,
+    //				StreamArtifact.class);
+    //		final Repository repository = configuration
+    //				.getRepositoryByName("OSL Group");
+    //		Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository,
+    //				Bundle.class);
+    //		manager.processBundles(bundles);
+    //		assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
+    //	}
+
 }

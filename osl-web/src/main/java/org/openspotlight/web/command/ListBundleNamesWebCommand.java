@@ -19,8 +19,14 @@ import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;
 
+/**
+ * The Class ListBundleNamesWebCommand.
+ */
 public class ListBundleNamesWebCommand implements WebCommand {
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.web.command.WebCommand#execute(org.openspotlight.web.command.WebCommand.WebCommandContext, java.util.Map)
+     */
     public String execute( final WebCommandContext context,
                            final Map<String, String> parameters ) throws WebException {
         try {

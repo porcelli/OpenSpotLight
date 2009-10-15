@@ -14,7 +14,19 @@ import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
 import org.openspotlight.federation.util.MarkAllAsDirtyVisitor;
 
+/**
+ * The Class ConfigurationSupport contains methods to be used on {@link ConfigurationManager} saved data.
+ */
 public class ConfigurationSupport {
+
+    /**
+     * Initialize configuration.
+     * 
+     * @param forceReload the force reload
+     * @param jcrSession the jcr session
+     * @return true, if successful
+     * @throws SLException the SL exception
+     */
     public static boolean initializeConfiguration( final boolean forceReload,
                                                    final Session jcrSession ) throws SLException {
         final ConfigurationManager manager = new JcrSessionConfigurationManager(jcrSession);
@@ -32,6 +44,13 @@ public class ConfigurationSupport {
         return reloaded;
     }
 
+    /**
+     * Save xml on jcr.
+     * 
+     * @param manager the manager
+     * @return the configuration
+     * @throws SLException the SL exception
+     */
     private static Configuration saveXmlOnJcr( final ConfigurationManager manager ) throws SLException {
         Configuration configuration;
         final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");

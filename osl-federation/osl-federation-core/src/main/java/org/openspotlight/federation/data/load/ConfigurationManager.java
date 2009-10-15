@@ -255,6 +255,9 @@ public interface ConfigurationManager {
      */
     public static final String DEFAULT_OSL_PREFIX = "osl"; //$NON-NLS-1$
 
+    /**
+     * Close resources.
+     */
     public void closeResources();
 
     /**

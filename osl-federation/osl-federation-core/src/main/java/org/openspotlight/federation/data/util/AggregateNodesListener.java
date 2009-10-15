@@ -60,66 +60,69 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
  * Simple listener for grouping all changes for later use.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-public class AggregateNodesListener implements
-		ItemEventListener<ConfigurationNode> {
+public class AggregateNodesListener implements ItemEventListener<ConfigurationNode> {
 
-	private final Set<ConfigurationNode> changedNodes = new HashSet<ConfigurationNode>();
+    /** The changed nodes. */
+    private final Set<ConfigurationNode> changedNodes  = new HashSet<ConfigurationNode>();
 
-	private final Set<ConfigurationNode> insertedNodes = new HashSet<ConfigurationNode>();
+    /** The inserted nodes. */
+    private final Set<ConfigurationNode> insertedNodes = new HashSet<ConfigurationNode>();
 
-	private final Set<ConfigurationNode> removedNodes = new HashSet<ConfigurationNode>();
+    /** The removed nodes. */
+    private final Set<ConfigurationNode> removedNodes  = new HashSet<ConfigurationNode>();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void changeEventHappened(
-			final ItemChangeEvent<ConfigurationNode> event) {
-		switch (event.getType()) {
-		case ADDED:
-			this.insertedNodes.add(event.getNewItem());
-			break;
-		case CHANGED:
-			this.changedNodes.add(event.getNewItem());
-			break;
-		case EXCLUDED:
-			this.removedNodes.add(event.getOldItem());
-			break;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    public void changeEventHappened( final ItemChangeEvent<ConfigurationNode> event ) {
+        switch (event.getType()) {
+            case ADDED:
+                this.insertedNodes.add(event.getNewItem());
+                break;
+            case CHANGED:
+                this.changedNodes.add(event.getNewItem());
+                break;
+            case EXCLUDED:
+                this.removedNodes.add(event.getOldItem());
+                break;
+        }
 
-	}
+    }
 
-	/**
-	 * Clear all internal sets of changes.
-	 */
-	public void clearData() {
-		this.insertedNodes.clear();
-		this.changedNodes.clear();
-		this.removedNodes.clear();
-	}
+    /**
+     * Clear all internal sets of changes.
+     */
+    public void clearData() {
+        this.insertedNodes.clear();
+        this.changedNodes.clear();
+        this.removedNodes.clear();
+    }
 
-	/**
-	 * 
-	 * @return the changed (updated) nodes
-	 */
-	public Set<ConfigurationNode> getChangedNodes() {
-		return this.changedNodes;
-	}
+    /**
+     * Gets the changed nodes.
+     * 
+     * @return the changed (updated) nodes
+     */
+    public Set<ConfigurationNode> getChangedNodes() {
+        return this.changedNodes;
+    }
 
-	/**
-	 * 
-	 * @return the inserted nodes
-	 */
-	public Set<ConfigurationNode> getInsertedNodes() {
-		return this.insertedNodes;
-	}
+    /**
+     * Gets the inserted nodes.
+     * 
+     * @return the inserted nodes
+     */
+    public Set<ConfigurationNode> getInsertedNodes() {
+        return this.insertedNodes;
+    }
 
-	/**
-	 * 
-	 * @return the removed nodes
-	 */
-	public Set<ConfigurationNode> getRemovedNodes() {
-		return this.removedNodes;
-	}
+    /**
+     * Gets the removed nodes.
+     * 
+     * @return the removed nodes
+     */
+    public Set<ConfigurationNode> getRemovedNodes() {
+        return this.removedNodes;
+    }
 }

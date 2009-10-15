@@ -17,8 +17,20 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.web.util.ConfigurationSupport;
 
+/**
+ * The listener interface for receiving oslContext events. The class that is interested in processing a oslContext event
+ * implements this interface, and the object created with that class is registered with a component using the component's
+ * <code>addOslContextListener<code> method. When
+ * the oslContext event occurs, that object's appropriate
+ * method is invoked.
+ * 
+ * @see OslContextEvent
+ */
 public class OslContextListener implements ServletContextListener, ServletContextConstants {
 
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
+     */
     public void contextDestroyed( final ServletContextEvent arg0 ) {
         final JcrConnectionProvider provider = OslServletContextSupport.getJcrConnectionFrom(arg0.getServletContext());
         final SLGraph graph = OslServletContextSupport.getGraphFrom(arg0.getServletContext());
@@ -28,6 +40,9 @@ public class OslContextListener implements ServletContextListener, ServletContex
         scheduler.shutdown();
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+     */
     public void contextInitialized( final ServletContextEvent arg0 ) {
         try {
             final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR);
@@ -38,8 +53,9 @@ public class OslContextListener implements ServletContextListener, ServletContex
             final Session jcrSession = provider.openSession();
             ConfigurationSupport.initializeConfiguration(false, jcrSession);
             jcrSession.logout();
-            scheduler.setBundleProcessorManager(new BundleProcessorManager(graph));
-            scheduler.setConfigurationManagerProvider(new JcrConfigurationManagerProvider(provider));
+            final JcrConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
+            scheduler.setBundleProcessorManager(new BundleProcessorManager(provider, configurationManagerProvider));
+            scheduler.setConfigurationManagerProvider(configurationManagerProvider);
             scheduler.start();
             arg0.getServletContext().setAttribute(SCHEDULER, scheduler);
             arg0.getServletContext().setAttribute(PROVIDER, provider);

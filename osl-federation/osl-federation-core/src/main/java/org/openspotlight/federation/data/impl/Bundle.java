@@ -63,455 +63,408 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
+import org.openspotlight.federation.data.impl.Artifact.Status;
 
 /**
- * A bundle is a group of artifact sources such as source folders, database
- * tables and so on. The bundle should group similar artifacts (example: java
- * files).
+ * A bundle is a group of artifact sources such as source folders, database tables and so on. The bundle should group similar
+ * artifacts (example: java files).
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings( "unchecked" )
 @ThreadSafe
-@StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
-		Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-		BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class,
-		ArtifactMapping.class, ScheduleData.class })
+@StaticMetadata( propertyNames = {"active", "initialLookup"}, propertyTypes = {Boolean.class, String.class}, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {Group.class}, validChildrenTypes = {
+    BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class, ArtifactMapping.class, ScheduleData.class} )
 public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
 
-	/** The Constant ACTIVE. */
-	private static final String ACTIVE = "active"; //$NON-NLS-1$
+    /** The Constant ACTIVE. */
+    private static final String    ACTIVE           = "active";            //$NON-NLS-1$
 
-	/** The Constant INITIAL_LOOKUP. */
-	private static final String INITIAL_LOOKUP = "initialLookup"; //$NON-NLS-1$
+    /** The Constant INITIAL_LOOKUP. */
+    private static final String    INITIAL_LOOKUP   = "initialLookup";     //$NON-NLS-1$
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1092283780730455977L;
+    /** The Constant serialVersionUID. */
+    private static final long      serialVersionUID = 1092283780730455977L;
 
-	/** The instance metadata. */
-	private final InstanceMetadata instanceMetadata;
+    /** The instance metadata. */
+    private final InstanceMetadata instanceMetadata;
 
-	/**
-	 * creates a bundle inside this project.
-	 * 
-	 * @param project
-	 *            the project
-	 * @param name
-	 *            the name
-	 */
-	public Bundle(final Group project, final String name) {
-		this.instanceMetadata = createWithKeyProperty(this, project, name);
-		checkCondition("noBundle", //$NON-NLS-1$
-				project.getBundleByName(name) == null);
-		project.getInstanceMetadata().addChild(this);
+    /**
+     * creates a bundle inside this project.
+     * 
+     * @param project the project
+     * @param name the name
+     */
+    public Bundle(
+                   final Group project, final String name ) {
+        this.instanceMetadata = createWithKeyProperty(this, project, name);
+        checkCondition("noBundle", //$NON-NLS-1$
+                       project.getBundleByName(name) == null);
+        project.getInstanceMetadata().addChild(this);
 
-	}
+    }
 
-	/**
-	 * Adds a new {@link StreamArtifact} to this bundle if there's no
-	 * {@link StreamArtifact} with the artifactName passed as a param. If
-	 * there's any {@link StreamArtifact} with this artifactName, this method
-	 * just returns the existing one.
-	 * 
-	 * @param artifactName
-	 *            the artifact name
-	 * 
-	 * @return a stream artifact
-	 */
-	public StreamArtifact addStreamArtifact(final String artifactName) {
-		final StreamArtifact streamArtifact = this
-				.getStreamArtifactByName(artifactName);
-		if (streamArtifact != null) {
-			return streamArtifact;
-		}
-		return new StreamArtifact(this, artifactName);
-	}
+    /**
+     * Adds a new {@link StreamArtifact} to this bundle if there's no {@link StreamArtifact} with the artifactName passed as a
+     * param. If there's any {@link StreamArtifact} with this artifactName, this method just returns the existing one.
+     * 
+     * @param artifactName the artifact name
+     * @return a stream artifact
+     */
+    public StreamArtifact addStreamArtifact( final String artifactName ) {
+        final StreamArtifact streamArtifact = this.getStreamArtifactByName(artifactName);
+        if (streamArtifact != null) {
+            return streamArtifact;
+        }
+        return new StreamArtifact(this, artifactName);
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	public final int compareTo(final ConfigurationNode o) {
-		return this.instanceMetadata.compare(this, o);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final int compareTo( final ConfigurationNode o ) {
+        return this.instanceMetadata.compare(this, o);
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final boolean equals(final Object obj) {
-		return this.instanceMetadata.equals(obj);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean equals( final Object obj ) {
+        return this.instanceMetadata.equals(obj);
+    }
 
-	/**
-	 * Gets the active.
-	 * 
-	 * @return active property
-	 */
-	public final Boolean getActive() {
-		return this.instanceMetadata.getProperty(ACTIVE);
-	}
+    /**
+     * Gets the active.
+     * 
+     * @return active property
+     */
+    public final Boolean getActive() {
+        return this.instanceMetadata.getProperty(ACTIVE);
+    }
 
-	/**
-	 * To process this bundle, the processor type classes should be configured.
-	 * This method groups all class names on a set and return this names.
-	 * 
-	 * @return all processor types names
-	 */
-	@SuppressWarnings("boxing")
-	public Set<String> getAllProcessorTypeNames() {
-		final Collection<BundleProcessorType> allProcessorTypes = this.instanceMetadata
-				.getChildrensOfType(BundleProcessorType.class);
-		final Set<String> allTypeNames = new HashSet<String>();
-		for (final BundleProcessorType type : allProcessorTypes) {
-			if (type.getActive()) {
-				allTypeNames.add(type.getName());
-			}
-		}
-		return unmodifiableSet(allTypeNames);
-	}
+    /**
+     * To process this bundle, the processor type classes should be configured. This method groups all class names on a set and
+     * return this names.
+     * 
+     * @return all processor types names
+     */
+    @SuppressWarnings( "boxing" )
+    public Set<String> getAllProcessorTypeNames() {
+        final Collection<BundleProcessorType> allProcessorTypes = this.instanceMetadata.getChildrensOfType(BundleProcessorType.class);
+        final Set<String> allTypeNames = new HashSet<String>();
+        for (final BundleProcessorType type : allProcessorTypes) {
+            if (type.getActive()) {
+                allTypeNames.add(type.getName());
+            }
+        }
+        return unmodifiableSet(allTypeNames);
+    }
 
-	/**
-	 * Returns a artifact mapping by its name.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return an artifact mapping
-	 */
-	public final ArtifactMapping getArtifactMappingByName(final String name) {
-		return this.instanceMetadata.getChildByKeyValue(ArtifactMapping.class,
-				name);
-	}
+    /**
+     * Returns a artifact mapping by its name.
+     * 
+     * @param name the name
+     * @return an artifact mapping
+     */
+    public final ArtifactMapping getArtifactMappingByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(ArtifactMapping.class, name);
+    }
 
-	/**
-	 * Gets the artifact mapping names.
-	 * 
-	 * @return all artifact mapping names
-	 */
-	public final Set<String> getArtifactMappingNames() {
-		return (Set<String>) this.instanceMetadata
-				.getKeyFromChildrenOfTypes(ArtifactMapping.class);
-	}
+    /**
+     * Gets the artifact mapping names.
+     * 
+     * @return all artifact mapping names
+     */
+    public final Set<String> getArtifactMappingNames() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(ArtifactMapping.class);
+    }
 
-	/**
-	 * Gets the artifact mappings.
-	 * 
-	 * @return all artifact mappings
-	 */
-	public final Collection<ArtifactMapping> getArtifactMappings() {
-		return this.instanceMetadata.getChildrensOfType(ArtifactMapping.class);
-	}
+    /**
+     * Gets the artifact mappings.
+     * 
+     * @return all artifact mappings
+     */
+    public final Collection<ArtifactMapping> getArtifactMappings() {
+        return this.instanceMetadata.getChildrensOfType(ArtifactMapping.class);
+    }
 
-	/**
-	 * Returns a bundle by its name.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return a bundle
-	 */
-	public final Bundle getBundleByName(final String name) {
-		return this.instanceMetadata.getChildByKeyValue(Bundle.class, name);
-	}
+    /**
+     * Returns a bundle by its name.
+     * 
+     * @param name the name
+     * @return a bundle
+     */
+    public final Bundle getBundleByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(Bundle.class, name);
+    }
 
-	/**
-	 * Gets the bundle names.
-	 * 
-	 * @return all bundle names
-	 */
-	public final Set<String> getBundleNames() {
-		return (Set<String>) this.instanceMetadata
-				.getKeyFromChildrenOfTypes(Bundle.class);
-	}
+    /**
+     * Gets the bundle names.
+     * 
+     * @return all bundle names
+     */
+    public final Set<String> getBundleNames() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(Bundle.class);
+    }
 
-	/**
-	 * Gets the bundles.
-	 * 
-	 * @return all bundles
-	 */
-	public final Collection<Bundle> getBundles() {
-		return this.instanceMetadata.getChildrensOfType(Bundle.class);
-	}
+    /**
+     * Gets the bundles.
+     * 
+     * @return all bundles
+     */
+    public final Collection<Bundle> getBundles() {
+        return this.instanceMetadata.getChildrensOfType(Bundle.class);
+    }
 
-	/**
-	 * Returns a custom artifact by its name.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return a custom artifact
-	 */
-	public final CustomArtifact getCustomArtifactByName(final String name) {
-		return this.instanceMetadata.getChildByKeyValue(CustomArtifact.class,
-				name);
-	}
+    /**
+     * Returns a custom artifact by its name.
+     * 
+     * @param name the name
+     * @return a custom artifact
+     */
+    public final CustomArtifact getCustomArtifactByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(CustomArtifact.class, name);
+    }
 
-	/**
-	 * Gets the custom artifact names.
-	 * 
-	 * @return all custom artifact names
-	 */
-	public final Set<String> getCustomArtifactNames() {
-		return (Set<String>) this.instanceMetadata
-				.getKeyFromChildrenOfTypes(CustomArtifact.class);
-	}
+    /**
+     * Gets the custom artifact names.
+     * 
+     * @return all custom artifact names
+     */
+    public final Set<String> getCustomArtifactNames() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(CustomArtifact.class);
+    }
 
-	/**
-	 * Gets the custom artifacts.
-	 * 
-	 * @return all custom artifacts
-	 */
-	public final Collection<CustomArtifact> getCustomArtifacts() {
-		return this.instanceMetadata.getChildrensOfType(CustomArtifact.class);
-	}
+    /**
+     * Gets the custom artifacts.
+     * 
+     * @return all custom artifacts
+     */
+    public final Collection<CustomArtifact> getCustomArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(CustomArtifact.class);
+    }
 
-	/**
-	 * Gets the group.
-	 * 
-	 * @return the group
-	 */
-	public Group getGroup() {
-		return this.instanceMetadata.getParent(Group.class);
-	}
+    /**
+     * Gets the group.
+     * 
+     * @return the group
+     */
+    public Group getGroup() {
+        return this.instanceMetadata.getParent(Group.class);
+    }
 
-	/**
-	 * Gets the initial lookup.
-	 * 
-	 * @return the initial lookup property.
-	 */
-	public final String getInitialLookup() {
-		return this.instanceMetadata.getProperty(INITIAL_LOOKUP);
-	}
+    /**
+     * Gets the initial lookup.
+     * 
+     * @return the initial lookup property.
+     */
+    public final String getInitialLookup() {
+        return this.instanceMetadata.getProperty(INITIAL_LOOKUP);
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	public final InstanceMetadata getInstanceMetadata() {
-		return this.instanceMetadata;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final InstanceMetadata getInstanceMetadata() {
+        return this.instanceMetadata;
+    }
 
-	/**
-	 * The name, in this case, is a unique identifier (with parent node) to this
-	 * node.
-	 * 
-	 * @return the node name
-	 */
-	public String getName() {
-		return (String) this.instanceMetadata.getKeyPropertyValue();
-	}
+    /**
+     * The name, in this case, is a unique identifier (with parent node) to this node.
+     * 
+     * @return the node name
+     */
+    public String getName() {
+        return (String)this.instanceMetadata.getKeyPropertyValue();
+    }
 
-	/**
-	 * Gets the project.
-	 * 
-	 * @return the parent project
-	 */
-	public Group getProject() {
-		return (Group) this.instanceMetadata.getDefaultParent();
-	}
+    /**
+     * Gets the project.
+     * 
+     * @return the parent project
+     */
+    public Group getProject() {
+        return (Group)this.instanceMetadata.getDefaultParent();
+    }
 
-	/**
-	 * Returns the repository if this node has one, or the parent's project
-	 * repository instead.
-	 * 
-	 * @return a repository
-	 */
-	public final Repository getRepository() {
-		final ConfigurationNode parent = this.instanceMetadata
-				.getDefaultParent();
-		if (parent instanceof Repository) {
-			return (Repository) parent;
-		} else if (parent instanceof Group) {
-			final Group proj = (Group) parent;
-			return proj.getRepository();
-		}
-		return null;
-	}
+    /**
+     * Returns the repository if this node has one, or the parent's project repository instead.
+     * 
+     * @return a repository
+     */
+    public final Repository getRepository() {
+        final ConfigurationNode parent = this.instanceMetadata.getDefaultParent();
+        if (parent instanceof Repository) {
+            return (Repository)parent;
+        } else if (parent instanceof Group) {
+            final Group proj = (Group)parent;
+            return proj.getRepository();
+        }
+        return null;
+    }
 
-	/**
-	 * Gets the root group.
-	 * 
-	 * @return the root group
-	 */
-	public Group getRootGroup() {
-		Group parentGroup = this.getGroup();
-		boolean found = (this.getGroup().getGraphRoot() != null)
-				&& this.getGroup().getGraphRoot().booleanValue();
-		while (!found) {
-			found = (this.getGroup().getGraphRoot() != null)
-					&& this.getGroup().getGraphRoot().booleanValue();
+    /**
+     * Gets the root group.
+     * 
+     * @return the root group
+     */
+    public Group getRootGroup() {
+        Group parentGroup = this.getGroup();
+        boolean found = this.getGroup().getGraphRoot() != null && this.getGroup().getGraphRoot().booleanValue();
+        while (!found) {
+            found = this.getGroup().getGraphRoot() != null && this.getGroup().getGraphRoot().booleanValue();
 
-			final ConfigurationNode defaultParent = parentGroup
-					.getInstanceMetadata().getDefaultParent();
-			if (!(defaultParent instanceof Group)) {
-				throw logAndReturn(new IllegalStateException(
-						"Parent group for this bundle was not found"));
-			}
-			parentGroup = Group.class.cast(defaultParent);
-		}
-		return parentGroup;
-	}
+            final ConfigurationNode defaultParent = parentGroup.getInstanceMetadata().getDefaultParent();
+            if (!(defaultParent instanceof Group)) {
+                throw logAndReturn(new IllegalStateException("Parent group for this bundle was not found"));
+            }
+            parentGroup = Group.class.cast(defaultParent);
+        }
+        return parentGroup;
+    }
 
-	public Collection<ScheduleData> getScheduleDataForThisBundle() {
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<ScheduleData> getScheduleData() {
+        return this.instanceMetadata.getChildrensOfType(ScheduleData.class);
+    }
 
-		Collection<ScheduleData> scheduleData = this.getScheduleData();
-		while (scheduleData == null || scheduleData.size() == 0) {
-			ConfigurationNode parent = this.getInstanceMetadata()
-					.getDefaultParent();
-			if (parent != null && parent instanceof Group) {
-				Group parentGroup = (Group) parent;
-				scheduleData = parentGroup.getScheduleData();
-			} else {
-				throw logAndReturn(new IllegalStateException(
-						"Bundle with no schedule data"));
-			}
-		}
-		return scheduleData;
+    /**
+     * {@inheritDoc}
+     */
+    public ScheduleData getScheduleDataByCronInformation( final String cronInformation ) {
+        return this.instanceMetadata.getChildByKeyValue(ScheduleData.class, cronInformation);
+    }
 
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public Set<String> getScheduleDataCronInformations() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(ScheduleData.class);
+    }
 
-	/**
-	 * Returns an artifact by its name.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return an artifact
-	 */
-	public final StreamArtifact getStreamArtifactByName(final String name) {
-		return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class,
-				name);
-	}
+    public Collection<ScheduleData> getScheduleDataForThisBundle() {
 
-	/**
-	 * Gets the stream artifact names.
-	 * 
-	 * @return all artifact names
-	 */
-	public final Set<String> getStreamArtifactNames() {
-		return (Set<String>) this.instanceMetadata
-				.getKeyFromChildrenOfTypes(StreamArtifact.class);
-	}
+        Collection<ScheduleData> scheduleData = this.getScheduleData();
+        while (scheduleData == null || scheduleData.size() == 0) {
+            final ConfigurationNode parent = this.getInstanceMetadata().getDefaultParent();
+            if (parent != null && parent instanceof Group) {
+                final Group parentGroup = (Group)parent;
+                scheduleData = parentGroup.getScheduleData();
+            } else {
+                throw logAndReturn(new IllegalStateException("Bundle with no schedule data"));
+            }
+        }
+        return scheduleData;
 
-	/**
-	 * Gets the stream artifacts.
-	 * 
-	 * @return all artifacts
-	 */
-	public final Collection<StreamArtifact> getStreamArtifacts() {
-		return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
-	}
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final int hashCode() {
-		return this.instanceMetadata.hashCode();
-	}
+    /**
+     * Returns an artifact by its name.
+     * 
+     * @param name the name
+     * @return an artifact
+     */
+    public final StreamArtifact getStreamArtifactByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class, name);
+    }
 
-	/**
-	 * Removes a artifact mapping.
-	 * 
-	 * @param ArtifactMapping
-	 *            the artifact mapping
-	 */
-	public final void removeArtifactMapping(
-			final ArtifactMapping ArtifactMapping) {
-		this.instanceMetadata.removeChild(ArtifactMapping);
-	}
+    /**
+     * Gets the stream artifact names.
+     * 
+     * @return all artifact names
+     */
+    public final Set<String> getStreamArtifactNames() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(StreamArtifact.class);
+    }
 
-	/**
-	 * removes a bundle.
-	 * 
-	 * @param bundle
-	 *            the bundle
-	 */
-	public final void removeBundle(final Bundle bundle) {
-		this.instanceMetadata.removeChild(bundle);
-	}
+    /**
+     * Gets the stream artifacts.
+     * 
+     * @return all artifacts
+     */
+    public final Collection<StreamArtifact> getStreamArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
+    }
 
-	/**
-	 * Removes a Custom Artifact.
-	 * 
-	 * @param CustomArtifact
-	 *            the custom artifact
-	 */
-	public final void removeCustomArtifact(final CustomArtifact CustomArtifact) {
-		this.instanceMetadata.removeChild(CustomArtifact);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final int hashCode() {
+        return this.instanceMetadata.hashCode();
+    }
 
-	/**
-	 * Removes a project.
-	 * 
-	 * @param group
-	 *            the group
-	 */
-	public final void removeProject(final Group group) {
-		this.instanceMetadata.removeChild(group);
-	}
+    /**
+     * Removes a Custom Artifact.
+     * 
+     * @param customArtifact the custom artifact
+     */
+    public final void markCustomArtifactAsRemoved( final CustomArtifact customArtifact ) {
+        customArtifact.getInstanceMetadata().setProperty("status", Status.EXCLUDED);
+    }
 
-	/**
-	 * Removes an artifact.
-	 * 
-	 * @param Artifact
-	 *            the artifact
-	 */
-	public final void removeStreamArtifact(final StreamArtifact Artifact) {
-		this.instanceMetadata.removeChild(Artifact);
-	}
+    /**
+     * Removes an artifact.
+     * 
+     * @param streamArtifact the artifact
+     */
+    public final void markStreamArtifactAsRemoved( final StreamArtifact streamArtifact ) {
+        streamArtifact.getInstanceMetadata().setProperty("status", Status.EXCLUDED);
+    }
 
-	/**
-	 * Sets the active property.
-	 * 
-	 * @param active
-	 *            the active
-	 */
-	public final void setActive(final Boolean active) {
-		this.instanceMetadata.setProperty(ACTIVE, active);
-	}
+    /**
+     * Removes a artifact mapping.
+     * 
+     * @param ArtifactMapping the artifact mapping
+     */
+    public final void removeArtifactMapping( final ArtifactMapping ArtifactMapping ) {
+        this.instanceMetadata.removeChild(ArtifactMapping);
+    }
 
-	/**
-	 * Sets the initial lookup property.
-	 * 
-	 * @param initialLookup
-	 *            the initial lookup
-	 */
-	public final void setInitialLookup(final String initialLookup) {
-		this.instanceMetadata.setProperty(INITIAL_LOOKUP, initialLookup);
-	}
+    /**
+     * removes a bundle.
+     * 
+     * @param bundle the bundle
+     */
+    public final void removeBundle( final Bundle bundle ) {
+        this.instanceMetadata.removeChild(bundle);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Collection<ScheduleData> getScheduleData() {
-		return this.instanceMetadata.getChildrensOfType(ScheduleData.class);
-	}
+    /**
+     * Removes a project.
+     * 
+     * @param group the group
+     */
+    public final void removeProject( final Group group ) {
+        this.instanceMetadata.removeChild(group);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public ScheduleData getScheduleDataByCronInformation(String cronInformation) {
-		return this.instanceMetadata.getChildByKeyValue(ScheduleData.class,
-				cronInformation);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void removeScheduleData( final ScheduleData scheduleData ) {
+        this.instanceMetadata.removeChild(scheduleData);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Set<String> getScheduleDataCronInformations() {
-		return (Set<String>) this.instanceMetadata
-				.getKeyFromChildrenOfTypes(ScheduleData.class);
-	}
+    /**
+     * Sets the active property.
+     * 
+     * @param active the active
+     */
+    public final void setActive( final Boolean active ) {
+        this.instanceMetadata.setProperty(ACTIVE, active);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void removeScheduleData(ScheduleData scheduleData) {
-		this.instanceMetadata.removeChild(scheduleData);
-	}
+    /**
+     * Sets the initial lookup property.
+     * 
+     * @param initialLookup the initial lookup
+     */
+    public final void setInitialLookup( final String initialLookup ) {
+        this.instanceMetadata.setProperty(INITIAL_LOOKUP, initialLookup);
+    }
 
 }

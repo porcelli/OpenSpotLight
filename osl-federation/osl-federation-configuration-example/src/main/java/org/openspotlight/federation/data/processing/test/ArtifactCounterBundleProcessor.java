@@ -60,61 +60,71 @@ import org.openspotlight.federation.data.processing.StreamArtifactBundleProcesso
  * Example class for bundle processor.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-public class ArtifactCounterBundleProcessor implements
-		StreamArtifactBundleProcessor {
+public class ArtifactCounterBundleProcessor implements StreamArtifactBundleProcessor {
 
-	private static ProcessingStartAction DEFAULT_START_ACTION;
+    private static ProcessingStartAction                 DEFAULT_START_ACTION;
 
-	private static BundleProcessingGroup<StreamArtifact> LAST_GROUP;
+    private static BundleProcessingGroup<StreamArtifact> LAST_GROUP;
 
-	private static final List<StreamArtifact> PROCESSED_ARTIFACTS = new CopyOnWriteArrayList<StreamArtifact>();
+    private static final List<StreamArtifact>            PROCESSED_ARTIFACTS = new CopyOnWriteArrayList<StreamArtifact>();
 
-	/**
-	 * @return last group processed
-	 */
-	public static BundleProcessingGroup<StreamArtifact> getLastGroup() {
-		return LAST_GROUP;
-	}
+    /**
+     * Sets the default start action
+     * 
+     * @param startAction
+     */
+    public static ProcessingStartAction getDefaultProcessingStartAction() {
+        return DEFAULT_START_ACTION;
+    }
 
-	/**
-	 * @return last processed artifact
-	 */
-	public static List<StreamArtifact> getProcessedArtifacts() {
-		return PROCESSED_ARTIFACTS;
-	}
+    /**
+     * @return last group processed
+     */
+    public static BundleProcessingGroup<StreamArtifact> getLastGroup() {
+        return LAST_GROUP;
+    }
 
-	/**
-	 * Sets the default start action
-	 * 
-	 * @param startAction
-	 */
-	public static void setDefaultProcessingStartAction(
-			final ProcessingStartAction startAction) {
-		DEFAULT_START_ACTION = startAction;
-	}
+    /**
+     * @return last processed artifact
+     */
+    public static List<StreamArtifact> getProcessedArtifacts() {
+        return PROCESSED_ARTIFACTS;
+    }
 
-	public void globalProcessingFinalized(
-			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
-		//
-	}
+    /**
+     * Sets the default start action
+     * 
+     * @param startAction
+     */
+    public static void setDefaultProcessingStartAction( final ProcessingStartAction startAction ) {
+        DEFAULT_START_ACTION = startAction;
+    }
 
-	public ProcessingStartAction globalProcessingStarted(
-			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
-		LAST_GROUP = bundleProcessingGroup;
-		PROCESSED_ARTIFACTS.clear();
-		return DEFAULT_START_ACTION;
-	}
+    /**
+     * @return last group processed
+     */
+    public static void setLastGroup( final BundleProcessingGroup<StreamArtifact> group ) {
+        LAST_GROUP = group;
+    }
 
-	public ProcessingAction processArtifact(
-			final StreamArtifact targetArtifact,
-			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final GraphContext graphContext) {
-		PROCESSED_ARTIFACTS.add(targetArtifact);
-		return ProcessingAction.ARTIFACT_PROCESSED;
-	}
+    public void globalProcessingFinalized( final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+                                           final BundleProcessingContext graphContext ) {
+        //
+    }
+
+    public ProcessingStartAction globalProcessingStarted( final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+                                                          final BundleProcessingContext graphContext ) {
+        LAST_GROUP = bundleProcessingGroup;
+        PROCESSED_ARTIFACTS.clear();
+        return DEFAULT_START_ACTION;
+    }
+
+    public ProcessingAction processArtifact( final StreamArtifact targetArtifact,
+                                             final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+                                             final BundleProcessingContext graphContext ) {
+        PROCESSED_ARTIFACTS.add(targetArtifact);
+        return ProcessingAction.ARTIFACT_PROCESSED;
+    }
 
 }
