@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openspotlight.graph.SLNode;
@@ -68,7 +69,11 @@ public class SLQueryResultImpl implements SLQueryResult {
 	 * @param nodes the nodes
 	 */
 	public SLQueryResultImpl(List<SLNode> nodes) {
-		this.nodes = nodes;
+	    if (nodes == null){
+	        this.nodes = new ArrayList<SLNode>(0);
+	    } else {
+	        this.nodes = nodes;	        
+	    }
 	}
 
 	/* (non-Javadoc)

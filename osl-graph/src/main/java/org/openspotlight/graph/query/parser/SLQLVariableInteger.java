@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.graph.query.SLQLVariable;
+
 public class SLQLVariableInteger extends SLQLVariable {
 
     protected Set<Integer> domainValue = null;

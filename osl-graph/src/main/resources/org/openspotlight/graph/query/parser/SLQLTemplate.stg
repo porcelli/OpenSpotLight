@@ -53,9 +53,14 @@ compilationUnit(selects, generalCollatorLevel) ::=
 {
 	validateAndInit($1, $2, $3);
 	
-	org.openspotlight.graph.query.SLQuery query = $1.createQuery();
-	<generalCollatorLevel>
-	query<selects>;
+    org.openspotlight.graph.query.SLQueryApi query;
+    try {
+    	query = $1.createQueryApi();
+		<generalCollatorLevel>
+		query<selects>;
+	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
+            throw new org.openspotlight.graph.query.SLQueryException(e1);
+    }
 	
 	org.openspotlight.graph.query.SLQueryResult result = null;
 	if ($3 != null) {
@@ -64,7 +69,7 @@ compilationUnit(selects, generalCollatorLevel) ::=
 	    result = query.execute();
 	}
 
-	return result.getNodes();
+	return result;
 }
 >>
 
@@ -172,10 +177,15 @@ defineTargetWithSelect(select) ::=
 {
 	validateAndInit($1, $2, $3);
 	
-	org.openspotlight.graph.query.SLQuery query = $1.createQuery();
-	query<select>;
+    org.openspotlight.graph.query.SLQueryApi query;
+    try {
+    	query = $1.createQueryApi();
+		query<selects>;
+	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
+            throw new org.openspotlight.graph.query.SLQueryException(e1);
+    }
 
-	return query.execute().getNodes();
+	return query.execute();
 }
 >>
 
@@ -184,9 +194,14 @@ defineTarget(nodeType) ::=
 {
 	validateAndInit($1, $2, $3);
 	
-	org.openspotlight.graph.query.SLQuery query = $1.createQuery();
-	query.select()<nodeType>.selectEnd();
+    org.openspotlight.graph.query.SLQueryApi query;
+    try {
+    	query = $1.createQueryApi();
+		query.select()<nodeType>.selectEnd();
+	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
+            throw new org.openspotlight.graph.query.SLQueryException(e1);
+    }
 
-	return query.execute().getNodes();
+	return query.execute();
 }
 >>

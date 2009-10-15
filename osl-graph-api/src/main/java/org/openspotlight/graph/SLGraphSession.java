@@ -50,7 +50,9 @@ package org.openspotlight.graph;
 
 import java.util.Collection;
 
-import org.openspotlight.graph.query.SLQuery;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.SLQueryApi;
+import org.openspotlight.graph.query.SLQueryText;
 
 /**
  * The Interface SLGraphSession.
@@ -58,429 +60,408 @@ import org.openspotlight.graph.query.SLQuery;
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSession {
-	
-	/**
-	 * Creates the context.
-	 * 
-	 * @param id the id
-	 * 
-	 * @return the sL context
-	 * 
-	 * @throws SLContextAlreadyExistsException the SL context already exists exception
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLContext createContext(String id) throws SLContextAlreadyExistsException, SLGraphSessionException;
-	
-	/**
-	 * Gets the context.
-	 * 
-	 * @param id the id
-	 * 
-	 * @return the context
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLContext getContext(String id) throws SLGraphSessionException;
-	
-	/**
-	 * Save.
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void save() throws SLGraphSessionException;
-	
-	/**
-	 * Close.
-	 */
-	public void close();
 
-	/**
-	 * Clear.
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void clear() throws SLGraphSessionException;
+    /**
+     * Creates the context.
+     * 
+     * @param id the id
+     * @return the sL context
+     * @throws SLContextAlreadyExistsException the SL context already exists exception
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLContext createContext( String id ) throws SLContextAlreadyExistsException, SLGraphSessionException;
 
-	/**
-	 * Gets the node by id.
-	 * 
-	 * @param id the id
-	 * 
-	 * @return the node by id
-	 * 
-	 * @throws SLNodeNotFoundException the SL node not found exception
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLNode getNodeByID(String id) throws SLNodeNotFoundException, SLGraphSessionException;
-	
-	/**
-	 * Adds the link.
-	 * 
-	 * @param linkClass the link class
-	 * @param source the source
-	 * @param target the target
-	 * @param bidirecional the bidirecional
-	 * 
-	 * @return the l
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional) throws SLGraphSessionException;
-	
-	
-	/**
-	 * Adds the link.
-	 * 
-	 * @param linkClass the link class
-	 * @param source the source
-	 * @param target the target
-	 * @param bidirecional the bidirecional
-	 * @param persistenceMode the persistence mode
-	 * 
-	 * @return the l
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> L addLink(Class<L> linkClass, SLNode source, SLNode target, boolean bidirecional, SLPersistenceMode persistenceMode) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the nodes by predicate.
-	 * 
-	 * @param predicate the predicate
-	 * 
-	 * @return the nodes by predicate
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLNode> getNodesByPredicate(SLNodePredicate predicate) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param node the node
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLNode> getNodesByLink(SLNode node) throws SLGraphSessionException;
+    /**
+     * Gets the context.
+     * 
+     * @param id the id
+     * @return the context
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLContext getContext( String id ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param node the node
-	 * @param direction the direction
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLNode> getNodesByLink(SLNode node, int direction) throws SLGraphSessionException;
-		
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param node the node
-	 * @param nodeClass the node class
-	 * @param returnSubTypes the return sub types
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <N extends SLNode> Collection<N> getNodesByLink(SLNode node, Class<N> nodeClass, boolean returnSubTypes) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param node the node
-	 * @param nodeClass the node class
-	 * @param returnSubTypes the return sub types
-	 * @param direction the direction
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <N extends SLNode> Collection<N> getNodesByLink(SLNode node, Class<N> nodeClass, boolean returnSubTypes, int direction) throws SLGraphSessionException;
+    /**
+     * Save.
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void save() throws SLGraphSessionException;
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass the link class
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass) throws SLGraphSessionException;
+    /**
+     * Close.
+     */
+    public void close();
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass the link class
-	 * @param node the node
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass the link class
-	 * @param node the node
-	 * @param direction the direction
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLNode> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, int direction) throws SLGraphSessionException;
+    /**
+     * Clear.
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void clear() throws SLGraphSessionException;
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass the link class
-	 * @param node the node
-	 * @param nodeClass the node class
-	 * @param returnSubTypes the return sub types
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <N extends SLNode> Collection<N> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass, boolean returnSubTypes) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass the link class
-	 * @param node the node
-	 * @param nodeClass the node class
-	 * @param returnSubTypes the return sub types
-	 * @param direction the direction
-	 * 
-	 * @return the nodes by link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <N extends SLNode> Collection<N> getNodesByLink(Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass, boolean returnSubTypes, int direction) throws SLGraphSessionException;
+    /**
+     * Gets the node by id.
+     * 
+     * @param id the id
+     * @return the node by id
+     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLNode getNodeByID( String id ) throws SLNodeNotFoundException, SLGraphSessionException;
 
-	/**
-	 * Gets the bidirectional links.
-	 * 
-	 * @param linkClass the link class
-	 * @param side1 the side1
-	 * @param side2 the side2
-	 * 
-	 * @return the bidirectional links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getBidirectionalLinks(Class<L> linkClass, SLNode side1, SLNode side2) throws SLGraphSessionException;
+    /**
+     * Adds the link.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @param bidirecional the bidirecional
+     * @return the l
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> L addLink( Class<L> linkClass,
+                                         SLNode source,
+                                         SLNode target,
+                                         boolean bidirecional ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the bidirectional links by side.
-	 * 
-	 * @param linkClass the link class
-	 * @param side the side
-	 * 
-	 * @return the bidirectional links by side
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getBidirectionalLinksBySide(Class<L> linkClass, SLNode side) throws SLGraphSessionException;
+    /**
+     * Adds the link.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @param bidirecional the bidirecional
+     * @param persistenceMode the persistence mode
+     * @return the l
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> L addLink( Class<L> linkClass,
+                                         SLNode source,
+                                         SLNode target,
+                                         boolean bidirecional,
+                                         SLPersistenceMode persistenceMode ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the bidirectional links.
-	 * 
-	 * @param side1 the side1
-	 * @param side2 the side2
-	 * 
-	 * @return the bidirectional links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getBidirectionalLinks(SLNode side1, SLNode side2) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the bidirectional links by side.
-	 * 
-	 * @param side the side
-	 * 
-	 * @return the bidirectional links by side
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getBidirectionalLinksBySide(SLNode side) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the unidirectional links.
-	 * 
-	 * @param linkClass the link class
-	 * @param source the source
-	 * @param target the target
-	 * 
-	 * @return the unidirectional links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getUnidirectionalLinks(Class<L> linkClass, SLNode source, SLNode target) throws SLGraphSessionException;
+    /**
+     * Gets the nodes by predicate.
+     * 
+     * @param predicate the predicate
+     * @return the nodes by predicate
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLNode> getNodesByPredicate( SLNodePredicate predicate ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the unidirectional links by source.
-	 * 
-	 * @param linkClass the link class
-	 * @param source the source
-	 * 
-	 * @return the unidirectional links by source
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource(Class<L> linkClass, SLNode source) throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param node the node
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLNode> getNodesByLink( SLNode node ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the unidirectional links by target.
-	 * 
-	 * @param linkClass the link class
-	 * @param target the target
-	 * 
-	 * @return the unidirectional links by target
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget(Class<L> linkClass, SLNode target) throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param node the node
+     * @param direction the direction
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLNode> getNodesByLink( SLNode node,
+                                              int direction ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the unidirectional links.
-	 * 
-	 * @param source the source
-	 * @param target the target
-	 * 
-	 * @return the unidirectional links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getUnidirectionalLinks(SLNode source, SLNode target) throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param node the node
+     * @param nodeClass the node class
+     * @param returnSubTypes the return sub types
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <N extends SLNode> Collection<N> getNodesByLink( SLNode node,
+                                                            Class<N> nodeClass,
+                                                            boolean returnSubTypes ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the unidirectional links by source.
-	 * 
-	 * @param source the source
-	 * 
-	 * @return the unidirectional links by source
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getUnidirectionalLinksBySource(SLNode source) throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param node the node
+     * @param nodeClass the node class
+     * @param returnSubTypes the return sub types
+     * @param direction the direction
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <N extends SLNode> Collection<N> getNodesByLink( SLNode node,
+                                                            Class<N> nodeClass,
+                                                            boolean returnSubTypes,
+                                                            int direction ) throws SLGraphSessionException;
 
-	/**
-	 * Gets the unidirectional links by target.
-	 * 
-	 * @param target the target
-	 * 
-	 * @return the unidirectional links by target
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getUnidirectionalLinksByTarget(SLNode target) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the links.
-	 * 
-	 * @param source the source
-	 * @param target the target
-	 * 
-	 * @return the links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getLinks(SLNode source, SLNode target) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the links.
-	 * 
-	 * @param source the source
-	 * @param target the target
-	 * @param directionType the direction type
-	 * 
-	 * @return the links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLLink> getLinks(SLNode source, SLNode target, int directionType) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the links.
-	 * 
-	 * @param linkClass the link class
-	 * @param source the source
-	 * @param target the target
-	 * 
-	 * @return the links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the links.
-	 * 
-	 * @param linkClass the link class
-	 * @param source the source
-	 * @param target the target
-	 * @param directionType the direction type
-	 * 
-	 * @return the links
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public <L extends SLLink> Collection<L> getLinks(Class<L> linkClass, SLNode source, SLNode target, int directionType) throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass ) throws SLGraphSessionException;
 
-	
-	/**
-	 * Gets the metadata.
-	 * 
-	 * @return the metadata
-	 */
-	public SLMetadata getMetadata();
-	
-	/**
-	 * Sets the default encoder.
-	 * 
-	 * @param encoder the new default encoder
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setDefaultEncoder(SLEncoder encoder) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the default encoder.
-	 * 
-	 * @return the default encoder
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLEncoder getDefaultEncoder() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the encoder factory.
-	 * 
-	 * @return the encoder factory
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @param node the node
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass,
+                                              SLNode node ) throws SLGraphSessionException;
 
-	/**
-	 * Creates the query.
-	 * 
-	 * @return the sL query
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLQuery createQuery() throws SLGraphSessionException;
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @param node the node
+     * @param direction the direction
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass,
+                                              SLNode node,
+                                              int direction ) throws SLGraphSessionException;
+
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @param node the node
+     * @param nodeClass the node class
+     * @param returnSubTypes the return sub types
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <N extends SLNode> Collection<N> getNodesByLink( Class<? extends SLLink> linkClass,
+                                                            SLNode node,
+                                                            Class<N> nodeClass,
+                                                            boolean returnSubTypes ) throws SLGraphSessionException;
+
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @param node the node
+     * @param nodeClass the node class
+     * @param returnSubTypes the return sub types
+     * @param direction the direction
+     * @return the nodes by link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <N extends SLNode> Collection<N> getNodesByLink( Class<? extends SLLink> linkClass,
+                                                            SLNode node,
+                                                            Class<N> nodeClass,
+                                                            boolean returnSubTypes,
+                                                            int direction ) throws SLGraphSessionException;
+
+    /**
+     * Gets the bidirectional links.
+     * 
+     * @param linkClass the link class
+     * @param side1 the side1
+     * @param side2 the side2
+     * @return the bidirectional links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getBidirectionalLinks( Class<L> linkClass,
+                                                                   SLNode side1,
+                                                                   SLNode side2 ) throws SLGraphSessionException;
+
+    /**
+     * Gets the bidirectional links by side.
+     * 
+     * @param linkClass the link class
+     * @param side the side
+     * @return the bidirectional links by side
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getBidirectionalLinksBySide( Class<L> linkClass,
+                                                                         SLNode side ) throws SLGraphSessionException;
+
+    /**
+     * Gets the bidirectional links.
+     * 
+     * @param side1 the side1
+     * @param side2 the side2
+     * @return the bidirectional links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getBidirectionalLinks( SLNode side1,
+                                                     SLNode side2 ) throws SLGraphSessionException;
+
+    /**
+     * Gets the bidirectional links by side.
+     * 
+     * @param side the side
+     * @return the bidirectional links by side
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getBidirectionalLinksBySide( SLNode side ) throws SLGraphSessionException;
+
+    /**
+     * Gets the unidirectional links.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @return the unidirectional links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getUnidirectionalLinks( Class<L> linkClass,
+                                                                    SLNode source,
+                                                                    SLNode target ) throws SLGraphSessionException;
+
+    /**
+     * Gets the unidirectional links by source.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @return the unidirectional links by source
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource( Class<L> linkClass,
+                                                                            SLNode source ) throws SLGraphSessionException;
+
+    /**
+     * Gets the unidirectional links by target.
+     * 
+     * @param linkClass the link class
+     * @param target the target
+     * @return the unidirectional links by target
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget( Class<L> linkClass,
+                                                                            SLNode target ) throws SLGraphSessionException;
+
+    /**
+     * Gets the unidirectional links.
+     * 
+     * @param source the source
+     * @param target the target
+     * @return the unidirectional links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getUnidirectionalLinks( SLNode source,
+                                                      SLNode target ) throws SLGraphSessionException;
+
+    /**
+     * Gets the unidirectional links by source.
+     * 
+     * @param source the source
+     * @return the unidirectional links by source
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getUnidirectionalLinksBySource( SLNode source ) throws SLGraphSessionException;
+
+    /**
+     * Gets the unidirectional links by target.
+     * 
+     * @param target the target
+     * @return the unidirectional links by target
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getUnidirectionalLinksByTarget( SLNode target ) throws SLGraphSessionException;
+
+    /**
+     * Gets the links.
+     * 
+     * @param source the source
+     * @param target the target
+     * @return the links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getLinks( SLNode source,
+                                        SLNode target ) throws SLGraphSessionException;
+
+    /**
+     * Gets the links.
+     * 
+     * @param source the source
+     * @param target the target
+     * @param directionType the direction type
+     * @return the links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLLink> getLinks( SLNode source,
+                                        SLNode target,
+                                        int directionType ) throws SLGraphSessionException;
+
+    /**
+     * Gets the links.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @return the links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getLinks( Class<L> linkClass,
+                                                      SLNode source,
+                                                      SLNode target ) throws SLGraphSessionException;
+
+    /**
+     * Gets the links.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @param directionType the direction type
+     * @return the links
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <L extends SLLink> Collection<L> getLinks( Class<L> linkClass,
+                                                      SLNode source,
+                                                      SLNode target,
+                                                      int directionType ) throws SLGraphSessionException;
+
+    /**
+     * Gets the metadata.
+     * 
+     * @return the metadata
+     */
+    public SLMetadata getMetadata();
+
+    /**
+     * Sets the default encoder.
+     * 
+     * @param encoder the new default encoder
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setDefaultEncoder( SLEncoder encoder ) throws SLGraphSessionException;
+
+    /**
+     * Gets the default encoder.
+     * 
+     * @return the default encoder
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLEncoder getDefaultEncoder() throws SLGraphSessionException;
+
+    /**
+     * Gets the encoder factory.
+     * 
+     * @return the encoder factory
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException;
+
+    /**
+     * Creates the api query.
+     * 
+     * @return the sL query
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLQueryApi createQueryApi() throws SLGraphSessionException;
+
+    public SLQueryText createQueryText( String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException;
+
 }
