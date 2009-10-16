@@ -1,6 +1,6 @@
-select org.openspotlight.graph.query.JavaType.* 
+select org.openspotlight.graph.test.domain.JavaType.* 
 	where 
-		org.openspotlight.graph.query.JavaInterface 
+		org.openspotlight.graph.test.domain.JavaInterface 
 			property caption <*> "Set"
-		org.openspotlight.graph.query.JavaClass	
+		org.openspotlight.graph.test.domain.JavaClass	
 			property caption <*> "Map";

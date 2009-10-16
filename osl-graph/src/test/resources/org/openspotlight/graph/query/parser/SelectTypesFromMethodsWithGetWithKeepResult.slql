@@ -1,8 +1,8 @@
-select org.openspotlight.graph.query.JavaTypeMethod
+select org.openspotlight.graph.test.domain.JavaTypeMethod
 	where
-		org.openspotlight.graph.query.JavaTypeMethod
+		org.openspotlight.graph.test.domain.JavaTypeMethod
 			property caption *... "get"
 	keep result;
 
-select org.openspotlight.graph.query.JavaType.*
-	by link org.openspotlight.graph.query.TypeContainsMethod (a);
+select org.openspotlight.graph.test.domain.JavaType.*
+	by link org.openspotlight.graph.test.domain.TypeContainsMethod (a);

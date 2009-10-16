@@ -242,6 +242,6 @@ public interface SLSelectStatement extends SLSelect {
 		 * 
 		 * @return the end
 		 */
-		public End executeXTimes(int x);
+		public End executeXTimes(Integer x);
 	}
 }

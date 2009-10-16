@@ -57,8 +57,7 @@ import java.io.Reader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -77,6 +76,16 @@ import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.graph.test.domain.ClassImplementsInterface;
+import org.openspotlight.graph.test.domain.JavaClass;
+import org.openspotlight.graph.test.domain.JavaClassHierarchy;
+import org.openspotlight.graph.test.domain.JavaInterface;
+import org.openspotlight.graph.test.domain.JavaInterfaceHierarchy;
+import org.openspotlight.graph.test.domain.JavaPackage;
+import org.openspotlight.graph.test.domain.JavaType;
+import org.openspotlight.graph.test.domain.JavaTypeMethod;
+import org.openspotlight.graph.test.domain.PackageContainsType;
+import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -160,13 +169,13 @@ public class AbstractGeneralQueryTest {
      * @param nodes the nodes
      * @return the node wrapper[]
      */
-    protected NodeWrapper[] wrapNodes( Collection<SLNode> nodes ) {
-        Set<NodeWrapper> wrappers = new HashSet<NodeWrapper>();
-        for (SLNode node : nodes) {
-            NodeWrapper wrapper = new NodeWrapper(node);
-            wrappers.add(wrapper);
+    protected NodeWrapper[] wrapNodes( List<SLNode> nodes ) {
+        NodeWrapper[] wrappers = new NodeWrapper[nodes.size()]; 
+        
+        for (int i = 0; i < wrappers.length; i++) {
+            wrappers[i] = new NodeWrapper(nodes.get(i));
         }
-        return wrappers.toArray(new NodeWrapper[] {});
+        return wrappers;
     }
 
     /**
