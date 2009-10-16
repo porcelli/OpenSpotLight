@@ -70,7 +70,7 @@ public class SLQLVariableFloat extends SLQLVariable {
      * @param name the name
      */
     public SLQLVariableFloat(
-                                String name ) {
+                              String name ) {
         super(name);
         this.domainValue = new HashSet<Float>();
     }
@@ -116,11 +116,27 @@ public class SLQLVariableFloat extends SLQLVariable {
      */
     @Override
     public boolean isValidValue( Object value ) {
+        if (value == null){
+            return false;
+        }
         if (value.getClass().getName().equals(float.class.getName())) {
             return true;
         }
         if (value instanceof Float) {
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isValidDomainValue( Object value ) {
+        for (Float activeValue : domainValue) {
+            if (activeValue.equals(value)){
+                return true;
+            }
         }
         return false;
     }
