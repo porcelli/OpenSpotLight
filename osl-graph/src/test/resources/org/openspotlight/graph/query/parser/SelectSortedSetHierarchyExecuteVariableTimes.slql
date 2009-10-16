@@ -1,0 +1,10 @@
+select org.openspotlight.graph.test.domain.JavaInterface
+	where
+		org.openspotlight.graph.test.domain.JavaInterface
+			property caption == "java.util.SortedSet"
+	keep result;
+
+select org.openspotlight.graph.test.domain.JavaInterface
+	by link org.openspotlight.graph.test.domain.JavaInterfaceHierarchy (b)
+	executing #times times
+	keep result;

@@ -1,0 +1,12 @@
+define message $testeString = "Entre com o testeString";
+define message #testeInt = "Entre com o testeInt";
+define message @testeBool = "Entre com o testeBool";
+define message &testeFloat = "Entre com o testeFloat";
+
+select org.openspotlight.graph.test.domain.JavaType.*
+	where
+		org.openspotlight.graph.test.domain.JavaType.*
+			property caption == $testeString &&
+			property intValue == #testeInt  &&
+			property boolValue == @testeBool &&
+			property decValue > &testeFloat;
