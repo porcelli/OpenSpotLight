@@ -115,18 +115,6 @@ public class Sha1 {
     }
 
     /**
-     * A syntax sugar method that returns a sha-1 signature for that content as an Hexa string.
-     * 
-     * @param content
-     * @return a base64 string representing the signature
-     * @throws SLException
-     */
-    public static String getSha1SignatureEncodedAsHexa( final String content )
-        throws SLException {
-        return getSha1SignatureEncodedAsHexa(content.getBytes());
-    }
-
-    /**
      * A syntax sugar method that returns a sha-1 signature for that content as an Base64 string.
      * 
      * @param content
