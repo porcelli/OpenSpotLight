@@ -1,5 +1,8 @@
 package org.openspotlight.common.util.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.openspotlight.common.util.TimeOutFactory;
 import org.openspotlight.common.util.TimeOutFactory.TaskFinalizer;
@@ -29,6 +32,8 @@ public class TimeOutTest {
 
                                                                                  });
         final boolean result = newInstance.returnsTrue();
+        assertThat(result, is(true));
+        assertThat(this.finalized, is(false));
     }
 
     @Test( expected = IllegalStateException.class )
@@ -43,7 +48,11 @@ public class TimeOutTest {
 
                                                                                  });
         Thread.sleep(1000);
-        final boolean result = newInstance.returnsTrue();
+        try {
+            newInstance.returnsTrue();
+        } finally {
+            assertThat(this.finalized, is(true));
+        }
 
     }
 
