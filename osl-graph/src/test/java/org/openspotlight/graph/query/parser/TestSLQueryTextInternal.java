@@ -52,23 +52,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isOneOf;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 import org.openspotlight.graph.query.AssertResult;
+import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryResult;
+import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.testng.annotations.Test;
 
 /**
@@ -94,9 +91,36 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
      * @param session the session
      */
     public TestSLQueryTextInternal(
-                          SLGraphSession session ) {
+                                    SLGraphSession session ) {
         this.session = session;
         LOGGER = Logger.getLogger(TestSLQueryTextInternal.class);
+    }
+
+    /**
+     * Test select all packages.
+     * 
+     * @throws SLInvalidQuerySyntaxException
+     */
+    @Test
+    public void testSelectAllPackagesUserWay() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectAllPackages.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        SLQueryResult result = query.execute();
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.security"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.io"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.util"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.lang"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
     }
 
     /**
@@ -326,6 +350,273 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
         SLQueryResult result = query.execute(session, null, null);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(55));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Enumeration"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.EventListener"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectTypesFromJavaUtilPackageUsingVariablesWithoutValue()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        queryText.execute();
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectTypesFromJavaUtilPackageUsingVariablesWithoutCorrectVariable()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, String> variableValues = new HashMap<String, String>();
+        variableValues.put("$JavaPackage", "java.util");
+
+        queryText.execute(variableValues);
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test
+    public void testSelectTypesFromJavaUtilPackageUsingVariablesAndDomain()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromPackageUsingVariablesAndDomain.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, String> variableValues = new HashMap<String, String>();
+        variableValues.put("$javaPackage", "java.util");
+
+        SLQueryResult result = queryText.execute(variableValues);
+
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(55));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Enumeration"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.EventListener"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test
+    public void testSelectTypesFromPackageUsingVariablesAndDomainEmpty()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromPackageUsingVariablesAndDomain.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, String> variableValues = new HashMap<String, String>();
+        variableValues.put("$javaPackage", "java.lang");
+
+        SLQueryResult result = queryText.execute(variableValues);
+
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        printResult(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Iterable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
+            }
+        }.execute();
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectTypesFromJavaUtilPackageUsingVariablesAndIncorrectDomain()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromPackageUsingVariablesAndDomain.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, String> variableValues = new HashMap<String, String>();
+        variableValues.put("$javaPackage", "java");
+
+        queryText.execute(variableValues);
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectTypesFromJavaUtilPackageUsingVariablesWithNullValue()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, String> variableValues = new HashMap<String, String>();
+        variableValues.put("$javaPackage", null);
+
+        queryText.execute(variableValues);
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectTypesFromJavaUtilPackageUsingVariablesWithIncorrectValue()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("$javaPackage", 1);
+
+        queryText.execute(variableValues);
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test
+    public void testSelectTypesFromJavaUtilPackageUsingVariables() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, String> variableValues = new HashMap<String, String>();
+        variableValues.put("$javaPackage", "java.util");
+
+        SLQueryResult result = queryText.execute(variableValues);
+        ;
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1505,6 +1796,127 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     }
 
     /**
+     * Test select sorted set hierarchy execute3 times.
+     */
+    @Test
+    public void testSelectSortedSetHierarchyExecuteVariableTimes() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectSortedSetHierarchyExecuteVariableTimes.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        Map<String, Integer> variableValues = new HashMap<String, Integer>();
+        variableValues.put("#times", 3);
+
+        SLQueryResult result = query.execute(session, variableValues, null);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    /**
+     * Test select sorted set hierarchy execute3 times.
+     */
+    @Test
+    public void testSelectSortedSetHierarchyExecuteVariableTimesWithDomain()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        Map<String, Integer> variableValues = new HashMap<String, Integer>();
+        variableValues.put("#times", 3);
+
+        SLQueryResult result = query.execute(session, variableValues, null);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    /**
+     * Test select sorted set hierarchy execute3 times.
+     */
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectSortedSetHierarchyExecuteVariableTimesWithIncorrectDomain()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        Map<String, Integer> variableValues = new HashMap<String, Integer>();
+        variableValues.put("#times", 4);
+
+        query.execute(session, variableValues, null);
+    }
+
+    /**
+     * Test select sorted set hierarchy execute3 times.
+     */
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectSortedSetHierarchyExecuteVariableTimesWithIncorrectValue()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#times", "4");
+
+        query.execute(session, variableValues, null);
+    }
+
+    /**
+     * Test select sorted set hierarchy execute3 times.
+     */
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectSortedSetHierarchyExecuteVariableTimesWithNullValue()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#times", "4");
+
+        query.execute(session, variableValues, null);
+    }
+
+    /**
+     * Test select types from java util package.
+     */
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectSortedSetHierarchyExecuteVariableTimesWithoutCorrectVariable()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
+        SLQueryText queryText = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#Times", 3);
+
+        queryText.execute(variableValues);
+    }
+
+    /**
      * Test select sorted set hierarchy execute x times.
      */
     @Test
@@ -1728,9 +2140,6 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    /**
-     * Test select by link count.
-     */
     @Test
     public void testSelectByLinkCount() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2037,50 +2446,359 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    //    @Test
-    //    public void testSample() throws SLGraphSessionException{
-    //        SampleTest x = new SampleTest("id", null, null, false, null);
-    //        x.execute(session, null, null);
-    //    }
+    @Test
+    public void testSelectUsingIntVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
-    /**
-     * The main method.
-     * 
-     * @param args the arguments
-     */
-    @Test( enabled = false )
-    public static void main( String[] args ) {
-        try {
-            int count = 0;
-            Map<Integer, Method> methodMap = new TreeMap<Integer, Method>();
-            Method[] methods = TestSLQueryTextInternal.class.getDeclaredMethods();
-            for (Method method : methods) {
-                if (method.getName().startsWith("test") && method.getAnnotation(Test.class) != null) {
-                    methodMap.put(++count, method);
-                }
+        String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#intValue", 4);
+
+        SLQueryResult result = query.execute(variableValues);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(1));
             }
-            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            SLGraph graph = factory.createTempGraph(false);
-            SLGraphSession session = graph.openSession();
-            TestSLQueryTextInternal test = new TestSLQueryTextInternal(session);
-            int option = 0;
-            Scanner in = new Scanner(System.in);
-            do {
-                LOGGER.info("Menu:");
-                LOGGER.info("0: exit");
-                for (Entry<Integer, Method> entry : methodMap.entrySet()) {
-                    LOGGER.info(entry.getKey() + ": " + entry.getValue().getName());
-                }
-                LOGGER.info("Enter any option: ");
-                option = in.nextInt();
-                if (option > 0 && option <= methodMap.size()) {
-                    Method method = methodMap.get(option);
-                    method.invoke(test, new Object[] {});
-                }
-            } while (option != 0);
-            LOGGER.info("bye!");
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    @Test
+    public void testSelectByLinkCountIntVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectByLinkCountIntVariable.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#intVar", 3);
+
+        SLQueryResult result = query.execute(session, variableValues, null);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(14));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectUsingIntVariableNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#intValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingIntVariableIncorrectVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#IntValue", 3);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingIntVariableIncorrectDataType() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#IntValue", "teste");
+
+        query.execute(variableValues);
+    }
+
+    @Test
+    public void testSelectUsingIntVariableWithDomain() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#intValue", 3);
+
+        SLQueryResult result = query.execute(variableValues);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(1));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingIntVariableWithDomainIncorrectDomain()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#intValue", 22);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingIntVariableWithDomainNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#intValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingIntVariableWithDomainIncorrectVariable()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#IntValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingIntVariableWithDomainIncorrectDataType()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingIntVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#IntValue", "teste");
+
+        query.execute(variableValues);
+    }
+
+    @Test
+    public void testSelectUsingDecVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("&decValue", 1.3F);
+
+        SLQueryResult result = query.execute(variableValues);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(11));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectUsingDecVariableNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("&decValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingDecVariableIncorrectVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#DecValue", 3);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingDecVariableIncorrectDataType() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#DecValue", "teste");
+
+        query.execute(variableValues);
+    }
+
+    @Test
+    public void testSelectUsingDecVariableWithDomain() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("&decValue", new Float(1.3F));
+
+        SLQueryResult result = query.execute(variableValues);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(11));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingDecVariableWithDomainIncorrectDomain()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("&decValue", 22);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingDecVariableWithDomainNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("&decValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingDecVariableWithDomainIncorrectVariable()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#DecValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingDecVariableWithDomainIncorrectDataType()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingDecVariableWithDomain.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("#DecValue", "teste");
+
+        query.execute(variableValues);
+    }
+
+    @Test
+    public void testSelectUsingBoolVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("@boolValue", new Boolean(true));
+
+        SLQueryResult result = query.execute(variableValues);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(11));
+            }
+        }.execute();
+
+        printResult(result.getNodes());
+    }
+
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectUsingBoolVariableNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("@boolValue", null);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    public void testSelectUsingBoolVariableIncorrectVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("@BoolValue", 3);
+
+        query.execute(variableValues);
+    }
+
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testSelectUsingBoolVariableIncorrectDataType() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        Map<String, Object> variableValues = new HashMap<String, Object>();
+        variableValues.put("@boolValue", "teste");
+
+        query.execute(variableValues);
+    }
+
+    @Test
+    public void testCheckDefineMessage() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+
+        String slqlInput = getResourceContent("CheckDefineMessage.slql");
+        SLQueryTextInternal query = queryBuilder.build(slqlInput);
+
+        assertThat(query.getVariables().size(), is(4));
+        for (SLQLVariable activeVariable : query.getVariables()) {
+            if (activeVariable.getName().equals("$testeString")) {
+                assertThat(activeVariable.getDisplayMessage(), is("Entre com o testeString"));
+            } else if (activeVariable.getName().equals("#testeInt")) {
+                assertThat(activeVariable.getDisplayMessage(), is("Entre com o testeInt"));
+            } else if (activeVariable.getName().equals("@testeBool")) {
+                assertThat(activeVariable.getDisplayMessage(), is("Entre com o testeBool"));
+            } else if (activeVariable.getName().equals("&testeFloat")) {
+                assertThat(activeVariable.getDisplayMessage(), is("Entre com o testeFloat"));
+            }
         }
     }
 }

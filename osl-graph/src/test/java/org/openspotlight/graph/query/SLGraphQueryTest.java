@@ -117,7 +117,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         try {
 
             SLQueryApi query = session.createQueryApi();
-
+            
             query
                  .select()
                  .type(JavaPackage.class.getName())

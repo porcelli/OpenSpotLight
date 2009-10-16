@@ -166,7 +166,7 @@ defineTarget
 
 defineMessage
 	:	^(DEFINE_MESSAGE_VK variable STRING)
-		{	queryInfo.getMessageVariables().put($variable.varName, $STRING.text);	}
+		{	queryInfo.getMessageVariables().put($variable.varName, $STRING.text.substring(1, $STRING.text.length() -1));	}
 	;
 
 variable returns [String varName]
@@ -344,8 +344,8 @@ stringValue returns [Object value]
 	;
 
 numericValue returns [Object value]
-	:	INT		{$value = $INT.text;}								-> intValue(value={$INT.text})
-	|	DEC		{$value = $DEC.text;}								-> decValue(value={$DEC.text})
+	:	INT		{$value = new Integer($INT.text);}					-> intValue(value={$INT.text})
+	|	DEC		{$value = new Float($DEC.text);}					-> decValue(value={$DEC.text})
 	|	VAR_DEC	{queryInfo.getDecVariables().add($VAR_DEC.text);}	-> decVariableValue(variableName={$VAR_DEC.text})
 	|	VAR_INT	{queryInfo.getIntVariables().add($VAR_INT.text);}	-> intVariableValue(variableName={$VAR_INT.text})
 	;
