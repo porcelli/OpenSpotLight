@@ -11,14 +11,22 @@ public class TimeOutTest {
 
     private static class ExampleImplementation implements ExampleInterface {
 
+        volatile boolean finalized = false;
+
+        public boolean isFinalized() {
+            return this.finalized;
+        }
+
         public boolean returnsTrue() throws Exception {
             return true;
 
         }
 
-    }
+        public void setFinalized( final boolean finalized ) {
+            this.finalized = finalized;
+        }
 
-    volatile boolean finalized = false;
+    }
 
     @Test
     public void shouldExecuteWhenTheresNoTimeOut() throws Exception {
@@ -27,13 +35,13 @@ public class TimeOutTest {
                                                                                  new TaskFinalizer<ExampleInterface>() {
 
                                                                                      public void finalizeTask( final ExampleInterface target ) {
-                                                                                         TimeOutTest.this.finalized = true;
+                                                                                         target.setFinalized(true);
                                                                                      }
 
                                                                                  });
         final boolean result = newInstance.returnsTrue();
         assertThat(result, is(true));
-        assertThat(this.finalized, is(false));
+        assertThat(newInstance.isFinalized(), is(false));
     }
 
     @Test( expected = IllegalStateException.class )
@@ -43,7 +51,7 @@ public class TimeOutTest {
                                                                                  new TaskFinalizer<ExampleInterface>() {
 
                                                                                      public void finalizeTask( final ExampleInterface target ) {
-                                                                                         TimeOutTest.this.finalized = true;
+                                                                                         target.setFinalized(true);
                                                                                      }
 
                                                                                  });
@@ -51,7 +59,7 @@ public class TimeOutTest {
         try {
             newInstance.returnsTrue();
         } finally {
-            assertThat(this.finalized, is(true));
+            assertThat(newInstance.isFinalized(), is(true));
         }
 
     }
