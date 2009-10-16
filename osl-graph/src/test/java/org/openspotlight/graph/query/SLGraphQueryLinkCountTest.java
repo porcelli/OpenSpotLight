@@ -62,6 +62,11 @@ import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.test.domain.JavaInterface;
+import org.openspotlight.graph.test.domain.JavaTypeMethod;
+import org.openspotlight.graph.test.domain.MethodContainsParam;
+import org.openspotlight.graph.test.domain.MethodParam;
+import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -140,7 +145,7 @@ public class SLGraphQueryLinkCountTest {
     	try {
     		
     		String id = findIFaceID(java.util.Map.class);
-    		SLQuery query = session.createQuery();
+    		SLQueryApi query = session.createQueryApi();
 
     		query
     			.select()
@@ -178,7 +183,7 @@ public class SLGraphQueryLinkCountTest {
     		Collection<SLNode> inputNodes = new ArrayList<SLNode>();
     		inputNodes.add(node);
     		
-    		SLQuery query = session.createQuery();
+    		SLQueryApi query = session.createQueryApi();
 
     		query
     			.select()
@@ -212,9 +217,10 @@ public class SLGraphQueryLinkCountTest {
      * @return the string
      * 
      * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidQuerySyntaxException 
      */
-    private String findIFaceID(Class<?> type) throws SLGraphSessionException {
-		SLQuery query = session.createQuery();
+    private String findIFaceID(Class<?> type) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+		SLQueryApi query = session.createQueryApi();
 		query
 			.select()
 				.allTypes().onWhere()

@@ -1,10 +1,10 @@
-select org.openspotlight.graph.query.JavaInterface
+select org.openspotlight.graph.test.domain.JavaInterface
 	where
-		org.openspotlight.graph.query.JavaInterface
+		org.openspotlight.graph.test.domain.JavaInterface
 			property caption == "java.util.SortedSet"
 	keep result;
 
-select org.openspotlight.graph.query.JavaInterface
-	by link org.openspotlight.graph.query.JavaInterfaceHierarchy (b)
+select org.openspotlight.graph.test.domain.JavaInterface
+	by link org.openspotlight.graph.test.domain.JavaInterfaceHierarchy (b)
 	executing n times
 	keep result;

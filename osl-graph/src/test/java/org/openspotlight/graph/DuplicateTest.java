@@ -59,10 +59,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openspotlight.graph.query.JavaClass;
-import org.openspotlight.graph.query.JavaType;
-import org.openspotlight.graph.query.SLQuery;
+import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
+import org.openspotlight.graph.test.domain.JavaClass;
+import org.openspotlight.graph.test.domain.JavaType;
 import org.testng.annotations.Test;
 
 /**
@@ -100,7 +100,7 @@ public class DuplicateTest {
         session.save();
         session.close();
         session = graph.openSession();
-        final SLQuery query = session.createQuery();
+        final SLQueryApi query = session.createQueryApi();
         query
 
         .select()

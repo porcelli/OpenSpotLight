@@ -149,6 +149,9 @@ tokens {
  */
 
 package org.openspotlight.graph.query.parser;
+
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
 }
 
 @parser::header {
@@ -205,11 +208,13 @@ package org.openspotlight.graph.query.parser;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
 }
 
 @parser::members {
-	private List<SLQueryLanguageParserException> errors = new ArrayList<SLQueryLanguageParserException>();
-	private SLQueryLanguageParserExceptionFactory errorMessageFactory = new SLQueryLanguageParserExceptionFactory(tokenNames);
+	private List<SLInvalidQuerySyntaxException> errors = new ArrayList<SLInvalidQuerySyntaxException>();
+	private SLInvalidQuerySyntaxExceptionFactory errorMessageFactory = new SLInvalidQuerySyntaxExceptionFactory(tokenNames);
 	private boolean isInsideDefineTarget = false;
 	private boolean isgUnitTest = true;
 	private Set<String> defineMessageVariableSet = new HashSet<String>();
@@ -256,7 +261,7 @@ import java.util.Set;
 	}
 	
 	/** return the raw DroolsParserException errors */
-	public List<SLQueryLanguageParserException> getErrors() {
+	public List<SLInvalidQuerySyntaxException> getErrors() {
 		return errors;
 	}
 	
@@ -264,7 +269,7 @@ import java.util.Set;
 	public List<String> getErrorMessages() {
 		List<String> messages = new ArrayList<String>(errors.size());
 	
-		for (SLQueryLanguageParserException activeException : errors) {
+		for (SLInvalidQuerySyntaxException activeException : errors) {
 			messages.add(activeException.getMessage());
 		}
 	
@@ -444,9 +449,8 @@ offset
 	;
 
 orderBy
-	:	order_by_key
-		orderByGroupNode (COMMA orderByGroupNode)*
-	-> ^(order_by_key orderByGroupNode+)
+	:	order_by_key^
+		orderByGroupNode (COMMA! orderByGroupNode)*
 	;
 
 orderByGroupNode
@@ -461,11 +465,7 @@ propertyReference
 	;
 
 booleanExpr
-	:	negatedExpr ((AND_OPERATOR^|OR_OPERATOR^) negatedExpr)*
-	;
-
-negatedExpr
-	:	(NEGATED_OPERATOR^)? expr
+	:	expr ((AND_OPERATOR^|OR_OPERATOR^) NEGATED_OPERATOR? expr)*
 	;
 
 expr
@@ -500,6 +500,7 @@ stringOperator
 	:	STARTS_WITH
 	|	ENDS_WITH
 	|	CONTAINS
+	|	NOT_CONTAINS
 	;
 
 numericOperator
@@ -756,6 +757,10 @@ STARTS_WITH
 
 ENDS_WITH
 	:	'...*'
+	;
+
+NOT_CONTAINS
+	:	'!<*>'
 	;
 
 CONTAINS
