@@ -7,6 +7,9 @@ public class ExampleCajoServer {
 
     public static void main( final String... args ) throws Exception {
         startServer();
+        while (true) {
+            Thread.currentThread().sleep(5000);
+        }
     }
 
     public static void startServer() throws Exception {
@@ -14,10 +17,6 @@ public class ExampleCajoServer {
         final Example server = new ExampleServer();
         Remote.config(null, 1198, null, 0);
         ItemServer.bind(server, "server");
-
-        while (true) {
-            Thread.currentThread().sleep(5000);
-        }
 
     }
 
