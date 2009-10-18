@@ -1,4 +1,4 @@
-package org.openspotlight.graph.client.internal;
+package org.openspotlight.remote.internal;
 
 import java.io.Serializable;
 
