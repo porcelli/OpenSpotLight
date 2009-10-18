@@ -9,31 +9,27 @@
 		<version>0.0.4-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>osl-graph-server</artifactId>
+	<artifactId>osl-remote-support</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenSpotLight Graph Server</name>
+	<name>OpenSpotLight Remote Support</name>
 
 	<dependencies>
-		<!-- Internal dependencies -->
 		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-client</artifactId>
-			<scope>provided</scope>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<scope>test</scope>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cajo</groupId>
+			<artifactId>cajo</artifactId>
 		</dependency>
 	</dependencies>
 </project>
