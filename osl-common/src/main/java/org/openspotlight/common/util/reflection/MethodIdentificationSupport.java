@@ -15,7 +15,7 @@ public class MethodIdentificationSupport {
      * 
      * @author feu
      */
-    public static final class MethodKey {
+    public static final class MethodWithParametersKey {
 
         /** The hashcode. */
         private final int      hashcode;
@@ -32,7 +32,7 @@ public class MethodIdentificationSupport {
          * @param key the key
          * @param parameters the parameters
          */
-        public MethodKey(
+        public MethodWithParametersKey(
                           final String key, final Object... parameters ) {
             if (parameters == null) {
                 throw new IllegalArgumentException();
@@ -58,10 +58,10 @@ public class MethodIdentificationSupport {
             if (obj == this) {
                 return true;
             }
-            if (!(obj instanceof MethodKey)) {
+            if (!(obj instanceof MethodWithParametersKey)) {
                 return false;
             }
-            final MethodKey that = (MethodKey)obj;
+            final MethodWithParametersKey that = (MethodWithParametersKey)obj;
             if (that.parameters.length != this.parameters.length) {
                 return false;
             }

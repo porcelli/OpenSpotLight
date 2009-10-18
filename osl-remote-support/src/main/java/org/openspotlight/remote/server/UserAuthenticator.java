@@ -3,7 +3,7 @@ package org.openspotlight.remote.server;
 /**
  * The Interface UserAutenticator should be used inside the {@link RemoteObjectServerImpl} to autenticate users from some client host.
  */
-public interface UserAutenticator {
+public interface UserAuthenticator {
 
     /**
      * Can connect to this server?
