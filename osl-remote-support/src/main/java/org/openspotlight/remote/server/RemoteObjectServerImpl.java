@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
@@ -292,13 +293,19 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         throws InternalErrorOnMethodInvocationException, InvocationTargetException {
         checkNotNull("invocation", invocation);
         checkCondition("remoteReferenceValid", this.isRemoteReferenceValid(invocation.getRemoteReference()));
+
         try {
             final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>)this.remoteReferences.get(invocation.getRemoteReference());
             final T object = remoteReferenceData.getObject();
             final Method method = invocation.getRemoteReference().getRemoteType().getMethod(invocation.getMethodName(),
                                                                                             invocation.getParameterTypes());
+            if (method.getAnnotation(UnsupportedRemoteMethod.class) != null) {
+                throw new UnsupportedOperationException();
+            }
             final R result = (R)method.invoke(object, invocation.getParameters());
             return result;
+        } catch (final UnsupportedOperationException e) {
+            throw logAndReturn(e);
         } catch (final InvocationTargetException e) {
             throw logAndReturn(e);
         } catch (final Exception e) {

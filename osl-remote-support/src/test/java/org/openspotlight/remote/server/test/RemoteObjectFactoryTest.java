@@ -49,6 +49,18 @@ public class RemoteObjectFactoryTest {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
     }
 
+    @Test( expected = UnsupportedOperationException.class )
+    public void shouldGetErrorOnMethodMarkedAsUnsupported() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        proxy.unsupportedMethod();
+    }
+
+    @Test( expected = EnumConstantNotPresentException.class )
+    public void shouldGetTheRightException() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        proxy.throwAnException();
+    }
+
     @Test
     public void shouldInvokeAnMethod() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
