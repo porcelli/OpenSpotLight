@@ -1,5 +1,8 @@
 package org.openspotlight.remote.server.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,6 +47,13 @@ public class RemoteObjectFactoryTest {
     @Test
     public void shouldCreateRemoteReference() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+    }
+
+    @Test
+    public void shouldInvokeAnMethod() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final Integer result = proxy.returns6Times(6);
+        assertThat(result, is(36));
     }
 
     @Test( expected = CantConnectException.class )
