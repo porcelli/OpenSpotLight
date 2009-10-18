@@ -1,6 +1,7 @@
 package org.openspotlight.remote.client;
 
 import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import gnu.cajo.utils.extra.TransparentItemProxy;
 
@@ -17,6 +18,9 @@ import org.openspotlight.remote.internal.UserToken;
 import org.openspotlight.remote.server.AccessDeniedException;
 import org.openspotlight.remote.server.InvalidReferenceTypeException;
 import org.openspotlight.remote.server.RemoteObjectServer;
+import org.openspotlight.remote.server.RemoteObjectServer.AbstractInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.LocalCopyInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.RemoteReferenceInvocationResponse;
 
 /**
  * A factory for creating RemoteObject objects.
@@ -43,15 +47,29 @@ public class RemoteObjectFactory {
                 throw new UnsupportedOperationException();
             }
             final Class<?>[] parameterTypes = method.getParameterTypes();
-            final RemoteObjectInvocation<T, Object> invocation = new RemoteObjectInvocation<T, Object>(
-                                                                                                       method.getReturnType(),
-                                                                                                       parameterTypes,
-                                                                                                       args == null ? EMPTY_ARR : args,
-                                                                                                       method.getName(),
-                                                                                                       this.remoteReference);
+            final RemoteObjectInvocation<T> invocation = new RemoteObjectInvocation<T>(method.getReturnType(), parameterTypes,
+                                                                                       args == null ? EMPTY_ARR : args,
+                                                                                       method.getName(), this.remoteReference);
             try {
-                final Object result = this.fromServer.invokeRemoteMethod(invocation);
-                return result;
+                final AbstractInvocationResponse<Object> result = this.fromServer.invokeRemoteMethod(invocation);
+                if (result instanceof LocalCopyInvocationResponse<?>) {
+                    final LocalCopyInvocationResponse<Object> localCopy = (LocalCopyInvocationResponse<Object>)result;
+                    return localCopy.getLocalCopy();
+                } else if (result instanceof RemoteReferenceInvocationResponse<?>) {
+                    //FIXME here, cache is mandatory if on server the return is the same reference
+                    final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse = (RemoteReferenceInvocationResponse<Object>)result;
+                    final RemoteReference<Object> methodResponseRemoteReference = remoteReferenceResponse.getRemoteReference();
+                    final Object newObjectProxy = Proxy.newProxyInstance(
+                                                                         this.getClass().getClassLoader(),
+                                                                         new Class[] {invocation.getReturnType()},
+                                                                         new RemoteReferenceHandler<Object>(this.fromServer,
+                                                                                                            methodResponseRemoteReference));
+
+                    return newObjectProxy;
+                } else {
+                    throw logAndReturn(new IllegalStateException());
+                }
+
             } catch (final InvocationTargetException e) {
                 throw e.getCause();
             }

@@ -1,5 +1,6 @@
 package org.openspotlight.remote.server;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
@@ -10,6 +11,20 @@ import org.openspotlight.remote.internal.UserToken;
  * The Interface RemoteObjectServer.
  */
 public interface RemoteObjectServer {
+
+    /**
+     * The Class AbstractInvocationResponse.
+     * 
+     * @param <R>
+     */
+    public static abstract class AbstractInvocationResponse<R> implements Serializable {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -8373059894096363951L;
+        //
+    }
 
     /**
      * A factory for creating any kind of object on server. If there's a factory, it will call its
@@ -37,14 +52,80 @@ public interface RemoteObjectServer {
     }
 
     /**
+     * The Class LocalCopyInvocationResponse.
+     */
+    public static final class LocalCopyInvocationResponse<R> extends AbstractInvocationResponse<R> {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 45524732045499074L;
+        /** The local copy. */
+        private final R           localCopy;
+
+        /**
+         * Instantiates a new local copy invocation response.
+         * 
+         * @param localCopy the local copy
+         */
+        public LocalCopyInvocationResponse(
+                                            final R localCopy ) {
+            super();
+            this.localCopy = localCopy;
+        }
+
+        /**
+         * Gets the local copy.
+         * 
+         * @return the local copy
+         */
+        public R getLocalCopy() {
+            return this.localCopy;
+        }
+
+    }
+
+    /**
+     * The Class RemoteReferenceInvocationResponse.
+     */
+    public static final class RemoteReferenceInvocationResponse<R> extends AbstractInvocationResponse<R> {
+
+        /**
+         * 
+         */
+        private static final long        serialVersionUID = 1539869691497856873L;
+        /** The remote reference. */
+        private final RemoteReference<R> remoteReference;
+
+        /**
+         * Instantiates a new remote reference invocation response.
+         * 
+         * @param remoteReference the remote reference
+         */
+        public RemoteReferenceInvocationResponse(
+                                                  final RemoteReference<R> remoteReference ) {
+            super();
+            this.remoteReference = remoteReference;
+        }
+
+        /**
+         * Gets the remote reference.
+         * 
+         * @return the remote reference
+         */
+        public RemoteReference<R> getRemoteReference() {
+            return this.remoteReference;
+        }
+    }
+
+    /**
      * Creates the remote reference.
      * 
-     * @param <T>
-     * @param userToken
+     * @param userToken the user token
      * @param remoteReferenceType the remote reference type
      * @param parameters the parameters
      * @return the remote reference< t>
-     * @throws InvalidReferenceTypeException
+     * @throws InvalidReferenceTypeException the invalid reference type exception
      */
     public <T> RemoteReference<T> createRemoteReference( UserToken userToken,
                                                          Class<T> remoteReferenceType,
@@ -70,10 +151,10 @@ public interface RemoteObjectServer {
      * @param <R>
      * @param invocation the invocation
      * @return the returned object
-     * @throws InternalErrorOnMethodInvocationException
-     * @throws InvocationTargetException
+     * @throws InternalErrorOnMethodInvocationException the internal error on method invocation exception
+     * @throws InvocationTargetException the invocation target exception
      */
-    public <T, R> R invokeRemoteMethod( RemoteObjectInvocation<T, R> invocation )
+    public <T, R> AbstractInvocationResponse<R> invokeRemoteMethod( RemoteObjectInvocation<T> invocation )
         throws InternalErrorOnMethodInvocationException, InvocationTargetException;
 
     /**

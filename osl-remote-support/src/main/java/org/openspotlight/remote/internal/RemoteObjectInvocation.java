@@ -14,9 +14,8 @@ import java.io.Serializable;
  * The Class RemoteObjectInvocation is used to transfer data to invoke objects on the server.
  * 
  * @param <T>
- * @param <R>
  */
-public class RemoteObjectInvocation<T, R> implements Serializable {
+public class RemoteObjectInvocation<T> implements Serializable {
 
     /**
      * 
@@ -27,7 +26,7 @@ public class RemoteObjectInvocation<T, R> implements Serializable {
     private final UserToken          userToken;
 
     /** The return type. */
-    private final R                  returnType;
+    private final Class<?>           returnType;
 
     /** The parameter types. */
     private final Class<?>[]         parameterTypes;
@@ -55,7 +54,7 @@ public class RemoteObjectInvocation<T, R> implements Serializable {
      * @param remoteReference the remote reference
      */
     public RemoteObjectInvocation(
-                                   final R returnType, final Class<?>[] parameterTypes, final Object[] parameters,
+                                   final Class<?> returnType, final Class<?>[] parameterTypes, final Object[] parameters,
                                    final String methodName, final RemoteReference<T> remoteReference ) {
         checkNotNull("returnType", returnType);
         checkNotNull("parameterTypes", parameterTypes);
@@ -78,10 +77,10 @@ public class RemoteObjectInvocation<T, R> implements Serializable {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof RemoteObjectInvocation<?, ?>)) {
+        if (!(obj instanceof RemoteObjectInvocation<?>)) {
             return false;
         }
-        final RemoteObjectInvocation<?, ?> that = (RemoteObjectInvocation<?, ?>)obj;
+        final RemoteObjectInvocation<?> that = (RemoteObjectInvocation<?>)obj;
         return eachEquality(of(this.userToken, this.returnType, this.parameterTypes, this.methodName, this.remoteReference,
                                this.parameters), andOf(that.userToken, that.returnType, that.parameterTypes, that.methodName,
                                                        that.remoteReference, that.parameters));
@@ -103,7 +102,7 @@ public class RemoteObjectInvocation<T, R> implements Serializable {
         return this.remoteReference;
     }
 
-    public R getReturnType() {
+    public final Class<?> getReturnType() {
         return this.returnType;
     }
 

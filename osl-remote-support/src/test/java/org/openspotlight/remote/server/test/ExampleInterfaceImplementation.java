@@ -2,6 +2,12 @@ package org.openspotlight.remote.server.test;
 
 public class ExampleInterfaceImplementation implements ExampleInterface {
 
+    private final AnotherNonSerializableClass remoteResult = new AnotherNonSerializableClass("damn cool stuff!");
+
+    public AnotherNonSerializableClass getRemoteResult() {
+        return this.remoteResult;
+    }
+
     public Integer returns6Times( final Integer another ) {
         return another * 6;
     }

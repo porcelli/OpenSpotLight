@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.remote.annotation.ReturnsRemoteReference;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
@@ -244,11 +245,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
             final T newObject = internalFactory.createNewInstance(parameters);
 
-            final String remoteReferenceId = UUID.randomUUID().toString();
-
-            final RemoteReference<T> reference = new RemoteReference<T>(remoteReferenceType, remoteReferenceId, userToken);
-            this.remoteReferences.put(reference, new RemoteReferenceInternalData<T>(reference, newObject));
-            this.updateRemoteReference(reference);
+            final RemoteReference<T> reference = this.internalCreateRemoteReference(userToken, remoteReferenceType, newObject);
 
             return reference;
         } catch (final Exception e) {
@@ -288,8 +285,27 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         return token;
     }
 
+    /**
+     * Internal create remote reference.
+     * 
+     * @param userToken the user token
+     * @param remoteReferenceType the remote reference type
+     * @param newObject the new object
+     * @return the remote reference< t>
+     */
+    private <T> RemoteReference<T> internalCreateRemoteReference( final UserToken userToken,
+                                                                  final Class<T> remoteReferenceType,
+                                                                  final T newObject ) {
+        final String remoteReferenceId = UUID.randomUUID().toString();
+
+        final RemoteReference<T> reference = new RemoteReference<T>(remoteReferenceType, remoteReferenceId, userToken);
+        this.remoteReferences.put(reference, new RemoteReferenceInternalData<T>(reference, newObject));
+        this.updateRemoteReference(reference);
+        return reference;
+    }
+
     @SuppressWarnings( "unchecked" )
-    public <T, R> R invokeRemoteMethod( final RemoteObjectInvocation<T, R> invocation )
+    public <T, R> AbstractInvocationResponse<R> invokeRemoteMethod( final RemoteObjectInvocation<T> invocation )
         throws InternalErrorOnMethodInvocationException, InvocationTargetException {
         checkNotNull("invocation", invocation);
         checkCondition("remoteReferenceValid", this.isRemoteReferenceValid(invocation.getRemoteReference()));
@@ -303,7 +319,15 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                 throw new UnsupportedOperationException();
             }
             final R result = (R)method.invoke(object, invocation.getParameters());
-            return result;
+            if (method.getAnnotation(ReturnsRemoteReference.class) != null) {
+                //FIXME here, cache is mandatory if on server the return is the same reference
+                final RemoteReference<R> remoteReference = this.internalCreateRemoteReference(
+                                                                                              invocation.getUserToken(),
+                                                                                              (Class<R>)invocation.getReturnType(),
+                                                                                              result);
+                return new RemoteReferenceInvocationResponse(remoteReference);
+            }
+            return new LocalCopyInvocationResponse(result);
         } catch (final UnsupportedOperationException e) {
             throw logAndReturn(e);
         } catch (final InvocationTargetException e) {
