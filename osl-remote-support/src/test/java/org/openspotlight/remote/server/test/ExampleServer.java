@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openspotlight.graph.server.test;
+package org.openspotlight.remote.server.test;
 
 
 public class ExampleServer implements Example {

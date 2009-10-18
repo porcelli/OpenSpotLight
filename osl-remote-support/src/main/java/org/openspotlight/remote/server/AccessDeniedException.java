@@ -3,7 +3,7 @@ package org.openspotlight.remote.server;
 import org.openspotlight.common.exception.SLException;
 
 /**
- * This exception is thrown when the user can't connect to the {@link RemoteObjectServer}.
+ * This exception is thrown when the user can't connect to the {@link RemoteObjectServerImpl}.
  */
 public class AccessDeniedException extends SLException {
 
