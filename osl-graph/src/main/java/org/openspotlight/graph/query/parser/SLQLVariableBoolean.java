@@ -111,6 +111,9 @@ public class SLQLVariableBoolean extends SLQLVariable {
      */
     @Override
     public boolean isValidValue( Object value ) {
+        if (value == null){
+            return false;
+        }
         if (value.getClass().getName().equals(boolean.class.getName())) {
             return true;
         }
@@ -118,5 +121,13 @@ public class SLQLVariableBoolean extends SLQLVariable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isValidDomainValue( Object value ) {
+        return true;
     }
 }

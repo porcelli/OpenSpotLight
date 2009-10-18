@@ -57,6 +57,10 @@ import org.openspotlight.common.util.Exceptions;
  * 
  * @author porcelli
  */
+/**
+ * @author porcelli
+ *
+ */
 public abstract class SLQLVariable {
 
     /** The variable name. */
@@ -124,7 +128,7 @@ public abstract class SLQLVariable {
      */
     public void setValue( Object value ) {
         if (isValidValue(value)) {
-            this.value = (Integer)value;
+            this.value = value;
         } else {
             Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
         }
@@ -162,6 +166,15 @@ public abstract class SLQLVariable {
      * @return true, if is valid value
      */
     public abstract boolean isValidValue( Object value );
+
+    /**
+     * Checks if is valid domain value.
+     * 
+     * @param value the value
+     * 
+     * @return true, if is valid domain value
+     */
+    public abstract boolean isValidDomainValue( Object value );
 
     /**
      * Gets the domain values.

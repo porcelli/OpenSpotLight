@@ -1,0 +1,4 @@
+select org.openspotlight.graph.test.domain.JavaType.* 
+	where 
+		org.openspotlight.graph.test.domain.JavaType.* 
+			property caption *... $javaPackage;

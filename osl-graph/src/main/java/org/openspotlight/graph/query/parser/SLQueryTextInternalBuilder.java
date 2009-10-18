@@ -362,6 +362,8 @@ public class SLQueryTextInternalBuilder {
                 }
             }
 
+//            System.out.println("executeContent : " + executeContent);
+            
             CtConstructor newConstructor = CtNewConstructor.make(CONSTRUCTOR_ARGS, CONSTRUCTOR_THROWS, clas);
             clas.addConstructor(newConstructor);
 

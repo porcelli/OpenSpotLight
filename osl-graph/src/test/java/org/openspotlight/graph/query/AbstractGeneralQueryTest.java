@@ -126,23 +126,34 @@ public class AbstractGeneralQueryTest {
             JavaPackage utilJavaPackage = root.addNode(JavaPackage.class, pack.getName());
             utilJavaPackage.setCaption(pack.getName());
 
+            int count = 0;
+            float floatValue = 0.3F;
             for (Class<?> iFace : iFaces) {
                 JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
                 session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
                 javaInterface.setCaption(iFace.getName());
+                javaInterface.setProperty(Integer.class, "intValue", count);
+                javaInterface.setProperty(Float.class, "decValue", new Float(count + floatValue));
+                javaInterface.setProperty(Boolean.class, "boolValue", new Boolean(true));
                 addJavaInterfaceHirarchyLinks(root, iFace, javaInterface);
                 addJavaInterfaceContainsJavaMethod(iFace, javaInterface);
+                count++;
             }
 
+            count = 0;
             for (Class<?> clazz : classes) {
                 //              context = session.createContext("queryTest2");
                 root = context.getRootNode();
                 JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
                 session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
                 javaClass.setCaption(clazz.getName());
+                javaClass.setProperty(Integer.class, "intValue", count);
+                javaClass.setProperty(Float.class, "decValue", new Float(count + floatValue));
+                javaClass.setProperty(Boolean.class, "boolValue", new Boolean(false));
                 addJavaClassHirarchyLinks(root, clazz, javaClass);
                 addClassImplementsInterfaceLinks(root, clazz, javaClass);
                 addJavaClassContainsJavaClassMethod(clazz, javaClass);
+                count++;
             }
 
             session.save();
