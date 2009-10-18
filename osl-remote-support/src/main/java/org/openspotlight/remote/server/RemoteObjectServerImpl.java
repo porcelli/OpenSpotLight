@@ -295,8 +295,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         try {
             final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>)this.remoteReferences.get(invocation.getRemoteReference());
             final T object = remoteReferenceData.getObject();
-            final Method method = invocation.getRemoteReference().getClass().getMethod(invocation.getMethodName(),
-                                                                                       invocation.getParameterTypes());
+            final Method method = invocation.getRemoteReference().getRemoteType().getMethod(invocation.getMethodName(),
+                                                                                            invocation.getParameterTypes());
             final R result = (R)method.invoke(object, invocation.getParameters());
             return result;
         } catch (final InvocationTargetException e) {

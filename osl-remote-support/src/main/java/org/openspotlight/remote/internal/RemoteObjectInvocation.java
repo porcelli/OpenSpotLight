@@ -55,16 +55,15 @@ public class RemoteObjectInvocation<T, R> implements Serializable {
      * @param remoteReference the remote reference
      */
     public RemoteObjectInvocation(
-                                   final UserToken userToken, final R returnType, final Class<?>[] parameterTypes,
-                                   final Object[] parameters, final String methodName, final RemoteReference<T> remoteReference ) {
-        checkNotNull("userToken", userToken);
+                                   final R returnType, final Class<?>[] parameterTypes, final Object[] parameters,
+                                   final String methodName, final RemoteReference<T> remoteReference ) {
         checkNotNull("returnType", returnType);
         checkNotNull("parameterTypes", parameterTypes);
         checkNotNull("parameters", parameters);
         checkNotEmpty("methodName", methodName);
         checkNotNull("remoteReference", remoteReference);
         checkCondition("correctNumberOfArguments", parameters.length == parameterTypes.length);
-        this.userToken = userToken;
+        this.userToken = remoteReference.getUserToken();
         this.returnType = returnType;
         this.parameterTypes = parameterTypes;
         this.parameters = parameters;
