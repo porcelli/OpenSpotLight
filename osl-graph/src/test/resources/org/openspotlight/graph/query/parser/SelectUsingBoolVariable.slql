@@ -1,0 +1,4 @@
+select **
+	where
+		org.openspotlight.graph.test.domain.JavaType.*
+			property boolValue == @boolValue;

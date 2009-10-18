@@ -99,7 +99,12 @@ public class SLQLVariableString extends SLQLVariable {
     @Override
     public void addDomainValue( Object value ) {
         if (isValidValue(value)) {
-            domainValue.add((String)value);
+            String vsValue = (String)value;
+            if (vsValue.startsWith("\"")){
+                domainValue.add(vsValue.substring(1, vsValue.length() -1));                
+            } else {
+                domainValue.add(vsValue);
+            }
         }
     }
 
@@ -116,8 +121,24 @@ public class SLQLVariableString extends SLQLVariable {
      */
     @Override
     public boolean isValidValue( Object value ) {
+        if (value == null){
+            return false;
+        }
         if (value instanceof String) {
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isValidDomainValue( Object value ) {
+        for (String activeValue : domainValue) {
+            if (activeValue.equals(value)){
+                return true;
+            }
         }
         return false;
     }

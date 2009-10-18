@@ -1,5 +1,10 @@
 package org.openspotlight.graph.query.parser;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 import java.io.IOException;
 
 import org.junit.Assert;
@@ -16,7 +21,19 @@ public class TestSLQueryTextInternalBuilder {
         String select = "select *;";
         SLQueryTextInternal result = queryBuilder.build(select);
 
+        assertThat(result, notNullValue());
         Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void testCheckQueryExists() throws SLException, IOException {
+        String select = "select *;";
+        SLQueryTextInternal result = queryBuilder.build(select);
+
+        String select2 = "     select *      ;   ";
+        SLQueryTextInternal result2 = queryBuilder.build(select2);
+
+        assertThat(result.getClass().getName(), is(result2.getClass().getName()));
     }
 
 }

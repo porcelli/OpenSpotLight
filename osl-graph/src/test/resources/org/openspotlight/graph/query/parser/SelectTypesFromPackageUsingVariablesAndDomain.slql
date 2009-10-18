@@ -1,0 +1,6 @@
+define domain values $javaPackage = "java.util", "java.lang";
+
+select org.openspotlight.graph.test.domain.JavaType.* 
+	where 
+		org.openspotlight.graph.test.domain.JavaType.* 
+			property caption *... $javaPackage;

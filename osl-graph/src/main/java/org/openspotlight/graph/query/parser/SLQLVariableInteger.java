@@ -116,11 +116,27 @@ public class SLQLVariableInteger extends SLQLVariable {
      */
     @Override
     public boolean isValidValue( Object value ) {
+        if (value == null){
+            return false;
+        }
         if (value.getClass().getName().equals(int.class.getName())) {
             return true;
         }
         if (value instanceof Integer) {
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isValidDomainValue( Object value ) {
+        for (Integer activeValue : domainValue) {
+            if (activeValue.equals(value)){
+                return true;
+            }
         }
         return false;
     }
