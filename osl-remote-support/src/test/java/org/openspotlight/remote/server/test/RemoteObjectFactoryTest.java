@@ -11,6 +11,7 @@ import org.openspotlight.remote.client.RemoteObjectFactory;
 import org.openspotlight.remote.server.AccessDeniedException;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.remote.server.test.ExampleInterface.NonSerializableInterface;
 
 public class RemoteObjectFactoryTest {
 
@@ -76,6 +77,15 @@ public class RemoteObjectFactoryTest {
     @Test( expected = AccessDeniedException.class )
     public void shouldNotCreateRemoteObjectFactoryWhenUserIsInvalid() throws Exception {
         new RemoteObjectFactory("localhost", 7070, "invalid", "password");
+    }
+
+    @Test
+    public void shouldReturnRemoteReferenceForAnMethodInvocation() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final NonSerializableInterface nonSerializableResult = proxy.getRemoteResult();
+        assertThat(nonSerializableResult.getStuff(), is("damn cool stuff!"));
+        //FIXME here, cache is mandatory if on server the return is the same reference
+
     }
 
 }
