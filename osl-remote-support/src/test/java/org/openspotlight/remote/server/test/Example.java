@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openspotlight.graph.server.test;
+package org.openspotlight.remote.server.test;
 
 import java.io.Serializable;
 

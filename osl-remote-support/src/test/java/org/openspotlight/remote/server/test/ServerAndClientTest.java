@@ -1,4 +1,4 @@
-package org.openspotlight.graph.server.test;
+package org.openspotlight.remote.server.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

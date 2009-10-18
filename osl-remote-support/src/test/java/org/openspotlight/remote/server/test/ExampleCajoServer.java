@@ -1,4 +1,4 @@
-package org.openspotlight.graph.server.test;
+package org.openspotlight.remote.server.test;
 
 import gnu.cajo.invoke.Remote;
 import gnu.cajo.utils.ItemServer;
