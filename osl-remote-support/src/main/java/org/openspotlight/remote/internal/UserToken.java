@@ -23,6 +23,7 @@ public class UserToken implements Serializable {
     /** The token. */
     private final String      token;
 
+    /** The hashcode. */
     private final int         hashcode;
 
     /**

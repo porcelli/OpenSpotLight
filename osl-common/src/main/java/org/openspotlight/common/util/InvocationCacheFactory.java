@@ -12,7 +12,7 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
-import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodKey;
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
 
 /**
@@ -60,7 +60,7 @@ public final class InvocationCacheFactory {
         private Object                       source;
 
         /** The cache. */
-        private final Map<MethodKey, Object> cache      = new HashMap<MethodKey, Object>();
+        private final Map<MethodWithParametersKey, Object> cache      = new HashMap<MethodWithParametersKey, Object>();
 
         /** The Constant NULL_VALUE. */
         private static final Object          NULL_VALUE = new Object();
@@ -84,7 +84,7 @@ public final class InvocationCacheFactory {
                                  final MethodProxy proxy ) throws Throwable {
             if (Modifier.isPublic(method.getModifiers())) {
                 final String uniqueName = getMethodUniqueName(method);
-                final MethodKey key = new MethodKey(uniqueName, parameters);
+                final MethodWithParametersKey key = new MethodWithParametersKey(uniqueName, parameters);
                 Object value = this.cache.get(key);
                 if (value == null) {
                     boolean invocationOk = true;

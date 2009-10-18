@@ -1,53 +1,59 @@
 package org.openspotlight.remote.server.test;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.remote.client.CantConnectException;
 import org.openspotlight.remote.client.RemoteObjectFactory;
 import org.openspotlight.remote.server.AccessDeniedException;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
-import org.openspotlight.remote.server.UserAutenticator;
+import org.openspotlight.remote.server.UserAuthenticator;
 
 public class RemoteObjectFactoryTest {
 
-    private static class AllowAlwaysUserAutenticator implements UserAutenticator {
+    private static class AllowUserValidAutenticator implements UserAuthenticator {
 
         public boolean canConnect( final String userName,
                                    final String password,
                                    final String clientHost ) {
-            return true;
+            return "valid".equals(userName);
+
         }
 
     }
 
-    private static class AllowNeverUserAutenticator implements UserAutenticator {
+    private static RemoteObjectServerImpl server;
 
-        public boolean canConnect( final String userName,
-                                   final String password,
-                                   final String clientHost ) {
-            return false;
-        }
+    @BeforeClass
+    public static void setup() throws Exception {
+        server = new RemoteObjectServerImpl(new AllowUserValidAutenticator(), 7070, 1);
+        server.registerInternalObjectFactory(ExampleInterface.class, new ExampleInterfaceFactory());
+    }
 
+    @AfterClass
+    public static void shutdown() throws Exception {
+        server.shutdown();
+        server = null;
     }
 
     @Test
     public void shouldCreateRemoteObjectFactory() throws Exception {
-        final RemoteObjectServerImpl server = new RemoteObjectServerImpl(new AllowAlwaysUserAutenticator(), 7070);
-        final RemoteObjectFactory client = new RemoteObjectFactory("localhost", 7070, "userName", "password");
-        server.shutdown();
-        Thread.sleep(500);
+        new RemoteObjectFactory("localhost", 7070, "valid", "password");
+    }
+
+    @Test
+    public void shouldCreateRemoteReference() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
     }
 
     @Test( expected = CantConnectException.class )
     public void shouldNotCreateRemoteObjectFactoryWhenServerIsInvalid() throws Exception {
-        final RemoteObjectFactory client = new RemoteObjectFactory("localhost", 666, "userName", "password");
+        new RemoteObjectFactory("localhost", 666, "userName", "password");
     }
 
     @Test( expected = AccessDeniedException.class )
     public void shouldNotCreateRemoteObjectFactoryWhenUserIsInvalid() throws Exception {
-        final RemoteObjectServerImpl server = new RemoteObjectServerImpl(new AllowNeverUserAutenticator(), 7171);
-        final RemoteObjectFactory client = new RemoteObjectFactory("localhost", 7171, "userName", "password");
-        server.shutdown();
-        Thread.sleep(500);
+        new RemoteObjectFactory("localhost", 7070, "invalid", "password");
     }
 
 }
