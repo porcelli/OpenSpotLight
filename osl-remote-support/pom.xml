@@ -31,5 +31,9 @@
 			<groupId>cajo</groupId>
 			<artifactId>cajo</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+		</dependency>
 	</dependencies>
 </project>
