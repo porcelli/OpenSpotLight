@@ -10,4 +10,12 @@ public class ExampleInterfaceImplementation implements ExampleInterface {
         return true;
     }
 
+    public void throwAnException() throws EnumConstantNotPresentException {
+        throw new EnumConstantNotPresentException(Enum.class, "stuff");
+    }
+
+    public boolean unsupportedMethod() {
+        return false;
+    }
+
 }

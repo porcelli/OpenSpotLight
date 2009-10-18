@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetAddress;
 
+import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
@@ -27,6 +28,8 @@ public class RemoteObjectFactory {
         private final RemoteReference<T> remoteReference;
         private final RemoteObjectServer fromServer;
 
+        private static final Object[]    EMPTY_ARR = new Object[0];
+
         public RemoteReferenceHandler(
                                        final RemoteObjectServer fromServer, final RemoteReference<T> remoteReference ) {
             this.remoteReference = remoteReference;
@@ -36,10 +39,15 @@ public class RemoteObjectFactory {
         public Object invoke( final Object proxy,
                               final Method method,
                               final Object[] args ) throws Throwable {
+            if (method.getAnnotation(UnsupportedRemoteMethod.class) != null) {
+                throw new UnsupportedOperationException();
+            }
+            final Class<?>[] parameterTypes = method.getParameterTypes();
             final RemoteObjectInvocation<T, Object> invocation = new RemoteObjectInvocation<T, Object>(
                                                                                                        method.getReturnType(),
-                                                                                                       method.getParameterTypes(),
-                                                                                                       args, method.getName(),
+                                                                                                       parameterTypes,
+                                                                                                       args == null ? EMPTY_ARR : args,
+                                                                                                       method.getName(),
                                                                                                        this.remoteReference);
             try {
                 final Object result = this.fromServer.invokeRemoteMethod(invocation);
