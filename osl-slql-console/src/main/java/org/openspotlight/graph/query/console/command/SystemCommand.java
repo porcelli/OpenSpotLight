@@ -1,6 +1,6 @@
 package org.openspotlight.graph.query.console.command;
 
 
-public interface DynamicCommand extends Command {
+public interface SystemCommand extends Command {
 
 }

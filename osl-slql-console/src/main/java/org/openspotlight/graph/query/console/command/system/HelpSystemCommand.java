@@ -8,7 +8,7 @@ import jline.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.Command;
-import org.openspotlight.graph.query.console.command.Command.FileCompletionMode;
+import org.openspotlight.graph.query.console.command.SystemCommand;
 
 public class HelpSystemCommand implements SystemCommand {
 
@@ -43,6 +43,10 @@ public class HelpSystemCommand implements SystemCommand {
 
     public String getCommand() {
         return "help";
+    }
+
+    public String getAutoCompleteCommand() {
+        return getCommand();
     }
 
     public String getDescription() {

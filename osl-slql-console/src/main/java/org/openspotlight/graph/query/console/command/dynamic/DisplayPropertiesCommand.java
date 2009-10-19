@@ -1,32 +1,39 @@
-package org.openspotlight.graph.query.console.command.system;
+package org.openspotlight.graph.query.console.command.dynamic;
 
 import java.io.PrintWriter;
 
 import jline.ConsoleReader;
 
 import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.SLQLPlus;
-import org.openspotlight.graph.query.console.command.SystemCommand;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
-public class VersionSystemCommand implements SystemCommand {
+public class DisplayPropertiesCommand implements DynamicCommand {
 
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
-        out.println("slqlplus version \"" + SLQLPlus.VERSION + "\"");
+        out.println("additional properties:");
+        if (state.getAdditionalProperties().size() == 0){
+            out.println("\t(none)");
+        } else {
+            for (String propertyName : state.getAdditionalProperties()) {
+                out.print("\t- ");
+                out.println(propertyName);
+            }            
+        }
         out.flush();
     }
 
     public String getCommand() {
-        return "version";
+        return "display properties";
     }
 
     public String getAutoCompleteCommand() {
-        return getCommand();
+        return "display properties";
     }
 
     public String getDescription() {
-        return "print product version";
+        return "display slql properties output";
     }
 
     public String getFileCompletionCommand() {
@@ -42,7 +49,7 @@ public class VersionSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("version")) {
+        if (state.getActiveCommand() == null && state.getInput().equals("display properties")) {
             return true;
         }
         return false;

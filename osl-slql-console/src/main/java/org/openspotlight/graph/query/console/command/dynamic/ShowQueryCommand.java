@@ -1,26 +1,33 @@
-package org.openspotlight.graph.query.console.command;
+package org.openspotlight.graph.query.console.command.dynamic;
 
 import java.io.PrintWriter;
 
 import jline.ConsoleReader;
 
 import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
-public class ExecuteLastQueryCommand extends QueryCommand {
+public class ShowQueryCommand implements DynamicCommand {
 
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        out.println("query: ");
+        out.println(state.getLastQuery());
+        out.flush();
         state.clearBuffer();
-        executeQuery(reader, out, state, state.getLastQuery());
     }
 
     public String getCommand() {
-        return "/";
+        return "show query";
+    }
+
+    public String getAutoCompleteCommand() {
+        return "show query";
     }
 
     public String getDescription() {
-        return "executes the last slql query.";
+        return "shows last slql query";
     }
 
     public String getFileCompletionCommand() {
@@ -36,7 +43,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("/")) {
+        if (state.getActiveCommand() == null && state.getInput().equals("show query")) {
             return true;
         }
         return false;

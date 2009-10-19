@@ -1,34 +1,32 @@
-package org.openspotlight.graph.query.console.command.system;
+package org.openspotlight.graph.query.console.command.dynamic;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import jline.ConsoleReader;
 
 import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.SystemCommand;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
-public class ClearSystemCommand implements SystemCommand {
+public class ResetPropertiesCommand implements DynamicCommand {
 
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
-        try {
-            reader.clearScreen();
-        } catch (IOException e) {
-        }
+        state.resetAdditionalProperties();
+        out.println("properties reset.");
+        out.flush();
     }
 
     public String getCommand() {
-        return "clear";
+        return "reset properties";
     }
 
     public String getAutoCompleteCommand() {
-        return getCommand();
+        return "reset properties";
     }
 
     public String getDescription() {
-        return "clear the terminal screen";
+        return "resets slql properties output";
     }
 
     public String getFileCompletionCommand() {
@@ -44,7 +42,7 @@ public class ClearSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("clear")) {
+        if (state.getActiveCommand() == null && state.getInput().equals("reset properties")) {
             return true;
         }
         return false;

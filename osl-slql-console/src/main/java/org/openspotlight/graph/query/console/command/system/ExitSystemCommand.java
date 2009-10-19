@@ -5,8 +5,7 @@ import java.io.PrintWriter;
 import jline.ConsoleReader;
 
 import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.Command;
-import org.openspotlight.graph.query.console.command.Command.FileCompletionMode;
+import org.openspotlight.graph.query.console.command.SystemCommand;
 
 public class ExitSystemCommand implements SystemCommand {
 
@@ -18,6 +17,10 @@ public class ExitSystemCommand implements SystemCommand {
 
     public String getCommand() {
         return "exit";
+    }
+
+    public String getAutoCompleteCommand() {
+        return getCommand();
     }
 
     public String getDescription() {

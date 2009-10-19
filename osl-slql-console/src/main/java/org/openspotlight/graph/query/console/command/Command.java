@@ -2,9 +2,9 @@ package org.openspotlight.graph.query.console.command;
 
 import java.io.PrintWriter;
 
-import org.openspotlight.graph.query.console.ConsoleState;
-
 import jline.ConsoleReader;
+
+import org.openspotlight.graph.query.console.ConsoleState;
 
 public interface Command {
 
@@ -18,6 +18,8 @@ public interface Command {
                          ConsoleState state );
 
     public String getCommand();
+
+    public String getAutoCompleteCommand();
 
     public String getDescription();
 
