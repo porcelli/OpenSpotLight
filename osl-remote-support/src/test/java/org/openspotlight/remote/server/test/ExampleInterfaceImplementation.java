@@ -6,7 +6,7 @@ public class ExampleInterfaceImplementation implements ExampleInterface {
 
     public boolean expensiveMethodWithoutParameter() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
         } catch (final InterruptedException e) {
             // nothing to see here... move along sir.
         }
@@ -18,7 +18,7 @@ public class ExampleInterfaceImplementation implements ExampleInterface {
                                                 final String anotherStr,
                                                 final boolean throwsException ) throws Exception {
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
         } catch (final InterruptedException e) {
             // nothing to see here... move along sir.
         }
