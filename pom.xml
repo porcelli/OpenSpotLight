@@ -34,6 +34,11 @@
 		<url>http://www.caravelatech.com/</url>
 	</organization>
 	<repositories>
+        <repository>
+            <id>jline</id>
+            <name>JLine Project Repository</name>
+            <url>http://jline.sourceforge.net/m2repo</url>
+        </repository>
 		<repository>
 			<id>snapshots.jboss.org</id>
 			<url>http://snapshots.jboss.org/maven2</url>
@@ -74,6 +79,7 @@
 		<module>osl-graph-import-test</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
+		<module>osl-slql-console</module>
 		<module>osl-federation</module>
 		<module>bundle-processor/osl-java-bundle</module>
 	</modules>
@@ -214,11 +220,29 @@
 				<artifactId>h2</artifactId>
 				<version>1.1.115</version>
 			</dependency>
+			<!-- Console Lib-->
+	        <dependency>
+	            <groupId>jline</groupId>
+	            <artifactId>jline</artifactId>
+	            <version>0.9.94</version>
+	        </dependency>
+			<!-- Classpath Manipulation Utils-->
+	        <dependency>
+	            <groupId>org.clapper</groupId>
+	            <artifactId>ocutil</artifactId>
+	            <version>2.4.4b</version>
+	        </dependency>
 			<!-- Cryptography utilities-->
 			<dependency>
 				<groupId>org.jasypt</groupId>
 				<artifactId>jasypt</artifactId>
 				<version>1.5</version>
+			</dependency>
+			<!-- Commons Lang util -->
+			<dependency>
+			  <groupId>commons-lang</groupId>
+			  <artifactId>commons-lang</artifactId>
+			  <version>2.4</version>
 			</dependency>
 			<!-- Bean utils -->
 			<dependency>
@@ -541,6 +565,11 @@
 			<dependency>
 				<groupId>asm</groupId>
 				<artifactId>asm</artifactId>
+				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>asm</groupId>
+				<artifactId>asm-commons</artifactId>
 				<version>3.2</version>
 			</dependency>
 			<!--
