@@ -18,6 +18,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
         state.resetAdditionalProperties();
         out.println("properties reset.");
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -45,7 +46,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("reset properties")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("reset properties")) {
             return true;
         }
         return false;

@@ -20,6 +20,7 @@ public class AddPropertyCommand implements DynamicCommand {
         out.print(propertyName);
         out.println(" property added.");
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -47,7 +48,7 @@ public class AddPropertyCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().startsWith("add property ")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("add property ")) {
             return true;
         }
         return false;

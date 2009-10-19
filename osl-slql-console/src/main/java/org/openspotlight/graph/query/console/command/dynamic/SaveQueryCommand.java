@@ -36,6 +36,7 @@ public class SaveQueryCommand implements DynamicCommand {
             out.println("Invalid file name.");
         }
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -63,7 +64,7 @@ public class SaveQueryCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().startsWith("save ")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("save ")) {
             return true;
         }
         return false;

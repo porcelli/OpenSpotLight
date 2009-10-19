@@ -52,6 +52,7 @@ public class QueryCommand implements DynamicCommand {
             state.setActiveCommand(this);
             state.appendLineBuffer(state.getInput());
         }
+        state.clearBuffer();
     }
 
     protected void executeQuery( ConsoleReader reader,

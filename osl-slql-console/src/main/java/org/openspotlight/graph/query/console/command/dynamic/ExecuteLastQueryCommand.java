@@ -21,6 +21,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
             outputFileName = state.getInput().substring(index + 3);
         }
         executeQuery(reader, out, state, state.getLastQuery(), outputFileName);
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -44,10 +45,9 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("/") || state.getActiveCommand() == null && state.getInput().startsWith("/ > ")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("/") || state.getActiveCommand() == null && state.getInput().trim().startsWith("/ > ")) {
             return true;
         }
         return false;
     }
-
 }

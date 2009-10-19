@@ -46,7 +46,7 @@ public class ShowQueryCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("show query")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("show query")) {
             return true;
         }
         return false;
