@@ -1,5 +1,9 @@
 package org.openspotlight.graph.query.console;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.query.console.command.Command;
 
@@ -8,22 +12,31 @@ public class ConsoleState {
     private SLGraphSession session              = null;
     private String         input                = null;
     private StringBuilder  sb                   = new StringBuilder();
-    private Command        activeCommand        = null;
     private String         lastQuery            = null;
     private boolean        quitApplication      = false;
-    private String[]       additionalProperties = new String[] {};
+    private Set<String>    additionalProperties = new HashSet<String>();
+    private Command        activeCommand        = null;
 
     public ConsoleState(
                          SLGraphSession session ) {
         this.session = session;
     }
 
-    public StringBuilder getSb() {
-        return sb;
+    public String getBuffer() {
+        return sb.toString();
     }
 
-    public void setSb( StringBuilder sb ) {
-        this.sb = sb;
+    public void appendBuffer( String buffer ) {
+        this.sb.append(buffer);
+    }
+
+    public void appendLineBuffer( String buffer ) {
+        appendBuffer(buffer);
+        appendBuffer("\n");
+    }
+
+    public void clearBuffer() {
+        sb = new StringBuilder();
     }
 
     public Command getActiveCommand() {
@@ -50,10 +63,6 @@ public class ConsoleState {
         this.input = input;
     }
 
-    public void clearBuffer() {
-        sb = new StringBuilder();
-    }
-
     public boolean quitApplication() {
         return quitApplication;
     }
@@ -66,11 +75,24 @@ public class ConsoleState {
         return session;
     }
 
-    public String[] getAdditionalProperties() {
+    public Collection<String> getAdditionalProperties() {
         return additionalProperties;
     }
 
-    public void setAdditionalProperties( String[] additionalProperties ) {
-        this.additionalProperties = additionalProperties;
+    public void addAdditionalProperties( String additionalProperty ) {
+        if (additionalProperty.trim().length() > 0) {
+            this.additionalProperties.add(additionalProperty);
+        }
     }
+
+    public void removesAdditionalProperties( String additionalProperty ) {
+        if (additionalProperty.trim().length() > 0 && this.additionalProperties.contains(additionalProperty)) {
+            this.additionalProperties.remove(additionalProperty);
+        }
+    }
+
+    public void resetAdditionalProperties() {
+        additionalProperties = new HashSet<String>();
+    }
+
 }

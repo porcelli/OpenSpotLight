@@ -1,10 +1,13 @@
-package org.openspotlight.graph.query.console.command;
+package org.openspotlight.graph.query.console.command.dynamic;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.openspotlight.graph.query.console.ConsoleState;
-
 import jline.ConsoleReader;
+
+import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
 public class SaveQueryCommand implements DynamicCommand {
 
@@ -13,11 +16,31 @@ public class SaveQueryCommand implements DynamicCommand {
                          ConsoleState state ) {
 
         String fileName = state.getInput().substring(4).trim();
-        out.println("save last query to file: " + state.getSb().toString() + " -> " + fileName);
+        File outputFile = new File(fileName);
+        if (!outputFile.isDirectory()) {
+            try {
+                outputFile.createNewFile();
+                PrintWriter fileOut = new PrintWriter(outputFile);
+                fileOut.append(state.getLastQuery());
+                fileOut.flush();
+                fileOut.close();
+                out.println("query saved.");
+            } catch (IOException e) {
+                out.print("ERROR: ");
+                out.println(e.getMessage());
+            }
+        } else {
+            out.print("ERROR: ");
+            out.println("Invalid file name.");
+        }
         out.flush();
     }
 
     public String getCommand() {
+        return "save";
+    }
+
+    public String getAutoCompleteCommand() {
         return "save";
     }
 

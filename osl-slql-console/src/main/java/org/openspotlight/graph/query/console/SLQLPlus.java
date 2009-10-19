@@ -50,7 +50,7 @@ public class SLQLPlus {
 
             int i = 0;
             for (Command command : commands.values()) {
-                consoleCommands[i] = command.getCommand();
+                consoleCommands[i] = command.getAutoCompleteCommand();
                 i++;
             }
 
@@ -61,9 +61,6 @@ public class SLQLPlus {
             String input;
             while ((input = reader.readLine(getPrompt())) != null) {
                 state.setInput(input.trim());
-                state.getSb().append(state.getInput());
-                state.getSb().append("\n"); //$NON-NLS-1$
-
                 boolean inputAccepted = false;
                 for (Command activeCommand : commands.values()) {
                     if (activeCommand.accept(state)) {
