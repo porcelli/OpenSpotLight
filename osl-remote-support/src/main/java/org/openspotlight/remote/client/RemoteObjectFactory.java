@@ -1,6 +1,7 @@
 package org.openspotlight.remote.client;
 
 import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import gnu.cajo.utils.extra.TransparentItemProxy;
@@ -27,7 +28,6 @@ import org.openspotlight.remote.server.RemoteObjectServer.AbstractInvocationResp
 import org.openspotlight.remote.server.RemoteObjectServer.LocalCopyInvocationResponse;
 import org.openspotlight.remote.server.RemoteObjectServer.RemoteReferenceInvocationResponse;
 
-// TODO: Auto-generated Javadoc
 /**
  * A factory for creating RemoteObject objects.
  */
@@ -38,24 +38,40 @@ public class RemoteObjectFactory {
      */
     private static class RemoteReferenceHandler<T> implements InvocationHandler {
 
+        /**
+         * The Class ExceptionWrapper.
+         */
         private static class ExceptionWrapper {
 
+            /** The throwable. */
             private final Throwable throwable;
 
+            /**
+             * Instantiates a new exception wrapper.
+             * 
+             * @param throwable the throwable
+             */
             public ExceptionWrapper(
                                      final Throwable throwable ) {
                 super();
                 this.throwable = throwable;
             }
 
+            /**
+             * Gets the throwable.
+             * 
+             * @return the throwable
+             */
             public Throwable getThrowable() {
                 return this.throwable;
             }
 
         }
 
+        /** The Constant NULL_VALUE. */
         private static final Object                        NULL_VALUE        = new Object();
 
+        /** The method result cache. */
         private final Map<MethodWithParametersKey, Object> methodResultCache = new ConcurrentHashMap<MethodWithParametersKey, Object>();
 
         /** The remote reference. */
@@ -75,13 +91,13 @@ public class RemoteObjectFactory {
          */
         public RemoteReferenceHandler(
                                        final RemoteObjectServer fromServer, final RemoteReference<T> remoteReference ) {
+            checkNotNull("fromServer", fromServer);
+            checkNotNull("remoteReference", remoteReference);
+
             this.remoteReference = remoteReference;
             this.fromServer = fromServer;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
-         */
         public Object invoke( final Object proxy,
                               final Method method,
                               final Object[] args ) throws Throwable {
@@ -110,7 +126,6 @@ public class RemoteObjectFactory {
                     final LocalCopyInvocationResponse<Object> localCopy = (LocalCopyInvocationResponse<Object>)result;
                     resultFromMethod = localCopy.getLocalCopy();
                 } else if (result instanceof RemoteReferenceInvocationResponse<?>) {
-                    //FIXME here, cache is mandatory if on server the return is the same reference
                     final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse = (RemoteReferenceInvocationResponse<Object>)result;
                     final RemoteReference<Object> methodResponseRemoteReference = remoteReferenceResponse.getRemoteReference();
                     resultFromMethod = Proxy.newProxyInstance(this.getClass().getClassLoader(),
@@ -135,6 +150,13 @@ public class RemoteObjectFactory {
 
         }
 
+        /**
+         * Return result from cache.
+         * 
+         * @param key the key
+         * @return the object
+         * @throws Throwable the throwable
+         */
         private Object returnResultFromCache( final MethodWithParametersKey key ) throws Throwable {
             final Object value = this.methodResultCache.get(key);
             if (value == NULL_VALUE) {
@@ -149,6 +171,12 @@ public class RemoteObjectFactory {
             return value;
         }
 
+        /**
+         * Store result on cache.
+         * 
+         * @param key the key
+         * @param resultFromMethod the result from method
+         */
         private void storeResultOnCache( final MethodWithParametersKey key,
                                          final Object resultFromMethod ) {
 
