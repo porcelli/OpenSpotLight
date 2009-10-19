@@ -532,8 +532,11 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * Shutdown.
      */
     public void shutdown() {
-        this.closed.set(true);
         Remote.shutdown();
+        this.closed.set(true);
+        for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> e : this.remoteReferences.entrySet()) {
+            this.removeDeathEntry(e.getValue());
+        }
     }
 
     /**
