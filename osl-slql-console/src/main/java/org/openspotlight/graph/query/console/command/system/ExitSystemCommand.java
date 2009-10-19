@@ -12,6 +12,9 @@ public class ExitSystemCommand implements SystemCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         state.setQuitApplication(true);
     }
 

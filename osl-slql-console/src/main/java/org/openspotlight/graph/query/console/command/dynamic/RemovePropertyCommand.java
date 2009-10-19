@@ -12,6 +12,9 @@ public class RemovePropertyCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         String propertyName = state.getInput().substring(16).trim();
         state.removesAdditionalProperties(propertyName);
         out.print(propertyName);

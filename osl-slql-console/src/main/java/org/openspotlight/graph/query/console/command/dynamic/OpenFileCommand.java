@@ -15,6 +15,9 @@ public class OpenFileCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         String fileName = state.getInput().substring(3).trim();
 
         File file = new File(fileName);

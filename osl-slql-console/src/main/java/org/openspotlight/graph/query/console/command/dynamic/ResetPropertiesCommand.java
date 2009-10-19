@@ -12,6 +12,9 @@ public class ResetPropertiesCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         state.resetAdditionalProperties();
         out.println("properties reset.");
         out.flush();

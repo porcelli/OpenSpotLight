@@ -12,6 +12,9 @@ public class AddPropertyCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         String propertyName = state.getInput().substring(13).trim();
         state.addAdditionalProperties(propertyName);
         out.print(propertyName);

@@ -13,6 +13,9 @@ public class VersionSystemCommand implements SystemCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         out.println("slqlplus version \"" + SLQLPlus.VERSION + "\"");
         out.flush();
     }
