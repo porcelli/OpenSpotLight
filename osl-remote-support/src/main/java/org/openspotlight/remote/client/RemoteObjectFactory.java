@@ -10,7 +10,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport;
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
+import org.openspotlight.remote.annotation.CachedInvocation;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
@@ -22,56 +27,135 @@ import org.openspotlight.remote.server.RemoteObjectServer.AbstractInvocationResp
 import org.openspotlight.remote.server.RemoteObjectServer.LocalCopyInvocationResponse;
 import org.openspotlight.remote.server.RemoteObjectServer.RemoteReferenceInvocationResponse;
 
+// TODO: Auto-generated Javadoc
 /**
  * A factory for creating RemoteObject objects.
  */
 public class RemoteObjectFactory {
 
+    /**
+     * The Class RemoteReferenceHandler.
+     */
     private static class RemoteReferenceHandler<T> implements InvocationHandler {
 
-        private final RemoteReference<T> remoteReference;
-        private final RemoteObjectServer fromServer;
+        private static class ExceptionWrapper {
 
-        private static final Object[]    EMPTY_ARR = new Object[0];
+            private final Throwable throwable;
 
+            public ExceptionWrapper(
+                                     final Throwable throwable ) {
+                super();
+                this.throwable = throwable;
+            }
+
+            public Throwable getThrowable() {
+                return this.throwable;
+            }
+
+        }
+
+        private static final Object                        NULL_VALUE        = new Object();
+
+        private final Map<MethodWithParametersKey, Object> methodResultCache = new ConcurrentHashMap<MethodWithParametersKey, Object>();
+
+        /** The remote reference. */
+        private final RemoteReference<T>                   remoteReference;
+
+        /** The from server. */
+        private final RemoteObjectServer                   fromServer;
+
+        /** The Constant EMPTY_ARR. */
+        private static final Object[]                      EMPTY_ARR         = new Object[0];
+
+        /**
+         * Instantiates a new remote reference handler.
+         * 
+         * @param fromServer the from server
+         * @param remoteReference the remote reference
+         */
         public RemoteReferenceHandler(
                                        final RemoteObjectServer fromServer, final RemoteReference<T> remoteReference ) {
             this.remoteReference = remoteReference;
             this.fromServer = fromServer;
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
+         */
         public Object invoke( final Object proxy,
                               final Method method,
                               final Object[] args ) throws Throwable {
-            if (method.getAnnotation(UnsupportedRemoteMethod.class) != null) {
+            if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
                 throw new UnsupportedOperationException();
             }
+
             final Class<?>[] parameterTypes = method.getParameterTypes();
+            MethodWithParametersKey key = null;
+            if (method.isAnnotationPresent(CachedInvocation.class)) {
+                final String uniqueName = MethodIdentificationSupport.getMethodUniqueName(method);
+                key = new MethodWithParametersKey(uniqueName, args == null ? EMPTY_ARR : args);
+                if (this.methodResultCache.containsKey(key)) {
+                    return this.returnResultFromCache(key);
+                }
+            }
+
             final RemoteObjectInvocation<T> invocation = new RemoteObjectInvocation<T>(method.getReturnType(), parameterTypes,
                                                                                        args == null ? EMPTY_ARR : args,
                                                                                        method.getName(), this.remoteReference);
             try {
+                Object resultFromMethod = null;
+
                 final AbstractInvocationResponse<Object> result = this.fromServer.invokeRemoteMethod(invocation);
                 if (result instanceof LocalCopyInvocationResponse<?>) {
                     final LocalCopyInvocationResponse<Object> localCopy = (LocalCopyInvocationResponse<Object>)result;
-                    return localCopy.getLocalCopy();
+                    resultFromMethod = localCopy.getLocalCopy();
                 } else if (result instanceof RemoteReferenceInvocationResponse<?>) {
                     //FIXME here, cache is mandatory if on server the return is the same reference
                     final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse = (RemoteReferenceInvocationResponse<Object>)result;
                     final RemoteReference<Object> methodResponseRemoteReference = remoteReferenceResponse.getRemoteReference();
-                    final Object newObjectProxy = Proxy.newProxyInstance(
-                                                                         this.getClass().getClassLoader(),
-                                                                         new Class[] {invocation.getReturnType()},
-                                                                         new RemoteReferenceHandler<Object>(this.fromServer,
-                                                                                                            methodResponseRemoteReference));
+                    resultFromMethod = Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                                                              new Class[] {invocation.getReturnType()},
+                                                              new RemoteReferenceHandler<Object>(this.fromServer,
+                                                                                                 methodResponseRemoteReference));
 
-                    return newObjectProxy;
                 } else {
                     throw logAndReturn(new IllegalStateException());
                 }
+                if (method.isAnnotationPresent(CachedInvocation.class)) {
 
+                    this.storeResultOnCache(key, resultFromMethod);
+                }
+                return resultFromMethod;
             } catch (final InvocationTargetException e) {
+                if (method.isAnnotationPresent(CachedInvocation.class)) {
+                    this.storeResultOnCache(key, new ExceptionWrapper(e.getCause()));
+                }
                 throw e.getCause();
+            }
+
+        }
+
+        private Object returnResultFromCache( final MethodWithParametersKey key ) throws Throwable {
+            final Object value = this.methodResultCache.get(key);
+            if (value == NULL_VALUE) {
+                return null;
+            }
+
+            if (value instanceof ExceptionWrapper) {
+                final ExceptionWrapper ex = (ExceptionWrapper)value;
+                throw ex.getThrowable();
+            }
+
+            return value;
+        }
+
+        private void storeResultOnCache( final MethodWithParametersKey key,
+                                         final Object resultFromMethod ) {
+
+            if (resultFromMethod == null) {
+                this.methodResultCache.put(key, NULL_VALUE);
+            } else {
+                this.methodResultCache.put(key, resultFromMethod);
             }
 
         }
@@ -114,11 +198,10 @@ public class RemoteObjectFactory {
     /**
      * Creates a new object on server.
      * 
-     * @param <T>
      * @param remoteObjectType the remote object type
      * @param parameters the parameters
      * @return the T
-     * @throws InvalidReferenceTypeException
+     * @throws InvalidReferenceTypeException the invalid reference type exception
      */
     @SuppressWarnings( "unchecked" )
     public <T> T createRemoteObject( final Class<T> remoteObjectType,
