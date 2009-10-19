@@ -48,6 +48,7 @@
  */
 package org.openspotlight.common.util;
 
+import java.util.List;
 
 /**
  * The Class StringBuilderUtil.
@@ -55,54 +56,85 @@ package org.openspotlight.common.util;
  * @author Vitor Hugo Chagas
  */
 public class StringBuilderUtil {
-	
-	/**
-	 * Append values if value is not null.
-	 * 
-	 * @param buffer the buffer
-	 * @param value the value
-	 * @param values the values
-	 * 
-	 * @return true, if successful
-	 */
-	public static StringBuilder appendIfNotNull(StringBuilder buffer, Object value, Object...values) {
-		if (value != null) {
-			for (Object current : values) {
-				if (current != null) {
-					buffer.append(current);
-				}
-			}
-		}
-		return buffer;
-	}
 
-	/**
-	 * Append value if not null.
-	 * 
-	 * @param buffer the buffer
-	 * @param value the value
-	 * 
-	 * @return the string builder
-	 */
-	public static StringBuilder append(StringBuilder buffer, Object value) {
-		if (value != null) {
-			buffer.append(value);
-		}
-		return buffer;
-	}
-	
-	/**
-	 * Append values.
-	 * 
-	 * @param buffer the buffer
-	 * @param values the values
-	 * 
-	 * @return the string builder
-	 */
-	public static StringBuilder append(StringBuilder buffer, Object...values) {
-		for (Object value : values) {
-			buffer.append(value);
-		}
-		return buffer;
-	}
+    /**
+     * Append values if value is not null.
+     * 
+     * @param buffer the buffer
+     * @param value the value
+     * @param values the values
+     * @return true, if successful
+     */
+    public static StringBuilder appendIfNotNull( StringBuilder buffer,
+                                                 Object value,
+                                                 Object... values ) {
+        if (value != null) {
+            for (Object current : values) {
+                if (current != null) {
+                    buffer.append(current);
+                }
+            }
+        }
+        return buffer;
+    }
+
+    /**
+     * Append value if not null.
+     * 
+     * @param buffer the buffer
+     * @param value the value
+     * @return the string builder
+     */
+    public static StringBuilder append( StringBuilder buffer,
+                                        Object value ) {
+        if (value != null) {
+            buffer.append(value);
+        }
+        return buffer;
+    }
+
+    /**
+     * Append values.
+     * 
+     * @param buffer the buffer
+     * @param values the values
+     * @return the string builder
+     */
+    public static StringBuilder append( StringBuilder buffer,
+                                        Object... values ) {
+        for (Object value : values) {
+            buffer.append(value);
+        }
+        return buffer;
+    }
+
+    /**
+     * Append values.
+     * 
+     * @param buffer the buffer
+     * @param values the values
+     * @return the string builder
+     */
+    public static StringBuilder append( StringBuilder buffer,
+                                        List<?> values ) {
+        for (Object value : values) {
+            buffer.append(value);
+        }
+        return buffer;
+    }
+
+    /**
+     * Append values and add a carriage return.
+     * 
+     * @param buffer the buffer
+     * @param values the values
+     * @return the string builder
+     */
+    public static StringBuilder appendLine( StringBuilder buffer,
+                                            List<?> values ) {
+        buffer = append(buffer, values);
+        buffer.append("\n");
+        return buffer;
+    }
+
 }

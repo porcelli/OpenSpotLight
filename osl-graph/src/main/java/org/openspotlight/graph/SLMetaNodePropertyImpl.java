@@ -59,89 +59,86 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * @author Vitor Hugo Chagas
  */
 public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
-	
-	/** The metadata. */
-	private SLMetadata metadata;
-	
-	/** The meta node. */
-	private SLMetaNodeType metaNode;
-	
-	/** The p property. */
-	private SLPersistentProperty<Serializable> pProperty;
-	
-	/**
-	 * Instantiates a new sL meta node property impl.
-	 * 
-	 * @param metadata the metadata
-	 * @param metaNode the meta node
-	 * @param pProperty the property
-	 */
-	SLMetaNodePropertyImpl(SLMetadata metadata, SLMetaNodeType metaNode, SLPersistentProperty<Serializable> pProperty) {
-		this.metadata = metadata;
-		this.metaNode = metaNode;
-		this.pProperty = pProperty;
-	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLMetaElement#getMetadata()
-	 */
-	public SLMetadata getMetadata() throws SLGraphSessionException {
-		return metadata;
-	}
+    /** The metadata. */
+    private SLMetadata                         metadata;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLMetaNodeProperty#getMetaNode()
-	 */
-	public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
-		return metaNode;
-	}
+    /** The meta node. */
+    private SLMetaNodeType                     metaNode;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLMetaNodeProperty#getName()
-	 */
-	public String getName() throws SLGraphSessionException {
-		try {
-			return SLCommonSupport.toSimplePropertyName(pProperty.getName());
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve meta node property name.", e);
-		}
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLMetaNodeProperty#getType()
-	 */
-	@SuppressWarnings("unchecked")
-	public Class<? extends Serializable> getType() throws SLGraphSessionException {
-		try {
-			return (Class<? extends Serializable>) Class.forName((String) pProperty.getValue());
-		}
-		catch (Exception e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve meta node property type.", e);
-		}
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		if (!(obj instanceof SLMetaNodePropertyImpl)) return false;
-		SLMetaNodePropertyImpl metaProperty = (SLMetaNodePropertyImpl) obj;
-		return pProperty.equals(metaProperty.pProperty);
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		return pProperty.hashCode();
-	}
+    /** The p property. */
+    private SLPersistentProperty<Serializable> pProperty;
 
+    /**
+     * Instantiates a new sL meta node property impl.
+     * 
+     * @param metadata the metadata
+     * @param metaNode the meta node
+     * @param pProperty the property
+     */
+    SLMetaNodePropertyImpl(
+                            SLMetadata metadata, SLMetaNodeType metaNode, SLPersistentProperty<Serializable> pProperty ) {
+        this.metadata = metadata;
+        this.metaNode = metaNode;
+        this.pProperty = pProperty;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLMetaElement#getMetadata()
+     */
+    public SLMetadata getMetadata() throws SLGraphSessionException {
+        return metadata;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLMetaNodeProperty#getMetaNode()
+     */
+    public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
+        return metaNode;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLMetaNodeProperty#getName()
+     */
+    public String getName() throws SLGraphSessionException {
+        try {
+            return SLCommonSupport.toSimplePropertyName(pProperty.getName());
+        } catch (SLPersistentTreeSessionException e) {
+            throw new SLGraphSessionException("Error on attempt to retrieve meta node property name.", e);
+        }
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLMetaNodeProperty#getType()
+     */
+    @SuppressWarnings( "unchecked" )
+    public Class<? extends Serializable> getType() throws SLGraphSessionException {
+        try {
+            return (Class<? extends Serializable>)Class.forName((String)pProperty.getValue());
+        } catch (Exception e) {
+            throw new SLGraphSessionException("Error on attempt to retrieve meta node property type.", e);
+        }
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals( Object obj ) {
+        if (!(obj instanceof SLMetaNodePropertyImpl)) return false;
+        SLMetaNodePropertyImpl metaProperty = (SLMetaNodePropertyImpl)obj;
+        return pProperty.equals(metaProperty.pProperty);
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        return pProperty.hashCode();
+    }
 }
-
