@@ -11,6 +11,9 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         state.clearBuffer();
         String outputFileName = null;
         if (state.getInput().contains(" > ")) {

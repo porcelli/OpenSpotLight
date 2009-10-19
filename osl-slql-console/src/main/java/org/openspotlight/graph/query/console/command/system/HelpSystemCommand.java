@@ -35,6 +35,9 @@ public class HelpSystemCommand implements SystemCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         for (String activeDesc : descriptions) {
             out.println(activeDesc);
         }

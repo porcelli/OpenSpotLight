@@ -26,6 +26,9 @@ public class QueryCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         if (state.getInput().endsWith(";") || state.getInput().contains("; > ")) {
             if (state.getActiveCommand() != null){
                 state.appendBuffer(state.getInput());

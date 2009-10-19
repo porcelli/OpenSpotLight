@@ -12,6 +12,9 @@ public class ShowQueryCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         out.println("query: ");
         out.println(state.getLastQuery());
         out.flush();

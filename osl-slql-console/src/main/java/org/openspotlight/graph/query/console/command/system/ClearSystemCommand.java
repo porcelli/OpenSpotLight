@@ -13,6 +13,9 @@ public class ClearSystemCommand implements SystemCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        if (!accept(state)) {
+            return;
+        }
         try {
             reader.clearScreen();
         } catch (IOException e) {

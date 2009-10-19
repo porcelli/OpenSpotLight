@@ -14,7 +14,9 @@ public class SaveQueryCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
-
+        if (!accept(state)) {
+            return;
+        }
         String fileName = state.getInput().substring(4).trim();
         File outputFile = new File(fileName);
         if (!outputFile.isDirectory()) {
