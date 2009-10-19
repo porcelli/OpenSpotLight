@@ -1,5 +1,7 @@
 package org.openspotlight.remote.server;
 
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
@@ -104,7 +106,7 @@ public interface RemoteObjectServer {
          */
         public RemoteReferenceInvocationResponse(
                                                   final RemoteReference<R> remoteReference ) {
-            super();
+            checkNotNull("remoteReference", remoteReference);
             this.remoteReference = remoteReference;
         }
 

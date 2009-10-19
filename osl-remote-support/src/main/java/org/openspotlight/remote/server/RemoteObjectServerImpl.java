@@ -36,7 +36,6 @@ import org.openspotlight.remote.internal.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RemoteObjectServer will handle and take care of all object instances.
  */
@@ -254,13 +253,13 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      */
     public RemoteObjectServerImpl(
                                    final UserAuthenticator userAutenticator, final Integer portToUse,
-                                   final Integer timeoutInMilliseconds ) {
+                                   final Long timeoutInMilliseconds ) {
         try {
             checkNotNull("userAutenticator", userAutenticator);
             checkNotNull("portToUse", portToUse);
             checkCondition("portToUseBiggerThanZero", portToUse.intValue() > 0);
             checkNotNull("timeoutInMinutes", timeoutInMilliseconds);
-            checkCondition("timeoutInMinutesBiggerThanOrEqualToZero", timeoutInMilliseconds.intValue() >= 0);
+            checkCondition("timeoutInMinutesBiggerThanOrEqualToZero", timeoutInMilliseconds.longValue() >= 0L);
             this.userAuthenticator = userAutenticator;
             this.timeoutInMilliseconds = timeoutInMilliseconds;
             Remote.config(null, portToUse.intValue(), null, 0);
@@ -439,11 +438,22 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             }
 
             if (method.getAnnotation(ReturnsRemoteReference.class) != null) {
-                //FIXME here, cache is mandatory if on server the return is the same reference
-                final RemoteReference<R> remoteReference = this.internalCreateRemoteReference(
-                                                                                              invocation.getUserToken(),
-                                                                                              (Class<R>)invocation.getReturnType(),
-                                                                                              result);
+                RemoteReference<R> remoteReference = null;
+
+                if (this.remoteReferences.containsValue(result)) {
+                    for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
+                        if (result.equals(entry.getValue().getObject())) {
+                            if (invocation.getUserToken().equals(entry.getKey().getUserToken())) {
+                                remoteReference = (RemoteReference<R>)entry.getKey();
+                            }
+                        }
+                    }
+                }
+
+                if (remoteReference == null) {
+                    remoteReference = this.internalCreateRemoteReference(invocation.getUserToken(),
+                                                                         (Class<R>)invocation.getReturnType(), result);
+                }
                 return new RemoteReferenceInvocationResponse(remoteReference);
             }
             return new LocalCopyInvocationResponse(result);

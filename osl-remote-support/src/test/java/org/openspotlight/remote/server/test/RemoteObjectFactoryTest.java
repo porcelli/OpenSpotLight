@@ -16,10 +16,19 @@ import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.remote.server.test.ExampleInterface.NonSerializableInterface;
 
+/**
+ * The Class RemoteObjectFactoryTest.
+ */
 public class RemoteObjectFactoryTest {
 
+    /**
+     * The Class AllowUserValidAutenticator.
+     */
     private static class AllowUserValidAutenticator implements UserAuthenticator {
 
+        /* (non-Javadoc)
+         * @see org.openspotlight.remote.server.UserAuthenticator#canConnect(java.lang.String, java.lang.String, java.lang.String)
+         */
         public boolean canConnect( final String userName,
                                    final String password,
                                    final String clientHost ) {
@@ -29,42 +38,80 @@ public class RemoteObjectFactoryTest {
 
     }
 
+    /** The server. */
     private static RemoteObjectServerImpl server;
 
+    /**
+     * Setup.
+     * 
+     * @throws Exception the exception
+     */
     @BeforeClass
     public static void setup() throws Exception {
-        server = new RemoteObjectServerImpl(new AllowUserValidAutenticator(), 7070, 250);
+        server = new RemoteObjectServerImpl(new AllowUserValidAutenticator(), 7070, 250L);
         server.registerInternalObjectFactory(ExampleInterface.class, new ExampleInterfaceFactory());
     }
 
+    /**
+     * Shutdown.
+     * 
+     * @throws Exception the exception
+     */
     @AfterClass
     public static void shutdown() throws Exception {
-        server.shutdown();
+        if (server != null) {
+            server.shutdown();
+        }
         server = null;
     }
 
+    /**
+     * Should create remote object factory.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldCreateRemoteObjectFactory() throws Exception {
         new RemoteObjectFactory("localhost", 7070, "valid", "password");
     }
 
+    /**
+     * Should create remote reference.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldCreateRemoteReference() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
     }
 
+    /**
+     * Should get error on method marked as unsupported.
+     * 
+     * @throws Exception the exception
+     */
     @Test( expected = UnsupportedOperationException.class )
     public void shouldGetErrorOnMethodMarkedAsUnsupported() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
         proxy.unsupportedMethod();
     }
 
+    /**
+     * Should get the right exception.
+     * 
+     * @throws Exception the exception
+     */
     @Test( expected = EnumConstantNotPresentException.class )
     public void shouldGetTheRightException() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
         proxy.throwAnException();
     }
 
+    /**
+     * Should invalidate user when it gets the timeout.
+     * 
+     * @throws Exception the exception
+     */
     @Test( expected = UndeclaredThrowableException.class )
     public void shouldInvalidateUserWhenItGetsTheTimeout() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
@@ -72,6 +119,11 @@ public class RemoteObjectFactoryTest {
         proxy.getRemoteResult();
     }
 
+    /**
+     * Should invoke an method.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldInvokeAnMethod() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
@@ -79,16 +131,31 @@ public class RemoteObjectFactoryTest {
         assertThat(result, is(36));
     }
 
+    /**
+     * Should not create remote object factory when server is invalid.
+     * 
+     * @throws Exception the exception
+     */
     @Test( expected = CantConnectException.class )
     public void shouldNotCreateRemoteObjectFactoryWhenServerIsInvalid() throws Exception {
         new RemoteObjectFactory("localhost", 666, "userName", "password");
     }
 
+    /**
+     * Should not create remote object factory when user is invalid.
+     * 
+     * @throws Exception the exception
+     */
     @Test( expected = AccessDeniedException.class )
     public void shouldNotCreateRemoteObjectFactoryWhenUserIsInvalid() throws Exception {
         new RemoteObjectFactory("localhost", 7070, "invalid", "password");
     }
 
+    /**
+     * Should retrive information from cache.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldRetriveInformationFromCache() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
@@ -103,6 +170,11 @@ public class RemoteObjectFactoryTest {
         assertThat(result, is(true));
     }
 
+    /**
+     * Should retrive information from cache usim method with parameters.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldRetriveInformationFromCacheUsimMethodWithParameters() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
@@ -117,6 +189,11 @@ public class RemoteObjectFactoryTest {
         assertThat(result, is("AB"));
     }
 
+    /**
+     * Should retrive information from cache usim method with parameters throwing exceptions.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldRetriveInformationFromCacheUsimMethodWithParametersThrowingExceptions() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
@@ -142,12 +219,16 @@ public class RemoteObjectFactoryTest {
         assertThat(e1, is(notNullValue()));
     }
 
+    /**
+     * Should return remote reference for an method invocation.
+     * 
+     * @throws Exception the exception
+     */
     @Test
     public void shouldReturnRemoteReferenceForAnMethodInvocation() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
         final NonSerializableInterface nonSerializableResult = proxy.getRemoteResult();
         assertThat(nonSerializableResult.getStuff(), is("damn cool stuff!"));
-        //FIXME here, cache is mandatory if on server the return is the same reference
 
     }
 }
