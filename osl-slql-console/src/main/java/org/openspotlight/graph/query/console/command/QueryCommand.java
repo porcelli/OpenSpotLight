@@ -18,6 +18,8 @@ import org.openspotlight.graph.query.console.ConsoleState;
 
 public class QueryCommand implements DynamicCommand {
 
+    private static int COLUMN_SIZE = 36;
+
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
@@ -67,24 +69,24 @@ public class QueryCommand implements DynamicCommand {
                                      String[] additionalProperties ) throws SLGraphSessionException {
         StringBuilder buffer = new StringBuilder();
         //Header
-        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.length) * 63) + 1), "\n");
-        StringBuilderUtil.append(buffer, "|", StringUtils.center("type name", 62), "|");
-        StringBuilderUtil.append(buffer, StringUtils.center("name", 62), "|");
-        StringBuilderUtil.append(buffer, StringUtils.center("parent name", 62), "|");
+        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.length) * (COLUMN_SIZE + 3)) + 1), "\n");
+        StringBuilderUtil.append(buffer, "|", StringUtils.center("type name", COLUMN_SIZE + 2), "|");
+        StringBuilderUtil.append(buffer, StringUtils.center("name", COLUMN_SIZE + 2), "|");
+        StringBuilderUtil.append(buffer, StringUtils.center("parent name", COLUMN_SIZE + 2), "|");
         for (String property : additionalProperties) {
-            StringBuilderUtil.append(buffer, StringUtils.center(property, 62), "|");
+            StringBuilderUtil.append(buffer, StringUtils.center(property, COLUMN_SIZE + 2), "|");
         }
         StringBuilderUtil.append(buffer, "\n");
-        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.length) * 63) + 1), "\n");
+        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.length) * (COLUMN_SIZE + 3)) + 1), "\n");
         if (!nodes.isEmpty()) {
             for (SLNode node : nodes) {
                 List<String> output = new LinkedList<String>();
                 output.add("| ");
-                output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getTypeName(), 60), 60));
+                output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getTypeName(), COLUMN_SIZE), COLUMN_SIZE));
                 output.add(" | ");
-                output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getName(), 60), 60));
+                output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getName(), COLUMN_SIZE), COLUMN_SIZE));
                 output.add(" | ");
-                output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getParent().getName(), 60), 60));
+                output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getParent().getName(), COLUMN_SIZE), COLUMN_SIZE));
                 output.add(" | ");
                 for (String propertyName : additionalProperties) {
                     String propertyValue = "";
@@ -92,14 +94,14 @@ public class QueryCommand implements DynamicCommand {
                         propertyValue = node.getPropertyValueAsString(propertyName);
                     } catch (Exception e) {
                     }
-                    output.add(StringUtils.rightPad(StringUtils.abbreviate(propertyValue, 60), 60));
+                    output.add(StringUtils.rightPad(StringUtils.abbreviate(propertyValue, COLUMN_SIZE), COLUMN_SIZE));
                     output.add(" | ");
                 }
                 StringBuilderUtil.appendLine(buffer, output);
             }
-            StringBuilderUtil.append(buffer, "\n", nodes.size(), " affected nodes.", "\n");
+            StringBuilderUtil.append(buffer, "\n", nodes.size(), " nodes affected.", "\n");
         } else {
-            StringBuilderUtil.append(buffer, "\n", "0 affected nodes.", "\n");
+            StringBuilderUtil.append(buffer, "\n", "0 nodes affected.", "\n");
         }
 
         return buffer.toString();
