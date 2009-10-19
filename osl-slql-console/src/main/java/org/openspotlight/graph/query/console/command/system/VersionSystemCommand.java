@@ -18,6 +18,7 @@ public class VersionSystemCommand implements SystemCommand {
         }
         out.println("slqlplus version \"" + SLQLPlus.VERSION + "\"");
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -45,7 +46,7 @@ public class VersionSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("version")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("version")) {
             return true;
         }
         return false;

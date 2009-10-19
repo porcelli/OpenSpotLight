@@ -16,15 +16,16 @@ public class DisplayPropertiesCommand implements DynamicCommand {
             return;
         }
         out.println("additional properties:");
-        if (state.getAdditionalProperties().size() == 0){
+        if (state.getAdditionalProperties().size() == 0) {
             out.println("\t(none)");
         } else {
             for (String propertyName : state.getAdditionalProperties()) {
                 out.print("\t- ");
                 out.println(propertyName);
-            }            
+            }
         }
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -52,7 +53,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("display properties")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("display properties")) {
             return true;
         }
         return false;

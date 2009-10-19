@@ -16,6 +16,7 @@ public class ExitSystemCommand implements SystemCommand {
             return;
         }
         state.setQuitApplication(true);
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -43,7 +44,7 @@ public class ExitSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("exit")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("exit")) {
             return true;
         }
         return false;

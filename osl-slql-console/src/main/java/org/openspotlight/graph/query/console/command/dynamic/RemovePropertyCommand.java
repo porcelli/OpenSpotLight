@@ -20,6 +20,7 @@ public class RemovePropertyCommand implements DynamicCommand {
         out.print(propertyName);
         out.println(" property removed.");
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -47,7 +48,7 @@ public class RemovePropertyCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().startsWith("remove property ")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("remove property ")) {
             return true;
         }
         return false;

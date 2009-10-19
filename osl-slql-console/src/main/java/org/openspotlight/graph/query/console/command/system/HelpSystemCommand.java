@@ -42,6 +42,7 @@ public class HelpSystemCommand implements SystemCommand {
             out.println(activeDesc);
         }
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -69,7 +70,7 @@ public class HelpSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("help")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("help")) {
             return true;
         }
         return false;

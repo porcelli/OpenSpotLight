@@ -41,6 +41,7 @@ public class OpenFileCommand implements DynamicCommand {
             out.println("invalid file name.");
         }
         out.flush();
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -68,7 +69,7 @@ public class OpenFileCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().startsWith("get ")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().startsWith("get ")) {
             return true;
         }
         return false;

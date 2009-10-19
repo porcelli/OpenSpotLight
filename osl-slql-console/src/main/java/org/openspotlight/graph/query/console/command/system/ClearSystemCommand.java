@@ -20,6 +20,7 @@ public class ClearSystemCommand implements SystemCommand {
             reader.clearScreen();
         } catch (IOException e) {
         }
+        state.clearBuffer();
     }
 
     public String getCommand() {
@@ -47,7 +48,7 @@ public class ClearSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
-        if (state.getActiveCommand() == null && state.getInput().equals("clear")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("clear")) {
             return true;
         }
         return false;
