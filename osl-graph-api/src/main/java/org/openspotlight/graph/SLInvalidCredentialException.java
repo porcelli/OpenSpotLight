@@ -48,37 +48,33 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
 /**
- * The Interface SLMetaNodeProperty.
+ * The Class SLInvalidCredentialException.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
  */
-public interface SLMetaNodeProperty extends SLMetaElement {
+public class SLInvalidCredentialException extends SLGraphSessionException {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -1891819028100700399L;
 
     /**
-     * Gets the meta node.
+     * Instantiates a new sL invalid credential exception.
      * 
-     * @return the meta node
-     * @throws SLGraphSessionException the SL graph session exception
+     * @param message the message
      */
-    public SLMetaNodeType getMetaNode() throws SLGraphSessionException;
+    public SLInvalidCredentialException(
+                                         String message ) {
+        super(message);
+    }
 
     /**
-     * Gets the name.
+     * Instantiates a new sL invalid credential exception.
      * 
-     * @return the name
-     * @throws SLGraphSessionException the SL graph session exception
+     * @param cause the cause
      */
-    public String getName() throws SLGraphSessionException;
-
-    /**
-     * Gets the type.
-     * 
-     * @return the type
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public Class<? extends Serializable> getType() throws SLGraphSessionException;
-
+    public SLInvalidCredentialException(
+                                         Throwable cause ) {
+        super(cause);
+    }
 }
