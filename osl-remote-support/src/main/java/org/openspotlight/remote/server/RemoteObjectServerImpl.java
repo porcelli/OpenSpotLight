@@ -17,27 +17,50 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.remote.annotation.DisposeMethod;
 import org.openspotlight.remote.annotation.ReturnsRemoteReference;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class RemoteObjectServer will handle and take care of all object instances.
  */
 public class RemoteObjectServerImpl implements RemoteObjectServer {
-    //FIXME create GC thread
+
+    /**
+     * The Class ActivityMonitor.
+     */
+    private class ActivityMonitor implements Runnable {
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        public void run() {
+            final long acceptableDiff = System.currentTimeMillis() - RemoteObjectServerImpl.this.timeoutInMilliseconds;
+
+            RemoteObjectServerImpl.this.garbageCollection(acceptableDiff);
+
+        }
+
+    }
+
     /**
      * The Class RemoteReferenceInternalData.
      */
-    private static class RemoteReferenceInternalData<T> {
+    private static class RemoteReferenceInternalData<T> implements TimeoutAble {
 
         /** The object. */
         private final T                  object;
@@ -119,9 +142,22 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     /**
+     * The Interface TimeoutAble.
+     */
+    private interface TimeoutAble {
+
+        /**
+         * Gets the last date access.
+         * 
+         * @return the last date access
+         */
+        public AtomicLong getLastDateAccess();
+    }
+
+    /**
      * The Class UserTokenInternalData.
      */
-    private static class UserTokenInternalData {
+    private static class UserTokenInternalData implements TimeoutAble {
 
         /** The user token. */
         private final UserToken  userToken;
@@ -145,6 +181,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             this.hashcode = hashOf(this.userToken, this.lastDateAccess);
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
         @Override
         public boolean equals( final Object obj ) {
             if (obj == this) {
@@ -185,6 +224,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
     }
 
+    /** The closed. */
+    private final AtomicBoolean                                           closed                   = new AtomicBoolean(false);
+
     /** The user authenticator. */
     private final UserAuthenticator                                       userAuthenticator;
 
@@ -201,25 +243,26 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     private final long                                                    timeoutInMilliseconds;
 
     /**
-     * Instantiates a new remote object server.
+     * Instantiates a new remote object server impl.
      * 
-     * @param userAutenticator the user authenticator
+     * @param userAutenticator the user autenticator
      * @param portToUse the port to use
-     * @param timeoutInMinutes the timeout in minutes
+     * @param timeoutInMilliseconds the timeout in milliseconds
      */
     public RemoteObjectServerImpl(
                                    final UserAuthenticator userAutenticator, final Integer portToUse,
-                                   final Integer timeoutInMinutes ) {
+                                   final Integer timeoutInMilliseconds ) {
         try {
             checkNotNull("userAutenticator", userAutenticator);
             checkNotNull("portToUse", portToUse);
             checkCondition("portToUseBiggerThanZero", portToUse.intValue() > 0);
-            checkNotNull("timeoutInMinutes", timeoutInMinutes);
-            checkCondition("timeoutInMinutesBiggerThanZero", timeoutInMinutes.intValue() > 0);
+            checkNotNull("timeoutInMinutes", timeoutInMilliseconds);
+            checkCondition("timeoutInMinutesBiggerThanOrEqualToZero", timeoutInMilliseconds.intValue() >= 0);
             this.userAuthenticator = userAutenticator;
-            this.timeoutInMilliseconds = timeoutInMinutes.longValue() * 60 * 1000;
+            this.timeoutInMilliseconds = timeoutInMilliseconds;
             Remote.config(null, portToUse.intValue(), null, 0);
             ItemServer.bind(this, "RemoteObjectServer");
+            new Thread(new ActivityMonitor()).start();
         } catch (final RemoteException e) {
             throw logAndReturnNew(format("Problem starting remote object server inside port {0}", portToUse), e,
                                   ConfigurationException.class);
@@ -286,6 +329,58 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     /**
+     * Garbage collection.
+     * 
+     * @param acceptableDiff the acceptable diff
+     */
+    private void garbageCollection( final long acceptableDiff ) {
+        while (true) {
+            final Set<UserTokenInternalData> deathUserEntries = new HashSet<UserTokenInternalData>();
+            final Set<Entry<UserToken, UserTokenInternalData>> userEntries = this.userTokenDataMap.entrySet();
+            for (final Entry<UserToken, UserTokenInternalData> entry : userEntries) {
+                if (entry.getValue().getLastDateAccess().get() < acceptableDiff) {
+                    deathUserEntries.add(entry.getValue());
+                }
+            }
+
+            for (final UserTokenInternalData deathUserEntry : deathUserEntries) {
+                this.userTokenDataMap.remove(deathUserEntry.getUserToken());
+                final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = this.remoteReferences.entrySet();
+                for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : remoteObjectsEntries) {
+                    final Set<RemoteReferenceInternalData<?>> deathEntries = new HashSet<RemoteReferenceInternalData<?>>();
+                    if (entry.getKey().getUserToken().equals(deathUserEntry)) {
+                        deathEntries.add(entry.getValue());
+                    }
+                    for (final RemoteReferenceInternalData<?> deathEntry : deathEntries) {
+                        this.removeDeathEntry(deathEntry);
+                    }
+                }
+            }
+
+            final Set<RemoteReferenceInternalData<?>> deathEntries = new HashSet<RemoteReferenceInternalData<?>>();
+            final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = this.remoteReferences.entrySet();
+            for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : remoteObjectsEntries) {
+                if (entry.getValue().getLastDateAccess().get() < acceptableDiff) {
+                    deathEntries.add(entry.getValue());
+                }
+            }
+
+            for (final RemoteReferenceInternalData<?> deathEntry : deathEntries) {
+                this.removeDeathEntry(deathEntry);
+            }
+
+            try {
+                Thread.sleep(acceptableDiff / 2);
+            } catch (final InterruptedException e) {
+
+            }
+            if (this.closed.get()) {
+                return;
+            }
+        }
+    }
+
+    /**
      * Internal create remote reference.
      * 
      * @param userToken the user token
@@ -300,10 +395,13 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
         final RemoteReference<T> reference = new RemoteReference<T>(remoteReferenceType, remoteReferenceId, userToken);
         this.remoteReferences.put(reference, new RemoteReferenceInternalData<T>(reference, newObject));
-        this.updateRemoteReference(reference);
+        this.updateRemoteReferenceIfNecessary(reference);
         return reference;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.remote.server.RemoteObjectServer#invokeRemoteMethod(org.openspotlight.remote.internal.RemoteObjectInvocation)
+     */
     @SuppressWarnings( "unchecked" )
     public <T, R> AbstractInvocationResponse<R> invokeRemoteMethod( final RemoteObjectInvocation<T> invocation )
         throws InternalErrorOnMethodInvocationException, InvocationTargetException {
@@ -315,10 +413,14 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             final T object = remoteReferenceData.getObject();
             final Method method = invocation.getRemoteReference().getRemoteType().getMethod(invocation.getMethodName(),
                                                                                             invocation.getParameterTypes());
-            if (method.getAnnotation(UnsupportedRemoteMethod.class) != null) {
+            if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
                 throw new UnsupportedOperationException();
             }
             final R result = (R)method.invoke(object, invocation.getParameters());
+            if (method.isAnnotationPresent(DisposeMethod.class)) {
+                this.removeDeathEntry(remoteReferenceData);
+            }
+
             if (method.getAnnotation(ReturnsRemoteReference.class) != null) {
                 //FIXME here, cache is mandatory if on server the return is the same reference
                 final RemoteReference<R> remoteReference = this.internalCreateRemoteReference(
@@ -335,7 +437,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         } catch (final Exception e) {
             throw logAndReturnNew(e, InternalErrorOnMethodInvocationException.class);
         } finally {
-            this.updateRemoteReference(invocation.getRemoteReference());
+
+            this.updateRemoteReferenceIfNecessary(invocation.getRemoteReference());
         }
     }
 
@@ -378,6 +481,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         return isValid;
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.remote.server.RemoteObjectServer#registerInternalObjectFactory(java.lang.Class, org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory)
+     */
     public <T> void registerInternalObjectFactory( final Class<T> objectType,
                                                    final InternalObjectFactory<T> factory ) {
         checkNotNull("objectType", objectType);
@@ -388,9 +494,30 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     /**
+     * Removes the death entry.
+     * 
+     * @param deathEntry the death entry
+     */
+    private void removeDeathEntry( final RemoteReferenceInternalData<?> deathEntry ) {
+        RemoteObjectServerImpl.this.remoteReferences.remove(deathEntry.getRemoteReference());
+        final Method[] methods = deathEntry.getObject().getClass().getMethods();
+        for (final Method m : methods) {
+            if (m.isAnnotationPresent(DisposeMethod.class) && m.getParameterTypes().length == 0) {
+                try {
+                    m.invoke(deathEntry.getObject());
+                    return;
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
      * Shutdown.
      */
     public void shutdown() {
+        this.closed.set(true);
         Remote.shutdown();
     }
 
@@ -399,11 +526,12 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * 
      * @param remoteReference the remote reference
      */
-    private void updateRemoteReference( final RemoteReference<?> remoteReference ) {
+    private void updateRemoteReferenceIfNecessary( final RemoteReference<?> remoteReference ) {
         checkNotNull("remoteReference", remoteReference);
-        checkCondition("remoteReferenceValid", this.remoteReferences.containsKey(remoteReference));
-        this.remoteReferences.get(remoteReference).getLastDateAccess().set(System.currentTimeMillis());
-        this.updateUserToken(remoteReference.getUserToken());
+        if (this.remoteReferences.containsKey(remoteReference)) {
+            this.remoteReferences.get(remoteReference).getLastDateAccess().set(System.currentTimeMillis());
+            this.updateUserToken(remoteReference.getUserToken());
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.openspotlight.remote.server.test;
 
+import org.openspotlight.remote.annotation.CachedInvocation;
 import org.openspotlight.remote.annotation.ReturnsRemoteReference;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 
@@ -22,6 +23,14 @@ public interface ExampleInterface {
     public interface NonSerializableInterface {
         public String getStuff();
     }
+
+    @CachedInvocation
+    public boolean expensiveMethodWithoutParameter();
+
+    @CachedInvocation
+    public String expensiveMethodWithParameter( String id,
+                                                String anotherStr,
+                                                boolean throwsException ) throws Exception;
 
     @ReturnsRemoteReference
     public NonSerializableInterface getRemoteResult();
