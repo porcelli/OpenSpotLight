@@ -33,6 +33,8 @@ import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -49,9 +51,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
          * @see java.lang.Runnable#run()
          */
         public void run() {
-            final long acceptableDiff = System.currentTimeMillis() - RemoteObjectServerImpl.this.timeoutInMilliseconds;
-
-            RemoteObjectServerImpl.this.garbageCollection(acceptableDiff);
+            RemoteObjectServerImpl.this.logger.trace("Starting GC...");
+            RemoteObjectServerImpl.this.garbageCollection();
 
         }
 
@@ -224,6 +225,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
     }
 
+    private final Logger                                                  logger                   = LoggerFactory.getLogger(this.getClass());
+
     /** The closed. */
     private final AtomicBoolean                                           closed                   = new AtomicBoolean(false);
 
@@ -262,7 +265,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             this.timeoutInMilliseconds = timeoutInMilliseconds;
             Remote.config(null, portToUse.intValue(), null, 0);
             ItemServer.bind(this, "RemoteObjectServer");
-            new Thread(new ActivityMonitor()).start();
+            new Thread(new ActivityMonitor(), "OSL-Remote-Server-GC").start();
         } catch (final RemoteException e) {
             throw logAndReturnNew(format("Problem starting remote object server inside port {0}", portToUse), e,
                                   ConfigurationException.class);
@@ -333,8 +336,22 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * 
      * @param acceptableDiff the acceptable diff
      */
-    private void garbageCollection( final long acceptableDiff ) {
+    private void garbageCollection() {
         while (true) {
+            try {
+                Thread.sleep(this.timeoutInMilliseconds / 2);
+            } catch (final InterruptedException e) {
+
+            }
+            final long curTimeMillis = System.currentTimeMillis();
+
+            final long acceptableDiff = curTimeMillis - this.timeoutInMilliseconds;
+            if (RemoteObjectServerImpl.this.logger.isTraceEnabled()) {
+                RemoteObjectServerImpl.this.logger.trace(format(
+                                                                "diff in milliseconds {0} for timeout {1} and currentTimeMillis {2} ",
+                                                                acceptableDiff, this.timeoutInMilliseconds, curTimeMillis));
+            }
+
             final Set<UserTokenInternalData> deathUserEntries = new HashSet<UserTokenInternalData>();
             final Set<Entry<UserToken, UserTokenInternalData>> userEntries = this.userTokenDataMap.entrySet();
             for (final Entry<UserToken, UserTokenInternalData> entry : userEntries) {
@@ -344,6 +361,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             }
 
             for (final UserTokenInternalData deathUserEntry : deathUserEntries) {
+                this.logger.info(format("removing user {0} token {1}", deathUserEntry.getUserToken().getUser(),
+                                        deathUserEntry.getUserToken().getToken()));
+
                 this.userTokenDataMap.remove(deathUserEntry.getUserToken());
                 final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = this.remoteReferences.entrySet();
                 for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : remoteObjectsEntries) {
@@ -368,15 +388,12 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             for (final RemoteReferenceInternalData<?> deathEntry : deathEntries) {
                 this.removeDeathEntry(deathEntry);
             }
-
-            try {
-                Thread.sleep(acceptableDiff / 2);
-            } catch (final InterruptedException e) {
-
-            }
             if (this.closed.get()) {
+
+                RemoteObjectServerImpl.this.logger.trace("Stopping GC...");
                 return;
             }
+
         }
     }
 
@@ -404,7 +421,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      */
     @SuppressWarnings( "unchecked" )
     public <T, R> AbstractInvocationResponse<R> invokeRemoteMethod( final RemoteObjectInvocation<T> invocation )
-        throws InternalErrorOnMethodInvocationException, InvocationTargetException {
+        throws InternalErrorOnMethodInvocationException, InvocationTargetException, RemoteReferenceInvalid, UserTokenInvalid {
         checkNotNull("invocation", invocation);
         checkCondition("remoteReferenceValid", this.isRemoteReferenceValid(invocation.getRemoteReference()));
 
@@ -448,18 +465,17 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @param remoteReference the remote reference
      * @return true, if is remote reference valid
      */
-    private boolean isRemoteReferenceValid( final RemoteReference<?> remoteReference ) {
+    private boolean isRemoteReferenceValid( final RemoteReference<?> remoteReference )
+        throws RemoteReferenceInvalid, UserTokenInvalid {
         checkNotNull("remoteReference", remoteReference);
         checkCondition("userTokenValid", this.isUserTokenValid(remoteReference.getUserToken()));
         final boolean contains = this.remoteReferences.containsKey(remoteReference);
         if (!contains) {
-            return false;
+            throw logAndReturn(new RemoteReferenceInvalid(remoteReference.getRemoteType()
+                                                          + remoteReference.getRemoteReferenceId()
+                                                          + " is invalid. Try to get this object again."));
         }
-        final long lastDate = this.remoteReferences.get(remoteReference).getLastDateAccess().get();
-        final long now = System.currentTimeMillis();
-        final long diff = now - lastDate;
-        final boolean isValid = diff < this.timeoutInMilliseconds;
-        return isValid;
+        return true;
     }
 
     /**
@@ -468,17 +484,13 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @param userToken the user token
      * @return true, if is user token valid
      */
-    private boolean isUserTokenValid( final UserToken userToken ) {
+    private boolean isUserTokenValid( final UserToken userToken ) throws UserTokenInvalid {
         checkNotNull("userToken", userToken);
         final boolean contains = this.userTokenDataMap.containsKey(userToken);
         if (!contains) {
-            return false;
+            throw logAndReturn(new UserTokenInvalid(userToken.getUser() + " is invalid. Try to connect again."));
         }
-        final long lastDate = this.userTokenDataMap.get(userToken).getLastDateAccess().get();
-        final long now = System.currentTimeMillis();
-        final long diff = now - lastDate;
-        final boolean isValid = diff < this.timeoutInMilliseconds;
-        return isValid;
+        return true;
     }
 
     /* (non-Javadoc)
@@ -499,6 +511,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @param deathEntry the death entry
      */
     private void removeDeathEntry( final RemoteReferenceInternalData<?> deathEntry ) {
+        this.logger.info(format("removing reference {0} id {1}", deathEntry.getObject(),
+                                deathEntry.getRemoteReference().getRemoteReferenceId()));
+
         RemoteObjectServerImpl.this.remoteReferences.remove(deathEntry.getRemoteReference());
         final Method[] methods = deathEntry.getObject().getClass().getMethods();
         for (final Method m : methods) {

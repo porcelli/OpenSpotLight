@@ -153,9 +153,11 @@ public interface RemoteObjectServer {
      * @return the returned object
      * @throws InternalErrorOnMethodInvocationException the internal error on method invocation exception
      * @throws InvocationTargetException the invocation target exception
+     * @throws RemoteReferenceInvalid
+     * @throws UserTokenInvalid
      */
     public <T, R> AbstractInvocationResponse<R> invokeRemoteMethod( RemoteObjectInvocation<T> invocation )
-        throws InternalErrorOnMethodInvocationException, InvocationTargetException;
+        throws InternalErrorOnMethodInvocationException, InvocationTargetException, RemoteReferenceInvalid, UserTokenInvalid;
 
     /**
      * Register internal object factory.

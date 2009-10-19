@@ -3,6 +3,8 @@ package org.openspotlight.remote.server.test;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -60,6 +62,13 @@ public class RemoteObjectFactoryTest {
     public void shouldGetTheRightException() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
         proxy.throwAnException();
+    }
+
+    @Test( expected = UndeclaredThrowableException.class )
+    public void shouldInvalidateUserWhenItGetsTheTimeout() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        Thread.sleep(700);
+        proxy.getRemoteResult();
     }
 
     @Test
