@@ -30,7 +30,7 @@ public class RemoteObjectFactoryTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        server = new RemoteObjectServerImpl(new AllowUserValidAutenticator(), 7070, 1);
+        server = new RemoteObjectServerImpl(new AllowUserValidAutenticator(), 7070, 250);
         server.registerInternalObjectFactory(ExampleInterface.class, new ExampleInterfaceFactory());
     }
 
