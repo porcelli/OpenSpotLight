@@ -31,6 +31,9 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
 
     @After
     public void deleteTestFile() {
+        if (this.state.getSession() != null) {
+            this.state.getSession().close();
+        }
         new File("out.txt").delete();
     }
 
@@ -151,6 +154,40 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         assertThat(generatedFile.exists(), is(false));
 
         this.state.getSession().close();
+    }
+
+    @Test
+    public void testInvalidQueryWithTargetError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setLastQuery("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);");
+        state.setInput("/ > out,txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);"));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+    }
+
+    @Test
+    public void testInvalidQueryWithVariablesError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setLastQuery("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;");
+        state.setInput("/ > out,txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;"));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
     }
 
     private String getFileContent( File in ) {
