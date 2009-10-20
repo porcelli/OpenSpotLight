@@ -69,7 +69,7 @@ public class QueryCommand implements DynamicCommand {
                                  String outputFileName ) {
         try {
             SLQueryText slqlText = state.getSession().createQueryText(query);
-            if (!slqlText.hasTarget() && slqlText.getVariables().size() == 0) {
+            if (!slqlText.hasTarget() && slqlText.getVariables() == null) {
                 SLQueryResult result = slqlText.execute();
                 String outputString = generateOutput(result.getNodes(), state.getAdditionalProperties());
                 out.println(outputString);
@@ -85,7 +85,7 @@ public class QueryCommand implements DynamicCommand {
                 }
             } else if (slqlText.hasTarget()) {
                 out.println("ERROR: can't execute queries with target.");
-            } else if (slqlText.getVariables().size() == 0) {
+            } else if (slqlText.getVariables() == null) {
                 out.println("ERROR: can't execute queries with variables.");
             }
         } catch (SLGraphSessionException e) {
@@ -168,6 +168,7 @@ public class QueryCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() != null && state.getActiveCommand() instanceof QueryCommand) {
             return true;
         } else if (validateStatement(state, "select") || validateStatement(state, "use") || validateStatement(state, "define")) {
@@ -182,7 +183,6 @@ public class QueryCommand implements DynamicCommand {
 
     private boolean validateStatement( ConsoleState state,
                                        String word ) {
-        Assertions.checkNotNull("state", state);
         if (state.getInput().trim().length() > word.length() && state.getInput().trim().startsWith(word + " ")) {
             return true;
         } else if (state.getInput().trim().length() == word.length() && state.getInput().trim().equals(word)) {
