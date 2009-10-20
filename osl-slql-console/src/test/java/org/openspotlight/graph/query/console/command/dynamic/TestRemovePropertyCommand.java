@@ -15,6 +15,14 @@ public class TestRemovePropertyCommand extends AbstractCommandTest {
     }
 
     @Test
+    public void testAcceptNullInout() {
+        ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
     public void testAcceptValidParameter() {
         ConsoleState state = new ConsoleState(null);
         state.setInput("remove property myProperty");
@@ -75,10 +83,10 @@ public class TestRemovePropertyCommand extends AbstractCommandTest {
 
         command.execute(reader, out, state);
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getBuffer().length(), is(0));
         assertThat(state.getAdditionalProperties().size(), is(0));
         assertThat(state.getAdditionalProperties().contains("?"), is(false));
+        assertThat(state.getInput(), is(""));
     }
 
     @Test
@@ -98,6 +106,7 @@ public class TestRemovePropertyCommand extends AbstractCommandTest {
         assertThat(state.getAdditionalProperties().size(), is(1));
         assertThat(state.getAdditionalProperties().contains("myProperty"), is(false));
         assertThat(state.getAdditionalProperties().contains("myProperty2"), is(true));
+        assertThat(state.getInput(), is(""));
 
         state.appendBuffer("something");
         state.setInput("remove property myProperty2");
@@ -105,9 +114,9 @@ public class TestRemovePropertyCommand extends AbstractCommandTest {
         command.execute(reader, out, state);
         assertThat(state.getBuffer().length(), is(0));
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getAdditionalProperties().size(), is(0));
         assertThat(state.getAdditionalProperties().contains("myProperty"), is(false));
         assertThat(state.getAdditionalProperties().contains("myProperty2"), is(false));
+        assertThat(state.getInput(), is(""));
     }
 }

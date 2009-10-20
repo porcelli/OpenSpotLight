@@ -16,6 +16,7 @@ public class ExitSystemCommand implements SystemCommand {
             return;
         }
         state.setQuitApplication(true);
+        state.setInput(null);
         state.clearBuffer();
     }
 

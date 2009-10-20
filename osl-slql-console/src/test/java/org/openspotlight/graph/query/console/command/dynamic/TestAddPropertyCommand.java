@@ -15,6 +15,14 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
     }
 
     @Test
+    public void testAcceptNullInout() {
+        ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
     public void testAcceptValidParameter() {
         ConsoleState state = new ConsoleState(null);
         state.setInput("add property myProperty");
@@ -72,7 +80,6 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
 
         command.execute(reader, out, state);
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getBuffer().length(), is(0));
         assertThat(state.getAdditionalProperties().size(), is(1));
         assertThat(state.getAdditionalProperties().contains("?"), is(true));
@@ -87,17 +94,18 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
         assertThat(state.getAdditionalProperties().size(), is(0));
 
         command.execute(reader, out, state);
-        state.setInput("add property myProperty2");
         assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getInput(), is(""));
 
+        state.setInput("add property myProperty2");
         state.appendBuffer("something");
         command.execute(reader, out, state);
         assertThat(state.getBuffer().length(), is(0));
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getAdditionalProperties().size(), is(2));
         assertThat(state.getAdditionalProperties().contains("myProperty"), is(true));
         assertThat(state.getAdditionalProperties().contains("myProperty2"), is(true));
         assertThat(state.getAdditionalProperties().contains("myProperty3"), is(false));
+        assertThat(state.getInput(), is(""));
     }
 }

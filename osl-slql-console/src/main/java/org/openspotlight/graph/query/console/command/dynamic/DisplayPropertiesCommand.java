@@ -25,6 +25,7 @@ public class DisplayPropertiesCommand implements DynamicCommand {
             }
         }
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

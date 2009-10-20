@@ -13,6 +13,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
+import org.openspotlight.graph.query.console.completor.SLQLFileNameCompletor;
 import org.openspotlight.graph.query.console.util.Messages;
 
 public class SLQLPlus {
@@ -76,6 +77,7 @@ public class SLQLPlus {
                     break;
                 }
             }
+            loginState.getK2().close();
         }
     }
 

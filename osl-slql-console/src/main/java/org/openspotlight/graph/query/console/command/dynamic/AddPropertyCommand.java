@@ -20,6 +20,7 @@ public class AddPropertyCommand implements DynamicCommand {
         out.print(propertyName);
         out.println(" property added.");
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

@@ -18,6 +18,7 @@ public class ResetPropertiesCommand implements DynamicCommand {
         state.resetAdditionalProperties();
         out.println("properties reset.");
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

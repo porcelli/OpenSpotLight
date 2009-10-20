@@ -15,6 +15,14 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
     }
 
     @Test
+    public void testAcceptNullInout() {
+        ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
     public void testAcceptValidParameter() {
         ConsoleState state = new ConsoleState(null);
         state.setInput("reset properties");
@@ -70,8 +78,8 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
 
         command.execute(reader, out, state);
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getInput(), is(""));
     }
 
     @Test
@@ -92,8 +100,8 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
         assertThat(state.getAdditionalProperties().contains("property1"), is(false));
         assertThat(state.getAdditionalProperties().contains("property2"), is(false));
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getInput(), is(""));
     }
 
 }

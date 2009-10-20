@@ -20,6 +20,7 @@ public class ClearSystemCommand implements SystemCommand {
             reader.clearScreen();
         } catch (IOException e) {
         }
+        state.setInput(null);
         state.clearBuffer();
     }
 

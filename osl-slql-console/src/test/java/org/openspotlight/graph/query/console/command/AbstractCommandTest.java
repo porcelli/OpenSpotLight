@@ -3,9 +3,9 @@ package org.openspotlight.graph.query.console.command;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import jline.ConsoleReader;
-
 import org.junit.Before;
+
+import jline.ConsoleReader;
 
 public abstract class AbstractCommandTest {
 
@@ -15,10 +15,12 @@ public abstract class AbstractCommandTest {
 
     @Before
     public void setup() throws IOException {
-        reader = new ConsoleReader();
-        reader.setBellEnabled(false);
-        out = new PrintWriter(System.out);
-        setupCommand();
+        if (reader == null) {
+            reader = new ConsoleReader();
+            reader.setBellEnabled(false);
+            out = new PrintWriter(System.out);
+            setupCommand();
+        }
     }
 
     protected abstract void setupCommand();
