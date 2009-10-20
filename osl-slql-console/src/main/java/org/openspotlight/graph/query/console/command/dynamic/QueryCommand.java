@@ -52,6 +52,11 @@ public class QueryCommand implements DynamicCommand {
             state.setLastQuery(lastQuery);
             state.clearBuffer();
             state.setActiveCommand(null);
+        } else if (state.getInput().contains(";") || state.getInput().contains("; >")) {
+            out.println("invalid statement");
+            out.flush();
+            state.clearBuffer();
+            state.setActiveCommand(null);
         } else {
             if (state.getActiveCommand() == null) {
                 state.clearBuffer();
@@ -172,6 +177,15 @@ public class QueryCommand implements DynamicCommand {
         if (state.getActiveCommand() != null && state.getActiveCommand() instanceof QueryCommand) {
             return true;
         } else if (validateStatement(state, "select") || validateStatement(state, "use") || validateStatement(state, "define")) {
+            if (state.getInput().trim().contains(";")) {
+                if (state.getInput().trim().contains("; > ")) {
+                    return true;
+                }
+                if (state.getInput().trim().endsWith(";")) {
+                    return true;
+                }
+                return false;
+            }
             return true;
         } else if (state.getInput().trim().contains("; > ")) {
             return true;

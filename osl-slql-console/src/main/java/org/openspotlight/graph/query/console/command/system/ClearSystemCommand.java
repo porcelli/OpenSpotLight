@@ -53,6 +53,7 @@ public class ClearSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() == null && state.getInput().trim().equals("clear")) {
             return true;
         }

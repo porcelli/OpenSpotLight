@@ -359,6 +359,50 @@ public class TestQueryCommand extends AbstractCommandTest {
         assertThat(generatedFile.exists(), is(false));
     }
 
+    @Test
+    public void testInvalidQueryWithVariablesError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;"));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+    }
+
+    @Test
+    public void testInvalidMultiLineQueryWithVariablesError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select ");
+        state.appendBuffer("something");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getLastQuery(), is(""));
+        assertThat(state.getBuffer(), is("select \n"));
+        assertThat(state.getActiveCommand(), is(notNullValue()));
+
+        state.setInput("** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select \n** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;"));
+        assertThat(state.getActiveCommand(), is(nullValue()));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+    }
+
     private String getFileContent( File in ) {
         StringBuilder sb = new StringBuilder();
         LineNumberReader fileReader;
