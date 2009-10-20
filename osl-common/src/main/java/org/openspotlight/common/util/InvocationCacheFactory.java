@@ -1,5 +1,7 @@
 package org.openspotlight.common.util;
 
+import static org.openspotlight.common.util.reflection.MethodIdentificationSupport.getMethodUniqueName;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -9,6 +11,9 @@ import java.util.Map;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
 
 /**
  * This factory is used to create lazy behavior on method invocations. For the first method invocation with some of the
@@ -27,79 +32,6 @@ public final class InvocationCacheFactory {
      * @author feu
      */
     private static class CachedInterceptor implements MethodInterceptor {
-
-        /**
-         * Parameter key to be used as a key inside the cache map for method invocation.
-         * 
-         * @author feu
-         */
-        private static final class Key {
-
-            /** The hashcode. */
-            private final int      hashcode;
-
-            /** The parameters. */
-            private final Object[] parameters;
-
-            /** The key. */
-            private final String   key;
-
-            /**
-             * Constructor with final fields.
-             * 
-             * @param key the key
-             * @param parameters the parameters
-             */
-            public Key(
-                        final String key, final Object... parameters ) {
-                if (parameters == null) {
-                    throw new IllegalArgumentException();
-                }
-                if (key == null) {
-                    throw new IllegalArgumentException();
-                }
-                if (key.length() == 0) {
-                    throw new IllegalArgumentException();
-                }
-                this.key = key;
-                this.parameters = parameters;
-                int hashing = 7;
-                hashing = 31 * hashing + key.hashCode();
-                for (final Object parameter : parameters) {
-                    hashing = 31 * hashing + (parameter == null ? 0 : parameter.hashCode());
-                }
-                this.hashcode = hashing;
-            }
-
-            @Override
-            public boolean equals( final Object obj ) {
-                if (obj == this) {
-                    return true;
-                }
-                if (!(obj instanceof Key)) {
-                    return false;
-                }
-                final Key that = (Key)obj;
-                if (that.parameters.length != this.parameters.length) {
-                    return false;
-                }
-                if (!isEquals(this.key, that.key)) {
-                    return false;
-                }
-                for (int i = 0, size = this.parameters.length; i < size; i++) {
-                    if (!isEquals(this.parameters[i], that.parameters[i])) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            @Override
-            public int hashCode() {
-                return this.hashcode;
-            }
-
-        }
 
         /**
          * This class is used to wrap thrown exceptions.
@@ -121,76 +53,20 @@ public final class InvocationCacheFactory {
             }
         }
 
-        /**
-         * This enum specifies the behavior applied on the new object. It should behave like a wrapped object when the default
-         * constructor is used, or like enhanced object when the non default constructor is called.
-         */
-        enum UseEnhanced {
-
-            /** use enhanced. */
-            USE_ENHANCED,
-
-            /** use wrapped. */
-            USE_WRAPPED
-        }
-
-        /**
-         * Gets the method unique name.
-         * 
-         * @param arg1 the arg1
-         * @return the method unique name
-         */
-        private static String getMethodUniqueName( final Method arg1 ) {
-            final Class<?>[] parameterTypes = arg1.getParameterTypes();
-            final StringBuilder nameBuff = new StringBuilder();
-            nameBuff.append(arg1.getName());
-            nameBuff.append(':');
-            nameBuff.append(arg1.getReturnType().getName());
-            nameBuff.append('/');
-            for (int i = 0, size = parameterTypes.length; i < size; i++) {
-                nameBuff.append(parameterTypes[i].getName());
-                if (i != size - 1) {
-                    nameBuff.append(',');
-                }
-            }
-            return nameBuff.toString();
-        }
-
-        /**
-         * Checks if is equals in a null pointer safe way.
-         * 
-         * @param o1 the o1
-         * @param o2 the o2
-         * @return true, if is equals
-         */
-        static boolean isEquals( final Object o1,
-                                 final Object o2 ) {
-            if (o1 == o2) {
-                return true;
-            }
-            if (o1 == null) {
-                return false;
-            }
-            if (o2 == null) {
-                return false;
-            }
-            return o1.equals(o2);
-        }
-
         /** The use enhanced method. */
-        private final UseEnhanced      useEnhancedMethod;
+        private final UseEnhanced            useEnhancedMethod;
 
         /** The source. */
-        private Object                 source;
+        private Object                       source;
 
         /** The cache. */
-        private final Map<Key, Object> cache      = new HashMap<Key, Object>();
+        private final Map<MethodWithParametersKey, Object> cache      = new HashMap<MethodWithParametersKey, Object>();
 
         /** The Constant NULL_VALUE. */
-        private static final Object    NULL_VALUE = new Object();
+        private static final Object          NULL_VALUE = new Object();
 
         /** The Constant VOID_VALUE. */
-        private static final Object    VOID_VALUE = new Object();
+        private static final Object          VOID_VALUE = new Object();
 
         /**
          * Instantiates a new cached interceptor using the behavior described on {@link UseEnhanced}.
@@ -208,7 +84,7 @@ public final class InvocationCacheFactory {
                                  final MethodProxy proxy ) throws Throwable {
             if (Modifier.isPublic(method.getModifiers())) {
                 final String uniqueName = getMethodUniqueName(method);
-                final Key key = new Key(uniqueName, parameters);
+                final MethodWithParametersKey key = new MethodWithParametersKey(uniqueName, parameters);
                 Object value = this.cache.get(key);
                 if (value == null) {
                     boolean invocationOk = true;
@@ -301,7 +177,7 @@ public final class InvocationCacheFactory {
     public static <T> T createIntoCached( final Class<T> superClass,
                                           final Class<?>[] argumentTypes,
                                           final Object[] arguments ) {
-        final CachedInterceptor interceptor = new CachedInterceptor(CachedInterceptor.UseEnhanced.USE_ENHANCED);
+        final CachedInterceptor interceptor = new CachedInterceptor(UseEnhanced.USE_ENHANCED);
         final Enhancer e = new Enhancer();
         e.setSuperclass(superClass);
         e.setCallback(interceptor);
@@ -319,7 +195,7 @@ public final class InvocationCacheFactory {
      * @return the t
      */
     public static <T> T wrapIntoCached( final T toWrap ) {
-        final CachedInterceptor interceptor = new CachedInterceptor(CachedInterceptor.UseEnhanced.USE_WRAPPED);
+        final CachedInterceptor interceptor = new CachedInterceptor(UseEnhanced.USE_WRAPPED);
         interceptor.setSource(toWrap);
         final Enhancer e = new Enhancer();
         e.setSuperclass(toWrap.getClass());
