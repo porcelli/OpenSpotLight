@@ -3,7 +3,7 @@ select **
 		org.openspotlight.graph.test.domain.JavaType.*
 			property caption <*> "Set" 	||
 			property caption <*> "List" ||
-			property caption <*> "Map";
+			property caption <*> "Map"
 
 select *
 	where
