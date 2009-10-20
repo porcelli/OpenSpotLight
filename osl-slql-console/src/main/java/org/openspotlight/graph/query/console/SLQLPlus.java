@@ -2,32 +2,17 @@ package org.openspotlight.graph.query.console;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 
 import jline.ConsoleReader;
 import jline.SimpleCompletor;
 
-import org.clapper.util.classutil.AbstractClassFilter;
-import org.clapper.util.classutil.AndClassFilter;
-import org.clapper.util.classutil.ClassFilter;
-import org.clapper.util.classutil.ClassFinder;
-import org.clapper.util.classutil.ClassInfo;
-import org.clapper.util.classutil.InterfaceOnlyClassFilter;
-import org.clapper.util.classutil.NotClassFilter;
-import org.clapper.util.classutil.SubclassClassFilter;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.query.console.command.Command;
-import org.openspotlight.graph.query.console.command.DynamicCommand;
-import org.openspotlight.graph.query.console.command.system.ClearSystemCommand;
-import org.openspotlight.graph.query.console.command.system.ExitSystemCommand;
-import org.openspotlight.graph.query.console.command.system.HelpSystemCommand;
-import org.openspotlight.graph.query.console.command.system.VersionSystemCommand;
+import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
 import org.openspotlight.graph.query.console.util.Messages;
 
 public class SLQLPlus {
@@ -58,25 +43,25 @@ public class SLQLPlus {
             out.println(Messages.getString("SLQLPlus.1")); //$NON-NLS-1$
             out.flush();
 
-            Map<String, Command> commands = initializeCommands();
+            List<Command> commands = DynamicCommandSupport.getRegisteredDynamicCommands();
 
             String[] consoleCommands = new String[commands.size()];
 
             int i = 0;
-            for (Command command : commands.values()) {
+            for (Command command : commands) {
                 consoleCommands[i] = command.getAutoCompleteCommand();
                 i++;
             }
 
             reader.addCompletor(new SimpleCompletor(consoleCommands));
-            reader.addCompletor(new SLQLFileNameCompletor(commands.values()));
+            reader.addCompletor(new SLQLFileNameCompletor(commands));
 
             ConsoleState state = new ConsoleState(loginState.getK2());
             String input;
             while ((input = reader.readLine(getPrompt())) != null) {
                 state.setInput(input.trim());
                 boolean inputAccepted = false;
-                for (Command activeCommand : commands.values()) {
+                for (Command activeCommand : commands) {
                     if (activeCommand.accept(state)) {
                         inputAccepted = true;
                         activeCommand.execute(reader, out, state);
@@ -163,45 +148,6 @@ public class SLQLPlus {
         out.println(Messages.getString("SLQLPlus.13")); //$NON-NLS-1$
         out.flush();
         return new Pair<Boolean, SLGraphSession>(false, null);
-    }
-
-    private static Map<String, Command> initializeCommands()
-        throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Map<String, Command> result = new HashMap<String, Command>();
-        ClassFinder finder = new ClassFinder();
-        finder.addClassPath();
-
-        ClassFilter filter =
-            new AndClassFilter(
-                                       //Must not be an interface
-        new NotClassFilter(new InterfaceOnlyClassFilter()),
-                                       //Must implement the ClassFilter interface
-        new SubclassClassFilter(DynamicCommand.class),
-                                       // Must not be abstract
-        new NotClassFilter(new AbstractClassFilter()));
-
-        Collection<ClassInfo> foundClasses = new ArrayList<ClassInfo>();
-        finder.findClasses(foundClasses, filter);
-
-        for (ClassInfo classInfo : foundClasses) {
-            Class<?> clasz = Class.forName(classInfo.getClassName());
-
-            DynamicCommand generatedCommand = (DynamicCommand)clasz.newInstance();
-            result.put(generatedCommand.getCommand(), generatedCommand);
-        }
-        Command clear = new ClearSystemCommand();
-        result.put(clear.getCommand(), clear);
-
-        ExitSystemCommand exit = new ExitSystemCommand();
-        result.put(exit.getCommand(), exit);
-
-        VersionSystemCommand version = new VersionSystemCommand();
-        result.put(version.getCommand(), version);
-
-        Command help = new HelpSystemCommand(result.values());
-        result.put(help.getCommand(), help);
-
-        return result;
     }
 
     private static String getPrompt() {

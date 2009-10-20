@@ -1,4 +1,4 @@
-package org.openspotlight.graph.query.console.command.dynamic;
+package org.openspotlight.graph.query.console.command;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import jline.ConsoleReader;
 
 import org.junit.Before;
-import org.openspotlight.graph.query.console.command.Command;
 
 public abstract class AbstractCommandTest {
 
