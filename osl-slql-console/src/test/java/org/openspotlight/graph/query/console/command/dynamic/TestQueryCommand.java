@@ -326,6 +326,54 @@ public class TestQueryCommand extends AbstractCommandTest {
         this.state.getSession().close();
     }
 
+    @Test
+    public void testInvalidQueryWithTargetError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b); > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);"));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+
+        this.state.getSession().close();
+    }
+
+    @Test
+    public void testInvalidMultiLineQueryWithTargetError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select ");
+        state.appendBuffer("something");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getLastQuery(), is(""));
+        assertThat(state.getBuffer(), is("select \n"));
+        assertThat(state.getActiveCommand(), is(notNullValue()));
+
+        state.setInput("*?*; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select \n*?*;"));
+        assertThat(state.getActiveCommand(), is(nullValue()));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+
+        this.state.getSession().close();
+    }
+   
     private String getFileContent( File in ) {
         StringBuilder sb = new StringBuilder();
         LineNumberReader fileReader;

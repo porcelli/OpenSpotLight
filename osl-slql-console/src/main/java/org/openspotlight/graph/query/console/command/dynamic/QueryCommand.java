@@ -69,18 +69,24 @@ public class QueryCommand implements DynamicCommand {
                                  String outputFileName ) {
         try {
             SLQueryText slqlText = state.getSession().createQueryText(query);
-            SLQueryResult result = slqlText.execute();
-            String outputString = generateOutput(result.getNodes(), state.getAdditionalProperties());
-            out.println(outputString);
-            if (outputFileName != null) {
-                File outputFile = new File(outputFileName);
-                outputFile.createNewFile();
-                PrintWriter fileOut = new PrintWriter(outputFile);
-                fileOut.append("Query: " + query);
-                fileOut.append("\n\n");
-                fileOut.append(outputString);
-                fileOut.flush();
-                fileOut.close();
+            if (!slqlText.hasTarget() && slqlText.getVariables().size() == 0) {
+                SLQueryResult result = slqlText.execute();
+                String outputString = generateOutput(result.getNodes(), state.getAdditionalProperties());
+                out.println(outputString);
+                if (outputFileName != null) {
+                    File outputFile = new File(outputFileName);
+                    outputFile.createNewFile();
+                    PrintWriter fileOut = new PrintWriter(outputFile);
+                    fileOut.append("Query: " + query);
+                    fileOut.append("\n\n");
+                    fileOut.append(outputString);
+                    fileOut.flush();
+                    fileOut.close();
+                }
+            } else if (slqlText.hasTarget()) {
+                out.println("ERROR: can't execute queries with target.");
+            } else if (slqlText.getVariables().size() == 0) {
+                out.println("ERROR: can't execute queries with variables.");
             }
         } catch (SLGraphSessionException e) {
             out.print("ERROR: ");

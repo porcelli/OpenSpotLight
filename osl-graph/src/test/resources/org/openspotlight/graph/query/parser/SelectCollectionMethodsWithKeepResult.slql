@@ -2,7 +2,7 @@ select org.openspotlight.graph.test.domain.JavaInterface
 	where 
 		org.openspotlight.graph.test.domain.JavaInterface
 			property caption == "java.util.Collection"
-	keep result;
+	keep result
 
 select org.openspotlight.graph.test.domain.JavaTypeMethod
 	by link org.openspotlight.graph.test.domain.TypeContainsMethod (b);

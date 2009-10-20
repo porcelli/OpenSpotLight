@@ -11,7 +11,7 @@ import org.openspotlight.graph.query.console.command.Command.FileCompletionMode;
 
 public class SLQLFileNameCompletor extends FileNameCompletor {
 
-    List<Command> commands;
+    List<Command> commands = null;
 
     public SLQLFileNameCompletor(
                                   Collection<Command> commands ) {

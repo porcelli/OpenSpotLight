@@ -1,4 +1,4 @@
-define domain values #intValue = 1,2,3,5; 
+define domain values #intValue = 1,2,3,5 
 select **
 	where
 		org.openspotlight.graph.test.domain.JavaInterface

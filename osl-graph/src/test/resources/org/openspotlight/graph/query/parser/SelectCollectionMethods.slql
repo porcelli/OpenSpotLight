@@ -1,7 +1,7 @@
 select org.openspotlight.graph.test.domain.JavaInterface
 	where 
 		org.openspotlight.graph.test.domain.JavaInterface
-			property caption == "java.util.Collection";
+			property caption == "java.util.Collection"
 
 select org.openspotlight.graph.test.domain.JavaTypeMethod 
 by link 

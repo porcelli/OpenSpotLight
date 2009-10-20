@@ -1,7 +1,7 @@
-define message $testeString = "Entre com o testeString";
-define message #testeInt = "Entre com o testeInt";
-define message @testeBool = "Entre com o testeBool";
-define message &testeFloat = "Entre com o testeFloat";
+define message $testeString = "Entre com o testeString"
+define message #testeInt = "Entre com o testeInt"
+define message @testeBool = "Entre com o testeBool"
+define message &testeFloat = "Entre com o testeFloat"
 
 select org.openspotlight.graph.test.domain.JavaType.*
 	where
