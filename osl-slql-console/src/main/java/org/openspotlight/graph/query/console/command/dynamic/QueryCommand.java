@@ -10,6 +10,7 @@ import java.util.List;
 import jline.ConsoleReader;
 
 import org.apache.commons.lang.StringUtils;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
@@ -26,6 +27,9 @@ public class QueryCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
         if (!accept(state)) {
             return;
         }
@@ -172,6 +176,7 @@ public class QueryCommand implements DynamicCommand {
 
     private boolean validateStatement( ConsoleState state,
                                        String word ) {
+        Assertions.checkNotNull("state", state);
         if (state.getInput().trim().length() > word.length() && state.getInput().trim().startsWith(word + " ")) {
             return true;
         } else if (state.getInput().trim().length() == word.length() && state.getInput().trim().equals(word)) {

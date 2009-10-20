@@ -14,6 +14,16 @@ public class TestDisplayPropertiesCommand extends AbstractCommandTest {
         command = new DisplayPropertiesCommand();
     }
 
+    @Test( expected = IllegalArgumentException.class )
+    public void testAcceptNull() {
+        assertThat(command.accept(null), is(false));
+    }
+
+    @Test( expected = IllegalArgumentException.class )
+    public void testExecuteNull() {
+        command.execute(null, null, null);
+    }
+
     @Test
     public void testAcceptNullInout() {
         ConsoleState state = new ConsoleState(null);

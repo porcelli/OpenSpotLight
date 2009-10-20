@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 
 import jline.ConsoleReader;
 
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
 
@@ -12,6 +13,9 @@ public class ResetPropertiesCommand implements DynamicCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
         if (!accept(state)) {
             return;
         }
@@ -47,10 +51,10 @@ public class ResetPropertiesCommand implements DynamicCommand {
     }
 
     public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() == null && state.getInput().trim().equals("reset properties")) {
             return true;
         }
         return false;
     }
-
 }

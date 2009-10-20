@@ -6,6 +6,7 @@ import java.util.Collection;
 import jline.ConsoleReader;
 
 import org.apache.commons.lang.StringUtils;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.SystemCommand;
@@ -49,6 +50,9 @@ public class HelpSystemCommand implements SystemCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
         if (!accept(state)) {
             return;
         }
@@ -85,6 +89,7 @@ public class HelpSystemCommand implements SystemCommand {
     }
 
     public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() == null && state.getInput().trim().equals("help")) {
             return true;
         }

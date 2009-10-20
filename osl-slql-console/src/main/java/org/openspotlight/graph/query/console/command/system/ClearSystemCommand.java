@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import jline.ConsoleReader;
 
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.SystemCommand;
 
@@ -13,6 +14,9 @@ public class ClearSystemCommand implements SystemCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
         if (!accept(state)) {
             return;
         }
