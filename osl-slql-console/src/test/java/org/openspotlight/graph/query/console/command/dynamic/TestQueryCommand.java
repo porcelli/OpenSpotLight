@@ -198,7 +198,7 @@ public class TestQueryCommand extends AbstractCommandTest {
         command.execute(reader, out, state);
 
         assertThat(state.getBuffer().length(), is(0));
-        assertThat(state.getLastQuery(), is("select\n*;"));
+        assertThat(state.getLastQuery(), is("select\n*;\n"));
         assertThat(state.getActiveCommand(), is(nullValue()));
 
         this.state.getSession().close();
