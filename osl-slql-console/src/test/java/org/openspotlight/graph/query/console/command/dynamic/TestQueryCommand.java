@@ -24,14 +24,15 @@ public class TestQueryCommand extends AbstractCommandTest {
 
     @Override
     protected void setupCommand() {
-        if (this.state == null) {
-            this.state = new ConsoleState(null);
-            command = new QueryCommand();
-        }
+        this.state = new ConsoleState(null);
+        command = new QueryCommand();
     }
 
     @After
     public void deleteTestFile() {
+        if (this.state.getSession() != null) {
+            this.state.getSession().close();
+        }
         new File("out.txt").delete();
     }
 
@@ -194,8 +195,6 @@ public class TestQueryCommand extends AbstractCommandTest {
 
         assertThat(state.getBuffer().length(), is(0));
         assertThat(state.getLastQuery(), is("select *;"));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -220,8 +219,6 @@ public class TestQueryCommand extends AbstractCommandTest {
         assertThat(state.getBuffer().length(), is(0));
         assertThat(state.getLastQuery(), is("select \n*;"));
         assertThat(state.getActiveCommand(), is(nullValue()));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -242,8 +239,6 @@ public class TestQueryCommand extends AbstractCommandTest {
         String fileContent = getFileContent(generatedFile);
         assertThat(fileContent, is(notNullValue()));
         assertThat(fileContent.length(), is(not(0)));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -274,8 +269,6 @@ public class TestQueryCommand extends AbstractCommandTest {
         String fileContent = getFileContent(generatedFile);
         assertThat(fileContent, is(is(notNullValue())));
         assertThat(fileContent.length(), is(not(0)));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -293,8 +286,6 @@ public class TestQueryCommand extends AbstractCommandTest {
 
         File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(false));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -322,8 +313,6 @@ public class TestQueryCommand extends AbstractCommandTest {
 
         File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(false));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -341,8 +330,6 @@ public class TestQueryCommand extends AbstractCommandTest {
 
         File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(false));
-
-        this.state.getSession().close();
     }
 
     @Test
@@ -351,29 +338,27 @@ public class TestQueryCommand extends AbstractCommandTest {
         this.command = new QueryCommand();
         this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
 
-        state.setInput("select ");
+        state.setInput("define ");
         state.appendBuffer("something");
 
         command.execute(reader, out, state);
 
         assertThat(state.getLastQuery(), is(""));
-        assertThat(state.getBuffer(), is("select \n"));
+        assertThat(state.getBuffer(), is("define \n"));
         assertThat(state.getActiveCommand(), is(notNullValue()));
 
-        state.setInput("*?*; > out.txt");
+        state.setInput("target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b); > out.txt");
 
         command.execute(reader, out, state);
 
         assertThat(state.getBuffer().length(), is(0));
-        assertThat(state.getLastQuery(), is("select \n*?*;"));
+        assertThat(state.getLastQuery(), is("define \ntarget org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);"));
         assertThat(state.getActiveCommand(), is(nullValue()));
 
         File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(false));
-
-        this.state.getSession().close();
     }
-   
+
     private String getFileContent( File in ) {
         StringBuilder sb = new StringBuilder();
         LineNumberReader fileReader;
