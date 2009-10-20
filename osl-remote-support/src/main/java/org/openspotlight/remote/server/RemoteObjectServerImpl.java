@@ -16,6 +16,7 @@ import gnu.cajo.utils.ItemServer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
+import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.remote.annotation.DisposeMethod;
 import org.openspotlight.remote.annotation.ReturnsRemoteReference;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
@@ -289,7 +294,6 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             final InternalObjectFactory<T> internalFactory = (InternalObjectFactory<T>)this.internalObjectFactoryMap.get(remoteReferenceType);
 
             final T newObject = internalFactory.createNewInstance(parameters);
-
             final RemoteReference<T> reference = this.internalCreateRemoteReference(userToken, remoteReferenceType, newObject);
 
             return reference;
@@ -407,9 +411,21 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     private <T> RemoteReference<T> internalCreateRemoteReference( final UserToken userToken,
                                                                   final Class<T> remoteReferenceType,
                                                                   final T newObject ) {
+        RemoteReference<T> reference;
+        if (this.remoteReferences.containsValue(newObject)) {
+            for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
+                if (newObject.equals(entry.getValue().getObject())) {
+                    if (userToken.equals(entry.getKey().getUserToken())) {
+                        reference = (RemoteReference<T>)entry.getKey();
+                        return reference;
+                    }
+                }
+            }
+        }
+
         final String remoteReferenceId = UUID.randomUUID().toString();
 
-        final RemoteReference<T> reference = new RemoteReference<T>(remoteReferenceType, remoteReferenceId, userToken);
+        reference = new RemoteReference<T>(remoteReferenceType, remoteReferenceId, userToken);
         this.remoteReferences.put(reference, new RemoteReferenceInternalData<T>(reference, newObject));
         this.updateRemoteReferenceIfNecessary(reference);
         return reference;
@@ -437,25 +453,30 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                 this.removeDeathEntry(remoteReferenceData);
             }
 
-            if (method.getAnnotation(ReturnsRemoteReference.class) != null) {
-                RemoteReference<R> remoteReference = null;
+            if (method.isAnnotationPresent(ReturnsRemoteReference.class)) {
+                if (result instanceof Collection) {
 
-                if (this.remoteReferences.containsValue(result)) {
-                    for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
-                        if (result.equals(entry.getValue().getObject())) {
-                            if (invocation.getUserToken().equals(entry.getKey().getUserToken())) {
-                                remoteReference = (RemoteReference<R>)entry.getKey();
-                            }
-                        }
-                    }
+                    final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoCollection(
+                                                                                                                                method,
+                                                                                                                                invocation.getUserToken(),
+                                                                                                                                (Collection<?>)result);
+                    return response;
                 }
+                if (result instanceof Map) {
+                    final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoMap(
+                                                                                                                         method,
+                                                                                                                         invocation.getUserToken(),
+                                                                                                                         (Map<?, ?>)result);
 
-                if (remoteReference == null) {
-                    remoteReference = this.internalCreateRemoteReference(invocation.getUserToken(),
-                                                                         (Class<R>)invocation.getReturnType(), result);
+                    return response;
                 }
+                final RemoteReference<R> remoteReference = this.internalCreateRemoteReference(
+                                                                                              invocation.getUserToken(),
+                                                                                              (Class<R>)invocation.getReturnType(),
+                                                                                              result);
                 return new RemoteReferenceInvocationResponse(remoteReference);
             }
+
             return new LocalCopyInvocationResponse(result);
         } catch (final UnsupportedOperationException e) {
             throw logAndReturn(e);
@@ -573,4 +594,40 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         this.userTokenDataMap.get(userToken).getLastDateAccess().set(System.currentTimeMillis());
     }
 
+    public <W, R extends Collection<W>> AbstractInvocationResponse<R> wrapResultIntoCollection( final Method method,
+                                                                                                final UserToken userToken,
+                                                                                                final R collection )
+        throws Exception {
+        final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection.unwrapCollectionFromMethodReturn(method);
+        final Class<? extends Collection<?>> collectionType = metadata.getCollectionType();
+        final Class<W> remoteReferenceType = (Class<W>)metadata.getItemType();
+        final Collection<RemoteReference<W>> remoteReferencesCollection = (Collection<RemoteReference<W>>)Collections.createNewCollection(
+                                                                                                                                          collectionType,
+                                                                                                                                          collection.size());
+
+        for (final W o : collection) {
+            final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(userToken, remoteReferenceType, o);
+            remoteReferencesCollection.add(remoteRef);
+        }
+
+        final CollectionOfRemoteInvocationResponse<W, R> wrapped = new CollectionOfRemoteInvocationResponse<W, R>(
+                                                                                                                  (Class<R>)collectionType,
+                                                                                                                  remoteReferencesCollection);
+        return wrapped;
+    }
+
+    public <K, W, R extends Map<K, W>> AbstractInvocationResponse<R> wrapResultIntoMap( final Method method,
+                                                                                        final UserToken userToken,
+                                                                                        final R map ) throws Exception {
+        final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection.unwrapMapFromMethodReturn(method);
+        final Class<W> remoteReferenceType = (Class<W>)metadata.getItemType().getK2();
+        final Map<K, RemoteReference<W>> remoteReferencesMap = new HashMap<K, RemoteReference<W>>(map.size());
+        for (final Entry<K, W> o : map.entrySet()) {
+            final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(userToken, remoteReferenceType, o.getValue());
+            remoteReferencesMap.put(o.getKey(), remoteRef);
+        }
+
+        final MapOfRemoteInvocationResponse<K, W, R> wrapped = new MapOfRemoteInvocationResponse<K, W, R>(remoteReferencesMap);
+        return wrapped;
+    }
 }
