@@ -11,9 +11,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetAddress;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
 import org.openspotlight.remote.annotation.CachedInvocation;
@@ -25,7 +29,9 @@ import org.openspotlight.remote.server.AccessDeniedException;
 import org.openspotlight.remote.server.InvalidReferenceTypeException;
 import org.openspotlight.remote.server.RemoteObjectServer;
 import org.openspotlight.remote.server.RemoteObjectServer.AbstractInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.CollectionOfRemoteInvocationResponse;
 import org.openspotlight.remote.server.RemoteObjectServer.LocalCopyInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.MapOfRemoteInvocationResponse;
 import org.openspotlight.remote.server.RemoteObjectServer.RemoteReferenceInvocationResponse;
 
 /**
@@ -98,6 +104,7 @@ public class RemoteObjectFactory {
             this.fromServer = fromServer;
         }
 
+        @SuppressWarnings( "unchecked" )
         public Object invoke( final Object proxy,
                               final Method method,
                               final Object[] args ) throws Throwable {
@@ -133,6 +140,37 @@ public class RemoteObjectFactory {
                                                               new RemoteReferenceHandler<Object>(this.fromServer,
                                                                                                  methodResponseRemoteReference));
 
+                } else if (result instanceof CollectionOfRemoteInvocationResponse<?, ?>) {
+
+                    final CollectionOfRemoteInvocationResponse<?, ?> resultCollection = (CollectionOfRemoteInvocationResponse<?, ?>)result;
+                    final Collection<Object> remoteResultCollection = (Collection<Object>)Collections.createNewCollection(
+                                                                                                                          resultCollection.getResultType(),
+                                                                                                                          resultCollection.getResult().size());
+                    for (final RemoteReference<?> remoteRef : resultCollection.getResult()) {
+                        final Object proxyInstance = Proxy.newProxyInstance(
+                                                                            this.getClass().getClassLoader(),
+                                                                            new Class[] {invocation.getReturnType()},
+                                                                            new RemoteReferenceHandler<Object>(
+                                                                                                               this.fromServer,
+                                                                                                               (RemoteReference<Object>)remoteRef));
+
+                        remoteResultCollection.add(proxyInstance);
+                    }
+                    resultFromMethod = remoteResultCollection;
+                } else if (result instanceof MapOfRemoteInvocationResponse<?, ?, ?>) {
+                    final MapOfRemoteInvocationResponse<?, ?, ?> resultMap = (MapOfRemoteInvocationResponse<?, ?, ?>)result;
+                    final Map<Object, Object> remoteResultMap = new HashMap<Object, Object>();
+                    for (final Entry<?, ?> remoteRef : resultMap.getResult().entrySet()) {
+                        final Object proxyInstance = Proxy.newProxyInstance(
+                                                                            this.getClass().getClassLoader(),
+                                                                            new Class[] {invocation.getReturnType()},
+                                                                            new RemoteReferenceHandler<Object>(
+                                                                                                               this.fromServer,
+                                                                                                               (RemoteReference<Object>)remoteRef.getValue()));
+
+                        remoteResultMap.put(remoteRef.getKey(), proxyInstance);
+                    }
+                    resultFromMethod = remoteResultMap;
                 } else {
                     throw logAndReturn(new IllegalStateException());
                 }

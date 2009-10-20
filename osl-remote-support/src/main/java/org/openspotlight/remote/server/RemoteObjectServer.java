@@ -4,11 +4,14 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Map;
 
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface RemoteObjectServer.
  */
@@ -21,11 +24,49 @@ public interface RemoteObjectServer {
      */
     public static abstract class AbstractInvocationResponse<R> implements Serializable {
 
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = -8373059894096363951L;
+        //
+    }
+
+    /**
+     * The Class SetOfRemoteInvocationResponse.
+     */
+    public static final class CollectionOfRemoteInvocationResponse<W, R extends Collection<W>>
+        extends AbstractInvocationResponse<R> {
+
         /**
          * 
          */
-        private static final long serialVersionUID = -8373059894096363951L;
-        //
+        private static final long                    serialVersionUID = -5319417381072030066L;
+        /** The result. */
+        private final Collection<RemoteReference<W>> result;
+
+        private final Class<R>                       resultType;
+
+        /**
+         * Instantiates a new sets the of remote invocation response.
+         * 
+         * @param result the result
+         */
+        public CollectionOfRemoteInvocationResponse(
+                                                     final Class<R> resultType, final Collection<RemoteReference<W>> result ) {
+            this.result = result;
+            this.resultType = resultType;
+        }
+
+        /**
+         * Gets the result.
+         * 
+         * @return the result
+         */
+        public Collection<RemoteReference<W>> getResult() {
+            return this.result;
+        }
+
+        public Class<R> getResultType() {
+            return resultType;
+        }
     }
 
     /**
@@ -58,10 +99,9 @@ public interface RemoteObjectServer {
      */
     public static final class LocalCopyInvocationResponse<R> extends AbstractInvocationResponse<R> {
 
-        /**
-         * 
-         */
+        /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 45524732045499074L;
+
         /** The local copy. */
         private final R           localCopy;
 
@@ -88,14 +128,41 @@ public interface RemoteObjectServer {
     }
 
     /**
+     * The Class MapOfRemoteInvocationResponse.
+     */
+    public static final class MapOfRemoteInvocationResponse<K, W, R extends Map<K, W>> extends AbstractInvocationResponse<R> {
+
+        /** The result. */
+        private final Map<K, RemoteReference<W>> result;
+
+        /**
+         * Instantiates a new map of remote invocation response.
+         * 
+         * @param result the result
+         */
+        public MapOfRemoteInvocationResponse(
+                                              final Map<K, RemoteReference<W>> result ) {
+            this.result = result;
+        }
+
+        /**
+         * Gets the result.
+         * 
+         * @return the result
+         */
+        public Map<K, RemoteReference<W>> getResult() {
+            return this.result;
+        }
+    }
+
+    /**
      * The Class RemoteReferenceInvocationResponse.
      */
     public static final class RemoteReferenceInvocationResponse<R> extends AbstractInvocationResponse<R> {
 
-        /**
-         * 
-         */
+        /** The Constant serialVersionUID. */
         private static final long        serialVersionUID = 1539869691497856873L;
+
         /** The remote reference. */
         private final RemoteReference<R> remoteReference;
 
@@ -149,14 +216,12 @@ public interface RemoteObjectServer {
     /**
      * Invoke remote method.
      * 
-     * @param <T>
-     * @param <R>
      * @param invocation the invocation
      * @return the returned object
      * @throws InternalErrorOnMethodInvocationException the internal error on method invocation exception
      * @throws InvocationTargetException the invocation target exception
-     * @throws RemoteReferenceInvalid
-     * @throws UserTokenInvalid
+     * @throws RemoteReferenceInvalid the remote reference invalid
+     * @throws UserTokenInvalid the user token invalid
      */
     public <T, R> AbstractInvocationResponse<R> invokeRemoteMethod( RemoteObjectInvocation<T> invocation )
         throws InternalErrorOnMethodInvocationException, InvocationTargetException, RemoteReferenceInvalid, UserTokenInvalid;
@@ -164,7 +229,6 @@ public interface RemoteObjectServer {
     /**
      * Register internal object factory.
      * 
-     * @param <T>
      * @param objectType the object type
      * @param factory the factory
      */
