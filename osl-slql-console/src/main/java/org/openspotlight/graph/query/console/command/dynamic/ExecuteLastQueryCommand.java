@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 
 import jline.ConsoleReader;
 
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 
 public class ExecuteLastQueryCommand extends QueryCommand {
@@ -11,6 +12,9 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
         if (!accept(state)) {
             return;
         }
@@ -23,8 +27,8 @@ public class ExecuteLastQueryCommand extends QueryCommand {
             executeQuery(reader, out, state, state.getLastQuery(), outputFileName);
         } else {
             out.println("there is no query at buffer.");
-            out.flush();
         }
+        out.flush();
         state.setInput(null);
         state.clearBuffer();
     }
@@ -50,6 +54,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
     }
 
     public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() == null && state.getInput().trim().equals("/") || state.getActiveCommand() == null && state.getInput().trim().startsWith("/ > ")) {
             return true;
         }
