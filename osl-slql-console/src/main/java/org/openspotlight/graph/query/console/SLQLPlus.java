@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph.query.console;
 
 import java.io.IOException;
@@ -16,9 +64,17 @@ import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
 import org.openspotlight.graph.query.console.completor.SLQLFileNameCompletor;
 import org.openspotlight.graph.query.console.util.Messages;
 
+/**
+ * The Class SLQLPlus. This is the main application.
+ * 
+ * @author porcelli
+ */
 public class SLQLPlus {
 
+    /** The Constant VERSION. */
     public final static String VERSION    = "0.5"; //$NON-NLS-1$
+
+    /** The logos. */
     private static String[]    LOGO_TYPES =
                                               {" (   (         (      (              \n )\\ ))\\ )  (   )\\ )   )\\ ) (         \n(()/(()/(( )\\ (()/(  (()/( )\\  (     \n /(_))(_))((_) /(_))  /(_))(_)))\\ (  \n(_))(_))((_)_ (_))   (_))  _ /((_))\\ \n/ __| |  / _ \\| |    | _ \\| (_))(((_)\n\\__ \\ |__ (_) | |__  |  _/| | || (_-<\n|___/____\\__\\_\\____| |_|  |_|\\_,_/__/",
                                           " ______     __         ______     __            ______   __         __  __     ______   \n/\\  ___\\   /\\ \\       /\\  __ \\   /\\ \\          /\\  == \\ /\\ \\       /\\ \\/\\ \\   /\\  ___\\  \n\\ \\___  \\  \\ \\ \\____  \\ \\ \\/\\_\\  \\ \\ \\____     \\ \\  _-/ \\ \\ \\____  \\ \\ \\_\\ \\  \\ \\___  \\ \n \\/\\_____\\  \\ \\_____\\  \\ \\___\\_\\  \\ \\_____\\     \\ \\_\\    \\ \\_____\\  \\ \\_____\\  \\/\\_____\\\n  \\/_____/   \\/_____/   \\/___/_/   \\/_____/      \\/_/     \\/_____/   \\/_____/   \\/_____/",
@@ -27,6 +83,12 @@ public class SLQLPlus {
                                           "   ___    _     ___     _                ___    _                        \n  / __|  | |   / _ \\   | |       o O O  | _ \\  | |   _  _    ___         \n  \\__ \\  | |__| (_) |  | |__    o       |  _/  | |  | +| |  (_-<         \n  |___/  |____|\\__\\_\\  |____|  TS__[O] _|_|_  _|_|_  \\_,_|  /__/_        \n_|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"| {======|| \"\"\" ||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|       \n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'./o--000'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'"
                                               };
 
+    /**
+     * The main method.
+     * 
+     * @param args the arguments
+     * @throws Exception the exception
+     */
     public static void main( String[] args ) throws Exception {
         ConsoleReader reader = new ConsoleReader();
         reader.setBellEnabled(false);
@@ -81,6 +143,16 @@ public class SLQLPlus {
         }
     }
 
+    /**
+     * Login.
+     * 
+     * @param reader the reader
+     * @param out the out
+     * @return the pair< boolean, sl graph session>
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws SLException the SL exception
+     * @throws ClassNotFoundException the class not found exception
+     */
     private static Pair<Boolean, SLGraphSession> login( ConsoleReader reader,
                                                         PrintWriter out ) throws IOException, SLException, ClassNotFoundException {
         out.println("Please enter server name, user and password.");
@@ -137,6 +209,18 @@ public class SLQLPlus {
         return result;
     }
 
+    /**
+     * Validate credentials.
+     * 
+     * @param serverName the server name
+     * @param userName the user name
+     * @param password the password
+     * @param out the out
+     * @return the pair< boolean, sl graph session>
+     * @throws SLException the SL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
     private static Pair<Boolean, SLGraphSession> validateCredentials( String serverName,
                                                                       String userName,
                                                                       String password,
@@ -152,10 +236,20 @@ public class SLQLPlus {
         return new Pair<Boolean, SLGraphSession>(false, null);
     }
 
+    /**
+     * Gets the prompt.
+     * 
+     * @return the prompt
+     */
     private static String getPrompt() {
         return "slql> "; //$NON-NLS-1$
     }
 
+    /**
+     * Prints the logo.
+     * 
+     * @param out the out
+     */
     public static void printLogo( PrintWriter out ) {
         Random x = new Random();
         out.print(LOGO_TYPES[x.nextInt(LOGO_TYPES.length)]);
