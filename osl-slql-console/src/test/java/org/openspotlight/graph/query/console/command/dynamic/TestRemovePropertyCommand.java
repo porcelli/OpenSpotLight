@@ -84,7 +84,7 @@ public class TestRemovePropertyCommand extends AbstractCommandTest {
     public void testValidParameter() {
         ConsoleState state = new ConsoleState(null);
         state.setInput("remove property ?");
-        state.addAdditionalProperties("?");
+        state.addAdditionalProperty("?");
 
         assertThat(state.getAdditionalProperties().size(), is(1));
         assertThat(state.getAdditionalProperties().contains("?"), is(true));
@@ -102,8 +102,8 @@ public class TestRemovePropertyCommand extends AbstractCommandTest {
     @Test
     public void testValidParameter2() {
         ConsoleState state = new ConsoleState(null);
-        state.addAdditionalProperties("myProperty");
-        state.addAdditionalProperties("myProperty2");
+        state.addAdditionalProperty("myProperty");
+        state.addAdditionalProperty("myProperty2");
 
         assertThat(state.getAdditionalProperties().contains("myProperty"), is(true));
         assertThat(state.getAdditionalProperties().contains("myProperty2"), is(true));
