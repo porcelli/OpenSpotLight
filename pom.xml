@@ -72,10 +72,13 @@
 	</pluginRepositories>
 	<modules>
 		<module>osl-common</module>
+		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
 		<module>osl-web</module>
 		<module>osl-graph-api</module>
 		<module>osl-graph</module>
+		<module>osl-graph-client</module>
+		<module>osl-graph-server</module>
 		<module>osl-graph-import-test</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
@@ -122,6 +125,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-remote-support</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-slql-parser</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
@@ -138,6 +146,16 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-client</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-server</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -597,6 +615,18 @@
 				<version>2.3</version>
 				<classifier>jdk15</classifier>
 			</dependency>
+			<dependency>
+				<groupId>cajo</groupId>
+				<artifactId>cajo</artifactId>
+				<version>1.127</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>2.2</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 </project>

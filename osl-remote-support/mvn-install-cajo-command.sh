@@ -1,0 +1,1 @@
+mvn install:install-file -DgroupId=cajo -DartifactId=cajo -Dversion=1.127 -Dpackaging=jar -Dfile=cajo.jar
