@@ -18,6 +18,7 @@ public class ShowQueryCommand implements DynamicCommand {
         out.println("query: ");
         out.println(state.getLastQuery());
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

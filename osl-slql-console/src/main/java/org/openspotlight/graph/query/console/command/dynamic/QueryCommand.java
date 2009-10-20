@@ -49,10 +49,13 @@ public class QueryCommand implements DynamicCommand {
             state.clearBuffer();
             state.setActiveCommand(null);
         } else {
-            state.setActiveCommand(this);
+            if (state.getActiveCommand() == null) {
+                state.clearBuffer();
+                state.setActiveCommand(this);
+            }
             state.appendLineBuffer(state.getInput());
         }
-        state.clearBuffer();
+        state.setInput(null);
     }
 
     protected void executeQuery( ConsoleReader reader,
@@ -157,7 +160,21 @@ public class QueryCommand implements DynamicCommand {
     public boolean accept( ConsoleState state ) {
         if (state.getActiveCommand() != null && state.getActiveCommand() instanceof QueryCommand) {
             return true;
-        } else if (state.getInput().startsWith("select") || state.getInput().startsWith("use") || state.getInput().startsWith("define")) {
+        } else if (validateStatement(state, "select") || validateStatement(state, "use") || validateStatement(state, "define")) {
+            return true;
+        } else if (state.getInput().trim().contains("; > ")) {
+            return true;
+        } else if (state.getInput().trim().endsWith(";")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validateStatement( ConsoleState state,
+                                       String word ) {
+        if (state.getInput().trim().length() > word.length() && state.getInput().trim().startsWith(word + " ")) {
+            return true;
+        } else if (state.getInput().trim().length() == word.length() && state.getInput().trim().equals(word)) {
             return true;
         }
         return false;

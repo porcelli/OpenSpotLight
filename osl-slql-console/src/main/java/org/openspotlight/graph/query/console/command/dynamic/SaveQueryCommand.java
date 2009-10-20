@@ -36,6 +36,7 @@ public class SaveQueryCommand implements DynamicCommand {
             out.println("Invalid file name.");
         }
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

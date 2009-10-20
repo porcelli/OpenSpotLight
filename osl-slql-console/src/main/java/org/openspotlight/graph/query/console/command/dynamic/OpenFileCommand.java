@@ -41,6 +41,7 @@ public class OpenFileCommand implements DynamicCommand {
             out.println("invalid file name.");
         }
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

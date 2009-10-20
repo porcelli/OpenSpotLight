@@ -56,6 +56,7 @@ public class HelpSystemCommand implements SystemCommand {
             out.println(activeDesc);
         }
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 

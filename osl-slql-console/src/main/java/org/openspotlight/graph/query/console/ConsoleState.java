@@ -10,12 +10,12 @@ import org.openspotlight.graph.query.console.command.Command;
 public class ConsoleState {
 
     private SLGraphSession session              = null;
-    private String         input                = null;
     private StringBuilder  sb                   = new StringBuilder();
-    private String         lastQuery            = null;
-    private boolean        quitApplication      = false;
     private Set<String>    additionalProperties = new HashSet<String>();
     private Command        activeCommand        = null;
+    private boolean        quitApplication      = false;
+    private String         input                = "";
+    private String         lastQuery            = "";
 
     public ConsoleState(
                          SLGraphSession session ) {
@@ -52,7 +52,11 @@ public class ConsoleState {
     }
 
     public void setLastQuery( String lastQuery ) {
-        this.lastQuery = lastQuery;
+        if (lastQuery == null) {
+            this.lastQuery = "";
+        } else {
+            this.lastQuery = lastQuery;
+        }
     }
 
     public String getInput() {
@@ -60,7 +64,11 @@ public class ConsoleState {
     }
 
     public void setInput( String input ) {
-        this.input = input;
+        if (input == null) {
+            this.input = "";
+        } else {
+            this.input = input;
+        }
     }
 
     public boolean quitApplication() {

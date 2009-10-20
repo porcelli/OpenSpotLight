@@ -15,6 +15,14 @@ public class TestShowQueryCommand extends AbstractCommandTest {
     }
 
     @Test
+    public void testAcceptNullInout() {
+        ConsoleState state = new ConsoleState(null);
+        state.setInput(null);
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
     public void testAcceptValidParameter() {
         ConsoleState state = new ConsoleState(null);
         state.setInput("show query");
@@ -62,7 +70,7 @@ public class TestShowQueryCommand extends AbstractCommandTest {
 
         command.execute(reader, out, state);
 
-        assertThat(command.accept(state), is(true));
         assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getInput(), is(""));
     }
 }

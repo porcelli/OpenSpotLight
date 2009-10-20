@@ -1,4 +1,4 @@
-package org.openspotlight.graph.query.console;
+package org.openspotlight.graph.query.console.completor;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -17,9 +17,11 @@ public class SLQLFileNameCompletor extends FileNameCompletor {
                                   Collection<Command> commands ) {
         super();
         this.commands = new LinkedList<Command>();
-        for (Command command : commands) {
-            if (command.hasFileCompletion()) {
-                this.commands.add(command);
+        if (commands != null && commands.size() > 0) {
+            for (Command command : commands) {
+                if (command != null && command.hasFileCompletion()) {
+                    this.commands.add(command);
+                }
             }
         }
     }

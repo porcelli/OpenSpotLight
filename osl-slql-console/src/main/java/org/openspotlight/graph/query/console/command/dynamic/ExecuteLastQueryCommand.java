@@ -25,6 +25,7 @@ public class ExecuteLastQueryCommand extends QueryCommand {
             out.println("there is no query at buffer.");
             out.flush();
         }
+        state.setInput(null);
         state.clearBuffer();
     }
 

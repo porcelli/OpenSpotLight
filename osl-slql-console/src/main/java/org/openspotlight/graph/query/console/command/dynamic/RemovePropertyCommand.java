@@ -20,6 +20,7 @@ public class RemovePropertyCommand implements DynamicCommand {
         out.print(propertyName);
         out.println(" property removed.");
         out.flush();
+        state.setInput(null);
         state.clearBuffer();
     }
 
