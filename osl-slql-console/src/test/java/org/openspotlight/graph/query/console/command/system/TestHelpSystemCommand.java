@@ -1,23 +1,28 @@
-package org.openspotlight.graph.query.console.command.dynamic;
+package org.openspotlight.graph.query.console.command.system;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.Test;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
+import org.openspotlight.graph.query.console.command.Command;
+import org.openspotlight.graph.query.console.command.dynamic.SaveQueryCommand;
 
-public class TestAddPropertyCommand extends AbstractCommandTest {
+public class TestHelpSystemCommand extends AbstractCommandTest {
 
     @Override
     protected void setupCommand() {
-        command = new AddPropertyCommand();
+        command = new HelpSystemCommand(null);
     }
 
     @Test
     public void testAcceptValidParameter() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add property myProperty");
+        state.setInput("help");
 
         assertThat(command.accept(state), is(true));
     }
@@ -25,7 +30,7 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
     @Test
     public void testAcceptValidParameter2() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add property ?");
+        state.setInput("help  ");
 
         assertThat(command.accept(state), is(true));
     }
@@ -33,7 +38,7 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
     @Test
     public void testAcceptInValidParameter() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add propertx myProperty");
+        state.setInput("xxhelp ");
 
         assertThat(command.accept(state), is(false));
     }
@@ -41,7 +46,7 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
     @Test
     public void testAcceptInValidParameter2() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add property");
+        state.setInput("add help");
 
         assertThat(command.accept(state), is(false));
     }
@@ -49,15 +54,7 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
     @Test
     public void testAcceptInValidParameter3() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add propertyx");
-
-        assertThat(command.accept(state), is(false));
-    }
-
-    @Test
-    public void testAcceptInValidParameter4() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("add property ");
+        state.setInput("help something");
 
         assertThat(command.accept(state), is(false));
     }
@@ -65,39 +62,31 @@ public class TestAddPropertyCommand extends AbstractCommandTest {
     @Test
     public void testValidParameter() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add property ?");
+        state.setInput("help");
         state.appendBuffer("something");
-
-        assertThat(state.getAdditionalProperties().size(), is(0));
 
         command.execute(reader, out, state);
 
         assertThat(command.accept(state), is(true));
         assertThat(state.getBuffer().length(), is(0));
-        assertThat(state.getAdditionalProperties().size(), is(1));
-        assertThat(state.getAdditionalProperties().contains("?"), is(true));
     }
 
     @Test
     public void testValidParameter2() {
+        List<Command> commands = new LinkedList<Command>();
+        commands.add(new ExitSystemCommand());
+        commands.add(null);
+        commands.add(new SaveQueryCommand());
+        command = new HelpSystemCommand(commands);
+        
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add property myProperty");
+        state.setInput("help");
         state.appendBuffer("something");
 
-        assertThat(state.getAdditionalProperties().size(), is(0));
-
         command.execute(reader, out, state);
-        state.setInput("add property myProperty2");
-        assertThat(state.getBuffer().length(), is(0));
-
-        state.appendBuffer("something");
-        command.execute(reader, out, state);
-        assertThat(state.getBuffer().length(), is(0));
 
         assertThat(command.accept(state), is(true));
-        assertThat(state.getAdditionalProperties().size(), is(2));
-        assertThat(state.getAdditionalProperties().contains("myProperty"), is(true));
-        assertThat(state.getAdditionalProperties().contains("myProperty2"), is(true));
-        assertThat(state.getAdditionalProperties().contains("myProperty3"), is(false));
+        assertThat(state.getBuffer().length(), is(0));
     }
+
 }

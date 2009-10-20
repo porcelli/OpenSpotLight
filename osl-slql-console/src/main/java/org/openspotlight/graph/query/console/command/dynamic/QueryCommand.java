@@ -30,7 +30,7 @@ public class QueryCommand implements DynamicCommand {
             return;
         }
         if (state.getInput().endsWith(";") || state.getInput().contains("; > ")) {
-            if (state.getActiveCommand() != null){
+            if (state.getActiveCommand() != null) {
                 state.appendBuffer(state.getInput());
                 state.setInput(state.getBuffer());
             }

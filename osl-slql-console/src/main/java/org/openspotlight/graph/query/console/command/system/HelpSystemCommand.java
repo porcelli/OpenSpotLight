@@ -16,20 +16,34 @@ public class HelpSystemCommand implements SystemCommand {
 
     public HelpSystemCommand(
                               Collection<Command> commands ) {
-        descriptions = new String[commands.size() + 1];
         int maxSize = 4;
-        for (Command command : commands) {
-            if (command.getCommand().length() > maxSize) {
-                maxSize = command.getCommand().length();
-            }
-        }
+        if (commands != null) {
 
-        int i = 0;
-        for (Command command : commands) {
-            descriptions[i] = StringUtils.leftPad(command.getCommand(), maxSize) + " - " + command.getDescription();
-            i++;
+            int size = 0;
+            for (Command command : commands) {
+                if (command != null) {
+                    size++;
+                }
+            }
+
+            descriptions = new String[size + 1];
+            for (Command command : commands) {
+                if (command != null && command.getCommand().length() > maxSize) {
+                    maxSize = command.getCommand().length();
+                }
+            }
+
+            int i = 0;
+            for (Command command : commands) {
+                if (command != null) {
+                    descriptions[i] = StringUtils.leftPad(command.getCommand(), maxSize) + " - " + command.getDescription();
+                    i++;
+                }
+            }
+        } else {
+            descriptions = new String[1];
         }
-        descriptions[i] = StringUtils.leftPad("help", maxSize) + " - " + getDescription();
+        descriptions[0] = StringUtils.leftPad("help", maxSize) + " - " + getDescription();
     }
 
     public void execute( ConsoleReader reader,

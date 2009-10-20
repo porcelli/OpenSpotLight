@@ -14,13 +14,17 @@ public class ExecuteLastQueryCommand extends QueryCommand {
         if (!accept(state)) {
             return;
         }
-        state.clearBuffer();
         String outputFileName = null;
         if (state.getInput().contains(" > ")) {
             int index = state.getInput().lastIndexOf(" > ");
             outputFileName = state.getInput().substring(index + 3);
         }
-        executeQuery(reader, out, state, state.getLastQuery(), outputFileName);
+        if (state.getLastQuery() != null || state.getLastQuery().trim().length() > 0) {
+            executeQuery(reader, out, state, state.getLastQuery(), outputFileName);
+        } else {
+            out.println("there is no query at buffer.");
+            out.flush();
+        }
         state.clearBuffer();
     }
 

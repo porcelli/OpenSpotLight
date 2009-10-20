@@ -49,5 +49,4 @@ public class ExitSystemCommand implements SystemCommand {
         }
         return false;
     }
-
 }

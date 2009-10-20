@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 
 public class TestRemovePropertyCommand extends AbstractCommandTest {
 
