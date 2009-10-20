@@ -74,14 +74,12 @@ tokens {
 	TIMES_VK;
 	KEEP_RESULT_VK;
 	N_VK;
-	USE_VK;
 	COLLATOR_VK;
 	LEVEL_VK;
 	IDENTICAL_VK;
 	PRIMARY_VK;
 	SECONDARY_VK;
 	TERTIARY_VK;
-//	SELECT_VK;
 	ORDER_BY_VK;
 	BY_LINK_VK;
 	DEFINE_OUTPUT_VK;
@@ -637,8 +635,7 @@ desc_key
 	;
 
 select_key
-	:	SELECT_VK //{(validateIdentifierKey(SLSoftKeywords.SELECT))}?=>	ID
-		//-> SELECT_VK[$ID]
+	:	SELECT
 	;
 
 limit_key
@@ -716,8 +713,7 @@ n_times_key
 	;
 
 use_key
-	:	USE_VK //{(validateIdentifierKey(SLSoftKeywords.USE))}?=>	ID
-		//-> USE_VK[$ID]
+	:	USE
 	;
 
 collator_key
@@ -754,11 +750,11 @@ DEFINE
 	:	'define'
 	;
 
-USE_VK
+USE
 	:	'use'
 	;
 
-SELECT_VK
+SELECT
 	:	'select'
 	;
 
