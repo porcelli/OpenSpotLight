@@ -5,6 +5,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -94,6 +96,22 @@ public class RemoteObjectFactoryTest {
     public void shouldGetErrorOnMethodMarkedAsUnsupported() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
         proxy.unsupportedMethod();
+    }
+
+    @Test
+    public void shouldGetListItem() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final List<NonSerializableInterface> remoteList = proxy.getList();
+        assertThat(remoteList.size(), is(3));
+        assertThat(remoteList.get(0).getStuff(), is("1"));
+    }
+
+    @Test
+    public void shouldGetMapItem() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final Map<String, NonSerializableInterface> remoteMap = proxy.getMap();
+        assertThat(remoteMap.size(), is(3));
+        assertThat(remoteMap.get("1").getStuff(), is("1"));
     }
 
     /**
@@ -231,4 +249,7 @@ public class RemoteObjectFactoryTest {
         assertThat(nonSerializableResult.getStuff(), is("damn cool stuff!"));
 
     }
+
+    //FIXME method parameters should be retrieved from references
+    //FIXME test collections with null return and so on. Needs to return null on remote and see if it works
 }

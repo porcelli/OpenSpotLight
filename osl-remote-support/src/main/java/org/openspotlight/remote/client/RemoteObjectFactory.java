@@ -149,7 +149,7 @@ public class RemoteObjectFactory {
                     for (final RemoteReference<?> remoteRef : resultCollection.getResult()) {
                         final Object proxyInstance = Proxy.newProxyInstance(
                                                                             this.getClass().getClassLoader(),
-                                                                            new Class[] {invocation.getReturnType()},
+                                                                            new Class[] {remoteRef.getRemoteType()},
                                                                             new RemoteReferenceHandler<Object>(
                                                                                                                this.fromServer,
                                                                                                                (RemoteReference<Object>)remoteRef));
@@ -161,9 +161,10 @@ public class RemoteObjectFactory {
                     final MapOfRemoteInvocationResponse<?, ?, ?> resultMap = (MapOfRemoteInvocationResponse<?, ?, ?>)result;
                     final Map<Object, Object> remoteResultMap = new HashMap<Object, Object>();
                     for (final Entry<?, ?> remoteRef : resultMap.getResult().entrySet()) {
+                        final RemoteReference<?> remoteRefValue = (RemoteReference<?>)remoteRef.getValue();
                         final Object proxyInstance = Proxy.newProxyInstance(
                                                                             this.getClass().getClassLoader(),
-                                                                            new Class[] {invocation.getReturnType()},
+                                                                            new Class[] {remoteRefValue.getRemoteType()},
                                                                             new RemoteReferenceHandler<Object>(
                                                                                                                this.fromServer,
                                                                                                                (RemoteReference<Object>)remoteRef.getValue()));
