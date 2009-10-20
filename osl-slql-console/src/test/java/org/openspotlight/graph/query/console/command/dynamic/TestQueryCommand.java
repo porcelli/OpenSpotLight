@@ -1,12 +1,17 @@
 package org.openspotlight.graph.query.console.command.dynamic;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 
+import org.junit.After;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.console.ConsoleState;
@@ -23,6 +28,11 @@ public class TestQueryCommand extends AbstractCommandTest {
             this.state = new ConsoleState(null);
             command = new QueryCommand();
         }
+    }
+
+    @After
+    public void deleteTestFile() {
+        new File("out.txt").delete();
     }
 
     @Test
@@ -198,26 +208,126 @@ public class TestQueryCommand extends AbstractCommandTest {
         command.execute(reader, out, state);
 
         assertThat(state.getBuffer().length(), is(0));
-        assertThat(state.getLastQuery(), is("select\n*;\n"));
+        assertThat(state.getLastQuery(), is("select \n*;"));
         assertThat(state.getActiveCommand(), is(nullValue()));
 
         this.state.getSession().close();
     }
 
-    //
-    //    private String getFileContent( File in ) {
-    //        StringBuilder sb = new StringBuilder();
-    //        LineNumberReader fileReader;
-    //        try {
-    //            fileReader = new LineNumberReader(new FileReader(in));
-    //            while (fileReader.ready()) {
-    //                sb.append(fileReader.readLine());
-    //                sb.append("\n");
-    //            }
-    //            return sb.toString();
-    //        } catch (Exception e) {
-    //            // TODO Auto-generated catch block
-    //            return "";
-    //        }
-    //    }
+    @Test
+    public void testValidParameter2() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select *; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select *;"));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.isFile(), is(true));
+        String fileContent = getFileContent(generatedFile);
+        assertThat(fileContent, is(notNullValue()));
+        assertThat(fileContent.length(), is(not(0)));
+
+        this.state.getSession().close();
+    }
+
+    @Test
+    public void testValidMultiLineParameter2() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select ");
+        state.appendBuffer("something");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getLastQuery(), is(""));
+        assertThat(state.getBuffer(), is("select \n"));
+        assertThat(state.getActiveCommand(), is(notNullValue()));
+
+        state.setInput("*; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select \n*;"));
+        assertThat(state.getActiveCommand(), is(nullValue()));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.isFile(), is(true));
+        String fileContent = getFileContent(generatedFile);
+        assertThat(fileContent, is(is(notNullValue())));
+        assertThat(fileContent.length(), is(not(0)));
+
+        this.state.getSession().close();
+    }
+
+    @Test
+    public void testValidParameterSyntaxError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select *?*; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select *?*;"));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+
+        this.state.getSession().close();
+    }
+
+    @Test
+    public void testValidMultiLineParameterSyntaxError() throws SLException, IOException, ClassNotFoundException {
+        GraphConnection graphConnection = new GraphConnection();
+        this.command = new QueryCommand();
+        this.state = new ConsoleState(graphConnection.connect("sa", "sa", "sa"));
+
+        state.setInput("select ");
+        state.appendBuffer("something");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getLastQuery(), is(""));
+        assertThat(state.getBuffer(), is("select \n"));
+        assertThat(state.getActiveCommand(), is(notNullValue()));
+
+        state.setInput("*?*; > out.txt");
+
+        command.execute(reader, out, state);
+
+        assertThat(state.getBuffer().length(), is(0));
+        assertThat(state.getLastQuery(), is("select \n*?*;"));
+        assertThat(state.getActiveCommand(), is(nullValue()));
+
+        File generatedFile = new File("out.txt");
+        assertThat(generatedFile.exists(), is(false));
+
+        this.state.getSession().close();
+    }
+
+    private String getFileContent( File in ) {
+        StringBuilder sb = new StringBuilder();
+        LineNumberReader fileReader;
+        try {
+            fileReader = new LineNumberReader(new FileReader(in));
+            while (fileReader.ready()) {
+                sb.append(fileReader.readLine());
+                sb.append("\n");
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return "";
+        }
+    }
 }
