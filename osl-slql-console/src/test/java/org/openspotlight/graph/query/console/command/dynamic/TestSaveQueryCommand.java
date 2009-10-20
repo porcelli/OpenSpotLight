@@ -93,6 +93,7 @@ public class TestSaveQueryCommand extends AbstractCommandTest {
 
         File generatedFile = new File("out.slql");
 
+        assertThat(generatedFile.isFile(), is(true));
         assertThat(getFileContent(generatedFile), is("select *;\n"));
         assertThat(state.getLastQuery(), is("select *;"));
         assertThat(state.getInput(), is(""));
