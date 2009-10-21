@@ -75,14 +75,7 @@
 		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
 		<module>osl-web</module>
-		<module>osl-graph-api</module>
 		<module>osl-graph</module>
-		<module>osl-graph-client</module>
-		<module>osl-graph-server</module>
-		<module>osl-graph-import-test</module>
-		<module>osl-graph-persistence-api</module>
-		<module>osl-graph-persistence</module>
-		<module>osl-graph-test-data</module>
 		<module>osl-slql-console</module>
 		<module>osl-federation</module>
 		<module>bundle-processor/osl-java-bundle</module>
@@ -146,7 +139,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-graph</artifactId>
+				<artifactId>osl-graph-core</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -217,6 +210,21 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-federation-configuration-example</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-dna-core-loader</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-dna-filesystem-loader</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 

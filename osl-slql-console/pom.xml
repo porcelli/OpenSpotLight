@@ -17,7 +17,7 @@
 		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph</artifactId>
+			<artifactId>osl-graph-core</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.testng</groupId>

@@ -52,7 +52,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph</artifactId>
+			<artifactId>osl-graph-core</artifactId>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
