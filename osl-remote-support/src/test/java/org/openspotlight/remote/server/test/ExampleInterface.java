@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.openspotlight.remote.annotation.CachedInvocation;
-import org.openspotlight.remote.annotation.ReturnsRemoteReference;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 
 public interface ExampleInterface {
@@ -33,13 +32,10 @@ public interface ExampleInterface {
         public void setStuff( final String newStuff );
     }
 
-    @ReturnsRemoteReference
     public NonSerializableInterface doSomethingWith( NonSerializableInterface remoteParameter );
 
-    @ReturnsRemoteReference
     public NonSerializableInterface doSomethingWithCollection( Collection<NonSerializableInterface> collection );
 
-    @ReturnsRemoteReference
     public NonSerializableInterface doSomethingWithMap( Map<String, NonSerializableInterface> map );
 
     @CachedInvocation
@@ -50,13 +46,10 @@ public interface ExampleInterface {
                                                 String anotherStr,
                                                 boolean throwsException ) throws Exception;
 
-    @ReturnsRemoteReference
     public Collection<NonSerializableInterface> getList();
 
-    @ReturnsRemoteReference
     public Map<String, NonSerializableInterface> getMap();
 
-    @ReturnsRemoteReference
     public NonSerializableInterface getRemoteResult();
 
     public Integer returns6Times( Integer another );
