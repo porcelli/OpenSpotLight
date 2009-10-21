@@ -56,145 +56,160 @@ package org.openspotlight.graph.query;
  */
 public interface SLSelectByLinkType extends SLSelect {
 
-	/**
-	 * Type.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the type
-	 */
-	public Type type(String typeName);
-	
-	/**
-	 * By link.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the by link
-	 */
-	public ByLink byLink(String typeName);
-	
-	/**
-	 * End.
-	 * 
-	 * @return the end
-	 */
-	public End end();
-	
-	/**
-	 * The Interface Type.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface Type {
-		
-		/**
-		 * Comma.
-		 * 
-		 * @return the sL select by link type
-		 */
-		public SLSelectByLinkType comma();
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-		
-		/**
-		 * Sub types.
-		 * 
-		 * @return the type
-		 */
-		public Type subTypes();
-	}
-	
-	/**
-	 * The Interface End.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface End extends SLSelectFacade {
-		
-		/**
-		 * Where.
-		 * 
-		 * @return the sL where by link type
-		 */
-		public SLWhereByLinkType where();
-		
-		/**
-		 * Order by.
-		 * 
-		 * @return the sL order by statement
-		 */
-		public SLOrderByStatement orderBy();
-		
-		/**
-		 * Keep result.
-		 * 
-		 * @return the end
-		 */
-		public End keepResult();
-		
-		/**
-		 * Execute x times.
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes();
-		
-		/**
-		 * Execute x times.
-		 * 
-		 * @param x the x
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes(int x);
-	}
-	
-	/**
-	 * The Interface ByLink.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface ByLink {
-		
-		/**
-		 * Comma.
-		 * 
-		 * @return the sL select by link type
-		 */
-		public SLSelectByLinkType comma();
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-		
-		/**
-		 * A.
-		 * 
-		 * @return the by link
-		 */
-		public ByLink a();
-		
-		/**
-		 * B.
-		 * 
-		 * @return the by link
-		 */
-		public ByLink b();
-		
-		/**
-		 * Any.
-		 * 
-		 * @return the by link
-		 */
-		public ByLink any();
-	}
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type( String typeName );
+
+    /**
+     * By link.
+     * 
+     * @param typeName the type name
+     * @return the by link
+     */
+    public ByLink byLink( String typeName );
+
+    /**
+     * End.
+     * 
+     * @return the end
+     */
+    public End end();
+
+    /**
+     * The Interface Type.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface Type {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select by link type
+         */
+        public SLSelectByLinkType comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
+    }
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End extends SLSelectFacade {
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by link type
+         */
+        public SLWhereByLinkType where();
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public SLOrderByStatement orderBy();
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit( Integer size );
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit( Integer size,
+                          Integer offset );
+
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
+
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes( int x );
+    }
+
+    /**
+     * The Interface ByLink.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface ByLink {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select by link type
+         */
+        public SLSelectByLinkType comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * A.
+         * 
+         * @return the by link
+         */
+        public ByLink a();
+
+        /**
+         * B.
+         * 
+         * @return the by link
+         */
+        public ByLink b();
+
+        /**
+         * Any.
+         * 
+         * @return the by link
+         */
+        public ByLink any();
+    }
 }

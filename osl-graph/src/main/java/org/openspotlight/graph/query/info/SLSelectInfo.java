@@ -56,66 +56,117 @@ import org.openspotlight.common.util.StringBuilderUtil;
  * @author Vitor Hugo Chagas
  */
 public abstract class SLSelectInfo {
-	
-	/** The Constant INDIFINITE. */
-	public static final int INDIFINITE = 0; 
-	
-	/** The keep result. */
-	private boolean keepResult;
-	
-	/** The x times. */
-	private Integer xTimes;
 
-	/**
-	 * Checks if is keep result.
-	 * 
-	 * @return true, if is keep result
-	 */
-	public boolean isKeepResult() {
-		return keepResult;
-	}
+    /** The Constant INDIFINITE. */
+    public static final int INDIFINITE = 0;
 
-	/**
-	 * Sets the keep result.
-	 * 
-	 * @param keepResult the new keep result
-	 */
-	public void setKeepResult(boolean keepResult) {
-		this.keepResult = keepResult;
-	}
+    /** The keep result. */
+    private boolean         keepResult;
 
-	/**
-	 * Gets the x times.
-	 * 
-	 * @return the x times
-	 */
-	public Integer getXTimes() {
-		return xTimes;
-	}
+    /** The x times. */
+    private Integer         xTimes     = null;
 
-	/**
-	 * Sets the x times.
-	 * 
-	 * @param times the new x times
-	 */
-	public void setXTimes(Integer times) {
-		xTimes = times;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder();
-		if (isKeepResult()) {
-			StringBuilderUtil.append(buffer, "\nKEEP RESULT");
-		}
-		Integer xTimes = getXTimes();
-		if (xTimes != null) {
-			StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDIFINITE ? "INDIFINITE" : "" + xTimes), " TIMES");	
-		}
+    /** The limit. */
+    private Integer         limit      = null;
 
-		return buffer.toString();
-	}
+    /** The offset. */
+    private Integer         offset     = null;
+
+    /**
+     * Checks if is keep result.
+     * 
+     * @return true, if is keep result
+     */
+    public boolean isKeepResult() {
+        return keepResult;
+    }
+
+    /**
+     * Sets the keep result.
+     * 
+     * @param keepResult the new keep result
+     */
+    public void setKeepResult( boolean keepResult ) {
+        this.keepResult = keepResult;
+    }
+
+    /**
+     * Gets the x times.
+     * 
+     * @return the x times
+     */
+    public Integer getXTimes() {
+        return xTimes;
+    }
+
+    /**
+     * Sets the x times.
+     * 
+     * @param times the new x times
+     */
+    public void setXTimes( Integer times ) {
+        xTimes = times;
+    }
+
+    /**
+     * Gets the limit.
+     * 
+     * @return the limit
+     */
+    public Integer getLimit() {
+        return limit;
+    }
+
+    /**
+     * Sets the limit.
+     * 
+     * @param limit the new limit
+     */
+    public void setLimit( Integer limit ) {
+        this.limit = limit;
+    }
+
+    /**
+     * Gets the offset.
+     * 
+     * @return the offset
+     */
+    public Integer getOffset() {
+        return offset;
+    }
+
+    /**
+     * Sets the offset.
+     * 
+     * @param offset the new offset
+     */
+    public void setOffset( Integer offset ) {
+        this.offset = offset;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        if (isKeepResult()) {
+            StringBuilderUtil.append(buffer, "\nKEEP RESULT");
+        }
+        Integer xTimes = getXTimes();
+        if (xTimes != null) {
+            StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDIFINITE ? "INDIFINITE" : "" + xTimes), " TIMES");
+        }
+
+        Integer limit = getLimit();
+        if (limit != null) {
+            StringBuilderUtil.append(buffer, "\nLIMIT ", limit);
+            Integer offset = getOffset();
+            if (offset != null) {
+                StringBuilderUtil.append(buffer, " OFFSET ", offset);
+            }
+        }
+
+        return buffer.toString();
+    }
 }

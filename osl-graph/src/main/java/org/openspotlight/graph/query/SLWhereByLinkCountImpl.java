@@ -162,6 +162,24 @@ public class SLWhereByLinkCountImpl implements SLWhereByLinkCount {
 			return this;
 		}
 		
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit ) {
+            whereByLinkCountInfo.getSelectByLinkCountInfo().setLimit(limit);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit,
+                          Integer offset ) {
+            whereByLinkCountInfo.getSelectByLinkCountInfo().setLimit(limit);
+            whereByLinkCountInfo.getSelectByLinkCountInfo().setOffset(offset);
+            return this;
+        }
+		
 		/* (non-Javadoc)
 		 * @see org.openspotlight.graph.query.SLWhereByLinkCount.End#executeXTimes()
 		 */
