@@ -116,9 +116,7 @@ public interface SLQueryTextInternal extends Serializable {
      * @param session the session
      * @param variableValues the variable values
      * @param inputNodesIDs the input nodes id
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception

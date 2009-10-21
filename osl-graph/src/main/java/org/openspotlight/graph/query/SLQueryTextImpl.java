@@ -64,10 +64,10 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
 
     /** The Constant LOGGER. */
-    static final Logger LOGGER = Logger.getLogger(SLQueryTextImpl.class);
+    static final Logger         LOGGER = Logger.getLogger(SLQueryTextImpl.class);
 
     /** The internal query. */
-    private SLQueryTextInternal   query;
+    private SLQueryTextInternal query;
 
     /**
      * Instantiates a new SLQueryTextImpl.
@@ -123,7 +123,9 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     @Override
     public SLQueryResult execute( String[] inputNodesIDs,
                                   SortMode sortMode,
-                                  boolean showSLQL )
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
         return execute(inputNodesIDs, null, sortMode, showSLQL);
     }

@@ -117,7 +117,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         try {
 
             SLQueryApi query = session.createQueryApi();
-            
+
             query
                  .select()
                  .type(JavaPackage.class.getName())
@@ -2095,10 +2095,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd()
-
-            .keepResult()
-
-            .executeXTimes(3);
+                 .executeXTimes(3);
 
             SLQueryResult result = query.execute(sortMode, printInfo);
             List<SLNode> nodes = result.getNodes();
@@ -3040,6 +3037,457 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             printResult(nodes);
 
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimit() {
+        try {
+
+            SLQueryApi query = session.createQueryApi();
+
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd()
+                 .limit(10);
+
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(11));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
+                }
+            }.execute();
+
+            printResult(nodes);
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimit2() {
+        try {
+
+            SLQueryApi query = session.createQueryApi();
+            printInfo = true;
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd()
+                 .limit(20);
+
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(21));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[16]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[17]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[18]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[19]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), is(wrappers[20]));
+                }
+            }.execute();
+
+            printResult(nodes);
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitGeneral() {
+        try {
+
+            SLQueryApi query = session.createQueryApi();
+
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd();
+
+            SLQueryResult result = query.execute(sortMode, printInfo, 10, null);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(10));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                }
+            }.execute();
+
+            printResult(nodes);
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitGeneral2() {
+        try {
+
+            SLQueryApi query = session.createQueryApi();
+
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd();
+
+            SLQueryResult result = query.execute(sortMode, printInfo, 20, null);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(20));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[16]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[17]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[18]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[19]));
+                }
+            }.execute();
+
+            printResult(nodes);
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitOffset() {
+        try {
+            printInfo = true;
+            SLQueryApi query = session.createQueryApi();
+
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd()
+                 .limit(10, 11);
+
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            printResult(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(11));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), is(wrappers[10]));
+                }
+            }.execute();
+
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitOffset2() {
+        try {
+
+            SLQueryApi query = session.createQueryApi();
+            printInfo = true;
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd()
+                 .limit(20, 21);
+
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(17));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "parse"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "readObject"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMinutes"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMonth"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toString"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), is(wrappers[16]));
+                }
+            }.execute();
+
+            printResult(nodes);
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitOffsetGeneral() {
+        try {
+
+            SLQueryApi query = session.createQueryApi();
+
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd();
+
+            SLQueryResult result = query.execute(sortMode, printInfo, 10, 11);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(10));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[9]));
+                }
+            }.execute();
+
+            printResult(nodes);
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitGeneralOffset2() {
+        try {
+
+            printInfo = true;
+            SLQueryApi query = session.createQueryApi();
+
+            query
+                 .select()
+                 .allTypes().onWhere()
+                 .selectEnd().keepResult()
+
+            .where()
+                 .type(JavaClass.class.getName())
+                 .each().property("caption").equalsTo().value("java.util.Date")
+                 .typeEnd()
+                 .whereEnd()
+
+            .select()
+                 .type(JavaTypeMethod.class.getName()).comma()
+                 .byLink(TypeContainsMethod.class.getName()).b()
+                 .selectEnd();
+
+            SLQueryResult result = query.execute(sortMode, printInfo, 20, 21);
+            List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(17));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "parse"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "readObject"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMinutes"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMonth"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toString"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), is(wrappers[16]));
+                }
+            }.execute();
+
+            printResult(nodes);
         } catch (SLException e) {
             LOGGER.error(e.getMessage(), e);
         }
