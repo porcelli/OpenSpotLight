@@ -62,6 +62,7 @@ public class RemoteObjectInvocation<T> implements Serializable {
         checkNotEmpty("methodName", methodName);
         checkNotNull("remoteReference", remoteReference);
         checkCondition("correctNumberOfArguments", parameters.length == parameterTypes.length);
+
         this.userToken = remoteReference.getUserToken();
         this.returnType = returnType;
         this.parameterTypes = parameterTypes;
