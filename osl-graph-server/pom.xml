@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-client</artifactId>
+			<artifactId>osl-remote-support</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

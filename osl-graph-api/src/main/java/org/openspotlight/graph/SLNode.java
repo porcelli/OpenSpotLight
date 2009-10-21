@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.openspotlight.common.jcr.LogableObject;
+import org.openspotlight.remote.annotation.DisposeMethod;
 
 /**
  * The Interface SLNode.
@@ -390,6 +391,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
      * 
      * @throws SLGraphSessionException the SL graph session exception
      */
+    @DisposeMethod
     public void remove() throws SLGraphSessionException;
 
     /**
