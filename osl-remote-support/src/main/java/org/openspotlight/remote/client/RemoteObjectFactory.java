@@ -104,6 +104,10 @@ public class RemoteObjectFactory {
             this.fromServer = fromServer;
         }
 
+        public RemoteReference<T> getRemoteReference() {
+            return this.remoteReference;
+        }
+
         @SuppressWarnings( "unchecked" )
         public Object invoke( final Object proxy,
                               final Method method,
@@ -122,6 +126,19 @@ public class RemoteObjectFactory {
                 }
             }
 
+            if (args != null) {
+                for (int i = 0, size = args.length; i < size; i++) {
+                    if (args[i] != null) {
+                        if (Proxy.isProxyClass(args[i].getClass())) {
+                            final InvocationHandler invocationHandler = Proxy.getInvocationHandler(args[i]);
+                            if (invocationHandler instanceof RemoteReferenceHandler<?>) {
+                                final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
+                                args[i] = handler.getRemoteReference();
+                            }
+                        }
+                    }
+                }
+            }
             final RemoteObjectInvocation<T> invocation = new RemoteObjectInvocation<T>(method.getReturnType(), parameterTypes,
                                                                                        args == null ? EMPTY_ARR : args,
                                                                                        method.getName(), this.remoteReference);

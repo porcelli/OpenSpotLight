@@ -448,6 +448,14 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
                 throw new UnsupportedOperationException();
             }
+            final Object[] args = invocation.getParameters();
+            for (int i = 0, size = args.length; i < size; i++) {
+                if (args[i] instanceof RemoteReference<?>) {
+                    final RemoteReference<?> ref = (RemoteReference<?>)args[i];
+                    args[i] = this.remoteReferences.get(ref).getObject();
+                }
+            }
+
             final R result = (R)method.invoke(object, invocation.getParameters());
             if (method.isAnnotationPresent(DisposeMethod.class)) {
                 this.removeDeathEntry(remoteReferenceData);
