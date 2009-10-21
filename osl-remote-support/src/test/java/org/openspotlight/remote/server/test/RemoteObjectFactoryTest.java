@@ -5,7 +5,9 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -101,9 +103,9 @@ public class RemoteObjectFactoryTest {
     @Test
     public void shouldGetListItem() throws Exception {
         final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
-        final List<NonSerializableInterface> remoteList = proxy.getList();
+        final Collection<NonSerializableInterface> remoteList = proxy.getList();
         assertThat(remoteList.size(), is(3));
-        assertThat(remoteList.get(0).getStuff(), is("1"));
+        assertThat(remoteList.iterator().next().getStuff(), is("1"));
     }
 
     @Test
@@ -167,6 +169,40 @@ public class RemoteObjectFactoryTest {
     @Test( expected = AccessDeniedException.class )
     public void shouldNotCreateRemoteObjectFactoryWhenUserIsInvalid() throws Exception {
         new RemoteObjectFactory("localhost", 7070, "invalid", "password");
+    }
+
+    @Test
+    public void shouldPassNewRemoteReferenceAsParameter() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final NonSerializableInterface nonSerializableResult = proxy.getRemoteResult();
+        nonSerializableResult.setStuff("hooray");
+        final NonSerializableInterface anotherResult = proxy.doSomethingWith(nonSerializableResult);
+        assertThat(anotherResult.getStuff(), is("AAhooray"));
+        assertThat(nonSerializableResult.getStuff(), is("AAhooray"));
+    }
+
+    @Test
+    public void shouldPassNewRemoteReferenceAsParameterInsideCollection() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final NonSerializableInterface nonSerializableResult = proxy.getRemoteResult();
+        nonSerializableResult.setStuff("hooray");
+        final NonSerializableInterface anotherResult = proxy.doSomethingWithCollection(Arrays.asList(nonSerializableResult));
+        assertThat(anotherResult.getStuff(), is("hooray"));
+        assertThat(proxy.getList().size(), is(1));
+        assertThat(proxy.getList().iterator().next().getStuff(), is("hooray"));
+    }
+
+    @Test
+    public void shouldPassNewRemoteReferenceAsParameterInsideMap() throws Exception {
+        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        final NonSerializableInterface nonSerializableResult = proxy.getRemoteResult();
+        nonSerializableResult.setStuff("hooray");
+        final HashMap<String, NonSerializableInterface> map = new HashMap<String, NonSerializableInterface>();
+        map.put("o", nonSerializableResult);
+        final NonSerializableInterface anotherResult = proxy.doSomethingWithMap(map);
+        assertThat(anotherResult.getStuff(), is("hooray"));
+        assertThat(proxy.getMap().size(), is(1));
+        assertThat(proxy.getMap().entrySet().iterator().next().getValue().getStuff(), is("hooray"));
     }
 
     /**
@@ -250,6 +286,5 @@ public class RemoteObjectFactoryTest {
 
     }
 
-    //FIXME method parameters should be retrieved from references
     //FIXME test collections with null return and so on. Needs to return null on remote and see if it works
 }

@@ -1,6 +1,6 @@
 package org.openspotlight.remote.server.test;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.openspotlight.remote.annotation.CachedInvocation;
@@ -11,7 +11,7 @@ public interface ExampleInterface {
 
     public static class AnotherNonSerializableClass implements NonSerializableInterface {
 
-        private final String stuff;
+        private String stuff;
 
         public AnotherNonSerializableClass(
                                             final String stuff ) {
@@ -21,11 +21,26 @@ public interface ExampleInterface {
         public String getStuff() {
             return this.stuff;
         }
+
+        public void setStuff( final String newStuff ) {
+            this.stuff = newStuff;
+        }
     }
 
     public interface NonSerializableInterface {
         public String getStuff();
+
+        public void setStuff( final String newStuff );
     }
+
+    @ReturnsRemoteReference
+    public NonSerializableInterface doSomethingWith( NonSerializableInterface remoteParameter );
+
+    @ReturnsRemoteReference
+    public NonSerializableInterface doSomethingWithCollection( Collection<NonSerializableInterface> collection );
+
+    @ReturnsRemoteReference
+    public NonSerializableInterface doSomethingWithMap( Map<String, NonSerializableInterface> map );
 
     @CachedInvocation
     public boolean expensiveMethodWithoutParameter();
@@ -36,7 +51,7 @@ public interface ExampleInterface {
                                                 boolean throwsException ) throws Exception;
 
     @ReturnsRemoteReference
-    public List<NonSerializableInterface> getList();
+    public Collection<NonSerializableInterface> getList();
 
     @ReturnsRemoteReference
     public Map<String, NonSerializableInterface> getMap();
@@ -50,4 +65,5 @@ public interface ExampleInterface {
 
     @UnsupportedRemoteMethod
     public boolean unsupportedMethod();
+
 }

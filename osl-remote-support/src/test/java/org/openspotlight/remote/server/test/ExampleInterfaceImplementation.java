@@ -1,17 +1,17 @@
 package org.openspotlight.remote.server.test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ExampleInterfaceImplementation implements ExampleInterface {
 
-    private final AnotherNonSerializableClass           remoteResult = new AnotherNonSerializableClass("damn cool stuff!");
+    private final AnotherNonSerializableClass     remoteResult = new AnotherNonSerializableClass("damn cool stuff!");
 
-    private final List<NonSerializableInterface>        list         = new ArrayList<NonSerializableInterface>();
+    private Collection<NonSerializableInterface>  list         = new ArrayList<NonSerializableInterface>();
 
-    private final Map<String, NonSerializableInterface> map          = new HashMap<String, NonSerializableInterface>();
+    private Map<String, NonSerializableInterface> map          = new HashMap<String, NonSerializableInterface>();
 
     public ExampleInterfaceImplementation() {
         this.map.put("1", new AnotherNonSerializableClass("1"));
@@ -20,6 +20,21 @@ public class ExampleInterfaceImplementation implements ExampleInterface {
         this.list.add(new AnotherNonSerializableClass("1"));
         this.list.add(new AnotherNonSerializableClass("2"));
         this.list.add(new AnotherNonSerializableClass("3"));
+    }
+
+    public NonSerializableInterface doSomethingWith( final NonSerializableInterface remoteParameter ) {
+        remoteParameter.setStuff("AA" + remoteParameter.getStuff());
+        return remoteParameter;
+    }
+
+    public NonSerializableInterface doSomethingWithCollection( final Collection<NonSerializableInterface> collection ) {
+        this.list = collection;
+        return this.list.iterator().next();
+    }
+
+    public NonSerializableInterface doSomethingWithMap( final Map<String, NonSerializableInterface> map ) {
+        this.map = map;
+        return this.map.entrySet().iterator().next().getValue();
     }
 
     public boolean expensiveMethodWithoutParameter() {
@@ -47,7 +62,7 @@ public class ExampleInterfaceImplementation implements ExampleInterface {
 
     }
 
-    public List<NonSerializableInterface> getList() {
+    public Collection<NonSerializableInterface> getList() {
 
         return this.list;
     }

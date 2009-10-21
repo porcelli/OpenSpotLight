@@ -481,7 +481,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                     final Iterator<Entry<Object, Object>> it = map.entrySet().iterator();
                     Object o = null;
                     while (o == null) {
-                        o = it.next();
+                        o = it.next().getValue();
                     }
                     if (o instanceof RemoteReference<?>) {
                         // here it needs to use the correct reference instead of using the remote one
