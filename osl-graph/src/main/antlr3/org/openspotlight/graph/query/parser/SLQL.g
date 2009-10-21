@@ -74,14 +74,12 @@ tokens {
 	TIMES_VK;
 	KEEP_RESULT_VK;
 	N_VK;
-	USE_VK;
 	COLLATOR_VK;
 	LEVEL_VK;
 	IDENTICAL_VK;
 	PRIMARY_VK;
 	SECONDARY_VK;
 	TERTIARY_VK;
-	SELECT_VK;
 	ORDER_BY_VK;
 	BY_LINK_VK;
 	DEFINE_OUTPUT_VK;
@@ -299,12 +297,12 @@ scope	{
 	if (isgUnitTest && hasErrors()) {
 		throw new RecognitionException();
 	}
-}	:	(useCollatorLevel SEMICOLON)?
+}	:	useCollatorLevel?
 		defineOutput?
 		defineMessage*
 		defineDominValues*
 		(defineTarget {$compilationUnit::hasDefineTarget = true; defineTargetTreeResult = ((CommonTree)$defineTarget.tree).toStringTree().toLowerCase();} )? 
-		(select {$compilationUnit::selectCount++;})+ EOF
+		(select {$compilationUnit::selectCount++;})+ SEMICOLON? EOF
 	->	^(VT_COMPILATION_UNIT
 			useCollatorLevel?
 			defineOutput?
@@ -320,14 +318,14 @@ useCollatorLevel
 	;
 
 defineOutput
-	:	define_output_key ASSIGN graphicModel SEMICOLON
+	:	define_output_key ASSIGN graphicModel
 		-> graphicModel
 	;
 
 defineTarget
 @after	{
 	isInsideDefineTarget = false;
-}	:	define_target_key {isInsideDefineTarget = true;} ASSIGN (nodeType keep_result_key? SEMICOLON|select) 
+}	:	define_target_key {isInsideDefineTarget = true;} ASSIGN (nodeType keep_result_key?|select) 
 		-> ^(define_target_key nodeType? keep_result_key? select?)
 	;
 
@@ -338,12 +336,12 @@ defineMessage
 		} else {
 			defineMessageVariableSet.add($var.text);
 		}	}
-		ASSIGN STRING SEMICOLON
+		ASSIGN STRING
 		-> ^(define_message_key $var STRING)
 	;
 
 defineDominValues
-	:	define_domain_key values_key domainValues SEMICOLON
+	:	define_domain_key values_key domainValues
 		-> ^(define_domain_key domainValues)
 	;
 
@@ -399,7 +397,6 @@ scope {
 		keep_result_key?
 		orderBy?
 		useCollatorLevel?
-		SEMICOLON
 	-> ^(select_key 
 			STAR? DOUBLE_STAR? nodeType* 
 			byLink?
@@ -582,27 +579,27 @@ propertyName
 	;
 
 define_output_key
-	:	{(validateIdentifierKey(SLSoftKeywords.DEFINE) && validateLT(2, SLSoftKeywords.OUTPUT))}?=>  ID ID
+	:	{validateLT(2, SLSoftKeywords.OUTPUT)}?=>  DEFINE ID
 	;
 
 define_target_key
 @init{
 	String text = "";
-}	:	{(validateIdentifierKey(SLSoftKeywords.DEFINE) && validateLT(2, SLSoftKeywords.TARGET))}?=>  ID ID {text = $text;}
+}	:	{validateLT(2, SLSoftKeywords.TARGET)}?=>  DEFINE ID {text = $text;}
 		-> DEFINE_TARGET_VK[$start, text]
 	;
 
 define_message_key
 @init{
 	String text = "";
-}	:	{(validateIdentifierKey(SLSoftKeywords.DEFINE) && validateLT(2, SLSoftKeywords.MESSAGE))}?=>  ID ID {text = $text;}
+}	:	{validateLT(2, SLSoftKeywords.MESSAGE)}?=>  DEFINE ID {text = $text;}
 		-> DEFINE_MESSAGE_VK[$start, text]
 	;
 
 define_domain_key
 @init{
 	String text = "";
-}	:	{(validateIdentifierKey(SLSoftKeywords.DEFINE) && validateLT(2, SLSoftKeywords.DOMAIN))}?=>  ID ID {text = $text;}
+}	:	{validateLT(2, SLSoftKeywords.DOMAIN)}?=>  DEFINE ID {text = $text;}
 		-> DEFINE_DOMAIN_VK[$start, text]
 	;
 
@@ -638,8 +635,7 @@ desc_key
 	;
 
 select_key
-	:	{(validateIdentifierKey(SLSoftKeywords.SELECT))}?=>	ID
-		-> SELECT_VK[$ID]
+	:	SELECT
 	;
 
 limit_key
@@ -717,8 +713,7 @@ n_times_key
 	;
 
 use_key
-	:	{(validateIdentifierKey(SLSoftKeywords.USE))}?=>	ID
-		-> USE_VK[$ID]
+	:	USE
 	;
 
 collator_key
@@ -749,6 +744,18 @@ secondary_key
 tertiary_key
 	:	{(validateIdentifierKey(SLSoftKeywords.TERTIARY))}?=>	ID
 		-> TERTIARY_VK[$ID]
+	;
+
+DEFINE
+	:	'define'
+	;
+
+USE
+	:	'use'
+	;
+
+SELECT
+	:	'select'
 	;
 
 STARTS_WITH

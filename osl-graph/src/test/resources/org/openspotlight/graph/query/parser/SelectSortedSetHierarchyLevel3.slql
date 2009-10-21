@@ -2,15 +2,15 @@ select org.openspotlight.graph.test.domain.JavaInterface
 	where
 		org.openspotlight.graph.test.domain.JavaInterface
 			property caption == "java.util.SortedSet"
-	keep result;
+	keep result
 
 select org.openspotlight.graph.test.domain.JavaInterface
 	by link org.openspotlight.graph.test.domain.JavaInterfaceHierarchy (b)
-	keep result;
+	keep result
 
 select org.openspotlight.graph.test.domain.JavaInterface
 	by link org.openspotlight.graph.test.domain.JavaInterfaceHierarchy (b)
-	keep result;
+	keep result
 
 select org.openspotlight.graph.test.domain.JavaInterface
 	by link org.openspotlight.graph.test.domain.JavaInterfaceHierarchy (b)

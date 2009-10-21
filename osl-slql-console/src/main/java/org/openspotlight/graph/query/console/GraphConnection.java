@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * 
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph.query.console;
 
 import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
@@ -28,13 +76,38 @@ import org.openspotlight.graph.query.console.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.query.console.test.domain.PackageContainsType;
 import org.openspotlight.graph.query.console.test.domain.TypeContainsMethod;
 
+/**
+ * The Class GraphConnection. This implementation should be changes as soon we get remote access to graph done.
+ * 
+ * @author porcelli
+ */
 public class GraphConnection {
+
+    /**
+     * Connects at server and returns {@link SLGraphSession}.
+     * 
+     * @param serverName the server name
+     * @param userName the user name
+     * @param passw the passw
+     * @return the graph session
+     * @throws SLException the SL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
     public SLGraphSession connect( String serverName,
                                    String userName,
                                    String passw ) throws SLException, IOException, ClassNotFoundException {
         return getPopulatedGraph();
     }
 
+    /**
+     * Gets the populated graph. This method is temporary and used just for testing purpose!
+     * 
+     * @return the populated graph
+     * @throws SLException the SL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
     @Deprecated
     private SLGraphSession getPopulatedGraph() throws SLException, IOException, ClassNotFoundException {
         SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
@@ -95,6 +168,7 @@ public class GraphConnection {
      * @param root the root
      * @param iFace the i face
      * @param javaInterface the java interface
+     * @param session the session
      * @throws SLGraphSessionException the SL graph session exception
      */
     private void addJavaInterfaceHirarchyLinks( SLGraphSession session,
@@ -120,6 +194,7 @@ public class GraphConnection {
      * @param root the root
      * @param clazz the clazz
      * @param javaClass the java class
+     * @param session the session
      * @throws SLGraphSessionException the SL graph session exception
      */
     private void addJavaClassHirarchyLinks( SLGraphSession session,
@@ -144,6 +219,7 @@ public class GraphConnection {
      * @param root the root
      * @param clazz the clazz
      * @param javaClass the java class
+     * @param session the session
      * @throws SLGraphSessionException the SL graph session exception
      */
     private void addClassImplementsInterfaceLinks( SLGraphSession session,
@@ -166,6 +242,7 @@ public class GraphConnection {
      * 
      * @param clazz the clazz
      * @param javaClass the java class
+     * @param session the session
      * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
      * @throws SLGraphSessionException the SL graph session exception
      */
@@ -186,6 +263,7 @@ public class GraphConnection {
      * 
      * @param iFace the i face
      * @param javaInterface the java interface
+     * @param session the session
      * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
      * @throws SLGraphSessionException the SL graph session exception
      */

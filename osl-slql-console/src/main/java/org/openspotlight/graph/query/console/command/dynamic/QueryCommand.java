@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *  
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
+ * or third-party contributors as indicated by the @author tags or express 
+ * copyright attribution statements applied by the authors.  All third-party 
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
+ * TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * This copyrighted material is made available to anyone wishing to use, modify, 
+ * copy, or redistribute it subject to the terms and conditions of the GNU 
+ * Lesser General Public License, as published by the Free Software Foundation. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU Lesser General Public License  for more details. 
+ * 
+ * You should have received a copy of the GNU Lesser General Public License 
+ * along with this distribution; if not, write to: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA 
+ * 
+ *********************************************************************** 
+ * OpenSpotLight - Plataforma de Governana de TI de C—digo Aberto 
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * @author ou por expressa atribui‹o de direito autoral declarada e atribu’da pelo autor.
+ * Todas as contribui›es de terceiros est‹o distribu’das sob licena da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
+ * 
+ * Este programa Ž software livre; voc pode redistribu’-lo e/ou modific‡-lo sob os 
+ * termos da Licena Pœblica Geral Menor do GNU conforme publicada pela Free Software 
+ * Foundation. 
+ * 
+ * Este programa Ž distribu’do na expectativa de que seja œtil, porŽm, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia impl’cita de COMERCIABILIDADE OU ADEQUA‚ÌO A UMA
+ * FINALIDADE ESPECêFICA. Consulte a Licena Pœblica Geral Menor do GNU para mais detalhes.  
+ * 
+ * Voc deve ter recebido uma c—pia da Licena Pœblica Geral Menor do GNU junto com este
+ * programa; se n‹o, escreva para: 
+ * Free Software Foundation, Inc. 
+ * 51 Franklin Street, Fifth Floor 
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.graph.query.console.command.dynamic;
 
 import java.io.File;
@@ -20,10 +68,19 @@ import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
 
+/**
+ * The Class QueryCommand. This command executes a slql query.
+ * 
+ * @author porcelli
+ */
 public class QueryCommand implements DynamicCommand {
 
+    /** The COLUMN_SIZE. */
     private static int COLUMN_SIZE = 36;
 
+    /**
+     * {@inheritDoc}
+     */
     public void execute( ConsoleReader reader,
                          PrintWriter out,
                          ConsoleState state ) {
@@ -52,6 +109,11 @@ public class QueryCommand implements DynamicCommand {
             state.setLastQuery(lastQuery);
             state.clearBuffer();
             state.setActiveCommand(null);
+        } else if (state.getInput().contains(";") || state.getInput().contains("; >")) {
+            out.println("invalid statement");
+            out.flush();
+            state.clearBuffer();
+            state.setActiveCommand(null);
         } else {
             if (state.getActiveCommand() == null) {
                 state.clearBuffer();
@@ -62,6 +124,16 @@ public class QueryCommand implements DynamicCommand {
         state.setInput(null);
     }
 
+    /**
+     * Executes query. If there is any problem during executing, it display its error message. Queries that needs variables
+     * content or target can't be executed at slql console application.
+     * 
+     * @param reader the reader
+     * @param out the out
+     * @param state the state
+     * @param query the query
+     * @param outputFileName the output file name
+     */
     protected void executeQuery( ConsoleReader reader,
                                  PrintWriter out,
                                  ConsoleState state,
@@ -69,18 +141,24 @@ public class QueryCommand implements DynamicCommand {
                                  String outputFileName ) {
         try {
             SLQueryText slqlText = state.getSession().createQueryText(query);
-            SLQueryResult result = slqlText.execute();
-            String outputString = generateOutput(result.getNodes(), state.getAdditionalProperties());
-            out.println(outputString);
-            if (outputFileName != null) {
-                File outputFile = new File(outputFileName);
-                outputFile.createNewFile();
-                PrintWriter fileOut = new PrintWriter(outputFile);
-                fileOut.append("Query: " + query);
-                fileOut.append("\n\n");
-                fileOut.append(outputString);
-                fileOut.flush();
-                fileOut.close();
+            if (!slqlText.hasTarget() && slqlText.getVariables() == null) {
+                SLQueryResult result = slqlText.execute();
+                String outputString = generateOutput(result.getNodes(), state.getAdditionalProperties());
+                out.println(outputString);
+                if (outputFileName != null) {
+                    File outputFile = new File(outputFileName);
+                    outputFile.createNewFile();
+                    PrintWriter fileOut = new PrintWriter(outputFile);
+                    fileOut.append("Query: " + query);
+                    fileOut.append("\n\n");
+                    fileOut.append(outputString);
+                    fileOut.flush();
+                    fileOut.close();
+                }
+            } else if (slqlText.hasTarget()) {
+                out.println("ERROR: can't execute queries with target.");
+            } else if (slqlText.getVariables() == null) {
+                out.println("ERROR: can't execute queries with variables.");
             }
         } catch (SLGraphSessionException e) {
             out.print("ERROR: ");
@@ -95,6 +173,14 @@ public class QueryCommand implements DynamicCommand {
         out.flush();
     }
 
+    /**
+     * Generate output based on result nodes.
+     * 
+     * @param nodes the nodes
+     * @param additionalProperties the additional properties
+     * @return the string
+     * @throws SLGraphSessionException the SL graph session exception
+     */
     protected String generateOutput( Collection<SLNode> nodes,
                                      Collection<String> additionalProperties ) throws SLGraphSessionException {
         StringBuilder buffer = new StringBuilder();
@@ -137,34 +223,65 @@ public class QueryCommand implements DynamicCommand {
         return buffer.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getCommand() {
         return "select";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getAutoCompleteCommand() {
         return "select";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getDescription() {
         return "query the graph database";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getFileCompletionCommand() {
         return "; >";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public FileCompletionMode getFileCompletionMode() {
         return FileCompletionMode.CONTAINS;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean hasFileCompletion() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
         if (state.getActiveCommand() != null && state.getActiveCommand() instanceof QueryCommand) {
             return true;
         } else if (validateStatement(state, "select") || validateStatement(state, "use") || validateStatement(state, "define")) {
+            if (state.getInput().trim().contains(";")) {
+                if (state.getInput().trim().contains("; > ")) {
+                    return true;
+                }
+                if (state.getInput().trim().endsWith(";")) {
+                    return true;
+                }
+                return false;
+            }
             return true;
         } else if (state.getInput().trim().contains("; > ")) {
             return true;
@@ -174,9 +291,15 @@ public class QueryCommand implements DynamicCommand {
         return false;
     }
 
+    /**
+     * Validate statement.
+     * 
+     * @param state the state
+     * @param word the word
+     * @return true, if successful
+     */
     private boolean validateStatement( ConsoleState state,
                                        String word ) {
-        Assertions.checkNotNull("state", state);
         if (state.getInput().trim().length() > word.length() && state.getInput().trim().startsWith(word + " ")) {
             return true;
         } else if (state.getInput().trim().length() == word.length() && state.getInput().trim().equals(word)) {

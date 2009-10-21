@@ -49,52 +49,42 @@
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-database-loader</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-filesystem-loader</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-xml-manager</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-jcr-manager</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-processor-core</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-api</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-jcr</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-java-bundle</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 		<!-- Apache Jackrabbit (JCR Implementation) -->
 		<dependency>
@@ -131,7 +121,6 @@
 		<!--  TODO : remove this ASAP (when the first bundle processor is done) -->
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-configuration-example</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 
 	</dependencies>

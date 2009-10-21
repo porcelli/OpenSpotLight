@@ -95,8 +95,8 @@ public class TestResetPropertiesCommand extends AbstractCommandTest {
     @Test
     public void testValidParameter2() {
         ConsoleState state = new ConsoleState(null);
-        state.addAdditionalProperties("property1");
-        state.addAdditionalProperties("property2");
+        state.addAdditionalProperty("property1");
+        state.addAdditionalProperty("property2");
         state.setInput("reset properties");
         state.appendBuffer("something");
 

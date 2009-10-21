@@ -1,4 +1,4 @@
-define domain values &decValue = 1.3,1.4,2.3,2.5; 
+define domain values &decValue = 1.3,1.4,2.3,2.5 
 select **
 	where
 		org.openspotlight.graph.test.domain.JavaInterface
