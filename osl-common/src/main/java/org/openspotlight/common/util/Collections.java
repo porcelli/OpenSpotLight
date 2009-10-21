@@ -117,16 +117,16 @@ public class Collections {
      * @return the c
      */
     @SuppressWarnings( "unchecked" )
-    public static <I, C extends Collection<I>> C createNewCollection( final Class<C> collectionType,
-                                                                      final int initialSize ) {
+    public static <I> Collection<I> createNewCollection( final Class<? extends Collection> collectionType,
+                                                         final int initialSize ) {
         if (Set.class.isAssignableFrom(collectionType)) {
-            return (C)new HashSet<I>(initialSize);
+            return new HashSet<I>(initialSize);
         } else if (Queue.class.isAssignableFrom(collectionType)) {
-            return (C)new PriorityQueue<I>(initialSize);
+            return new PriorityQueue<I>(initialSize);
         } else if (List.class.isAssignableFrom(collectionType)) {
-            return (C)new ArrayList<I>(initialSize);
+            return new ArrayList<I>(initialSize);
         } else {
-            return (C)new ArrayList<I>(initialSize);
+            return new ArrayList<I>(initialSize);
         }
     }
 
