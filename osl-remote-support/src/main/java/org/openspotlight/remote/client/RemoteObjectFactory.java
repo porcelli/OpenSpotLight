@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -225,13 +226,16 @@ public class RemoteObjectFactory {
                                                               new RemoteReferenceHandler<Object>(this.fromServer,
                                                                                                  methodResponseRemoteReference));
 
-                } else if (result instanceof CollectionOfRemoteInvocationResponse<?, ?>) {
+                } else if (result instanceof CollectionOfRemoteInvocationResponse) {
 
-                    final CollectionOfRemoteInvocationResponse<?, ?> resultCollection = (CollectionOfRemoteInvocationResponse<?, ?>)result;
+                    final CollectionOfRemoteInvocationResponse resultCollection = (CollectionOfRemoteInvocationResponse)result;
                     final Collection<Object> remoteResultCollection = (Collection<Object>)Collections.createNewCollection(
                                                                                                                           resultCollection.getResultType(),
+
                                                                                                                           resultCollection.getResult().size());
-                    for (final RemoteReference<?> remoteRef : resultCollection.getResult()) {
+
+                    final Collection<RemoteReference<Object>> colection = resultCollection.getResult();
+                    for (final RemoteReference<Object> remoteRef : colection) {
                         final Object proxyInstance = Proxy.newProxyInstance(
                                                                             this.getClass().getClassLoader(),
                                                                             new Class[] {remoteRef.getRemoteType()},
@@ -242,10 +246,11 @@ public class RemoteObjectFactory {
                         remoteResultCollection.add(proxyInstance);
                     }
                     resultFromMethod = remoteResultCollection;
-                } else if (result instanceof MapOfRemoteInvocationResponse<?, ?, ?>) {
-                    final MapOfRemoteInvocationResponse<?, ?, ?> resultMap = (MapOfRemoteInvocationResponse<?, ?, ?>)result;
+                } else if (result instanceof MapOfRemoteInvocationResponse) {
+                    final MapOfRemoteInvocationResponse resultMap = (MapOfRemoteInvocationResponse)result;
                     final Map<Object, Object> remoteResultMap = new HashMap<Object, Object>();
-                    for (final Entry<?, ?> remoteRef : resultMap.getResult().entrySet()) {
+                    final Set<Entry<Object, Object>> entrySet = resultMap.getResult().entrySet();
+                    for (final Entry<Object, Object> remoteRef : entrySet) {
                         final RemoteReference<?> remoteRefValue = (RemoteReference<?>)remoteRef.getValue();
                         final Object proxyInstance = Proxy.newProxyInstance(
                                                                             this.getClass().getClassLoader(),

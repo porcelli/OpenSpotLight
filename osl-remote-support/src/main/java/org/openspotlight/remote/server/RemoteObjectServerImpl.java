@@ -653,9 +653,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection.unwrapCollectionFromMethodReturn(method);
         final Class<? extends Collection<?>> collectionType = metadata.getCollectionType();
         final Class<W> remoteReferenceType = (Class<W>)metadata.getItemType();
-        final Collection<RemoteReference<W>> remoteReferencesCollection = (Collection<RemoteReference<W>>)Collections.createNewCollection(
-                                                                                                                                          collectionType,
-                                                                                                                                          collection.size());
+        final Collection<RemoteReference<W>> remoteReferencesCollection = Collections.createNewCollection(collectionType,
+                                                                                                          collection.size());
 
         for (final W o : collection) {
             final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(userToken, remoteReferenceType, o);
