@@ -64,9 +64,9 @@ compilationUnit(selects, generalCollatorLevel) ::=
 	
 	org.openspotlight.graph.query.SLQueryResult result = null;
 	if ($3 != null) {
-	    result = query.execute($3);
+	    result = query.execute($3, $4, $5, $6, $7);
 	} else {
-	    result = query.execute();
+	    result = query.execute($4, $5, $6, $7);
 	}
 
 	return result;
@@ -168,9 +168,9 @@ ascType()	::= ".ascending()"
 descType()	::= ".descending()"
 
 
-limit(expr,offset)	::= ".limit(<expr>)<offset>"
-offset(expr)		::= ".offset(<expr>)"
-
+limit(expr)					::= ".limit(<expr>)"
+limitOffset(expr,offset)	::= ".limit(<expr>, <offset>)"
+offset(expr)				::= "<expr>"
 
 defineTargetWithSelect(select) ::= 
 <<
@@ -185,7 +185,7 @@ defineTargetWithSelect(select) ::=
             throw new org.openspotlight.graph.query.SLQueryException(e1);
     }
 
-	return query.execute();
+	return query.execute($4, $5);
 }
 >>
 
@@ -202,6 +202,6 @@ defineTarget(nodeType) ::=
             throw new org.openspotlight.graph.query.SLQueryException(e1);
     }
 
-	return query.execute();
+	return query.execute($4, $5);
 }
 >>

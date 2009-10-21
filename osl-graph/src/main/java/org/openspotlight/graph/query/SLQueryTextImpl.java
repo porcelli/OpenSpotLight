@@ -127,7 +127,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
                                   Integer limit,
                                   Integer offset )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(inputNodesIDs, null, sortMode, showSLQL);
+        return execute(inputNodesIDs, null, sortMode, showSLQL, limit, offset);
     }
 
     /**
@@ -135,7 +135,17 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
      */
     public SLQueryResult execute( Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute((String[])null, variableValues, SortMode.NOT_SORTED, false);
+        return execute((String[])null, variableValues, SortMode.NOT_SORTED, false, null, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQueryResult execute( Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
+        return execute((String[])null, variableValues, SortMode.NOT_SORTED, false, limit, offset);
     }
 
     /**
@@ -144,7 +154,18 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false);
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, null, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, limit, offset);
     }
 
     /**
@@ -153,7 +174,18 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(inputNodesIDs, variableValues, SortMode.NOT_SORTED, false);
+        return execute(inputNodesIDs, variableValues, SortMode.NOT_SORTED, false, null, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
+        return execute(inputNodesIDs, variableValues, SortMode.NOT_SORTED, false, limit, offset);
     }
 
     /**
@@ -163,7 +195,19 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
                                   SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute((String[])null, variableValues, sortMode, showSLQL);
+        return execute((String[])null, variableValues, sortMode, showSLQL, null, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQueryResult execute( Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
+        return execute((String[])null, variableValues, sortMode, showSLQL, limit, offset);
     }
 
     /**
@@ -174,7 +218,20 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
                                   SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false);
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, null, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, limit, offset);
     }
 
     /**
@@ -184,8 +241,21 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {
+        return execute(inputNodesIDs, variableValues, sortMode, showSLQL, null, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return query.execute(session, variableValues, inputNodesIDs);
+        return query.execute(session, variableValues, inputNodesIDs, sortMode, showSLQL, limit, offset);
     }
 
     /**
@@ -202,7 +272,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
                                         boolean showSLQL )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {
         if (query.getTarget() != null) {
-            return query.getTarget().execute(session, null, null);
+            return query.getTarget().execute(session, null, null, sortMode, showSLQL, null, null);
         }
         return new SLQueryResultImpl(null);
     }

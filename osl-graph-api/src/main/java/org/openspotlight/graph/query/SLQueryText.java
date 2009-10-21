@@ -112,6 +112,24 @@ public interface SLQueryText extends SLQuery {
     /**
      * Execute.
      * 
+     * @param variableValues the variable values
+     * @param limit the limit
+     * @param offset the offset
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+
+    /**
+     * Execute.
+     * 
      * @param inputNodes the input nodes
      * @param variableValues the variable values
      * 
@@ -128,6 +146,26 @@ public interface SLQueryText extends SLQuery {
     /**
      * Execute.
      * 
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @param limit the limit
+     * @param offset the offset
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+
+    /**
+     * Execute.
+     * 
      * @param inputNodesIDs the input nodes id
      * @param variableValues the variable values
      * 
@@ -139,6 +177,26 @@ public interface SLQueryText extends SLQuery {
      */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param variableValues the variable values
+     * @param limit the limit
+     * @param offset the offset
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  Map<String, ?> variableValues,
+                                  Integer limit,
+                                  Integer offset )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
     /**
@@ -162,6 +220,28 @@ public interface SLQueryText extends SLQuery {
     /**
      * Execute.
      * 
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+
+    /**
+     * Execute.
+     * 
      * @param inputNodes the input nodes
      * @param variableValues the variable values
      * @param sortMode the sort mode
@@ -182,6 +262,30 @@ public interface SLQueryText extends SLQuery {
     /**
      * Execute.
      * 
+     * @param inputNodes the input nodes
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+
+    /**
+     * Execute.
+     * 
      * @param inputNodesIDs the input nodes id
      * @param variableValues the variable values
      * @param sortMode the sort mode
@@ -197,6 +301,30 @@ public interface SLQueryText extends SLQuery {
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
+        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param variableValues the variable values
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * 
+     * @return the sL query result
+     * 
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  Map<String, ?> variableValues,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
     /**
