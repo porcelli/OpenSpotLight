@@ -13,6 +13,7 @@ import static org.openspotlight.common.util.HashCodes.hashOf;
 import gnu.cajo.invoke.Remote;
 import gnu.cajo.utils.ItemServer;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -34,7 +35,6 @@ import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.remote.annotation.DisposeMethod;
-import org.openspotlight.remote.annotation.ReturnsRemoteReference;
 import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
@@ -413,7 +413,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                                                                   final Class<T> remoteReferenceType,
                                                                   final T newObject ) {
         RemoteReference<T> reference;
-        if (this.remoteReferences.containsValue(newObject)) {
+        if (newObject != null && this.remoteReferences.containsValue(newObject)) {
             for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
                 if (newObject.equals(entry.getValue().getObject())) {
                     if (userToken.equals(entry.getKey().getUserToken())) {
@@ -505,7 +505,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                 this.removeDeathEntry(remoteReferenceData);
             }
 
-            if (method.isAnnotationPresent(ReturnsRemoteReference.class)) {
+            if (this.isRemote(method)) {
                 if (result instanceof Collection) {
 
                     final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoCollection(
@@ -543,6 +543,25 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     /**
+     * Checks if is remote.
+     * 
+     * @param method the method
+     * @return true, if is remote
+     * @throws Exception the exception
+     */
+    private boolean isRemote( final Method method ) throws Exception {
+        final Class<?> returnType = method.getReturnType();
+        if (Collection.class.isAssignableFrom(returnType)) {
+            final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection.unwrapCollectionFromMethodReturn(method);
+            return this.isTypeRemote(metadata.getItemType());
+        } else if (Map.class.isAssignableFrom(returnType)) {
+            final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection.unwrapMapFromMethodReturn(method);
+            return this.isTypeRemote(metadata.getItemType().getK2());
+        }
+        return this.isTypeRemote(returnType);
+    }
+
+    /**
      * Checks if is remote reference valid.
      * 
      * @param remoteReference the remote reference
@@ -559,6 +578,17 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                                                           + " is invalid. Try to get this object again."));
         }
         return true;
+    }
+
+    private boolean isTypeRemote( final Class<?> returnType ) {
+        if (returnType.isPrimitive()) {
+            return false;
+        }
+        if (Serializable.class.isAssignableFrom(returnType)) {
+            return false;
+        }
+        return true;
+
     }
 
     /**
