@@ -11,7 +11,6 @@ import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface RemoteObjectServer.
  */
@@ -83,7 +82,7 @@ public interface RemoteObjectServer {
          * @param parameters the parameters
          * @return the T
          */
-        public T createNewInstance( Object... parameters );
+        public T createNewInstance( Object... parameters ) throws Exception;
 
         /**
          * Gets the target object type.
@@ -91,6 +90,8 @@ public interface RemoteObjectServer {
          * @return the target object type
          */
         public Class<T> getTargetObjectType();
+
+        public void shutdown();
 
     }
 
