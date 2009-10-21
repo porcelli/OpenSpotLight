@@ -1,0 +1,10 @@
+select **
+	where
+		org.openspotlight.graph.test.domain.JavaClass
+			property caption == "java.util.Date"
+	keep result
+
+select org.openspotlight.graph.test.domain.JavaTypeMethod
+	by link
+		org.openspotlight.graph.test.domain.TypeContainsMethod (b)
+	limit 10;

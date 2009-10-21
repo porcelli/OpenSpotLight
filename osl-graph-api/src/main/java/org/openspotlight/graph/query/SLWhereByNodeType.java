@@ -49,6 +49,7 @@
 package org.openspotlight.graph.query;
 
 
+
 /**
  * The Interface SLWhereByNodeType.
  * 
@@ -93,6 +94,24 @@ public interface SLWhereByNodeType {
 		 */
 		public End keepResult();
 		
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit( Integer size );
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit( Integer size,
+                          Integer offset );
+
 		/**
 		 * Execute x times.
 		 * 

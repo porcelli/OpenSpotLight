@@ -159,6 +159,24 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 			return this;
 		}
 		
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit ) {
+            whereByNodeTypeInfo.getSelectByNodeTypeInfo().setLimit(limit);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit,
+                          Integer offset ) {
+            whereByNodeTypeInfo.getSelectByNodeTypeInfo().setLimit(limit);
+            whereByNodeTypeInfo.getSelectByNodeTypeInfo().setOffset(offset);
+            return this;
+        }
+		
 		/* (non-Javadoc)
 		 * @see org.openspotlight.graph.query.SLWhereByNodeType.End#executeXTimes()
 		 */

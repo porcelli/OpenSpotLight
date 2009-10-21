@@ -235,6 +235,24 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
 			return this;
 		}
 		
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit ) {
+            selectInfo.setLimit(limit);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit,
+                          Integer offset ) {
+            selectInfo.setLimit(limit);
+            selectInfo.setOffset(offset);
+            return this;
+        }
+
 		/* (non-Javadoc)
 		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
 		 */
