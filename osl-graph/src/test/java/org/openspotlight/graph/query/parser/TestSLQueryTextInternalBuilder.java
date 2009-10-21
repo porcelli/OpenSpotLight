@@ -6,10 +6,10 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 public class TestSLQueryTextInternalBuilder {
 

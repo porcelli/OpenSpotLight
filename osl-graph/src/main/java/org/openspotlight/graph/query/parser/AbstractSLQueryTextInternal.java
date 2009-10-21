@@ -63,6 +63,7 @@ import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryException;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
  * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.
@@ -123,7 +124,11 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      */
     public abstract SLQueryResult execute( final SLGraphSession session,
                                            final Map<String, ?> variableValues,
-                                           final String[] inputNodesIDs )
+                                           final String[] inputNodesIDs,
+                                           SortMode sortMode,
+                                           boolean showSLQL,
+                                           Integer limit,
+                                           Integer offset )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
 
     /**

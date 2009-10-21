@@ -3103,7 +3103,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         try {
 
             SLQueryApi query = session.createQueryApi();
-            printInfo = true;
             query
                  .select()
                  .allTypes().onWhere()
@@ -3276,7 +3275,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     @Test
     public void testSelectDateMethodsLimitOffset() {
         try {
-            printInfo = true;
             SLQueryApi query = session.createQueryApi();
 
             query
@@ -3332,7 +3330,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         try {
 
             SLQueryApi query = session.createQueryApi();
-            printInfo = true;
             query
                  .select()
                  .allTypes().onWhere()
@@ -3441,7 +3438,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimitGeneralOffset2() {
         try {
 
-            printInfo = true;
             SLQueryApi query = session.createQueryApi();
 
             query

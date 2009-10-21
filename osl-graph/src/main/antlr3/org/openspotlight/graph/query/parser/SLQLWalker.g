@@ -241,7 +241,11 @@ whereGroupByNodeType
 	;
 
 limitOffset
-	:	^(LIMIT_VK valueExpr offset?)	-> limit(expr={$valueExpr.st},offset={$offset.st})
+@init	{
+	boolean hasOffset = false;
+}	:	^(LIMIT_VK valueExpr (offset {hasOffset = true;})?)
+		-> {hasOffset}? limitOffset(expr={$valueExpr.st},offset={$offset.st})
+		-> limit(expr={$valueExpr.st})
 	;
 
 offset
