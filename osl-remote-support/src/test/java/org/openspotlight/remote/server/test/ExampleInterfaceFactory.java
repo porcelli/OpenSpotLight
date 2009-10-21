@@ -12,4 +12,9 @@ public class ExampleInterfaceFactory implements InternalObjectFactory<ExampleInt
         return ExampleInterface.class;
     }
 
+    public void shutdown() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

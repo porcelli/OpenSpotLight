@@ -82,6 +82,7 @@
 		<module>osl-graph-import-test</module>
 		<module>osl-graph-persistence-api</module>
 		<module>osl-graph-persistence</module>
+		<module>osl-graph-test-data</module>
 		<module>osl-slql-console</module>
 		<module>osl-federation</module>
 		<module>bundle-processor/osl-java-bundle</module>
@@ -146,6 +147,11 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-graph-test-data</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>

@@ -413,9 +413,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                                                                   final Class<T> remoteReferenceType,
                                                                   final T newObject ) {
         RemoteReference<T> reference;
-        if (newObject != null && this.remoteReferences.containsValue(newObject)) {
+        if (newObject != null) {
             for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
-                if (newObject.equals(entry.getValue().getObject())) {
+                if (newObject == entry.getValue().getObject()) {
                     if (userToken.equals(entry.getKey().getUserToken())) {
                         reference = (RemoteReference<T>)entry.getKey();
                         return reference;
@@ -426,7 +426,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
         final String remoteReferenceId = UUID.randomUUID().toString();
 
-        reference = new RemoteReference<T>(remoteReferenceType, remoteReferenceId, userToken);
+        reference = new RemoteReference<T>(remoteReferenceType, newObject.getClass().getInterfaces(), remoteReferenceId,
+                                           userToken);
         this.remoteReferences.put(reference, new RemoteReferenceInternalData<T>(reference, newObject));
         this.updateRemoteReferenceIfNecessary(reference);
         return reference;

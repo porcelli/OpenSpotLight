@@ -63,23 +63,24 @@ import org.openspotlight.graph.SLNode;
  */
 public class QueryUtil {
 
-	/** The Constant LOGGER. */
-	static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
-	
-	/**
-	 * Prints the result.
-	 * 
-	 * @param nodes the nodes
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	static void printResult(Collection<SLNode> nodes) throws SLGraphSessionException {
-		StringBuilder buffer = new StringBuilder();
-		StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
-		for (SLNode node : nodes) {
-			StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60), StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
-		}
-		LOGGER.info(buffer);
-	}
+    /** The Constant LOGGER. */
+    static final Logger LOGGER = Logger.getLogger(QueryUtil.class);
+
+    /**
+     * Prints the result.
+     * 
+     * @param nodes the nodes
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    static void printResult( final Collection<SLNode> nodes ) throws SLGraphSessionException {
+        final StringBuilder buffer = new StringBuilder();
+        StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
+        for (final SLNode node : nodes) {
+            StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60), StringUtils.rightPad(node.getName(),
+                                                                                                                60),
+                                     node.getParent().getName(), '\n');
+        }
+        LOGGER.info(buffer);
+    }
 
 }

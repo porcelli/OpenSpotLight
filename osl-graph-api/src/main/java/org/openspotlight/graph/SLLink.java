@@ -82,6 +82,8 @@ public interface SLLink extends Comparable<SLLink> {
     /** The Constant DIRECTION_ANY. */
     public static final int DIRECTION_ANY          = DIRECTION_UNI | DIRECTION_UNI_REVERSAL | DIRECTION_BI;
 
+    public boolean equals( Object o );
+
     /**
      * Gets the iD.
      * 
