@@ -19,6 +19,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -453,6 +454,49 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                 if (args[i] instanceof RemoteReference<?>) {
                     final RemoteReference<?> ref = (RemoteReference<?>)args[i];
                     args[i] = this.remoteReferences.get(ref).getObject();
+                } else if (args[i] instanceof Collection<?>) {
+                    final Collection<Object> collection = (Collection<Object>)args[i];
+                    final Iterator<?> it = collection.iterator();
+                    Object o = null;
+                    while (o == null) {
+                        o = it.next();
+                    }
+                    if (o instanceof RemoteReference<?>) {
+                        // here it needs to use the correct reference instead of using the remote one
+                        final Collection<Object> newCollection = Collections.createNewCollection(collection.getClass(),
+                                                                                                 collection.size());
+                        for (final Object item : collection) {
+                            if (item instanceof RemoteReference<?>) {
+                                final RemoteReference<Object> remoteRef = (RemoteReference<Object>)item;
+                                final Object correctInstance = this.remoteReferences.get(remoteRef).getObject();
+                                newCollection.add(correctInstance);
+                            } else {
+                                newCollection.add(item);
+                            }
+                        }
+                        args[i] = newCollection;
+                    }
+                } else if (args[i] instanceof Map<?, ?>) {
+                    final Map<Object, Object> map = (Map<Object, Object>)args[i];
+                    final Iterator<Entry<Object, Object>> it = map.entrySet().iterator();
+                    Object o = null;
+                    while (o == null) {
+                        o = it.next();
+                    }
+                    if (o instanceof RemoteReference<?>) {
+                        // here it needs to use the correct reference instead of using the remote one
+                        final Map<Object, Object> newMap = new HashMap<Object, Object>();
+                        for (final Entry<Object, Object> entry : map.entrySet()) {
+                            if (entry.getValue() instanceof RemoteReference<?>) {
+                                final RemoteReference<Object> remoteRef = (RemoteReference<Object>)entry.getValue();
+                                final Object correctInstance = this.remoteReferences.get(remoteRef).getObject();
+                                newMap.put(entry.getKey(), correctInstance);
+                            } else {
+                                newMap.put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                        args[i] = newMap;
+                    }
                 }
             }
 
