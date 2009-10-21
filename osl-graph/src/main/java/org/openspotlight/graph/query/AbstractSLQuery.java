@@ -80,69 +80,104 @@ public abstract class AbstractSLQuery {
         this.treeSession = treeSession;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLQuery#execute()
-     */
     /**
      * Execute.
      * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
     public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
-        return execute((String[])null, SortMode.NOT_SORTED, false);
+        return execute((String[])null, SortMode.NOT_SORTED, false, null, null);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLQuery#execute(java.util.Collection)
+    /**
+     * Execute.
+     * 
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
      */
+    public SLQueryResult execute( Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute((String[])null, SortMode.NOT_SORTED, false, limit, offset);
+    }
+
     /**
      * Execute.
      * 
      * @param inputNodes the input nodes
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes ) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false);
+    public SLQueryResult execute( Collection<SLNode> inputNodes )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLQuery#execute(java.lang.String[])
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
      */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
+    }
+
     /**
      * Execute.
      * 
      * @param inputNodesIDs the input nodes i ds
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( String[] inputNodesIDs ) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
-        return execute(inputNodesIDs, SortMode.NOT_SORTED, false);
+    public SLQueryResult execute( String[] inputNodesIDs )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute(inputNodesIDs, SortMode.NOT_SORTED, false, null, null);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLQuery#execute(org.openspotlight.graph.query.SLQuery.SortMode, boolean)
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
      */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute(inputNodesIDs, SortMode.NOT_SORTED, false, limit, offset);
+    }
+
     /**
      * Execute.
      * 
      * @param sortMode the sort mode
      * @param showSLQL the show slql
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
@@ -150,18 +185,55 @@ public abstract class AbstractSLQuery {
     public SLQueryResult execute( SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
-        return execute((String[])null, sortMode, showSLQL);
+        return execute((String[])null, sortMode, showSLQL, null, null);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLQuery#execute(java.util.Collection, org.openspotlight.graph.query.SLQuery.SortMode, boolean)
+    /**
+     * Execute.
+     * 
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
      */
+    public SLQueryResult execute( SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute((String[])null, sortMode, showSLQL, limit, offset);
+    }
+
     /**
      * Execute.
      * 
      * @param inputNodes the input nodes
      * @param sortMode the sort mode
      * @param showSLQL the show slql
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  SortMode sortMode,
+                                  boolean showSLQL )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
+    }
+
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
      * 
      * @return the sL query result
      * 
@@ -171,29 +243,36 @@ public abstract class AbstractSLQuery {
      */
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   SortMode sortMode,
-                                  boolean showSLQL )
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
         throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false);
+        return execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLQuery#execute(org.openspotlight.graph.query.SLQuery.SortMode, boolean)
-     */
     /**
      * Execute.
      * 
      * @param inputNodesIDs the input nodes i ds
      * @param sortMode the sort mode
      * @param showSLQL the show slql
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  SortMode sortMode,
+                                  boolean showSLQL )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        return execute(inputNodesIDs, SortMode.NOT_SORTED, false, null, null);
+    }
+
     public abstract SLQueryResult execute( String[] inputNodesIDs,
                                            SortMode sortMode,
-                                           boolean showSLQL )
+                                           boolean showSLQL,
+                                           Integer limit,
+                                           Integer offset )
         throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+
 }

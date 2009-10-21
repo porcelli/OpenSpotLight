@@ -48,200 +48,212 @@
  */
 package org.openspotlight.graph.query;
 
-
 /**
  * The Interface SLSelectStatement.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectStatement extends SLSelect {
-	
-	/**
-	 * All types.
-	 * 
-	 * @return the all types
-	 */
-	public AllTypes allTypes(); 
-	
-	/**
-	 * Type.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the type
-	 */
-	public Type type(String typeName);
-	
-	/**
-	 * By link.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the by link
-	 */
-	public ByLink byLink(String typeName);
 
-	/**
-	 * End.
-	 * 
-	 * @return the end
-	 */
-	public End end();
-	
-	/**
-	 * The Interface AllTypes.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface AllTypes {
-		
-		/**
-		 * On where.
-		 * 
-		 * @return the all types
-		 */
-		public AllTypes onWhere();
-		
-		/**
-		 * By link.
-		 * 
-		 * @param name the name
-		 * 
-		 * @return the by link
-		 */
-		public ByLink byLink(String name);
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-	}
-	
-	/**
-	 * The Interface Type.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface Type {
-		
-		/**
-		 * Comma.
-		 * 
-		 * @return the sL select statement
-		 */
-		public SLSelectStatement comma();
-		
-		/**
-		 * By link.
-		 * 
-		 * @param name the name
-		 * 
-		 * @return the by link
-		 */
-		public ByLink byLink(String name);
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-		
-		/**
-		 * Sub types.
-		 * 
-		 * @return the type
-		 */
-		public Type subTypes();
-	}
-	
-	/**
-	 * The Interface ByLink.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface ByLink {
-		
-		/**
-		 * Comma.
-		 * 
-		 * @return the sL select statement
-		 */
-		public SLSelectStatement comma();
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-		
-		/**
-		 * A.
-		 * 
-		 * @return the by link
-		 */
-		public ByLink a();
-		
-		/**
-		 * B.
-		 * 
-		 * @return the by link
-		 */
-		public ByLink b();
-		
-		/**
-		 * Any.
-		 * 
-		 * @return the by link
-		 */
-		public ByLink any();
-	}
-	
-	/**
-	 * The Interface End.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface End extends SLSelectFacade {
-		
-		/**
-		 * Where.
-		 * 
-		 * @return the sL where statement
-		 */
-		public SLWhereStatement where();
-		
-		/**
-		 * Order by.
-		 * 
-		 * @return the sL order by statement
-		 */
-		public SLOrderByStatement orderBy();
-		
-		/**
-		 * Keep result.
-		 * 
-		 * @return the end
-		 */
-		public End keepResult();
-		
-		/**
-		 * Execute x times.
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes();
-		
-		/**
-		 * Execute x times.
-		 * 
-		 * @param x the x
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes(Integer x);
-	}
+    /**
+     * All types.
+     * 
+     * @return the all types
+     */
+    public AllTypes allTypes();
+
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type( String typeName );
+
+    /**
+     * By link.
+     * 
+     * @param typeName the type name
+     * @return the by link
+     */
+    public ByLink byLink( String typeName );
+
+    /**
+     * End.
+     * 
+     * @return the end
+     */
+    public End end();
+
+    /**
+     * The Interface AllTypes.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface AllTypes {
+
+        /**
+         * On where.
+         * 
+         * @return the all types
+         */
+        public AllTypes onWhere();
+
+        /**
+         * By link.
+         * 
+         * @param name the name
+         * @return the by link
+         */
+        public ByLink byLink( String name );
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+    }
+
+    /**
+     * The Interface Type.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface Type {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select statement
+         */
+        public SLSelectStatement comma();
+
+        /**
+         * By link.
+         * 
+         * @param name the name
+         * @return the by link
+         */
+        public ByLink byLink( String name );
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
+    }
+
+    /**
+     * The Interface ByLink.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface ByLink {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select statement
+         */
+        public SLSelectStatement comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * A.
+         * 
+         * @return the by link
+         */
+        public ByLink a();
+
+        /**
+         * B.
+         * 
+         * @return the by link
+         */
+        public ByLink b();
+
+        /**
+         * Any.
+         * 
+         * @return the by link
+         */
+        public ByLink any();
+    }
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End extends SLSelectFacade {
+
+        /**
+         * Where.
+         * 
+         * @return the sL where statement
+         */
+        public SLWhereStatement where();
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public SLOrderByStatement orderBy();
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit( Integer size );
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit( Integer size,
+                          Integer offset );
+
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
+
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes( Integer x );
+    }
 }

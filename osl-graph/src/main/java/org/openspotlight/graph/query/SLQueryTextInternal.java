@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
  * The Interface SLQueryTextInternal. This class is an internal class.
@@ -115,16 +116,22 @@ public interface SLQueryTextInternal extends Serializable {
      * 
      * @param session the session
      * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes id
-     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
     public SLQueryResult execute( final SLGraphSession session,
                                   final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs )
+                                  final String[] inputNodesIDs,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
 }

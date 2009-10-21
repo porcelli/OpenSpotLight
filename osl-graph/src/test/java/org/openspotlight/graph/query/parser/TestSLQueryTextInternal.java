@@ -54,8 +54,10 @@ import static org.hamcrest.Matchers.isOneOf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.log4j.Logger;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
@@ -66,6 +68,8 @@ import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.query.AbstractGeneralQueryTest.NodeWrapper;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.testng.annotations.Test;
 
 /**
@@ -134,7 +138,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllPackages.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -159,7 +163,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllJavaInterfaces.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -198,7 +202,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllJavaClasses.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -264,7 +268,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllJavaTypes.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -349,7 +353,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectTypesFromJavaUtilPackage.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -692,7 +696,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectInterfacesWithSetAndClassesWithMap.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -720,7 +724,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectTypesThatContainsSetOrList.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -756,7 +760,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectTypesFromUtilWithSetListOrMap.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -803,7 +807,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectInterfacesWithSetOverTypesFromUtil.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -826,7 +830,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectInterfacesWithSetOverTypesFromUtilWithKeepResult.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -901,7 +905,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectCollectionMethods.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -939,7 +943,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectCollectionMethodsWithKeepResult.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -975,7 +979,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectUtilTypesAndColletionMethods.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1069,7 +1073,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectTypesFromMethodsWithGet.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1121,7 +1125,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectTypesFromMethodsWithGetWithKeepResult.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1311,7 +1315,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByLinkWithAnySide.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1455,7 +1459,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByLinkWithAnySideWithKeepResult.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1599,7 +1603,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectDateMethodsWithTagLesserOrEqualTo50.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1621,7 +1625,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectDateMethodsWithTagGreaterThan50.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1642,7 +1646,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllDateMethods.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1665,7 +1669,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectDateMethodsWithTagLesserOrEqualTo30OrGreaterOrEqualTo70.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1686,7 +1690,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectDateMethodsWithTagBetween30And70.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1707,7 +1711,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectSortedSetHierarchyLevel1.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1730,7 +1734,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectSortedSetHierarchyLevel2.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1754,7 +1758,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectSortedSetHierarchyLevel3.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1779,7 +1783,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectSortedSetHierarchyExecute3Times.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1807,7 +1811,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         Map<String, Integer> variableValues = new HashMap<String, Integer>();
         variableValues.put("#times", 3);
 
-        SLQueryResult result = query.execute(session, variableValues, null);
+        SLQueryResult result = query.execute(session, variableValues, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1836,7 +1840,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         Map<String, Integer> variableValues = new HashMap<String, Integer>();
         variableValues.put("#times", 3);
 
-        SLQueryResult result = query.execute(session, variableValues, null);
+        SLQueryResult result = query.execute(session, variableValues, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1865,7 +1869,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         Map<String, Integer> variableValues = new HashMap<String, Integer>();
         variableValues.put("#times", 4);
 
-        query.execute(session, variableValues, null);
+        query.execute(session, variableValues, null, sortMode, printInfo, null, null);
     }
 
     /**
@@ -1881,7 +1885,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         Map<String, Object> variableValues = new HashMap<String, Object>();
         variableValues.put("#times", "4");
 
-        query.execute(session, variableValues, null);
+        query.execute(session, variableValues, null, sortMode, printInfo, null, null);
     }
 
     /**
@@ -1897,7 +1901,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         Map<String, Object> variableValues = new HashMap<String, Object>();
         variableValues.put("#times", "4");
 
-        query.execute(session, variableValues, null);
+        query.execute(session, variableValues, null, sortMode, printInfo, null, null);
     }
 
     /**
@@ -1925,7 +1929,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectSortedSetHierarchyExecuteXTimes.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1950,7 +1954,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllTypes.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -1971,7 +1975,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectAllTypesOnWhere.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2029,7 +2033,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("NotRelationalOperator.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2067,7 +2071,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("NotConditionalOperator.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2092,7 +2096,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectDateMethods.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2146,7 +2150,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByLinkCount.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2171,7 +2175,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectOrderByAscending.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2194,7 +2198,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectOrderByDescending.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2217,7 +2221,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectOrderByAscendingAndDescending.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2243,7 +2247,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectOrderByCrossType.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2271,7 +2275,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeyPrimaryChangeAccent.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2286,7 +2290,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeyPrimaryChangeCase.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2302,7 +2306,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeyPrimaryChangeAccentAndCase.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2320,7 +2324,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeySecondaryChangeAccent.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(0));
@@ -2334,7 +2338,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeySecondaryChangeCase.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2350,7 +2354,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeySecondaryChangeAccentAndCase.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(0));
@@ -2364,7 +2368,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeyTertiaryChangeAccent.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(0));
@@ -2378,7 +2382,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeyTertiaryChangeCase.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(0));
@@ -2393,7 +2397,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorKeyTertiaryChangeAccentAndCase.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(0));
@@ -2407,7 +2411,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorDescriptionPrimary.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2422,7 +2426,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorDescriptionSecondary.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2437,7 +2441,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         String slqlInput = getResourceContent("SelectByCollatorDescriptionTertiary.slql");
         SLQueryTextInternal query = queryBuilder.build(slqlInput);
 
-        SLQueryResult result = query.execute(session, null, null);
+        SLQueryResult result = query.execute(session, null, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         assertThat(wrappers.length, is(1));
@@ -2476,7 +2480,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         Map<String, Object> variableValues = new HashMap<String, Object>();
         variableValues.put("#intVar", 3);
 
-        SLQueryResult result = query.execute(session, variableValues, null);
+        SLQueryResult result = query.execute(session, variableValues, null, sortMode, printInfo, null, null);
         final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
 
         new AssertResult() {
@@ -2799,6 +2803,312 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             } else if (activeVariable.getName().equals("&testeFloat")) {
                 assertThat(activeVariable.getDisplayMessage(), is("Entre com o testeFloat"));
             }
+        }
+    }
+
+    @Test
+    public void testSelectDateMethodsLimit() {
+        try {
+
+            String slqlInput = getResourceContent("SelectDateMethodsLimit.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(SortMode.SORTED, false);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(11));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
+                }
+            }.execute();
+
+            printResult(result.getNodes());
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    @Test
+    public void testSelectDateMethodsLimit2() {
+        try {
+
+            String slqlInput = getResourceContent("SelectDateMethodsLimit2.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(SortMode.SORTED, false);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(21));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[16]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[17]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[18]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[19]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), is(wrappers[20]));
+                }
+            }.execute();
+
+            printResult(result.getNodes());
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    @Test
+    public void testSelectDateMethodsLimitGeneral() {
+        try {
+            String slqlInput = getResourceContent("SelectDateMethodsLimitGeneral.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(SortMode.SORTED, false, 10, null);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            printInfo = true;
+            printResult(result.getNodes());
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(10));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                }
+            }.execute();
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitGeneral2() {
+        try {
+
+            String slqlInput = getResourceContent("SelectDateMethodsLimitGeneral.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(SortMode.SORTED, false, 20, null);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(20));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "after"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "before"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[16]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[17]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[18]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[19]));
+                }
+            }.execute();
+
+            printResult(result.getNodes());
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitOffset() {
+        try {
+            String slqlInput = getResourceContent("SelectDateMethodsLimitOffset.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            printResult(result.getNodes());
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(11));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), is(wrappers[10]));
+                }
+            }.execute();
+
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitOffset2() {
+        try {
+
+            String slqlInput = getResourceContent("SelectDateMethodsLimitOffset2.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(sortMode, printInfo);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            printInfo = true;
+            printResult(result.getNodes());
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(17));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "parse"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "readObject"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMinutes"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMonth"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toString"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), is(wrappers[16]));
+                }
+            }.execute();
+
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    @Test
+    public void testSelectDateMethodsLimitOffsetGeneral() {
+        try {
+            String slqlInput = getResourceContent("SelectDateMethodsLimitGeneral.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(SortMode.SORTED, false, 10, 11);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            printInfo = true;
+            printResult(result.getNodes());
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(10));
+                    assertThat(wrappers.length, is(10));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[9]));
+                }
+            }.execute();
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Test select date methods with limit.
+     */
+    @Test
+    public void testSelectDateMethodsLimitOffsetGeneral2() {
+        try {
+
+            String slqlInput = getResourceContent("SelectDateMethodsLimitGeneral.slql");
+            SLQueryText query = session.createQueryText(slqlInput);
+
+            SLQueryResult result = query.execute(SortMode.SORTED, false, 20, 21);
+            final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(17));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"), is(wrappers[0]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), is(wrappers[1]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), is(wrappers[2]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), is(wrappers[3]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "parse"), is(wrappers[4]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "readObject"), is(wrappers[5]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), is(wrappers[6]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMinutes"), is(wrappers[8]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setMonth"), is(wrappers[9]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), is(wrappers[10]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), is(wrappers[11]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), is(wrappers[12]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), is(wrappers[13]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), is(wrappers[14]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "toString"), is(wrappers[15]));
+                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), is(wrappers[16]));
+                }
+            }.execute();
+
+            printResult(result.getNodes());
+        } catch (SLException e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }
