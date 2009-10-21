@@ -54,31 +54,30 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public interface SLContext {
-	
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public SLGraphSession getSession();
-	
-	/**
-	 * Gets the iD.
-	 * 
-	 * @return the iD
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getID() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the root node.
-	 * 
-	 * @return the root node
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLNode getRootNode() throws SLGraphSessionException;
+
+    public boolean equals( Object o );
+
+    /**
+     * Gets the iD.
+     * 
+     * @return the iD
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public String getID() throws SLGraphSessionException;
+
+    /**
+     * Gets the root node.
+     * 
+     * @return the root node
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLNode getRootNode() throws SLGraphSessionException;
+
+    /**
+     * Gets the session.
+     * 
+     * @return the session
+     */
+    public SLGraphSession getSession();
 
 }
-

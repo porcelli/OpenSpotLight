@@ -222,7 +222,7 @@ public class RemoteObjectFactory {
                     final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse = (RemoteReferenceInvocationResponse<Object>)result;
                     final RemoteReference<Object> methodResponseRemoteReference = remoteReferenceResponse.getRemoteReference();
                     resultFromMethod = Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                                                              new Class[] {invocation.getReturnType()},
+                                                              methodResponseRemoteReference.getInterfaces(),
                                                               new RemoteReferenceHandler<Object>(this.fromServer,
                                                                                                  methodResponseRemoteReference));
 
@@ -238,7 +238,7 @@ public class RemoteObjectFactory {
                     for (final RemoteReference<Object> remoteRef : colection) {
                         final Object proxyInstance = Proxy.newProxyInstance(
                                                                             this.getClass().getClassLoader(),
-                                                                            new Class[] {remoteRef.getRemoteType()},
+                                                                            remoteRef.getInterfaces(),
                                                                             new RemoteReferenceHandler<Object>(
                                                                                                                this.fromServer,
                                                                                                                (RemoteReference<Object>)remoteRef));
@@ -254,7 +254,7 @@ public class RemoteObjectFactory {
                         final RemoteReference<?> remoteRefValue = (RemoteReference<?>)remoteRef.getValue();
                         final Object proxyInstance = Proxy.newProxyInstance(
                                                                             this.getClass().getClassLoader(),
-                                                                            new Class[] {remoteRefValue.getRemoteType()},
+                                                                            remoteRefValue.getInterfaces(),
                                                                             new RemoteReferenceHandler<Object>(
                                                                                                                this.fromServer,
                                                                                                                (RemoteReference<Object>)remoteRef.getValue()));
@@ -365,7 +365,7 @@ public class RemoteObjectFactory {
                                      final Object... parameters ) throws InvalidReferenceTypeException {
         final RemoteReference<T> remoteReference = this.fromServer.createRemoteReference(this.userToken, remoteObjectType,
                                                                                          parameters);
-        final T newObjectProxy = (T)Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] {remoteObjectType},
+        final T newObjectProxy = (T)Proxy.newProxyInstance(this.getClass().getClassLoader(), remoteReference.getInterfaces(),
                                                            new RemoteReferenceHandler(this.fromServer, remoteReference));
         return newObjectProxy;
     }
