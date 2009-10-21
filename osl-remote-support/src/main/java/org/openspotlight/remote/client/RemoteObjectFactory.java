@@ -13,6 +13,7 @@ import java.lang.reflect.Proxy;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -135,6 +136,73 @@ public class RemoteObjectFactory {
                                 final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
                                 args[i] = handler.getRemoteReference();
                             }
+                        } else if (args[i] instanceof Collection) {
+                            final Collection<?> collection = (Collection<?>)args[i];
+                            if (collection.size() > 0) {
+                                final Iterator<?> it = collection.iterator();
+                                Object o = null;
+                                while (o == null) {
+                                    o = it.next();
+                                }
+                                if (Proxy.isProxyClass(o.getClass())) {
+                                    final InvocationHandler invocationHandlerForTest = Proxy.getInvocationHandler(o);
+                                    if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
+                                        //here, it *needs* to wrap only the references before sending it to the server
+                                        final Collection<Object> newCollection = Collections.createNewCollection(
+                                                                                                                 collection.getClass(),
+                                                                                                                 collection.size());
+                                        for (final Object item : collection) {
+                                            if (item != null) {
+                                                final InvocationHandler invocationHandler = Proxy.getInvocationHandler(item);
+                                                if (invocationHandler instanceof RemoteReferenceHandler<?>) {
+                                                    final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
+                                                    final Object newO = handler.getRemoteReference();
+                                                    newCollection.add(newO);
+                                                } else {
+                                                    newCollection.add(item);
+                                                }
+                                            } else {
+                                                newCollection.add(null);
+                                            }
+                                        }
+                                        args[i] = newCollection;
+                                    }
+                                }
+
+                            }
+                        } else if (args[i] instanceof Map) {
+                            final Map<Object, Object> map = (Map<Object, Object>)args[i];
+                            if (map.size() > 0) {
+                                final Iterator<Entry<Object, Object>> it = map.entrySet().iterator();
+                                Object o = null;
+                                while (o == null) {
+                                    o = it.next().getValue();
+                                }
+                                if (Proxy.isProxyClass(o.getClass())) {
+                                    final InvocationHandler invocationHandlerForTest = Proxy.getInvocationHandler(o);
+                                    if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
+                                        //here, it *needs* to wrap only the references before sending it to the server
+                                        final Map<Object, Object> newMap = new HashMap<Object, Object>();
+                                        for (final Entry<Object, Object> item : map.entrySet()) {
+                                            if (item.getValue() != null) {
+                                                final InvocationHandler invocationHandler = Proxy.getInvocationHandler(item.getValue());
+                                                if (invocationHandler instanceof RemoteReferenceHandler<?>) {
+                                                    final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
+                                                    final Object newO = handler.getRemoteReference();
+                                                    newMap.put(item.getKey(), newO);
+                                                } else {
+                                                    newMap.put(item.getKey(), item.getValue());
+                                                }
+                                            } else {
+                                                newMap.put(item.getKey(), null);
+                                            }
+                                        }
+                                        args[i] = newMap;
+                                    }
+                                }
+
+                            }
+
                         }
                     }
                 }
