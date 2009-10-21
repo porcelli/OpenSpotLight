@@ -58,7 +58,7 @@ import org.openspotlight.common.util.StringBuilderUtil;
 public abstract class SLSelectInfo {
 
     /** The Constant INDIFINITE. */
-    public static final int INDIFINITE = 0;
+    public static final int INDEFINITE = 0;
 
     /** The keep result. */
     private boolean         keepResult;
@@ -155,7 +155,7 @@ public abstract class SLSelectInfo {
         }
         Integer xTimes = getXTimes();
         if (xTimes != null) {
-            StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDIFINITE ? "INDIFINITE" : "" + xTimes), " TIMES");
+            StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDEFINITE ? "INDEFINITE" : "" + xTimes), " TIMES");
         }
 
         Integer limit = getLimit();
