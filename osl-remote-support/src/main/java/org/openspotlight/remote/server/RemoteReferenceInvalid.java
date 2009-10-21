@@ -4,6 +4,8 @@ import org.openspotlight.common.exception.SLException;
 
 public class RemoteReferenceInvalid extends SLException {
 
+    private static final long serialVersionUID = 1112800963858874985L;
+
     public RemoteReferenceInvalid() {
         // TODO Auto-generated constructor stub
     }
