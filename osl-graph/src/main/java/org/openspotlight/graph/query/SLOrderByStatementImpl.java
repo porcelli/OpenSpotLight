@@ -251,6 +251,23 @@ public class SLOrderByStatementImpl implements SLOrderByStatement {
 			return this;
 		}
 
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit ) {
+            selectStatementInfo.setLimit(limit);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public End limit( Integer limit,
+                          Integer offset ) {
+            selectStatementInfo.setLimit(limit);
+            selectStatementInfo.setOffset(offset);
+            return this;
+        }
 		/* (non-Javadoc)
 		 * @see org.openspotlight.graph.query.SLSelectFacade#select()
 		 */
