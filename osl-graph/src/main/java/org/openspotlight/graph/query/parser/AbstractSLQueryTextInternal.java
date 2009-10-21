@@ -144,6 +144,9 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      * {@inheritDoc}
      */
     public Collection<SLQLVariable> getVariables() {
+        if (variables == null) {
+            return null;
+        }
         return variables.values();
     }
 
@@ -204,7 +207,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
             for (Entry<String, ?> activeVariableValue : variableValues.entrySet()) {
                 if (variables.containsKey(activeVariableValue.getKey())) {
                     SLQLVariable activeVar = variables.get(activeVariableValue.getKey());
-                    if (activeVar.hasDomainValues() && !activeVar.isValidDomainValue(activeVariableValue.getValue())){
+                    if (activeVar.hasDomainValues() && !activeVar.isValidDomainValue(activeVariableValue.getValue())) {
                         Exceptions.logAndThrow(new SLInvalidQueryElementException("Variable value not Allowed"));
                     }
                     activeVar.setValue(activeVariableValue.getValue());

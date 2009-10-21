@@ -3,7 +3,7 @@ select org.openspotlight.graph.test.domain.JavaPackage, org.openspotlight.graph.
 		org.openspotlight.graph.test.domain.JavaType
 			property caption == "java.util"
 		org.openspotlight.graph.test.domain.JavaType.*
-			property caption == "java.util.Collection";
+			property caption == "java.util.Collection"
 
 
 select org.openspotlight.graph.test.domain.JavaType.*, org.openspotlight.graph.test.domain.JavaTypeMethod

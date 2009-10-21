@@ -1,7 +1,7 @@
 select **
 	where
 		org.openspotlight.graph.test.domain.JavaClass
-			property caption == "java.util.Date";
+			property caption == "java.util.Date"
 
 select org.openspotlight.graph.test.domain.JavaTypeMethod
 	by link

@@ -186,7 +186,7 @@ defineDominValues
 select returns [boolean hasKeepResult]
 @init	{
 	$hasKeepResult = false;
-}	:	^(SELECT_VK selectedElements 
+}	:	^(SELECT selectedElements 
 			byLink?
 			where?
 			executing?
