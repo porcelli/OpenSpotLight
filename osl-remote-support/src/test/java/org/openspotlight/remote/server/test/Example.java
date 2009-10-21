@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 public interface Example {
     public static class StrangeReturn implements Serializable {
+        private static final long serialVersionUID = 2643799416982794173L;
+        
         private final int i;
 
         public StrangeReturn(

@@ -4,6 +4,8 @@ import org.openspotlight.common.exception.SLException;
 
 public class UserTokenInvalid extends SLException {
 
+    private static final long serialVersionUID = -8860904224886777869L;
+
     public UserTokenInvalid() {
         // TODO Auto-generated constructor stub
     }

@@ -4,6 +4,8 @@ import org.openspotlight.common.exception.SLException;
 
 public class CantConnectException extends SLException {
 
+    private static final long serialVersionUID = 6687369333470591599L;
+
     public CantConnectException() {
         super();
         // TODO Auto-generated constructor stub

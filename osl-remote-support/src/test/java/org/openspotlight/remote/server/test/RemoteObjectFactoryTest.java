@@ -86,7 +86,7 @@ public class RemoteObjectFactoryTest {
      */
     @Test
     public void shouldCreateRemoteReference() throws Exception {
-        final ExampleInterface proxy = new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
+        new RemoteObjectFactory("localhost", 7070, "valid", "password").createRemoteObject(ExampleInterface.class);
     }
 
     /**

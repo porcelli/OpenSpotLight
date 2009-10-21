@@ -133,6 +133,8 @@ public interface RemoteObjectServer {
      */
     public static final class MapOfRemoteInvocationResponse<K, W, R extends Map<K, W>> extends AbstractInvocationResponse<R> {
 
+        private static final long serialVersionUID = -5728186157743872011L;
+
         /** The result. */
         private final Map<K, RemoteReference<W>> result;
 
