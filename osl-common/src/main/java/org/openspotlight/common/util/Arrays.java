@@ -216,10 +216,14 @@ public class Arrays {
         checkNotNull("anotherTypes", anotherTypes);
         final Set<T> list = new LinkedHashSet<T>();
         for (final T t : array) {
-            list.add(t);
+            if (t != null) {
+                list.add(t);
+            }
         }
         for (final T t : anotherTypes) {
-            list.add(t);
+            if (t != null) {
+                list.add(t);
+            }
         }
         return list.toArray(anotherTypes);
 
