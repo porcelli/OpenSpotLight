@@ -18,25 +18,23 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.GraphConnection;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
-import org.openspotlight.remote.server.RemoteObjectServer;
-import org.openspotlight.remote.server.RemoteObjectServerImpl;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.remote.server.UserAuthenticator;
 
 public class TestExecuteLastQueryCommand extends AbstractCommandTest {
-
-    private static RemoteObjectServer remoteObjectServer;
+    private static RemoteGraphSessionServer remoteObjectServer;
 
     @BeforeClass
     public static void setupServer() throws Exception {
-        remoteObjectServer = new RemoteObjectServerImpl(new UserAuthenticator() {
+        remoteObjectServer = new RemoteGraphSessionServer(new UserAuthenticator() {
 
             public boolean canConnect( final String userName,
                                        final String password,
                                        final String clientHost ) {
                 return true;
             }
-        }, 7070, 10 * 60 * 1000L);
-
+        }, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
     }
 
     @AfterClass

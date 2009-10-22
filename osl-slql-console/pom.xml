@@ -26,6 +26,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-client</artifactId>
 			<exclusions>
 				<exclusion>

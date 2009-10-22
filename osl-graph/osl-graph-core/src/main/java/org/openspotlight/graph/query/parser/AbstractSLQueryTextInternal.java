@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query.parser;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +114,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
 
         if (variables != null && variables.size() > 0) {
             this.variables = new HashMap<String, SLQLVariable>();
-            for (SLQLVariable slqlVariable : variables) {
+            for (final SLQLVariable slqlVariable : variables) {
                 this.variables.put(slqlVariable.getName(), slqlVariable);
             }
         }
@@ -132,55 +133,107 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
 
     /**
+     * Returns the variables content. If variable not found, returns false.
+     * 
+     * @param variableName the variable name
+     * @return the boolean value
+     */
+    protected Boolean getBooleanValue( final String variableName ) {
+        if (this.variables.containsKey(variableName)) {
+            return ((SLQLVariableBoolean)this.variables.get(variableName)).getValue();
+        }
+        return false;
+    }
+
+    /**
+     * Returns the variables content. If variable not found, returns -1.
+     * 
+     * @param variableName the variable name
+     * @return the dec value
+     */
+    protected Float getDecValue( final String variableName ) {
+        if (this.variables.containsKey(variableName)) {
+            return ((SLQLVariableFloat)this.variables.get(variableName)).getValue();
+        }
+        return new Float(-1);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public String getId() {
-        return id;
+        return this.id;
+    }
+
+    /**
+     * Returns the variables content. If variable not found, returns -1.
+     * 
+     * @param variableName the variable name
+     * @return the int value
+     */
+    protected Integer getIntValue( final String variableName ) {
+        if (this.variables.containsKey(variableName)) {
+            return ((SLQLVariableInteger)this.variables.get(variableName)).getValue();
+        }
+        return -1;
     }
 
     /**
      * {@inheritDoc}
      */
     public String getOutputModelName() {
-        return outputModelName;
+        return this.outputModelName;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the variables content. If variable not found, returns empty string.
+     * 
+     * @param variableName the variable name
+     * @return the string value
      */
-    public Collection<SLQLVariable> getVariables() {
-        if (variables == null) {
-            return null;
+    protected String getStringValue( final String variableName ) {
+        if (this.variables.containsKey(variableName)) {
+            return ((SLQLVariableString)this.variables.get(variableName)).getValue();
         }
-        return variables.values();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean hasOutputModel() {
-        return outputModelName != null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean hasTarget() {
-        return target != null;
+        return "";
     }
 
     /**
      * {@inheritDoc}
      */
     public SLQueryTextInternal getTarget() {
-        return target;
+        return this.target;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<SLQLVariable> getVariables() {
+        if (this.variables == null) {
+            return null;
+        }
+        return this.variables.values();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasOutputModel() {
+        return this.outputModelName != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean hasTarget() {
+        return this.target != null;
     }
 
     /**
      * {@inheritDoc}
      */
     public boolean hasVariables() {
-        return variables != null;
+        return this.variables != null;
     }
 
     /**
@@ -192,7 +245,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
     protected void validateAndInit( final SLGraphSession session,
-                                    final Map<String, ?> variableValues,
+                                    final Map<String, ? extends Serializable> variableValues,
                                     final String[] inputNodesIDs ) throws SLInvalidQueryElementException {
         Assertions.checkNotNull("session", session);
 
@@ -209,9 +262,9 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         }
 
         if (variableValues != null && variableValues.size() > 0) {
-            for (Entry<String, ?> activeVariableValue : variableValues.entrySet()) {
-                if (variables.containsKey(activeVariableValue.getKey())) {
-                    SLQLVariable activeVar = variables.get(activeVariableValue.getKey());
+            for (final Entry<String, ? extends Serializable> activeVariableValue : variableValues.entrySet()) {
+                if (this.variables.containsKey(activeVariableValue.getKey())) {
+                    final SLQLVariable activeVar = this.variables.get(activeVariableValue.getKey());
                     if (activeVar.hasDomainValues() && !activeVar.isValidDomainValue(activeVariableValue.getValue())) {
                         Exceptions.logAndThrow(new SLInvalidQueryElementException("Variable value not Allowed"));
                     }
@@ -221,57 +274,5 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
                 }
             }
         }
-    }
-
-    /**
-     * Returns the variables content. If variable not found, returns false.
-     * 
-     * @param variableName the variable name
-     * @return the boolean value
-     */
-    protected Boolean getBooleanValue( final String variableName ) {
-        if (variables.containsKey(variableName)) {
-            return ((SLQLVariableBoolean)variables.get(variableName)).getValue();
-        }
-        return false;
-    }
-
-    /**
-     * Returns the variables content. If variable not found, returns -1.
-     * 
-     * @param variableName the variable name
-     * @return the dec value
-     */
-    protected Float getDecValue( final String variableName ) {
-        if (variables.containsKey(variableName)) {
-            return ((SLQLVariableFloat)variables.get(variableName)).getValue();
-        }
-        return new Float(-1);
-    }
-
-    /**
-     * Returns the variables content. If variable not found, returns -1.
-     * 
-     * @param variableName the variable name
-     * @return the int value
-     */
-    protected Integer getIntValue( final String variableName ) {
-        if (variables.containsKey(variableName)) {
-            return ((SLQLVariableInteger)variables.get(variableName)).getValue();
-        }
-        return -1;
-    }
-
-    /**
-     * Returns the variables content. If variable not found, returns empty string.
-     * 
-     * @param variableName the variable name
-     * @return the string value
-     */
-    protected String getStringValue( final String variableName ) {
-        if (variables.containsKey(variableName)) {
-            return ((SLQLVariableString)variables.get(variableName)).getValue();
-        }
-        return "";
     }
 }

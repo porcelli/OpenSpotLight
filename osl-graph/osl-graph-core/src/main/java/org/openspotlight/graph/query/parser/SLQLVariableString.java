@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query.parser;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +63,7 @@ import org.openspotlight.graph.query.SLQLVariable;
 public class SLQLVariableString extends SLQLVariable {
 
     /** The domain value. */
-    protected Set<String> domainValue = null;
+    protected Set<Serializable> domainValue = null;
 
     /**
      * Instantiates a new sLQL variable string.
@@ -70,16 +71,48 @@ public class SLQLVariableString extends SLQLVariable {
      * @param name the name
      */
     public SLQLVariableString(
-                               String name ) {
+                               final String name ) {
         super(name);
-        this.domainValue = new HashSet<String>();
+        this.domainValue = new HashSet<Serializable>();
     }
 
     /**
      * {@inheritDoc}
      */
+
+    public void addDomainValue( final Serializable value ) {
+        if (this.isValidValue(value)) {
+            final String vsValue = (String)value;
+            if (vsValue.startsWith("\"")) {
+                this.domainValue.add(vsValue.substring(1, vsValue.length() - 1));
+            } else {
+                this.domainValue.add(vsValue);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Serializable> getDomainValues() {
+        return this.domainValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getValue() {
+        return (String)this.value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasDomainValues() {
-        if (domainValue.size() == 0) {
+        if (this.domainValue.size() == 0) {
             return false;
         }
         return true;
@@ -88,44 +121,12 @@ public class SLQLVariableString extends SLQLVariable {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Collection<String> getDomainValues() {
-        return domainValue;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addDomainValue( Object value ) {
-        if (isValidValue(value)) {
-            String vsValue = (String)value;
-            if (vsValue.startsWith("\"")){
-                domainValue.add(vsValue.substring(1, vsValue.length() -1));                
-            } else {
-                domainValue.add(vsValue);
+    public boolean isValidDomainValue( final Serializable value ) {
+        for (final Serializable activeValue : this.domainValue) {
+            if (activeValue.equals(value)) {
+                return true;
             }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getValue() {
-        return (String)value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isValidValue( Object value ) {
-        if (value == null){
-            return false;
-        }
-        if (value instanceof String) {
-            return true;
         }
         return false;
     }
@@ -133,12 +134,13 @@ public class SLQLVariableString extends SLQLVariable {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean isValidDomainValue( Object value ) {
-        for (String activeValue : domainValue) {
-            if (activeValue.equals(value)){
-                return true;
-            }
+
+    public boolean isValidValue( final Serializable value ) {
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof String) {
+            return true;
         }
         return false;
     }
