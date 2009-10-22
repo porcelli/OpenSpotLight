@@ -4,7 +4,6 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.remote.client.CantConnectException;
 import org.openspotlight.remote.client.RemoteObjectFactory;
 import org.openspotlight.remote.server.AccessDeniedException;
@@ -49,11 +48,45 @@ public class RemoteGraphSessionFactory {
         public String getUserName();
     }
 
-    /** The remote object factory. */
-    private final RemoteObjectFactory     remoteObjectFactory;
+    public static final class RemoteGraphFactoryConnectionDataImpl implements RemoteGraphFactoryConnectionData {
+        private final String host;
 
-    /** The descriptor. */
-    private final JcrConnectionDescriptor descriptor;
+        private final String password;
+
+        private final int    port;
+
+        private final String userName;
+
+        public RemoteGraphFactoryConnectionDataImpl(
+                                                     final String host, final String userName, final String password,
+                                                     final int port ) {
+            this.host = host;
+            this.password = password;
+            this.port = port;
+            this.userName = userName;
+        }
+
+        public String getHost() {
+            return this.host;
+        }
+
+        public String getPassword() {
+            return this.password;
+        }
+
+        public int getPort() {
+            return this.port;
+        }
+
+        public String getUserName() {
+            return this.userName;
+        }
+    }
+
+    public static final int           DEFAULT_PORT = 9876;
+
+    /** The remote object factory. */
+    private final RemoteObjectFactory remoteObjectFactory;
 
     /**
      * Instantiates a new remote graph session factory.
@@ -64,10 +97,8 @@ public class RemoteGraphSessionFactory {
      * @throws AccessDeniedException the access denied exception
      */
     public RemoteGraphSessionFactory(
-                                      final RemoteGraphFactoryConnectionData connectionData,
-                                      final JcrConnectionDescriptor descriptor )
+                                      final RemoteGraphFactoryConnectionData connectionData )
         throws CantConnectException, AccessDeniedException {
-        this.descriptor = descriptor;
         this.remoteObjectFactory = new RemoteObjectFactory(connectionData.getHost(), connectionData.getPort(),
                                                            connectionData.getUserName(), connectionData.getPassword());
     }
@@ -79,7 +110,7 @@ public class RemoteGraphSessionFactory {
      */
     public SLGraphSession createRemoteGraphSession() {
         try {
-            return this.remoteObjectFactory.createRemoteObject(SLGraphSession.class, this.descriptor);
+            return this.remoteObjectFactory.createRemoteObject(SLGraphSession.class);
         } catch (final InvalidReferenceTypeException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }
