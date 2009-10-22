@@ -91,307 +91,6 @@ import org.testng.annotations.BeforeClass;
 
 public class AbstractGeneralQueryTest {
 
-    /** The LOGGER. */
-    protected static Logger  LOGGER;
-    /** The graph. */
-    protected SLGraph        graph;
-    /** The session. */
-    protected SLGraphSession session;
-    /** The sort mode. */
-    protected SortMode       sortMode  = SortMode.NOT_SORTED;
-    /** The print info. */
-    protected boolean        printInfo = false;
-
-    /**
-     * Populate graph.
-     */
-    @BeforeClass
-    public void populateGraph() {
-        try {
-            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createTempGraph(true);
-            session = graph.openSession();
-            sortMode = SortMode.SORTED;
-
-            SLMetadata metadata = session.getMetadata();
-            if (metadata.findMetaNodeType(JavaType.class) != null) return;
-
-            Collection<Class<?>> iFaces = loadClasses("java-util-interfaces.txt");
-            Collection<Class<?>> classes = loadClasses("java-util-classes.txt");
-
-            SLContext context = session.createContext("queryTest");
-            SLNode root = context.getRootNode();
-
-            Package pack = java.util.Date.class.getPackage();
-            JavaPackage utilJavaPackage = root.addNode(JavaPackage.class, pack.getName());
-            utilJavaPackage.setCaption(pack.getName());
-
-            int count = 0;
-            float floatValue = 0.3F;
-            for (Class<?> iFace : iFaces) {
-                JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
-                session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
-                javaInterface.setCaption(iFace.getName());
-                javaInterface.setProperty(Integer.class, "intValue", count);
-                javaInterface.setProperty(Float.class, "decValue", new Float(count + floatValue));
-                javaInterface.setProperty(Boolean.class, "boolValue", new Boolean(true));
-                addJavaInterfaceHirarchyLinks(root, iFace, javaInterface);
-                addJavaInterfaceContainsJavaMethod(iFace, javaInterface);
-                count++;
-            }
-
-            count = 0;
-            for (Class<?> clazz : classes) {
-                //              context = session.createContext("queryTest2");
-                root = context.getRootNode();
-                JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
-                session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
-                javaClass.setCaption(clazz.getName());
-                javaClass.setProperty(Integer.class, "intValue", count);
-                javaClass.setProperty(Float.class, "decValue", new Float(count + floatValue));
-                javaClass.setProperty(Boolean.class, "boolValue", new Boolean(false));
-                addJavaClassHirarchyLinks(root, clazz, javaClass);
-                addClassImplementsInterfaceLinks(root, clazz, javaClass);
-                addJavaClassContainsJavaClassMethod(clazz, javaClass);
-                count++;
-            }
-
-            session.save();
-            session.close();
-
-            session = graph.openSession();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public void finish() {
-        session.close();
-        graph.shutdown();
-    }
-
-    /**
-     * Wrap nodes.
-     * 
-     * @param nodes the nodes
-     * @return the node wrapper[]
-     */
-    protected NodeWrapper[] wrapNodes( List<SLNode> nodes ) {
-        NodeWrapper[] wrappers = new NodeWrapper[nodes.size()]; 
-        
-        for (int i = 0; i < wrappers.length; i++) {
-            wrappers[i] = new NodeWrapper(nodes.get(i));
-        }
-        return wrappers;
-    }
-
-    /**
-     * Prints the asserts.
-     * 
-     * @param wrappers the wrappers
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    void printAsserts( NodeWrapper[] wrappers ) throws SLGraphSessionException {
-        StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
-        for (int i = 0; i < wrappers.length; i++) {
-            NodeWrapper wrapper = wrappers[i];
-            String pattern = "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), isOneOf(wrappers));";
-            pattern = StringUtils.replace(pattern, "${typeName}", wrapper.getTypeName());
-            pattern = StringUtils.replace(pattern, "${parentName}", wrapper.getParentName());
-            pattern = StringUtils.replace(pattern, "${name}", wrapper.getName());
-            buffer.append(pattern).append('\n');
-        }
-        buffer.append('\n');
-        LOGGER.info(buffer);
-    }
-
-    /**
-     * Prints the asserts in order.
-     * 
-     * @param wrappers the wrappers
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    void printAssertsInOrder( NodeWrapper[] wrappers ) throws SLGraphSessionException {
-        StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
-        for (int i = 0; i < wrappers.length; i++) {
-            NodeWrapper wrapper = wrappers[i];
-            String pattern = "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), is(wrappers[${index}]));";
-            pattern = StringUtils.replace(pattern, "${typeName}", wrapper.getTypeName());
-            pattern = StringUtils.replace(pattern, "${parentName}", wrapper.getParentName());
-            pattern = StringUtils.replace(pattern, "${name}", wrapper.getName());
-            pattern = StringUtils.replace(pattern, "${index}", "" + i);
-            buffer.append(pattern).append('\n');
-        }
-        buffer.append('\n');
-        LOGGER.info(buffer);
-    }
-
-    /**
-     * Prints the result.
-     * 
-     * @param nodes the nodes
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    protected void printResult( Collection<SLNode> nodes ) throws SLGraphSessionException {
-        if (printInfo && !nodes.isEmpty()) {
-            StringBuilder buffer = new StringBuilder();
-            StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
-            for (SLNode node : nodes) {
-                StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60), StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
-            }
-            LOGGER.info(buffer);
-        }
-    }
-
-    /**
-     * Adds the java interface hirarchy links.
-     * 
-     * @param root the root
-     * @param iFace the i face
-     * @param javaInterface the java interface
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private void addJavaInterfaceHirarchyLinks( SLNode root,
-                                                Class<?> iFace,
-                                                JavaInterface javaInterface ) throws SLGraphSessionException {
-        Class<?>[] superIFaces = iFace.getInterfaces();
-        for (Class<?> superIFace : superIFaces) {
-            Package iFacePack = iFace.getPackage();
-            JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
-            javaPackage.setCaption(iFacePack.getName());
-            JavaInterface superJavaInterface = javaPackage.addNode(JavaInterface.class, superIFace.getName());
-            session.addLink(PackageContainsType.class, javaPackage, superJavaInterface, false);
-            superJavaInterface.setCaption(superIFace.getName());
-            session.addLink(JavaInterfaceHierarchy.class, javaInterface, superJavaInterface, false);
-            addJavaInterfaceHirarchyLinks(root, superIFace, superJavaInterface);
-        }
-    }
-
-    /**
-     * Adds the java class hirarchy links.
-     * 
-     * @param root the root
-     * @param clazz the clazz
-     * @param javaClass the java class
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private void addJavaClassHirarchyLinks( SLNode root,
-                                            Class<?> clazz,
-                                            JavaClass javaClass ) throws SLGraphSessionException {
-        Class<?> superClass = clazz.getSuperclass();
-        if (superClass != null) {
-            Package classPack = clazz.getPackage();
-            JavaPackage javaPackage = root.addNode(JavaPackage.class, classPack.getName());
-            javaPackage.setCaption(classPack.getName());
-            JavaClass superJavaClass = javaPackage.addNode(JavaClass.class, superClass.getName());
-            session.addLink(PackageContainsType.class, javaPackage, superJavaClass, false);
-            session.addLink(JavaClassHierarchy.class, javaClass, superJavaClass, false);
-            addJavaClassHirarchyLinks(root, superClass, superJavaClass);
-        }
-    }
-
-    /**
-     * Adds the class implements interface links.
-     * 
-     * @param root the root
-     * @param clazz the clazz
-     * @param javaClass the java class
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private void addClassImplementsInterfaceLinks( SLNode root,
-                                                   Class<?> clazz,
-                                                   JavaClass javaClass ) throws SLGraphSessionException {
-        Class<?>[] iFaces = clazz.getInterfaces();
-        for (Class<?> iFace : iFaces) {
-            Package iFacePack = iFace.getPackage();
-            JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
-            javaPackage.setCaption(iFacePack.getName());
-            JavaInterface javaInterface = javaPackage.addNode(JavaInterface.class, iFace.getName());
-            javaInterface.setCaption(iFace.getName());
-            ClassImplementsInterface link = session.addLink(ClassImplementsInterface.class, javaClass, javaInterface, false);
-            link.setTag(randomTag());
-        }
-    }
-
-    /**
-     * Adds the java class contains java class method.
-     * 
-     * @param clazz the clazz
-     * @param javaClass the java class
-     * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private void addJavaClassContainsJavaClassMethod( Class<?> clazz,
-                                                      JavaClass javaClass )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
-        Method[] methods = clazz.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, methods[i].getName());
-            javaTypeMethod.setCaption(methods[i].getName());
-            TypeContainsMethod link = session.addLink(TypeContainsMethod.class, javaClass, javaTypeMethod, false);
-            link.setTag(randomTag());
-        }
-    }
-
-    /**
-     * Adds the java interface contains java method.
-     * 
-     * @param iFace the i face
-     * @param javaInterface the java interface
-     * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private void addJavaInterfaceContainsJavaMethod( Class<?> iFace,
-                                                     JavaInterface javaInterface )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
-        Method[] methods = iFace.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++) {
-            JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, methods[i].getName());
-            javaTypeMethod.setCaption(methods[i].getName());
-            TypeContainsMethod link = session.addLink(TypeContainsMethod.class, javaInterface, javaTypeMethod, false);
-            link.setTag(randomTag());
-        }
-    }
-
-    /**
-     * Load classes.
-     * 
-     * @param fileName the file name
-     * @return the collection< class<?>>
-     * @throws SLException the SL exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws ClassNotFoundException the class not found exception
-     */
-    private Collection<Class<?>> loadClasses( String fileName ) throws SLException, IOException, ClassNotFoundException {
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        String packagePath = AbstractGeneralQueryTest.class.getPackage().getName().replace('.', '/');
-        String filePath = packagePath + '/' + fileName;
-        InputStream inputStream = getResourceFromClassPath(filePath);
-        Collection<String> names = Files.readLines(inputStream);
-        inputStream.close();
-        for (String name : names) {
-            String className = "java.util.".concat(name).trim();
-            Class<?> clazz = Class.forName(className);
-            classes.add(clazz);
-        }
-        return classes;
-    }
-
-    /**
-     * Random tag.
-     * 
-     * @return the int
-     */
-    private int randomTag() {
-        return (int)Math.round(Math.random() * 100.0);
-    }
-
     /**
      * The Class NodeWrapper.
      * 
@@ -414,47 +113,33 @@ public class AbstractGeneralQueryTest {
         /**
          * Instantiates a new node wrapper.
          * 
-         * @param typeName the type name
-         * @param parentName the parent name
-         * @param name the name
+         * @param node the node
          */
         public NodeWrapper(
-                            String typeName, String parentName, String name ) {
-            this.typeName = typeName;
-            this.parentName = parentName;
-            this.name = name;
+                            final SLNode node ) {
+            this.node = node;
         }
 
         /**
          * Instantiates a new node wrapper.
          * 
-         * @param node the node
+         * @param typeName the type name
+         * @param parentName the parent name
+         * @param name the name
          */
         public NodeWrapper(
-                            SLNode node ) {
-            this.node = node;
-        }
-
-        /**
-         * Gets the type name.
-         * 
-         * @return the type name
-         * @throws SLGraphSessionException the SL graph session exception
-         */
-        public String getTypeName() throws SLGraphSessionException {
-            if (typeName == null) {
-                typeName = node.getTypeName();
-            }
-            return typeName;
-        }
-
-        /**
-         * Sets the type name.
-         * 
-         * @param typeName the new type name
-         */
-        public void setTypeName( String typeName ) {
+                            final String typeName, final String parentName, final String name ) {
             this.typeName = typeName;
+            this.parentName = parentName;
+            this.name = name;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals( final Object obj ) {
+            return this.hashCode() == obj.hashCode();
         }
 
         /**
@@ -464,19 +149,10 @@ public class AbstractGeneralQueryTest {
          * @throws SLGraphSessionException the SL graph session exception
          */
         public String getName() throws SLGraphSessionException {
-            if (name == null) {
-                name = node.getName();
+            if (this.name == null) {
+                this.name = this.node.getName();
             }
-            return name;
-        }
-
-        /**
-         * Sets the name.
-         * 
-         * @param name the new name
-         */
-        public void setName( String name ) {
-            this.name = name;
+            return this.name;
         }
 
         /**
@@ -486,27 +162,23 @@ public class AbstractGeneralQueryTest {
          * @throws SLGraphSessionException the SL graph session exception
          */
         public String getParentName() throws SLGraphSessionException {
-            if (parentName == null) {
-                parentName = node.getParent().getName();
+            if (this.parentName == null) {
+                this.parentName = this.node.getParent().getName();
             }
-            return parentName;
+            return this.parentName;
         }
 
         /**
-         * Sets the parent name.
+         * Gets the type name.
          * 
-         * @param parentName the new parent name
+         * @return the type name
+         * @throws SLGraphSessionException the SL graph session exception
          */
-        public void setParentName( String parentName ) {
-            this.parentName = parentName;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals( Object obj ) {
-            return hashCode() == obj.hashCode();
+        public String getTypeName() throws SLGraphSessionException {
+            if (this.typeName == null) {
+                this.typeName = this.node.getTypeName();
+            }
+            return this.typeName;
         }
 
         /* (non-Javadoc)
@@ -515,11 +187,170 @@ public class AbstractGeneralQueryTest {
         @Override
         public int hashCode() {
             try {
-                return HashCodes.hashOf(getTypeName(), getParentName(), getName());
-            } catch (SLGraphSessionException e) {
+                return HashCodes.hashOf(this.getTypeName(), this.getParentName(), this.getName());
+            } catch (final SLGraphSessionException e) {
                 throw new SLRuntimeException(e);
             }
         }
+
+        /**
+         * Sets the name.
+         * 
+         * @param name the new name
+         */
+        public void setName( final String name ) {
+            this.name = name;
+        }
+
+        /**
+         * Sets the parent name.
+         * 
+         * @param parentName the new parent name
+         */
+        public void setParentName( final String parentName ) {
+            this.parentName = parentName;
+        }
+
+        /**
+         * Sets the type name.
+         * 
+         * @param typeName the new type name
+         */
+        public void setTypeName( final String typeName ) {
+            this.typeName = typeName;
+        }
+    }
+
+    /** The LOGGER. */
+    protected static Logger  LOGGER;
+    /** The graph. */
+    protected SLGraph        graph;
+    /** The session. */
+    protected SLGraphSession session;
+    /** The sort mode. */
+    protected SortMode       sortMode  = SortMode.NOT_SORTED;
+
+    /** The print info. */
+    protected boolean        printInfo = false;
+
+    /**
+     * Adds the class implements interface links.
+     * 
+     * @param root the root
+     * @param clazz the clazz
+     * @param javaClass the java class
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    private void addClassImplementsInterfaceLinks( final SLNode root,
+                                                   final Class<?> clazz,
+                                                   final JavaClass javaClass ) throws SLGraphSessionException {
+        final Class<?>[] iFaces = clazz.getInterfaces();
+        for (final Class<?> iFace : iFaces) {
+            final Package iFacePack = iFace.getPackage();
+            final JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
+            javaPackage.setCaption(iFacePack.getName());
+            final JavaInterface javaInterface = javaPackage.addNode(JavaInterface.class, iFace.getName());
+            javaInterface.setCaption(iFace.getName());
+            final ClassImplementsInterface link = this.session.addLink(ClassImplementsInterface.class, javaClass, javaInterface,
+                                                                       false);
+            link.setTag(this.randomTag());
+        }
+    }
+
+    /**
+     * Adds the java class contains java class method.
+     * 
+     * @param clazz the clazz
+     * @param javaClass the java class
+     * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    private void addJavaClassContainsJavaClassMethod( final Class<?> clazz,
+                                                      final JavaClass javaClass )
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        final Method[] methods = clazz.getDeclaredMethods();
+        for (final Method method : methods) {
+            final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
+            javaTypeMethod.setCaption(method.getName());
+            final TypeContainsMethod link = this.session.addLink(TypeContainsMethod.class, javaClass, javaTypeMethod, false);
+            link.setTag(this.randomTag());
+        }
+    }
+
+    /**
+     * Adds the java class hirarchy links.
+     * 
+     * @param root the root
+     * @param clazz the clazz
+     * @param javaClass the java class
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    private void addJavaClassHirarchyLinks( final SLNode root,
+                                            final Class<?> clazz,
+                                            final JavaClass javaClass ) throws SLGraphSessionException {
+        final Class<?> superClass = clazz.getSuperclass();
+        if (superClass != null) {
+            final Package classPack = clazz.getPackage();
+            final JavaPackage javaPackage = root.addNode(JavaPackage.class, classPack.getName());
+            javaPackage.setCaption(classPack.getName());
+            final JavaClass superJavaClass = javaPackage.addNode(JavaClass.class, superClass.getName());
+            this.session.addLink(PackageContainsType.class, javaPackage, superJavaClass, false);
+            this.session.addLink(JavaClassHierarchy.class, javaClass, superJavaClass, false);
+            this.addJavaClassHirarchyLinks(root, superClass, superJavaClass);
+        }
+    }
+
+    /**
+     * Adds the java interface contains java method.
+     * 
+     * @param iFace the i face
+     * @param javaInterface the java interface
+     * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    private void addJavaInterfaceContainsJavaMethod( final Class<?> iFace,
+                                                     final JavaInterface javaInterface )
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        final Method[] methods = iFace.getDeclaredMethods();
+        for (final Method method : methods) {
+            final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
+            javaTypeMethod.setCaption(method.getName());
+            final TypeContainsMethod link = this.session.addLink(TypeContainsMethod.class, javaInterface, javaTypeMethod, false);
+            link.setTag(this.randomTag());
+        }
+    }
+
+    /**
+     * Adds the java interface hirarchy links.
+     * 
+     * @param root the root
+     * @param iFace the i face
+     * @param javaInterface the java interface
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    private void addJavaInterfaceHirarchyLinks( final SLNode root,
+                                                final Class<?> iFace,
+                                                final JavaInterface javaInterface ) throws SLGraphSessionException {
+        final Class<?>[] superIFaces = iFace.getInterfaces();
+        for (final Class<?> superIFace : superIFaces) {
+            final Package iFacePack = iFace.getPackage();
+            final JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
+            javaPackage.setCaption(iFacePack.getName());
+            final JavaInterface superJavaInterface = javaPackage.addNode(JavaInterface.class, superIFace.getName());
+            this.session.addLink(PackageContainsType.class, javaPackage, superJavaInterface, false);
+            superJavaInterface.setCaption(superIFace.getName());
+            this.session.addLink(JavaInterfaceHierarchy.class, javaInterface, superJavaInterface, false);
+            this.addJavaInterfaceHirarchyLinks(root, superIFace, superJavaInterface);
+        }
+    }
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public void finish() {
+        this.session.close();
+        this.shutdownTest();
     }
 
     /**
@@ -530,7 +361,7 @@ public class AbstractGeneralQueryTest {
      */
     protected String getResourceContent( final String resourceName ) {
         try {
-            final InputStream in = getClass().getResourceAsStream(resourceName);
+            final InputStream in = this.getClass().getResourceAsStream(resourceName);
             final Reader reader = new InputStreamReader(in);
 
             final StringBuilder text = new StringBuilder();
@@ -539,14 +370,199 @@ public class AbstractGeneralQueryTest {
             int len = 0;
 
             while ((len = reader.read(buf)) >= 0) {
-                text.append(buf,
-                            0,
-                            len);
+                text.append(buf, 0, len);
             }
 
             return text.toString();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return "";
         }
+    }
+
+    /**
+     * Load classes.
+     * 
+     * @param fileName the file name
+     * @return the collection< class<?>>
+     * @throws SLException the SL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws ClassNotFoundException the class not found exception
+     */
+    private Collection<Class<?>> loadClasses( final String fileName ) throws SLException, IOException, ClassNotFoundException {
+        final Collection<Class<?>> classes = new ArrayList<Class<?>>();
+        final String packagePath = AbstractGeneralQueryTest.class.getPackage().getName().replace('.', '/');
+        final String filePath = packagePath + '/' + fileName;
+        final InputStream inputStream = getResourceFromClassPath(filePath);
+        final Collection<String> names = Files.readLines(inputStream);
+        inputStream.close();
+        for (final String name : names) {
+            final String className = "java.util.".concat(name).trim();
+            final Class<?> clazz = Class.forName(className);
+            classes.add(clazz);
+        }
+        return classes;
+    }
+
+    protected void openNewSession() throws Exception {
+        this.session = this.graph.openSession();
+    }
+
+    /**
+     * Populate graph.
+     */
+    @BeforeClass
+    public void populateGraph() {
+        try {
+            this.setupSession();
+
+            this.sortMode = SortMode.SORTED;
+
+            final SLMetadata metadata = this.session.getMetadata();
+            if (metadata.findMetaNodeType(JavaType.class) != null) {
+                return;
+            }
+
+            final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
+            final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");
+
+            final SLContext context = this.session.createContext("queryTest");
+            SLNode root = context.getRootNode();
+
+            final Package pack = java.util.Date.class.getPackage();
+            final JavaPackage utilJavaPackage = root.addNode(JavaPackage.class, pack.getName());
+            utilJavaPackage.setCaption(pack.getName());
+
+            int count = 0;
+            final float floatValue = 0.3F;
+            for (final Class<?> iFace : iFaces) {
+                final JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
+                this.session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
+                javaInterface.setCaption(iFace.getName());
+                javaInterface.setProperty(Integer.class, "intValue", count);
+                javaInterface.setProperty(Float.class, "decValue", new Float(count + floatValue));
+                javaInterface.setProperty(Boolean.class, "boolValue", new Boolean(true));
+                this.addJavaInterfaceHirarchyLinks(root, iFace, javaInterface);
+                this.addJavaInterfaceContainsJavaMethod(iFace, javaInterface);
+                count++;
+            }
+
+            count = 0;
+            for (final Class<?> clazz : classes) {
+                //              context = session.createContext("queryTest2");
+                root = context.getRootNode();
+                final JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
+                this.session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
+                javaClass.setCaption(clazz.getName());
+                javaClass.setProperty(Integer.class, "intValue", count);
+                javaClass.setProperty(Float.class, "decValue", new Float(count + floatValue));
+                javaClass.setProperty(Boolean.class, "boolValue", new Boolean(false));
+                this.addJavaClassHirarchyLinks(root, clazz, javaClass);
+                this.addClassImplementsInterfaceLinks(root, clazz, javaClass);
+                this.addJavaClassContainsJavaClassMethod(clazz, javaClass);
+                count++;
+            }
+
+            this.session.save();
+            this.session.close();
+
+            this.openNewSession();
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Prints the asserts.
+     * 
+     * @param wrappers the wrappers
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    void printAsserts( final NodeWrapper[] wrappers ) throws SLGraphSessionException {
+        final StringBuilder buffer = new StringBuilder();
+        StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
+        for (final NodeWrapper wrapper : wrappers) {
+            String pattern = "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), isOneOf(wrappers));";
+            pattern = StringUtils.replace(pattern, "${typeName}", wrapper.getTypeName());
+            pattern = StringUtils.replace(pattern, "${parentName}", wrapper.getParentName());
+            pattern = StringUtils.replace(pattern, "${name}", wrapper.getName());
+            buffer.append(pattern).append('\n');
+        }
+        buffer.append('\n');
+        LOGGER.info(buffer);
+    }
+
+    /**
+     * Prints the asserts in order.
+     * 
+     * @param wrappers the wrappers
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    void printAssertsInOrder( final NodeWrapper[] wrappers ) throws SLGraphSessionException {
+        final StringBuilder buffer = new StringBuilder();
+        StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
+        for (int i = 0; i < wrappers.length; i++) {
+            final NodeWrapper wrapper = wrappers[i];
+            String pattern = "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), is(wrappers[${index}]));";
+            pattern = StringUtils.replace(pattern, "${typeName}", wrapper.getTypeName());
+            pattern = StringUtils.replace(pattern, "${parentName}", wrapper.getParentName());
+            pattern = StringUtils.replace(pattern, "${name}", wrapper.getName());
+            pattern = StringUtils.replace(pattern, "${index}", "" + i);
+            buffer.append(pattern).append('\n');
+        }
+        buffer.append('\n');
+        LOGGER.info(buffer);
+    }
+
+    /**
+     * Prints the result.
+     * 
+     * @param nodes the nodes
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    protected void printResult( final Collection<SLNode> nodes ) throws SLGraphSessionException {
+        if (this.printInfo && !nodes.isEmpty()) {
+            final StringBuilder buffer = new StringBuilder();
+            StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
+            for (final SLNode node : nodes) {
+                StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60),
+                                         StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
+            }
+            LOGGER.info(buffer);
+        }
+    }
+
+    /**
+     * Random tag.
+     * 
+     * @return the int
+     */
+    private int randomTag() {
+        return (int)Math.round(Math.random() * 100.0);
+    }
+
+    protected void setupSession() throws Exception {
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        this.graph = factory.createTempGraph(true);
+        this.session = this.graph.openSession();
+    }
+
+    protected void shutdownTest() {
+        this.graph.shutdown();
+
+    }
+
+    /**
+     * Wrap nodes.
+     * 
+     * @param nodes the nodes
+     * @return the node wrapper[]
+     */
+    protected NodeWrapper[] wrapNodes( final List<SLNode> nodes ) {
+        final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
+
+        for (int i = 0; i < wrappers.length; i++) {
+            wrappers[i] = new NodeWrapper(nodes.get(i));
+        }
+        return wrappers;
     }
 }

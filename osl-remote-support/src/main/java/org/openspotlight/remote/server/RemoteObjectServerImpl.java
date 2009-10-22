@@ -295,6 +295,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             final InternalObjectFactory<T> internalFactory = (InternalObjectFactory<T>)this.internalObjectFactoryMap.get(remoteReferenceType);
 
             final T newObject = internalFactory.createNewInstance(parameters);
+
             final RemoteReference<T> reference = this.internalCreateRemoteReference(userToken, remoteReferenceType, newObject);
 
             return reference;
@@ -412,6 +413,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     private <T> RemoteReference<T> internalCreateRemoteReference( final UserToken userToken,
                                                                   final Class<T> remoteReferenceType,
                                                                   final T newObject ) {
+        if (newObject == null) {
+            return null;
+        }
         RemoteReference<T> reference;
         if (newObject != null) {
             for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
@@ -445,8 +449,16 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         try {
             final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>)this.remoteReferences.get(invocation.getRemoteReference());
             final T object = remoteReferenceData.getObject();
-            final Method method = invocation.getRemoteReference().getRemoteType().getMethod(invocation.getMethodName(),
-                                                                                            invocation.getParameterTypes());
+            Method method = null;
+            for (final Class<?> iface : invocation.getRemoteReference().getInterfaces()) {
+                try {
+                    method = iface.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                    break;
+                } catch (final NoSuchMethodException e) {
+
+                }
+            }
+            checkCondition("methodNotNull", method != null);
             if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
                 throw new UnsupportedOperationException();
             }
@@ -629,9 +641,13 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @param deathEntry the death entry
      */
     private void removeDeathEntry( final RemoteReferenceInternalData<?> deathEntry ) {
-        this.logger.info(format("removing reference {0} id {1}", deathEntry.getObject(),
-                                deathEntry.getRemoteReference().getRemoteReferenceId()));
+        try {
+            this.logger.info(format("removing reference {0} id {1}", deathEntry.getObject().toString(),
+                                    deathEntry.getRemoteReference().getRemoteReferenceId()));
 
+        } catch (final Exception e) {
+            this.logger.warn("error printing log for death entry " + deathEntry.getRemoteReference().getRemoteReferenceId(), e);
+        }
         RemoteObjectServerImpl.this.remoteReferences.remove(deathEntry.getRemoteReference());
         final Method[] methods = deathEntry.getObject().getClass().getMethods();
         for (final Method m : methods) {

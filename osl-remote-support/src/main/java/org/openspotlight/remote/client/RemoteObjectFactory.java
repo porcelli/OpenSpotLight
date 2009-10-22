@@ -221,10 +221,15 @@ public class RemoteObjectFactory {
                 } else if (result instanceof RemoteReferenceInvocationResponse<?>) {
                     final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse = (RemoteReferenceInvocationResponse<Object>)result;
                     final RemoteReference<Object> methodResponseRemoteReference = remoteReferenceResponse.getRemoteReference();
-                    resultFromMethod = Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                                                              methodResponseRemoteReference.getInterfaces(),
-                                                              new RemoteReferenceHandler<Object>(this.fromServer,
-                                                                                                 methodResponseRemoteReference));
+                    if (methodResponseRemoteReference == null) {
+                        resultFromMethod = null;
+                    } else {
+                        resultFromMethod = Proxy.newProxyInstance(
+                                                                  this.getClass().getClassLoader(),
+                                                                  methodResponseRemoteReference.getInterfaces(),
+                                                                  new RemoteReferenceHandler<Object>(this.fromServer,
+                                                                                                     methodResponseRemoteReference));
+                    }
 
                 } else if (result instanceof CollectionOfRemoteInvocationResponse) {
 
