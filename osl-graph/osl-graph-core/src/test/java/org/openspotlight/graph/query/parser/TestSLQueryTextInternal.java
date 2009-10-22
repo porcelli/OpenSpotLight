@@ -61,7 +61,6 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 import org.openspotlight.graph.query.AssertResult;
-import org.openspotlight.graph.query.NodeWrapper;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;

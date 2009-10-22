@@ -63,14 +63,16 @@ import org.openspotlight.common.util.Exceptions;
  */
 public abstract class SLQLVariable implements Serializable {
 
+    private static final long serialVersionUID = 3345904857635022041L;
+
     /** The variable name. */
-    protected String       name           = null;
+    protected String          name             = null;
 
     /** The display message. */
-    protected String       displayMessage = null;
+    protected String          displayMessage   = null;
 
     /** The value. */
-    protected Serializable value          = null;
+    protected Serializable    value            = null;
 
     /**
      * Instantiates a new SLQL variable.

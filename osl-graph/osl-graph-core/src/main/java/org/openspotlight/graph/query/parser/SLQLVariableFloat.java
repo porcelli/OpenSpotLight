@@ -62,8 +62,10 @@ import org.openspotlight.graph.query.SLQLVariable;
  */
 public class SLQLVariableFloat extends SLQLVariable {
 
+    private static final long   serialVersionUID = 4363296081831314086L;
+
     /** The domain value. */
-    protected Set<Serializable> domainValue = null;
+    protected Set<Serializable> domainValue      = null;
 
     /**
      * Instantiates a new sLQL variable float.
