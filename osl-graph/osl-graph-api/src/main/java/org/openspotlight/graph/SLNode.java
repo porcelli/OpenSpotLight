@@ -388,6 +388,8 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
      */
     public String getTypeName() throws SLGraphSessionException;
 
+    public int hashCode();
+
     /**
      * Removes the.
      * 

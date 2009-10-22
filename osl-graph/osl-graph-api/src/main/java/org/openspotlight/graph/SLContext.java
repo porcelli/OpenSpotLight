@@ -80,4 +80,6 @@ public interface SLContext {
      */
     public SLGraphSession getSession();
 
+    public int hashCode();
+
 }
