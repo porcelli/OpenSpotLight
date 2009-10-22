@@ -61,7 +61,6 @@ import org.openspotlight.remote.annotation.DisposeMethod;
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSession {
-
     /**
      * Adds the link.
      * 
@@ -134,6 +133,8 @@ public interface SLGraphSession {
      * @throws SLInvalidQuerySyntaxException the invalid synyax exception
      */
     public SLQueryText createQueryText( String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException;
+
+    public boolean equals( Object o );
 
     /**
      * Gets the bidirectional links.
@@ -458,6 +459,8 @@ public interface SLGraphSession {
      * @throws SLGraphSessionException the SL graph session exception
      */
     public Collection<SLLink> getUnidirectionalLinksByTarget( SLNode target ) throws SLGraphSessionException;
+
+    public int hashCode();
 
     /**
      * Save.

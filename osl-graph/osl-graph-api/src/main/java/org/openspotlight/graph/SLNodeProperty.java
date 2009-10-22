@@ -55,59 +55,56 @@ import java.io.Serializable;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLNodeProperty<V extends Serializable> extends Serializable {
+public interface SLNodeProperty<V extends Serializable> {
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @return the node
-	 */
-	public SLNode getNode();
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getName() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the value.
-	 * 
-	 * @return the value
-	 * 
-	 * @throws SLInvalidNodePropertyTypeException the SL invalid node property type exception
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public V getValue() throws SLInvalidNodePropertyTypeException, SLGraphSessionException;
+    public boolean equals( Object o );
 
-	/**
-	 * Gets the value as string.
-	 * 
-	 * @return the value as string
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getValueAsString() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the value.
-	 * 
-	 * @param value the new value
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setValue(V value) throws SLGraphSessionException;
-	
-	/**
-	 * Removes the.
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void remove() throws SLGraphSessionException;
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public String getName() throws SLGraphSessionException;
+
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     */
+    public SLNode getNode();
+
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     * @throws SLInvalidNodePropertyTypeException the SL invalid node property type exception
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public V getValue() throws SLInvalidNodePropertyTypeException, SLGraphSessionException;
+
+    /**
+     * Gets the value as string.
+     * 
+     * @return the value as string
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public String getValueAsString() throws SLGraphSessionException;
+
+    public int hashCode();
+
+    /**
+     * Removes the.
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void remove() throws SLGraphSessionException;
+
+    /**
+     * Sets the value.
+     * 
+     * @param value the new value
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setValue( V value ) throws SLGraphSessionException;
 }
-
-
-

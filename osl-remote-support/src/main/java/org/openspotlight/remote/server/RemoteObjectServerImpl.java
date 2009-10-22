@@ -582,6 +582,10 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     private boolean isTypeRemote( final Class<?> returnType ) {
+        if (returnType == null) {
+            return true;
+        }
+
         if (returnType.isPrimitive()) {
             return false;
         }

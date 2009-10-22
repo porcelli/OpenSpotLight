@@ -388,7 +388,8 @@ public class SLRemoteGraphTest {
      * @throws SLGraphException the SL graph exception
      */
     @BeforeMethod
-    public void beforeTest() throws SLGraphException {
+    public void beforeTest() throws Exception {
+        org.openspotlight.common.util.Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
         if (this.session == null) {
             this.session = this.client.createRemoteGraphSession();
         }
