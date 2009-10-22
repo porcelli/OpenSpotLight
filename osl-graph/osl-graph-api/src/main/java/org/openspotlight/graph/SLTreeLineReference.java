@@ -48,5 +48,147 @@
  */
 package org.openspotlight.graph;
 
-public interface SLTreeLineReference extends SLNode {
+import java.util.Collection;
+
+/**
+ * The Interface SLTreeLineReference.
+ * 
+ * @author porcelli
+ */
+public interface SLTreeLineReference {
+
+    /**
+     * Gets the id.
+     * 
+     * @return the id
+     */
+    public String getId();
+
+    /**
+     * Gets the artifacts.
+     * 
+     * @return the artifacts
+     */
+    public Collection<SLArtifactLineReference> getArtifacts();
+
+    /**
+     * The Interface SLArtifactLineReference.
+     * 
+     * @author porcelli
+     */
+    public interface SLArtifactLineReference {
+
+        /**
+         * Gets the artifact id.
+         * 
+         * @return the artifact id
+         */
+        public String getArtifactId();
+
+        /**
+         * Gets the artifact version.
+         * 
+         * @return the artifact version
+         */
+        public String getArtifactVersion();
+
+        /**
+         * Gets the statements.
+         * 
+         * @return the statements
+         */
+        public Collection<SLStatementLineReference> getStatements();
+
+        /**
+         * Adds the statement.
+         * 
+         * @param statement the statement
+         * @param startLine the start line
+         * @param endLine the end line
+         * @param startColumn the start column
+         * @param endColumn the end column
+         */
+        public void addStatement( String statement,
+                                  Integer startLine,
+                                  Integer endLine,
+                                  Integer startColumn,
+                                  Integer endColumn );
+    }
+
+    /**
+     * The Interface SLStatementLineReference.
+     * 
+     * @author porcelli
+     */
+    public interface SLStatementLineReference {
+
+        /**
+         * Gets the statement.
+         * 
+         * @return the statement
+         */
+        public String getStatement();
+
+        /**
+         * Gets the line references.
+         * 
+         * @return the line references
+         */
+        public Collection<SLSimpleLineReference> getLineReferences();
+
+        /**
+         * Adds the line ref.
+         * 
+         * @param startLine the start line
+         * @param endLine the end line
+         * @param startColumn the start column
+         * @param endColumn the end column
+         */
+        public void addLineRef( Integer startLine,
+                                Integer endLine,
+                                Integer startColumn,
+                                Integer endColumn );
+
+        /**
+         * The Interface SLSimpleLineReference.
+         * 
+         * @author porcelli
+         */
+    }
+
+    /**
+     * The Interface SLSimpleLineReference.
+     * 
+     * @author porcelli
+     */
+    public interface SLSimpleLineReference {
+
+        /**
+         * Gets the start line.
+         * 
+         * @return the start line
+         */
+        public Integer getStartLine();
+
+        /**
+         * Gets the end line.
+         * 
+         * @return the end line
+         */
+        public Integer getEndLine();
+
+        /**
+         * Gets the start column.
+         * 
+         * @return the start column
+         */
+        public Integer getStartColumn();
+
+        /**
+         * Gets the end column.
+         * 
+         * @return the end column
+         */
+        public Integer getEndColumn();
+    }
 }

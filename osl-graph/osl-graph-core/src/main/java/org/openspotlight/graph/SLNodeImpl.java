@@ -496,8 +496,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public SLTreeLineReference getTreeLineReferences() throws SLGraphSessionException {
-        //TODO Implement here
-        return null;
+        return new SLTreeLineReferenceImpl(this.getID(), this.getLineReferences());
     }
 
     public String getTypeName() throws SLGraphSessionException {
