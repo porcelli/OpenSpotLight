@@ -48,6 +48,8 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+
 import org.apache.commons.collections15.Predicate;
 
 /**
@@ -55,6 +57,6 @@ import org.apache.commons.collections15.Predicate;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLNodePredicate extends Predicate<SLNode> {
+public interface SLNodePredicate extends Serializable, Predicate<SLNode> {
 
 }

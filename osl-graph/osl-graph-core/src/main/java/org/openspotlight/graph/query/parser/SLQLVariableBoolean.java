@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query.parser;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +63,7 @@ import org.openspotlight.graph.query.SLQLVariable;
 public class SLQLVariableBoolean extends SLQLVariable {
 
     /** The domain value. */
-    Set<Boolean> domainValue = new HashSet<Boolean>(2);
+    Set<Serializable> domainValue = new HashSet<Serializable>(2);
 
     /**
      * Instantiates a new sLQL variable boolean.
@@ -70,32 +71,24 @@ public class SLQLVariableBoolean extends SLQLVariable {
      * @param name the name
      */
     public SLQLVariableBoolean(
-                                String name ) {
+                                final String name ) {
         super(name);
-        domainValue.add(true);
-        domainValue.add(false);
+        this.domainValue.add(true);
+        this.domainValue.add(false);
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean hasDomainValues() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<Boolean> getDomainValues() {
-        return domainValue;
+    public void addDomainValue( final Serializable value ) {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addDomainValue( Object value ) {
+    public Collection<Serializable> getDomainValues() {
+        return this.domainValue;
     }
 
     /**
@@ -103,15 +96,29 @@ public class SLQLVariableBoolean extends SLQLVariable {
      */
     @Override
     public Boolean getValue() {
-        return (Boolean)value;
+        return (Boolean)this.value;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isValidValue( Object value ) {
-        if (value == null){
+    public boolean hasDomainValues() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isValidDomainValue( final Serializable value ) {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isValidValue( final Serializable value ) {
+        if (value == null) {
             return false;
         }
         if (value.getClass().getName().equals(boolean.class.getName())) {
@@ -121,13 +128,5 @@ public class SLQLVariableBoolean extends SLQLVariable {
             return true;
         }
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isValidDomainValue( Object value ) {
-        return true;
     }
 }

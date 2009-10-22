@@ -110,6 +110,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
+import java.io.Serializable;
 
 }
 
@@ -178,8 +179,8 @@ variable returns [String varName]
 
 defineDominValues
 @init	{
-	Set<Object> domainValues = new HashSet<Object>();
-}	:	^(DEFINE_DOMAIN_VK variable (ve=valueExpr {domainValues.add($ve.value);})+)
+	Set<Serializable> domainValues = new HashSet<Serializable>();
+}	:	^(DEFINE_DOMAIN_VK variable (ve=valueExpr {domainValues.add((Serializable)$ve.value);})+)
 		{	queryInfo.getDomainVariables().put($variable.varName, domainValues);	}
 	;
 

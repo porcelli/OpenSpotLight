@@ -68,6 +68,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.Files;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
@@ -100,6 +101,7 @@ import org.openspotlight.graph.test.domain.JavaLink;
 import org.openspotlight.graph.test.domain.JavaMethodNode;
 import org.openspotlight.graph.test.domain.JavaPackageJavaClass;
 import org.openspotlight.graph.test.domain.JavaPackagePublicElement;
+import org.openspotlight.graph.test.domain.NamePredicate;
 import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.graph.test.domain.node.JavaPackageNode;
@@ -388,7 +390,8 @@ public class SLRemoteGraphTest {
      * @throws SLGraphException the SL graph exception
      */
     @BeforeMethod
-    public void beforeTest() throws SLGraphException {
+    public void beforeTest() throws Exception {
+        //        org.openspotlight.common.util.Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
         if (this.session == null) {
             this.session = this.client.createRemoteGraphSession();
         }
@@ -440,6 +443,8 @@ public class SLRemoteGraphTest {
      */
     @BeforeClass
     public void init() throws Exception {
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+
         this.server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
             public boolean canConnect( final String userName,
@@ -447,7 +452,7 @@ public class SLRemoteGraphTest {
                                        final String clientHost ) {
                 return true;
             }
-        }, 7070, 10 * 60 * 1000L);
+        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         this.client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
@@ -466,7 +471,7 @@ public class SLRemoteGraphTest {
             public String getUserName() {
                 return "***";
             }
-        }, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        });
 
     }
 
@@ -1710,16 +1715,16 @@ public class SLRemoteGraphTest {
             final JavaMethodNode javaMethodNode2A = javaClassNode2.addNode(JavaMethodNode.class, "javaMethodNode2A");
             final JavaMethodNode javaMethodNode2B = javaClassNode2.addNode(JavaMethodNode.class, "javaMethodNode2B");
 
-            //                Collection<SLNode> nodes = null;
-            //                nodes = this.session.getNodesByPredicate(new NamePredicate("javaPackage"));
-            //                this.assertNodes(nodes, javaPackageNode1);
-            //    
-            //                nodes = this.session.getNodesByPredicate(new NamePredicate("javaClass"));
-            //                this.assertNodes(nodes, javaClassNode1, javaClassNode2);
-            //    
-            //                nodes = this.session.getNodesByPredicate(new NamePredicate("javaMethod"));
-            //                this.assertNodes(nodes, javaMethodNode1A, javaMethodNode1B, javaMethodNode2A, javaMethodNode2B);
-            //    
+            Collection<SLNode> nodes = null;
+            nodes = this.session.getNodesByPredicate(new NamePredicate("javaPackage"));
+            this.assertNodes(nodes, javaPackageNode1);
+
+            nodes = this.session.getNodesByPredicate(new NamePredicate("javaClass"));
+            this.assertNodes(nodes, javaClassNode1, javaClassNode2);
+
+            nodes = this.session.getNodesByPredicate(new NamePredicate("javaMethod"));
+            this.assertNodes(nodes, javaMethodNode1A, javaMethodNode1B, javaMethodNode2A, javaMethodNode2B);
+
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();

@@ -240,8 +240,6 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
     public SLNode addNode( String name,
                            SLEncoder encoder ) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException;
 
-    public boolean equals( Object o );
-
     /**
      * Gets the context.
      * 

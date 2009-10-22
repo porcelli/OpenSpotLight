@@ -9,6 +9,9 @@ import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.remote.server.RemoteObjectServer;
+
 /**
  * The Class RemoteReference will be used to locate the remote reference on actions like sending messages to the
  * {@link RemoteObjectServer} asking for some method invocation.
@@ -16,6 +19,34 @@ import java.io.Serializable;
  * @param <T>
  */
 public class RemoteReference<T> implements Serializable {
+
+    /**
+     * The Interface ObjectMethods contains commons methods used on Object class. This is necessary for the proxy implementation.
+     */
+    public interface ObjectMethods {
+
+        /**
+         * Equals.
+         * 
+         * @param o the o
+         * @return true, if successful
+         */
+        public boolean equals( Object o );
+
+        /**
+         * Hash code.
+         * 
+         * @return the int
+         */
+        public int hashCode();
+
+        /**
+         * To string.
+         * 
+         * @return the string
+         */
+        public String toString();
+    }
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1738168629624338103L;
@@ -46,13 +77,12 @@ public class RemoteReference<T> implements Serializable {
     public RemoteReference(
                             final Class<T> remoteType, final Class<?>[] interfaces, final String remoteReferenceId,
                             final UserToken userToken ) {
-        checkNotNull("remoteType", remoteType);
         checkNotEmpty("remoteReferenceId", remoteReferenceId);
         checkNotNull("userToken", userToken);
         this.remoteType = remoteType;
         this.remoteReferenceId = remoteReferenceId;
         this.userToken = userToken;
-        this.interfaces = interfaces;
+        this.interfaces = Arrays.unionOf(interfaces, ObjectMethods.class, remoteType);
         this.hashcode = hashOf(this.remoteType, this.remoteReferenceId, this.userToken);
     }
 
