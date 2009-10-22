@@ -57,180 +57,185 @@ import java.util.List;
  * @author Vitor Hugo Chagas
  */
 public class SLSelectStatementInfo extends SLSelectInfo {
-	
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/** The type info list. */
-	private List<SLSelectTypeInfo> typeInfoList;
-	
-	/** The by link info list. */
-	private List<SLSelectByLinkInfo> byLinkInfoList;
 
-	/** The where statement info. */
-	private SLWhereStatementInfo whereStatementInfo;
-	
-	/** The order by statement info. */
-	private SLOrderByStatementInfo orderByStatementInfo;
+    /** The Constant serialVersionUID. */
+    private static final long        serialVersionUID = 1L;
 
-	/** The all types info. */
-	private SLAllTypesInfo allTypesInfo;
-	
-	/** The collator strength. */
-	private Integer collatorStrength;
-	
-	/**
-	 * Instantiates a new sL select statement info.
-	 */
-	public SLSelectStatementInfo() {
-		typeInfoList = new ArrayList<SLSelectTypeInfo>();
-		byLinkInfoList = new ArrayList<SLSelectByLinkInfo>();
-	}
-	
-	/**
-	 * Gets the all types.
-	 * 
-	 * @return the all types
-	 */
-	public SLAllTypesInfo getAllTypes() {
-		return allTypesInfo;
-	}
-	
-	/**
-	 * Adds the all types.
-	 * 
-	 * @return the sL all types info
-	 */
-	public SLAllTypesInfo addAllTypes() {
-		if (allTypesInfo == null) {
-			allTypesInfo = new SLAllTypesInfo();
-		}
-		return allTypesInfo;
-	}
-	
-	/**
-	 * Adds the type.
-	 * 
-	 * @param name the name
-	 * 
-	 * @return the sL select type info
-	 */
-	public SLSelectTypeInfo addType(String name) {
-		SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(this, name);
-		typeInfoList.add(typeInfo);
-		return typeInfo;
-	}
-	
-	/**
-	 * Adds the by link.
-	 * 
-	 * @param name the name
-	 * 
-	 * @return the sL select by link info
-	 */
-	public SLSelectByLinkInfo addByLink(String name) {
-		SLSelectByLinkInfo byLinkInfo = new SLSelectByLinkInfo(name);
-		byLinkInfoList.add(byLinkInfo);
-		return byLinkInfo;
-	}
+    /** The type info list. */
+    private List<SLSelectTypeInfo>   typeInfoList;
 
-	/**
-	 * Gets the by link info list.
-	 * 
-	 * @return the by link info list
-	 */
-	public List<SLSelectByLinkInfo> getByLinkInfoList() {
-		return byLinkInfoList;
-	}
+    /** The by link info list. */
+    private List<SLSelectByLinkInfo> byLinkInfoList;
 
-	/**
-	 * Gets the type info list.
-	 * 
-	 * @return the type info list
-	 */
-	public List<SLSelectTypeInfo> getTypeInfoList() {
-		return typeInfoList;
-	}
+    /** The where statement info. */
+    private SLWhereStatementInfo     whereStatementInfo;
 
-	/**
-	 * Gets the where statement info.
-	 * 
-	 * @return the where statement info
-	 */
-	public SLWhereStatementInfo getWhereStatementInfo() {
-		return whereStatementInfo;
-	}
+    /** The order by statement info. */
+    private SLOrderByStatementInfo   orderByStatementInfo;
 
-	/**
-	 * Sets the where statement info.
-	 * 
-	 * @param whereStatementInfo the new where statement info
-	 */
-	public void setWhereStatementInfo(SLWhereStatementInfo whereStatementInfo) {
-		this.whereStatementInfo = whereStatementInfo;
-	}
+    /** The all types info. */
+    private SLAllTypesInfo           allTypesInfo;
 
-	/**
-	 * Gets the collator strength.
-	 * 
-	 * @return the collator strength
-	 */
-	public Integer getCollatorStrength() {
-		return collatorStrength;
-	}
+    /** The collator strength. */
+    private Integer                  collatorStrength;
 
-	/**
-	 * Sets the collator strength.
-	 * 
-	 * @param collatorStrength the new collator strength
-	 */
-	public void setCollatorStrength(Integer collatorStrength) {
-		this.collatorStrength = collatorStrength;
-	}
+    /**
+     * Instantiates a new sL select statement info.
+     */
+    public SLSelectStatementInfo() {
+        typeInfoList = new ArrayList<SLSelectTypeInfo>();
+        byLinkInfoList = new ArrayList<SLSelectByLinkInfo>();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder();
-		
-		if (allTypesInfo == null) {
-			buffer.append("\nSELECT\n");	
-		}
-		else {
-			if (allTypesInfo.isOnWhere()) {
-				buffer.append("\nSELECT **\n");
-			}
-			else {
-				buffer.append("\nSELECT *\n");
-			}
-		}
-		
-		// types ...
-		for (int i = 0; i < typeInfoList.size(); i++) {
-			SLSelectTypeInfo typeInfo = typeInfoList.get(i);
-			if (i > 0) buffer.append(",\n");
-			buffer.append('\t').append('"').append(typeInfo.getName());
-			if (typeInfo.isSubTypes()) buffer.append(".*");
-			buffer.append('"');
-		}
-		
-		// where ...
-		if (whereStatementInfo != null) {
-			buffer.append(whereStatementInfo);	
-		}
-		
-		buffer.append(super.toString());
+    /**
+     * Gets the all types.
+     * 
+     * @return the all types
+     */
+    public SLAllTypesInfo getAllTypes() {
+        return allTypesInfo;
+    }
 
-		return buffer.toString();
-	}
+    /**
+     * Adds the all types.
+     * 
+     * @return the sL all types info
+     */
+    public SLAllTypesInfo addAllTypes() {
+        if (allTypesInfo == null) {
+            allTypesInfo = new SLAllTypesInfo();
+        }
+        return allTypesInfo;
+    }
 
-	public SLOrderByStatementInfo getOrderByStatementInfo() {
-		return orderByStatementInfo;
-	}
+    /**
+     * Adds the type.
+     * 
+     * @param name the name
+     * @return the sL select type info
+     */
+    public SLSelectTypeInfo addType( String name ) {
+        SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(this, name);
+        typeInfoList.add(typeInfo);
+        return typeInfo;
+    }
 
-	public void setOrderByStatementInfo(SLOrderByStatementInfo orderByStatementInfo) {
-		this.orderByStatementInfo = orderByStatementInfo;
-	}
+    /**
+     * Adds the by link.
+     * 
+     * @param name the name
+     * @return the sL select by link info
+     */
+    public SLSelectByLinkInfo addByLink( String name ) {
+        SLSelectByLinkInfo byLinkInfo = new SLSelectByLinkInfo(name);
+        byLinkInfoList.add(byLinkInfo);
+        return byLinkInfo;
+    }
+
+    /**
+     * Gets the by link info list.
+     * 
+     * @return the by link info list
+     */
+    public List<SLSelectByLinkInfo> getByLinkInfoList() {
+        return byLinkInfoList;
+    }
+
+    /**
+     * Gets the type info list.
+     * 
+     * @return the type info list
+     */
+    public List<SLSelectTypeInfo> getTypeInfoList() {
+        return typeInfoList;
+    }
+
+    /**
+     * Gets the where statement info.
+     * 
+     * @return the where statement info
+     */
+    public SLWhereStatementInfo getWhereStatementInfo() {
+        return whereStatementInfo;
+    }
+
+    /**
+     * Sets the where statement info.
+     * 
+     * @param whereStatementInfo the new where statement info
+     */
+    public void setWhereStatementInfo( SLWhereStatementInfo whereStatementInfo ) {
+        this.whereStatementInfo = whereStatementInfo;
+    }
+
+    /**
+     * Gets the collator strength.
+     * 
+     * @return the collator strength
+     */
+    public Integer getCollatorStrength() {
+        return collatorStrength;
+    }
+
+    /**
+     * Sets the collator strength.
+     * 
+     * @param collatorStrength the new collator strength
+     */
+    public void setCollatorStrength( Integer collatorStrength ) {
+        this.collatorStrength = collatorStrength;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+
+        if (allTypesInfo == null) {
+            buffer.append("\nSELECT\n");
+        } else {
+            if (allTypesInfo.isOnWhere()) {
+                buffer.append("\nSELECT **\n");
+            } else {
+                buffer.append("\nSELECT *\n");
+            }
+        }
+
+        // types ...
+        for (int i = 0; i < typeInfoList.size(); i++) {
+            SLSelectTypeInfo typeInfo = typeInfoList.get(i);
+            if (i > 0) buffer.append(",\n");
+            buffer.append('\t').append('"').append(typeInfo.getName());
+            if (typeInfo.isSubTypes()) buffer.append(".*");
+            buffer.append('"');
+        }
+
+        // where ...
+        if (whereStatementInfo != null) {
+            buffer.append(whereStatementInfo);
+        }
+
+        // order by...
+        if (orderByStatementInfo != null) {
+            buffer.append(orderByStatementInfo);
+        }
+
+        buffer.append("USE COLLATOR LEVEL ");
+        buffer.append(collatorStrength);
+        buffer.append('\n');
+
+        buffer.append(super.toString());
+
+        return buffer.toString();
+    }
+
+    public SLOrderByStatementInfo getOrderByStatementInfo() {
+        return orderByStatementInfo;
+    }
+
+    public void setOrderByStatementInfo( SLOrderByStatementInfo orderByStatementInfo ) {
+        this.orderByStatementInfo = orderByStatementInfo;
+    }
 }

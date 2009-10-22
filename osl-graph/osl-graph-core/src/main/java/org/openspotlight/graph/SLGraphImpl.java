@@ -49,7 +49,9 @@
 package org.openspotlight.graph;
 
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTree;
+import org.openspotlight.graph.persistence.SLPersistentTreeException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 
 /**
@@ -58,39 +60,49 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
  * @author Vitor Hugo Chagas
  */
 public class SLGraphImpl implements SLGraph {
-	
-	/** The tree. */
-	private SLPersistentTree tree;
-	
-	/**
-	 * Instantiates a new sL graph impl.
-	 * 
-	 * @param tree the tree
-	 */
-	public SLGraphImpl(SLPersistentTree tree) {
-		this.tree = tree;
-	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraph#openSession()
-	 */
-	public SLGraphSession openSession() throws SLGraphException {
-		try {
-			SLPersistentTreeSession treeSession = tree.openSession();
-			SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-			return factory.createGraphSession(treeSession);
-		}
-		catch (Exception e) {
-			throw new SLGraphException("Could not open SL graph session.", e);
-		}
-	}
+    /** The tree. */
+    private SLPersistentTree tree;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLGraph#shutdown()
-	 */
-	public void shutdown() {
-		tree.shutdown();
-	}
+    /**
+     * Instantiates a new sL graph impl.
+     * 
+     * @param tree the tree
+     */
+    public SLGraphImpl(
+                        SLPersistentTree tree ) {
+        this.tree = tree;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLGraphSession openSession() throws SLGraphException {
+        try {
+            SLPersistentTreeSession treeSession = tree.openSession();
+            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            return factory.createGraphSession(treeSession);
+        } catch (Exception e) {
+            throw new SLGraphException("Could not open SL graph session.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void shutdown() {
+        tree.shutdown();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void gc() throws SLPersistentTreeException {
+        SLPersistentTreeSession treeSession = tree.openSession();
+        if (SLCommonSupport.containsQueryCache(treeSession)) {
+            SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
+            pNode.remove();
+        }
+        treeSession.close();
+    }
 }

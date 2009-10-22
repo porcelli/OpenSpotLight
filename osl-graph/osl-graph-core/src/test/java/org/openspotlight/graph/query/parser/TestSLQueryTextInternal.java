@@ -54,7 +54,6 @@ import static org.hamcrest.Matchers.isOneOf;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.exception.SLException;
@@ -62,13 +61,13 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 import org.openspotlight.graph.query.AssertResult;
+import org.openspotlight.graph.query.NodeWrapper;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.SLQueryTextInternal;
-import org.openspotlight.graph.query.AbstractGeneralQueryTest.NodeWrapper;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.testng.annotations.Test;
 
@@ -148,6 +147,21 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.io"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.util"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.lang"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        SLQueryTextInternal query2 = queryBuilder.build(slqlInput);
+
+        SLQueryResult result2 = query2.execute(session, null, null, sortMode, printInfo, null, null);
+        final NodeWrapper[] wrappers2 = wrapNodes(result2.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers2.length, is(4));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.security"), isOneOf(wrappers2));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.io"), isOneOf(wrappers2));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.util"), isOneOf(wrappers2));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.lang"), isOneOf(wrappers2));
             }
         }.execute();
 

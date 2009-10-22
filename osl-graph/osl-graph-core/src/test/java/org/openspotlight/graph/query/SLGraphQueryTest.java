@@ -123,7 +123,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .type(JavaPackage.class.getName())
                  .selectEnd();
 
-            SLQueryResult result = query.execute(sortMode, printInfo);
+            SLQueryResult result = query.execute(sortMode, true);
             List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = wrapNodes(nodes);
 
@@ -135,6 +135,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaPackage.class.getName(), "queryTest", "java.lang"), isOneOf(wrappers));
                 }
             }.execute();
+
+            SLQueryApi nquery = session.createQueryApi();
+            nquery
+                  .select()
+                  .type(JavaPackage.class.getName())
+                  .selectEnd();
+
+            nquery.execute(sortMode, true);
 
             printResult(nodes);
         } catch (SLException e) {

@@ -59,27 +59,57 @@ import org.openspotlight.graph.SLNode;
  * @author Vitor Hugo Chagas
  */
 public class SLQueryResultImpl implements SLQueryResult {
-	
-	/** The nodes. */
-	private List<SLNode> nodes;
-	
-	/**
-	 * Instantiates a new sL query result impl.
-	 * 
-	 * @param nodes the nodes
-	 */
-	public SLQueryResultImpl(List<SLNode> nodes) {
-	    if (nodes == null){
-	        this.nodes = new ArrayList<SLNode>(0);
-	    } else {
-	        this.nodes = nodes;	        
-	    }
-	}
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
-	 */
-	public List<SLNode> getNodes() throws SLQueryException {
-		return nodes;
-	}
+    /** The nodes. */
+    private List<SLNode> nodes;
+
+    /** The query id. */
+    private final String queryId;
+
+    /**
+     * Instantiates a new sL query result impl.
+     * 
+     * @param nodes the nodes
+     */
+    public SLQueryResultImpl(
+                              List<SLNode> nodes, String queryId ) {
+        if (nodes == null) {
+            this.nodes = new ArrayList<SLNode>(0);
+        } else {
+            this.nodes = nodes;
+        }
+        this.queryId = queryId;
+    }
+
+    /**
+     * Instantiates a new sL query result impl.
+     * 
+     * @param nodes the nodes
+     */
+    public SLQueryResultImpl(
+                              SLNode[] nodes, String queryId ) {
+        if (nodes == null) {
+            this.nodes = new ArrayList<SLNode>(0);
+        } else {
+            this.nodes = new ArrayList<SLNode>(nodes.length);
+            for (SLNode slNode : nodes) {
+                this.nodes.add(slNode);
+            }
+        }
+        this.queryId = queryId;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
+     */
+    public List<SLNode> getNodes() throws SLQueryException {
+        return nodes;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getQueryId() {
+        return queryId;
+    }
 }

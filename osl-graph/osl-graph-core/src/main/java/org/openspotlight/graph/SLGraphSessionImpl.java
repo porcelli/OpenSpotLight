@@ -70,11 +70,13 @@ import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryApiImpl;
+import org.openspotlight.graph.query.SLQueryCache;
+import org.openspotlight.graph.query.SLQueryCacheImpl;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.SLQueryTextImpl;
+import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.parser.SLQueryTextInternalBuilder;
 import org.openspotlight.graph.util.ProxyUtil;
 
@@ -100,6 +102,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /** The slql query builder. */
     private SLQueryTextInternalBuilder      queryBuilder;
 
+    /** The slql query cache. */
+    private SLQueryCache                    queryCache;
+
     /**
      * Instantiates a new sL graph session impl.
      * 
@@ -118,6 +123,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         this.encoderFactory = new SLEncoderFactoryImpl();
         this.encoder = this.encoderFactory.getUUIDEncoder();
         this.queryBuilder = new SLQueryTextInternalBuilder();
+        this.queryCache = new SLQueryCacheImpl(this.treeSession, this);
     }
 
     /* (non-Javadoc)
@@ -1061,7 +1067,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see org.openspotlight.graph.SLGraphSession#createQuery()
      */
     public SLQueryApi createQueryApi() throws SLGraphSessionException {
-        return new SLQueryApiImpl(this, treeSession);
+        return new SLQueryApiImpl(this, treeSession, queryCache);
     }
 
     /* (non-Javadoc)

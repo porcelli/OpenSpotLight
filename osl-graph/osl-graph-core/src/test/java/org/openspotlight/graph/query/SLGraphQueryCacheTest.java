@@ -48,21 +48,31 @@
  */
 package org.openspotlight.graph.query;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.persistence.SLPersistentTree;
+import org.openspotlight.graph.persistence.SLPersistentTreeException;
+import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
+import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.JavaInterface;
+import org.openspotlight.graph.test.domain.JavaType;
 import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
@@ -71,22 +81,21 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/**
- * The Class SLGraphQueryLinkCountTest.
- * 
- * @author Vitor Hugo Chagas
- */
 @Test
-public class SLGraphQueryLinkCountTest {
+public class SLGraphQueryCacheTest {
 
     /** The Constant LOGGER. */
-    static final Logger    LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
+    static final Logger             LOGGER = Logger.getLogger(SLGraphQueryCacheTest.class);
 
     /** The graph. */
-    private SLGraph        graph;
+    private SLGraph                 graph;
 
     /** The session. */
-    private SLGraphSession session;
+    private SLGraphSession          session;
+
+    private SLPersistentTreeSession treeSession;
+
+    private SLQueryCacheImpl        queryCache;
 
     /**
      * Quick graph population.
@@ -97,7 +106,7 @@ public class SLGraphQueryLinkCountTest {
             SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createTempGraph(true);
             session = graph.openSession();
-            SLContext context = session.createContext("linkCountTest");
+            SLContext context = session.createContext("cacheTest");
             SLNode root = context.getRootNode();
             Set<Class<?>> types = getIFaceTypeSet();
             for (Class<?> type : types) {
@@ -121,6 +130,13 @@ public class SLGraphQueryLinkCountTest {
             session.save();
             session.close();
             session = graph.openSession();
+
+            final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
+            final SLPersistentTree tree = pFactory.createTempPersistentTree(false);
+            treeSession = tree.openSession();
+
+            queryCache = new SLQueryCacheImpl(treeSession, session);
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -135,99 +151,88 @@ public class SLGraphQueryLinkCountTest {
         graph.shutdown();
     }
 
-    /**
-     * Select map zero param methods.
-     */
     @Test
-    public void selectMapZeroParamMethods() {
+    public void selectTypes() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException {
+        String queryId = null;
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
 
-        try {
-
-            String id = findIFaceID(java.util.Map.class);
-            SLQueryApi query = session.createQueryApi();
-
-            query
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .byLink(TypeContainsMethod.class.getName()).b()
-                 .selectEnd()
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .selectEnd()
-                 .where()
-                 .type(JavaTypeMethod.class.getName())
-                 .each().link(MethodContainsParam.class.getName()).a().count().equalsTo().value(0)
-                 .typeEnd()
-                 .whereEnd();
-
-            SLQueryResult result = query.execute(new String[] {id});
-            Collection<SLNode> nodes = result.getNodes();
-            QueryUtil.printResult(nodes);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Select collection methods with all in caption and with one param.
-     */
-    @Test
-    public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
-
-        try {
-
-            String id = findIFaceID(java.util.Collection.class);
-            SLNode node = session.getNodeByID(id);
-            Collection<SLNode> inputNodes = new ArrayList<SLNode>();
-            inputNodes.add(node);
-
-            SLQueryApi query = session.createQueryApi();
-
-            query
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .byLink(TypeContainsMethod.class.getName()).b()
-                 .selectEnd()
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .selectEnd()
-                 .where()
-                 .type(JavaTypeMethod.class.getName())
-                 .each().property("caption").contains().value("All")
-                 .and().each().link(MethodContainsParam.class.getName()).a().count().equalsTo().value(1)
-                 .typeEnd()
-                 .whereEnd();
-
-            SLQueryResult result = query.execute(new String[] {id});
-            Collection<SLNode> nodes = result.getNodes();
-            QueryUtil.printResult(nodes);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Find i face id.
-     * 
-     * @param type the type
-     * @return the string
-     * @throws SLGraphSessionException the SL graph session exception
-     * @throws SLInvalidQuerySyntaxException
-     */
-    private String findIFaceID( Class<?> type ) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
         SLQueryApi query = session.createQueryApi();
+
         query
              .select()
-             .allTypes().onWhere()
-             .selectEnd()
-             .where()
-             .type(JavaInterface.class.getName())
-             .each().property("caption").equalsTo().value(type.getName())
-             .typeEnd()
-             .whereEnd();
+             .type(JavaType.class.getName()).subTypes()
+             .selectEnd();
+
+        SLQueryResult result = query.execute(SortMode.SORTED, false);
+        queryId = result.getQueryId();
+
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
+        assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
+
+        QueryUtil.printResult(result.getNodes());
+
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+        assertThat(wrappers.length, is(5));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.Collection"), is(wrappers[0]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.List"), is(wrappers[1]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.Map"), is(wrappers[2]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.Set"), is(wrappers[3]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.SortedSet"), is(wrappers[4]));
+
+        SLQueryApi query2 = session.createQueryApi();
+
+        query2
+              .select()
+              .type(JavaType.class.getName()).subTypes()
+              .selectEnd();
+
+        SLQueryResult result2 = query2.execute(SortMode.SORTED, false);
+
+        assertThat(result2.getQueryId(), is(queryId));
+
+        final NodeWrapper[] wrappers2 = wrapNodes(result2.getNodes());
+        assertThat(wrappers2.length, is(5));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.Collection"), is(wrappers2[0]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.List"), is(wrappers2[1]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.Map"), is(wrappers2[2]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.Set"), is(wrappers2[3]));
+        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest", "java.util.SortedSet"), is(wrappers2[4]));
+
+        graph.gc();
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+    }
+
+    @Test( dependsOnMethods = "selectTypes" )
+    public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException {
+        String queryId = null;
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+
+        SLQueryApi query = session.createQueryApi();
+
+        query
+             .select()
+             .type(JavaTypeMethod.class.getName())
+             .selectEnd();
+
         SLQueryResult result = query.execute();
-        Collection<SLNode> nodes = result.getNodes();
-        return nodes.size() > 0 ? result.getNodes().iterator().next().getID() : null;
+        queryId = result.getQueryId();
+
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
+        assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
+
+        SLQueryApi query2 = session.createQueryApi();
+
+        query2
+              .select()
+              .type(JavaTypeMethod.class.getName())
+              .selectEnd();
+
+        SLQueryResult result2 = query2.execute();
+
+        assertThat(result2.getQueryId(), is(queryId));
+
+        graph.gc();
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
     }
 
     /**
@@ -244,4 +249,20 @@ public class SLGraphQueryLinkCountTest {
         set.add(java.util.SortedSet.class);
         return set;
     }
+
+    /**
+     * Wrap nodes.
+     * 
+     * @param nodes the nodes
+     * @return the node wrapper[]
+     */
+    protected NodeWrapper[] wrapNodes( List<SLNode> nodes ) {
+        NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
+
+        for (int i = 0; i < wrappers.length; i++) {
+            wrappers[i] = new NodeWrapper(nodes.get(i));
+        }
+        return wrappers;
+    }
+
 }

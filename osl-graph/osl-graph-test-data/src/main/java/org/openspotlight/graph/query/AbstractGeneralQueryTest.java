@@ -62,10 +62,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
@@ -390,136 +388,6 @@ public class AbstractGeneralQueryTest {
      */
     private int randomTag() {
         return (int)Math.round(Math.random() * 100.0);
-    }
-
-    /**
-     * The Class NodeWrapper.
-     * 
-     * @author Vitor Hugo Chagas
-     */
-    public class NodeWrapper {
-
-        /** The node. */
-        private SLNode node;
-
-        /** The type name. */
-        private String typeName;
-
-        /** The name. */
-        private String name;
-
-        /** The parent name. */
-        private String parentName;
-
-        /**
-         * Instantiates a new node wrapper.
-         * 
-         * @param typeName the type name
-         * @param parentName the parent name
-         * @param name the name
-         */
-        public NodeWrapper(
-                            String typeName, String parentName, String name ) {
-            this.typeName = typeName;
-            this.parentName = parentName;
-            this.name = name;
-        }
-
-        /**
-         * Instantiates a new node wrapper.
-         * 
-         * @param node the node
-         */
-        public NodeWrapper(
-                            SLNode node ) {
-            this.node = node;
-        }
-
-        /**
-         * Gets the type name.
-         * 
-         * @return the type name
-         * @throws SLGraphSessionException the SL graph session exception
-         */
-        public String getTypeName() throws SLGraphSessionException {
-            if (typeName == null) {
-                typeName = node.getTypeName();
-            }
-            return typeName;
-        }
-
-        /**
-         * Sets the type name.
-         * 
-         * @param typeName the new type name
-         */
-        public void setTypeName( String typeName ) {
-            this.typeName = typeName;
-        }
-
-        /**
-         * Gets the name.
-         * 
-         * @return the name
-         * @throws SLGraphSessionException the SL graph session exception
-         */
-        public String getName() throws SLGraphSessionException {
-            if (name == null) {
-                name = node.getName();
-            }
-            return name;
-        }
-
-        /**
-         * Sets the name.
-         * 
-         * @param name the new name
-         */
-        public void setName( String name ) {
-            this.name = name;
-        }
-
-        /**
-         * Gets the parent name.
-         * 
-         * @return the parent name
-         * @throws SLGraphSessionException the SL graph session exception
-         */
-        public String getParentName() throws SLGraphSessionException {
-            if (parentName == null) {
-                parentName = node.getParent().getName();
-            }
-            return parentName;
-        }
-
-        /**
-         * Sets the parent name.
-         * 
-         * @param parentName the new parent name
-         */
-        public void setParentName( String parentName ) {
-            this.parentName = parentName;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals( Object obj ) {
-            return hashCode() == obj.hashCode();
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            try {
-                return HashCodes.hashOf(getTypeName(), getParentName(), getName());
-            } catch (SLGraphSessionException e) {
-                throw new SLRuntimeException(e);
-            }
-        }
     }
 
     /**
