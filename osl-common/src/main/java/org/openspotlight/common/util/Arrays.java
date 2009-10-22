@@ -54,19 +54,20 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper class to deal with arrays
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class Arrays {
-    
+
     /**
-     * Convenient method to group varargs on a array. This can be used on a
-     * situation that is needed to group more than a group of Ts on a method.
+     * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
+     * Ts on a method.
      * 
      * <pre>
      * someMethod(of(someParam1,   someParam2,...,   someParamN),
@@ -77,13 +78,13 @@ public class Arrays {
      * @param array
      * @return the same parameters in a array
      */
-    public static <T> T[] andOf(final T... array) {
+    public static <T> T[] andOf( final T... array ) {
         return array;
     }
-    
+
     /**
-     * Convenient method to group varargs on a array. This can be used on a
-     * situation that is needed to group more than a group of Ts on a method.
+     * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
+     * Ts on a method.
      * 
      * <pre>
      * someMethod(ofNames(someParam1,   someParam2,...,   someParamN),
@@ -94,10 +95,10 @@ public class Arrays {
      * @param array
      * @return the same parameters in a array
      */
-    public static <T> T[] andValues(final T... array) {
+    public static <T> T[] andValues( final T... array ) {
         return array;
     }
-    
+
     /**
      * Simple method to see if an element is inside a array.
      * 
@@ -106,7 +107,8 @@ public class Arrays {
      * @param toSearch
      * @return if target is equals some array element.
      */
-    public static <T> boolean contains(final T target, final T[] toSearch) {
+    public static <T> boolean contains( final T target,
+                                        final T[] toSearch ) {
         checkNotNull("target", target); //$NON-NLS-1$
         checkNotNull("toSearch", toSearch); //$NON-NLS-1$
         for (final T t : toSearch) {
@@ -116,7 +118,7 @@ public class Arrays {
         }
         return false;
     }
-    
+
     /**
      * Returns a Map in the following way:
      * 
@@ -129,11 +131,10 @@ public class Arrays {
      * @param andValues
      * @return a new map with the parameters
      */
-    public static <K> Map<K, Class<?>> map(final K[] ofKeys,
-            final Class<?>[] andValues) {
+    public static <K> Map<K, Class<?>> map( final K[] ofKeys,
+                                            final Class<?>[] andValues ) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
-                ((ofKeys == null) || (andValues == null))
-                        || (ofKeys.length == andValues.length));
+                       ofKeys == null || andValues == null || ofKeys.length == andValues.length);
         if (ofKeys == null) {
             return new HashMap<K, Class<?>>();
         }
@@ -145,7 +146,7 @@ public class Arrays {
         }
         return map;
     }
-    
+
     /**
      * Returns a Map in the following way:
      * 
@@ -159,10 +160,10 @@ public class Arrays {
      * @param andValues
      * @return a new map with the parameters
      */
-    public static <K, V> Map<K, V> map(final K[] ofKeys, final V[] andValues) {
+    public static <K, V> Map<K, V> map( final K[] ofKeys,
+                                        final V[] andValues ) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
-                ((ofKeys == null) || (andValues == null))
-                        || (ofKeys.length == andValues.length));
+                       ofKeys == null || andValues == null || ofKeys.length == andValues.length);
         if (ofKeys == null) {
             return new HashMap<K, V>();
         }
@@ -174,10 +175,10 @@ public class Arrays {
         }
         return map;
     }
-    
+
     /**
-     * Convenient method to group varargs on a array. This can be used on a
-     * situation that is needed to group more than a group of Ts on a method.
+     * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
+     * Ts on a method.
      * 
      * <pre>
      * someMethod(of(someParam1,   someParam2,...,   someParamN),
@@ -188,13 +189,13 @@ public class Arrays {
      * @param array
      * @return the same parameters in a array
      */
-    public static <T> T[] of(final T... array) {
+    public static <T> T[] of( final T... array ) {
         return array;
     }
-    
+
     /**
-     * Convenient method to group varargs on a array. This can be used on a
-     * situation that is needed to group more than a group of Ts on a method.
+     * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
+     * Ts on a method.
      * 
      * <pre>
      * someMethod(ofNames(someParam1,   someParam2,...,   someParamN),
@@ -205,16 +206,30 @@ public class Arrays {
      * @param array
      * @return the same parameters in a array
      */
-    public static <T> T[] ofKeys(final T... array) {
+    public static <T> T[] ofKeys( final T... array ) {
         return array;
     }
-    
+
+    public static <T> T[] unionOf( final T[] array,
+                                   final T... anotherTypes ) {
+        checkNotNull("array", array);
+        checkNotNull("anotherTypes", anotherTypes);
+        final Set<T> list = new LinkedHashSet<T>();
+        for (final T t : array) {
+            list.add(t);
+        }
+        for (final T t : anotherTypes) {
+            list.add(t);
+        }
+        return list.toArray(anotherTypes);
+
+    }
+
     /**
      * Should not be instantiated
      */
     private Arrays() {
-        logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
-    
+
 }

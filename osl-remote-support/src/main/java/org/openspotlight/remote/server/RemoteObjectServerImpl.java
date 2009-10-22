@@ -39,6 +39,7 @@ import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
+import org.openspotlight.remote.internal.RemoteReference.ObjectMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -450,7 +451,11 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>)this.remoteReferences.get(invocation.getRemoteReference());
             final T object = remoteReferenceData.getObject();
             Method method = null;
+
             for (final Class<?> iface : invocation.getRemoteReference().getInterfaces()) {
+                if (iface.equals(ObjectMethods.class)) {
+                    continue;
+                }
                 try {
                     method = iface.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
                     break;
@@ -458,7 +463,15 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
                 }
             }
-            checkCondition("methodNotNull", method != null);
+            if (method == null) {
+                try {
+                    method = Object.class.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+
+                } catch (final NoSuchMethodException e) {
+
+                }
+            }
+            checkCondition("methodNotNull:" + invocation.getMethodName(), method != null);
             if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
                 throw new UnsupportedOperationException();
             }
