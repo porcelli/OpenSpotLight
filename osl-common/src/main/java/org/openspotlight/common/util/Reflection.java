@@ -111,7 +111,7 @@ public class Reflection {
         UnwrappedCollectionTypeFromMethodReturn(
                                                  final Class<? extends Collection<?>> collectionType, final Class<T> itemType ) {
             checkNotNull("collectionType", collectionType);
-            checkNotNull("itemType", itemType);
+            //            checkNotNull("itemType", itemType);
             this.collectionType = collectionType;
             this.itemType = itemType;
         }

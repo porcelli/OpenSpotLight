@@ -118,11 +118,14 @@ public class Files {
      */
     private static void deleteDir( final File dir ) throws Exception {
         checkNotNull("dir", dir); //$NON-NLS-1$
-        for (final File f : dir.listFiles()) {
-            if (f.isFile()) {
-                deleteFile(f);
-            } else {
-                deleteDir(f);
+        final File[] files = dir.listFiles();
+        if (files != null) {
+            for (final File f : files) {
+                if (f.isFile()) {
+                    deleteFile(f);
+                } else {
+                    deleteDir(f);
+                }
             }
         }
         dir.delete();

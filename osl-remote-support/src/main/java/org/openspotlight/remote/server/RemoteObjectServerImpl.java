@@ -7,6 +7,7 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
@@ -39,6 +40,7 @@ import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 import org.openspotlight.remote.internal.RemoteObjectInvocation;
 import org.openspotlight.remote.internal.RemoteReference;
 import org.openspotlight.remote.internal.UserToken;
+import org.openspotlight.remote.internal.RemoteReference.ObjectMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,6 +297,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             final InternalObjectFactory<T> internalFactory = (InternalObjectFactory<T>)this.internalObjectFactoryMap.get(remoteReferenceType);
 
             final T newObject = internalFactory.createNewInstance(parameters);
+
             final RemoteReference<T> reference = this.internalCreateRemoteReference(userToken, remoteReferenceType, newObject);
 
             return reference;
@@ -412,6 +415,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     private <T> RemoteReference<T> internalCreateRemoteReference( final UserToken userToken,
                                                                   final Class<T> remoteReferenceType,
                                                                   final T newObject ) {
+        if (newObject == null) {
+            return null;
+        }
         RemoteReference<T> reference;
         if (newObject != null) {
             for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : this.remoteReferences.entrySet()) {
@@ -445,8 +451,28 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         try {
             final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>)this.remoteReferences.get(invocation.getRemoteReference());
             final T object = remoteReferenceData.getObject();
-            final Method method = invocation.getRemoteReference().getRemoteType().getMethod(invocation.getMethodName(),
-                                                                                            invocation.getParameterTypes());
+            Method method = null;
+
+            for (final Class<?> iface : invocation.getRemoteReference().getInterfaces()) {
+                if (iface.equals(ObjectMethods.class)) {
+                    continue;
+                }
+                try {
+                    method = iface.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                    break;
+                } catch (final NoSuchMethodException e) {
+
+                }
+            }
+            if (method == null) {
+                try {
+                    method = Object.class.getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+
+                } catch (final NoSuchMethodException e) {
+
+                }
+            }
+            checkCondition("methodNotNull:" + invocation.getMethodName(), method != null);
             if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
                 throw new UnsupportedOperationException();
             }
@@ -582,6 +608,10 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     private boolean isTypeRemote( final Class<?> returnType ) {
+        if (returnType == null) {
+            return true;
+        }
+
         if (returnType.isPrimitive()) {
             return false;
         }
@@ -625,9 +655,13 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @param deathEntry the death entry
      */
     private void removeDeathEntry( final RemoteReferenceInternalData<?> deathEntry ) {
-        this.logger.info(format("removing reference {0} id {1}", deathEntry.getObject(),
-                                deathEntry.getRemoteReference().getRemoteReferenceId()));
+        try {
+            this.logger.info(format("removing reference {0} id {1}", deathEntry.getObject().toString(),
+                                    deathEntry.getRemoteReference().getRemoteReferenceId()));
 
+        } catch (final Exception e) {
+            this.logger.warn("error printing log for death entry " + deathEntry.getRemoteReference().getRemoteReferenceId(), e);
+        }
         RemoteObjectServerImpl.this.remoteReferences.remove(deathEntry.getRemoteReference());
         final Method[] methods = deathEntry.getObject().getClass().getMethods();
         for (final Method m : methods) {
@@ -636,7 +670,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                     m.invoke(deathEntry.getObject());
                     return;
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    catchAndLog(e);
                 }
             }
         }

@@ -17,6 +17,11 @@
 		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+				<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-core</artifactId>
 			<scope>provided</scope>
 		</dependency>

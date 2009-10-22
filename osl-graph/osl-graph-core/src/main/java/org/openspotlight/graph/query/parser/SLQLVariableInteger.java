@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query.parser;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +63,7 @@ import org.openspotlight.graph.query.SLQLVariable;
 public class SLQLVariableInteger extends SLQLVariable {
 
     /** The domain value. */
-    protected Set<Integer> domainValue = null;
+    protected Set<Serializable> domainValue = null;
 
     /**
      * Instantiates a new sLQL variable integer.
@@ -70,16 +71,43 @@ public class SLQLVariableInteger extends SLQLVariable {
      * @param name the name
      */
     public SLQLVariableInteger(
-                                String name ) {
+                                final String name ) {
         super(name);
-        this.domainValue = new HashSet<Integer>();
+        this.domainValue = new HashSet<Serializable>();
     }
 
     /**
      * {@inheritDoc}
      */
+
+    public void addDomainValue( final Serializable value ) {
+        if (this.isValidValue(value)) {
+            this.domainValue.add((Integer)value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Serializable> getDomainValues() {
+        return this.domainValue;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer getValue() {
+        return (Integer)this.value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasDomainValues() {
-        if (domainValue.size() == 0) {
+        if (this.domainValue.size() == 0) {
             return false;
         }
         return true;
@@ -88,42 +116,12 @@ public class SLQLVariableInteger extends SLQLVariable {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Collection<Integer> getDomainValues() {
-        return domainValue;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addDomainValue( Object value ) {
-        if (isValidValue(value)) {
-            domainValue.add((Integer)value);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Integer getValue() {
-        return (Integer)value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isValidValue( Object value ) {
-        if (value == null){
-            return false;
-        }
-        if (value.getClass().getName().equals(int.class.getName())) {
-            return true;
-        }
-        if (value instanceof Integer) {
-            return true;
+    public boolean isValidDomainValue( final Serializable value ) {
+        for (final Serializable activeValue : this.domainValue) {
+            if (activeValue.equals(value)) {
+                return true;
+            }
         }
         return false;
     }
@@ -131,12 +129,16 @@ public class SLQLVariableInteger extends SLQLVariable {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean isValidDomainValue( Object value ) {
-        for (Integer activeValue : domainValue) {
-            if (activeValue.equals(value)){
-                return true;
-            }
+
+    public boolean isValidValue( final Serializable value ) {
+        if (value == null) {
+            return false;
+        }
+        if (value.getClass().getName().equals(int.class.getName())) {
+            return true;
+        }
+        if (value instanceof Integer) {
+            return true;
         }
         return false;
     }
