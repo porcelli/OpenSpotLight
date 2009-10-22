@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query.parser;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,124 +60,45 @@ import java.util.Set;
  * @author porcelli
  */
 public class SLQueryTextInternalInfo {
-    
+
     /** The query unique id. */
-    private String                   id                  = null;
-    
+    private String                         id                  = null;
+
     /** The target unique id. */
-    private String                   targetUniqueId      = null;
-    
+    private String                         targetUniqueId      = null;
+
     /** The int variables. */
-    private Set<String>              intVariables        = new HashSet<String>();
-    
+    private Set<String>                    intVariables        = new HashSet<String>();
+
     /** The dec variables. */
-    private Set<String>              decVariables        = new HashSet<String>();
-    
+    private Set<String>                    decVariables        = new HashSet<String>();
+
     /** The bool variables. */
-    private Set<String>              boolVariables       = new HashSet<String>();
-    
+    private Set<String>                    boolVariables       = new HashSet<String>();
+
     /** The string variables. */
-    private Set<String>              stringVariables     = new HashSet<String>();
+    private Set<String>                    stringVariables     = new HashSet<String>();
 
     /** The message variables. */
-    private Map<String, String>      messageVariables    = new HashMap<String, String>();
-    
+    private Map<String, String>            messageVariables    = new HashMap<String, String>();
+
     /** The domain variables. */
-    private Map<String, Set<Object>> domainVariables     = new HashMap<String, Set<Object>>();
+    private Map<String, Set<Serializable>> domainVariables     = new HashMap<String, Set<Serializable>>();
 
     /** The has target. */
-    private boolean                  hasTarget           = false;
-    
+    private boolean                        hasTarget           = false;
+
     /** The target keeps result. */
-    private boolean                  targetKeepsResult   = false;
-    
+    private boolean                        targetKeepsResult   = false;
+
     /** The output model name. */
-    private String                   outputModelName     = null;
-    
+    private String                         outputModelName     = null;
+
     /** The define target content. */
-    private String                   defineTargetContent = null;
-    
+    private String                         defineTargetContent = null;
+
     /** The content. */
-    private String                   content             = null;
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if has variables
-     */
-    public boolean hasVariables() {
-        if (intVariables.size() == 0 && decVariables.size() == 0 &&
-            boolVariables.size() == 0 && stringVariables.size() == 0) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if has output model
-     */
-    public boolean hasOutputModel() {
-        if (outputModelName == null) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Gets the output model name.
-     * 
-     * @return the output model name
-     */
-    public String getOutputModelName() {
-        return outputModelName;
-    }
-
-    /**
-     * Checks for target.
-     * 
-     * @return true, if has target
-     */
-    public boolean hasTarget() {
-        return hasTarget;
-    }
-
-    /**
-     * Gets the int variables.
-     * 
-     * @return the int variables
-     */
-    public Set<String> getIntVariables() {
-        return intVariables;
-    }
-
-    /**
-     * Sets the int variables.
-     * 
-     * @param intVariables the new int variables
-     */
-    public void setIntVariables( Set<String> intVariables ) {
-        this.intVariables = intVariables;
-    }
-
-    /**
-     * Gets the dec variables.
-     * 
-     * @return the dec variables
-     */
-    public Set<String> getDecVariables() {
-        return decVariables;
-    }
-
-    /**
-     * Sets the dec variables.
-     * 
-     * @param decVariables the new dec variables
-     */
-    public void setDecVariables( Set<String> decVariables ) {
-        this.decVariables = decVariables;
-    }
+    private String                         content             = null;
 
     /**
      * Gets the bool variables.
@@ -184,124 +106,7 @@ public class SLQueryTextInternalInfo {
      * @return the bool variables
      */
     public Set<String> getBoolVariables() {
-        return boolVariables;
-    }
-
-    /**
-     * Sets the bool variables.
-     * 
-     * @param boolVariables the new bool variables
-     */
-    public void setBoolVariables( Set<String> boolVariables ) {
-        this.boolVariables = boolVariables;
-    }
-
-    /**
-     * Gets the string variables.
-     * 
-     * @return the string variables
-     */
-    public Set<String> getStringVariables() {
-        return stringVariables;
-    }
-
-    /**
-     * Sets the string variables.
-     * 
-     * @param stringVariables the new string variables
-     */
-    public void setStringVariables( Set<String> stringVariables ) {
-        this.stringVariables = stringVariables;
-    }
-
-    /**
-     * Gets the message variables.
-     * 
-     * @return the message variables
-     */
-    public Map<String, String> getMessageVariables() {
-        return messageVariables;
-    }
-
-    /**
-     * Sets the message variables.
-     * 
-     * @param messageVariables the message variables
-     */
-    public void setMessageVariables( Map<String, String> messageVariables ) {
-        this.messageVariables = messageVariables;
-    }
-
-    /**
-     * Gets the domain variables.
-     * 
-     * @return the domain variables
-     */
-    public Map<String, Set<Object>> getDomainVariables() {
-        return domainVariables;
-    }
-
-    /**
-     * Sets the domain variables.
-     * 
-     * @param domainVariables the domain variables
-     */
-    public void setDomainVariables( Map<String, Set<Object>> domainVariables ) {
-        this.domainVariables = domainVariables;
-    }
-
-    /**
-     * Checks if is checks for target.
-     * 
-     * @return true, if is checks for target
-     */
-    public boolean isHasTarget() {
-        return hasTarget;
-    }
-
-    /**
-     * Sets the checks for target.
-     * 
-     * @param hasTarget the new checks for target
-     */
-    public void setHasTarget( boolean hasTarget ) {
-        this.hasTarget = hasTarget;
-    }
-
-    /**
-     * Checks if is target keeps result.
-     * 
-     * @return true, if is target keeps result
-     */
-    public boolean isTargetKeepsResult() {
-        return targetKeepsResult;
-    }
-
-    /**
-     * Sets the target keeps result.
-     * 
-     * @param targetKeepsResult the new target keeps result
-     */
-    public void setTargetKeepsResult( boolean targetKeepsResult ) {
-        this.targetKeepsResult = targetKeepsResult;
-    }
-
-    /**
-     * Gets the define target content.
-     * 
-     * @return the define target content
-     */
-    public String getDefineTargetContent() {
-        return defineTargetContent;
-    }
-
-    /**
-     * Sets the define target content.
-     * 
-     * @param defineTargetContent the new define target content
-     */
-    public void setDefineTargetContent( String defineTargetContent ) {
-        this.defineTargetContent = defineTargetContent;
+        return this.boolVariables;
     }
 
     /**
@@ -310,25 +115,34 @@ public class SLQueryTextInternalInfo {
      * @return the content
      */
     public String getContent() {
-        return content;
+        return this.content;
     }
 
     /**
-     * Sets the content.
+     * Gets the dec variables.
      * 
-     * @param content the new content
+     * @return the dec variables
      */
-    public void setContent( String content ) {
-        this.content = content;
+    public Set<String> getDecVariables() {
+        return this.decVariables;
     }
 
     /**
-     * Sets the output model name.
+     * Gets the define target content.
      * 
-     * @param outputModelName the new output model name
+     * @return the define target content
      */
-    public void setOutputModelName( String outputModelName ) {
-        this.outputModelName = outputModelName;
+    public String getDefineTargetContent() {
+        return this.defineTargetContent;
+    }
+
+    /**
+     * Gets the domain variables.
+     * 
+     * @return the domain variables
+     */
+    public Map<String, Set<Serializable>> getDomainVariables() {
+        return this.domainVariables;
     }
 
     /**
@@ -337,16 +151,43 @@ public class SLQueryTextInternalInfo {
      * @return the unique query id
      */
     public String getId() {
-        return id;
+        return this.id;
     }
 
     /**
-     * Sets the unique query id.
+     * Gets the int variables.
      * 
-     * @param id the new id
+     * @return the int variables
      */
-    public void setId( String id ) {
-        this.id = id;
+    public Set<String> getIntVariables() {
+        return this.intVariables;
+    }
+
+    /**
+     * Gets the message variables.
+     * 
+     * @return the message variables
+     */
+    public Map<String, String> getMessageVariables() {
+        return this.messageVariables;
+    }
+
+    /**
+     * Gets the output model name.
+     * 
+     * @return the output model name
+     */
+    public String getOutputModelName() {
+        return this.outputModelName;
+    }
+
+    /**
+     * Gets the string variables.
+     * 
+     * @return the string variables
+     */
+    public Set<String> getStringVariables() {
+        return this.stringVariables;
     }
 
     /**
@@ -355,7 +196,167 @@ public class SLQueryTextInternalInfo {
      * @return the target unique id
      */
     public String getTargetUniqueId() {
-        return targetUniqueId;
+        return this.targetUniqueId;
+    }
+
+    /**
+     * Checks for output model.
+     * 
+     * @return true, if has output model
+     */
+    public boolean hasOutputModel() {
+        if (this.outputModelName == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks for target.
+     * 
+     * @return true, if has target
+     */
+    public boolean hasTarget() {
+        return this.hasTarget;
+    }
+
+    /**
+     * Checks for variables.
+     * 
+     * @return true, if has variables
+     */
+    public boolean hasVariables() {
+        if (this.intVariables.size() == 0 && this.decVariables.size() == 0 && this.boolVariables.size() == 0
+            && this.stringVariables.size() == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if is checks for target.
+     * 
+     * @return true, if is checks for target
+     */
+    public boolean isHasTarget() {
+        return this.hasTarget;
+    }
+
+    /**
+     * Checks if is target keeps result.
+     * 
+     * @return true, if is target keeps result
+     */
+    public boolean isTargetKeepsResult() {
+        return this.targetKeepsResult;
+    }
+
+    /**
+     * Sets the bool variables.
+     * 
+     * @param boolVariables the new bool variables
+     */
+    public void setBoolVariables( final Set<String> boolVariables ) {
+        this.boolVariables = boolVariables;
+    }
+
+    /**
+     * Sets the content.
+     * 
+     * @param content the new content
+     */
+    public void setContent( final String content ) {
+        this.content = content;
+    }
+
+    /**
+     * Sets the dec variables.
+     * 
+     * @param decVariables the new dec variables
+     */
+    public void setDecVariables( final Set<String> decVariables ) {
+        this.decVariables = decVariables;
+    }
+
+    /**
+     * Sets the define target content.
+     * 
+     * @param defineTargetContent the new define target content
+     */
+    public void setDefineTargetContent( final String defineTargetContent ) {
+        this.defineTargetContent = defineTargetContent;
+    }
+
+    /**
+     * Sets the domain variables.
+     * 
+     * @param domainVariables the domain variables
+     */
+    public void setDomainVariables( final Map<String, Set<Serializable>> domainVariables ) {
+        this.domainVariables = domainVariables;
+    }
+
+    /**
+     * Sets the checks for target.
+     * 
+     * @param hasTarget the new checks for target
+     */
+    public void setHasTarget( final boolean hasTarget ) {
+        this.hasTarget = hasTarget;
+    }
+
+    /**
+     * Sets the unique query id.
+     * 
+     * @param id the new id
+     */
+    public void setId( final String id ) {
+        this.id = id;
+    }
+
+    /**
+     * Sets the int variables.
+     * 
+     * @param intVariables the new int variables
+     */
+    public void setIntVariables( final Set<String> intVariables ) {
+        this.intVariables = intVariables;
+    }
+
+    /**
+     * Sets the message variables.
+     * 
+     * @param messageVariables the message variables
+     */
+    public void setMessageVariables( final Map<String, String> messageVariables ) {
+        this.messageVariables = messageVariables;
+    }
+
+    /**
+     * Sets the output model name.
+     * 
+     * @param outputModelName the new output model name
+     */
+    public void setOutputModelName( final String outputModelName ) {
+        this.outputModelName = outputModelName;
+    }
+
+    /**
+     * Sets the string variables.
+     * 
+     * @param stringVariables the new string variables
+     */
+    public void setStringVariables( final Set<String> stringVariables ) {
+        this.stringVariables = stringVariables;
+    }
+
+    /**
+     * Sets the target keeps result.
+     * 
+     * @param targetKeepsResult the new target keeps result
+     */
+    public void setTargetKeepsResult( final boolean targetKeepsResult ) {
+        this.targetKeepsResult = targetKeepsResult;
     }
 
     /**
@@ -363,7 +364,7 @@ public class SLQueryTextInternalInfo {
      * 
      * @param targetUniqueId the new target unique id
      */
-    public void setTargetUniqueId( String targetUniqueId ) {
+    public void setTargetUniqueId( final String targetUniqueId ) {
         this.targetUniqueId = targetUniqueId;
     }
 }

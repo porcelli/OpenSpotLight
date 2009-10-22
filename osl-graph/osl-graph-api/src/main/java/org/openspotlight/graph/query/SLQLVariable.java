@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.openspotlight.common.util.Exceptions;
@@ -59,18 +60,17 @@ import org.openspotlight.common.util.Exceptions;
  */
 /**
  * @author porcelli
- *
  */
-public abstract class SLQLVariable {
+public abstract class SLQLVariable implements Serializable {
 
     /** The variable name. */
-    protected String name           = null;
+    protected String       name           = null;
 
     /** The display message. */
-    protected String displayMessage = null;
+    protected String       displayMessage = null;
 
     /** The value. */
-    protected Object value          = null;
+    protected Serializable value          = null;
 
     /**
      * Instantiates a new SLQL variable.
@@ -78,60 +78,9 @@ public abstract class SLQLVariable {
      * @param name the name
      */
     public SLQLVariable(
-                         String name ) {
+                         final String name ) {
         this.name = name;
         this.displayMessage = name;
-    }
-
-    /**
-     * Gets the display message.
-     * 
-     * @return the display message
-     */
-    public String getDisplayMessage() {
-        return displayMessage;
-    }
-
-    /**
-     * Sets the display message.
-     * 
-     * @param displayMessage the new display message
-     */
-    public void setDisplayMessage( String displayMessage ) {
-        this.displayMessage = displayMessage;
-    }
-
-    /**
-     * Gets the name.
-     * 
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals( Object obj ) {
-        if (obj instanceof SLQLVariable) {
-            return name.equalsIgnoreCase(((SLQLVariable)obj).getName());
-        }
-        return false;
-    }
-
-    /**
-     * Sets the value.
-     * 
-     * @param value the new value
-     */
-    public void setValue( Object value ) {
-        if (isValidValue(value)) {
-            this.value = value;
-        } else {
-            Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
-        }
     }
 
     /**
@@ -139,9 +88,9 @@ public abstract class SLQLVariable {
      * 
      * @param values the values
      */
-    public void addAllDomainValue( Collection<Object> values ) {
-        for (Object activeValue : values) {
-            addDomainValue(activeValue);
+    public void addAllDomainValue( final Collection<Serializable> values ) {
+        for (final Serializable activeValue : values) {
+            this.addDomainValue(activeValue);
         }
     }
 
@@ -150,7 +99,50 @@ public abstract class SLQLVariable {
      * 
      * @param value the value
      */
-    public abstract void addDomainValue( Object value );
+    public abstract void addDomainValue( Serializable value );
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals( final Object obj ) {
+        if (obj instanceof SLQLVariable) {
+            return this.name.equalsIgnoreCase(((SLQLVariable)obj).getName());
+        }
+        return false;
+    }
+
+    /**
+     * Gets the display message.
+     * 
+     * @return the display message
+     */
+    public String getDisplayMessage() {
+        return this.displayMessage;
+    }
+
+    /**
+     * Gets the domain values.
+     * 
+     * @return the domain values
+     */
+    public abstract Collection<Serializable> getDomainValues();
+
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     */
+    public abstract Serializable getValue();
 
     /**
      * Checks for domain values.
@@ -160,33 +152,40 @@ public abstract class SLQLVariable {
     public abstract boolean hasDomainValues();
 
     /**
+     * Checks if is valid domain value.
+     * 
+     * @param value the value
+     * @return true, if is valid domain value
+     */
+    public abstract boolean isValidDomainValue( Serializable value );
+
+    /**
      * Checks if is valid value.
      * 
      * @param value the value
      * @return true, if is valid value
      */
-    public abstract boolean isValidValue( Object value );
+    public abstract boolean isValidValue( Serializable value );
 
     /**
-     * Checks if is valid domain value.
+     * Sets the display message.
      * 
-     * @param value the value
-     * 
-     * @return true, if is valid domain value
+     * @param displayMessage the new display message
      */
-    public abstract boolean isValidDomainValue( Object value );
+    public void setDisplayMessage( final String displayMessage ) {
+        this.displayMessage = displayMessage;
+    }
 
     /**
-     * Gets the domain values.
+     * Sets the value.
      * 
-     * @return the domain values
+     * @param value the new value
      */
-    public abstract Collection<?> getDomainValues();
-
-    /**
-     * Gets the value.
-     * 
-     * @return the value
-     */
-    public abstract Object getValue();
+    public void setValue( final Serializable value ) {
+        if (this.isValidValue(value)) {
+            this.value = value;
+        } else {
+            Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
+        }
+    }
 }
