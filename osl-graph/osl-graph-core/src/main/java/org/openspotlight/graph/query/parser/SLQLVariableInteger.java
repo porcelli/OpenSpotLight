@@ -62,8 +62,10 @@ import org.openspotlight.graph.query.SLQLVariable;
  */
 public class SLQLVariableInteger extends SLQLVariable {
 
+    private static final long   serialVersionUID = -581107015140120339L;
+
     /** The domain value. */
-    protected Set<Serializable> domainValue = null;
+    protected Set<Serializable> domainValue      = null;
 
     /**
      * Instantiates a new sLQL variable integer.

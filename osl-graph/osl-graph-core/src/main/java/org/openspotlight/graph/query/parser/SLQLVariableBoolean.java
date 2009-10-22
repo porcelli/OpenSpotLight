@@ -62,8 +62,10 @@ import org.openspotlight.graph.query.SLQLVariable;
  */
 public class SLQLVariableBoolean extends SLQLVariable {
 
+    private static final long serialVersionUID = -9054981284364714022L;
+
     /** The domain value. */
-    Set<Serializable> domainValue = new HashSet<Serializable>(2);
+    Set<Serializable>         domainValue      = new HashSet<Serializable>(2);
 
     /**
      * Instantiates a new sLQL variable boolean.
