@@ -57,6 +57,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.Files;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
@@ -102,6 +103,9 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
     @Override
     protected void setupSession() throws Exception {
+
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+
         this.server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
             public boolean canConnect( final String userName,
@@ -109,7 +113,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                                        final String clientHost ) {
                 return true;
             }
-        }, 7070, 10 * 60 * 1000L);
+        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         this.factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
@@ -128,7 +132,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
             public String getUserName() {
                 return "***";
             }
-        }, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        });
         this.session = this.factory.createRemoteGraphSession();
     }
 

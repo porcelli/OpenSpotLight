@@ -4,10 +4,6 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -31,18 +27,19 @@ public class RemoteGraphSessionServer {
      */
     private static class InternalGraphSessionFactory implements InternalObjectFactory<SLGraphSession> {
 
-        /** The current graph map. */
-        private final Map<JcrConnectionDescriptor, SLGraph> currentGraphMap = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
-
-        /** The graph factory. */
-        private final SLGraphFactory                        graphFactory;
+        private final SLGraph                 graph;
+        private final JcrConnectionDescriptor descriptor;
 
         /**
          * Instantiates a new internal graph session factory.
          */
-        public InternalGraphSessionFactory() {
+        public InternalGraphSessionFactory(
+                                            final JcrConnectionDescriptor descriptor ) {
             try {
-                this.graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+                this.descriptor = descriptor;
+                final SLGraphFactory graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
+                this.graph = graphFactory.createGraph(provider);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }
@@ -53,18 +50,8 @@ public class RemoteGraphSessionServer {
          */
         public synchronized SLGraphSession createNewInstance( final Object... parameters ) throws Exception {
             checkNotNull("parameters", parameters);
-            checkCondition("correctParamSize", parameters.length == 1);
-            checkCondition("correctParameterClass", parameters[0] instanceof JcrConnectionDescriptor);
-
-            final JcrConnectionDescriptor descriptor = (JcrConnectionDescriptor)parameters[0];
-            SLGraph graph = this.currentGraphMap.get(descriptor);
-            if (graph == null) {
-                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
-                graph = this.graphFactory.createGraph(provider);
-                this.currentGraphMap.put(descriptor, graph);
-
-            }
-            return graph.openSession();
+            checkCondition("correctParamSize", parameters.length == 0);
+            return this.graph.openSession();
         }
 
         /* (non-Javadoc)
@@ -78,19 +65,17 @@ public class RemoteGraphSessionServer {
          * @see org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory#shutdown()
          */
         public void shutdown() {
-            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : this.currentGraphMap.entrySet()) {
-                entry.getValue().shutdown();
-            }
-            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : this.currentGraphMap.entrySet()) {
-                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(entry.getKey());
-                provider.closeRepository();
-            }
+            this.graph.shutdown();
+            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(this.descriptor);
+            provider.closeRepository();
 
         }
     }
 
+    private final JcrConnectionDescriptor descriptor;
+
     /** The remote object server. */
-    private final RemoteObjectServer remoteObjectServer;
+    private final RemoteObjectServer      remoteObjectServer;
 
     /**
      * Instantiates a new remote graph session server.
@@ -101,9 +86,14 @@ public class RemoteGraphSessionServer {
      */
     public RemoteGraphSessionServer(
                                      final UserAuthenticator userAutenticator, final Integer portToUse,
-                                     final Long timeoutInMilliseconds ) {
+                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor ) {
+        checkNotNull("userAutenticator", userAutenticator);
+        checkNotNull("portToUse", portToUse);
+        checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
+        checkNotNull("descriptor", descriptor);
+        this.descriptor = descriptor;
         this.remoteObjectServer = new RemoteObjectServerImpl(userAutenticator, portToUse, timeoutInMilliseconds);
-        this.remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory());
+        this.remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(descriptor));
     }
 
     /**

@@ -68,6 +68,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.Files;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
@@ -445,6 +446,8 @@ public class SLRemoteGraphTest {
      */
     @BeforeClass
     public void init() throws Exception {
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+
         this.server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
             public boolean canConnect( final String userName,
@@ -452,7 +455,7 @@ public class SLRemoteGraphTest {
                                        final String clientHost ) {
                 return true;
             }
-        }, 7070, 10 * 60 * 1000L);
+        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         this.client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
@@ -471,7 +474,7 @@ public class SLRemoteGraphTest {
             public String getUserName() {
                 return "***";
             }
-        }, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        });
 
     }
 

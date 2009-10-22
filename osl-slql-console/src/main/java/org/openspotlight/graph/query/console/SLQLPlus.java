@@ -72,75 +72,23 @@ import org.openspotlight.graph.query.console.util.Messages;
 public class SLQLPlus {
 
     /** The Constant VERSION. */
-    public final static String VERSION    = "0.5"; //$NON-NLS-1$
+    public final static String VERSION    = "0.5";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //$NON-NLS-1$
 
     /** The logos. */
-    private static String[]    LOGO_TYPES =
-                                              {" (   (         (      (              \n )\\ ))\\ )  (   )\\ )   )\\ ) (         \n(()/(()/(( )\\ (()/(  (()/( )\\  (     \n /(_))(_))((_) /(_))  /(_))(_)))\\ (  \n(_))(_))((_)_ (_))   (_))  _ /((_))\\ \n/ __| |  / _ \\| |    | _ \\| (_))(((_)\n\\__ \\ |__ (_) | |__  |  _/| | || (_-<\n|___/____\\__\\_\\____| |_|  |_|\\_,_/__/",
-                                          " ______     __         ______     __            ______   __         __  __     ______   \n/\\  ___\\   /\\ \\       /\\  __ \\   /\\ \\          /\\  == \\ /\\ \\       /\\ \\/\\ \\   /\\  ___\\  \n\\ \\___  \\  \\ \\ \\____  \\ \\ \\/\\_\\  \\ \\ \\____     \\ \\  _-/ \\ \\ \\____  \\ \\ \\_\\ \\  \\ \\___  \\ \n \\/\\_____\\  \\ \\_____\\  \\ \\___\\_\\  \\ \\_____\\     \\ \\_\\    \\ \\_____\\  \\ \\_____\\  \\/\\_____\\\n  \\/_____/   \\/_____/   \\/___/_/   \\/_____/      \\/_/     \\/_____/   \\/_____/   \\/_____/",
-                                          " ____  _     ___  _       ____  _           \n/ ___|| |   / _ \\| |     |  _ \\| |_   _ ___ \n\\___ \\| |  | | | | |     | |_) | | | | / __|\n ___) | |___ |_| | |___  |  __/| | |_| \\__ \\\n|____/|_____\\__\\_\\_____| |_|   |_|\\__,_|___/",
-                                          "  ______   _____       ___      _____      _______  __                 \n.' ____ \\ |_   _|    .'   `.   |_   _|    |_   __ \\[  |                \n| (___ \\_|  | |     /  .-.  \\    | |        | |__) || | __   _   .--.  \n _.____`.   | |   _ | |   | |    | |   _    |  ___/ | |[  | | | ( (`\\] \n| \\____) | _| |__/ |\\  `-'  \\_  _| |__/ |  _| |_    | | | \\_/ |, `'.'. \n \\______.'|________| `.___.\\__||________| |_____|  [___]'.__.'_/[\\__) )",
-                                          "   ___    _     ___     _                ___    _                        \n  / __|  | |   / _ \\   | |       o O O  | _ \\  | |   _  _    ___         \n  \\__ \\  | |__| (_) |  | |__    o       |  _/  | |  | +| |  (_-<         \n  |___/  |____|\\__\\_\\  |____|  TS__[O] _|_|_  _|_|_  \\_,_|  /__/_        \n_|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"| {======|| \"\"\" ||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|       \n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'./o--000'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'"
-                                              };
+    private static String[]    LOGO_TYPES = {
+        " (   (         (      (              \n )\\ ))\\ )  (   )\\ )   )\\ ) (         \n(()/(()/(( )\\ (()/(  (()/( )\\  (     \n /(_))(_))((_) /(_))  /(_))(_)))\\ (  \n(_))(_))((_)_ (_))   (_))  _ /((_))\\ \n/ __| |  / _ \\| |    | _ \\| (_))(((_)\n\\__ \\ |__ (_) | |__  |  _/| | || (_-<\n|___/____\\__\\_\\____| |_|  |_|\\_,_/__/",
+        " ______     __         ______     __            ______   __         __  __     ______   \n/\\  ___\\   /\\ \\       /\\  __ \\   /\\ \\          /\\  == \\ /\\ \\       /\\ \\/\\ \\   /\\  ___\\  \n\\ \\___  \\  \\ \\ \\____  \\ \\ \\/\\_\\  \\ \\ \\____     \\ \\  _-/ \\ \\ \\____  \\ \\ \\_\\ \\  \\ \\___  \\ \n \\/\\_____\\  \\ \\_____\\  \\ \\___\\_\\  \\ \\_____\\     \\ \\_\\    \\ \\_____\\  \\ \\_____\\  \\/\\_____\\\n  \\/_____/   \\/_____/   \\/___/_/   \\/_____/      \\/_/     \\/_____/   \\/_____/   \\/_____/",
+        " ____  _     ___  _       ____  _           \n/ ___|| |   / _ \\| |     |  _ \\| |_   _ ___ \n\\___ \\| |  | | | | |     | |_) | | | | / __|\n ___) | |___ |_| | |___  |  __/| | |_| \\__ \\\n|____/|_____\\__\\_\\_____| |_|   |_|\\__,_|___/",
+        "  ______   _____       ___      _____      _______  __                 \n.' ____ \\ |_   _|    .'   `.   |_   _|    |_   __ \\[  |                \n| (___ \\_|  | |     /  .-.  \\    | |        | |__) || | __   _   .--.  \n _.____`.   | |   _ | |   | |    | |   _    |  ___/ | |[  | | | ( (`\\] \n| \\____) | _| |__/ |\\  `-'  \\_  _| |__/ |  _| |_    | | | \\_/ |, `'.'. \n \\______.'|________| `.___.\\__||________| |_____|  [___]'.__.'_/[\\__) )",
+        "   ___    _     ___     _                ___    _                        \n  / __|  | |   / _ \\   | |       o O O  | _ \\  | |   _  _    ___         \n  \\__ \\  | |__| (_) |  | |__    o       |  _/  | |  | +| |  (_-<         \n  |___/  |____|\\__\\_\\  |____|  TS__[O] _|_|_  _|_|_  \\_,_|  /__/_        \n_|\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"| {======|| \"\"\" ||\"\"\"\"\"||\"\"\"\"\"||\"\"\"\"\"|       \n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'./o--000'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'"};
 
     /**
-     * The main method.
+     * Gets the prompt.
      * 
-     * @param args the arguments
-     * @throws Exception the exception
+     * @return the prompt
      */
-    public static void main( String[] args ) throws Exception {
-        ConsoleReader reader = new ConsoleReader();
-        reader.setBellEnabled(false);
-
-        PrintWriter out = new PrintWriter(System.out);
-
-        reader.clearScreen();
-        printLogo(out);
-
-        Pair<Boolean, SLGraphSession> loginState = login(reader, out);
-
-        if (loginState.getK1() && loginState.getK2() != null) {
-            out.println();
-            out.println();
-            out.println(Messages.getString("SLQLPlus.1")); //$NON-NLS-1$
-            out.flush();
-
-            List<Command> commands = DynamicCommandSupport.getRegisteredDynamicCommands();
-
-            String[] consoleCommands = new String[commands.size()];
-
-            int i = 0;
-            for (Command command : commands) {
-                consoleCommands[i] = command.getAutoCompleteCommand();
-                i++;
-            }
-
-            reader.addCompletor(new SimpleCompletor(consoleCommands));
-            reader.addCompletor(new SLQLFileNameCompletor(commands));
-
-            ConsoleState state = new ConsoleState(loginState.getK2());
-            String input;
-            while ((input = reader.readLine(getPrompt())) != null) {
-                state.setInput(input.trim());
-                boolean inputAccepted = false;
-                for (Command activeCommand : commands) {
-                    if (activeCommand.accept(state)) {
-                        inputAccepted = true;
-                        activeCommand.execute(reader, out, state);
-                        break;
-                    }
-                }
-                if (!inputAccepted && state.getInput().length() > 0) {
-                    out.println(Messages.getString("SLQLPlus.2")); //$NON-NLS-1$
-                    state.clearBuffer();
-                    out.flush();
-                } else if (state.quitApplication()) {
-                    break;
-                }
-            }
-            loginState.getK2().close();
-        }
+    private static String getPrompt() {
+        return "slql> "; //$NON-NLS-1$
     }
 
     /**
@@ -153,8 +101,9 @@ public class SLQLPlus {
      * @throws SLException the SL exception
      * @throws ClassNotFoundException the class not found exception
      */
-    private static Pair<Boolean, SLGraphSession> login( ConsoleReader reader,
-                                                        PrintWriter out ) throws IOException, SLException, ClassNotFoundException {
+    private static Pair<Boolean, SLGraphSession> login( final ConsoleReader reader,
+                                                        final PrintWriter out )
+        throws IOException, SLException, ClassNotFoundException {
         out.println("Please enter server name, user and password.");
         out.println();
         out.flush();
@@ -193,7 +142,7 @@ public class SLQLPlus {
                     break start;
                 }
             }
-            String password = reader.readLine(Messages.getString("SLQLPlus.9"), '*'); //$NON-NLS-1$
+            final String password = reader.readLine(Messages.getString("SLQLPlus.9"), '*'); //$NON-NLS-1$
             result = validateCredentials(serverName, userName, password, out);
             loginAtemptsCount++;
             if (!result.getK1() && loginAtemptsCount == 3) {
@@ -210,6 +159,79 @@ public class SLQLPlus {
     }
 
     /**
+     * The main method.
+     * 
+     * @param args the arguments
+     * @throws Exception the exception
+     */
+    public static void main( final String[] args ) throws Exception {
+        final ConsoleReader reader = new ConsoleReader();
+        reader.setBellEnabled(false);
+
+        final PrintWriter out = new PrintWriter(System.out);
+
+        reader.clearScreen();
+        printLogo(out);
+
+        final Pair<Boolean, SLGraphSession> loginState = login(reader, out);
+
+        if (loginState.getK1() && loginState.getK2() != null) {
+            out.println();
+            out.println();
+            out.println(Messages.getString("SLQLPlus.1")); //$NON-NLS-1$
+            out.flush();
+
+            final List<Command> commands = DynamicCommandSupport.getRegisteredDynamicCommands();
+
+            final String[] consoleCommands = new String[commands.size()];
+
+            int i = 0;
+            for (final Command command : commands) {
+                consoleCommands[i] = command.getAutoCompleteCommand();
+                i++;
+            }
+
+            reader.addCompletor(new SimpleCompletor(consoleCommands));
+            reader.addCompletor(new SLQLFileNameCompletor(commands));
+
+            final ConsoleState state = new ConsoleState(loginState.getK2());
+            String input;
+            while ((input = reader.readLine(getPrompt())) != null) {
+                state.setInput(input.trim());
+                boolean inputAccepted = false;
+                for (final Command activeCommand : commands) {
+                    if (activeCommand.accept(state)) {
+                        inputAccepted = true;
+                        activeCommand.execute(reader, out, state);
+                        break;
+                    }
+                }
+                if (!inputAccepted && state.getInput().length() > 0) {
+                    out.println(Messages.getString("SLQLPlus.2")); //$NON-NLS-1$
+                    state.clearBuffer();
+                    out.flush();
+                } else if (state.quitApplication()) {
+                    break;
+                }
+            }
+            loginState.getK2().close();
+        }
+    }
+
+    /**
+     * Prints the logo.
+     * 
+     * @param out the out
+     */
+    public static void printLogo( final PrintWriter out ) {
+        final Random x = new Random();
+        out.print(LOGO_TYPES[x.nextInt(LOGO_TYPES.length)]);
+        out.println();
+        out.println();
+        out.flush();
+    }
+
+    /**
      * Validate credentials.
      * 
      * @param serverName the server name
@@ -221,41 +243,19 @@ public class SLQLPlus {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    private static Pair<Boolean, SLGraphSession> validateCredentials( String serverName,
-                                                                      String userName,
-                                                                      String password,
-                                                                      PrintWriter out )
+    private static Pair<Boolean, SLGraphSession> validateCredentials( final String serverName,
+                                                                      final String userName,
+                                                                      final String password,
+                                                                      final PrintWriter out )
         throws SLException, IOException, ClassNotFoundException {
         if (userName.equalsIgnoreCase("sa")) { //$NON-NLS-1$
-            GraphConnection connection = new GraphConnection();
+            final GraphConnection connection = new GraphConnection();
             return new Pair<Boolean, SLGraphSession>(true, connection.connect(serverName, userName, password));
         }
 
         out.println(Messages.getString("SLQLPlus.13")); //$NON-NLS-1$
         out.flush();
         return new Pair<Boolean, SLGraphSession>(false, null);
-    }
-
-    /**
-     * Gets the prompt.
-     * 
-     * @return the prompt
-     */
-    private static String getPrompt() {
-        return "slql> "; //$NON-NLS-1$
-    }
-
-    /**
-     * Prints the logo.
-     * 
-     * @param out the out
-     */
-    public static void printLogo( PrintWriter out ) {
-        Random x = new Random();
-        out.print(LOGO_TYPES[x.nextInt(LOGO_TYPES.length)]);
-        out.println();
-        out.println();
-        out.flush();
     }
 
 }
