@@ -7,6 +7,7 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
@@ -669,7 +670,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                     m.invoke(deathEntry.getObject());
                     return;
                 } catch (final Exception e) {
-                    e.printStackTrace();
+                    catchAndLog(e);
                 }
             }
         }
