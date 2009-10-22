@@ -71,7 +71,6 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLRecursiveMode;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -90,7 +89,6 @@ import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatemen
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
-import org.openspotlight.graph.util.ProxyUtil;
 
 /**
  * The Class SLQueryImpl.
@@ -108,6 +106,9 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
     /** The selects. */
     private List<SLSelect> selects          = new ArrayList<SLSelect>();
 
+    /** The cache. */
+    private SLQueryCache   cache            = null;
+
     /** The collator strength. */
     private int            collatorStrength = Collator.IDENTICAL;
 
@@ -118,9 +119,10 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param treeSession the tree session
      */
     public SLQueryApiImpl(
-                           SLGraphSession session, SLPersistentTreeSession treeSession ) {
+                           SLGraphSession session, SLPersistentTreeSession treeSession, SLQueryCache cache ) {
         super(session, treeSession);
         this.metadata = session.getMetadata();
+        this.cache = cache;
     }
 
     /* (non-Javadoc)
@@ -172,6 +174,13 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
         validateSelects();
 
         try {
+
+            String queryId = cache.buildQueryId(selects, collatorStrength, inputNodesIDs, sortMode, limit, offset);
+
+            SLQueryResult queryResult = cache.getCache(queryId);
+            if (queryResult != null) {
+                return queryResult;
+            }
 
             Collection<PNodeWrapper> resultSelectNodeWrappers = null;
             //here is the result
@@ -232,13 +241,9 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
 
             resultNodeWrappers = applyLimitOffset(resultNodeWrappers, limit, offset);
 
-            List<SLNode> nodes = new ArrayList<SLNode>();
-            for (PNodeWrapper pNodeWrapper : resultNodeWrappers) {
-                SLNode node = session.getNodeByID(pNodeWrapper.getID());
-                SLNode nodeProxy = ProxyUtil.createNodeProxy(SLNode.class, node);
-                nodes.add(nodeProxy);
-            }
-            return new SLQueryResultImpl(nodes);
+            cache.add2Cache(queryId, resultNodeWrappers);
+
+            return cache.getCache(queryId);
         } catch (SLException e) {
             throw new SLQueryException("Error on attempt to execute query.", e);
         }

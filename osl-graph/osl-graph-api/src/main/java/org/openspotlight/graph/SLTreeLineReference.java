@@ -48,31 +48,5 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.persistence.SLPersistentTreeException;
-
-/**
- * The Interface SLGraph.
- * 
- * @author Vitor Hugo Chagas
- */
-public interface SLGraph {
-
-    /**
-     * Open session.
-     * 
-     * @return the sL graph session
-     * @throws SLGraphException the SL graph exception
-     */
-    public SLGraphSession openSession() throws SLGraphException;
-
-    /**
-     * Shutdown.
-     */
-    public void shutdown();
-
-    /**
-     * Runs the garbage collector.
-     */
-    public void gc() throws SLPersistentTreeException;
-
+public interface SLTreeLineReference extends SLNode {
 }

@@ -46,33 +46,66 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.persistence.SLPersistentTreeException;
+import java.util.Collection;
+import java.util.List;
+
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLNodeNotFoundException;
+import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
- * The Interface SLGraph.
+ * The Interface SLQueryCache.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
  */
-public interface SLGraph {
+public interface SLQueryCache {
 
     /**
-     * Open session.
+     * Builds a unique query id.
      * 
-     * @return the sL graph session
-     * @throws SLGraphException the SL graph exception
+     * @param selects the selects
+     * @param collatorStrength the collator strength
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param limit the limit
+     * @param offset the offset
+     * @return the string
+     * @throws SLException the SL exception
      */
-    public SLGraphSession openSession() throws SLGraphException;
+    public abstract String buildQueryId( final List<SLSelect> selects,
+                                         final Integer collatorStrength,
+                                         final String[] inputNodesIDs,
+                                         final SortMode sortMode,
+                                         final Integer limit,
+                                         final Integer offset ) throws SLException;
 
     /**
-     * Shutdown.
+     * Gets the cache content. Returns null if not found.
+     * 
+     * @param queryId the query id
+     * @return the cache
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void shutdown();
+    public abstract SLQueryResult getCache( final String queryId )
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException, SLGraphSessionException;
 
     /**
-     * Runs the garbage collector.
+     * Adds content to the cache.
+     * 
+     * @param queryId the query id
+     * @param nodes the nodes
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void gc() throws SLPersistentTreeException;
+    public abstract void add2Cache( final String queryId,
+                                    final Collection<PNodeWrapper> nodes )
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException, SLGraphSessionException;
 
 }

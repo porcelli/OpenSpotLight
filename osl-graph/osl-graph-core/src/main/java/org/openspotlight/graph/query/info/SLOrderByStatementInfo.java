@@ -112,4 +112,17 @@ public class SLOrderByStatementInfo implements Serializable {
 	public void setOrderByTypeInfoList(List<SLOrderByTypeInfo> orderByTypeInfoList) {
 		this.orderByTypeInfoList = orderByTypeInfoList;
 	}
+	
+    /**
+     * {@inheritDoc}
+     */
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("\nORDER BY\n");
+        for (SLOrderByTypeInfo orderByType : orderByTypeInfoList) {
+            buffer.append(orderByType.toString());
+        }
+
+        return buffer.toString();
+    }
 }

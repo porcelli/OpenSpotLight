@@ -266,6 +266,14 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
     public Collection<SLLineReference> getLineReferences() throws SLGraphSessionException;
 
     /**
+     * Gets line references in tree format.
+     * 
+     * @return the tree line references
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLTreeLineReference getTreeLineReferences() throws SLGraphSessionException;
+
+    /**
      * Gets the name.
      * 
      * @return the name

@@ -58,14 +58,19 @@ import org.openspotlight.graph.SLNode;
  * @author Vitor Hugo Chagas
  */
 public interface SLQueryResult {
-	
-	/**
-	 * Gets the nodes.
-	 * 
-	 * @return the nodes
-	 * 
-	 * @throws SLQueryException the SL query exception
-	 */
-	public List<SLNode> getNodes() throws SLQueryException;
 
+    /**
+     * Gets the nodes.
+     * 
+     * @return the nodes
+     * @throws SLQueryException the SL query exception
+     */
+    public List<SLNode> getNodes() throws SLQueryException;
+
+    /**
+     * Gets the query id. This id is related to cache.
+     * 
+     * @return the query id
+     */
+    public String getQueryId();
 }

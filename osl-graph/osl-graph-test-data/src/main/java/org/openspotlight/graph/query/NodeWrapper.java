@@ -46,55 +46,66 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query.info;
+package org.openspotlight.graph.query;
 
-import java.io.Serializable;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLNode;
 
 /**
- * The Class SLOrderByTypeInfo.
+ * The Class NodeWrapper.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLOrderByTypeInfo implements Serializable {
+public class NodeWrapper {
 
-    /**
-     * The Enum OrderType.
-     * 
-     * @author Vitor Hugo Chagas
-     */
-    public static enum OrderType {
-
-        /** The ASCENDING. */
-        ASCENDING,
-
-        /** The DESCENDING. */
-        DESCENDING
-    }
-
-    /** The Constant serialVersionUID. */
-    private static final long      serialVersionUID = 1L;
+    /** The node. */
+    private SLNode node;
 
     /** The type name. */
-    private String                 typeName;
+    private String typeName;
 
-    /** The sub types. */
-    private boolean                subTypes;
+    /** The name. */
+    private String name;
 
-    /** The property name. */
-    private String                 propertyName;
+    /** The parent name. */
+    private String parentName;
 
-    /** The order type. */
-    private OrderType              orderType        = OrderType.ASCENDING;
+    /**
+     * Instantiates a new node wrapper.
+     * 
+     * @param typeName the type name
+     * @param parentName the parent name
+     * @param name the name
+     */
+    public NodeWrapper(
+                        String typeName, String parentName, String name ) {
+        this.typeName = typeName;
+        this.parentName = parentName;
+        this.name = name;
+    }
 
-    /** The order by statement info. */
-    private SLOrderByStatementInfo orderByStatementInfo;
+    /**
+     * Instantiates a new node wrapper.
+     * 
+     * @param node the node
+     */
+    public NodeWrapper(
+                        SLNode node ) {
+        this.node = node;
+    }
 
     /**
      * Gets the type name.
      * 
      * @return the type name
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getTypeName() {
+    public String getTypeName() throws SLGraphSessionException {
+        if (typeName == null) {
+            typeName = node.getTypeName();
+        }
         return typeName;
     }
 
@@ -108,86 +119,66 @@ public class SLOrderByTypeInfo implements Serializable {
     }
 
     /**
-     * Checks if is sub types.
+     * Gets the name.
      * 
-     * @return true, if is sub types
+     * @return the name
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public boolean isSubTypes() {
-        return subTypes;
+    public String getName() throws SLGraphSessionException {
+        if (name == null) {
+            name = node.getName();
+        }
+        return name;
     }
 
     /**
-     * Sets the sub types.
+     * Sets the name.
      * 
-     * @param subTypes the new sub types
+     * @param name the new name
      */
-    public void setSubTypes( boolean subTypes ) {
-        this.subTypes = subTypes;
+    public void setName( String name ) {
+        this.name = name;
     }
 
     /**
-     * Gets the property name.
+     * Gets the parent name.
      * 
-     * @return the property name
+     * @return the parent name
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getPropertyName() {
-        return propertyName;
+    public String getParentName() throws SLGraphSessionException {
+        if (parentName == null) {
+            parentName = node.getParent().getName();
+        }
+        return parentName;
     }
 
     /**
-     * Sets the property name.
+     * Sets the parent name.
      * 
-     * @param propertyName the new property name
+     * @param parentName the new parent name
      */
-    public void setPropertyName( String propertyName ) {
-        this.propertyName = propertyName;
-    }
-
-    /**
-     * Gets the order type.
-     * 
-     * @return the order type
-     */
-    public OrderType getOrderType() {
-        return orderType;
-    }
-
-    /**
-     * Sets the order type.
-     * 
-     * @param orderType the new order type
-     */
-    public void setOrderType( OrderType orderType ) {
-        this.orderType = orderType;
-    }
-
-    /**
-     * Gets the order by statement info.
-     * 
-     * @return the order by statement info
-     */
-    public SLOrderByStatementInfo getOrderByStatementInfo() {
-        return orderByStatementInfo;
-    }
-
-    /**
-     * Sets the order by statement info.
-     * 
-     * @param orderByStatementInfo the new order by statement info
-     */
-    public void setOrderByStatementInfo( SLOrderByStatementInfo orderByStatementInfo ) {
-        this.orderByStatementInfo = orderByStatementInfo;
+    public void setParentName( String parentName ) {
+        this.parentName = parentName;
     }
 
     /**
      * {@inheritDoc}
      */
-    public String toString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("\t").append('"').append(typeName);
-        if (subTypes) buffer.append(".*");
-        buffer.append("\" property \"").append(propertyName).append("\" ").append(orderType).append('\n');
+    @Override
+    public boolean equals( Object obj ) {
+        return hashCode() == obj.hashCode();
+    }
 
-        return buffer.toString();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        try {
+            return HashCodes.hashOf(getTypeName(), getParentName(), getName());
+        } catch (SLGraphSessionException e) {
+            throw new SLRuntimeException(e);
+        }
     }
 }
