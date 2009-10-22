@@ -9,6 +9,8 @@ import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import java.io.Serializable;
 
+import org.openspotlight.remote.server.RemoteObjectServer;
+
 /**
  * The Class RemoteReference will be used to locate the remote reference on actions like sending messages to the
  * {@link RemoteObjectServer} asking for some method invocation.
@@ -46,7 +48,6 @@ public class RemoteReference<T> implements Serializable {
     public RemoteReference(
                             final Class<T> remoteType, final Class<?>[] interfaces, final String remoteReferenceId,
                             final UserToken userToken ) {
-        checkNotNull("remoteType", remoteType);
         checkNotEmpty("remoteReferenceId", remoteReferenceId);
         checkNotNull("userToken", userToken);
         this.remoteType = remoteType;
