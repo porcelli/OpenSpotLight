@@ -60,7 +60,6 @@ import org.openspotlight.remote.annotation.DisposeMethod;
  * @author Vitor Hugo Chagas
  */
 public interface SLLink extends Comparable<SLLink> {
-
     /** The Constant SIDE_SOURCE. */
     public static final int SIDE_SOURCE            = 4;                                                    // 100
 
@@ -81,8 +80,6 @@ public interface SLLink extends Comparable<SLLink> {
 
     /** The Constant DIRECTION_ANY. */
     public static final int DIRECTION_ANY          = DIRECTION_UNI | DIRECTION_UNI_REVERSAL | DIRECTION_BI;
-
-    public boolean equals( Object o );
 
     /**
      * Gets the iD.

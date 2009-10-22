@@ -106,10 +106,18 @@ public class RemoteObjectFactory {
             this.fromServer = fromServer;
         }
 
+        /**
+         * Gets the remote reference.
+         * 
+         * @return the remote reference
+         */
         public RemoteReference<T> getRemoteReference() {
             return this.remoteReference;
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
+         */
         @SuppressWarnings( "unchecked" )
         public Object invoke( final Object proxy,
                               final Method method,
@@ -241,14 +249,18 @@ public class RemoteObjectFactory {
 
                     final Collection<RemoteReference<Object>> colection = resultCollection.getResult();
                     for (final RemoteReference<Object> remoteRef : colection) {
-                        final Object proxyInstance = Proxy.newProxyInstance(
-                                                                            this.getClass().getClassLoader(),
-                                                                            remoteRef.getInterfaces(),
-                                                                            new RemoteReferenceHandler<Object>(
-                                                                                                               this.fromServer,
-                                                                                                               (RemoteReference<Object>)remoteRef));
+                        if (remoteRef != null) {
+                            final Object proxyInstance = Proxy.newProxyInstance(
+                                                                                this.getClass().getClassLoader(),
+                                                                                remoteRef.getInterfaces(),
+                                                                                new RemoteReferenceHandler<Object>(
+                                                                                                                   this.fromServer,
+                                                                                                                   (RemoteReference<Object>)remoteRef));
 
-                        remoteResultCollection.add(proxyInstance);
+                            remoteResultCollection.add(proxyInstance);
+                        } else {
+                            remoteResultCollection.add(null);
+                        }
                     }
                     resultFromMethod = remoteResultCollection;
                 } else if (result instanceof MapOfRemoteInvocationResponse) {
@@ -257,14 +269,20 @@ public class RemoteObjectFactory {
                     final Set<Entry<Object, Object>> entrySet = resultMap.getResult().entrySet();
                     for (final Entry<Object, Object> remoteRef : entrySet) {
                         final RemoteReference<?> remoteRefValue = (RemoteReference<?>)remoteRef.getValue();
-                        final Object proxyInstance = Proxy.newProxyInstance(
-                                                                            this.getClass().getClassLoader(),
-                                                                            remoteRefValue.getInterfaces(),
-                                                                            new RemoteReferenceHandler<Object>(
-                                                                                                               this.fromServer,
-                                                                                                               (RemoteReference<Object>)remoteRef.getValue()));
+                        if (remoteRefValue != null) {
 
-                        remoteResultMap.put(remoteRef.getKey(), proxyInstance);
+                            final Object proxyInstance = Proxy.newProxyInstance(
+                                                                                this.getClass().getClassLoader(),
+                                                                                remoteRefValue.getInterfaces(),
+                                                                                new RemoteReferenceHandler<Object>(
+                                                                                                                   this.fromServer,
+                                                                                                                   (RemoteReference<Object>)remoteRef.getValue()));
+
+                            remoteResultMap.put(remoteRef.getKey(), proxyInstance);
+                        } else {
+                            remoteResultMap.put(remoteRef.getKey(), null);
+
+                        }
                     }
                     resultFromMethod = remoteResultMap;
                 } else {
