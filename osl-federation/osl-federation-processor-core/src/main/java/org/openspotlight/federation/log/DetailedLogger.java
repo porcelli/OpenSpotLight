@@ -45,64 +45,11 @@ public interface DetailedLogger {
     /**
      * The ErrorCode describes some special kind of errors.
      */
-    public static enum ErrorCode {
+    public static interface ErrorCode {
 
-        /** NO_ERROR_CODE */
-        NO_ERROR_CODE(0, "No error code"),
+        public String getDescription();
 
-        /** ERR_001 */
-        ERR_001(1, "Example error #1"),
-
-        /** ERR_002 */
-        ERR_002(2, "Example error #2");
-
-        /** The code. */
-        private final int    code;
-
-        /** The description. */
-        private final String description;
-
-        /** The to string description. */
-        private final String toStringDescription;
-
-        /**
-         * Instantiates a new error code.
-         * 
-         * @param code the code
-         * @param description the description
-         */
-        private ErrorCode(
-                           final int code, final String description ) {
-            assert code >= 0;
-            assert description != null;
-            assert description.trim().length() > 0;
-            this.code = code;
-            this.description = description;
-            this.toStringDescription = "ErrorCode: " + this.code + " " + this.description;
-        }
-
-        /**
-         * Gets the code.
-         * 
-         * @return the code
-         */
-        public int getCode() {
-            return this.code;
-        }
-
-        /**
-         * Gets the description.
-         * 
-         * @return the description
-         */
-        public String getDescription() {
-            return this.description;
-        }
-
-        @Override
-        public String toString() {
-            return this.toStringDescription;
-        }
+        public String getErrorCode();
 
     }
 
@@ -206,6 +153,9 @@ public interface DetailedLogger {
                                                        final ErrorCode code,
                                                        final Date start,
                                                        final Date end ) {
+                if (true) {
+                    throw new UnsupportedOperationException();
+                }
                 try {
                     final StringBuilder xpath = new StringBuilder(MessageFormat.format("//{0}/{1}", NODE_LOG, NODE_LOG_ENTRY));
                     if (code != null || eventType != null || start != null || end != null) {
@@ -224,7 +174,7 @@ public interface DetailedLogger {
                             hasWhere = true;
                             xpath.append(PROPERTY_LOG_ENTRY__ERROR_CODE);
                             xpath.append("=\"");
-                            xpath.append(code.name());
+                            //                            xpath.append(code.name());
                             xpath.append("\"");
                         }
                         if (start != null) {
@@ -271,34 +221,43 @@ public interface DetailedLogger {
                         if (object != null) {
                             node = node.getParent();
                         }
-                        final ErrorCode errorCode = ErrorCode.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__ERROR_CODE).getString());
                         final Date date = node.getProperty(PROPERTY_LOG_ENTRY__DATE).getDate().getTime();
                         final LogEventType type = LogEventType.valueOf(node.getProperty(PROPERTY_LOG_ENTRY__EVENT_TYPE).getString());
                         final String message = node.getProperty(PROPERTY_LOG_ENTRY__MESSAGE).getString();
                         final String detailedMessage = node.getProperty(PROPERTY_LOG_ENTRY__DETAILED_MESSAGE).getString();
                         final List<LoggedObjectInformation> nodes = new ArrayList<LoggedObjectInformation>();
-                        final LogEntry entry = new LogEntry(errorCode, date, type, message, detailedMessage, nodes);
-                        if (!logEntries.contains(entry)) {
-                            logEntries.add(entry);
-                            final NodeIterator children = node.getNodes(NODE_OBJ_INFO);
-                            Node objectInfo;
-                            while (children.hasNext()) {
-                                objectInfo = children.nextNode();
-                                final int order = (int)objectInfo.getProperty(PROPERTY_OBJ_INFO__ORDER).getLong();
-                                final String uniqueId = objectInfo.getProperty(PROPERTY_OBJ_INFO__UNIQUE_ID).getString();
-                                final String className = objectInfo.getProperty(PROPERTY_OBJ_INFO__TYPE_NAME).getString();
-                                final String friendlyDescription = objectInfo.getProperty(PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION).getString();
-                                final LoggedObjectInformation info = new LoggedObjectInformation(order, uniqueId, className,
-                                                                                                 friendlyDescription);
-                                nodes.add(info);
-                            }
-                        }
+                        //                        final LogEntry entry = new LogEntry(errorCode, date, type, message, detailedMessage, nodes);
+                        //                        if (!logEntries.contains(entry)) {
+                        //                            logEntries.add(entry);
+                        //                            final NodeIterator children = node.getNodes(NODE_OBJ_INFO);
+                        //                            Node objectInfo;
+                        //                            while (children.hasNext()) {
+                        //                                objectInfo = children.nextNode();
+                        //                                final int order = (int)objectInfo.getProperty(PROPERTY_OBJ_INFO__ORDER).getLong();
+                        //                                final String uniqueId = objectInfo.getProperty(PROPERTY_OBJ_INFO__UNIQUE_ID).getString();
+                        //                                final String className = objectInfo.getProperty(PROPERTY_OBJ_INFO__TYPE_NAME).getString();
+                        //                                final String friendlyDescription = objectInfo.getProperty(PROPERTY_OBJ_INFO__FRIENDLY_DESCRIPTION).getString();
+                        //                                final LoggedObjectInformation info = new LoggedObjectInformation(order, uniqueId, className,
+                        //                                                                                                 friendlyDescription);
+                        //                                nodes.add(info);
+                        //                            }
+                        //                        }
 
                     }
                     return logEntries;
                 } catch (final Exception e) {
                     throw logAndReturnNew(e, SLRuntimeException.class);
                 }
+            }
+
+            public List<LogEntry> findLogByParameters( final String user,
+                                                       final LogEventType eventType,
+                                                       final LogableObject object,
+                                                       final ErrorCode code,
+                                                       final Date start,
+                                                       final Date end ) {
+                // TODO Auto-generated method stub
+                return null;
             }
 
             /* (non-Javadoc)
@@ -322,6 +281,10 @@ public interface DetailedLogger {
                              final String detailedMessage,
                              final LogableObject node,
                              final LogableObject... anotherNodes ) {
+                if (true) {
+                    throw new UnsupportedOperationException();
+                }
+
                 try {
                     checkNotNull("type", type);
                     checkNotNull("errorCode", errorCode);
@@ -335,7 +298,6 @@ public interface DetailedLogger {
                     }
                     final Node entry = logNode.addNode(NODE_LOG_ENTRY);
                     entry.setProperty(PROPERTY_LOG_ENTRY__EVENT_TYPE, type.name());
-                    entry.setProperty(PROPERTY_LOG_ENTRY__ERROR_CODE, errorCode.name());
                     entry.setProperty(PROPERTY_LOG_ENTRY__MESSAGE, message);
                     entry.setProperty(PROPERTY_LOG_ENTRY__DATE, Calendar.getInstance());
                     entry.setProperty(PROPERTY_LOG_ENTRY__DETAILED_MESSAGE, detailedMessage != null ? detailedMessage : message);
@@ -362,8 +324,7 @@ public interface DetailedLogger {
                              final String message,
                              final LogableObject node,
                              final LogableObject... anotherNodes ) {
-                this.log(type, ErrorCode.NO_ERROR_CODE, message, null, node, anotherNodes);
-
+                throw new UnsupportedOperationException();
             }
 
             /* (non-Javadoc)
@@ -374,7 +335,83 @@ public interface DetailedLogger {
                              final String detailedMessage,
                              final LogableObject node,
                              final LogableObject... anotherNodes ) {
-                this.log(type, ErrorCode.NO_ERROR_CODE, message, detailedMessage, node, anotherNodes);
+
+                throw new UnsupportedOperationException();
+            }
+
+            public void log( final String user,
+                             final LogEventType type,
+                             final ErrorCode errorCode,
+                             final String detailedMessage,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final LogEventType type,
+                             final ErrorCode errorCode,
+                             final String message,
+                             final String detailedMessage,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final LogEventType type,
+                             final String message,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final LogEventType type,
+                             final String message,
+                             final String detailedMessage,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final String repository,
+                             final LogEventType type,
+                             final ErrorCode errorCode,
+                             final String detailedMessage,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final String repository,
+                             final LogEventType type,
+                             final ErrorCode errorCode,
+                             final String message,
+                             final String detailedMessage,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final String repository,
+                             final LogEventType type,
+                             final String message,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void log( final String user,
+                             final String repository,
+                             final LogEventType type,
+                             final String message,
+                             final String detailedMessage,
+                             final LogableObject... anotherNodes ) {
+                // TODO Auto-generated method stub
 
             }
 
@@ -755,7 +792,8 @@ public interface DetailedLogger {
      * @param end the end
      * @return the list< log entry>
      */
-    public List<LogEntry> findLogByParameters( LogEventType eventType,
+    public List<LogEntry> findLogByParameters( String user,
+                                               LogEventType eventType,
                                                LogableObject object,
                                                ErrorCode code,
                                                Date start,
@@ -770,10 +808,10 @@ public interface DetailedLogger {
      * @param node the node
      * @param anotherNodes the another nodes
      */
-    public void log( LogEventType type,
+    public void log( String user,
+                     LogEventType type,
                      ErrorCode errorCode,
                      String detailedMessage,
-                     LogableObject node,
                      LogableObject... anotherNodes );
 
     /**
@@ -786,11 +824,11 @@ public interface DetailedLogger {
      * @param node the node
      * @param anotherNodes the another nodes
      */
-    public void log( LogEventType type,
+    public void log( String user,
+                     LogEventType type,
                      ErrorCode errorCode,
                      String message,
                      String detailedMessage,
-                     LogableObject node,
                      LogableObject... anotherNodes );
 
     /**
@@ -801,9 +839,9 @@ public interface DetailedLogger {
      * @param node the node
      * @param anotherNodes the another nodes
      */
-    public void log( LogEventType type,
+    public void log( String user,
+                     LogEventType type,
                      String message,
-                     LogableObject node,
                      LogableObject... anotherNodes );
 
     /**
@@ -815,10 +853,74 @@ public interface DetailedLogger {
      * @param node the node
      * @param anotherNodes the another nodes
      */
-    public void log( LogEventType type,
+    public void log( String user,
+                     LogEventType type,
                      String message,
                      String detailedMessage,
-                     LogableObject node,
+                     LogableObject... anotherNodes );
+
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param errorCode the error code
+     * @param detailedMessage the detailed message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( String user,
+                     String repository,
+                     LogEventType type,
+                     ErrorCode errorCode,
+                     String detailedMessage,
+                     LogableObject... anotherNodes );
+
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param errorCode the error code
+     * @param message the message
+     * @param detailedMessage the detailed message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( String user,
+                     String repository,
+                     LogEventType type,
+                     ErrorCode errorCode,
+                     String message,
+                     String detailedMessage,
+                     LogableObject... anotherNodes );
+
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param message the message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( String user,
+                     String repository,
+                     LogEventType type,
+                     String message,
+                     LogableObject... anotherNodes );
+
+    /**
+     * Log.
+     * 
+     * @param type the type
+     * @param message the message
+     * @param detailedMessage the detailed message
+     * @param node the node
+     * @param anotherNodes the another nodes
+     */
+    public void log( String user,
+                     String repository,
+                     LogEventType type,
+                     String message,
+                     String detailedMessage,
                      LogableObject... anotherNodes );
 
 }
