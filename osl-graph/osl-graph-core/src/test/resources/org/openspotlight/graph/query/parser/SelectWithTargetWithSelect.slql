@@ -1,0 +1,4 @@
+define target = select org.openspotlight.graph.test.domain.JavaClass
+
+select * by link
+	org.openspotlight.graph.test.domain.TypeContainsMethod (b);

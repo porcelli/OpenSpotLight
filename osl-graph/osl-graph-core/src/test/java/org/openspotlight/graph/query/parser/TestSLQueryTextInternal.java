@@ -564,7 +564,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         new AssertResult() {
             public void execute() {
                 assertThat(wrappers.length, is(4));
-                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Iterable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
@@ -3124,4 +3124,223 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             LOGGER.error(e.getMessage(), e);
         }
     }
+
+    @Test( expectedExceptions = IllegalArgumentException.class )
+    public void testInvalidSelectWithTarget()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException, IllegalArgumentException {
+        String slqlInput = getResourceContent("SelectWithTarget.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        query.execute(SortMode.SORTED, false, 20, 21);
+    }
+
+    @Test
+    public void testSelectWithTarget() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+        String slqlInput = getResourceContent("SelectWithTarget.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        SLQueryResult result = query.executeTarget(SortMode.SORTED, false);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(64));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.ListIterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.security.BasicPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Enumeration"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.EventListener"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security", "java.security.Permission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
+            }
+        }.execute();
+    }
+
+    @Test
+    public void testSelectWithTarget2() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+        String slqlInput = getResourceContent("SelectWithTarget2.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        SLQueryResult result = query.executeTarget(SortMode.SORTED, false);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(45));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.security.BasicPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security", "java.security.Permission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
+            }
+        }.execute();
+    }
+
+    @Test
+    public void testSelectWithTargetWithSelect() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+        String slqlInput = getResourceContent("SelectWithTargetWithSelect.slql");
+        SLQueryText query = session.createQueryText(slqlInput);
+
+        SLQueryResult result = query.executeTarget(SortMode.SORTED, false);
+        final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(45));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.security.BasicPermission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security", "java.security.Permission"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
+            }
+        }.execute();
+
+        SLQueryResult result2 = query.execute(new String[] {result.getNodes().get(20).getID()}, SortMode.SORTED, false);
+        final NodeWrapper[] wrappers2 = wrapNodes(result2.getNodes());
+
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers2.length, is(40));
+            }
+        }.execute();
+
+    }
+
 }
