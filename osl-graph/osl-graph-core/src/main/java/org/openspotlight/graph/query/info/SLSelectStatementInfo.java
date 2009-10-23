@@ -103,7 +103,7 @@ public class SLSelectStatementInfo extends SLSelectInfo {
      */
     public SLAllTypesInfo addAllTypes() {
         if (allTypesInfo == null) {
-            allTypesInfo = new SLAllTypesInfo();
+            allTypesInfo = new SLAllTypesInfo(this);
         }
         return allTypesInfo;
     }

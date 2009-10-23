@@ -100,7 +100,8 @@ moreNodeTypes(nodeTypes)	::= "<nodeTypes>"
 
 byLink(byLinkDefinitions)	::= "<byLinkDefinitions>"
 
-byLinkDefinition(linkType, linkDirections)	::= ".comma().byLink(\"<linkType>\")<linkDirections>"
+byLinkDefinition(linkType, linkDirections)				::= ".comma().byLink(\"<linkType>\")<linkDirections>"
+byLinkDefinitionWithoutComma(linkType, linkDirections)	::= ".byLink(\"<linkType>\")<linkDirections>"
 
 linkDirections(linkDirectionOptions)	::= "<linkDirectionOptions>"
 
@@ -180,7 +181,7 @@ defineTargetWithSelect(select) ::=
     org.openspotlight.graph.query.SLQueryApi query;
     try {
     	query = $1.createQueryApi();
-		query<selects>;
+		query<select>;
 	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
             throw new org.openspotlight.graph.query.SLQueryException(e1);
     }
