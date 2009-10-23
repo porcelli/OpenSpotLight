@@ -51,9 +51,9 @@ package org.openspotlight.federation.data.processing;
 
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.jcr.Session;
@@ -61,18 +61,17 @@ import javax.jcr.Session;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.MutableType;
+import org.openspotlight.federation.data.ArtifactFinder;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLogger;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLEncoder;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLUUIDEncoder;
+import org.openspotlight.graph.SLNode;
 
 /**
  * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
@@ -95,23 +94,20 @@ public interface BundleProcessor<T extends Artifact> {
     @ThreadSafe
     public static class BundleProcessingContext {
 
-        /** The context. */
-        private final SLContext            context;
-
         /** The session. */
-        private final SLGraphSession       session;
+        private final SLGraphSession session;
 
-        /** The configuration manager. */
-        private final ConfigurationManager configurationManager;
+        private ArtifactFinder       artifactFinder;
+
+        private String               currentArtifactSourceReference;
 
         /** The logger. */
-        private final DetailedLogger       logger;
+        private DetailedLogger       logger;
 
         /** The root group. */
-        private final Group                rootGroup;
+        private List<SLNode>         groupList;
 
-        /** The encoder. */
-        private final SLEncoder            encoder = new SLUUIDEncoder();
+        private SLNode               currentGroup;
 
         /**
          * Instantiates a new bundle processing context.
@@ -131,65 +127,44 @@ public interface BundleProcessor<T extends Artifact> {
             checkNotNull("configurationManager", configurationManager);
             checkNotNull("rootGroup", rootGroup);
             this.session = graphSession;
-            this.configurationManager = configurationManager;
-            this.logger = DetailedLogger.Factory.createJcrDetailedLogger(jcrSession);
-            this.rootGroup = rootGroup;
-            final String contextId = this.encoder.encode(rootGroup.getInstanceMetadata().getPath());
-            SLContext tempContext = null;
-            try {
-                tempContext = this.session.getContext(contextId);
-            } catch (final Exception e) {
-                catchAndLog(e);
-            }
-            if (tempContext == null) {
-                tempContext = this.session.createContext(contextId);
-            }
-            this.context = tempContext;
+            ////            this.configurationManager = configurationManager;
+            //            this.logger = DetailedLogger.Factory.createJcrDetailedLogger(jcrSession);
+            //            this.rootGroup = rootGroup;
+            //            final String contextId = this.encoder.encode(rootGroup.getInstanceMetadata().getPath());
+            //            SLContext tempContext = null;
+            //            try {
+            //                tempContext = this.session.getContext(contextId);
+            //            } catch (final Exception e) {
+            //                catchAndLog(e);
+            //            }
+            //            if (tempContext == null) {
+            //                tempContext = this.session.createContext(contextId);
+            //            }
+            //            this.context = tempContext;
         }
 
-        /**
-         * Gets the configuration manager.
-         * 
-         * @return the configuration manager
-         */
-        public ConfigurationManager getConfigurationManager() {
-            return this.configurationManager;
+        public ArtifactFinder getArtifactFinder() {
+            return artifactFinder;
         }
 
-        /**
-         * Gets the context.
-         * 
-         * @return the context
-         */
-        public SLContext getContext() {
-            return this.context;
+        public String getCurrentArtifactSourceReference() {
+            return currentArtifactSourceReference;
         }
 
-        /**
-         * Gets the logger.
-         * 
-         * @return the logger
-         */
+        public SLNode getCurrentGroup() {
+            return currentGroup;
+        }
+
+        public List<SLNode> getGroupList() {
+            return groupList;
+        }
+
         public DetailedLogger getLogger() {
-            return this.logger;
+            return logger;
         }
 
-        /**
-         * Gets the root group.
-         * 
-         * @return the root group
-         */
-        public Group getRootGroup() {
-            return this.rootGroup;
-        }
-
-        /**
-         * Gets the session.
-         * 
-         * @return the session
-         */
         public SLGraphSession getSession() {
-            return this.session;
+            return session;
         }
 
         /**
@@ -198,7 +173,7 @@ public interface BundleProcessor<T extends Artifact> {
          * @throws SLGraphSessionException
          */
         public void processFinished() {
-            this.configurationManager.save(this.rootGroup.getRepository().getConfiguration());
+            //            this.configurationManager.save(this.rootGroup.getRepository().getConfiguration());
             //            try {
             //                //FIXME throws exeption here. Maybe it should have anything to do with multithread execution...
             //                this.session.save();
@@ -214,6 +189,26 @@ public interface BundleProcessor<T extends Artifact> {
          */
         public void processStarted() {
             //
+        }
+
+        public void setArtifactFinder( final ArtifactFinder artifactFinder ) {
+            this.artifactFinder = artifactFinder;
+        }
+
+        public void setCurrentArtifactSourceReference( final String currentArtifactSourceReference ) {
+            this.currentArtifactSourceReference = currentArtifactSourceReference;
+        }
+
+        public void setCurrentGroup( final SLNode currentGroup ) {
+            this.currentGroup = currentGroup;
+        }
+
+        public void setGroupList( final List<SLNode> groupList ) {
+            this.groupList = groupList;
+        }
+
+        public void setLogger( final DetailedLogger logger ) {
+            this.logger = logger;
         }
 
     }
