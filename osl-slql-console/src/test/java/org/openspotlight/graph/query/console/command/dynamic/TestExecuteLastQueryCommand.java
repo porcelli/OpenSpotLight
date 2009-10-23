@@ -190,7 +190,6 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         assertThat(this.state.getBuffer().length(), is(0));
         assertThat(this.state.getLastQuery(), is("select *;"));
 
-        this.state.getSession().close();
     }
 
     @Test
@@ -212,7 +211,6 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         assertThat(fileContent, is(notNullValue()));
         assertThat(fileContent.length(), is(not(0)));
 
-        this.state.getSession().close();
     }
 
     @Test
@@ -231,6 +229,5 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
         final File generatedFile = new File("out.txt");
         assertThat(generatedFile.exists(), is(false));
 
-        this.state.getSession().close();
     }
 }
