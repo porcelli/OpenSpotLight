@@ -185,7 +185,11 @@ defineDominValues
 	;
 
 select returns [boolean hasKeepResult]
+scope	{
+	boolean isSelectStar;
+}
 @init	{
+	$select::isSelectStar = false;
 	$hasKeepResult = false;
 }	:	^(SELECT selectedElements 
 			byLink?
@@ -210,8 +214,8 @@ keepResult
 	;
 
 selectedElements
-	:	STAR			-> selectStar()
-	|	DOUBLE_STAR		-> selectDoubleStar()
+	:	STAR			{$select::isSelectStar = true;} -> selectStar()
+	|	DOUBLE_STAR		{$select::isSelectStar = true;} -> selectDoubleStar()
 	|	nodeType moreNodeTypes -> nodeTypes(firstType={$nodeType.st}, moreTypes={$moreNodeTypes.st}) 
 	;
 
@@ -224,11 +228,15 @@ startWithCommaNodeType
 	;
 
 byLink
-	:	^(BY_LINK_VK (bld+=byLinkDefinition)+) -> byLink(byLinkDefinitions={$bld})
+@init	{
+	int count = 0;
+}	:	^(BY_LINK_VK (bld+=byLinkDefinition[count] {count++;})+) -> byLink(byLinkDefinitions={$bld})
 	;
 
-byLinkDefinition
-	:	LINK_TYPE_NAME linkDirections	-> byLinkDefinition(linkType={$LINK_TYPE_NAME.text}, linkDirections={$linkDirections.st})
+byLinkDefinition [int count]
+	:	LINK_TYPE_NAME linkDirections	
+		-> {$select::isSelectStar && $count == 0}? byLinkDefinitionWithoutComma(linkType={$LINK_TYPE_NAME.text}, linkDirections={$linkDirections.st})
+		-> byLinkDefinition(linkType={$LINK_TYPE_NAME.text}, linkDirections={$linkDirections.st})
 	;
 
 where
