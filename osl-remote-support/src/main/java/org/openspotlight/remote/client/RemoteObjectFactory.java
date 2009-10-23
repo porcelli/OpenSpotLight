@@ -298,6 +298,8 @@ public class RemoteObjectFactory {
                     this.storeResultOnCache(key, new ExceptionWrapper(e.getCause()));
                 }
                 throw e.getCause();
+            } catch (final Exception e) {
+                throw logAndReturn(e);
             }
 
         }

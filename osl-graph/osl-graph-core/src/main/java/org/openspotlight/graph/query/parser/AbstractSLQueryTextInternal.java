@@ -49,6 +49,7 @@
 package org.openspotlight.graph.query.parser;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -212,7 +213,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
         if (this.variables == null) {
             return null;
         }
-        return this.variables.values();
+        return new ArrayList<SLQLVariable>(this.variables.values());
     }
 
     /**

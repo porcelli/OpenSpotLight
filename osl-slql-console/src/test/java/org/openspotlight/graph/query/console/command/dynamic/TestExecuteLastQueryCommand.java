@@ -10,7 +10,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
-import org.apache.derby.authentication.UserAuthenticator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,7 +18,9 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.GraphConnection;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.remote.server.UserAuthenticator;
 
 public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     private static RemoteGraphSessionServer remoteObjectServer;
