@@ -264,6 +264,10 @@ public class ExampleRemoteServerWithData {
                                        final String clientHost ) {
                 return true;
             }
+
+            public boolean equals( final Object o ) {
+                return this.getClass().equals(o.getClass());
+            }
         }, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
     }

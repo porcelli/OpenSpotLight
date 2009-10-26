@@ -252,23 +252,43 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     /** The timeout in milliseconds. */
     private final long                                                    timeoutInMilliseconds;
 
+    private static RemoteObjectServerImpl                                 defaultReference         = null;
+
+    public synchronized static RemoteObjectServer getDefault( final UserAuthenticator userAuthenticator,
+                                                              final Integer portToUse,
+                                                              final Long timeoutInMilliseconds ) {
+        if (defaultReference == null) {
+            defaultReference = new RemoteObjectServerImpl(userAuthenticator, portToUse, timeoutInMilliseconds);
+        } else {
+            checkCondition("sameUserAutenticator", userAuthenticator.equals(defaultReference.userAuthenticator));
+            checkCondition("samePort", portToUse.equals(defaultReference.portToUse));
+            checkCondition("sameTimeoutInMilliseconds", timeoutInMilliseconds.equals(defaultReference.timeoutInMilliseconds));
+        }
+
+        return defaultReference;
+
+    }
+
+    private final Integer portToUse;
+
     /**
      * Instantiates a new remote object server impl.
      * 
-     * @param userAutenticator the user autenticator
+     * @param userAuthenticator the user autenticator
      * @param portToUse the port to use
      * @param timeoutInMilliseconds the timeout in milliseconds
      */
-    public RemoteObjectServerImpl(
-                                   final UserAuthenticator userAutenticator, final Integer portToUse,
-                                   final Long timeoutInMilliseconds ) {
+    private RemoteObjectServerImpl(
+                                    final UserAuthenticator userAuthenticator, final Integer portToUse,
+                                    final Long timeoutInMilliseconds ) {
         try {
-            checkNotNull("userAutenticator", userAutenticator);
+            checkNotNull("userAutenticator", userAuthenticator);
             checkNotNull("portToUse", portToUse);
             checkCondition("portToUseBiggerThanZero", portToUse.intValue() > 0);
             checkNotNull("timeoutInMinutes", timeoutInMilliseconds);
             checkCondition("timeoutInMinutesBiggerThanOrEqualToZero", timeoutInMilliseconds.longValue() >= 0L);
-            this.userAuthenticator = userAutenticator;
+            this.userAuthenticator = userAuthenticator;
+            this.portToUse = portToUse;
             this.timeoutInMilliseconds = timeoutInMilliseconds;
             Remote.config(null, portToUse.intValue(), null, 0);
             ItemServer.bind(this, "RemoteObjectServer");
@@ -681,6 +701,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      */
     public void shutdown() {
         Remote.shutdown();
+
         this.closed.set(true);
         for (final Entry<Class<?>, InternalObjectFactory<?>> entry : this.internalObjectFactoryMap.entrySet()) {
             entry.getValue().shutdown();
