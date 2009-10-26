@@ -19,8 +19,9 @@ public class MultipleGraphSessionsTest {
         graph = factory.createTempGraph(true);
     }
     
-    @AfterClass
+    @AfterClass( alwaysRun = true )
     public void finish(){
+        session.close();
         graph.shutdown();
     }
     

@@ -145,7 +145,7 @@ public class SLGraphQueryCacheTest {
     /**
      * Finish.
      */
-    @AfterClass
+    @AfterClass( alwaysRun = true )
     public void finish() {
         session.close();
         graph.shutdown();

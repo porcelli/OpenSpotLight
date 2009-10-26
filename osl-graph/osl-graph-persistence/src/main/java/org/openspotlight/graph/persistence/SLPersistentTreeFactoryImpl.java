@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.persistence;
 
-import static org.openspotlight.common.util.Files.delete;
-
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
 
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+
+import static org.openspotlight.common.util.Files.delete;
 
 /**
  * The Class SLPersistentTreeFactoryImpl.
@@ -68,7 +68,7 @@ public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
         try {
             final Credentials credentials = provider.getData().getCredentials();
             final Repository repo = provider.openRepository();
-            return new SLPersistentTreeImpl(repo, credentials);
+            return new SLPersistentTreeImpl(repo, credentials, provider.getData());
         } catch (final Exception e) {
             throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
         }
@@ -81,13 +81,14 @@ public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
     @Override
     public SLPersistentTree createTempPersistentTree( final boolean removeExistent ) throws SLPersistentTreeFactoryException {
         try {
-            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             if (removeExistent) {
-                delete(provider.getData().getConfigurationDirectory());
+                JcrConnectionProvider.invalidateCache(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+                delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
             }
+            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             final Credentials credentials = provider.getData().getCredentials();
             final Repository repo = provider.openRepository();
-            return new SLPersistentTreeImpl(repo, credentials);
+            return new SLPersistentTreeImpl(repo, credentials, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         } catch (final Exception e) {
             throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
         }
