@@ -59,11 +59,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.JavaClass;
 import org.openspotlight.graph.test.domain.JavaType;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -71,11 +74,24 @@ import org.testng.annotations.Test;
  */
 public class DuplicateTest {
 
+    SLGraph        graph   = null;
+    SLGraphSession session = null;
+
+    @BeforeMethod
+    public void setup() throws AbstractFactoryException, SLGraphException {
+        SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        this.graph = factory.createTempGraph(true);
+        this.session = graph.openSession();
+    }
+
+    @AfterMethod( alwaysRun = true )
+    public void shutdown() {
+        this.session.close();
+        this.graph.shutdown();
+    }
+
     @Test
     public void shouldNotInsertTwoEqualNodes() throws Exception {
-        SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        final SLGraph graph = factory.createTempGraph(true);
-        SLGraphSession session = graph.openSession();
         final SLNode rootNode = session.createContext("tmp").getRootNode();
         final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
         final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
@@ -132,9 +148,6 @@ public class DuplicateTest {
 
     @Test
     public void shouldNotInsertTwoEqualNodes2() throws Exception {
-        SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        final SLGraph graph = factory.createTempGraph(true);
-        SLGraphSession session = graph.openSession();
         final SLNode rootNode = session.createContext("tmp").getRootNode();
         final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
         final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
@@ -185,7 +198,5 @@ public class DuplicateTest {
             assertThat(entry.getValue().size(), is(1));
         }
 
-        session.close();
-        graph.shutdown();
     }
 }

@@ -93,7 +93,6 @@ public class GraphWithMassiveDataTest {
         this.graph = factory.createTempGraph(true);
         this.session = graph.openSession();
         this.rootNode = this.session.createContext("1L").getRootNode();
-
     }
 
     public void shouldInsertLinkData( final Map<String, SLNode> handleMap )

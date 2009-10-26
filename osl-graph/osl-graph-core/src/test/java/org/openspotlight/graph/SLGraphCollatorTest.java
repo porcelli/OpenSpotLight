@@ -32,7 +32,7 @@ public class SLGraphCollatorTest {
         graph = factory.createTempGraph(true);
     }
 
-    @AfterClass
+    @AfterClass( alwaysRun = true )
     public void finish() {
         this.session.close();
         graph.shutdown();

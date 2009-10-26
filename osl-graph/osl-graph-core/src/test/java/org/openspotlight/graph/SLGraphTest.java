@@ -126,7 +126,7 @@ public class SLGraphTest {
     private SLLink         linkBoth;
 
     /**
-     * <<<<<<< HEAD Inits the.
+     * Inits the.
      * 
      * @throws AbstractFactoryException the abstract factory exception
      */
@@ -151,7 +151,7 @@ public class SLGraphTest {
     /**
      * Finish.
      */
-    @AfterClass
+    @AfterClass( alwaysRun = true )
     public void finish() {
         this.session.close();
         this.graph.shutdown();
