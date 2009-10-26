@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.openspotlight.remote.client.CantConnectException;
 import org.openspotlight.remote.client.RemoteObjectFactory;
 import org.openspotlight.remote.server.AccessDeniedException;
+import org.openspotlight.remote.server.RemoteObjectServer;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.remote.server.test.ExampleInterface.NonSerializableInterface;
@@ -28,7 +29,7 @@ public class RemoteObjectFactoryTest {
     /**
      * The Class AllowUserValidAutenticator.
      */
-    private static class AllowUserValidAutenticator implements UserAuthenticator {
+    static class AllowUserValidAutenticator implements UserAuthenticator {
 
         /* (non-Javadoc)
          * @see org.openspotlight.remote.server.UserAuthenticator#canConnect(java.lang.String, java.lang.String, java.lang.String)
@@ -40,10 +41,17 @@ public class RemoteObjectFactoryTest {
 
         }
 
+        public boolean equals( final Object o ) {
+            if (o instanceof AllowUserValidAutenticator) {
+                return true;
+            }
+            return false;
+        }
+
     }
 
     /** The server. */
-    private static RemoteObjectServerImpl server;
+    private static RemoteObjectServer server;
 
     /**
      * Setup.
@@ -52,7 +60,7 @@ public class RemoteObjectFactoryTest {
      */
     @BeforeClass
     public static void setup() throws Exception {
-        server = new RemoteObjectServerImpl(new AllowUserValidAutenticator(), 7070, 250L);
+        server = RemoteObjectServerImpl.getDefault(new AllowUserValidAutenticator(), 7070, 250L);
         server.registerInternalObjectFactory(ExampleInterface.class, new ExampleInterfaceFactory());
     }
 

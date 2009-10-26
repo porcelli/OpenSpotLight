@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
@@ -27,13 +26,6 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @BeforeClass
     public static void setupServer() throws Exception {
         remoteObjectServer = ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
-    }
-
-    @AfterClass
-    public static void shutdownServer() throws Exception {
-        if (remoteObjectServer != null) {
-            remoteObjectServer.shutdown();
-        }
     }
 
     private ConsoleState state = null;
