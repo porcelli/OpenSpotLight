@@ -59,10 +59,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openspotlight.common.exception.AbstractFactoryException;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.JavaClass;
 import org.openspotlight.graph.test.domain.JavaType;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -70,11 +74,24 @@ import org.testng.annotations.Test;
  */
 public class DuplicateTest {
 
+    SLGraph        graph   = null;
+    SLGraphSession session = null;
+
+    @BeforeMethod
+    public void setup() throws AbstractFactoryException, SLGraphException {
+        SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        this.graph = factory.createTempGraph(true);
+        this.session = graph.openSession();
+    }
+
+    @AfterMethod( alwaysRun = true )
+    public void shutdown() {
+        this.session.close();
+        this.graph.shutdown();
+    }
+
     @Test
     public void shouldNotInsertTwoEqualNodes() throws Exception {
-        final SLGraphFactory factory = new SLGraphFactoryImpl();
-        final SLGraph graph = factory.createTempGraph(true);
-        SLGraphSession session = graph.openSession();
         final SLNode rootNode = session.createContext("tmp").getRootNode();
         final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
         final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
@@ -86,16 +103,16 @@ public class DuplicateTest {
         final JavaType n3 = parent.addNode(JavaType.class, "someName");
 
         assertThat(n1, is(n3));
-        
+
         n3.setCaption("someName");
         final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
         n1_.setCaption("someName");
         final JavaType n2_ = parent1.addNode(JavaType.class, "another");
         n2_.setCaption("another");
         final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
-        
+
         assertThat(n1_, is(n3_));
-        
+
         n3_.setCaption("someName");
         session.save();
         session.close();
@@ -104,14 +121,14 @@ public class DuplicateTest {
         query
 
         .select()
-        	.type(JavaType.class.getName()).subTypes()
-        .selectEnd()
-        .where()
-        	.type(JavaType.class.getName()).subTypes()
-        		.each().property("caption").equalsTo().value("someName")
-        	.typeEnd()
-        .whereEnd();
-                                                                                                                                                                          
+             .type(JavaType.class.getName()).subTypes()
+             .selectEnd()
+             .where()
+             .type(JavaType.class.getName()).subTypes()
+             .each().property("caption").equalsTo().value("someName")
+             .typeEnd()
+             .whereEnd();
+
         final SLQueryResult result = query.execute();
         // aqui o map possui uma lista de nodes para cada id de contexto.
         final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
@@ -124,5 +141,62 @@ public class DuplicateTest {
         for (final Map.Entry<String, List<SLNode>> entry : resultMap.entrySet()) {
             assertThat(entry.getValue().size(), is(1));
         }
+
+        session.close();
+        graph.shutdown();
+    }
+
+    @Test
+    public void shouldNotInsertTwoEqualNodes2() throws Exception {
+        final SLNode rootNode = session.createContext("tmp").getRootNode();
+        final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
+        final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
+        final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
+        final JavaType n1 = parent.addNode(JavaClass.class, "someName");
+        n1.setCaption("someName");
+        final JavaType n2 = parent.addNode(JavaType.class, "another");
+        n2.setCaption("another");
+        final JavaType n3 = parent.addNode(JavaType.class, "someName");
+
+        assertThat(n1, is(n3));
+
+        n3.setCaption("someName");
+        final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
+        n1_.setCaption("someName");
+        final JavaType n2_ = parent1.addNode(JavaType.class, "another");
+        n2_.setCaption("another");
+        final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
+
+        assertThat(n1_, is(n3_));
+
+        n3_.setCaption("someName");
+        session.save();
+        session.close();
+        session = graph.openSession();
+        final SLQueryApi query = session.createQueryApi();
+        query
+
+        .select()
+             .type(JavaType.class.getName()).subTypes()
+             .selectEnd()
+             .where()
+             .type(JavaType.class.getName()).subTypes()
+             .each().property("caption").equalsTo().value("someName")
+             .typeEnd()
+             .whereEnd();
+
+        final SLQueryResult result = query.execute();
+        // aqui o map possui uma lista de nodes para cada id de contexto.
+        final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
+        resultMap.put("tmp", new ArrayList<SLNode>());
+        resultMap.put("tmp1", new ArrayList<SLNode>());
+        for (final SLNode n : result.getNodes()) {
+            resultMap.get(n.getContext().getID()).add(n);
+        }
+        // aqui Ž verificado se cada id de contexto possui apenas um node
+        for (final Map.Entry<String, List<SLNode>> entry : resultMap.entrySet()) {
+            assertThat(entry.getValue().size(), is(1));
+        }
+
     }
 }

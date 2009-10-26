@@ -64,6 +64,8 @@ public class SLGraphImpl implements SLGraph {
     /** The tree. */
     private SLPersistentTree tree;
 
+    private GraphState       graphState;
+
     /**
      * Instantiates a new sL graph impl.
      * 
@@ -72,12 +74,17 @@ public class SLGraphImpl implements SLGraph {
     public SLGraphImpl(
                         SLPersistentTree tree ) {
         this.tree = tree;
+        this.graphState = GraphState.OPENED;
     }
 
     /**
      * {@inheritDoc}
      */
     public SLGraphSession openSession() throws SLGraphException {
+        if (this.graphState == GraphState.SHUTDOWN) {
+            throw new SLGraphException("Could not open SL graph session. Graph is already shutdown.");
+        }
+
         try {
             SLPersistentTreeSession treeSession = tree.openSession();
             SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
@@ -92,17 +99,27 @@ public class SLGraphImpl implements SLGraph {
      */
     public void shutdown() {
         tree.shutdown();
+        this.graphState = GraphState.SHUTDOWN;
     }
 
     /**
      * {@inheritDoc}
      */
     public void gc() throws SLPersistentTreeException {
-        SLPersistentTreeSession treeSession = tree.openSession();
-        if (SLCommonSupport.containsQueryCache(treeSession)) {
-            SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
-            pNode.remove();
+        if (this.graphState != GraphState.SHUTDOWN) {
+            SLPersistentTreeSession treeSession = tree.openSession();
+            if (SLCommonSupport.containsQueryCache(treeSession)) {
+                SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
+                pNode.remove();
+            }
+            treeSession.close();
         }
-        treeSession.close();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public GraphState getGraphState() {
+        return this.graphState;
     }
 }
