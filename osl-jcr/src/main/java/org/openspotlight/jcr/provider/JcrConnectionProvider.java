@@ -7,10 +7,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.apache.jackrabbit.core.util.RepositoryLock;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.ClassPathResource;
 
@@ -48,11 +50,22 @@ public abstract class JcrConnectionProvider {
          */
         @Override
         public synchronized void closeRepository() {
-            if (this.getData().equals(DefaultJcrDescriptor.TEMP_DESCRIPTOR)) {
+            if (this.repository == null) {
+                this.repositoryClosed = true;
                 return;
             }
             final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl)this.repository;
+
             repositoryCasted.shutdown();
+
+            RepositoryLock repoLock = new RepositoryLock();
+            try {
+                repoLock.init(this.getData().getConfigurationDirectory());
+                repoLock.acquire();
+                repoLock.release();
+            } catch (RepositoryException e) {
+            }
+
             this.repositoryClosed = true;
         }
 
@@ -96,6 +109,16 @@ public abstract class JcrConnectionProvider {
 
     /** The cache. */
     private static Map<JcrConnectionDescriptor, JcrConnectionProvider> cache = new ConcurrentHashMap<JcrConnectionDescriptor, JcrConnectionProvider>();
+
+    public static synchronized void invalidateCache( final JcrConnectionDescriptor data ) {
+        if (cache.containsKey(data)) {
+            JcrConnectionProvider provider = cache.get(data);
+            if (provider != null) {
+                provider.closeRepository();
+            }
+            cache.remove(data);
+        }
+    }
 
     /**
      * Creates the from data.

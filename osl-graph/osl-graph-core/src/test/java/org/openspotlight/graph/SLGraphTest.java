@@ -153,6 +153,7 @@ public class SLGraphTest {
      */
     @AfterClass
     public void finish() {
+        this.session.close();
         this.graph.shutdown();
     }
 

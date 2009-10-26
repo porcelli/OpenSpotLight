@@ -62,49 +62,51 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 /**
  * This test just import example data into the GraphSession.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class GraphWithMassiveDataTest {
-    
-    private SLNode rootNode;
+
+    private SLNode         rootNode;
     private SLGraphSession session;
-    
-    @Before
+    private SLGraph        graph;
+
+    @BeforeClass
     public void setup() throws Exception {
         final SLGraphFactory factory = AbstractFactory
-                .getDefaultInstance(SLGraphFactory.class);
-        final SLGraph graph = factory.createTempGraph(true);
+                                                      .getDefaultInstance(SLGraphFactory.class);
+        this.graph = factory.createTempGraph(true);
         this.session = graph.openSession();
         this.rootNode = this.session.createContext("1L").getRootNode();
-        
+
     }
-    
-    public void shouldInsertLinkData(final Map<String, SLNode> handleMap)
-            throws Exception {
+
+    public void shouldInsertLinkData( final Map<String, SLNode> handleMap )
+        throws Exception {
         int count = 0;
         int err = 0;
         int ok = 0;
-        
+
         try {
             final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/linkData.csv");
             assertThat(is, is(notNullValue()));
             final BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(is));
+                                                             new InputStreamReader(is));
             String line = null;
             boolean first = true;
             while ((count++ != 100000) && ((line = reader.readLine()) != null)) {
@@ -117,15 +119,15 @@ public class GraphWithMassiveDataTest {
                     final String handleA = tok.nextToken();
                     final String handleB = tok.nextToken();
                     final String type = tok.nextToken().replaceAll(" ", "")
-                            .replaceAll("\\.", "").replaceAll("-", "");
-                    
-                    final Class<? extends SLLink> clazz = (Class<? extends SLLink>) Class
-                            .forName("org.openspotlight.graph.link." + type
-                                    + "Link");
+                                           .replaceAll("\\.", "").replaceAll("-", "");
+
+                    final Class<? extends SLLink> clazz = (Class<? extends SLLink>)Class
+                                                                                        .forName("org.openspotlight.graph.link." + type
+                                                                                                 + "Link");
                     SLLink link = this.session.addLink(clazz, handleMap.get(handleA),
-                            handleMap.get(handleB), false);
+                                                       handleMap.get(handleB), false);
                     ok++;
-                    
+
                 } catch (final Exception e) {
                     System.err.println("node: " + e.getMessage() + ": " + line);
                     err++;
@@ -135,17 +137,17 @@ public class GraphWithMassiveDataTest {
             System.out.println("count " + count);
             System.out.println("err   " + err);
             System.out.println("ok    " + ok);
-            
+
         }
     }
-    
+
     public void shouldInsertNodeData() throws Exception {
-        
+
         final Map<String, SLNode> handleMap = new HashMap<String, SLNode>();
         final InputStream is = getResourceFromClassPath("/data/GraphWithMassiveDataTest/nodeData.csv");
         assertThat(is, is(notNullValue()));
         final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                is));
+                                                                               is));
         String line = null;
         boolean first = true;
         int count = 0;
@@ -153,39 +155,39 @@ public class GraphWithMassiveDataTest {
         int ok = 0;
         try {
             while ((count++ != 40000) && ((line = reader.readLine()) != null)) {
-                
+
                 if (first) {
                     first = false;
                     continue;
                 }
-                
+
                 try {
-                    
+
                     final StringTokenizer tok = new StringTokenizer(line, "|");
                     final String t1 = tok.nextToken();
                     final String t2 = tok.nextToken();
                     final String t3 = tok.nextToken();
                     final String t4 = tok.nextToken();
-                    
+
                     final String t5;
                     if (tok.hasMoreTokens()) {
                         t5 = tok.nextToken();
                     } else {
                         t5 = null;
                     }
-                    
+
                     final String handle = t1;
                     final String parentHandle = t5 == null ? null : t2;
                     final String key = t5 == null ? t2 : t3;
                     final String caption = t5 == null ? t3 : t4;
                     final String type = (t5 == null ? t4 : t5).replaceAll(" ",
-                            "").replaceAll("\\.", "").replaceAll("-", "");
-                    
+                                                                          "").replaceAll("\\.", "").replaceAll("-", "");
+
                     SLNode node;
                     if ((parentHandle == null)
-                            || parentHandle.trim().equals("")) {
+                        || parentHandle.trim().equals("")) {
                         node = this.rootNode.addNode(caption);
-                        
+
                     } else {
                         final SLNode parent = handleMap.get(parentHandle);
                         if (parent == null) {
@@ -195,7 +197,7 @@ public class GraphWithMassiveDataTest {
                     }
                     handleMap.put(handle, node);
                     ok++;
-                    
+
                 } catch (final Exception e) {
                     System.err.println("node: " + e.getMessage() + ": " + line);
                     err++;
@@ -205,20 +207,21 @@ public class GraphWithMassiveDataTest {
             System.out.println("count " + count);
             System.out.println("err   " + err);
             System.out.println("ok    " + ok);
-            
+
         }
         this.shouldInsertLinkData(handleMap);
-        
+
     }
-    
+
     @Test
     public void shouldInsertNodesAndLinks() throws Exception {
         this.shouldInsertNodeData();
     }
-    
-    @After
+
+    @AfterClass
     public void shutdown() throws Exception {
-        // this.rootNode.getSession().clear();
+        this.session.close();
+        this.graph.shutdown();
     }
-    
+
 }

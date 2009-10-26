@@ -21,6 +21,7 @@ public class MultipleGraphSessionsTest {
     
     @AfterClass
     public void finish(){
+        session.close();
         graph.shutdown();
     }
     

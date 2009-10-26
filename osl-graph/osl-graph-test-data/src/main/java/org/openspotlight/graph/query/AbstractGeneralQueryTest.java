@@ -408,10 +408,7 @@ public class AbstractGeneralQueryTest {
     }
 
     /**
-<<<<<<< HEAD
-     * Gets the resource content.
-=======
-     * Populate graph.
+     * Gets the resource content. Populate graph.
      */
     @BeforeClass
     public void populateGraph() {
@@ -536,7 +533,6 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Random tag.
->>>>>>> 51720a0fa81fe82484c076efdb19ffee0d4bfe42
      * 
      * @return the int
      */
@@ -552,7 +548,6 @@ public class AbstractGeneralQueryTest {
 
     protected void shutdownTest() {
         this.graph.shutdown();
-
     }
 
     /**

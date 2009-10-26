@@ -205,7 +205,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
     @Override
     public SLGraph createTempGraph( final boolean removeExistent ) throws SLGraphFactoryException {
         try {
-            if (this.graph == null) {
+            if (this.graph == null || removeExistent) {
                 final SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
                 final SLPersistentTree tree = factory.createTempPersistentTree(removeExistent);
                 this.graph = new SLGraphImpl(tree);
