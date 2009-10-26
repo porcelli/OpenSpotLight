@@ -2,6 +2,7 @@ package org.openspotlight.jcr.provider;
 
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Files.delete;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +15,7 @@ import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.util.RepositoryLock;
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
 
 /**
@@ -115,6 +117,10 @@ public abstract class JcrConnectionProvider {
             JcrConnectionProvider provider = cache.get(data);
             if (provider != null) {
                 provider.closeRepository();
+                try {
+                    delete(provider.getData().getConfigurationDirectory());
+                } catch (SLException e) {
+                }
             }
             cache.remove(data);
         }
