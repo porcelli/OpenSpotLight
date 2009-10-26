@@ -236,7 +236,8 @@ public interface RemoteObjectServer {
                                                    InternalObjectFactory<T> factory );
 
     /**
-     * Shutdown.
+     * Shutdown. This method should be called <b>only one time during the VM life cycle</b>. This is necessary due some static
+     * garbage on RMI.
      */
     public void shutdown();
 }

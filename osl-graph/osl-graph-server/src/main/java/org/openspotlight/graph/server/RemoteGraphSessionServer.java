@@ -97,7 +97,8 @@ public class RemoteGraphSessionServer {
     }
 
     /**
-     * Shutdown.
+     * Shutdown. This method should be called <b>only one time during the VM life cycle</b>. This is necessary due some static
+     * garbage on RMI.
      */
     public void shutdown() {
         this.remoteObjectServer.shutdown();
