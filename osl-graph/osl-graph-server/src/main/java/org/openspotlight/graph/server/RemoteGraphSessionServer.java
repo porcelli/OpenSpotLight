@@ -92,7 +92,7 @@ public class RemoteGraphSessionServer {
         checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
         checkNotNull("descriptor", descriptor);
         this.descriptor = descriptor;
-        this.remoteObjectServer = new RemoteObjectServerImpl(userAutenticator, portToUse, timeoutInMilliseconds);
+        this.remoteObjectServer = RemoteObjectServerImpl.getDefault(userAutenticator, portToUse, timeoutInMilliseconds);
         this.remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(descriptor));
     }
 
