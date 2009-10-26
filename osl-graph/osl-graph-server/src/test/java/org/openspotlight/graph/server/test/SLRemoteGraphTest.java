@@ -402,7 +402,6 @@ public class SLRemoteGraphTest {
      */
     @AfterClass
     public void finish() {
-        this.server.shutdown();
 
     }
 

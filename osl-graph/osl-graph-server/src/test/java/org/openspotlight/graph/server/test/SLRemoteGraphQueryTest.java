@@ -137,7 +137,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
     @Override
     protected void shutdownTest() {
-        this.server.shutdown();
+
     }
 
     @Test
