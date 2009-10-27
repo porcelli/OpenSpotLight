@@ -30,6 +30,7 @@ import org.openspotlight.graph.query.console.test.domain.PackageContainsType;
 import org.openspotlight.graph.query.console.test.domain.TypeContainsMethod;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
 
 public class ExampleRemoteServerWithData {
@@ -186,7 +187,7 @@ public class ExampleRemoteServerWithData {
          */
         public void populateGraph() throws SLException, IOException, ClassNotFoundException {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            final SLGraph graph = factory.createTempGraph(true);
+            final SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
             final SLGraphSession session = graph.openSession();
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");

@@ -130,7 +130,7 @@ public class SLGraphQueryCacheTest {
     public void quickGraphPopulation() {
         try {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            this.graph = factory.createTempGraph(true);
+            this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
             this.session = this.graph.openSession();
             final SLContext context = this.session.createContext("cacheTest");
             final SLNode root = context.getRootNode();
