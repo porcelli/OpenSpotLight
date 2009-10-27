@@ -37,7 +37,7 @@ public class SLGraphCollatorTest {
     @BeforeClass
     public static void init() throws AbstractFactoryException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
     }
 
     @After

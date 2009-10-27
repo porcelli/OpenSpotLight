@@ -81,7 +81,6 @@ import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class SLGraphQueryCacheTest {
 
@@ -129,7 +128,7 @@ public class SLGraphQueryCacheTest {
     public static void quickGraphPopulation() {
         try {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession();
             final SLContext context = session.createContext("cacheTest");
             final SLNode root = context.getRootNode();
@@ -157,7 +156,7 @@ public class SLGraphQueryCacheTest {
             session = graph.openSession();
 
             final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-            final SLPersistentTree tree = pFactory.createPersistentTree(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR));
+            final SLPersistentTree tree = pFactory.createPersistentTree(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR);
             treeSession = tree.openSession();
 
             queryCache = new SLQueryCacheImpl(treeSession, session);

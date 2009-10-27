@@ -94,7 +94,7 @@ public class SLGraphNodeByIDTest {
     public static void setUp() {
         try {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession();
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);

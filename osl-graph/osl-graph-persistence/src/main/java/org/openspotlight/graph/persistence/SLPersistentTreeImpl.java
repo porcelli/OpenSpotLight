@@ -51,12 +51,10 @@ package org.openspotlight.graph.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jcr.Credentials;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLPersistentTreeImpl.
@@ -65,14 +63,7 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
  */
 public class SLPersistentTreeImpl implements SLPersistentTree {
 
-    /** The repository. */
-    private final Repository                    repository;
-
-    /** The credentials. */
-    private final Credentials                   credentials;
-
-    private final JcrConnectionDescriptor       jcrConnectionDescription;
-
+    final JcrConnectionDescriptor               descriptor;
     private final List<SLPersistentTreeSession> sessions;
 
     /**
@@ -82,11 +73,8 @@ public class SLPersistentTreeImpl implements SLPersistentTree {
      * @param credentials the credentials
      */
     public SLPersistentTreeImpl(
-                                 final Repository repository, final Credentials credentials,
-                                 final JcrConnectionDescriptor jcrConnectionDescription ) {
-        this.repository = repository;
-        this.credentials = credentials;
-        this.jcrConnectionDescription = jcrConnectionDescription;
+                                 final JcrConnectionDescriptor descriptor ) {
+        this.descriptor = descriptor;
         this.sessions = new ArrayList<SLPersistentTreeSession>();
     }
 
@@ -95,14 +83,11 @@ public class SLPersistentTreeImpl implements SLPersistentTree {
      * @see org.openspotlight.graph.persistence.SLPersistentTree#openSession()
      */
     public SLPersistentTreeSession openSession() throws SLPersistentTreeException {
-        try {
-            final Session session = this.repository.login(this.credentials);
-            final SLPersistentTreeSession newSession = new SLPersistentTreeSessionImpl(session);
-            this.sessions.add(newSession);
-            return newSession;
-        } catch (final RepositoryException e) {
-            throw new SLPersistentTreeException("Error on attempt to open persistent tree session.", e);
-        }
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(this.descriptor);
+        final Session session = provider.openSession();
+        final SLPersistentTreeSession newSession = new SLPersistentTreeSessionImpl(session);
+        this.sessions.add(newSession);
+        return newSession;
     }
 
     //@Override
@@ -113,6 +98,5 @@ public class SLPersistentTreeImpl implements SLPersistentTree {
         for (final SLPersistentTreeSession activeSession : this.sessions) {
             activeSession.close();
         }
-        //        JcrConnectionProvider.invalidateCache(jcrConnectionDescription);
     }
 }

@@ -65,7 +65,6 @@ import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphFactoryImpl.
@@ -104,15 +103,15 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
     private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
 
     @Override
-    public synchronized SLGraph createGraph( final JcrConnectionProvider provider ) throws SLGraphFactoryException {
-        SLGraph cached = this.cache.get(provider.getData());
+    public synchronized SLGraph createGraph( final JcrConnectionDescriptor descriptor ) throws SLGraphFactoryException {
+        SLGraph cached = this.cache.get(descriptor);
         if (cached == null) {
             try {
                 SLPersistentTreeFactory factory;
                 factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-                final SLPersistentTree tree = factory.createPersistentTree(provider);
+                final SLPersistentTree tree = factory.createPersistentTree(descriptor);
                 cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
-                this.cache.put(provider.getData(), cached);
+                this.cache.put(descriptor, cached);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }

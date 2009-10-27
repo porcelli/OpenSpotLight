@@ -104,7 +104,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                 }
             }
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            final SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             final SLGraphSession session = graph.openSession();
             final AbstractGeneralQueryTest test = new SLGraphQueryTest(session, SortMode.SORTED, true);
             int option = 0;

@@ -49,14 +49,14 @@
 package org.openspotlight.graph.persistence;
 
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 /**
  * A factory for creating SLPersistentTree objects.
  */
 public abstract class SLPersistentTreeFactory extends AbstractFactory {
 
-    public abstract SLPersistentTree createPersistentTree( JcrConnectionProvider provider )
+    public abstract SLPersistentTree createPersistentTree( final JcrConnectionDescriptor descriptor )
         throws SLPersistentTreeFactoryException;
 
 }

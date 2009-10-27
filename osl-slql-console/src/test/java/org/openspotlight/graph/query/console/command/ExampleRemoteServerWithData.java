@@ -187,7 +187,7 @@ public class ExampleRemoteServerWithData {
          */
         public void populateGraph() throws SLException, IOException, ClassNotFoundException {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            final SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             final SLGraphSession session = graph.openSession();
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");

@@ -48,10 +48,7 @@
  */
 package org.openspotlight.graph.persistence;
 
-import javax.jcr.Credentials;
-import javax.jcr.Repository;
-
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 /**
  * The Class SLPersistentTreeFactoryImpl.
@@ -61,11 +58,10 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
 
     @Override
-    public SLPersistentTree createPersistentTree( final JcrConnectionProvider provider ) throws SLPersistentTreeFactoryException {
+    public SLPersistentTree createPersistentTree( final JcrConnectionDescriptor descriptor )
+        throws SLPersistentTreeFactoryException {
         try {
-            final Credentials credentials = provider.getData().getCredentials();
-            final Repository repo = provider.openRepository();
-            return new SLPersistentTreeImpl(repo, credentials, provider.getData());
+            return new SLPersistentTreeImpl(descriptor);
         } catch (final Exception e) {
             throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
         }

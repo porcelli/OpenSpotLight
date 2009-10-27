@@ -82,7 +82,7 @@ public class DuplicateTest {
     @Before
     public void setup() throws AbstractFactoryException, SLGraphException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+        this.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         this.session = this.graph.openSession();
     }
 

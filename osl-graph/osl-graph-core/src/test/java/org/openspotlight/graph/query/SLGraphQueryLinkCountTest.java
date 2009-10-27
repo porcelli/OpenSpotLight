@@ -121,7 +121,7 @@ public class SLGraphQueryLinkCountTest {
     public static void quickGraphPopulation() {
         try {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession();
             final SLContext context = session.createContext("linkCountTest");
             final SLNode root = context.getRootNode();

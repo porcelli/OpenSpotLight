@@ -69,7 +69,7 @@ public class ExampleGraphImport {
     public void shouldImportSomeData() throws Exception {
 
         final SLGraphFactory factory = new SLGraphFactoryImpl();
-        final SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+        final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final SLGraphSession session = graph.openSession();
         final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
         final SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
