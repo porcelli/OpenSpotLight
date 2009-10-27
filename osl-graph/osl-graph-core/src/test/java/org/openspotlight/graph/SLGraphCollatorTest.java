@@ -65,7 +65,7 @@ public class SLGraphCollatorTest {
                                                                        javaMethodNode1, false);
 
             final SLLinkProperty<String> prop1 = link.setProperty(String.class, "selecao", "great");
-            final SLLinkProperty<String> prop2 = link.getProperty(String.class, "seleção");
+            final SLLinkProperty<String> prop2 = link.getProperty(String.class, "sele\u00E7\u00E3o");
 
             Assert.assertEquals(prop1, prop2);
             Assert.assertEquals(prop1.getName(), "selecao");
@@ -74,7 +74,7 @@ public class SLGraphCollatorTest {
             try {
                 final Collator collator = Collator.getInstance(Locale.US);
                 collator.setStrength(Collator.TERTIARY);
-                link.getProperty(String.class, "seleção", collator);
+                link.getProperty(String.class, "sele\u00E7\u00E3o", collator);
                 Assert.fail();
             } catch (final SLNodePropertyNotFoundException e) {
                 Assert.assertTrue(true);
@@ -93,11 +93,11 @@ public class SLGraphCollatorTest {
 
             // test addNode ...
             final SQLElement element1 = root1.addNode(SQLElement.class, "selecao");
-            final SQLElement element2 = root1.addNode(SQLElement.class, "seleção");
+            final SQLElement element2 = root1.addNode(SQLElement.class, "sele\u00E7\u00E3o");
             Assert.assertEquals(element1, element2);
 
             // test getNode ...
-            final SQLElement element3 = root1.getNode(SQLElement.class, "seleção");
+            final SQLElement element3 = root1.getNode(SQLElement.class, "sele\u00E7\u00E3o");
             Assert.assertEquals(element1, element3);
 
             // the original name remains ...
@@ -119,7 +119,7 @@ public class SLGraphCollatorTest {
             final SQLElement element = root1.addNode(SQLElement.class, "element");
 
             final SLNodeProperty<String> prop1 = element.setProperty(String.class, "selecao", "great");
-            final SLNodeProperty<String> prop2 = element.getProperty(String.class, "seleção");
+            final SLNodeProperty<String> prop2 = element.getProperty(String.class, "sele\u00E7\u00E3o");
             Assert.assertEquals(prop1, prop2);
             Assert.assertEquals(prop1.getName(), "selecao");
             Assert.assertEquals(prop1.getName(), "selecao");
@@ -127,7 +127,7 @@ public class SLGraphCollatorTest {
             try {
                 final Collator collator = Collator.getInstance(Locale.US);
                 collator.setStrength(Collator.TERTIARY);
-                element.getProperty(String.class, "seleção", collator);
+                element.getProperty(String.class, "sele\u00E7\u00E3o", collator);
                 Assert.fail();
             } catch (final SLNodePropertyNotFoundException e) {
                 Assert.assertTrue(true);
