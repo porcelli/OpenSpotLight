@@ -6,33 +6,33 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.SLQueryTextInternal;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 public class TestSLQueryTextInternalBuilder {
 
-    private SLQueryTextInternalBuilder queryBuilder = new SLQueryTextInternalBuilder();
-
-    @Test
-    public void testSelectStar() throws SLException, IOException {
-        String select = "select *;";
-        SLQueryTextInternal result = queryBuilder.build(select);
-
-        assertThat(result, notNullValue());
-        Assert.assertNotNull(result);
-    }
+    private final SLQueryTextInternalBuilder queryBuilder = new SLQueryTextInternalBuilder();
 
     @Test
     public void testCheckQueryExists() throws SLException, IOException {
-        String select = "select *;";
-        SLQueryTextInternal result = queryBuilder.build(select);
+        final String select = "select *;";
+        final SLQueryTextInternal result = this.queryBuilder.build(select);
 
-        String select2 = "     select *      ;   ";
-        SLQueryTextInternal result2 = queryBuilder.build(select2);
+        final String select2 = "     select *      ;   ";
+        final SLQueryTextInternal result2 = this.queryBuilder.build(select2);
 
         assertThat(result.getClass().getName(), is(result2.getClass().getName()));
+    }
+
+    @Test
+    public void testSelectStar() throws SLException, IOException {
+        final String select = "select *;";
+        final SLQueryTextInternal result = this.queryBuilder.build(select);
+
+        assertThat(result, notNullValue());
+        Assert.assertNotNull(result);
     }
 
 }

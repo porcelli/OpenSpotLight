@@ -354,57 +354,6 @@
 				<version>1.7.0</version>
 			</dependency>
 			<dependency>
-				<groupId>com.thoughtworks.qdox</groupId>
-				<artifactId>qdox</artifactId>
-				<version>1.9.1</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.jung</groupId>
-				<artifactId>jung-graph-impl</artifactId>
-				<version>2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>jdom</groupId>
-				<artifactId>jdom</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jdom</groupId>
-				<artifactId>jaxen-jdom</artifactId>
-				<version>1.0-FCS</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jdom</groupId>
-				<artifactId>jaxen-core</artifactId>
-				<version>1.0-FCS</version>
-			</dependency>
-			<dependency>
-				<groupId>jaxen</groupId>
-				<artifactId>jaxen</artifactId>
-				<version>1.1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jdom</groupId>
-				<artifactId>saxpath</artifactId>
-				<version>1.0-FCS</version>
-			</dependency>
-			<dependency>
-				<groupId>org.testng</groupId>
-				<artifactId>testng</artifactId>
-				<version>5.10</version>
-				<classifier>jdk15</classifier>
-			</dependency>
-			<dependency>
-				<groupId>xdoclet</groupId>
-				<artifactId>xdoclet-xjavadoc</artifactId>
-				<version>1.2b2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.ws.jaxme</groupId>
-				<artifactId>jaxmejs</artifactId>
-				<version>0.5.2</version>
-			</dependency>
-			<dependency>
 				<groupId>antlr</groupId>
 				<artifactId>antlr</artifactId>
 				<version>2.7.7</version>
@@ -440,11 +389,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-all</artifactId>
 				<version>1.8.0-rc2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.testng</groupId>
-				<artifactId>testng</artifactId>
-				<version>5.8</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -671,6 +615,11 @@
 				<artifactId>cglib</artifactId>
 				<version>2.2</version>
 			</dependency>
+<dependency>
+  <groupId>com.ibm.icu</groupId>
+  <artifactId>icu4j</artifactId>
+  <version>4.0.1</version>
+</dependency>
 
 		</dependencies>
 	</dependencyManagement>

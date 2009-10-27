@@ -66,6 +66,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -88,29 +94,43 @@ import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  * The Class SLGraphTest.
  * 
  * @author Vitor Hugo Chagas
  */
-@Test
+
 public class SLGraphTest {
 
     /** The Constant LOGGER. */
-    static final Logger    LOGGER = Logger.getLogger(SLGraphTest.class);
+    static final Logger           LOGGER = Logger.getLogger(SLGraphTest.class);
 
     /** The graph. */
-    private SLGraph        graph;
+    private static SLGraph        graph;
 
     /** The session. */
-    private SLGraphSession session;
+    private static SLGraphSession session;
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish() {
+        session.close();
+        graph.shutdown();
+    }
+
+    /**
+     * Inits the.
+     * 
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @BeforeClass
+    public static void init() throws AbstractFactoryException {
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+    }
 
     /** The java class node. */
     private JavaClassNode  javaClassNode;
@@ -128,50 +148,6 @@ public class SLGraphTest {
     private SLLink         linkBoth;
 
     /**
-     * Inits the.
-     * 
-     * @throws AbstractFactoryException the abstract factory exception
-     */
-    @BeforeClass
-    public void init() throws AbstractFactoryException {
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-    }
-
-    /**
-     * Before test.
-     * 
-     * @throws SLGraphException the SL graph exception
-     */
-    @BeforeMethod
-    public void beforeTest() throws SLGraphException {
-        if (this.session == null) {
-            this.session = this.graph.openSession();
-        }
-    }
-
-    /**
-     * Finish.
-     */
-    @AfterClass( alwaysRun = true )
-    public void finish() {
-        this.session.close();
-        this.graph.shutdown();
-    }
-
-    /**
-     * After test.
-     * 
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    @AfterMethod
-    public void afterTest() throws SLGraphSessionException {
-        this.session.clear();
-        // session.save();
-        // session.close();
-    }
-
-    /**
      * ======= >>>>>>> 51720a0fa81fe82484c076efdb19ffee0d4bfe42 Adds the add multiple link empty case.
      */
     @Test
@@ -182,21 +158,24 @@ public class SLGraphTest {
             // empty --> add AB --> add AB
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
 
             // empty --> add BA --> add BA
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
 
             // empty --> add BOTH --> add BOTH
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
 
@@ -209,7 +188,8 @@ public class SLGraphTest {
     /**
      * Adds the add multiple link existent ab case.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkEmptyCase" )
+    @Test
+    // ( dependsOnMethods = "addAddMultipleLinkEmptyCase" )
     public void addAddMultipleLinkExistentABCase() {
 
         try {
@@ -217,7 +197,8 @@ public class SLGraphTest {
             // existent AB --> add AB --> add NEW AB
             this.setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertNotSame(linkAB, this.linkAB);
@@ -225,7 +206,8 @@ public class SLGraphTest {
             // existent AB --> add BA --> add BA
             this.setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertNotSame(linkBA, this.linkAB);
@@ -233,7 +215,8 @@ public class SLGraphTest {
             // existent AB --> add BOTH --> add BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkAB);
@@ -247,7 +230,8 @@ public class SLGraphTest {
     /**
      * Adds the add multiple link existent ba case.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkExistentABCase" )
+    @Test
+    // ( dependsOnMethods = "addAddMultipleLinkExistentABCase" )
     public void addAddMultipleLinkExistentBACase() {
 
         try {
@@ -255,7 +239,8 @@ public class SLGraphTest {
             // existent BA --> add BA --> add NEW BA
             this.setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertNotSame(linkAB, this.linkBA);
@@ -263,7 +248,8 @@ public class SLGraphTest {
             // existent BA --> add AB --> add AB
             this.setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertNotSame(linkBA, this.linkBA);
@@ -271,7 +257,8 @@ public class SLGraphTest {
             // existent BA --> add BOTH --> add BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkBA);
@@ -285,7 +272,8 @@ public class SLGraphTest {
     /**
      * Adds the add multiple link existent both case.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkExistentBACase" )
+    @Test
+    // ( dependsOnMethods = "addAddMultipleLinkExistentBACase" )
     public void addAddMultipleLinkExistentBothCase() {
 
         try {
@@ -293,7 +281,8 @@ public class SLGraphTest {
             // existent BOTH --> add AB --> add AB
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertNotSame(linkAB, this.linkBoth);
@@ -301,7 +290,8 @@ public class SLGraphTest {
             // existent BOTH --> add BA --> add BA
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertNotSame(linkBA, this.linkBoth);
@@ -309,7 +299,8 @@ public class SLGraphTest {
             // existent BOTH --> add BOTH --> add NEW BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkBoth);
@@ -318,6 +309,18 @@ public class SLGraphTest {
             LOGGER.error(e);
             Assert.fail();
         }
+    }
+
+    /**
+     * After test.
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @After
+    public void afterTest() throws SLGraphSessionException {
+        session.clear();
+        // session.save();
+        // session.close();
     }
 
     /**
@@ -406,6 +409,18 @@ public class SLGraphTest {
         Assert.assertEquals(link.getOtherSide(source), target);
         Assert.assertEquals(link.getOtherSide(target), source);
         Assert.assertEquals(link.isBidirectional(), bidirecional);
+    }
+
+    /**
+     * Before test.
+     * 
+     * @throws SLGraphException the SL graph exception
+     */
+    @Before
+    public void beforeTest() throws SLGraphException {
+        if (session == null) {
+            session = graph.openSession();
+        }
     }
 
     /**
@@ -504,7 +519,8 @@ public class SLGraphTest {
     /**
      * Test add and get node with strange chars on name.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
+    @Test
+    // ( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
     public void testAddAndGetNodeWithStrangeCharsOnName() {
         try {
             final SLNode root1 = this.session.createContext("1L").getRootNode();
@@ -522,7 +538,8 @@ public class SLGraphTest {
     /**
      * Test add node type hierarchy case.
      */
-    @Test( dependsOnMethods = "testAddAndGetNodeWithStrangeCharsOnName" )
+    @Test
+    // ( dependsOnMethods = "testAddAndGetNodeWithStrangeCharsOnName" )
     public void testAddNodeTypeHierarchyCase() {
 
         try {
@@ -558,7 +575,8 @@ public class SLGraphTest {
     /**
      * Test add simple link empty case.
      */
-    @Test( dependsOnMethods = "testAddNodeTypeHierarchyCase" )
+    @Test
+    // ( dependsOnMethods = "testAddNodeTypeHierarchyCase" )
     public void testAddSimpleLinkEmptyCase() {
 
         try {
@@ -566,21 +584,24 @@ public class SLGraphTest {
             // empty --> add AB --> add AB
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
 
             // empty --> add BA --> add BA
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
 
             // empty --> add BOTH --> add BOTH
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
         } catch (final SLGraphSessionException e) {
@@ -592,7 +613,8 @@ public class SLGraphTest {
     /**
      * Test add simple link empty case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkEmptyCase" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkEmptyCase" )
     public void testAddSimpleLinkEmptyCaseACTB() {
 
         try {
@@ -600,22 +622,26 @@ public class SLGraphTest {
             // empty --> add AB --> add AB
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
 
             // empty --> add BA --> add BA
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
 
             // empty --> add BOTH --> add BOTH
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
-            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
+            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
+                                  true);
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
@@ -626,7 +652,8 @@ public class SLGraphTest {
     /**
      * Test add simple link existent ab case.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkEmptyCaseACTB" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkEmptyCaseACTB" )
     public void testAddSimpleLinkExistentABCase() {
 
         try {
@@ -634,7 +661,8 @@ public class SLGraphTest {
             // existent AB --> add AB --> remains AB
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertEquals(linkAB, this.linkAB);
@@ -642,7 +670,8 @@ public class SLGraphTest {
             // existent AB --> add BA --> add BA
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertNotSame(linkBA, this.linkAB);
@@ -650,7 +679,8 @@ public class SLGraphTest {
             // existent AB --> add BOTH --> add BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkAB);
@@ -663,7 +693,8 @@ public class SLGraphTest {
     /**
      * Test add simple link existent ab case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentABCase" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentABCase" )
     public void testAddSimpleLinkExistentABCaseACTB() {
 
         try {
@@ -671,7 +702,8 @@ public class SLGraphTest {
             // existent AB --> add AB --> remains AB
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertEquals(linkAB, this.linkAB);
@@ -679,7 +711,8 @@ public class SLGraphTest {
             // existent AB --> add BA --> changes to BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, true);
             Assert.assertEquals(linkBA, this.linkAB);
@@ -687,8 +720,10 @@ public class SLGraphTest {
             // existent AB --> add BOTH --> changes to BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
-            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
+            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
+                                  true);
             Assert.assertEquals(linkBoth, this.linkAB);
 
         } catch (final SLGraphSessionException e) {
@@ -700,7 +735,8 @@ public class SLGraphTest {
     /**
      * Test add simple link existent ba case.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentABCaseACTB" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentABCaseACTB" )
     public void testAddSimpleLinkExistentBACase() {
 
         try {
@@ -708,7 +744,8 @@ public class SLGraphTest {
             // existent BA --> add AB --> add AB
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertNotSame(linkAB, this.linkBA);
@@ -716,14 +753,16 @@ public class SLGraphTest {
             // existent BA --> add BA --> remains BA
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertEquals(linkBA, this.linkBA);
 
             // existent BA --> add BOTH --> add BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLink.class);
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkBA);
@@ -737,29 +776,34 @@ public class SLGraphTest {
     /**
      * Test add simple link existent ba case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBACase" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentBACase" )
     public void testAddSimpleLinkExistentBACaseACTB() {
 
         try {
 
             // existent BA --> add AB --> changes to BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertEquals(linkAB, this.linkBA);
 
             // existent BA --> add BA --> remains BA
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertEquals(linkBA, this.linkBA);
 
             // existent BA --> add BOTH --> changes to BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
-            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
+            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
+                                  true);
 
             Assert.assertEquals(linkBoth, this.linkBA);
 
@@ -772,7 +816,8 @@ public class SLGraphTest {
     /**
      * Test add simple link existent both case.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBACaseACTB" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentBACaseACTB" )
     public void testAddSimpleLinkExistentBothCase() {
 
         try {
@@ -780,7 +825,8 @@ public class SLGraphTest {
             // existent BOTH --> add AB --> add AB
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
             Assert.assertNotSame(linkAB, this.linkBoth);
@@ -788,14 +834,16 @@ public class SLGraphTest {
             // existent BOTH --> add BA --> add BA
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertNotSame(linkBA, this.linkBoth);
 
             // existent BOTH --> add BOTH --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLink.class);
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
 
             Assert.assertEquals(linkBoth, this.linkBoth);
@@ -808,7 +856,8 @@ public class SLGraphTest {
     /**
      * Test add simple link existent both case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBothCase" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentBothCase" )
     public void testAddSimpleLinkExistentBothCaseACTB() {
 
         try {
@@ -816,20 +865,24 @@ public class SLGraphTest {
             // existent BOTH --> add AB --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                       this.javaMethodNode, false);
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertEquals(linkAB, this.linkBoth);
 
             // existent BOTH --> add BA --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+                                                       this.javaClassNode, false);
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, true);
             Assert.assertEquals(linkBA, this.linkBoth);
 
             // existent BOTH --> add BOTH --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
-            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+                                                         this.javaMethodNode, true);
+            this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
+                                  true);
             Assert.assertEquals(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
@@ -841,7 +894,8 @@ public class SLGraphTest {
     /**
      * Test any serializable property.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
     public void testAnySerializableProperty() {
 
         try {
@@ -882,7 +936,8 @@ public class SLGraphTest {
     /**
      * Test boolean property.
      */
-    @Test( dependsOnMethods = "testAnySerializableProperty" )
+    @Test
+    // ( dependsOnMethods = "testAnySerializableProperty" )
     public void testBooleanProperty() {
 
         try {
@@ -921,7 +976,8 @@ public class SLGraphTest {
     /**
      * Test chi ld nodes retrieval.
      */
-    @Test( dependsOnMethods = "testBooleanProperty" )
+    @Test
+    // ( dependsOnMethods = "testBooleanProperty" )
     public void testChiLdNodesRetrieval() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -946,12 +1002,13 @@ public class SLGraphTest {
      * 
      * @throws SLGraphSessionException the SL graph session exception
      */
-    @Test( dependsOnMethods = "testChiLdNodesRetrieval" )
+    @Test
+    // ( dependsOnMethods = "testChiLdNodesRetrieval" )
     public void testContextOperations() throws SLGraphSessionException {
         final SLContext context1 = this.session.createContext("1L");
-        Assert.assertNotNull(context1, "context1 should not be null.");
+        Assert.assertNotNull("context1 should not be null.", context1);
         final SLContext context2 = this.session.getContext("1L");
-        Assert.assertNotNull(context2, "context2 should not be null.");
+        Assert.assertNotNull("context2 should not be null.", context2);
         final String id1 = context1.getID();
         final String id2 = context2.getID();
         Assert.assertNotNull(id1);
@@ -963,7 +1020,8 @@ public class SLGraphTest {
     /**
      * Test double property.
      */
-    @Test( dependsOnMethods = "testContextOperations" )
+    @Test
+    // ( dependsOnMethods = "testContextOperations" )
     public void testDoubleProperty() {
 
         try {
@@ -1014,7 +1072,8 @@ public class SLGraphTest {
     /**
      * Test float property.
      */
-    @Test( dependsOnMethods = "testDoubleProperty" )
+    @Test
+    // ( dependsOnMethods = "testDoubleProperty" )
     public void testFloatProperty() {
 
         try {
@@ -1065,7 +1124,8 @@ public class SLGraphTest {
     /**
      * Test get bidirectional links.
      */
-    @Test( dependsOnMethods = "testFloatProperty" )
+    @Test
+    // ( dependsOnMethods = "testFloatProperty" )
     public void testGetBidirectionalLinks() {
 
         try {
@@ -1074,8 +1134,10 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, true);
-            final SLLink multipleLinkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1, true);
+            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                               javaMethodNode1, true);
+            final SLLink multipleLinkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                                 javaMethodNode1, true);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
@@ -1084,7 +1146,8 @@ public class SLGraphTest {
             simpleLinks = this.session.getBidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            multipleLinks = this.session.getBidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1);
+            multipleLinks = this.session.getBidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                               javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkBoth);
 
             links = this.session.getBidirectionalLinks(javaClassNode1, javaMethodNode1);
@@ -1099,7 +1162,8 @@ public class SLGraphTest {
     /**
      * Test get bidirectional links by side.
      */
-    @Test( dependsOnMethods = "testGetBidirectionalLinks" )
+    @Test
+    // ( dependsOnMethods = "testGetBidirectionalLinks" )
     public void testGetBidirectionalLinksBySide() {
 
         try {
@@ -1108,8 +1172,10 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, true);
-            final SLLink multipleLinkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1, true);
+            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                               javaMethodNode1, true);
+            final SLLink multipleLinkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                                 javaMethodNode1, true);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
@@ -1139,7 +1205,8 @@ public class SLGraphTest {
     /**
      * Test get links.
      */
-    @Test( dependsOnMethods = "testGetSubMetaNodeType" )
+    @Test
+    // ( dependsOnMethods = "testGetSubMetaNodeType" )
     public void testGetLinks() {
 
         try {
@@ -1148,9 +1215,12 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
-            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, true);
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                             javaMethodNode1, false);
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+                                                             javaClassNode1, false);
+            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                               javaMethodNode1, true);
 
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 
@@ -1167,36 +1237,48 @@ public class SLGraphTest {
 
             // test getLinks between javaClassNode1 and javaMethodNode1
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+                                                DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+                                                DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, DIRECTION_UNI_REVERSAL);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+                                                DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, DIRECTION_UNI_REVERSAL);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+                                                DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+                                                DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+                                                DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+                                                DIRECTION_UNI | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+                                                DIRECTION_UNI | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+                                                DIRECTION_UNI_REVERSAL | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+                                                DIRECTION_UNI_REVERSAL | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, DIRECTION_ANY);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+                                                DIRECTION_ANY);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, DIRECTION_ANY);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+                                                DIRECTION_ANY);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
 
@@ -1219,14 +1301,18 @@ public class SLGraphTest {
             simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI
+                                                                                                           | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI
+                                                                                                           | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL
+                                                                                                           | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI_REVERSAL
+                                                                                                           | DIRECTION_BI);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
 
@@ -1243,10 +1329,12 @@ public class SLGraphTest {
             simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI_REVERSAL);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1,
+                                                DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI_REVERSAL);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null,
+                                                DIRECTION_UNI_REVERSAL);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
@@ -1255,14 +1343,18 @@ public class SLGraphTest {
             simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI
+                                                                                                            | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI
+                                                                                                            | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1,
+                                                DIRECTION_UNI_REVERSAL | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null,
+                                                DIRECTION_UNI_REVERSAL | DIRECTION_BI);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
 
@@ -1291,7 +1383,8 @@ public class SLGraphTest {
     /**
      * Test get meta link properties.
      */
-    @Test( dependsOnMethods = "testGetLinks" )
+    @Test
+    // ( dependsOnMethods = "testGetLinks" )
     public void testGetMetaLinkProperties() {
 
         try {
@@ -1327,7 +1420,8 @@ public class SLGraphTest {
     /**
      * Test get meta link property.
      */
-    @Test( dependsOnMethods = "testGetMetaLinkProperties" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaLinkProperties" )
     public void testGetMetaLinkProperty() {
 
         try {
@@ -1366,7 +1460,8 @@ public class SLGraphTest {
     /**
      * Test get meta node.
      */
-    @Test( dependsOnMethods = "testGetMetaLinkProperty" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaLinkProperty" )
     public void testGetMetaNode() {
 
         try {
@@ -1396,7 +1491,8 @@ public class SLGraphTest {
     /**
      * Test get meta node properties.
      */
-    @Test( dependsOnMethods = "testGetMetaNode" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaNode" )
     public void testGetMetaNodeProperties() {
 
         try {
@@ -1470,7 +1566,8 @@ public class SLGraphTest {
     /**
      * Test get meta nodes.
      */
-    @Test( dependsOnMethods = "testGetMetaNodeProperties" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaNodeProperties" )
     public void testGetMetaNodes() {
 
         try {
@@ -1492,7 +1589,8 @@ public class SLGraphTest {
     /**
      * Test get meta render hint.
      */
-    @Test( dependsOnMethods = "testGetMetaNodes" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaNodes" )
     public void testGetMetaRenderHint() {
 
         try {
@@ -1521,7 +1619,8 @@ public class SLGraphTest {
     /**
      * Test get meta render hints.
      */
-    @Test( dependsOnMethods = "testGetMetaRenderHint" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaRenderHint" )
     public void testGetMetaRenderHints() {
 
         try {
@@ -1549,7 +1648,8 @@ public class SLGraphTest {
     /**
      * Test get nodes by link with link type.
      */
-    @Test( dependsOnMethods = "testGetMetaRenderHints" )
+    @Test
+    // ( dependsOnMethods = "testGetMetaRenderHints" )
     public void testGetNodesByLinkWithLinkType() {
 
         try {
@@ -1600,7 +1700,8 @@ public class SLGraphTest {
     /**
      * Test get nodes by link without link type.
      */
-    @Test( dependsOnMethods = "testGetNodesByLinkWithLinkType" )
+    @Test
+    // ( dependsOnMethods = "testGetNodesByLinkWithLinkType" )
     public void testGetNodesByLinkWithoutLinkType() {
 
         try {
@@ -1644,7 +1745,8 @@ public class SLGraphTest {
     /**
      * Test get nodes by predicate.
      */
-    @Test( dependsOnMethods = "testGetNodesByLinkWithoutLinkType" )
+    @Test
+    // ( dependsOnMethods = "testGetNodesByLinkWithoutLinkType" )
     public void testGetNodesByPredicate() {
 
         try {
@@ -1679,7 +1781,8 @@ public class SLGraphTest {
     /**
      * Test get property as string.
      */
-    @Test( dependsOnMethods = "testGetNodesByPredicate" )
+    @Test
+    // ( dependsOnMethods = "testGetNodesByPredicate" )
     public void testGetPropertyAsString() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -1700,7 +1803,8 @@ public class SLGraphTest {
     /**
      * <<<<<<< HEAD ======= Test get sub meta node type.
      */
-    @Test( dependsOnMethods = "testGetSubMetaNodeTypes" )
+    @Test
+    // ( dependsOnMethods = "testGetSubMetaNodeTypes" )
     public void testGetSubMetaNodeType() {
 
         try {
@@ -1729,7 +1833,8 @@ public class SLGraphTest {
     /**
      * Test get sub meta node types.
      */
-    @Test( dependsOnMethods = "testGetBidirectionalLinksBySide" )
+    @Test
+    // ( dependsOnMethods = "testGetBidirectionalLinksBySide" )
     public void testGetSubMetaNodeTypes() {
 
         try {
@@ -1758,7 +1863,8 @@ public class SLGraphTest {
     /**
      * >>>>>>> 51720a0fa81fe82484c076efdb19ffee0d4bfe42 Test get unidirectional links.
      */
-    @Test( dependsOnMethods = "testGetPropertyAsString" )
+    @Test
+    // ( dependsOnMethods = "testGetPropertyAsString" )
     public void testGetUnidirectionalLinks() {
 
         try {
@@ -1767,23 +1873,31 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
-            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1, false);
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                             javaMethodNode1, false);
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+                                                             javaClassNode1, false);
+            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                               javaMethodNode1, false);
+            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+                                                               javaClassNode1, false);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
             Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
 
-            simpleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1);
+            simpleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                              javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
-            simpleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1);
+            simpleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+                                                              javaClassNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            multipleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1);
+            multipleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                                javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkAB);
-            multipleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1);
+            multipleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+                                                                javaClassNode1);
 
             this.assertLinksInOrder(multipleLinks, multipleLinkBA);
 
@@ -1801,7 +1915,8 @@ public class SLGraphTest {
     /**
      * Test get unidirectional links by source.
      */
-    @Test( dependsOnMethods = "testGetUnidirectionalLinks" )
+    @Test
+    // ( dependsOnMethods = "testGetUnidirectionalLinks" )
     public void testGetUnidirectionalLinksBySource() {
 
         try {
@@ -1810,10 +1925,14 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
-            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1, false);
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                             javaMethodNode1, false);
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+                                                             javaClassNode1, false);
+            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                               javaMethodNode1, false);
+            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+                                                               javaClassNode1, false);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
@@ -1843,7 +1962,8 @@ public class SLGraphTest {
     /**
      * Test get unidirectional links by target.
      */
-    @Test( dependsOnMethods = "testGetUnidirectionalLinksBySource" )
+    @Test
+    // ( dependsOnMethods = "testGetUnidirectionalLinksBySource" )
     public void testGetUnidirectionalLinksByTarget() {
 
         try {
@@ -1852,10 +1972,14 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
-            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1, false);
-            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1, false);
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                             javaMethodNode1, false);
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+                                                             javaClassNode1, false);
+            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+                                                               javaMethodNode1, false);
+            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+                                                               javaClassNode1, false);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
@@ -1885,7 +2009,8 @@ public class SLGraphTest {
     /**
      * Test integer property.
      */
-    @Test( dependsOnMethods = "testGetUnidirectionalLinksByTarget" )
+    @Test
+    // ( dependsOnMethods = "testGetUnidirectionalLinksByTarget" )
     public void testIntegerProperty() {
 
         try {
@@ -1937,7 +2062,8 @@ public class SLGraphTest {
     /**
      * Test line reference.
      */
-    @Test( dependsOnMethods = "testIntegerProperty" )
+    @Test
+    // ( dependsOnMethods = "testIntegerProperty" )
     public void testLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
         final SLNode root1 = this.session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
@@ -1970,50 +2096,11 @@ public class SLGraphTest {
         }
     }
 
-    @Test( dependsOnMethods = "testLineReference" )
-    public void testTreeLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
-        final SLNode root1 = this.session.createContext("1L").getRootNode();
-        final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
-
-        javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(9, 16, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "2");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-
-        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences();
-        Assert.assertEquals(treeLineRefs.getArtifacts().size(), 3);
-
-        for (SLArtifactLineReference artifactLine : treeLineRefs.getArtifacts()) {
-            if (artifactLine.getArtifactId().equals("1")) {
-                Assert.assertEquals(artifactLine.getStatements().size(), 2);
-                for (SLStatementLineReference activeStatement : artifactLine.getStatements()) {
-                    if (activeStatement.getStatement().equals("Hello World!")) {
-                        Assert.assertEquals(activeStatement.getLineReferences().size(), 4);
-                    } else if (activeStatement.getStatement().equals("New Hello!")) {
-                        Assert.assertEquals(activeStatement.getLineReferences().size(), 1);
-                    } else {
-                        Assert.fail();
-                    }
-                }
-            } else if (artifactLine.getArtifactId().equals("2") && artifactLine.getArtifactVersion().equals("1")) {
-                Assert.assertEquals(artifactLine.getStatements().size(), 1);
-            } else if (artifactLine.getArtifactId().equals("2") && artifactLine.getArtifactVersion().equals("2")) {
-                Assert.assertEquals(artifactLine.getStatements().size(), 1);
-            } else {
-                Assert.fail();
-            }
-        }
-    }
-
     /**
      * Test link properties.
      */
-    @Test( dependsOnMethods = "testTreeLineReference" )
+    @Test
+    // ( dependsOnMethods = "testTreeLineReference" )
     public void testLinkProperties() {
 
         try {
@@ -2055,7 +2142,8 @@ public class SLGraphTest {
     /**
      * Test link property with annotations.
      */
-    @Test( dependsOnMethods = "testLinkProperties" )
+    @Test
+    // ( dependsOnMethods = "testLinkProperties" )
     public void testLinkPropertyWithAnnotations() {
         try {
 
@@ -2063,7 +2151,8 @@ public class SLGraphTest {
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final JavaClassJavaMethodSimpleLink link = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            final JavaClassJavaMethodSimpleLink link = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                                            javaMethodNode1, false);
 
             final Date creationTime = new Date();
             link.setLinkName("myLink");
@@ -2082,7 +2171,8 @@ public class SLGraphTest {
     /**
      * Test links removal by node deletion.
      */
-    @Test( dependsOnMethods = "testLinkPropertyWithAnnotations" )
+    @Test
+    // ( dependsOnMethods = "testLinkPropertyWithAnnotations" )
     public void testLinksRemovalByNodeDeletion() {
 
         try {
@@ -2125,7 +2215,8 @@ public class SLGraphTest {
     /**
      * Test link types for link deletion mark and unmark case.
      */
-    @Test( dependsOnMethods = "testLinksRemovalByNodeDeletion" )
+    @Test
+    // ( dependsOnMethods = "testLinksRemovalByNodeDeletion" )
     public void testLinkTypesForLinkDeletionMarkAndUnmarkCase() {
 
         try {
@@ -2162,7 +2253,8 @@ public class SLGraphTest {
     /**
      * Test link types for link deletion mark case.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkDeletionMarkAndUnmarkCase" )
+    @Test
+    // ( dependsOnMethods = "testLinkTypesForLinkDeletionMarkAndUnmarkCase" )
     public void testLinkTypesForLinkDeletionMarkCase() {
 
         try {
@@ -2200,7 +2292,8 @@ public class SLGraphTest {
     /**
      * Test link types for linked node deletion mark and unmark case.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkDeletionMarkCase" )
+    @Test
+    // ( dependsOnMethods = "testLinkTypesForLinkDeletionMarkCase" )
     public void testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase() {
 
         try {
@@ -2237,7 +2330,8 @@ public class SLGraphTest {
     /**
      * Test link types for linked node deletion mark case.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" )
+    @Test
+    // ( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" )
     public void testLinkTypesForLinkedNodeDeletionMarkCase() {
 
         try {
@@ -2270,7 +2364,8 @@ public class SLGraphTest {
     /**
      * Test long property.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkCase" )
+    @Test
+    // ( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkCase" )
     public void testLongProperty() {
 
         try {
@@ -2322,7 +2417,8 @@ public class SLGraphTest {
     /**
      * Test meta link get description.
      */
-    @Test( dependsOnMethods = "testLongProperty" )
+    @Test
+    // ( dependsOnMethods = "testLongProperty" )
     public void testMetaLinkGetDescription() {
         try {
             final SLNode root1 = this.session.createContext("1L").getRootNode();
@@ -2344,7 +2440,8 @@ public class SLGraphTest {
     /**
      * Test meta node get description.
      */
-    @Test( dependsOnMethods = "testMetaLinkGetDescription" )
+    @Test
+    // ( dependsOnMethods = "testMetaLinkGetDescription" )
     public void testMetaNodeGetDescription() {
         try {
             final SLNode root1 = this.session.createContext("1L").getRootNode();
@@ -2364,7 +2461,8 @@ public class SLGraphTest {
     /**
      * Test node operations.
      */
-    @Test( dependsOnMethods = "testMetaNodeGetDescription" )
+    @Test
+    // ( dependsOnMethods = "testMetaNodeGetDescription" )
     public void testNodeOperations() {
         try {
             // add new node ...
@@ -2397,7 +2495,8 @@ public class SLGraphTest {
     /**
      * Test properties retrieval.
      */
-    @Test( dependsOnMethods = "testNodeOperations" )
+    @Test
+    // ( dependsOnMethods = "testNodeOperations" )
     public void testPropertiesRetrieval() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -2420,7 +2519,8 @@ public class SLGraphTest {
     /**
      * Test property removal.
      */
-    @Test( dependsOnMethods = "testPropertiesRetrieval" )
+    @Test
+    // ( dependsOnMethods = "testPropertiesRetrieval" )
     public void testPropertyRemoval() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -2441,7 +2541,8 @@ public class SLGraphTest {
     /**
      * Test property value overwriting.
      */
-    @Test( dependsOnMethods = "testPropertyRemoval" )
+    @Test
+    // ( dependsOnMethods = "testPropertyRemoval" )
     public void testPropertyValueOverwriting() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -2459,7 +2560,8 @@ public class SLGraphTest {
     /**
      * Test string property.
      */
-    @Test( dependsOnMethods = "testPropertyValueOverwriting" )
+    @Test
+    // ( dependsOnMethods = "testPropertyValueOverwriting" )
     public void testStringProperty() {
 
         try {
@@ -2498,7 +2600,8 @@ public class SLGraphTest {
     /**
      * Test transient links with annotations.
      */
-    @Test( dependsOnMethods = "testStringProperty" )
+    @Test
+    // ( dependsOnMethods = "testStringProperty" )
     public void testTransientLinksWithAnnotations() {
 
         try {
@@ -2517,7 +2620,8 @@ public class SLGraphTest {
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
-            final Collection<? extends SLLink> links = this.session.getUnidirectionalLinks(TransientLink.class, javaClassNode1, javaMethodNode1);
+            final Collection<? extends SLLink> links = this.session.getUnidirectionalLinks(TransientLink.class, javaClassNode1,
+                                                                                           javaMethodNode1);
             Assert.assertEquals(links.size(), 0);
 
         } catch (final SLException e) {
@@ -2529,7 +2633,8 @@ public class SLGraphTest {
     /**
      * Test transient links without annotations.
      */
-    @Test( dependsOnMethods = "testTransientLinksWithAnnotations" )
+    @Test
+    // ( dependsOnMethods = "testTransientLinksWithAnnotations" )
     public void testTransientLinksWithoutAnnotations() {
 
         try {
@@ -2566,7 +2671,8 @@ public class SLGraphTest {
     /**
      * Test transient nodes with annotation.
      */
-    @Test( dependsOnMethods = "testTransientLinksWithoutAnnotations" )
+    @Test
+    // ( dependsOnMethods = "testTransientLinksWithoutAnnotations" )
     public void testTransientNodesWithAnnotation() {
 
         try {
@@ -2599,7 +2705,8 @@ public class SLGraphTest {
     /**
      * Test transient nodes without annotation.
      */
-    @Test( dependsOnMethods = "testTransientNodesWithAnnotation" )
+    @Test
+    // ( dependsOnMethods = "testTransientNodesWithAnnotation" )
     public void testTransientNodesWithoutAnnotation() {
 
         try {
@@ -2630,10 +2737,52 @@ public class SLGraphTest {
         }
     }
 
+    @Test
+    // ( dependsOnMethods = "testLineReference" )
+    public void testTreeLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
+        final SLNode root1 = this.session.createContext("1L").getRootNode();
+        final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
+
+        javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(9, 16, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(22, 16, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(22, 16, 26, 32, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "2");
+        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
+
+        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences();
+        Assert.assertEquals(treeLineRefs.getArtifacts().size(), 3);
+
+        for (final SLArtifactLineReference artifactLine : treeLineRefs.getArtifacts()) {
+            if (artifactLine.getArtifactId().equals("1")) {
+                Assert.assertEquals(artifactLine.getStatements().size(), 2);
+                for (final SLStatementLineReference activeStatement : artifactLine.getStatements()) {
+                    if (activeStatement.getStatement().equals("Hello World!")) {
+                        Assert.assertEquals(activeStatement.getLineReferences().size(), 4);
+                    } else if (activeStatement.getStatement().equals("New Hello!")) {
+                        Assert.assertEquals(activeStatement.getLineReferences().size(), 1);
+                    } else {
+                        Assert.fail();
+                    }
+                }
+            } else if (artifactLine.getArtifactId().equals("2") && artifactLine.getArtifactVersion().equals("1")) {
+                Assert.assertEquals(artifactLine.getStatements().size(), 1);
+            } else if (artifactLine.getArtifactId().equals("2") && artifactLine.getArtifactVersion().equals("2")) {
+                Assert.assertEquals(artifactLine.getStatements().size(), 1);
+            } else {
+                Assert.fail();
+            }
+        }
+    }
+
     /**
      * Test typed node operations.
      */
-    @Test( dependsOnMethods = "testTransientNodesWithoutAnnotation" )
+    @Test
+    // ( dependsOnMethods = "testTransientNodesWithoutAnnotation" )
     public void testTypedNodeOperations() {
         try {
 
@@ -2669,7 +2818,8 @@ public class SLGraphTest {
     /**
      * Test typed on different contexts.
      */
-    @Test( dependsOnMethods = "testTypedNodeOperations" )
+    @Test
+    // ( dependsOnMethods = "testTypedNodeOperations" )
     public void testTypedOnDifferentContexts() {
         try {
 

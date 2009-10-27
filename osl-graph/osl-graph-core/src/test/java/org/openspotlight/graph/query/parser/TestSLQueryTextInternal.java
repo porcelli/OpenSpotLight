@@ -56,6 +56,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
@@ -68,14 +70,13 @@ import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.testng.annotations.Test;
 
 /**
  * The Class SLQLQueryTest.
  * 
  * @author porcelli
  */
-@Test
+
 public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
     private SLQueryTextInternalBuilder queryBuilder = new SLQueryTextInternalBuilder();
@@ -436,7 +437,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithoutValue()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -449,7 +450,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithoutCorrectVariable()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -575,7 +576,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectTypesFromJavaUtilPackageUsingVariablesAndIncorrectDomain()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -591,7 +592,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithNullValue()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -607,7 +608,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithIncorrectValue()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -1609,7 +1610,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag lesser or equal to50.
      */
-    @Test( enabled = false )
+    @Test( ) @Ignore
     public void testSelectDateMethodsWithTagLesserOrEqualTo50() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         //FIXME where no link... ainda n‹o suportado na syntax
@@ -1631,7 +1632,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag greater than50.
      */
-    @Test( enabled = false )
+    @Test( )@Ignore
     public void testSelectDateMethodsWithTagGreaterThan50() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         //FIXME where no link... ainda n‹o suportado na syntax
@@ -1674,7 +1675,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag lesser or equal to30 or greater or equal to70.
      */
-    @Test( enabled = false )
+    @Test( )@Ignore
     public void testSelectDateMethodsWithTagLesserOrEqualTo30OrGreaterOrEqualTo70()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -1697,7 +1698,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag between30 and70.
      */
-    @Test( enabled = false )
+    @Test( )@Ignore
     public void testSelectDateMethodsWithTagBetween30And70() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
         //FIXME where no link... ainda n‹o suportado na syntax
         String slqlInput = getResourceContent("SelectDateMethodsWithTagBetween30And70.slql");
@@ -1872,7 +1873,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select sorted set hierarchy execute3 times.
      */
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithIncorrectDomain()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -1888,7 +1889,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select sorted set hierarchy execute3 times.
      */
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithIncorrectValue()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -1904,7 +1905,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select sorted set hierarchy execute3 times.
      */
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithNullValue()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -1920,7 +1921,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithoutCorrectVariable()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2505,7 +2506,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectUsingIntVariableNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
@@ -2517,7 +2518,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingIntVariableIncorrectVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
@@ -2529,7 +2530,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingIntVariableIncorrectDataType() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingIntVariable.slql");
@@ -2562,7 +2563,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingIntVariableWithDomainIncorrectDomain()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2575,7 +2576,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingIntVariableWithDomainNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingIntVariableWithDomain.slql");
@@ -2587,7 +2588,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingIntVariableWithDomainIncorrectVariable()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2600,7 +2601,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingIntVariableWithDomainIncorrectDataType()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2634,7 +2635,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectUsingDecVariableNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
@@ -2646,7 +2647,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingDecVariableIncorrectVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
@@ -2658,7 +2659,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingDecVariableIncorrectDataType() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingDecVariable.slql");
@@ -2691,7 +2692,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingDecVariableWithDomainIncorrectDomain()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2704,7 +2705,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingDecVariableWithDomainNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingDecVariableWithDomain.slql");
@@ -2716,7 +2717,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingDecVariableWithDomainIncorrectVariable()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2729,7 +2730,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingDecVariableWithDomainIncorrectDataType()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
@@ -2763,7 +2764,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         printResult(result.getNodes());
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectUsingBoolVariableNullValue() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
@@ -2775,7 +2776,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = SLInvalidQueryElementException.class )
+    @Test( expected = SLInvalidQueryElementException.class )
     public void testSelectUsingBoolVariableIncorrectVariable() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
@@ -2787,7 +2788,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testSelectUsingBoolVariableIncorrectDataType() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
         String slqlInput = getResourceContent("SelectUsingBoolVariable.slql");
@@ -3125,7 +3126,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         }
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testInvalidSelectWithTarget()
         throws SLGraphSessionException, SLInvalidQuerySyntaxException, IllegalArgumentException {
         String slqlInput = getResourceContent("SelectWithTarget.slql");

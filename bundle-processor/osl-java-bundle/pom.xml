@@ -14,6 +14,11 @@
 	<packaging>jar</packaging>
 	<name>OpenSpotLight Java Bundle Processor</name>
 	<dependencies>
+			<dependency>
+				<groupId>org.beanshell</groupId>
+				<artifactId>bsh</artifactId>
+			</dependency>
+
 		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>
