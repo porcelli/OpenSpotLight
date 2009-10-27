@@ -16,6 +16,7 @@ import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.util.RepositoryLock;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.ClassPathResource;
 
 /**
@@ -51,7 +52,7 @@ public abstract class JcrConnectionProvider {
          * @see org.openspotlight.jcr.provider.JcrConnectionProvider#closeRepository()
          */
         @Override
-        public synchronized void closeRepository() {
+        public synchronized void beforeCloseRepository() {
             if (this.repository == null) {
                 this.repositoryClosed = true;
                 return;
@@ -60,12 +61,20 @@ public abstract class JcrConnectionProvider {
 
             repositoryCasted.shutdown();
 
-            RepositoryLock repoLock = new RepositoryLock();
+            final RepositoryLock repoLock = new RepositoryLock();
             try {
                 repoLock.init(this.getData().getConfigurationDirectory());
                 repoLock.acquire();
                 repoLock.release();
-            } catch (RepositoryException e) {
+            } catch (final RepositoryException e) {
+            }
+            if (this.getData().isTemporary()) {
+                try {
+                    delete(this.getData().getConfigurationDirectory());
+                } catch (final SLException e) {
+                    throw logAndReturnNew(e, SLRuntimeException.class);
+
+                }
             }
 
             this.repositoryClosed = true;
@@ -76,8 +85,17 @@ public abstract class JcrConnectionProvider {
          */
         @Override
         public synchronized Repository openRepository() {
+            if (this.getData().isTemporary()) {
+                this.beforeCloseRepository();
+            }
+
             if (this.repository == null || this.repositoryClosed) {
                 try {
+                    try {
+                        delete(this.getData().getConfigurationDirectory());
+                    } catch (final SLException e) {
+                        throw logAndReturnNew(e, SLRuntimeException.class);
+                    }
 
                     final RepositoryConfig config = RepositoryConfig.create(
                                                                             ClassPathResource.getResourceFromClassPath(this.getData().getXmlClasspathLocation()),
@@ -112,20 +130,6 @@ public abstract class JcrConnectionProvider {
     /** The cache. */
     private static Map<JcrConnectionDescriptor, JcrConnectionProvider> cache = new ConcurrentHashMap<JcrConnectionDescriptor, JcrConnectionProvider>();
 
-    public static synchronized void invalidateCache( final JcrConnectionDescriptor data ) {
-        if (cache.containsKey(data)) {
-            JcrConnectionProvider provider = cache.get(data);
-            if (provider != null) {
-                provider.closeRepository();
-                try {
-                    delete(provider.getData().getConfigurationDirectory());
-                } catch (SLException e) {
-                }
-            }
-            cache.remove(data);
-        }
-    }
-
     /**
      * Creates the from data.
      * 
@@ -158,12 +162,18 @@ public abstract class JcrConnectionProvider {
     JcrConnectionProvider(
                            final JcrConnectionDescriptor data ) {
         this.data = data;
+
     }
 
     /**
      * Close repository.
      */
-    public abstract void closeRepository();
+    protected abstract void beforeCloseRepository();
+
+    public void closeRepository() {
+        this.beforeCloseRepository();
+        cache.remove(this);
+    }
 
     /**
      * Gets the data.
@@ -172,6 +182,10 @@ public abstract class JcrConnectionProvider {
      */
     public JcrConnectionDescriptor getData() {
         return this.data;
+    }
+
+    public final boolean isTemporary() {
+        return this.data.isTemporary();
     }
 
     /**
