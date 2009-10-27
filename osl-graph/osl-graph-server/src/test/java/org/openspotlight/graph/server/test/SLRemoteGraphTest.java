@@ -66,9 +66,17 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidNodePropertyTypeException;
@@ -105,45 +113,86 @@ import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.graph.test.domain.node.JavaPackageNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  * The Class SLGraphTest.
  * 
  * @author Vitor Hugo Chagas
  */
-@Test
+
 public class SLRemoteGraphTest {
 
     /** The Constant LOGGER. */
-    static final Logger               LOGGER = Logger.getLogger(SLRemoteGraphTest.class);
+    static final Logger                      LOGGER = Logger.getLogger(SLRemoteGraphTest.class);
 
-    private RemoteGraphSessionFactory client;
+    private static RemoteGraphSessionFactory client;
 
-    private RemoteGraphSessionServer  server;
+    private static RemoteGraphSessionServer  server;
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish() {
+
+    }
+
+    /**
+     * Inits the.
+     * 
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @BeforeClass
+    public static void init() throws Exception {
+        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+
+        server = new RemoteGraphSessionServer(new UserAuthenticator() {
+
+            public boolean canConnect( final String userName,
+                                       final String password,
+                                       final String clientHost ) {
+                return true;
+            }
+        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
+
+            public String getHost() {
+                return "localhost";
+            }
+
+            public String getPassword() {
+                return "***";
+            }
+
+            public int getPort() {
+                return 7070;
+            }
+
+            public String getUserName() {
+                return "***";
+            }
+        });
+
+    }
 
     /** The session. */
-    private SLGraphSession            session;
+    private SLGraphSession session;
 
     /** The java class node. */
-    private JavaClassNode             javaClassNode;
+    private JavaClassNode  javaClassNode;
 
     /** The java method node. */
-    private JavaMethodNode            javaMethodNode;
+    private JavaMethodNode javaMethodNode;
 
     /** The link ab. */
-    private SLLink                    linkAB;
+    private SLLink         linkAB;
 
     /** The link ba. */
-    private SLLink                    linkBA;
+    private SLLink         linkBA;
 
     /** The link both. */
-    private SLLink                    linkBoth;
+    private SLLink         linkBoth;
 
     /**
      * Adds the add multiple link empty case.
@@ -180,7 +229,8 @@ public class SLRemoteGraphTest {
     /**
      * Adds the add multiple link existent ab case.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkEmptyCase" )
+    @Test
+    //( dependsOnMethods = "addAddMultipleLinkEmptyCase" )
     public void addAddMultipleLinkExistentABCase() {
 
         try {
@@ -215,7 +265,8 @@ public class SLRemoteGraphTest {
     /**
      * Adds the add multiple link existent ba case.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkExistentABCase" )
+    @Test
+    //( dependsOnMethods = "addAddMultipleLinkExistentABCase" )
     public void addAddMultipleLinkExistentBACase() {
 
         try {
@@ -250,7 +301,8 @@ public class SLRemoteGraphTest {
     /**
      * Adds the add multiple link existent both case.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkExistentBACase" )
+    @Test
+    //( dependsOnMethods = "addAddMultipleLinkExistentBACase" )
     public void addAddMultipleLinkExistentBothCase() {
 
         try {
@@ -287,7 +339,7 @@ public class SLRemoteGraphTest {
      * 
      * @throws SLGraphSessionException the SL graph session exception
      */
-    @AfterMethod
+    @After
     public void afterTest() throws SLGraphSessionException {
         this.session.clear();
         // session.save();
@@ -387,20 +439,12 @@ public class SLRemoteGraphTest {
      * 
      * @throws SLGraphException the SL graph exception
      */
-    @BeforeMethod
+    @Before
     public void beforeTest() throws Exception {
         //        org.openspotlight.common.util.Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
         if (this.session == null) {
             this.session = this.client.createRemoteGraphSession();
         }
-    }
-
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public void finish() {
-
     }
 
     /**
@@ -431,45 +475,6 @@ public class SLRemoteGraphTest {
             set.add(metaNode.getType().getName());
         }
         return set;
-    }
-
-    /**
-     * Inits the.
-     * 
-     * @throws AbstractFactoryException the abstract factory exception
-     */
-    @BeforeClass
-    public void init() throws Exception {
-        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
-
-        this.server = new RemoteGraphSessionServer(new UserAuthenticator() {
-
-            public boolean canConnect( final String userName,
-                                       final String password,
-                                       final String clientHost ) {
-                return true;
-            }
-        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-
-        this.client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
-
-            public String getHost() {
-                return "localhost";
-            }
-
-            public String getPassword() {
-                return "***";
-            }
-
-            public int getPort() {
-                return 7070;
-            }
-
-            public String getUserName() {
-                return "***";
-            }
-        });
-
     }
 
     /**
@@ -538,7 +543,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add and get node with strange chars on name.
      */
-    @Test( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
+    @Test
+    //( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
     public void testAddAndGetNodeWithStrangeCharsOnName() {
         try {
             final SLNode root1 = this.session.createContext("1L").getRootNode();
@@ -556,7 +562,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add node type hierarchy case.
      */
-    @Test( dependsOnMethods = "testAddAndGetNodeWithStrangeCharsOnName" )
+    @Test
+    //( dependsOnMethods = "testAddAndGetNodeWithStrangeCharsOnName" )
     public void testAddNodeTypeHierarchyCase() {
 
         try {
@@ -592,7 +599,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link empty case.
      */
-    @Test( dependsOnMethods = "testAddNodeTypeHierarchyCase" )
+    @Test
+    //( dependsOnMethods = "testAddNodeTypeHierarchyCase" )
     public void testAddSimpleLinkEmptyCase() {
 
         try {
@@ -623,7 +631,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link empty case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkEmptyCase" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkEmptyCase" )
     public void testAddSimpleLinkEmptyCaseACTB() {
 
         try {
@@ -656,7 +665,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link existent ab case.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkEmptyCaseACTB" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkEmptyCaseACTB" )
     public void testAddSimpleLinkExistentABCase() {
 
         try {
@@ -690,7 +700,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link existent ab case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentABCase" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkExistentABCase" )
     public void testAddSimpleLinkExistentABCaseACTB() {
 
         try {
@@ -726,7 +737,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link existent ba case.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentABCaseACTB" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkExistentABCaseACTB" )
     public void testAddSimpleLinkExistentBACase() {
 
         try {
@@ -761,7 +773,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link existent ba case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBACase" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkExistentBACase" )
     public void testAddSimpleLinkExistentBACaseACTB() {
 
         try {
@@ -797,7 +810,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link existent both case.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBACaseACTB" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkExistentBACaseACTB" )
     public void testAddSimpleLinkExistentBothCase() {
 
         try {
@@ -831,7 +845,8 @@ public class SLRemoteGraphTest {
     /**
      * Test add simple link existent both case actb.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBothCase" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkExistentBothCase" )
     public void testAddSimpleLinkExistentBothCaseACTB() {
 
         try {
@@ -867,7 +882,8 @@ public class SLRemoteGraphTest {
     /**
      * Test any serializable property.
      */
-    @Test( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
+    @Test
+    //( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
     public void testAnySerializableProperty() {
 
         try {
@@ -908,7 +924,8 @@ public class SLRemoteGraphTest {
     /**
      * Test boolean property.
      */
-    @Test( dependsOnMethods = "testAnySerializableProperty" )
+    @Test
+    //( dependsOnMethods = "testAnySerializableProperty" )
     public void testBooleanProperty() {
 
         try {
@@ -947,7 +964,8 @@ public class SLRemoteGraphTest {
     /**
      * Test chi ld nodes retrieval.
      */
-    @Test( dependsOnMethods = "testBooleanProperty" )
+    @Test
+    //( dependsOnMethods = "testBooleanProperty" )
     public void testChiLdNodesRetrieval() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -972,12 +990,13 @@ public class SLRemoteGraphTest {
      * 
      * @throws SLGraphSessionException the SL graph session exception
      */
-    @Test( dependsOnMethods = "testChiLdNodesRetrieval" )
+    @Test
+    //( dependsOnMethods = "testChiLdNodesRetrieval" )
     public void testContextOperations() throws SLGraphSessionException {
         final SLContext context1 = this.session.createContext("1L");
-        Assert.assertNotNull(context1, "context1 should not be null.");
+        Assert.assertNotNull("context1 should not be null.", context1);
         final SLContext context2 = this.session.getContext("1L");
-        Assert.assertNotNull(context2, "context2 should not be null.");
+        Assert.assertNotNull("context2 should not be null.", context2);
         final String id1 = context1.getID();
         final String id2 = context2.getID();
         Assert.assertNotNull(id1);
@@ -989,7 +1008,8 @@ public class SLRemoteGraphTest {
     /**
      * Test double property.
      */
-    @Test( dependsOnMethods = "testContextOperations" )
+    @Test
+    //( dependsOnMethods = "testContextOperations" )
     public void testDoubleProperty() {
 
         try {
@@ -1040,7 +1060,8 @@ public class SLRemoteGraphTest {
     /**
      * Test float property.
      */
-    @Test( dependsOnMethods = "testDoubleProperty" )
+    @Test
+    //( dependsOnMethods = "testDoubleProperty" )
     public void testFloatProperty() {
 
         try {
@@ -1091,7 +1112,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get bidirectional links.
      */
-    @Test( dependsOnMethods = "testFloatProperty" )
+    @Test
+    //( dependsOnMethods = "testFloatProperty" )
     public void testGetBidirectionalLinks() {
 
         try {
@@ -1128,7 +1150,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get bidirectional links by side.
      */
-    @Test( dependsOnMethods = "testGetBidirectionalLinks" )
+    @Test
+    //( dependsOnMethods = "testGetBidirectionalLinks" )
     public void testGetBidirectionalLinksBySide() {
 
         try {
@@ -1170,7 +1193,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get links.
      */
-    @Test( dependsOnMethods = "testGetSubMetaNodeType" )
+    @Test
+    //( dependsOnMethods = "testGetSubMetaNodeType" )
     public void testGetLinks() {
 
         try {
@@ -1343,7 +1367,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta link properties.
      */
-    @Test( dependsOnMethods = "testGetLinks" )
+    @Test
+    //( dependsOnMethods = "testGetLinks" )
     public void testGetMetaLinkProperties() {
 
         try {
@@ -1379,7 +1404,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta link property.
      */
-    @Test( dependsOnMethods = "testGetMetaLinkProperties" )
+    @Test
+    //( dependsOnMethods = "testGetMetaLinkProperties" )
     public void testGetMetaLinkProperty() {
 
         try {
@@ -1418,7 +1444,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta node.
      */
-    @Test( dependsOnMethods = "testGetMetaLinkProperty" )
+    @Test
+    //( dependsOnMethods = "testGetMetaLinkProperty" )
     public void testGetMetaNode() {
 
         try {
@@ -1448,7 +1475,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta node properties.
      */
-    @Test( dependsOnMethods = "testGetMetaNode" )
+    @Test
+    //( dependsOnMethods = "testGetMetaNode" )
     public void testGetMetaNodeProperties() {
 
         try {
@@ -1522,7 +1550,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta nodes.
      */
-    @Test( dependsOnMethods = "testGetMetaNodeProperties" )
+    @Test
+    //( dependsOnMethods = "testGetMetaNodeProperties" )
     public void testGetMetaNodes() {
 
         try {
@@ -1544,7 +1573,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta render hint.
      */
-    @Test( dependsOnMethods = "testGetMetaNodes" )
+    @Test
+    //( dependsOnMethods = "testGetMetaNodes" )
     public void testGetMetaRenderHint() {
 
         try {
@@ -1573,7 +1603,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get meta render hints.
      */
-    @Test( dependsOnMethods = "testGetMetaRenderHint" )
+    @Test
+    //( dependsOnMethods = "testGetMetaRenderHint" )
     public void testGetMetaRenderHints() {
 
         try {
@@ -1601,7 +1632,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get nodes by link with link type.
      */
-    @Test( dependsOnMethods = "testGetMetaRenderHints" )
+    @Test
+    //( dependsOnMethods = "testGetMetaRenderHints" )
     public void testGetNodesByLinkWithLinkType() {
 
         try {
@@ -1652,7 +1684,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get nodes by link without link type.
      */
-    @Test( dependsOnMethods = "testGetNodesByLinkWithLinkType" )
+    @Test
+    //( dependsOnMethods = "testGetNodesByLinkWithLinkType" )
     public void testGetNodesByLinkWithoutLinkType() {
 
         try {
@@ -1696,7 +1729,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get nodes by predicate.
      */
-    @Test( dependsOnMethods = "testGetNodesByLinkWithoutLinkType" )
+    @Test
+    //( dependsOnMethods = "testGetNodesByLinkWithoutLinkType" )
     public void testGetNodesByPredicate() {
 
         try {
@@ -1731,7 +1765,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get property as string.
      */
-    @Test( dependsOnMethods = "testGetNodesByPredicate" )
+    @Test
+    //( dependsOnMethods = "testGetNodesByPredicate" )
     public void testGetPropertyAsString() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -1752,7 +1787,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get sub meta node type.
      */
-    @Test( dependsOnMethods = "testGetSubMetaNodeTypes" )
+    @Test
+    //( dependsOnMethods = "testGetSubMetaNodeTypes" )
     public void testGetSubMetaNodeType() {
 
         try {
@@ -1781,7 +1817,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get sub meta node types.
      */
-    @Test( dependsOnMethods = "testGetBidirectionalLinksBySide" )
+    @Test
+    //( dependsOnMethods = "testGetBidirectionalLinksBySide" )
     public void testGetSubMetaNodeTypes() {
 
         try {
@@ -1810,7 +1847,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get unidirectional links.
      */
-    @Test( dependsOnMethods = "testGetPropertyAsString" )
+    @Test
+    //( dependsOnMethods = "testGetPropertyAsString" )
     public void testGetUnidirectionalLinks() {
 
         try {
@@ -1860,7 +1898,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get unidirectional links by source.
      */
-    @Test( dependsOnMethods = "testGetUnidirectionalLinks" )
+    @Test
+    //( dependsOnMethods = "testGetUnidirectionalLinks" )
     public void testGetUnidirectionalLinksBySource() {
 
         try {
@@ -1906,7 +1945,8 @@ public class SLRemoteGraphTest {
     /**
      * Test get unidirectional links by target.
      */
-    @Test( dependsOnMethods = "testGetUnidirectionalLinksBySource" )
+    @Test
+    //( dependsOnMethods = "testGetUnidirectionalLinksBySource" )
     public void testGetUnidirectionalLinksByTarget() {
 
         try {
@@ -1952,7 +1992,8 @@ public class SLRemoteGraphTest {
     /**
      * Test integer property.
      */
-    @Test( dependsOnMethods = "testGetUnidirectionalLinksByTarget" )
+    @Test
+    //( dependsOnMethods = "testGetUnidirectionalLinksByTarget" )
     public void testIntegerProperty() {
 
         try {
@@ -2004,7 +2045,8 @@ public class SLRemoteGraphTest {
     /**
      * Test line reference.
      */
-    @Test( dependsOnMethods = "testIntegerProperty" )
+    @Test
+    //( dependsOnMethods = "testIntegerProperty" )
     public void testLineReference() {
 
         try {
@@ -2046,7 +2088,8 @@ public class SLRemoteGraphTest {
     /**
      * Test link properties.
      */
-    @Test( dependsOnMethods = "testLineReference" )
+    @Test
+    //( dependsOnMethods = "testLineReference" )
     public void testLinkProperties() {
 
         try {
@@ -2088,7 +2131,8 @@ public class SLRemoteGraphTest {
     /**
      * Test link property with annotations.
      */
-    @Test( dependsOnMethods = "testLinkProperties" )
+    @Test
+    //( dependsOnMethods = "testLinkProperties" )
     public void testLinkPropertyWithAnnotations() {
         try {
 
@@ -2116,7 +2160,8 @@ public class SLRemoteGraphTest {
     /**
      * Test links removal by node deletion.
      */
-    @Test( dependsOnMethods = "testLinkPropertyWithAnnotations" )
+    @Test
+    //( dependsOnMethods = "testLinkPropertyWithAnnotations" )
     public void testLinksRemovalByNodeDeletion() {
 
         try {
@@ -2159,7 +2204,8 @@ public class SLRemoteGraphTest {
     /**
      * Test link types for link deletion mark and unmark case.
      */
-    @Test( dependsOnMethods = "testLinksRemovalByNodeDeletion" )
+    @Test
+    //( dependsOnMethods = "testLinksRemovalByNodeDeletion" )
     public void testLinkTypesForLinkDeletionMarkAndUnmarkCase() {
 
         try {
@@ -2196,7 +2242,8 @@ public class SLRemoteGraphTest {
     /**
      * Test link types for link deletion mark case.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkDeletionMarkAndUnmarkCase" )
+    @Test
+    //( dependsOnMethods = "testLinkTypesForLinkDeletionMarkAndUnmarkCase" )
     public void testLinkTypesForLinkDeletionMarkCase() {
 
         try {
@@ -2234,7 +2281,8 @@ public class SLRemoteGraphTest {
     /**
      * Test link types for linked node deletion mark and unmark case.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkDeletionMarkCase" )
+    @Test
+    //( dependsOnMethods = "testLinkTypesForLinkDeletionMarkCase" )
     public void testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase() {
 
         try {
@@ -2271,7 +2319,8 @@ public class SLRemoteGraphTest {
     /**
      * Test link types for linked node deletion mark case.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" )
+    @Test
+    //( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" )
     public void testLinkTypesForLinkedNodeDeletionMarkCase() {
 
         try {
@@ -2304,7 +2353,8 @@ public class SLRemoteGraphTest {
     /**
      * Test long property.
      */
-    @Test( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkCase" )
+    @Test
+    //( dependsOnMethods = "testLinkTypesForLinkedNodeDeletionMarkCase" )
     public void testLongProperty() {
 
         try {
@@ -2356,7 +2406,8 @@ public class SLRemoteGraphTest {
     /**
      * Test meta link get description.
      */
-    @Test( dependsOnMethods = "testLongProperty" )
+    @Test
+    //( dependsOnMethods = "testLongProperty" )
     public void testMetaLinkGetDescription() {
         try {
             final SLNode root1 = this.session.createContext("1L").getRootNode();
@@ -2378,7 +2429,8 @@ public class SLRemoteGraphTest {
     /**
      * Test meta node get description.
      */
-    @Test( dependsOnMethods = "testMetaLinkGetDescription" )
+    @Test
+    //( dependsOnMethods = "testMetaLinkGetDescription" )
     public void testMetaNodeGetDescription() {
         try {
             final SLNode root1 = this.session.createContext("1L").getRootNode();
@@ -2398,7 +2450,8 @@ public class SLRemoteGraphTest {
     /**
      * Test node operations.
      */
-    @Test( dependsOnMethods = "testMetaNodeGetDescription" )
+    @Test
+    //( dependsOnMethods = "testMetaNodeGetDescription" )
     public void testNodeOperations() {
         try {
             // add new node ...
@@ -2431,7 +2484,8 @@ public class SLRemoteGraphTest {
     /**
      * Test properties retrieval.
      */
-    @Test( dependsOnMethods = "testNodeOperations" )
+    @Test
+    //( dependsOnMethods = "testNodeOperations" )
     public void testPropertiesRetrieval() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -2454,7 +2508,8 @@ public class SLRemoteGraphTest {
     /**
      * Test property removal.
      */
-    @Test( dependsOnMethods = "testPropertiesRetrieval" )
+    @Test
+    //( dependsOnMethods = "testPropertiesRetrieval" )
     public void testPropertyRemoval() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -2475,7 +2530,8 @@ public class SLRemoteGraphTest {
     /**
      * Test property value overwriting.
      */
-    @Test( dependsOnMethods = "testPropertyRemoval" )
+    @Test
+    //( dependsOnMethods = "testPropertyRemoval" )
     public void testPropertyValueOverwriting() {
         try {
             final SLNode root = this.session.createContext("1L").getRootNode();
@@ -2493,7 +2549,8 @@ public class SLRemoteGraphTest {
     /**
      * Test string property.
      */
-    @Test( dependsOnMethods = "testPropertyValueOverwriting" )
+    @Test
+    //( dependsOnMethods = "testPropertyValueOverwriting" )
     public void testStringProperty() {
 
         try {
@@ -2532,7 +2589,8 @@ public class SLRemoteGraphTest {
     /**
      * Test transient links with annotations.
      */
-    @Test( dependsOnMethods = "testStringProperty" )
+    @Test
+    //( dependsOnMethods = "testStringProperty" )
     public void testTransientLinksWithAnnotations() {
 
         try {
@@ -2564,7 +2622,8 @@ public class SLRemoteGraphTest {
     /**
      * Test transient links without annotations.
      */
-    @Test( dependsOnMethods = "testTransientLinksWithAnnotations" )
+    @Test
+    //( dependsOnMethods = "testTransientLinksWithAnnotations" )
     public void testTransientLinksWithoutAnnotations() {
 
         try {
@@ -2601,7 +2660,8 @@ public class SLRemoteGraphTest {
     /**
      * Test transient nodes with annotation.
      */
-    @Test( dependsOnMethods = "testTransientLinksWithoutAnnotations" )
+    @Test
+    //( dependsOnMethods = "testTransientLinksWithoutAnnotations" )
     public void testTransientNodesWithAnnotation() {
 
         try {
@@ -2634,7 +2694,8 @@ public class SLRemoteGraphTest {
     /**
      * Test transient nodes without annotation.
      */
-    @Test( dependsOnMethods = "testTransientNodesWithAnnotation" )
+    @Test
+    //( dependsOnMethods = "testTransientNodesWithAnnotation" )
     public void testTransientNodesWithoutAnnotation() {
 
         try {
@@ -2668,7 +2729,8 @@ public class SLRemoteGraphTest {
     /**
      * Test typed node operations.
      */
-    @Test( dependsOnMethods = "testTransientNodesWithoutAnnotation" )
+    @Test
+    //( dependsOnMethods = "testTransientNodesWithoutAnnotation" )
     public void testTypedNodeOperations() {
         try {
 
@@ -2704,7 +2766,8 @@ public class SLRemoteGraphTest {
     /**
      * Test typed on different contexts.
      */
-    @Test( dependsOnMethods = "testTypedNodeOperations" )
+    @Test
+    //( dependsOnMethods = "testTypedNodeOperations" )
     public void testTypedOnDifferentContexts() {
         try {
 

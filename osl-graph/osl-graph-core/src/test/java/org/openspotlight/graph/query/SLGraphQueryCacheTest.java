@@ -58,6 +58,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLContext;
@@ -79,33 +82,29 @@ import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
-@Test
 public class SLGraphQueryCacheTest {
 
     /** The Constant LOGGER. */
-    static final Logger             LOGGER = Logger.getLogger(SLGraphQueryCacheTest.class);
+    static final Logger                    LOGGER = Logger.getLogger(SLGraphQueryCacheTest.class);
 
     /** The graph. */
-    private SLGraph                 graph;
+    private static SLGraph                 graph;
 
     /** The session. */
-    private SLGraphSession          session;
+    private static SLGraphSession          session;
 
-    private SLPersistentTreeSession treeSession;
+    private static SLPersistentTreeSession treeSession;
 
-    private SLQueryCacheImpl        queryCache;
+    private static SLQueryCacheImpl        queryCache;
 
     /**
      * Finish.
      */
-    @AfterClass( alwaysRun = true )
-    public void finish() {
-        this.session.close();
-        this.graph.shutdown();
+    @AfterClass
+    public static void finish() {
+        session.close();
+        graph.shutdown();
     }
 
     /**
@@ -113,7 +112,7 @@ public class SLGraphQueryCacheTest {
      * 
      * @return the i face type set
      */
-    private Set<Class<?>> getIFaceTypeSet() {
+    private static Set<Class<?>> getIFaceTypeSet() {
         final Set<Class<?>> set = new HashSet<Class<?>>();
         set.add(java.util.Collection.class);
         set.add(java.util.Map.class);
@@ -127,14 +126,14 @@ public class SLGraphQueryCacheTest {
      * Quick graph population.
      */
     @BeforeClass
-    public void quickGraphPopulation() {
+    public static void quickGraphPopulation() {
         try {
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-            this.session = this.graph.openSession();
-            final SLContext context = this.session.createContext("cacheTest");
+            graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            session = graph.openSession();
+            final SLContext context = session.createContext("cacheTest");
             final SLNode root = context.getRootNode();
-            final Set<Class<?>> types = this.getIFaceTypeSet();
+            final Set<Class<?>> types = getIFaceTypeSet();
             for (final Class<?> type : types) {
                 final Method[] methods = type.getDeclaredMethods();
                 LOGGER.info(type.getName() + ": " + methods.length + " methods");
@@ -143,32 +142,33 @@ public class SLGraphQueryCacheTest {
                 for (final Method method : methods) {
                     final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());
                     javaMethod.setProperty(String.class, "caption", method.getName());
-                    this.session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
+                    session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
                     final Class<?>[] paramTypes = method.getParameterTypes();
                     LOGGER.info("\t\t" + method.getName() + ": " + paramTypes.length + " params");
                     for (final Class<?> paramType : paramTypes) {
                         final MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramType.getName());
                         methodParam.setProperty(String.class, "caption", paramType.getName());
-                        this.session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
+                        session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
                     }
                 }
             }
-            this.session.save();
-            this.session.close();
-            this.session = this.graph.openSession();
+            session.save();
+            session.close();
+            session = graph.openSession();
 
             final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
             final SLPersistentTree tree = pFactory.createPersistentTree(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR));
-            this.treeSession = tree.openSession();
+            treeSession = tree.openSession();
 
-            this.queryCache = new SLQueryCacheImpl(this.treeSession, this.session);
+            queryCache = new SLQueryCacheImpl(treeSession, session);
 
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
 
-    @Test( dependsOnMethods = "selectTypes" )
+    @Test
+    //( dependsOnMethods = "selectTypes" )
     public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException {
         String queryId = null;
         assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
