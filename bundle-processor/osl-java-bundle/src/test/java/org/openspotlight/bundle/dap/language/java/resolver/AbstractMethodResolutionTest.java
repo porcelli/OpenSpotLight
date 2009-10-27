@@ -26,6 +26,8 @@ import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidNodeTypeException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -184,7 +186,7 @@ public abstract class AbstractMethodResolutionTest {
     @BeforeClass
     public void init() throws AbstractFactoryException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createTempGraph(true);
+        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
     }
 
     @BeforeMethod

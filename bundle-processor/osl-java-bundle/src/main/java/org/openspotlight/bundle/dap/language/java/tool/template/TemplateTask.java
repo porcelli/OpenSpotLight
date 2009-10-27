@@ -62,6 +62,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
+import org.openspotlight.bundle.dap.language.java.asm.tool.CompiledTypesExtractorTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

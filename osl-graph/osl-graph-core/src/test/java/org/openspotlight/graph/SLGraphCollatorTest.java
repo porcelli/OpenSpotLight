@@ -11,6 +11,8 @@ import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLink;
 import org.openspotlight.graph.test.domain.JavaClassNode;
 import org.openspotlight.graph.test.domain.JavaMethodNode;
 import org.openspotlight.graph.test.domain.SQLElement;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -29,7 +31,7 @@ public class SLGraphCollatorTest {
     @BeforeClass
     public void init() throws AbstractFactoryException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        graph = factory.createTempGraph(true);
+        graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
     }
 
     @AfterClass( alwaysRun = true )

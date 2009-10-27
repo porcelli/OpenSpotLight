@@ -65,6 +65,8 @@ import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.JavaClass;
 import org.openspotlight.graph.test.domain.JavaType;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -80,7 +82,7 @@ public class DuplicateTest {
     @BeforeMethod
     public void setup() throws AbstractFactoryException, SLGraphException {
         SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createTempGraph(true);
+        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         this.session = graph.openSession();
     }
 

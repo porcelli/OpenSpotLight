@@ -64,7 +64,6 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -224,23 +223,6 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
                                                                final SLGraphSessionEventPoster eventPoster )
         throws SLGraphFactoryException {
         return new SLNodePropertyImpl<V>(node, persistentProperty, eventPoster);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLGraphFactory#createTempGraph(boolean)
-     */
-    @Override
-    public SLGraph createTempGraph( final boolean removeExistent ) throws SLGraphFactoryException {
-        try {
-            if (this.graph == null || removeExistent) {
-                final SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-                final SLPersistentTree tree = factory.createPersistentTree(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-                this.graph = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
-            }
-            return this.graph;
-        } catch (final Exception e) {
-            throw new SLGraphFactoryException("Couldn't create SL graph.", e);
-        }
     }
 
     //@Override

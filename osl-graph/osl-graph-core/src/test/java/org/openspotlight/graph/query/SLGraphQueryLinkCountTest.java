@@ -67,6 +67,8 @@ import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -95,7 +97,7 @@ public class SLGraphQueryLinkCountTest {
     public void quickGraphPopulation() {
         try {
             SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createTempGraph(true);
+            graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
             session = graph.openSession();
             SLContext context = session.createContext("linkCountTest");
             SLNode root = context.getRootNode();

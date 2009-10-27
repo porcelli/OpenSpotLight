@@ -86,6 +86,8 @@ import org.openspotlight.graph.test.domain.JavaType;
 import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -542,7 +544,7 @@ public class AbstractGeneralQueryTest {
 
     protected void setupSession() throws Exception {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createTempGraph(true);
+        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         this.session = this.graph.openSession();
     }
 

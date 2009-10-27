@@ -55,6 +55,8 @@ import org.apache.log4j.Logger;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.JavaInterface;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -83,7 +85,7 @@ public class SLGraphNodeByIDTest {
 	public void setUp() {
 		try {
 			SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createTempGraph(true);
+            graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
             session = graph.openSession();
 		}
 		catch (Exception e) {

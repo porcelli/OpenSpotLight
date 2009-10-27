@@ -76,6 +76,8 @@ import org.openspotlight.graph.test.domain.JavaType;
 import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -3514,7 +3516,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                 }
             }
             SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            SLGraph graph = factory.createTempGraph(false);
+            SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
             SLGraphSession session = graph.openSession();
             AbstractGeneralQueryTest test = new SLGraphQueryTest(session, SortMode.SORTED, true);
             int option = 0;

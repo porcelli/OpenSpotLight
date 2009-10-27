@@ -86,6 +86,8 @@ import org.openspotlight.graph.test.domain.JavaPackagePublicElement;
 import org.openspotlight.graph.test.domain.NamePredicate;
 import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -133,7 +135,7 @@ public class SLGraphTest {
     @BeforeClass
     public void init() throws AbstractFactoryException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createTempGraph(true);
+        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
     }
 
     /**

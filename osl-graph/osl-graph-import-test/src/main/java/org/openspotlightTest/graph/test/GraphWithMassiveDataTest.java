@@ -67,6 +67,8 @@ import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +101,7 @@ public class GraphWithMassiveDataTest {
 
 	public void setup() throws Exception {
 		final SLGraphFactory factory = new SLGraphFactoryImpl();
-		final SLGraph graph = factory.createTempGraph(true);
+		final SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 		this.session = graph.openSession();
 		this.rootNode = this.session.createContext("sample").getRootNode();
 

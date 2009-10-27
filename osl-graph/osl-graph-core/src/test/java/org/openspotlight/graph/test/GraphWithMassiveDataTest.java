@@ -61,14 +61,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.junit.After;
-import org.junit.Before;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -90,7 +90,7 @@ public class GraphWithMassiveDataTest {
     public void setup() throws Exception {
         final SLGraphFactory factory = AbstractFactory
                                                       .getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createTempGraph(true);
+        this.graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         this.session = graph.openSession();
         this.rootNode = this.session.createContext("1L").getRootNode();
     }
