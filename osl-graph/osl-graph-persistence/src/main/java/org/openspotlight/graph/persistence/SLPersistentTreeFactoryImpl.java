@@ -54,8 +54,6 @@ import javax.jcr.Repository;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-import static org.openspotlight.common.util.Files.delete;
-
 /**
  * The Class SLPersistentTreeFactoryImpl.
  * 
@@ -81,10 +79,10 @@ public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
     @Override
     public SLPersistentTree createTempPersistentTree( final boolean removeExistent ) throws SLPersistentTreeFactoryException {
         try {
-            if (removeExistent) {
-                JcrConnectionProvider.invalidateCache(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-                delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
-            }
+            //            if (removeExistent) {
+            //                JcrConnectionProvider.invalidateCache(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            //                delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+            //            }
             final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             final Credentials credentials = provider.getData().getCredentials();
             final Repository repo = provider.openRepository();
