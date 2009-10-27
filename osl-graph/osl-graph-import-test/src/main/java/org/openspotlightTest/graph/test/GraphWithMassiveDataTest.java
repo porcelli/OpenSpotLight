@@ -101,7 +101,7 @@ public class GraphWithMassiveDataTest {
 
 	public void setup() throws Exception {
 		final SLGraphFactory factory = new SLGraphFactoryImpl();
-		final SLGraph graph = factory.createGraph(JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+		final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		this.session = graph.openSession();
 		this.rootNode = this.session.createContext("sample").getRootNode();
 
