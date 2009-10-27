@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
@@ -75,7 +75,7 @@ public class SLPersistentTreeImpl implements SLPersistentTree {
     public SLPersistentTreeImpl(
                                  final JcrConnectionDescriptor descriptor ) {
         this.descriptor = descriptor;
-        this.sessions = new ArrayList<SLPersistentTreeSession>();
+        this.sessions = new CopyOnWriteArrayList<SLPersistentTreeSession>();
     }
 
     //@Override

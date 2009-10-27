@@ -93,7 +93,6 @@ import org.openspotlight.graph.test.domain.NamePredicate;
 import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphTest.
@@ -2236,6 +2235,7 @@ public class SLGraphTest {
             this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
 
             this.session.save();
+            this.session.close();
             this.session = this.graph.openSession();
 
             root1 = this.session.getContext("1L").getRootNode();
