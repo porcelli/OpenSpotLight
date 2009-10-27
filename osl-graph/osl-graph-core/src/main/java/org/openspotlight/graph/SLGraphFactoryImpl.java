@@ -53,6 +53,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.AbstractFactoryException;
@@ -73,6 +74,31 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
  */
 public class SLGraphFactoryImpl extends SLGraphFactory {
 
+    public static interface SLGraphClosingListener {
+        public void graphClosed( SLGraph desc );
+    }
+
+    private class SLGraphClosingListenerImpl implements SLGraphClosingListener {
+
+        public void graphClosed( final SLGraph desc ) {
+            JcrConnectionDescriptor data = null;
+            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : SLGraphFactoryImpl.this.cache.entrySet()) {
+                if (entry.getValue().equals(desc)) {
+                    data = entry.getKey();
+                    break;
+                }
+            }
+            synchronized (SLGraphFactoryImpl.this.cache) {
+                if (data != null) {
+                    SLGraphFactoryImpl.this.cache.remove(data);
+                }
+
+            }
+
+        }
+
+    }
+
     private SLGraph                                     graph;
 
     private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
@@ -85,7 +111,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
                 SLPersistentTreeFactory factory;
                 factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
                 final SLPersistentTree tree = factory.createPersistentTree(provider);
-                cached = new SLGraphImpl(tree);
+                cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
                 this.cache.put(provider.getData(), cached);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
@@ -208,7 +234,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
             if (this.graph == null || removeExistent) {
                 final SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
                 final SLPersistentTree tree = factory.createTempPersistentTree(removeExistent);
-                this.graph = new SLGraphImpl(tree);
+                this.graph = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
             }
             return this.graph;
         } catch (final Exception e) {
