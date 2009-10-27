@@ -1,3 +1,4 @@
+package org.openspotlight.cr.provider.test;
 import org.junit.Test;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
