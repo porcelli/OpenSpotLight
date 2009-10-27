@@ -88,22 +88,22 @@ import org.openspotlight.graph.util.ProxyUtil;
 public class SLGraphSessionImpl implements SLGraphSession {
 
     /** The tree session. */
-    private final SLPersistentTreeSession   treeSession;
+    private final SLPersistentTreeSession    treeSession;
 
     /** The event poster. */
-    private final SLGraphSessionEventPoster eventPoster;
+    private final SLGraphSessionEventPoster  eventPoster;
 
     /** The encoder. */
-    private SLEncoder                       encoder;
+    private SLEncoder                        encoder;
 
     /** The encoder factory. */
-    private final SLEncoderFactory          encoderFactory;
+    private final SLEncoderFactory           encoderFactory;
 
     /** The slql query builder. */
-    private SLQueryTextInternalBuilder      queryBuilder;
+    private final SLQueryTextInternalBuilder queryBuilder;
 
     /** The slql query cache. */
-    private SLQueryCache                    queryCache;
+    private final SLQueryCache               queryCache;
 
     /**
      * Instantiates a new sL graph session impl.
@@ -158,7 +158,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
             final boolean allowsChangeToBidirecional = this.allowsChangeToBidirecional(linkClass);
 
             if (allowsMultiple && allowsChangeToBidirecional) {
-                throw new SLGraphSessionException("ALLOWS_CHANGE_TO_BIDIRECTIONAL and ALLOWS_MULTIPLE attributes are not supported at once.");
+                throw new SLGraphSessionException(
+                                                  "ALLOWS_CHANGE_TO_BIDIRECTIONAL and ALLOWS_MULTIPLE attributes are not supported at once.");
             }
 
             final SLPersistentNode pairKeyNode = this.getPairKeyNode(linkClass, source, target);
@@ -178,7 +179,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
                         if (linkNode == null) {
                             newLink = true;
                         } else {
-                            final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION);
+                            final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(
+                                                                                                     Integer.class,
+                                                                                                     SLConsts.PROPERTY_NAME_DIRECTION);
                             if (directionProp.getValue() != SLConsts.DIRECTION_BOTH) {
                                 directionProp.setValue(SLConsts.DIRECTION_BOTH);
                                 changedToBidirectional = true;
@@ -196,7 +199,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
             final SLLink link = new SLLinkImpl(this, linkNode, this.eventPoster);
             final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
-            SLLinkEvent event = new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode, persistenceMode);
+            final SLLinkEvent event = new SLLinkEvent(SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode, persistenceMode);
             event.setSource(source);
             event.setTarget(target);
             event.setNewLink(newLink);
@@ -222,20 +225,22 @@ public class SLGraphSessionImpl implements SLGraphSession {
      */
     @SuppressWarnings( "unchecked" )
     private SLPersistentNode addLinkNode( final SLPersistentNode pairKeyNode,
-                                          Class<? extends SLLink> linkType,
-                                          SLNode source,
-                                          SLNode target,
+                                          final Class<? extends SLLink> linkType,
+                                          final SLNode source,
+                                          final SLNode target,
                                           final int direction ) throws SLPersistentTreeSessionException, SLGraphSessionException {
         final long linkCount = this.incLinkCount(pairKeyNode);
         final String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
         final SLPersistentNode linkNode = pairKeyNode.addNode(name);
-        Class<? extends SLNode> sourceType = (Class<? extends SLNode>)source.getClass().getInterfaces()[0];
-        Class<? extends SLNode> targetType = (Class<? extends SLNode>)target.getClass().getInterfaces()[0];
+        final Class<? extends SLNode> sourceType = (Class<? extends SLNode>)source.getClass().getInterfaces()[0];
+        final Class<? extends SLNode> targetType = (Class<? extends SLNode>)target.getClass().getInterfaces()[0];
         SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_ID, source.getID());
         SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_ID, target.getID());
         SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH, linkType.getName().hashCode());
-        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH, sourceType.getName().hashCode());
-        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH, targetType.getName().hashCode());
+        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH,
+                                                   sourceType.getName().hashCode());
+        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH,
+                                                   targetType.getName().hashCode());
         linkNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT, linkCount);
         linkNode.setProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION, direction);
         return linkNode;
@@ -249,7 +254,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      */
     private boolean allowsChangeToBidirecional( final Class<? extends SLLink> linkTypeClass ) {
         final SLLinkAttribute attribute = linkTypeClass.getAnnotation(SLLinkAttribute.class);
-        return (attribute != null) && (Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL) > -1);
+        return attribute != null && Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL) > -1;
     }
 
     /**
@@ -260,7 +265,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      */
     private boolean allowsMultiple( final Class<? extends SLLink> linkTypeClass ) {
         final SLLinkAttribute attribute = linkTypeClass.getAnnotation(SLLinkAttribute.class);
-        return (attribute != null) && (Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_MULTIPLE) > -1);
+        return attribute != null && Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_MULTIPLE) > -1;
     }
 
     // @Override
@@ -295,19 +300,34 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see org.openspotlight.graph.SLGraphSession#createContext(java.lang.Long)
      */
     public SLContext createContext( final String id ) throws SLContextAlreadyExistsException, SLGraphSessionException {
-        SLContext context = null;
         try {
             final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
-            if (contextsPersistentNode.getNode("" + id) == null) {
+            if (contextsPersistentNode.getNode(id) == null) {
                 final SLPersistentNode contextRootPersistentNode = contextsPersistentNode.addNode("" + id);
-                context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
+                final SLContext context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
+                return context;
             } else {
                 throw new SLContextAlreadyExistsException(id);
             }
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLGraphSessionException("Error on attempt to create context node.", e);
         }
-        return context;
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.SLGraphSession#createQuery()
+     */
+    public SLQueryApi createQueryApi() throws SLGraphSessionException {
+        return new SLQueryApiImpl(this, this.treeSession, this.queryCache);
+    }
+
+    /* (non-Javadoc)
+    * @see org.openspotlight.graph.SLGraphSession#createQuery()
+    */
+    public SLQueryText createQueryText( final String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+        final SLQueryTextInternal query = this.queryBuilder.build(slqlInput);
+        return new SLQueryTextImpl(this, this.treeSession, query);
     }
 
     /**
@@ -443,7 +463,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         try {
             SLContext context = null;
             final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
-            final SLPersistentNode contextRootPersistentNode = contextsPersistentNode.getNode("" + id);
+            final SLPersistentNode contextRootPersistentNode = contextsPersistentNode.getNode(id);
             if (contextRootPersistentNode != null) {
                 context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
             }
@@ -568,22 +588,38 @@ public class SLGraphSessionImpl implements SLGraphSession {
             final StringBuilder statement = new StringBuilder();
             statement.append("//osl/links/").append(linkClass.getName()).append("/*");
 
-            if ((source != null) || (target != null)) {
+            if (source != null || target != null) {
 
                 statement.append('[');
 
                 // filter source ...
                 if (source != null) {
-                    statement.append('(').append('@').append(SLConsts.PROPERTY_NAME_A_NODE_ID).append("='").append(source.getID()).append("'").append(" or ").append('@').append(SLConsts.PROPERTY_NAME_B_NODE_ID).append("='").append(source.getID()).append("'").append(')');
+                    statement.append('(').append('@').append(SLConsts.PROPERTY_NAME_A_NODE_ID).append("='").append(source.getID()).append(
+                                                                                                                                          "'").append(
+                                                                                                                                                      " or ").append(
+                                                                                                                                                                     '@').append(
+                                                                                                                                                                                 SLConsts.PROPERTY_NAME_B_NODE_ID).append(
+                                                                                                                                                                                                                          "='").append(
+                                                                                                                                                                                                                                       source.getID()).append(
+                                                                                                                                                                                                                                                              "'").append(
+                                                                                                                                                                                                                                                                          ')');
                 }
 
-                if ((source != null) && (target != null)) {
+                if (source != null && target != null) {
                     statement.append(" and ");
                 }
 
                 // filter target ...
                 if (target != null) {
-                    statement.append('(').append('@').append(SLConsts.PROPERTY_NAME_A_NODE_ID).append("='").append(target.getID()).append("'").append(" or ").append('@').append(SLConsts.PROPERTY_NAME_B_NODE_ID).append("='").append(target.getID()).append("'").append(')');
+                    statement.append('(').append('@').append(SLConsts.PROPERTY_NAME_A_NODE_ID).append("='").append(target.getID()).append(
+                                                                                                                                          "'").append(
+                                                                                                                                                      " or ").append(
+                                                                                                                                                                     '@').append(
+                                                                                                                                                                                 SLConsts.PROPERTY_NAME_B_NODE_ID).append(
+                                                                                                                                                                                                                          "='").append(
+                                                                                                                                                                                                                                       target.getID()).append(
+                                                                                                                                                                                                                                                              "'").append(
+                                                                                                                                                                                                                                                                          ')');
                 }
 
                 statement.append(']');
@@ -592,8 +628,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
             statement.append("/*");
 
             final StringBuilder directionFilter = new StringBuilder();
-            if ((direction == (direction | SLLink.DIRECTION_UNI)) || (direction == (direction | SLLink.DIRECTION_UNI_REVERSAL))) {
-                directionFilter.append('@').append(SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(SLConsts.DIRECTION_AB).append(" or @").append(SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(SLConsts.DIRECTION_BA);
+            if (direction == (direction | SLLink.DIRECTION_UNI) || direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)) {
+                directionFilter.append('@').append(SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(SLConsts.DIRECTION_AB).append(
+                                                                                                                                      " or @").append(
+                                                                                                                                                      SLConsts.PROPERTY_NAME_DIRECTION).append(
+                                                                                                                                                                                               '=').append(
+                                                                                                                                                                                                           SLConsts.DIRECTION_BA);
             }
             if (direction == (direction | SLLink.DIRECTION_BI)) {
                 if (directionFilter.length() > 0) {
@@ -618,17 +658,20 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
                 final SLPersistentNode pairKeyNode = linkNode.getParent();
 
-                final SLPersistentProperty<String> aNodeIDProp = pairKeyNode.getProperty(String.class, SLConsts.PROPERTY_NAME_A_NODE_ID);
-                final SLPersistentProperty<String> bNodeIDProp = pairKeyNode.getProperty(String.class, SLConsts.PROPERTY_NAME_B_NODE_ID);
-                final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION);
+                final SLPersistentProperty<String> aNodeIDProp = pairKeyNode.getProperty(String.class,
+                                                                                         SLConsts.PROPERTY_NAME_A_NODE_ID);
+                final SLPersistentProperty<String> bNodeIDProp = pairKeyNode.getProperty(String.class,
+                                                                                         SLConsts.PROPERTY_NAME_B_NODE_ID);
+                final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(Integer.class,
+                                                                                         SLConsts.PROPERTY_NAME_DIRECTION);
 
                 final SLNode aNode = this.getNodeByID(aNodeIDProp.getValue());
                 final SLNode bNode = this.getNodeByID(bNodeIDProp.getValue());
 
                 boolean status = false;
 
-                if ((source == null) && (target == null)) {
-                    if ((directionProp.getValue() == SLConsts.DIRECTION_AB) || (directionProp.getValue() == SLConsts.DIRECTION_BA)) {
+                if (source == null && target == null) {
+                    if (directionProp.getValue() == SLConsts.DIRECTION_AB || directionProp.getValue() == SLConsts.DIRECTION_BA) {
                         status = direction == (direction | SLLink.DIRECTION_UNI);
                     } else {
                         status = direction == (direction | SLLink.DIRECTION_BI);
@@ -650,7 +693,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
                             t = aNode;
                         }
 
-                        status = ((direction == (direction | SLLink.DIRECTION_UNI)) && (s.equals(source) || t.equals(target))) || ((direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)) && (s.equals(target) || t.equals(source)));
+                        status = direction == (direction | SLLink.DIRECTION_UNI) && (s.equals(source) || t.equals(target))
+                                 || direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)
+                                 && (s.equals(target) || t.equals(source));
                     }
                 }
 
@@ -725,13 +770,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
             final SLEncoder fakeEncoder = this.getEncoderFactory().getFakeEncoder();
             for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
                 if (node == null) {
-                    SLNode rootNode = context.getRootNode();
+                    final SLNode rootNode = context.getRootNode();
                     node = context.getRootNode().getNode(SLNode.class, names[i], fakeEncoder);
-                    Class<? extends SLNode> nodeType = getNodeType(rootNode);
+                    final Class<? extends SLNode> nodeType = this.getNodeType(rootNode);
                     node = ProxyUtil.createNodeProxy(nodeType, node);
                 } else {
                     node = node.getNode(SLNode.class, names[i], fakeEncoder);
-                    Class<? extends SLNode> nodeType = getNodeType(node);
+                    final Class<? extends SLNode> nodeType = this.getNodeType(node);
                     node = ProxyUtil.createNodeProxy(nodeType, node);
                 }
             }
@@ -885,12 +930,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
     public Collection<SLNode> getNodesByPredicate( final SLNodePredicate predicate ) throws SLGraphSessionException {
         try {
             final Collection<SLNode> nodes = new ArrayList<SLNode>();
-            final SLPersistentQuery query = this.treeSession.createQuery("//osl/contexts/*//descendant::node()", SLPersistentQuery.TYPE_XPATH);
+            final SLPersistentQuery query = this.treeSession.createQuery("//osl/contexts/*//descendant::node()",
+                                                                         SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             final Collection<SLPersistentNode> pNodes = result.getNodes();
             for (final SLPersistentNode pNode : pNodes) {
                 final SLNode node = this.getNodeByID(pNode.getID());
-                if ((node != null) && predicate.evaluate(node)) {
+                if (node != null && predicate.evaluate(node)) {
                     nodes.add(node);
                 }
             }
@@ -898,6 +944,37 @@ public class SLGraphSessionImpl implements SLGraphSession {
         } catch (final SLException e) {
             throw new SLGraphSessionException("Error on attempt to retrieve nodes by predicate.", e);
         }
+    }
+
+    /**
+     * Gets the node type.
+     * 
+     * @param node the node
+     * @return the node type
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private Class<? extends SLNode> getNodeType( final SLNode node ) throws SLPersistentTreeSessionException {
+        final SLPersistentNode pNode = SLCommonSupport.getPNode(node);
+        final String typeName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
+        return this.getNodeType(typeName);
+    }
+
+    /**
+     * Gets the node type.
+     * 
+     * @param typeName the type name
+     * @return the node type
+     */
+    @SuppressWarnings( "unchecked" )
+    private Class<? extends SLNode> getNodeType( final String typeName ) {
+        final Class<? extends SLNode> nodeType = null;
+        if (typeName != null) {
+            try {
+                return (Class<? extends SLNode>)Class.forName(typeName);
+            } catch (final ClassNotFoundException e) {
+            }
+        }
+        return nodeType == null ? SLNode.class : nodeType;
     }
 
     /**
@@ -1017,7 +1094,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private long incLinkCount( final SLPersistentNode linkKeyPairNode ) throws SLPersistentTreeSessionException {
-        final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
+        final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode.getProperty(Long.class,
+                                                                                     SLConsts.PROPERTY_NAME_LINK_COUNT);
         final long linkCount = linkCountProp.getValue() + 1;
         linkCountProp.setValue(linkCount);
         return linkCount;
@@ -1034,7 +1112,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private boolean nodeOfType( final SLNode node,
                                 final Class<? extends SLNode> nodeClass,
                                 final boolean returnSubTypes ) {
-        return (returnSubTypes && nodeClass.isAssignableFrom(node.getClass().getInterfaces()[0])) || (!returnSubTypes && nodeClass.equals(node.getClass().getInterfaces()[0]));
+        return returnSubTypes && nodeClass.isAssignableFrom(node.getClass().getInterfaces()[0]) || !returnSubTypes
+               && nodeClass.equals(node.getClass().getInterfaces()[0]);
     }
 
     // @Override
@@ -1061,52 +1140,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
      */
     public void setDefaultEncoder( final SLEncoder encoder ) throws SLGraphSessionException {
         this.encoder = encoder;
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLGraphSession#createQuery()
-     */
-    public SLQueryApi createQueryApi() throws SLGraphSessionException {
-        return new SLQueryApiImpl(this, treeSession, queryCache);
-    }
-
-    /* (non-Javadoc)
-    * @see org.openspotlight.graph.SLGraphSession#createQuery()
-    */
-    public SLQueryText createQueryText( String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
-        SLQueryTextInternal query = queryBuilder.build(slqlInput);
-        return new SLQueryTextImpl(this, treeSession, query);
-    }
-
-    /**
-     * Gets the node type.
-     * 
-     * @param node the node
-     * @return the node type
-     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-     */
-    private Class<? extends SLNode> getNodeType( SLNode node ) throws SLPersistentTreeSessionException {
-        SLPersistentNode pNode = SLCommonSupport.getPNode(node);
-        String typeName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
-        return getNodeType(typeName);
-    }
-
-    /**
-     * Gets the node type.
-     * 
-     * @param typeName the type name
-     * @return the node type
-     */
-    @SuppressWarnings( "unchecked" )
-    private Class<? extends SLNode> getNodeType( String typeName ) {
-        Class<? extends SLNode> nodeType = null;
-        if (typeName != null) {
-            try {
-                return (Class<? extends SLNode>)Class.forName(typeName);
-            } catch (ClassNotFoundException e) {
-            }
-        }
-        return nodeType == null ? SLNode.class : nodeType;
     }
 
 }
