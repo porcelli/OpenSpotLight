@@ -59,95 +59,106 @@ import org.openspotlight.graph.query.SLSideType;
  */
 public class SLSelectByLinkInfo {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/** The name. */
-	private String name;
-	
-	/** The side. */
-	private SLSideType side;
-	
-	/** The comma. */
-	private boolean comma;
-	
-	/**
-	 * Instantiates a new sL select by link info.
-	 * 
-	 * @param name the name
-	 */
-	public SLSelectByLinkInfo(String name) {
-		setName(name);
-	}
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /** The name. */
+    private String            name;
 
-	/**
-	 * Sets the name.
-	 * 
-	 * @param name the new name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /** The side. */
+    private SLSideType        side;
 
-	/**
-	 * Checks if is comma.
-	 * 
-	 * @return true, if is comma
-	 */
-	public boolean isComma() {
-		return comma;
-	}
+    /** The comma. */
+    private boolean           comma;
 
-	/**
-	 * Sets the comma.
-	 * 
-	 * @param comma the new comma
-	 */
-	public void setComma(boolean comma) {
-		this.comma = comma;
-	}
+    /**
+     * Instantiates a new sL select by link info.
+     * 
+     * @param name the name
+     */
+    public SLSelectByLinkInfo(
+                               String name ) {
+        setName(name);
+    }
 
-	/**
-	 * Gets the side.
-	 * 
-	 * @return the side
-	 */
-	public SLSideType getSide() {
-		return side;
-	}
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets the side.
-	 * 
-	 * @param side the new side
-	 */
-	public void setSide(SLSideType side) {
-		this.side = side;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return Equals.eachEquality(SLSelectByLinkInfo.class, this, obj, "name");
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return HashCodes.hashOf(name);
-	}
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
+    public void setName( String name ) {
+        this.name = name;
+    }
 
+    /**
+     * Checks if is comma.
+     * 
+     * @return true, if is comma
+     */
+    public boolean isComma() {
+        return comma;
+    }
+
+    /**
+     * Sets the comma.
+     * 
+     * @param comma the new comma
+     */
+    public void setComma( boolean comma ) {
+        this.comma = comma;
+    }
+
+    /**
+     * Gets the side.
+     * 
+     * @return the side
+     */
+    public SLSideType getSide() {
+        return side;
+    }
+
+    /**
+     * Sets the side.
+     * 
+     * @param side the new side
+     */
+    public void setSide( SLSideType side ) {
+        this.side = side;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals( Object obj ) {
+        return Equals.eachEquality(SLSelectByLinkInfo.class, this, obj, "name");
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(name);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append('"').append(name).append('"').append(' ');
+        buffer.append('(').append(side).append(')');
+        return buffer.toString();
+    }
 }
