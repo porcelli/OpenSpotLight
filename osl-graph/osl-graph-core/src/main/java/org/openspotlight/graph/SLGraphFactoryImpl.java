@@ -65,6 +65,7 @@ import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphFactoryImpl.
@@ -109,6 +110,8 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
             try {
                 SLPersistentTreeFactory factory;
                 factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
+                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
+                provider.openRepositoryAndCleanIfItIsTemporary();//this is necessary only because test issues. DO NOT REMOVE THIS LINE!
                 final SLPersistentTree tree = factory.createPersistentTree(descriptor);
                 cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
                 this.cache.put(descriptor, cached);
