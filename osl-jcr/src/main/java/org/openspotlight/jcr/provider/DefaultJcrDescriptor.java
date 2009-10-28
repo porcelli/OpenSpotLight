@@ -10,11 +10,11 @@ public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
 
     /** The TEM p_ descriptor. */
     TEMP_DESCRIPTOR("/tmp/osl-temp-repository", new SimpleCredentials("username", "password".toCharArray()), JcrType.JACKRABBIT,
-                    "temp-repository.xml"),
+                    "temp-repository.xml", true),
 
     /** The DEFAUL t_ descriptor. */
     DEFAULT_DESCRIPTOR("/osl/repository", new SimpleCredentials("username", "password".toCharArray()), JcrType.JACKRABBIT,
-                       "postgres-repository.xml");
+                       "postgres-repository.xml", false);
 
     /** The configuration directory. */
     private final String      configurationDirectory;
@@ -28,6 +28,8 @@ public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
     /** The xml classpath location. */
     private final String      xmlClasspathLocation;
 
+    private final boolean     temporary;
+
     /**
      * Instantiates a new default jcr descriptor.
      * 
@@ -38,11 +40,13 @@ public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
      */
     private DefaultJcrDescriptor(
                                   final String configurationDirectory, final Credentials credentials, final JcrType jcrType,
-                                  final String xmlClasspathLocation ) {
+                                  final String xmlClasspathLocation, final boolean temporary ) {
         this.configurationDirectory = configurationDirectory;
         this.credentials = credentials;
         this.jcrType = jcrType;
         this.xmlClasspathLocation = xmlClasspathLocation;
+        this.temporary = temporary;
+
     }
 
     /* (non-Javadoc)
@@ -71,6 +75,13 @@ public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
      */
     public String getXmlClasspathLocation() {
         return this.xmlClasspathLocation;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.jcr.provider.JcrConnectionDescriptor#isTemporary()
+     */
+    public boolean isTemporary() {
+        return this.temporary;
     }
 
 }

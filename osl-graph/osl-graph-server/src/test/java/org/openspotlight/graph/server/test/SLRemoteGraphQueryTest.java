@@ -56,6 +56,7 @@ import java.text.Collator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
@@ -76,36 +77,27 @@ import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.testng.annotations.Test;
 
 /**
  * The Class SLGraphQueryTest.
  * 
  * @author Vitor Hugo Chagas
  */
-@Test
 public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
-    private RemoteGraphSessionFactory factory;
+    private static RemoteGraphSessionFactory factory;
 
-    private RemoteGraphSessionServer  server;
+    private static RemoteGraphSessionServer  server;
 
-    public SLRemoteGraphQueryTest() {
-        LOGGER = Logger.getLogger(this.getClass());
-
+    protected static void openNewSession() throws Exception {
+        session = factory.createRemoteGraphSession();
     }
 
-    @Override
-    protected void openNewSession() throws Exception {
-        this.session = this.factory.createRemoteGraphSession();
-    }
-
-    @Override
-    protected void setupSession() throws Exception {
+    protected static void setupSession() throws Exception {
 
         //        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
 
-        this.server = new RemoteGraphSessionServer(new UserAuthenticator() {
+        server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
             public boolean canConnect( final String userName,
                                        final String password,
@@ -114,7 +106,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
             }
         }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
-        this.factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
+        factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
             public String getHost() {
                 return "localhost";
@@ -132,11 +124,15 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                 return "***";
             }
         });
-        this.session = this.factory.createRemoteGraphSession();
+        session = factory.createRemoteGraphSession();
     }
 
-    @Override
-    protected void shutdownTest() {
+    protected static void shutdownTest() {
+
+    }
+
+    public SLRemoteGraphQueryTest() {
+        LOGGER = Logger.getLogger(this.getClass());
 
     }
 

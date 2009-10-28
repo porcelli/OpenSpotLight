@@ -53,6 +53,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.AbstractFactoryException;
@@ -73,20 +74,47 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
  */
 public class SLGraphFactoryImpl extends SLGraphFactory {
 
+    public static interface SLGraphClosingListener {
+        public void graphClosed( SLGraph desc );
+    }
+
+    private class SLGraphClosingListenerImpl implements SLGraphClosingListener {
+
+        public void graphClosed( final SLGraph desc ) {
+            JcrConnectionDescriptor data = null;
+            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : SLGraphFactoryImpl.this.cache.entrySet()) {
+                if (entry.getValue().equals(desc)) {
+                    data = entry.getKey();
+                    break;
+                }
+            }
+            synchronized (SLGraphFactoryImpl.this.cache) {
+                if (data != null) {
+                    SLGraphFactoryImpl.this.cache.remove(data);
+                }
+
+            }
+
+        }
+
+    }
+
     private SLGraph                                     graph;
 
     private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
 
     @Override
-    public synchronized SLGraph createGraph( final JcrConnectionProvider provider ) throws SLGraphFactoryException {
-        SLGraph cached = this.cache.get(provider.getData());
+    public synchronized SLGraph createGraph( final JcrConnectionDescriptor descriptor ) throws SLGraphFactoryException {
+        SLGraph cached = this.cache.get(descriptor);
         if (cached == null) {
             try {
                 SLPersistentTreeFactory factory;
                 factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-                final SLPersistentTree tree = factory.createPersistentTree(provider);
-                cached = new SLGraphImpl(tree);
-                this.cache.put(provider.getData(), cached);
+                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
+                provider.openRepositoryAndCleanIfItIsTemporary();//this is necessary only because test issues. DO NOT REMOVE THIS LINE!
+                final SLPersistentTree tree = factory.createPersistentTree(descriptor);
+                cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
+                this.cache.put(descriptor, cached);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }
@@ -197,23 +225,6 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
                                                                final SLGraphSessionEventPoster eventPoster )
         throws SLGraphFactoryException {
         return new SLNodePropertyImpl<V>(node, persistentProperty, eventPoster);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLGraphFactory#createTempGraph(boolean)
-     */
-    @Override
-    public SLGraph createTempGraph( final boolean removeExistent ) throws SLGraphFactoryException {
-        try {
-            if (this.graph == null) {
-                final SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-                final SLPersistentTree tree = factory.createTempPersistentTree(removeExistent);
-                this.graph = new SLGraphImpl(tree);
-            }
-            return this.graph;
-        } catch (final Exception e) {
-            throw new SLGraphFactoryException("Couldn't create SL graph.", e);
-        }
     }
 
     //@Override

@@ -48,10 +48,10 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.graph.node;
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.SLGraphSessionException;
 
 /**
  * The Interface for node Natural Data.Map Field.

@@ -3,6 +3,10 @@ package org.openspotlight.bundle.dap.language.java.resolver;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.dap.language.java.Constants;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.Extends;
@@ -26,25 +30,44 @@ import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidNodeTypeException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public abstract class AbstractMethodResolutionTest {
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish() {
+        graph.shutdown();
+    }
+
+    /**
+     * Inits the Graph.
+     * 
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @BeforeClass
+    public static void init() throws AbstractFactoryException {
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+    }
 
     protected MethodResolver<JavaType, JavaMethod> methodResolver = null;
     protected SLGraphSession                       graphSession   = null;
     protected JavaGraphNodeSupport                 helper         = null;
+
     protected SLContext                            abstractContex = null;
-    protected SLGraph                              graph          = null;
+
+    protected static SLGraph                       graph          = null;
 
     /**
      * After test.
      * 
      * @throws SLGraphSessionException the SL graph session exception
      */
-    @AfterMethod
+    @After
     public void afterTest() throws SLGraphSessionException {
         this.graphSession.clear();
     }
@@ -159,14 +182,6 @@ public abstract class AbstractMethodResolutionTest {
         return newType;
     }
 
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public void finish() {
-        this.graph.shutdown();
-    }
-
     protected JavaType getAbstractType( final String packageName,
                                         final String className ) throws SLInvalidNodeTypeException, SLGraphSessionException {
         final JavaPackage abstractPackage = this.abstractContex.getRootNode().getNode(JavaPackage.class, packageName);
@@ -176,18 +191,7 @@ public abstract class AbstractMethodResolutionTest {
         return null;
     }
 
-    /**
-     * Inits the Graph.
-     * 
-     * @throws AbstractFactoryException the abstract factory exception
-     */
-    @BeforeClass
-    public void init() throws AbstractFactoryException {
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createTempGraph(true);
-    }
-
-    @BeforeMethod
+    @Before
     public void setupGraphSession() throws Exception {
         //FIXME this == null should be removed -> NOT I CAN'T OPEN ONE SESSION PER METHOD EXECUTION!!
         if (this.graphSession == null) {

@@ -44,4 +44,11 @@ public interface JcrConnectionDescriptor {
      */
     public String getXmlClasspathLocation();
 
+    /**
+     * Checks if is temporary.
+     * 
+     * @return true, if is temporary
+     */
+    public boolean isTemporary();
+
 }

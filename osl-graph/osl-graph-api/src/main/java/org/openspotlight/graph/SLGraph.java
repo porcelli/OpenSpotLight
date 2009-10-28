@@ -50,12 +50,27 @@ package org.openspotlight.graph;
 
 import org.openspotlight.graph.persistence.SLPersistentTreeException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface SLGraph.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLGraph {
+
+    /**
+     * The Enum GraphState.
+     * 
+     * @author porcelli
+     */
+    public enum GraphState {
+
+        /** The OPENED. */
+        OPENED,
+
+        /** The SHUTDOWN. */
+        SHUTDOWN;
+    }
 
     /**
      * Open session.
@@ -72,7 +87,16 @@ public interface SLGraph {
 
     /**
      * Runs the garbage collector.
+     * 
+     * @throws SLPersistentTreeException the SL persistent tree exception
      */
     public void gc() throws SLPersistentTreeException;
+
+    /**
+     * Gets the graph state.
+     * 
+     * @return the graph state
+     */
+    public GraphState getGraphState();
 
 }

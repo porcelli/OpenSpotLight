@@ -48,13 +48,7 @@
  */
 package org.openspotlight.graph.persistence;
 
-import static org.openspotlight.common.util.Files.delete;
-
-import javax.jcr.Credentials;
-import javax.jcr.Repository;
-
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 /**
  * The Class SLPersistentTreeFactoryImpl.
@@ -64,30 +58,10 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
 
     @Override
-    public SLPersistentTree createPersistentTree( final JcrConnectionProvider provider ) throws SLPersistentTreeFactoryException {
+    public SLPersistentTree createPersistentTree( final JcrConnectionDescriptor descriptor )
+        throws SLPersistentTreeFactoryException {
         try {
-            final Credentials credentials = provider.getData().getCredentials();
-            final Repository repo = provider.openRepository();
-            return new SLPersistentTreeImpl(repo, credentials);
-        } catch (final Exception e) {
-            throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.persistence.SLPersistentTreeFactory#createPersistentTree()
-     */
-    @Override
-    public SLPersistentTree createTempPersistentTree( final boolean removeExistent ) throws SLPersistentTreeFactoryException {
-        try {
-            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            if (removeExistent) {
-                delete(provider.getData().getConfigurationDirectory());
-            }
-            final Credentials credentials = provider.getData().getCredentials();
-            final Repository repo = provider.openRepository();
-            return new SLPersistentTreeImpl(repo, credentials);
+            return new SLPersistentTreeImpl(descriptor);
         } catch (final Exception e) {
             throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
         }

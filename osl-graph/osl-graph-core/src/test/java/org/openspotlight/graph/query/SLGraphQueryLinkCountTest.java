@@ -55,6 +55,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
@@ -67,53 +70,76 @@ import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphQueryLinkCountTest.
  * 
  * @author Vitor Hugo Chagas
  */
-@Test
+
 public class SLGraphQueryLinkCountTest {
 
     /** The Constant LOGGER. */
-    static final Logger    LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
+    static final Logger           LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
 
     /** The graph. */
-    private SLGraph        graph;
+    private static SLGraph        graph;
 
     /** The session. */
-    private SLGraphSession session;
+    private static SLGraphSession session;
+
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish() {
+        session.close();
+        graph.shutdown();
+    }
+
+    /**
+     * Gets the i face type set.
+     * 
+     * @return the i face type set
+     */
+    private static Set<Class<?>> getIFaceTypeSet() {
+        final Set<Class<?>> set = new HashSet<Class<?>>();
+        set.add(java.util.Collection.class);
+        set.add(java.util.Map.class);
+        set.add(java.util.List.class);
+        set.add(java.util.Set.class);
+        set.add(java.util.SortedSet.class);
+        return set;
+    }
 
     /**
      * Quick graph population.
      */
     @BeforeClass
-    public void quickGraphPopulation() {
+    public static void quickGraphPopulation() {
         try {
-            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createTempGraph(true);
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession();
-            SLContext context = session.createContext("linkCountTest");
-            SLNode root = context.getRootNode();
-            Set<Class<?>> types = getIFaceTypeSet();
-            for (Class<?> type : types) {
-                Method[] methods = type.getDeclaredMethods();
+            final SLContext context = session.createContext("linkCountTest");
+            final SLNode root = context.getRootNode();
+            final Set<Class<?>> types = getIFaceTypeSet();
+            for (final Class<?> type : types) {
+                final Method[] methods = type.getDeclaredMethods();
                 LOGGER.info(type.getName() + ": " + methods.length + " methods");
-                JavaInterface javaInteface = root.addNode(JavaInterface.class, type.getName());
+                final JavaInterface javaInteface = root.addNode(JavaInterface.class, type.getName());
                 javaInteface.setProperty(String.class, "caption", type.getName());
-                for (int i = 0; i < methods.length; i++) {
-                    JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, methods[i].getName());
-                    javaMethod.setProperty(String.class, "caption", methods[i].getName());
+                for (final Method method : methods) {
+                    final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());
+                    javaMethod.setProperty(String.class, "caption", method.getName());
                     session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
-                    Class<?>[] paramTypes = methods[i].getParameterTypes();
-                    LOGGER.info("\t\t" + methods[i].getName() + ": " + paramTypes.length + " params");
-                    for (int j = 0; j < paramTypes.length; j++) {
-                        MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramTypes[j].getName());
-                        methodParam.setProperty(String.class, "caption", paramTypes[j].getName());
+                    final Class<?>[] paramTypes = method.getParameterTypes();
+                    LOGGER.info("\t\t" + method.getName() + ": " + paramTypes.length + " params");
+                    for (final Class<?> paramType : paramTypes) {
+                        final MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramType.getName());
+                        methodParam.setProperty(String.class, "caption", paramType.getName());
                         session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
                     }
                 }
@@ -121,87 +147,7 @@ public class SLGraphQueryLinkCountTest {
             session.save();
             session.close();
             session = graph.openSession();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public void finish() {
-        session.close();
-        graph.shutdown();
-    }
-
-    /**
-     * Select map zero param methods.
-     */
-    @Test
-    public void selectMapZeroParamMethods() {
-
-        try {
-
-            String id = findIFaceID(java.util.Map.class);
-            SLQueryApi query = session.createQueryApi();
-
-            query
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .byLink(TypeContainsMethod.class.getName()).b()
-                 .selectEnd()
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .selectEnd()
-                 .where()
-                 .type(JavaTypeMethod.class.getName())
-                 .each().link(MethodContainsParam.class.getName()).a().count().equalsTo().value(0)
-                 .typeEnd()
-                 .whereEnd();
-
-            SLQueryResult result = query.execute(new String[] {id});
-            Collection<SLNode> nodes = result.getNodes();
-            QueryUtil.printResult(nodes);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Select collection methods with all in caption and with one param.
-     */
-    @Test
-    public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
-
-        try {
-
-            String id = findIFaceID(java.util.Collection.class);
-            SLNode node = session.getNodeByID(id);
-            Collection<SLNode> inputNodes = new ArrayList<SLNode>();
-            inputNodes.add(node);
-
-            SLQueryApi query = session.createQueryApi();
-
-            query
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .byLink(TypeContainsMethod.class.getName()).b()
-                 .selectEnd()
-                 .select()
-                 .type(JavaTypeMethod.class.getName())
-                 .selectEnd()
-                 .where()
-                 .type(JavaTypeMethod.class.getName())
-                 .each().property("caption").contains().value("All")
-                 .and().each().link(MethodContainsParam.class.getName()).a().count().equalsTo().value(1)
-                 .typeEnd()
-                 .whereEnd();
-
-            SLQueryResult result = query.execute(new String[] {id});
-            Collection<SLNode> nodes = result.getNodes();
-            QueryUtil.printResult(nodes);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -214,34 +160,68 @@ public class SLGraphQueryLinkCountTest {
      * @throws SLGraphSessionException the SL graph session exception
      * @throws SLInvalidQuerySyntaxException
      */
-    private String findIFaceID( Class<?> type ) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
-        SLQueryApi query = session.createQueryApi();
-        query
-             .select()
-             .allTypes().onWhere()
-             .selectEnd()
-             .where()
-             .type(JavaInterface.class.getName())
-             .each().property("caption").equalsTo().value(type.getName())
-             .typeEnd()
-             .whereEnd();
-        SLQueryResult result = query.execute();
-        Collection<SLNode> nodes = result.getNodes();
+    private String findIFaceID( final Class<?> type ) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+        final SLQueryApi query = session.createQueryApi();
+        query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
+                                                                                                                                                type.getName()).typeEnd().whereEnd();
+        final SLQueryResult result = query.execute();
+        final Collection<SLNode> nodes = result.getNodes();
         return nodes.size() > 0 ? result.getNodes().iterator().next().getID() : null;
     }
 
     /**
-     * Gets the i face type set.
-     * 
-     * @return the i face type set
+     * Select collection methods with all in caption and with one param.
      */
-    private Set<Class<?>> getIFaceTypeSet() {
-        Set<Class<?>> set = new HashSet<Class<?>>();
-        set.add(java.util.Collection.class);
-        set.add(java.util.Map.class);
-        set.add(java.util.List.class);
-        set.add(java.util.Set.class);
-        set.add(java.util.SortedSet.class);
-        return set;
+    @Test
+    public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
+
+        try {
+
+            final String id = this.findIFaceID(java.util.Collection.class);
+            final SLNode node = session.getNodeByID(id);
+            final Collection<SLNode> inputNodes = new ArrayList<SLNode>();
+            inputNodes.add(node);
+
+            final SLQueryApi query = session.createQueryApi();
+
+            query.select().type(JavaTypeMethod.class.getName()).byLink(TypeContainsMethod.class.getName()).b().selectEnd().select().type(
+                                                                                                                                         JavaTypeMethod.class.getName()).selectEnd().where().type(
+                                                                                                                                                                                                  JavaTypeMethod.class.getName()).each().property(
+                                                                                                                                                                                                                                                  "caption").contains().value(
+                                                                                                                                                                                                                                                                              "All").and().each().link(
+                                                                                                                                                                                                                                                                                                       MethodContainsParam.class.getName()).a().count().equalsTo().value(
+                                                                                                                                                                                                                                                                                                                                                                         1).typeEnd().whereEnd();
+
+            final SLQueryResult result = query.execute(new String[] {id});
+            final Collection<SLNode> nodes = result.getNodes();
+            QueryUtil.printResult(nodes);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Select map zero param methods.
+     */
+    @Test
+    public void selectMapZeroParamMethods() {
+
+        try {
+
+            final String id = this.findIFaceID(java.util.Map.class);
+            final SLQueryApi query = session.createQueryApi();
+
+            query.select().type(JavaTypeMethod.class.getName()).byLink(TypeContainsMethod.class.getName()).b().selectEnd().select().type(
+                                                                                                                                         JavaTypeMethod.class.getName()).selectEnd().where().type(
+                                                                                                                                                                                                  JavaTypeMethod.class.getName()).each().link(
+                                                                                                                                                                                                                                              MethodContainsParam.class.getName()).a().count().equalsTo().value(
+                                                                                                                                                                                                                                                                                                                0).typeEnd().whereEnd();
+
+            final SLQueryResult result = query.execute(new String[] {id});
+            final Collection<SLNode> nodes = result.getNodes();
+            QueryUtil.printResult(nodes);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }
