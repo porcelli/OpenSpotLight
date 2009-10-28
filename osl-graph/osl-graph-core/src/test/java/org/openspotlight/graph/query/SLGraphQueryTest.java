@@ -50,8 +50,8 @@ package org.openspotlight.graph.query;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.isOneOf;
+import static org.hamcrest.Matchers.not;
 
 import java.lang.reflect.Method;
 import java.text.Collator;

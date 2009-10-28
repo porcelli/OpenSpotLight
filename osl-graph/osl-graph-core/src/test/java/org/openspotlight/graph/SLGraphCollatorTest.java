@@ -18,7 +18,6 @@ import org.openspotlight.graph.test.domain.JavaClassNode;
 import org.openspotlight.graph.test.domain.JavaMethodNode;
 import org.openspotlight.graph.test.domain.SQLElement;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class SLGraphCollatorTest {
 
