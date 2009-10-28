@@ -99,8 +99,6 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 
     }
 
-    private SLGraph                                     graph;
-
     private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
 
     @Override
