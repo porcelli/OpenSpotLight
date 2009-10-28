@@ -66,7 +66,7 @@ import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
@@ -100,9 +100,9 @@ public class DatabaseStreamDeltaTest {
     @Test
     public void shouldListenChangesOnStreams() throws Exception {
 
-        final DbBundle bundle = (DbBundle)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
+        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
                                                                                                                     "H2 Repository").getGroupByName(
-                                                                                                                                                    "h2 Group").getBundleByName(
+                                                                                                                                                    "h2 Group").getArtifactSourceByName(
                                                                                                                                                                                 "H2 Connection");
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/changes/db");
         final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
@@ -138,9 +138,9 @@ public class DatabaseStreamDeltaTest {
 
     @Test
     public void shouldListenExclusionsOnStreams() throws Exception {
-        final DbBundle bundle = (DbBundle)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
+        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
                                                                                                                     "H2 Repository").getGroupByName(
-                                                                                                                                                    "h2 Group").getBundleByName(
+                                                                                                                                                    "h2 Group").getArtifactSourceByName(
                                                                                                                                                                                 "H2 Connection");
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/exclusions/db");
         final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
@@ -174,9 +174,9 @@ public class DatabaseStreamDeltaTest {
 
     @Test
     public void shouldListenInclusionsOnStreams() throws Exception {
-        final DbBundle bundle = (DbBundle)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
+        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getRepositoryByName(
                                                                                                                     "H2 Repository").getGroupByName(
-                                                                                                                                                    "h2 Group").getBundleByName(
+                                                                                                                                                    "h2 Group").getArtifactSourceByName(
                                                                                                                                                                                 "H2 Connection");
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 

@@ -61,9 +61,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.JavaBundle;
+import org.openspotlight.federation.data.impl.JavaArtifactSource;
 import org.openspotlight.federation.data.load.AbstractArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader;
 import org.openspotlight.federation.data.test.NodeTest;
@@ -72,77 +72,75 @@ import org.openspotlight.federation.data.test.NodeTest;
  * Test for class {@link AbstractArtifactLoader}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public abstract class AbstractArtifactLoaderTest extends NodeTest {
 
-	private static class SampleArtifactLoader extends AbstractArtifactLoader {
+    private static class SampleArtifactLoader extends AbstractArtifactLoader {
 
-		@Override
-		protected GlobalExecutionContext createGlobalExecutionContext() {
-			return new DefaultGlobalExecutionContext() {
+        @Override
+        protected GlobalExecutionContext createGlobalExecutionContext() {
+            return new DefaultGlobalExecutionContext() {
 
-				public Set<String> getAllArtifactNames(final Bundle bundle,
-						final ArtifactMapping mapping)
-						throws ConfigurationException {
-					if (bundle.getStreamArtifacts().size() == 0) {
-						return setOf("1", "2", "3", "4");
-					} else {
-						return Collections.emptySet();
-					}
-				}
+                public Set<String> getAllArtifactNames( final ArtifactSource bundle,
+                                                        final ArtifactMapping mapping ) throws ConfigurationException {
+                    if (bundle.getStreamArtifacts().size() == 0) {
+                        return setOf("1", "2", "3", "4");
+                    } else {
+                        return Collections.emptySet();
+                    }
+                }
 
-			};
-		}
+            };
+        }
 
-		@Override
-		protected ThreadExecutionContext createThreadExecutionContext() {
-			return new DefaultThreadExecutionContext() {
+        @Override
+        protected ThreadExecutionContext createThreadExecutionContext() {
+            return new DefaultThreadExecutionContext() {
 
-				public byte[] loadArtifactOrReturnNullToIgnore(
-						final Bundle bundle, final ArtifactMapping mapping,
-						final String artifactName,
-						final GlobalExecutionContext context) throws Exception {
-					return artifactName.getBytes();
-				}
+                public byte[] loadArtifactOrReturnNullToIgnore( final ArtifactSource bundle,
+                                                                final ArtifactMapping mapping,
+                                                                final String artifactName,
+                                                                final GlobalExecutionContext context ) throws Exception {
+                    return artifactName.getBytes();
+                }
 
-			};
-		}
+            };
+        }
 
-	}
+    }
 
-	protected ArtifactLoader artifactLoader;
+    protected ArtifactLoader artifactLoader;
 
-	protected String BUNDLE_NAME = "b-1,1,1";
+    protected String         BUNDLE_NAME     = "b-1,1,1";
 
-	protected Configuration configuration;
+    protected Configuration  configuration;
 
-	protected String PROJECT_NAME = "p-1,1";
+    protected String         PROJECT_NAME    = "p-1,1";
 
-	protected String REPOSITORY_NAME = "r-1";;
+    protected String         REPOSITORY_NAME = "r1";      ;
 
-	@Before
-	public void createArtifactLoader() {
-		this.artifactLoader = new SampleArtifactLoader() {
+    @Before
+    public void createArtifactLoader() {
+        this.artifactLoader = new SampleArtifactLoader() {
 
-		};
-	}
+        };
+    }
 
-	@Before
-	public void createConfiguration() throws Exception {
-		this.configuration = this.createSampleData();
-	}
+    @Before
+    public void createConfiguration() throws Exception {
+        this.configuration = this.createSampleData();
+    }
 
-	@Test
-	public void shouldLoadArtifacts() throws Exception {
-		final Bundle bundle = this.configuration.getRepositoryByName(
-				this.REPOSITORY_NAME).getGroupByName(this.PROJECT_NAME)
-				.getBundleByName(this.BUNDLE_NAME);
-		this.artifactLoader.loadArtifactsFromMappings(bundle);
-		if (!(bundle instanceof JavaBundle)) {
-			assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
-		}
-	}
+    @Test
+    public void shouldLoadArtifacts() throws Exception {
+        final ArtifactSource bundle = this.configuration.getRepositoryByName(this.REPOSITORY_NAME).getGroupByName(
+                                                                                                                  this.PROJECT_NAME).getArtifactSourceByName(
+                                                                                                                                                             this.BUNDLE_NAME);
+        this.artifactLoader.loadArtifactsFromMappings(bundle);
+        if (!(bundle instanceof JavaArtifactSource)) {
+            assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
+        }
+    }
 
 }

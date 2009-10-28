@@ -61,61 +61,53 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
 import org.openspotlight.federation.data.InstanceMetadata.PropertyValue;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
 
 /**
- * Test for class {@link AbstractConfigurationNode} and
- * {@link ConfigurationNodeMetadata}
+ * Test for class {@link AbstractConfigurationNode} and {@link ConfigurationNodeMetadata}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class AbstractNodeTest extends NodeTest {
-    
-    private ItemChangeEvent<PropertyValue> lastPropertyChange;
-    
+
+    private ItemChangeEvent<PropertyValue>     lastPropertyChange;
+
     private ItemChangeEvent<ConfigurationNode> lastNodeChange;
-    
+
     private Configuration createGroupWithListeners() {
         final Configuration configuration = this.createSampleData();
         configuration.getInstanceMetadata().getSharedData().markAsSaved();
-        configuration.getInstanceMetadata().getSharedData()
-                .addPropertyListener(new ItemEventListener<PropertyValue>() {
-                    public void changeEventHappened(
-                            final ItemChangeEvent<PropertyValue> event) {
-                        AbstractNodeTest.this.setLastPropertyChange(event);
-                    }
-                });
-        configuration.getInstanceMetadata().getSharedData().addNodeListener(
-                new ItemEventListener<ConfigurationNode>() {
-                    public void changeEventHappened(
-                            final ItemChangeEvent<ConfigurationNode> event) {
-                        AbstractNodeTest.this.setLastNodeChange(event);
-                    }
-                });
+        configuration.getInstanceMetadata().getSharedData().addPropertyListener(new ItemEventListener<PropertyValue>() {
+            public void changeEventHappened( final ItemChangeEvent<PropertyValue> event ) {
+                AbstractNodeTest.this.setLastPropertyChange(event);
+            }
+        });
+        configuration.getInstanceMetadata().getSharedData().addNodeListener(new ItemEventListener<ConfigurationNode>() {
+            public void changeEventHappened( final ItemChangeEvent<ConfigurationNode> event ) {
+                AbstractNodeTest.this.setLastNodeChange(event);
+            }
+        });
         return configuration;
     }
-    
+
     @Before
     public void releaseChanges() {
         this.lastNodeChange = null;
         this.lastPropertyChange = null;
     }
-    
-    private void setLastNodeChange(
-            final ItemChangeEvent<ConfigurationNode> value) {
+
+    private void setLastNodeChange( final ItemChangeEvent<ConfigurationNode> value ) {
         this.lastNodeChange = value;
     }
-    
-    private void setLastPropertyChange(
-            final ItemChangeEvent<PropertyValue> value) {
+
+    private void setLastPropertyChange( final ItemChangeEvent<PropertyValue> value ) {
         this.lastPropertyChange = value;
     }
-    
+
     @Test
     public void shouldEqualsAndHashCodeWorkOk() {
         final Configuration configuration = new Configuration();
@@ -128,76 +120,60 @@ public class AbstractNodeTest extends NodeTest {
         assertThat(rep.equals(rep1), is(false));
         assertThat(rep.hashCode(), is(not(rep1.hashCode())));
         assertThat(rep.compareTo(rep1), is(not(0)));
-        
+
         final Configuration anotherConfiguration = new Configuration();
         final Repository anotherRep = new Repository(anotherConfiguration, "a");
         assertThat(anotherRep.equals(rep), is(true));
         assertThat(anotherRep.hashCode(), is(rep.hashCode()));
-        
+
     }
-    
+
     @Test
     public void shouldListenChangesOnNodes() throws Exception {
         final Configuration configuration = this.createGroupWithListeners();
-        final Repository repository = configuration.getRepositoryByName("r-1");
+        final Repository repository = configuration.getRepositoryByName("r1");
         final Group newProject = new Group(repository, "newProject");
         assertThat(this.lastNodeChange.getType(), is(ItemChangeType.ADDED));
-        assertThat((Group) this.lastNodeChange.getNewItem(), is(newProject));
+        assertThat((Group)this.lastNodeChange.getNewItem(), is(newProject));
         assertThat(this.lastNodeChange.getOldItem(), is(nullValue()));
         this.lastNodeChange = null;
         assertThat(this.lastNodeChange, is(nullValue()));
-        final Bundle newBundle = new Bundle(newProject, "newBundle");
-        assertThat((Bundle) this.lastNodeChange.getNewItem(), is(newBundle));
+        final ArtifactSource newBundle = new ArtifactSource(newProject, "newBundle");
+        assertThat((ArtifactSource)this.lastNodeChange.getNewItem(), is(newBundle));
         repository.removeGroup(newProject);
         assertThat(this.lastNodeChange.getType(), is(ItemChangeType.EXCLUDED));
         assertThat(this.lastNodeChange.getNewItem(), is(nullValue()));
-        assertThat((Group) this.lastNodeChange.getOldItem(), is(newProject));
-        assertThat(configuration.getInstanceMetadata().getSharedData()
-                .isDirty(), is(true));
-        assertThat(repository.getInstanceMetadata().getSharedData()
-                .getNodeChangesSinceLastSave().size(), is(3));
+        assertThat((Group)this.lastNodeChange.getOldItem(), is(newProject));
+        assertThat(configuration.getInstanceMetadata().getSharedData().isDirty(), is(true));
+        assertThat(repository.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(3));
         configuration.getInstanceMetadata().getSharedData().markAsSaved();
-        assertThat(repository.getInstanceMetadata().getSharedData().isDirty(),
-                is(false));
-        assertThat(repository.getInstanceMetadata().getSharedData()
-                .getNodeChangesSinceLastSave().size(), is(0));
+        assertThat(repository.getInstanceMetadata().getSharedData().isDirty(), is(false));
+        assertThat(repository.getInstanceMetadata().getSharedData().getNodeChangesSinceLastSave().size(), is(0));
     }
-    
+
     @Test
     public void shouldListenChangesOnProperties() throws Exception {
         final Configuration configuration = this.createGroupWithListeners();
-        assertThat(configuration.getInstanceMetadata().getSharedData()
-                .isDirty(), is(false));
-        final Repository repository = configuration.getRepositoryByName("r-1");
+        assertThat(configuration.getInstanceMetadata().getSharedData().isDirty(), is(false));
+        final Repository repository = configuration.getRepositoryByName("r1");
         repository.setActive(false);
-        assertThat(this.lastPropertyChange.getType(),
-                is(ItemChangeType.CHANGED));
-        assertThat(this.lastPropertyChange.getNewItem().getPropertyName(),
-                is("active"));
-        assertThat(
-                (Repository) this.lastPropertyChange.getNewItem().getOwner(),
-                is(repository));
-        assertThat((Boolean) this.lastPropertyChange.getNewItem()
-                .getPropertyValue(), is(false));
-        assertThat((Boolean) this.lastPropertyChange.getOldItem()
-                .getPropertyValue(), is(true));
+        assertThat(this.lastPropertyChange.getType(), is(ItemChangeType.CHANGED));
+        assertThat(this.lastPropertyChange.getNewItem().getPropertyName(), is("active"));
+        assertThat((Repository)this.lastPropertyChange.getNewItem().getOwner(), is(repository));
+        assertThat((Boolean)this.lastPropertyChange.getNewItem().getPropertyValue(), is(false));
+        assertThat((Boolean)this.lastPropertyChange.getOldItem().getPropertyValue(), is(true));
         this.lastPropertyChange = null;
         repository.setActive(false);
         assertThat(this.lastPropertyChange, is(nullValue()));
         configuration.setNumberOfParallelThreads(null);
-        assertThat(this.lastPropertyChange.getType(),
-                is(ItemChangeType.EXCLUDED));
-        assertThat(this.lastPropertyChange.getNewItem().getPropertyValue(),
-                is(nullValue()));
+        assertThat(this.lastPropertyChange.getType(), is(ItemChangeType.EXCLUDED));
+        assertThat(this.lastPropertyChange.getNewItem().getPropertyValue(), is(nullValue()));
         configuration.setNumberOfParallelThreads(1);
         assertThat(this.lastPropertyChange.getType(), is(ItemChangeType.ADDED));
-        assertThat((Integer) this.lastPropertyChange.getNewItem()
-                .getPropertyValue(), is(1));
-        assertThat(configuration.getInstanceMetadata().getSharedData()
-                .isDirty(), is(true));
+        assertThat((Integer)this.lastPropertyChange.getNewItem().getPropertyValue(), is(1));
+        assertThat(configuration.getInstanceMetadata().getSharedData().isDirty(), is(true));
         configuration.getInstanceMetadata().getSharedData().markAsSaved();
-        assertThat(repository.getInstanceMetadata().getSharedData().isDirty(),
-                is(false));
+        assertThat(repository.getInstanceMetadata().getSharedData().isDirty(), is(false));
     }
-    
+
 }

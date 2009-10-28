@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
 @SuppressWarnings("all")
@@ -17,12 +17,12 @@ public class OracleDatabaseStreamTest extends DatabaseStreamTest implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DbBundle createValidConfigurationWithMappings() {
+	protected DbArtifactSource createValidConfigurationWithMappings() {
 		final Configuration configuration = createOracleOciDbConfiguration();
-		return (DbBundle) configuration
+		return (DbArtifactSource) configuration
 				.getRepositoryByName("oracle Repository") //$NON-NLS-1$
 				.getGroupByName("oracle Group") //$NON-NLS-1$
-				.getBundleByName("oracle Connection"); //$NON-NLS-1$
+				.getArtifactSourceByName("oracle Connection"); //$NON-NLS-1$
 	}
 
 	/**

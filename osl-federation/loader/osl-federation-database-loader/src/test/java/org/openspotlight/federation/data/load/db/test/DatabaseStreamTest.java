@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.ScriptType;
@@ -57,7 +57,7 @@ public abstract class DatabaseStreamTest {
 	 * 
 	 * @return a valid database configuration
 	 */
-	protected abstract DbBundle createValidConfigurationWithMappings();
+	protected abstract DbArtifactSource createValidConfigurationWithMappings();
 
 	/**
 	 * Fill the data necessary to run the database tests. For example, here it
@@ -111,7 +111,7 @@ public abstract class DatabaseStreamTest {
 	protected abstract Set<ScriptType> typesToAssert();
 
 	private void validateAllTypes() throws Exception {
-		final DbBundle bundle = this.createValidConfigurationWithMappings();
+		final DbArtifactSource bundle = this.createValidConfigurationWithMappings();
 		Connection conn = createConnection(bundle);
 		this.fillDatabase(conn);
 		if (!conn.isClosed()) {

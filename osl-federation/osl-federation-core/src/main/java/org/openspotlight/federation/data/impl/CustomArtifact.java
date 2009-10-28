@@ -66,7 +66,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, propertyNames = {
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class, Group.class}, propertyNames = {
     "UUID", "version", "status"}, propertyTypes = {String.class, String.class, Status.class} )
 public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifact {
 
@@ -85,7 +85,7 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifac
      * @param relativeName
      */
     public CustomArtifact(
-                           final Bundle bundle, final String relativeName ) {
+                           final ArtifactSource bundle, final String relativeName ) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
         checkCondition("noCustomArtifact", //$NON-NLS-1$
                        bundle.getCustomArtifactByName(relativeName) == null);

@@ -70,7 +70,7 @@ import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformatio
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, validChildrenTypes = {SyntaxInformation.class}, propertyNames = {
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class, Group.class}, validChildrenTypes = {SyntaxInformation.class}, propertyNames = {
     "name", "dataSha1", "UUID", "version", "data", "status"}, propertyTypes = {String.class, String.class, String.class,
     String.class, InputStream.class, Status.class} )
 public final class StreamArtifact implements ConfigurationNode, GeneratedNode, Artifact {
@@ -95,7 +95,7 @@ public final class StreamArtifact implements ConfigurationNode, GeneratedNode, A
      * @param relativeName
      */
     public StreamArtifact(
-                           final Bundle bundle, final String relativeName ) {
+                           final ArtifactSource bundle, final String relativeName ) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
         checkCondition("noStreamArtifact", //$NON-NLS-1$
                        bundle.getStreamArtifactByName(relativeName) == null);

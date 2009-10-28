@@ -65,7 +65,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata( propertyNames = {"active"}, propertyTypes = {Boolean.class}, keyPropertyName = "className", keyPropertyType = String.class, validParentTypes = {Bundle.class} )
+@StaticMetadata( propertyNames = {"active"}, propertyTypes = {Boolean.class}, keyPropertyName = "className", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class} )
 public final class BundleProcessorType implements ConfigurationNode {
 
     private static final String    ACTIVE           = "active";             //$NON-NLS-1$
@@ -81,7 +81,7 @@ public final class BundleProcessorType implements ConfigurationNode {
      * @param className
      */
     public BundleProcessorType(
-                                final Bundle bundle, final String className ) {
+                                final ArtifactSource bundle, final String className ) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, className);
         checkCondition("noBundleProcessor", //$NON-NLS-1$
                        bundle.getInstanceMetadata().getChildByKeyValue(BundleProcessorType.class, className) == null);

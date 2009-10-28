@@ -73,7 +73,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
 @ThreadSafe
 @StaticMetadata( propertyNames = {"active", "graphRoot", "type"}, propertyTypes = {Boolean.class, Boolean.class, String.class}, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {
     Group.class, Repository.class}, validChildrenTypes = {ScheduleData.class, Group.class, StreamArtifact.class,
-    CustomArtifact.class, ArtifactMapping.class, Bundle.class} )
+    CustomArtifact.class, ArtifactMapping.class, ArtifactSource.class} )
 public final class Group implements ConfigurationNode, Schedulable<Group> {
 
     private static final String    ACTIVE           = "active";             //$NON-NLS-1$
@@ -180,22 +180,22 @@ public final class Group implements ConfigurationNode, Schedulable<Group> {
      * @param name
      * @return a bundle
      */
-    public final Bundle getBundleByName( final String name ) {
-        return this.instanceMetadata.getChildByKeyValue(Bundle.class, name);
+    public final ArtifactSource getArtifactSourceByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(ArtifactSource.class, name);
     }
 
     /**
      * @return all bundle names
      */
-    public final Set<String> getBundleNames() {
-        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(Bundle.class);
+    public final Set<String> getArtifactSourceNames() {
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(ArtifactSource.class);
     }
 
     /**
      * @return all bundles
      */
-    public final Collection<Bundle> getBundles() {
-        return this.instanceMetadata.getChildrensOfType(Bundle.class);
+    public final Collection<ArtifactSource> getArtifactSources() {
+        return this.instanceMetadata.getChildrensOfType(ArtifactSource.class);
     }
 
     /**
@@ -363,7 +363,7 @@ public final class Group implements ConfigurationNode, Schedulable<Group> {
      * 
      * @param bundle
      */
-    public final void removeBundle( final Bundle bundle ) {
+    public final void removeArtifactSource( final ArtifactSource bundle ) {
         this.instanceMetadata.removeChild(bundle);
     }
 

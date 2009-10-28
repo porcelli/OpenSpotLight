@@ -70,7 +70,7 @@ import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
 
 /**
@@ -146,7 +146,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * @param relative
 		 */
 		protected abstract void configureWithBundle(
-				RepositorySourceDefinition<?> sourceDefinition, Bundle bundle,
+				RepositorySourceDefinition<?> sourceDefinition, ArtifactSource bundle,
 				ArtifactMapping relative);
 
 		/**
@@ -170,7 +170,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * 
 		 * {@inheritDoc}
 		 */
-		public Set<String> getAllArtifactNames(final Bundle bundle,
+		public Set<String> getAllArtifactNames(final ArtifactSource bundle,
 				final ArtifactMapping mapping) throws ConfigurationException {
 
 			final Set<String> names = new HashSet<String>();
@@ -209,7 +209,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void globalExecutionAboutToStart(final Bundle bundle) {
+		public void globalExecutionAboutToStart(final ArtifactSource bundle) {
 
 			try {
 				for (final ArtifactMapping relative : bundle
@@ -237,7 +237,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void globalExecutionFinished(final Bundle bundle) {
+		public void globalExecutionFinished(final ArtifactSource bundle) {
 			this.shutdown();
 		}
 
@@ -269,7 +269,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * 
 		 * {@inheritDoc}
 		 */
-		public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
+		public byte[] loadArtifactOrReturnNullToIgnore(final ArtifactSource bundle,
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
 			try {
@@ -292,7 +292,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		}
 
 		@Override
-		public void threadExecutionAboutToStart(final Bundle bundle,
+		public void threadExecutionAboutToStart(final ArtifactSource bundle,
 				final ArtifactMapping mapping,
 				final GlobalExecutionContext globalContext) {
 			final GlobalDnaResourceContext context = (GlobalDnaResourceContext) globalContext;
@@ -307,7 +307,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		}
 
 		@Override
-		public void threadExecutionFinished(final Bundle bundle,
+		public void threadExecutionFinished(final ArtifactSource bundle,
 				final ArtifactMapping mapping,
 				final GlobalExecutionContext globalContext) {
 			this.session.logout();

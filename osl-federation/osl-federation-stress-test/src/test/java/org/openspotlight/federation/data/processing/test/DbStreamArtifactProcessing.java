@@ -61,9 +61,9 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
@@ -85,9 +85,9 @@ public class DbStreamArtifactProcessing {
         Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
         Files.delete("./target/test-data/DbStreamArtifactProcessing/h2/");
         final Configuration configuration = createH2DbConfiguration("DbStreamArtifactProcessing");
-        final DbBundle bundle = (DbBundle)configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
+        final DbArtifactSource bundle = (DbArtifactSource)configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
         .getGroupByName("h2 Group") //$NON-NLS-1$
-        .getBundleByName("H2 Connection"); //$NON-NLS-1$
+        .getArtifactSourceByName("H2 Connection"); //$NON-NLS-1$
         final Connection conn = createConnection(bundle);
         try {
             H2Support.fillDatabaseArtifacts(conn);
@@ -101,8 +101,8 @@ public class DbStreamArtifactProcessing {
 
     private Configuration loadAllArtifactsFromThisConfiguration( final Configuration configuration ) throws Exception {
         final ArtifactLoaderGroup group = new ArtifactLoaderGroup(new DatabaseStreamLoader());
-        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
-        for (final Bundle bundle : bundles) {
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
             group.loadArtifactsFromMappings(bundle);
 
         }
@@ -113,8 +113,8 @@ public class DbStreamArtifactProcessing {
     @Test
     public void shouldLoadAllArtifactsFromh2SourceCode() throws Exception {
         final Configuration configuration = this.loadAllArtifactsFromThisConfiguration(createH2DbConfiguration("DbStreamArtifactProcessing"));
-        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
-        for (final Bundle bundle : bundles) {
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
             assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
         }
     }
@@ -131,7 +131,7 @@ public class DbStreamArtifactProcessing {
 
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration, StreamArtifact.class);
         final Repository repository = configuration.getRepositoryByName("H2 Repository");
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         manager.processBundles(bundles);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }

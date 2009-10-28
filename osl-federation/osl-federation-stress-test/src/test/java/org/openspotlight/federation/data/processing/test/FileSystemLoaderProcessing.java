@@ -58,7 +58,7 @@ import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllN
 import java.util.Set;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
@@ -78,8 +78,8 @@ public class FileSystemLoaderProcessing {
 
     public static Configuration loadAllFilesFromThisConfiguration( final Configuration configuration ) throws Exception {
         final ArtifactLoaderGroup group = new ArtifactLoaderGroup(new FileSystemArtifactLoader());
-        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
-        for (final Bundle bundle : bundles) {
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
             group.loadArtifactsFromMappings(bundle);
 
         }
@@ -90,8 +90,8 @@ public class FileSystemLoaderProcessing {
     @Test
     public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
         final Configuration configuration = this.loadAllFilesFromThisConfiguration(createOslValidConfiguration("FileSystemLoaderProcessing"));
-        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
-        for (final Bundle bundle : bundles) {
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
             assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
         }
     }
@@ -108,7 +108,7 @@ public class FileSystemLoaderProcessing {
         final BundleProcessingContext graphContext = mock(BundleProcessingContext.class);
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration, StreamArtifact.class);
         final Repository repository = configuration.getRepositoryByName("OSL Group");
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         manager.processBundles(bundles);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }
