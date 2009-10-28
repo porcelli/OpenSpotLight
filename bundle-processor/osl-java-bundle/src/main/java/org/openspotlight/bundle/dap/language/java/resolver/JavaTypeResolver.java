@@ -379,6 +379,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 
         this.allKindsOfInheritanceLinks.add(AbstractTypeBind.class);
         this.allKindsOfInheritanceLinks.add(Extends.class);
+        this.allKindsOfInheritanceLinks.add(ImplicitExtends.class);
         this.allKindsOfInheritanceLinks.add(InterfaceExtends.class);
         this.allKindsOfInheritanceLinks.add(Implements.class);
 

@@ -140,7 +140,7 @@ public abstract class AbstractMethodResolutionTest {
     }
 
     protected JavaTypePrimitive createPrimitiveType( final String type ) throws Exception {
-        return this.helper.addTypeOnCurrentContext(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
+        return this.helper.addTypeOnCurrentContext(JavaTypePrimitive.class, "", type, Opcodes.ACC_PUBLIC);
     }
 
     protected JavaType createType( final String packageName,

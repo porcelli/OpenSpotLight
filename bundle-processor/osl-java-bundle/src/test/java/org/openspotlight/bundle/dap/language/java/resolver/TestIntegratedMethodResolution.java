@@ -26,8 +26,8 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
         final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
-        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
-        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
         final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
 
         final List<JavaType> parameterList = new LinkedList<JavaType>();
@@ -43,7 +43,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
                                                                                   objectType,
                                                                                   "wait",
                                                                                   "wait(java.lang.Integer, java.lang.String, long)",
-                                                                                  numberType, stringType, longTypePrimitive);
+                                                                                  integerType, stringType, longTypePrimitive);
 
         final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
 
@@ -57,8 +57,8 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
         final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
-        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
-        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
         final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
 
         final List<JavaType> parameterList = new LinkedList<JavaType>();
@@ -78,7 +78,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
                                                                                   objectType,
                                                                                   "wait",
                                                                                   "wait(java.lang.Integer, java.lang.String, long)",
-                                                                                  numberType, stringType, longTypePrimitive);
+                                                                                  integerType, stringType, longTypePrimitive);
 
         this.createMethod(objectType, "wait", "wait(java.lang.Object, java.lang.Object, long)", objectType, objectType,
                           longTypePrimitive);
@@ -95,8 +95,8 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
         final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
-        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
-        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
         final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
 
         final List<JavaType> parameterList = new LinkedList<JavaType>();
@@ -302,8 +302,8 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
         final JavaType numberType = this.createType("java.lang", "Number", objectType, true);
-        final JavaType integerType = this.createType("java.lang", "Integer", numberType, true);
-        final JavaType longType = this.createType("java.lang", "Long", numberType, true);
+        final JavaType integerType = this.createType("java.lang", "Integer", numberType, false);
+        final JavaType longType = this.createType("java.lang", "Long", numberType, false);
         final JavaTypePrimitive longTypePrimitive = this.createPrimitiveType("long");
 
         final List<JavaType> parameterList = new LinkedList<JavaType>();
@@ -458,6 +458,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(integerType, "wait", parameterList);
 
         assertThat(foundMethod, is(notNullValue()));
+        System.out.println("found method: " + foundMethod);
         assertThat(foundMethod.getID(), is(correctTypeAndMethod.getK2().getID()));
         assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
