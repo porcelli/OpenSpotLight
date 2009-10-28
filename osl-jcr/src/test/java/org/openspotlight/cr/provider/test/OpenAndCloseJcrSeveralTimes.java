@@ -10,13 +10,13 @@ public class OpenAndCloseJcrSeveralTimes {
     public void shouldOpenAndCloseJcrSeveralTimes() throws Exception {
         final JcrConnectionDescriptor desc = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
         JcrConnectionProvider provider = JcrConnectionProvider.createFromData(desc);
-        provider.openRepository();
+        provider.openRepositoryAndCleanIfItIsTemporary();
         provider.closeRepository();
         provider = JcrConnectionProvider.createFromData(desc);
-        provider.openRepository();
+        provider.openRepositoryAndCleanIfItIsTemporary();
         provider.closeRepository();
         provider = JcrConnectionProvider.createFromData(desc);
-        provider.openRepository();
+        provider.openRepositoryAndCleanIfItIsTemporary();
         provider.closeRepository();
 
     }
