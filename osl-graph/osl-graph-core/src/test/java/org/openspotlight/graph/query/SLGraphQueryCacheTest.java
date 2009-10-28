@@ -156,7 +156,7 @@ public class SLGraphQueryCacheTest {
             session = graph.openSession();
 
             final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-            final SLPersistentTree tree = pFactory.createPersistentTree(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR);
+            final SLPersistentTree tree = pFactory.createPersistentTree(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             treeSession = tree.openSession();
 
             queryCache = new SLQueryCacheImpl(treeSession, session);
