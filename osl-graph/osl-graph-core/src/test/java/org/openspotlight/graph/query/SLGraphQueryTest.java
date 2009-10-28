@@ -50,6 +50,7 @@ package org.openspotlight.graph.query;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.isOneOf;
 
 import java.lang.reflect.Method;
@@ -67,6 +68,7 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.JavaClass;
@@ -3949,185 +3951,34 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         }
     }
 
-    /**
-     * Test select util types and colletion methods.
-     */
     @Test
-    public void testSelectUtilTypesAndColletionMethods() {
-        try {
+    public void testDifferentQueryIds() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
-            final SLQueryApi query = this.session.createQueryApi();
+        final SLQueryApi initQuery = this.session.createQueryApi();
 
-            query.select().type(JavaPackage.class.getName()).comma().type(JavaType.class.getName()).subTypes().selectEnd()
+        initQuery.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
+                                                                                                                                                    "\u00E7ollecTION").typeEnd().whereEnd().collator(
+                                                                                                                                                                                                     Collator.PRIMARY);
 
-            .where().type(JavaType.class.getName()).each().property("caption").equalsTo().value("java.util").typeEnd().type(
-                                                                                                                            JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                                                 "caption").equalsTo().value(
-                                                                                                                                                                                                             "java.util.Collection").typeEnd().whereEnd()
+        final SLQueryResult initialData = initQuery.execute(this.sortMode, this.printInfo);
 
-            .select().type(JavaType.class.getName()).subTypes().comma().type(JavaTypeMethod.class.getName()).comma().byLink(
-                                                                                                                            TypeContainsMethod.class.getName()).b().comma().byLink(
-                                                                                                                                                                                   PackageContainsType.class.getName()).b().selectEnd();
+        final SLQueryApi query = this.session.createQueryApi();
 
-            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
-            final List<SLNode> nodes = result.getNodes();
-            final NodeWrapper[] wrappers = this.wrapNodes(nodes);
+        query.select().allTypes().
+             byLink(TypeContainsMethod.class.getName()).b().
+             selectEnd();
 
-            new AssertResult() {
-                public void execute() {
-                    assertThat(wrappers.length, is(73));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Observable"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Map"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.AbstractSequentialList"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.TimerTask"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security",
-                                               "java.lang.Object"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.ListIterator"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Currency"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.PropertyPermission"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Random"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Stack"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.TimeZone"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "retainAll"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.AbstractList"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.security.BasicPermission"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Observer"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.EventListenerProxy"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.ArrayList"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "isEmpty"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.lang.Iterable"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Set"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.WeakHashMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Hashtable"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.HashSet"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "containsAll"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.SimpleTimeZone"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.BitSet"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.TreeSet"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.RandomAccess"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Enumeration"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "add"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "contains"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.List"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.ResourceBundle"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Properties"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.LinkedList"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "iterator"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "size"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.IdentityHashMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.HashMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Calendar"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Iterator"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Timer"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Collection"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.EventListener"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "removeAll"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Vector"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "addAll"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "equals"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Date"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security",
-                                               "java.security.Permission"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.AbstractMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.LinkedHashSet"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.StringTokenizer"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.TreeMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "toArray"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.GregorianCalendar"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.EventObject"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.LinkedHashMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Dictionary"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Arrays"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.SortedMap"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "hashCode"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.lang.Object"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Collections"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "clear"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.Locale"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.PropertyResourceBundle"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.Comparator"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.AbstractCollection"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.ListResourceBundle"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaTypeMethod.class.getName(),
-                                               "java.util.Collection", "remove"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
-                                               "java.util.AbstractSet"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
-                                               "java.util.SortedSet"), isOneOf(wrappers));
-                }
-            }.execute();
+        final SLQueryResult result = query.execute(new String[] {initialData.getNodes().get(0).getID()}, this.sortMode, this.printInfo);
 
-            this.printResult(nodes);
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+        final SLQueryApi query2 = this.session.createQueryApi();
+
+        query2.select().allTypes().
+              byLink(PackageContainsType.class.getName()).b().
+              selectEnd();
+
+        final SLQueryResult result2 = query2.execute(new String[] {initialData.getNodes().get(0).getID()}, this.sortMode, this.printInfo);
+
+        assertThat(result.getQueryId(), is(not(result2.getQueryId())));
+
     }
 }
