@@ -78,7 +78,6 @@ import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphQueryTest.
@@ -853,8 +852,8 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
-                                                                                                                                                    "çollecTION").typeEnd().whereEnd().collator(
-                                                                                                                                                                                                Collator.PRIMARY);
+                                                                                                                                                    "\u00E7ollecTION").typeEnd().whereEnd().collator(
+                                                                                                                                                                                                     Collator.PRIMARY);
 
             final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
@@ -901,8 +900,8 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
-                                                                                                                                                    "Çollection").typeEnd().whereEnd().collator(
-                                                                                                                                                                                                Collator.TERTIARY);
+                                                                                                                                                    "\u00C7ollection").typeEnd().whereEnd().collator(
+                                                                                                                                                                                                     Collator.TERTIARY);
 
             final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
@@ -928,8 +927,8 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
-                                                                                                                                                    "java.util.Çollection").typeEnd().whereEnd().collator(
-                                                                                                                                                                                                          Collator.PRIMARY);
+                                                                                                                                                    "java.util.\u00C7ollection").typeEnd().whereEnd().collator(
+                                                                                                                                                                                                               Collator.PRIMARY);
 
             final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
@@ -952,8 +951,8 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
-                                                                                                                                                    "java.util.ÇollécTION").typeEnd().whereEnd().collator(
-                                                                                                                                                                                                          Collator.PRIMARY);
+                                                                                                                                                    "java.util.\u00C7oll\u00E9cTION").typeEnd().whereEnd().collator(
+                                                                                                                                                                                                                    Collator.PRIMARY);
 
             final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
