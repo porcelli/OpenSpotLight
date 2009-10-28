@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Test;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaMethod;
@@ -17,7 +18,6 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
-import org.testng.annotations.Test;
 
 public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest {
 
@@ -335,7 +335,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test( expectedExceptions = SLBundleException.class )
+    @Test( expected = SLBundleException.class )
     public void getMethodBetween5MatchesBoxingNotAllowed() throws Exception {
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
@@ -366,7 +366,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         this.methodResolver.getMethod(integerType, "wait", parameterList);
     }
 
-    @Test( expectedExceptions = SLBundleException.class )
+    @Test( expected = SLBundleException.class )
     public void getMethodInfinitiLooping() throws Exception {
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
@@ -576,7 +576,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    @Test( expectedExceptions = SLBundleException.class )
+    @Test( expected = SLBundleException.class )
     public void notFoundMethodOneSimpleTypeParameterWithHierarchy() throws Exception {
 
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
@@ -818,7 +818,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         assertThat(this.methodResolver.getCache().get(uniqueId), is(foundMethod.getID()));
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testInvalidParams() throws Exception {
         this.createMethod("java.lang", "Object", "toString", "toString()");
         final JavaType abstractType = this.getAbstractType("java.lang", "Object");
@@ -826,7 +826,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         this.methodResolver.getMethod(abstractType, "toString");
     }
 
-    @Test( expectedExceptions = IllegalArgumentException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testInvalidParamsNullParams() throws Exception {
         this.methodResolver.getMethod(null, null);
     }

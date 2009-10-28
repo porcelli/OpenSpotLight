@@ -505,7 +505,7 @@ public final class BundleProcessorManager {
         this.provider = provider;
         this.configurationManagerProvider = configurationManagerProvider;
         try {
-            this.graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(provider);
+            this.graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(provider.getData());
         } catch (final Exception e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }

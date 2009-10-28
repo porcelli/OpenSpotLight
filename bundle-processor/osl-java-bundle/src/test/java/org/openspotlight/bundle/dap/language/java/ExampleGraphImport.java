@@ -60,6 +60,8 @@ import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class ExampleGraphImport {
 
@@ -67,7 +69,7 @@ public class ExampleGraphImport {
     public void shouldImportSomeData() throws Exception {
 
         final SLGraphFactory factory = new SLGraphFactoryImpl();
-        final SLGraph graph = factory.createTempGraph(true);
+        final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final SLGraphSession session = graph.openSession();
         final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
         final SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();

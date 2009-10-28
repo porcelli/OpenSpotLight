@@ -3,9 +3,9 @@ package org.openspotlight.graph.query.console.command;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.junit.Before;
-
 import jline.ConsoleReader;
+
+import org.junit.Before;
 
 public abstract class AbstractCommandTest {
 

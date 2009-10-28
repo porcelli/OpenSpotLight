@@ -38,8 +38,7 @@ public class RemoteGraphSessionServer {
             try {
                 this.descriptor = descriptor;
                 final SLGraphFactory graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
-                this.graph = graphFactory.createGraph(provider);
+                this.graph = graphFactory.createGraph(descriptor);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
             }

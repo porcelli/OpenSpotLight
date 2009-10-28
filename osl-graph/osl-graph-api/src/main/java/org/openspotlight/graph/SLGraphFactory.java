@@ -54,14 +54,14 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 /**
  * A factory for creating SLGraph objects.
  */
 public abstract class SLGraphFactory extends AbstractFactory {
 
-    public abstract SLGraph createGraph( JcrConnectionProvider provider ) throws SLGraphFactoryException;
+    public abstract SLGraph createGraph( final JcrConnectionDescriptor descriptor ) throws SLGraphFactoryException;
 
     /**
      * Creates a new SLGraph object.
@@ -127,15 +127,6 @@ public abstract class SLGraphFactory extends AbstractFactory {
                                                                         SLPersistentProperty<V> persistentProperty,
                                                                         SLGraphSessionEventPoster eventPoster )
         throws SLGraphFactoryException;
-
-    /**
-     * Creates a new SLGraph object.
-     * 
-     * @param removeExistent the remove existent
-     * @return the SL graph
-     * @throws SLGraphFactoryException the SL graph factory exception
-     */
-    public abstract SLGraph createTempGraph( boolean removeExistent ) throws SLGraphFactoryException;
 
     /**
      * Gets the context impl class.

@@ -68,168 +68,160 @@ import org.openspotlight.common.util.JCRUtil;
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
-	
-	/** The Constant LOGGER. */
-	static final Logger LOGGER = Logger.getLogger(SLPersistentTreeSessionImpl.class);
-	
-	/** The jcr session. */
-	private Session jcrSession;
-	
-	/** The event poster. */
-	private SLPersistentEventPoster eventPoster;
-	
-	/** The root node. */
-	private Node rootNode;
 
-	/**
-	 * Instantiates a new sL persistent tree session impl.
-	 * 
-	 * @param session the session
-	 */
-	public SLPersistentTreeSessionImpl(Session session) {
-		this.jcrSession = session;
-		SLPersistentEventListener listener = new SLPersistentEventListenerImpl();
-		this.eventPoster = new SLPersistentEventPosterImpl(listener);
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getRootNode()
-	 */
-	public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException {
-		if (rootNode == null) {
-			try {
-				rootNode = JCRUtil.getChildNode(jcrSession.getRootNode(), "osl");
-				if (rootNode == null) {
-					createRootNode();
-					jcrSession.save();
-				}
-				else {
-					SortedSet<Double> versionNumbers = new TreeSet<Double>();
-					VersionIterator iter = rootNode.getVersionHistory().getAllVersions();
-					while (iter.hasNext()) {
-						Version version = iter.nextVersion();
-						if (!version.getName().equals("jcr:rootVersion")) {
-							versionNumbers.add(new Double(version.getName()));
-						}
-					}
-					if (versionNumbers.isEmpty()) {
-						rootNode.remove();
-						createRootNode();
-						jcrSession.save();
-					}
-					else {
-						//rootNode.restore(versionNumbers.last().toString(), true);
-					}
-				}
-				rootNode.checkout();
-			}
-			catch (RepositoryException e) {
-				throw new SLPersistentTreeSessionException("Couldn't create persistent root node.", e);
-			}
-		}
-		return new SLPersistentNodeImpl(this, null, rootNode, eventPoster);		
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#close()
-	 */
-	public void close() {
-		jcrSession.logout();
-	}
+    /** The Constant LOGGER. */
+    static final Logger                   LOGGER = Logger.getLogger(SLPersistentTreeSessionImpl.class);
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#save()
-	 */
-	public void save() throws SLPersistentTreeSessionException {
-		try {
-			rootNode.save();
-			rootNode.checkin();
-			jcrSession.save();
-			jcrSession.logout();
-		}
-		catch (RepositoryException e) {
-			throw new SLPersistentTreeSessionException("Error on attempt to save persistent session.", e);
-		}
-	}
+    /** The jcr session. */
+    private final Session                 jcrSession;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#clear()
-	 */
-	public void clear() throws SLPersistentTreeSessionException {
-		if (rootNode != null) {
-			try {
-				NodeIterator iter = rootNode.getNodes();
-				while (iter.hasNext()) {
-					Node node = iter.nextNode();
-					node.remove();
-				}
-			}
-			catch (RepositoryException e) {
-				throw new SLPersistentTreeSessionException("Error on attempt to clear the persistent tree session.", e);
-			}
-		}
-	}
+    /** The event poster. */
+    private final SLPersistentEventPoster eventPoster;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#createQuery(java.lang.String, int)
-	 */
-	public SLPersistentQuery createQuery(String statement, int type) throws SLPersistentTreeSessionException {
-		return new SLPersistentQueryImpl(this, jcrSession, statement, type);
-	}
+    /** The root node. */
+    private Node                          rootNode;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByID(java.lang.String)
-	 */
-	public SLPersistentNode getNodeByID(String id) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
-		try {
-			SLPersistentNode persistentNode = null;
-			Node jcrNode = jcrSession.getNodeByUUID(id);
-			String[] names = jcrNode.getPath().substring(1).split("/");
-			for (int i = 0; i < names.length; i++) {
-				if (persistentNode == null) {
-					persistentNode = getRootNode();
-				}
-				else {
-					persistentNode = persistentNode.getNode(names[i]);
-				}
-			}
-			return persistentNode;
-		}
-		catch (ItemNotFoundException e) {
-			throw new SLPersistentNodeNotFoundException(id, e);
-		}
-		catch (RepositoryException e) {
-			throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent node by id.", e);
-		}
-	}
+    /**
+     * Instantiates a new sL persistent tree session impl.
+     * 
+     * @param session the session
+     */
+    public SLPersistentTreeSessionImpl(
+                                        final Session session ) {
+        this.jcrSession = session;
+        final SLPersistentEventListener listener = new SLPersistentEventListenerImpl();
+        this.eventPoster = new SLPersistentEventPosterImpl(listener);
+    }
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByPath(java.lang.String)
-	 */
-	public SLPersistentNode getNodeByPath(String path) throws SLPersistentTreeSessionException {
-		SLPersistentQuery query = createQuery(path, SLPersistentQuery.TYPE_XPATH);
-		SLPersistentQueryResult result = query.execute();
-		return result.getRowCount() == 1 ? result.getNodes().iterator().next() : null;
-	}
-	
-	/**
-	 * Creates the root node.
-	 * 
-	 * @throws RepositoryException the repository exception
-	 */
-	private void createRootNode() throws RepositoryException {
-		rootNode = jcrSession.getRootNode().addNode("osl");
-		JCRUtil.makeVersionable(rootNode);
-		JCRUtil.makeReferenceable(rootNode);
-	}
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#clear()
+     */
+    public void clear() throws SLPersistentTreeSessionException {
+        if (this.rootNode != null) {
+            try {
+                final NodeIterator iter = this.rootNode.getNodes();
+                while (iter.hasNext()) {
+                    final Node node = iter.nextNode();
+                    node.remove();
+                }
+            } catch (final RepositoryException e) {
+                throw new SLPersistentTreeSessionException("Error on attempt to clear the persistent tree session.", e);
+            }
+        }
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#close()
+     */
+    public void close() {
+        this.jcrSession.logout();
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#createQuery(java.lang.String, int)
+     */
+    public SLPersistentQuery createQuery( final String statement,
+                                          final int type ) throws SLPersistentTreeSessionException {
+        return new SLPersistentQueryImpl(this, this.jcrSession, statement, type);
+    }
+
+    /**
+     * Creates the root node.
+     * 
+     * @throws RepositoryException the repository exception
+     */
+    private void createRootNode() throws RepositoryException {
+        this.rootNode = this.jcrSession.getRootNode().addNode("osl");
+        JCRUtil.makeVersionable(this.rootNode);
+        JCRUtil.makeReferenceable(this.rootNode);
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByID(java.lang.String)
+     */
+    public SLPersistentNode getNodeByID( final String id )
+        throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
+        try {
+            SLPersistentNode persistentNode = null;
+            final Node jcrNode = this.jcrSession.getNodeByUUID(id);
+            final String[] names = jcrNode.getPath().substring(1).split("/");
+            for (final String name : names) {
+                if (persistentNode == null) {
+                    persistentNode = this.getRootNode();
+                } else {
+                    persistentNode = persistentNode.getNode(name);
+                }
+            }
+            return persistentNode;
+        } catch (final ItemNotFoundException e) {
+            throw new SLPersistentNodeNotFoundException(id, e);
+        } catch (final RepositoryException e) {
+            throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent node by id.", e);
+        }
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByPath(java.lang.String)
+     */
+    public SLPersistentNode getNodeByPath( final String path ) throws SLPersistentTreeSessionException {
+        final SLPersistentQuery query = this.createQuery(path, SLPersistentQuery.TYPE_XPATH);
+        final SLPersistentQueryResult result = query.execute();
+        return result.getRowCount() == 1 ? result.getNodes().iterator().next() : null;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#getRootNode()
+     */
+    public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException {
+        if (this.rootNode == null) {
+            try {
+                this.rootNode = JCRUtil.getChildNode(this.jcrSession.getRootNode(), "osl");
+                if (this.rootNode == null) {
+                    this.createRootNode();
+                    this.jcrSession.save();
+                } else {
+                    final SortedSet<Double> versionNumbers = new TreeSet<Double>();
+                    final VersionIterator iter = this.rootNode.getVersionHistory().getAllVersions();
+                    while (iter.hasNext()) {
+                        final Version version = iter.nextVersion();
+                        if (!version.getName().equals("jcr:rootVersion")) {
+                            versionNumbers.add(new Double(version.getName()));
+                        }
+                    }
+                    if (versionNumbers.isEmpty()) {
+                        this.rootNode.remove();
+                        this.createRootNode();
+                        this.jcrSession.save();
+                    } else {
+                        //rootNode.restore(versionNumbers.last().toString(), true);
+                    }
+                }
+                this.rootNode.checkout();
+            } catch (final RepositoryException e) {
+                throw new SLPersistentTreeSessionException("Couldn't create persistent root node.", e);
+            }
+        }
+        return new SLPersistentNodeImpl(this, null, this.rootNode, this.eventPoster);
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#save()
+     */
+    public void save() throws SLPersistentTreeSessionException {
+        try {
+            //            this.rootNode.save();
+            this.rootNode.checkin();
+            this.jcrSession.save();
+            //			jcrSession.logout();
+        } catch (final RepositoryException e) {
+            throw new SLPersistentTreeSessionException("Error on attempt to save persistent session.", e);
+        }
+    }
 }
-
-
-

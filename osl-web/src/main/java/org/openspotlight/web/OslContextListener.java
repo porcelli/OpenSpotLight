@@ -45,9 +45,10 @@ public class OslContextListener implements ServletContextListener, ServletContex
      */
     public void contextInitialized( final ServletContextEvent arg0 ) {
         try {
-            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR);
+            final DefaultJcrDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
+            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            final SLGraph graph = factory.createGraph(provider);
+            final SLGraph graph = factory.createGraph(descriptor);
             final Scheduler scheduler = Scheduler.Factory.createScheduler();
 
             final Session jcrSession = provider.openSession();

@@ -52,71 +52,71 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.JavaInterface;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphNodeByIDTest.
  * 
  * @author Vitor Hugo Chagas
  */
-@Test
-public class SLGraphNodeByIDTest {
-	
-	/** The Constant LOGGER. */
-	static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
-	
-	/** The graph. */
-	private SLGraph graph;
-	
-	/** The session. */
-	private SLGraphSession session;
 
-	/**
-	 * Sets the up.
-	 */
-	@BeforeClass
-	public void setUp() {
-		try {
-			SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createTempGraph(true);
-            session = graph.openSession();
-		}
-		catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
+public class SLGraphNodeByIDTest {
+
+    /** The Constant LOGGER. */
+    static final Logger           LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+
+    /** The graph. */
+    private static SLGraph        graph;
+
+    /** The session. */
+    private static SLGraphSession session;
 
     /**
      * Finish.
      */
     @AfterClass
-    public void finish() {
+    public static void finish() {
         session.close();
         graph.shutdown();
     }
-    
+
+    /**
+     * Sets the up.
+     */
+    @BeforeClass
+    public static void setUp() {
+        try {
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            session = graph.openSession();
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
     /**
      * Test get node by id casting.
      */
     @Test
     public void testGetNodeByIDCasting() {
-    	try {
-    		
-            SLContext context = session.createContext("linkCountTest");
-            SLNode root = context.getRootNode();
-            
-            JavaInterface javaInterface = root.addNode(JavaInterface.class, "javaInterface");
-            JavaInterface javaInterface2 = (JavaInterface) session.getNodeByID(javaInterface.getID());
-            
+        try {
+
+            final SLContext context = session.createContext("linkCountTest");
+            final SLNode root = context.getRootNode();
+
+            final JavaInterface javaInterface = root.addNode(JavaInterface.class, "javaInterface");
+            final JavaInterface javaInterface2 = (JavaInterface)session.getNodeByID(javaInterface.getID());
+
             assertThat(javaInterface, is(javaInterface2));
-		}
-		catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }

@@ -75,6 +75,8 @@ import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -184,7 +186,7 @@ public class JavaTypeResolverTest {
     public static void setupJavaFinder() throws Exception {
         final SLGraphFactory factory = new SLGraphFactoryImpl();
 
-        graph = factory.createTempGraph(true);
+        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         session = graph.openSession();
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");

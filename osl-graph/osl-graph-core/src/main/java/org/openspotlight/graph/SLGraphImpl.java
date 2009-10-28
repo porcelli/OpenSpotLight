@@ -49,6 +49,7 @@
 package org.openspotlight.graph;
 
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLGraphFactoryImpl.SLGraphClosingListener;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeException;
@@ -62,7 +63,11 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 public class SLGraphImpl implements SLGraph {
 
     /** The tree. */
-    private SLPersistentTree tree;
+    private final SLPersistentTree       tree;
+
+    private GraphState                   graphState;
+
+    private final SLGraphClosingListener listener;
 
     /**
      * Instantiates a new sL graph impl.
@@ -70,19 +75,46 @@ public class SLGraphImpl implements SLGraph {
      * @param tree the tree
      */
     public SLGraphImpl(
-                        SLPersistentTree tree ) {
+                        final SLPersistentTree tree, final SLGraphClosingListener listener ) {
         this.tree = tree;
+        this.graphState = GraphState.OPENED;
+        this.listener = listener;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void gc() throws SLPersistentTreeException {
+        if (this.graphState != GraphState.SHUTDOWN) {
+            final SLPersistentTreeSession treeSession = this.tree.openSession();
+            if (SLCommonSupport.containsQueryCache(treeSession)) {
+                final SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
+                pNode.remove();
+            }
+            treeSession.close();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public GraphState getGraphState() {
+        return this.graphState;
     }
 
     /**
      * {@inheritDoc}
      */
     public SLGraphSession openSession() throws SLGraphException {
+        if (this.graphState == GraphState.SHUTDOWN) {
+            throw new SLGraphException("Could not open SL graph session. Graph is already shutdown.");
+        }
+
         try {
-            SLPersistentTreeSession treeSession = tree.openSession();
-            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            final SLPersistentTreeSession treeSession = this.tree.openSession();
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             return factory.createGraphSession(treeSession);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new SLGraphException("Could not open SL graph session.", e);
         }
     }
@@ -91,18 +123,8 @@ public class SLGraphImpl implements SLGraph {
      * {@inheritDoc}
      */
     public void shutdown() {
-        tree.shutdown();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void gc() throws SLPersistentTreeException {
-        SLPersistentTreeSession treeSession = tree.openSession();
-        if (SLCommonSupport.containsQueryCache(treeSession)) {
-            SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
-            pNode.remove();
-        }
-        treeSession.close();
+        this.tree.shutdown();
+        this.graphState = GraphState.SHUTDOWN;
+        this.listener.graphClosed(this);
     }
 }

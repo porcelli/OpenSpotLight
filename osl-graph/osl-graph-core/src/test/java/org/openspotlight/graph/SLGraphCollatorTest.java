@@ -4,6 +4,12 @@ import java.text.Collator;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -11,132 +17,125 @@ import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLink;
 import org.openspotlight.graph.test.domain.JavaClassNode;
 import org.openspotlight.graph.test.domain.JavaMethodNode;
 import org.openspotlight.graph.test.domain.SQLElement;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class SLGraphCollatorTest {
 
-	static final Logger LOGGER = Logger.getLogger(SLGraphTest.class);
+    static final Logger           LOGGER = Logger.getLogger(SLGraphTest.class);
 
-	private static SLGraph graph;
+    private static SLGraph        graph;
 
-	private static SLGraphSession session;
+    private static SLGraphSession session;
 
-	@BeforeClass
-	public static void init() throws AbstractFactoryException {
-		final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-		graph = factory.createTempGraph(true);
-	}
+    @AfterClass( )
+    public static void finish() {
+        session.close();
+        graph.shutdown();
+    }
 
-	@AfterClass
-	public static void finish() {
-		graph.shutdown();
-	}
+    @BeforeClass
+    public static void init() throws AbstractFactoryException {
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+    }
 
-	@BeforeMethod
-	public void beforeTest() throws SLGraphException {
-		if (session == null) {
-			session = graph.openSession();
-		}
-	}
+    @After
+    public void afterTest() throws SLGraphSessionException {
+        session.clear();
+    }
 
-	@AfterMethod
-	public void afterTest() throws SLGraphSessionException {
-		session.clear();
-	}
+    @Before
+    public void beforeTest() throws SLGraphException {
+        if (session == null) {
+            session = graph.openSession();
+        }
+    }
 
-	@Test
-	public void testNodeCollator() {
+    @Test
+    public void testLinkPropertyCollator() {
 
-		try {
-			final SLNode root1 = session.createContext("1L").getRootNode();
+        try {
 
-			// test addNode ...
-			final SQLElement element1 = root1.addNode(SQLElement.class, "selecao");
-			final SQLElement element2 = root1.addNode(SQLElement.class, "seleção");
-			Assert.assertEquals(element1, element2);
+            final SLNode root1 = session.createContext("1L").getRootNode();
+            final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
+            final JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-			// test getNode ...
-			final SQLElement element3 = root1.getNode(SQLElement.class, "seleção");
-			Assert.assertEquals(element1, element3);
+            final JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+                                                                       javaMethodNode1, false);
 
-			// the original name remains ...
-			Assert.assertEquals(element1.getName(), "selecao");
-			Assert.assertEquals(element2.getName(), "selecao");
-			Assert.assertEquals(element3.getName(), "selecao");
-		}
-		catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		}
-	}
-	
-	@Test
-	public void testLinkPropertyCollator() {
+            final SLLinkProperty<String> prop1 = link.setProperty(String.class, "selecao", "great");
+            final SLLinkProperty<String> prop2 = link.getProperty(String.class, "sele\u00E7\u00E3o");
 
-		try {
+            Assert.assertEquals(prop1, prop2);
+            Assert.assertEquals(prop1.getName(), "selecao");
+            Assert.assertEquals(prop1.getName(), "selecao");
 
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
-			final JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
+            try {
+                final Collator collator = Collator.getInstance(Locale.US);
+                collator.setStrength(Collator.TERTIARY);
+                link.getProperty(String.class, "sele\u00E7\u00E3o", collator);
+                Assert.fail();
+            } catch (final SLNodePropertyNotFoundException e) {
+                Assert.assertTrue(true);
+            }
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        }
+    }
 
-			final JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+    @Test
+    public void testNodeCollator() {
 
-			final SLLinkProperty<String> prop1 = link.setProperty(String.class, "selecao", "great");
-			final SLLinkProperty<String> prop2 = link.getProperty(String.class, "seleção");
+        try {
+            final SLNode root1 = session.createContext("1L").getRootNode();
 
-			Assert.assertEquals(prop1, prop2);
-			Assert.assertEquals(prop1.getName(), "selecao");
-			Assert.assertEquals(prop1.getName(), "selecao");
+            // test addNode ...
+            final SQLElement element1 = root1.addNode(SQLElement.class, "selecao");
+            final SQLElement element2 = root1.addNode(SQLElement.class, "sele\u00E7\u00E3o");
+            Assert.assertEquals(element1, element2);
 
-			try {
-				final Collator collator = Collator.getInstance(Locale.US);
-				collator.setStrength(Collator.TERTIARY);
-				link.getProperty(String.class, "seleção", collator);
-				Assert.fail();
-			}
-			catch (final SLNodePropertyNotFoundException e) {
-				Assert.assertTrue(true);
-			}
-		}
-		catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		}
-	}
+            // test getNode ...
+            final SQLElement element3 = root1.getNode(SQLElement.class, "sele\u00E7\u00E3o");
+            Assert.assertEquals(element1, element3);
 
-	@Test
-	public void testNodePropertyCollator() {
+            // the original name remains ...
+            Assert.assertEquals(element1.getName(), "selecao");
+            Assert.assertEquals(element2.getName(), "selecao");
+            Assert.assertEquals(element3.getName(), "selecao");
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        }
+    }
 
-		try {
+    @Test
+    public void testNodePropertyCollator() {
 
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			final SQLElement element = root1.addNode(SQLElement.class, "element");
+        try {
 
-			final SLNodeProperty<String> prop1 = element.setProperty(String.class, "selecao", "great");
-			final SLNodeProperty<String> prop2 = element.getProperty(String.class, "seleção");
-			Assert.assertEquals(prop1, prop2);
-			Assert.assertEquals(prop1.getName(), "selecao");
-			Assert.assertEquals(prop1.getName(), "selecao");
+            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SQLElement element = root1.addNode(SQLElement.class, "element");
 
-			try {
-				final Collator collator = Collator.getInstance(Locale.US);
-				collator.setStrength(Collator.TERTIARY);
-				element.getProperty(String.class, "seleção", collator);
-				Assert.fail();
-			}
-			catch (final SLNodePropertyNotFoundException e) {
-				Assert.assertTrue(true);
-			}
-		}
-		catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		}
-	}
+            final SLNodeProperty<String> prop1 = element.setProperty(String.class, "selecao", "great");
+            final SLNodeProperty<String> prop2 = element.getProperty(String.class, "sele\u00E7\u00E3o");
+            Assert.assertEquals(prop1, prop2);
+            Assert.assertEquals(prop1.getName(), "selecao");
+            Assert.assertEquals(prop1.getName(), "selecao");
+
+            try {
+                final Collator collator = Collator.getInstance(Locale.US);
+                collator.setStrength(Collator.TERTIARY);
+                element.getProperty(String.class, "sele\u00E7\u00E3o", collator);
+                Assert.fail();
+            } catch (final SLNodePropertyNotFoundException e) {
+                Assert.assertTrue(true);
+            }
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        }
+    }
 
 }
