@@ -212,6 +212,14 @@ public class SLSelectStatementInfo extends SLSelectInfo {
             buffer.append('"');
         }
 
+        // bylink ...
+        for (int i = 0; i < byLinkInfoList.size(); i++) {
+            if (i == 0) buffer.append("BY LINK \n");
+            if (i > 0) buffer.append(",\n");
+            SLSelectByLinkInfo byLinkTypeInfo = byLinkInfoList.get(i);
+            buffer.append('\t').append(byLinkTypeInfo.toString());
+        }
+
         // where ...
         if (whereStatementInfo != null) {
             buffer.append(whereStatementInfo);
