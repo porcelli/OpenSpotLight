@@ -62,7 +62,7 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Included;
@@ -92,7 +92,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         final Repository repository = new Repository(this.configuration, this.REPOSITORY_NAME);
         this.configuration.setNumberOfParallelThreads(4);
         final Group project = new Group(repository, this.PROJECT_NAME);
-        final Bundle bundle = new Bundle(project, this.BUNDLE_NAME);
+        final ArtifactSource bundle = new ArtifactSource(project, this.BUNDLE_NAME);
         final String basePath = new File("../../../").getCanonicalPath() + "/";
         bundle.setInitialLookup(basePath);
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
@@ -100,12 +100,12 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         new Included(artifactMapping, "src/main/java/**/*.java");
     }
 
-    public Bundle createConfigurationForChangeListen() throws Exception {
+    public ArtifactSource createConfigurationForChangeListen() throws Exception {
         this.configuration = new Configuration();
         final Repository repository = new Repository(this.configuration, "Local target folder");
         this.configuration.setNumberOfParallelThreads(4);
         final Group project = new Group(repository, "Osl Federation");
-        final Bundle bundle = new Bundle(project, "Target folder");
+        final ArtifactSource bundle = new ArtifactSource(project, "Target folder");
         final String basePath = new File("../../../").getCanonicalPath() + "/";
         bundle.setInitialLookup(basePath);
         final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
@@ -123,7 +123,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         fos.flush();
         fos.close();
 
-        final Bundle bundle = this.createConfigurationForChangeListen();
+        final ArtifactSource bundle = this.createConfigurationForChangeListen();
         final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
         sharedData.markAsSaved();
@@ -149,7 +149,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         fos.flush();
         fos.close();
 
-        final Bundle bundle = this.createConfigurationForChangeListen();
+        final ArtifactSource bundle = this.createConfigurationForChangeListen();
         final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
         sharedData.markAsSaved();
@@ -168,7 +168,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
     public void shouldListenInclusions() throws Exception {
         new File("target/test-data/FileSystemArtifactLoaderTest/").mkdirs();
 
-        final Bundle bundle = this.createConfigurationForChangeListen();
+        final ArtifactSource bundle = this.createConfigurationForChangeListen();
         final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
         new File("target/test-data/FileSystemArtifactLoaderTest/newTextFile").delete();
 

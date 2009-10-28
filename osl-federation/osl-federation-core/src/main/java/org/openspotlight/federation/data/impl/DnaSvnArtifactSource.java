@@ -49,58 +49,79 @@
 
 package org.openspotlight.federation.data.impl;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * Bundle class for java processing purposes
+ * This bundle class is used to load the file system artifacts using the DNA
+ * FileSystem Connector.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-@StaticMetadata(propertyNames = { "active", "initialLookup",
-        "virtualMachineVersion" }, propertyTypes = { Boolean.class,
-        String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-        Group.class, BundleProcessorType.class, StreamArtifact.class,
-        CustomArtifact.class, ArtifactMapping.class })
-public class JavaBundle extends Bundle {
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5833154085064816324L;
-    
-    private static final String VIRTUAL_MACHINE_VERSION = "virtualMachineVersion"; //$NON-NLS-1$
-    
-    private final InstanceMetadata instanceMetadata;
-    
-    /**
-     * Constructor to create a java bundle inside a project.
-     * 
-     * @param project
-     * @param name
-     */
-    public JavaBundle(final Group project, final String name) {
-        super(project, name);
-        this.instanceMetadata = super.getInstanceMetadata();
-    }
-    
-    /**
-     * 
-     * @return the virtual machine version
-     */
-    public String getVirtualMachineVersion() {
-        return this.instanceMetadata.getProperty(VIRTUAL_MACHINE_VERSION);
-    }
-    
-    /**
-     * Sets the virtual machine version.
-     * 
-     * @param virtualMachineVersion
-     */
-    public void setVirtualMachineVersion(final String virtualMachineVersion) {
-        this.instanceMetadata.setProperty(VIRTUAL_MACHINE_VERSION,
-                virtualMachineVersion);
-    }
-    
+@ThreadSafe
+@StaticMetadata(propertyNames = { "active", "initialLookup", "user", "password" }, propertyTypes = {
+		Boolean.class, String.class, String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
+		BundleProcessorType.class, Group.class, StreamArtifact.class,
+		CustomArtifact.class, ArtifactMapping.class })
+public class DnaSvnArtifactSource extends ArtifactSource {
+
+	private static final String PASSWORD = "password"; //$NON-NLS-1$
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6055285487792875923L;
+
+	private static final String USER = "user"; //$NON-NLS-1$
+
+	private final InstanceMetadata instanceMetadata;
+
+	/**
+	 * creates a bundle inside this project.
+	 * 
+	 * @param project
+	 * @param name
+	 */
+	public DnaSvnArtifactSource(final Group project, final String name) {
+		super(project, name);
+		this.instanceMetadata = super.getInstanceMetadata();
+	}
+
+	/**
+	 * 
+	 * @return the password
+	 */
+	public String getPassword() {
+		return this.instanceMetadata.getProperty(PASSWORD);
+	}
+
+	/**
+	 * 
+	 * @return user name
+	 */
+	public String getUser() {
+		return this.instanceMetadata.getProperty(USER);
+	}
+
+	/**
+	 * Sets the password
+	 * 
+	 * @param password
+	 */
+	public void setPassword(final String password) {
+		this.instanceMetadata.setProperty(PASSWORD, password);
+	}
+
+	/**
+	 * Sets username
+	 * 
+	 * @param user
+	 */
+	public void setUser(final String user) {
+		this.instanceMetadata.setProperty(USER, user);
+	}
+
 }

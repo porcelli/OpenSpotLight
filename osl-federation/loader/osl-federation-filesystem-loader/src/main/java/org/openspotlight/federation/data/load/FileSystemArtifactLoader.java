@@ -67,7 +67,7 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
 		/**
 		 * Return all files from bundle.initialLookup directory.
 		 */
-		public Set<String> getAllArtifactNames(final Bundle bundle,
+		public Set<String> getAllArtifactNames(final ArtifactSource bundle,
 				final ArtifactMapping mapping) throws ConfigurationException {
 			checkNotNull("bundle", bundle); //$NON-NLS-1$
 			try {
@@ -133,7 +133,7 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
 		 * loads the content of a file found on bundle.initialLookup +
 		 * artifactName
 		 */
-		public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
+		public byte[] loadArtifactOrReturnNullToIgnore(final ArtifactSource bundle,
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
 			checkNotNull("bundle", bundle); //$NON-NLS-1$
@@ -173,7 +173,7 @@ public class FileSystemArtifactLoader extends AbstractArtifactLoader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected String fixMapping(final String mapString, final Bundle bundle,
+	protected String fixMapping(final String mapString, final ArtifactSource bundle,
 			final ArtifactMapping mapping) {
 		return bundle.getInitialLookup() + mapping.getRelative() + mapString;
 	}

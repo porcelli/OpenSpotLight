@@ -53,7 +53,7 @@ import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 
 /**
  * The {@link ArtifactLoaderGroup} class is itself a {@link ArtifactLoader} that groups all the valid Artifact loaders and execute
@@ -84,7 +84,7 @@ public class ArtifactLoaderGroup implements ArtifactLoader {
      * @return a count for the artifact loading
      * @throws ConfigurationException
      */
-    public ArtifactProcessingCount loadArtifactsFromMappings( final Bundle bundle ) throws ConfigurationException {
+    public ArtifactProcessingCount loadArtifactsFromMappings( final ArtifactSource bundle ) throws ConfigurationException {
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         long loadCount = 0;
         long ignoreCount = 0;

@@ -64,7 +64,7 @@ import org.openspotlight.federation.data.StaticMetadata;
  */
 @ThreadSafe
 @StaticMetadata( propertyNames = {"description"}, propertyTypes = {Boolean.class, String.class}, keyPropertyName = "cronInformation", keyPropertyType = String.class, validParentTypes = {
-    Group.class, Bundle.class} )
+    Group.class, ArtifactSource.class} )
 public class ScheduleData implements ConfigurationNode {
 
     /** The Constant serialVersionUID. */
@@ -83,7 +83,7 @@ public class ScheduleData implements ConfigurationNode {
      * @param cronInformation the cron information
      */
     public ScheduleData(
-                         final Bundle bundle, final String cronInformation ) {
+                         final ArtifactSource bundle, final String cronInformation ) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, cronInformation);
         checkCondition("noScheduleData", //$NON-NLS-1$
                        bundle.getBundleByName(cronInformation) == null);
@@ -100,7 +100,7 @@ public class ScheduleData implements ConfigurationNode {
                          final Group group, final String cronInformation ) {
         this.instanceMetadata = createWithKeyProperty(this, group, cronInformation);
         checkCondition("noScheduleData", //$NON-NLS-1$
-                       group.getBundleByName(cronInformation) == null);
+                       group.getArtifactSourceByName(cronInformation) == null);
         group.getInstanceMetadata().addChild(this);
     }
 

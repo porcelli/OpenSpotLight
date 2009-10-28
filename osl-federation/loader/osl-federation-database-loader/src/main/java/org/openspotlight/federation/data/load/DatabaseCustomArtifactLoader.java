@@ -74,11 +74,11 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Column;
 import org.openspotlight.federation.data.impl.ColumnType;
 import org.openspotlight.federation.data.impl.CustomArtifact;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.NullableSqlType;
 import org.openspotlight.federation.data.impl.RoutineArtifact;
@@ -348,7 +348,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * 
 		 * @param bundle
 		 */
-		private void fireChangeOnChangedTables(final Bundle bundle) {
+		private void fireChangeOnChangedTables(final ArtifactSource bundle) {
 			final Set<ConfigurationNode> allChanges = new HashSet<ConfigurationNode>();
 			allChanges.addAll(this.listener.getChangedNodes());
 			allChanges.addAll(this.listener.getInsertedNodes());
@@ -378,7 +378,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * 
 		 * @param bundle
 		 */
-		private void fireChangeOnChangedViewStreams(final Bundle bundle) {
+		private void fireChangeOnChangedViewStreams(final ArtifactSource bundle) {
 			final Set<ConfigurationNode> changedNodes = new HashSet<ConfigurationNode>();
 			changedNodes.addAll(this.listener.getChangedNodes());
 			for (final ConfigurationNode node : changedNodes) {
@@ -387,8 +387,8 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 					final ConfigurationNode parent = view.getInstanceMetadata()
 							.getDefaultParent();
 					StreamArtifact stream = null;
-					if (parent instanceof Bundle) {
-						final Bundle b = (Bundle) parent;
+					if (parent instanceof ArtifactSource) {
+						final ArtifactSource b = (ArtifactSource) parent;
 						stream = b.getStreamArtifactByName(view
 								.getRelativeName());
 					} else if (parent instanceof Group) {
@@ -415,16 +415,16 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		public synchronized Set<String> getAllArtifactNames(
-				final Bundle bundle, final ArtifactMapping mapping)
+				final ArtifactSource bundle, final ArtifactMapping mapping)
 				throws ConfigurationException {
-			if (!(bundle instanceof DbBundle)) {
+			if (!(bundle instanceof DbArtifactSource)) {
 				return emptySet();
 			}
 
 			try {
 				final Set<String> artifactNames = new HashSet<String>();
 				if (this.loadedMetadata == null) {
-					final DbBundle dbBundle = (DbBundle) bundle;
+					final DbArtifactSource dbBundle = (DbArtifactSource) bundle;
 					this.loadMetadata(dbBundle);
 				}
 				for (final Map.Entry<String, DatabaseItemDescription> entry : this.loadedMetadata
@@ -454,7 +454,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void globalExecutionAboutToStart(final Bundle bundle) {
+		public void globalExecutionAboutToStart(final ArtifactSource bundle) {
 			bundle.getInstanceMetadata().getSharedData()
 					.addNodeListenerForAGivenType(this.listener, Column.class);
 			bundle.getInstanceMetadata().getSharedData()
@@ -466,7 +466,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void globalExecutionFinished(final Bundle bundle) {
+		public void globalExecutionFinished(final ArtifactSource bundle) {
 			bundle.getInstanceMetadata().getSharedData().removeNodeListener(
 					this.listener);
 			this.fireChangeOnChangedTables(bundle);
@@ -482,7 +482,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * @param dbBundle
 		 * @throws SQLException
 		 */
-		private void loadMetadata(final DbBundle dbBundle) throws SQLException {
+		private void loadMetadata(final DbArtifactSource dbBundle) throws SQLException {
 			Connection conn = null;
 			try {
 				conn = createConnection(dbBundle);
@@ -504,12 +504,12 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public Integer withThreadPoolSize(final Bundle bundle) {
+		public Integer withThreadPoolSize(final ArtifactSource bundle) {
 			final Integer defaultValue = super.withThreadPoolSize(bundle);
-			if (!(bundle instanceof DbBundle)) {
+			if (!(bundle instanceof DbArtifactSource)) {
 				return defaultValue;
 			}
-			final DbBundle dbBundle = (DbBundle) bundle;
+			final DbArtifactSource dbBundle = (DbArtifactSource) bundle;
 			final Integer maxConnections = dbBundle.getMaxConnections();
 			if ((maxConnections != null)
 					&& (maxConnections.compareTo(defaultValue) < 0)) {
@@ -533,7 +533,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		/**
 		 * {@inheritDoc}
 		 */
-		public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
+		public byte[] loadArtifactOrReturnNullToIgnore(final ArtifactSource bundle,
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) {
 			final DatabaseCustomGlobalContext context = (DatabaseCustomGlobalContext) globalContext;
@@ -556,7 +556,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * @param bundle
 		 * @param metadata
 		 */
-		private void loadRoutineMetadata(final Bundle bundle,
+		private void loadRoutineMetadata(final ArtifactSource bundle,
 				final DatabaseItemDescription metadata) {
 			final RoutineDescription routineMetadata = (RoutineDescription) metadata;
 			RoutineArtifact routine = (RoutineArtifact) bundle
@@ -596,7 +596,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		 * @param bundle
 		 * @param metadata
 		 */
-		private void loadTableMetadata(final Bundle bundle,
+		private void loadTableMetadata(final ArtifactSource bundle,
 				final DatabaseItemDescription metadata) {
 			final TableDescription tableMetadata = (TableDescription) metadata;
 			TableArtifact table = (TableArtifact) bundle

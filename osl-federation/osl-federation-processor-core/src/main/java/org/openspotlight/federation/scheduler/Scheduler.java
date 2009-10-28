@@ -60,7 +60,7 @@ import java.util.Set;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Schedulable;
 import org.openspotlight.federation.data.impl.ScheduleData;
@@ -141,7 +141,7 @@ public interface Scheduler {
              * @param bundle the bundle
              * @return the job detail
              */
-            private synchronized JobDetail createJobDetail( final Bundle bundle ) {
+            private synchronized JobDetail createJobDetail( final ArtifactSource bundle ) {
                 final String name = bundle.getInstanceMetadata().getPath();
                 final String group = bundle.getInstanceMetadata().getDefaultParent().getInstanceMetadata().getPath();
                 final JobDetail detail = new JobDetail(name, group, OslJob.class);
@@ -159,10 +159,10 @@ public interface Scheduler {
             /**
              * {@inheritDoc}
              */
-            public <T extends ConfigurationNode> void fireImmediateExecution( final Bundle... bundles )
+            public <T extends ConfigurationNode> void fireImmediateExecution( final ArtifactSource... bundles )
                 throws JobExecutionException {
                 try {
-                    for (final Bundle b : bundles) {
+                    for (final ArtifactSource b : bundles) {
                         final long startTime = System.currentTimeMillis() + 1000L;
                         final Date date = new Date(startTime);
                         final SimpleTrigger trigger = new SimpleTrigger("only once: " + date + " " + b.toString(), null, date,
@@ -184,8 +184,8 @@ public interface Scheduler {
                     for (final Pair<String, String> entry : jobEntries) {
                         this.scheduler.deleteJob(entry.getK1(), entry.getK2());
                     }
-                    final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
-                    for (final Bundle bundle : bundles) {
+                    final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
+                    for (final ArtifactSource bundle : bundles) {
                         for (final ScheduleData data : bundle.getScheduleDataForThisBundle()) {
 
                             final JobDetail detail = createJobDetail(bundle);
@@ -256,7 +256,7 @@ public interface Scheduler {
      * @param bundles the bundles
      * @throws JobExecutionException the job execution exception
      */
-    public <T extends ConfigurationNode> void fireImmediateExecution( Bundle... bundles ) throws JobExecutionException;
+    public <T extends ConfigurationNode> void fireImmediateExecution( ArtifactSource... bundles ) throws JobExecutionException;
 
     /**
      * Load or reload the configuration.

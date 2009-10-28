@@ -63,7 +63,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.ArtifactFinder;
 import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
@@ -237,7 +237,7 @@ public interface BundleProcessor<T extends Artifact> {
         private final Set<T> artifactsWithError;
 
         /** The bundle. */
-        private final Bundle bundle;
+        private final ArtifactSource bundle;
 
         /** The excluded artifacts. */
         private final Set<T> excludedArtifacts;
@@ -266,7 +266,7 @@ public interface BundleProcessor<T extends Artifact> {
          * @param mutableType the mutable type
          */
         public BundleProcessingGroup(
-                                      final Bundle bundle, final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
+                                      final ArtifactSource bundle, final Set<T> addedArtifacts, final Set<T> excludedArtifacts,
                                       final Set<T> ignoredArtifacts, final Set<T> artifactsWithError,
                                       final Set<T> modifiedArtifacts, final Set<T> allValidArtifacts,
                                       final Set<T> notProcessedArtifacts, final Set<T> alreadyProcessedArtifacts,
@@ -350,7 +350,7 @@ public interface BundleProcessor<T extends Artifact> {
          * 
          * @return the parent bundle for all this artifacts
          */
-        public Bundle getBundle() {
+        public ArtifactSource getBundle() {
             return this.bundle;
         }
 
@@ -476,7 +476,7 @@ public interface BundleProcessor<T extends Artifact> {
 
     /**
      * This method will be called once, before the threads creation to process all the artifacts. This return is very important,
-     * because with this is possible to change the behavior of this {@link BundleProcessor} execution for its {@link Bundle}. Take
+     * because with this is possible to change the behavior of this {@link BundleProcessor} execution for its {@link ArtifactSource}. Take
      * a look on the {@link ProcessingStartAction} documentation. The common behavior should be returning
      * {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
      * 

@@ -9,7 +9,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
@@ -57,7 +57,7 @@ public class BundleProcessingGroupTest {
         final Group project = new Group(repository, "project");
         project.setGraphRoot(Boolean.TRUE);
         project.setActive(Boolean.TRUE);
-        final Bundle bundle = new Bundle(project, "bundle");
+        final ArtifactSource bundle = new ArtifactSource(project, "bundle");
         bundle.setActive(Boolean.TRUE);
 
         new BundleProcessorType(bundle, "org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
@@ -80,12 +80,12 @@ public class BundleProcessingGroupTest {
         new StreamArtifact(bundle, "included4").setStatus(Status.INCLUDED);
         new StreamArtifact(bundle, "included5").setStatus(Status.INCLUDED);
 
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
         boolean hasProcessed = false;
         boolean hasChanged = false;
         boolean hasExcluded = false;
         boolean hasIncluded = false;
-        for (final Bundle b : bundles) {
+        for (final ArtifactSource b : bundles) {
             looping: for (final StreamArtifact sa : b.getStreamArtifacts()) {
                 if (sa.getStatus() == null) {
                     continue looping;
@@ -128,12 +128,12 @@ public class BundleProcessingGroupTest {
 
         configurationManager.save(repository.getConfiguration());
         final Configuration newConfiguration = configurationManager.load(LazyType.LAZY);
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(newConfiguration, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(newConfiguration, ArtifactSource.class);
         boolean hasProcessed = false;
         boolean hasChanged = false;
         boolean hasExcluded = false;
         boolean hasIncluded = false;
-        for (final Bundle bundle : bundles) {
+        for (final ArtifactSource bundle : bundles) {
             looping: for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
                 if (sa.getStatus() == null) {
                     continue looping;
@@ -180,7 +180,7 @@ public class BundleProcessingGroupTest {
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
         manager.processBundles(bundles);
@@ -201,7 +201,7 @@ public class BundleProcessingGroupTest {
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
@@ -220,7 +220,7 @@ public class BundleProcessingGroupTest {
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
@@ -239,7 +239,7 @@ public class BundleProcessingGroupTest {
         final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 

@@ -77,7 +77,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.Excluded;
@@ -106,7 +106,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param bundle the bundle
          * @param e the e
          */
-        public void fatalErrorHappened( final Bundle bundle,
+        public void fatalErrorHappened( final ArtifactSource bundle,
                                         Exception e );
 
         /**
@@ -117,7 +117,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param nameToProcess the name to process
          * @param exception the exception
          */
-        public <E extends Exception> void handleError( final Bundle bundle,
+        public <E extends Exception> void handleError( final ArtifactSource bundle,
                                                        final ArtifactMapping mapping,
                                                        final String nameToProcess,
                                                        E exception );
@@ -132,7 +132,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         /**
          * {@inheritDoc}
          */
-        public void fatalErrorHappened( final Bundle bundle,
+        public void fatalErrorHappened( final ArtifactSource bundle,
                                         final Exception e ) {
             catchAndLog(e);
         }
@@ -140,7 +140,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         /**
          * {@inheritDoc}
          */
-        public <E extends Exception> void handleError( final Bundle bundle,
+        public <E extends Exception> void handleError( final ArtifactSource bundle,
                                                        final ArtifactMapping mapping,
                                                        final String nameToProcess,
                                                        final E exception ) {
@@ -159,14 +159,14 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         /**
          * {@inheritDoc}
          */
-        public void globalExecutionAboutToStart( final Bundle bundle ) {
+        public void globalExecutionAboutToStart( final ArtifactSource bundle ) {
             // nothign to do here
         }
 
         /**
          * {@inheritDoc}
          */
-        public void globalExecutionFinished( final Bundle bundle ) {
+        public void globalExecutionFinished( final ArtifactSource bundle ) {
             // nothign to do here
 
         }
@@ -177,7 +177,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param bundle the bundle
          * @return the thread pool size
          */
-        public Integer withThreadPoolSize( final Bundle bundle ) {
+        public Integer withThreadPoolSize( final ArtifactSource bundle ) {
             return bundle.getRepository().getConfiguration().getNumberOfParallelThreads();
         }
     }
@@ -191,7 +191,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         /**
          * {@inheritDoc}
          */
-        public void threadExecutionAboutToStart( final Bundle bundle,
+        public void threadExecutionAboutToStart( final ArtifactSource bundle,
                                                  final ArtifactMapping mapping,
                                                  final GlobalExecutionContext globalExecutionContext ) {
             // nothign to do here
@@ -200,7 +200,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         /**
          * {@inheritDoc}
          */
-        public void threadExecutionFinished( final Bundle bundle,
+        public void threadExecutionFinished( final ArtifactSource bundle,
                                              final ArtifactMapping mapping,
                                              final GlobalExecutionContext globalExecutionContext ) {
             // nothign to do here
@@ -227,7 +227,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @return all artifact names
          * @throws ConfigurationException the configuration exception
          */
-        public abstract Set<String> getAllArtifactNames( Bundle bundle,
+        public abstract Set<String> getAllArtifactNames( ArtifactSource bundle,
                                                          ArtifactMapping mapping ) throws ConfigurationException;
 
         /**
@@ -235,14 +235,14 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * 
          * @param bundle the bundle
          */
-        public void globalExecutionAboutToStart( final Bundle bundle );
+        public void globalExecutionAboutToStart( final ArtifactSource bundle );
 
         /**
          * This method will be called when all artifacts are processed.
          * 
          * @param bundle the bundle
          */
-        public void globalExecutionFinished( final Bundle bundle );
+        public void globalExecutionFinished( final ArtifactSource bundle );
 
         /**
          * Overwrite this method to change the thread pool size.
@@ -250,7 +250,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param bundle the bundle
          * @return the thread pool size
          */
-        public Integer withThreadPoolSize( Bundle bundle );
+        public Integer withThreadPoolSize( ArtifactSource bundle );
 
     }
 
@@ -278,7 +278,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @return the bytes from a given artifact name
          * @throws Exception the exception
          */
-        public byte[] loadArtifactOrReturnNullToIgnore( Bundle bundle,
+        public byte[] loadArtifactOrReturnNullToIgnore( ArtifactSource bundle,
                                                         ArtifactMapping mapping,
                                                         String artifactName,
                                                         GlobalExecutionContext globalContext ) throws Exception;
@@ -290,7 +290,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param mapping the mapping
          * @param globalContext the global context
          */
-        public void threadExecutionAboutToStart( final Bundle bundle,
+        public void threadExecutionAboutToStart( final ArtifactSource bundle,
                                                  final ArtifactMapping mapping,
                                                  GlobalExecutionContext globalContext );
 
@@ -301,7 +301,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param mapping the mapping
          * @param globalContext the global context
          */
-        public void threadExecutionFinished( final Bundle bundle,
+        public void threadExecutionFinished( final ArtifactSource bundle,
                                              final ArtifactMapping mapping,
                                              GlobalExecutionContext globalContext );
 
@@ -315,7 +315,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     private final class Worker implements Callable<Void> {
 
         /** The bundle. */
-        final Bundle                 bundle;
+        final ArtifactSource                 bundle;
 
         /** The error counter. */
         final AtomicInteger          errorCounter;
@@ -347,7 +347,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
          * @param errorHandler the error handler
          */
         public Worker(
-                       final Bundle bundle, final AtomicInteger errorCounter, final AtomicInteger loadCounter,
+                       final ArtifactSource bundle, final AtomicInteger errorCounter, final AtomicInteger loadCounter,
                        final ArtifactMapping mapping, final Set<String> namesToProcess,
                        final GlobalExecutionContext globalContext, final ArtifactErrorHandler errorHandler ) {
             super();
@@ -418,7 +418,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @return new mapping string
      */
     protected String fixMapping( final String mapString,
-                                 final Bundle bundle,
+                                 final ArtifactSource bundle,
                                  final ArtifactMapping mapping ) {
         return mapString;
     }
@@ -433,7 +433,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @throws ConfigurationException the configuration exception
      */
     @SuppressWarnings( "boxing" )
-    public final ArtifactProcessingCount loadArtifactsFromMappings( final Bundle bundle ) throws ConfigurationException {
+    public final ArtifactProcessingCount loadArtifactsFromMappings( final ArtifactSource bundle ) throws ConfigurationException {
 
         checkNotNull("bundle", bundle); //$NON-NLS-1$
         final ArtifactErrorHandler errorHandler = this.createErrorHandler();
@@ -523,7 +523,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @param globalContext the global context
      * @param errorHandler the error handler
      */
-    final void loadArtifactsOfNames( final Bundle bundle,
+    final void loadArtifactsOfNames( final ArtifactSource bundle,
                                      final AtomicInteger errorCounter,
                                      final AtomicInteger loadCounter,
                                      final ArtifactMapping mapping,
@@ -573,7 +573,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
      * @throws ConfigurationException the configuration exception
      */
     @SuppressWarnings( "boxing" )
-    private void splitWorkBetweenThreads( final Bundle bundle,
+    private void splitWorkBetweenThreads( final ArtifactSource bundle,
                                           final AtomicInteger errorCounter,
                                           final AtomicInteger loadCounter,
                                           final ArtifactMapping mapping,

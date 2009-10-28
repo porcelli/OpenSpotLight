@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
@@ -29,9 +29,9 @@ public class ImediateBundleProcessingWebCommand implements WebCommand {
             final Scheduler scheduler = context.getScheduler();
             final ConfigurationManager manager = new JcrSessionConfigurationManager(context.getJcrSession());
             final Configuration configuration = manager.load(LazyType.LAZY);
-            final Set<Bundle> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
+            final Set<ArtifactSource> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
 
-            scheduler.fireImmediateExecution(allBundles.toArray(new Bundle[] {}));
+            scheduler.fireImmediateExecution(allBundles.toArray(new ArtifactSource[] {}));
             return "fired";
         } catch (final Exception e) {
             catchAndLog(e);
