@@ -62,6 +62,11 @@ import org.openspotlight.common.exception.SLRuntimeException;
 public class InternalJavaFinderError extends SLRuntimeException {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Instantiates a new node not found exception.
      */
     public InternalJavaFinderError() {
