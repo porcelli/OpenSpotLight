@@ -78,7 +78,7 @@ import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.JavaArtifactSource;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.util.JcrNodeVisitor;
 import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
 

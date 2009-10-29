@@ -27,7 +27,7 @@ import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
@@ -39,7 +39,7 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**
  * This artifact loader loads all scripts used to create different database
- * artifacts. This artifacts should be loaded as a {@link StreamArtifact} with
+ * artifacts. This artifacts should be loaded as a {@link StreamArtifactAboutToChange} with
  * the SQL used to create it. In some cases the database implementation doesn't
  * have a great way to load this scripts. In other cases this DDL scripts should
  * be pretty complex. To be possible to work in both cases, there's a way to
@@ -146,7 +146,7 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
  * <ul>
  * <li>During a loading process of {@link PreferedType#SQL sql type} it takes
  * the content as the first column for the resulting select. To change the
- * column to use (the second one, for example) as the {@link StreamArtifact}
+ * column to use (the second one, for example) as the {@link StreamArtifactAboutToChange}
  * content, just add the
  * <code> &lt;contentColumnToUse&gt;2&lt;/contentColumnToUse&gt; </code> xml
  * attribute.</li>
@@ -204,7 +204,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 
 	/**
 	 * {@link ThreadExecutionContext} class for loading database
-	 * {@link StreamArtifact stream artifacts} using direct sql or template
+	 * {@link StreamArtifactAboutToChange stream artifacts} using direct sql or template
 	 * filled with sql.
 	 * 
 	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com

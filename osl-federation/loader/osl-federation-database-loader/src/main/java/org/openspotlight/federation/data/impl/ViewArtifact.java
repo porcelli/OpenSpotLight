@@ -52,7 +52,7 @@ package org.openspotlight.federation.data.impl;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 
 /**
  * {@link CustomArtifact} associated with view metadata.

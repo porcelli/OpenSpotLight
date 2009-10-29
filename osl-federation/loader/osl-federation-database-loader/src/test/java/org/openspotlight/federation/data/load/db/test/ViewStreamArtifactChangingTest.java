@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.DatabaseCustomArtifactLoader;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
@@ -74,7 +74,7 @@ public class ViewStreamArtifactChangingTest {
 				.execute();
 		conn.close();
 		loader.loadArtifactsFromMappings(dbBundle);
-		final StreamArtifact view = dbBundle
+		final StreamArtifactAboutToChange view = dbBundle
 				.getStreamArtifactByName("PUBLIC/VIEW/DB/EXAMPLEVIEW");
 		assertThat(view, is(notNullValue()));
 		final Set<ConfigurationNode> dirtyNodes = dbBundle

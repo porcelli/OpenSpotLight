@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
@@ -106,7 +106,7 @@ public class FileSystemLoaderProcessing {
         configurationManager.save(configuration);
         configurationManager.closeResources();
         final BundleProcessingContext graphContext = mock(BundleProcessingContext.class);
-        final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration, StreamArtifact.class);
+        final Set<StreamArtifactAboutToChange> artifacts = findAllNodesOfType(configuration, StreamArtifactAboutToChange.class);
         final Repository repository = configuration.getRepositoryByName("OSL Group");
         final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         manager.processBundles(bundles);

@@ -23,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.ScriptType;
 import org.slf4j.Logger;
@@ -125,11 +125,11 @@ public abstract class DatabaseStreamTest {
 			conn.close();
 		}
 
-		final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(bundle,
-				StreamArtifact.class);
+		final Set<StreamArtifactAboutToChange> loadedArtifacts = findAllNodesOfType(bundle,
+				StreamArtifactAboutToChange.class);
 		final Set<String> failMessages = new HashSet<String>();
 		lookingTypes: for (final ScriptType typeToAssert : this.typesToAssert()) {
-			for (final StreamArtifact streamArtifact : loadedArtifacts) {
+			for (final StreamArtifactAboutToChange streamArtifact : loadedArtifacts) {
 				final String relativeName = streamArtifact.getRelativeName();
 				if (relativeName.contains(typeToAssert.name())) {
 					assertThat(streamArtifact.getDataSha1(), is(notNullValue()));
@@ -146,7 +146,7 @@ public abstract class DatabaseStreamTest {
 		if (!failMessages.isEmpty()) {
 			fail(failMessages.toString());
 		}
-		for (final StreamArtifact loaded : loadedArtifacts) {
+		for (final StreamArtifactAboutToChange loaded : loadedArtifacts) {
 			final String name = "./target/test-data/"
 					+ this.getClass().getSimpleName() + "/"
 					+ loaded.getRelativeName().replaceAll(" ", "");// DB2 has

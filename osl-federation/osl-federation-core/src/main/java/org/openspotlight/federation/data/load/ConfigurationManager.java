@@ -69,7 +69,7 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**
@@ -281,7 +281,7 @@ public interface ConfigurationManager {
     /**
      * Search a node using its internal key value. Note that a note have a unique combination of key and parent. If any nodes has
      * the same keys, same types and different parents, it will return more than one result. So, its possible to choose the
-     * correct node by comparing the parent. <b>Warning:</b> Do not use a abstract type, such as {@link Artifact} or so on,
+     * correct node by comparing the parent. <b>Warning:</b> Do not use a abstract type, such as {@link ArtifactAboutToChange} or so on,
      * because, it will use the class name to create the query. If you need to find all kinds of a abstract type, use the non lazy
      * static method {@link org.openspotlight.federation.data.util.ConfigurationNodes#findAllNodesOfType}
      * 

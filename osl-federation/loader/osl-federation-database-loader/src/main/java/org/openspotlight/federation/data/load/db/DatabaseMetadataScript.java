@@ -58,7 +58,7 @@ import java.util.Map;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 
 import com.thoughtworks.xstream.XStream;
@@ -77,7 +77,7 @@ public final class DatabaseMetadataScript {
 
 	/**
 	 * The Interface DatabaseArtifactNameHandler is used to handle callback
-	 * during the initial phases of Database {@link StreamArtifact} processing.
+	 * during the initial phases of Database {@link StreamArtifactAboutToChange} processing.
 	 * This handler should be used as a filter also on situations where there's
 	 * no possible to filter the sql results.
 	 */
@@ -114,7 +114,7 @@ public final class DatabaseMetadataScript {
 
 	/**
 	 * The Interface DatabaseStreamHandler is used to handle callbacks during
-	 * the {@link StreamArtifact} final loading phase. Here is possible to
+	 * the {@link StreamArtifactAboutToChange} final loading phase. Here is possible to
 	 * reject or modify the input stream. There's also methods to add new
 	 * variables to a template.
 	 */
@@ -122,7 +122,7 @@ public final class DatabaseMetadataScript {
 
 		/**
 		 * Calback method to modify or reject the byte array before the
-		 * {@link StreamArtifact} loading.
+		 * {@link StreamArtifactAboutToChange} loading.
 		 * 
 		 * @param schema
 		 *            the schema
@@ -173,7 +173,7 @@ public final class DatabaseMetadataScript {
 	}
 
 	/**
-	 * Type for describing the way for filling the {@link StreamArtifact}
+	 * Type for describing the way for filling the {@link StreamArtifactAboutToChange}
 	 * content for {@link DatabaseType database} {@link ScriptType scripts}.
 	 * 
 	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com

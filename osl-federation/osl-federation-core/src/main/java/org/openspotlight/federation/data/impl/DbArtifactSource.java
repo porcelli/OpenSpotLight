@@ -67,7 +67,7 @@ import org.openspotlight.federation.data.StaticMetadata;
         "user", "password", "type", "maxConnections" }, propertyTypes = { Boolean.class,
         String.class, String.class, String.class, String.class,
         DatabaseType.class, Integer.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-        BundleProcessorType.class, Group.class, StreamArtifact.class,
+        BundleProcessorType.class, Group.class, StreamArtifactAboutToChange.class,
         CustomArtifact.class, ArtifactMapping.class })
 public class DbArtifactSource extends ArtifactSource {
     

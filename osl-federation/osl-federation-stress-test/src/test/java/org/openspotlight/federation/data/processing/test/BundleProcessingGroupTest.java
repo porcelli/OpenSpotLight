@@ -14,8 +14,8 @@ import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
@@ -62,23 +62,23 @@ public class BundleProcessingGroupTest {
 
         new BundleProcessorType(bundle, "org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
 
-        new StreamArtifact(bundle, "notChangedAtAllArtifact1").setStatus(Status.ALREADY_PROCESSED);
-        new StreamArtifact(bundle, "notChangedAtAllArtifact2").setStatus(Status.ALREADY_PROCESSED);
-        new StreamArtifact(bundle, "notChangedAtAllArtifact3").setStatus(Status.ALREADY_PROCESSED);
-        new StreamArtifact(bundle, "notChangedAtAllArtifact4").setStatus(Status.ALREADY_PROCESSED);
+        new StreamArtifactAboutToChange(bundle, "notChangedAtAllArtifact1").setStatus(Status.ALREADY_PROCESSED);
+        new StreamArtifactAboutToChange(bundle, "notChangedAtAllArtifact2").setStatus(Status.ALREADY_PROCESSED);
+        new StreamArtifactAboutToChange(bundle, "notChangedAtAllArtifact3").setStatus(Status.ALREADY_PROCESSED);
+        new StreamArtifactAboutToChange(bundle, "notChangedAtAllArtifact4").setStatus(Status.ALREADY_PROCESSED);
 
-        new StreamArtifact(bundle, "excluded1").setStatus(Status.EXCLUDED);
-        new StreamArtifact(bundle, "excluded2").setStatus(Status.EXCLUDED);
-        new StreamArtifact(bundle, "excluded3").setStatus(Status.EXCLUDED);
+        new StreamArtifactAboutToChange(bundle, "excluded1").setStatus(Status.EXCLUDED);
+        new StreamArtifactAboutToChange(bundle, "excluded2").setStatus(Status.EXCLUDED);
+        new StreamArtifactAboutToChange(bundle, "excluded3").setStatus(Status.EXCLUDED);
 
-        new StreamArtifact(bundle, "changedArtifact1").setStatus(Status.CHANGED);
-        new StreamArtifact(bundle, "changedArtifact2").setStatus(Status.CHANGED);
+        new StreamArtifactAboutToChange(bundle, "changedArtifact1").setStatus(Status.CHANGED);
+        new StreamArtifactAboutToChange(bundle, "changedArtifact2").setStatus(Status.CHANGED);
 
-        new StreamArtifact(bundle, "included1").setStatus(Status.INCLUDED);
-        new StreamArtifact(bundle, "included2").setStatus(Status.INCLUDED);
-        new StreamArtifact(bundle, "included3").setStatus(Status.INCLUDED);
-        new StreamArtifact(bundle, "included4").setStatus(Status.INCLUDED);
-        new StreamArtifact(bundle, "included5").setStatus(Status.INCLUDED);
+        new StreamArtifactAboutToChange(bundle, "included1").setStatus(Status.INCLUDED);
+        new StreamArtifactAboutToChange(bundle, "included2").setStatus(Status.INCLUDED);
+        new StreamArtifactAboutToChange(bundle, "included3").setStatus(Status.INCLUDED);
+        new StreamArtifactAboutToChange(bundle, "included4").setStatus(Status.INCLUDED);
+        new StreamArtifactAboutToChange(bundle, "included5").setStatus(Status.INCLUDED);
 
         final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
         boolean hasProcessed = false;
@@ -86,7 +86,7 @@ public class BundleProcessingGroupTest {
         boolean hasExcluded = false;
         boolean hasIncluded = false;
         for (final ArtifactSource b : bundles) {
-            looping: for (final StreamArtifact sa : b.getStreamArtifacts()) {
+            looping: for (final StreamArtifactAboutToChange sa : b.getStreamArtifacts()) {
                 if (sa.getStatus() == null) {
                     continue looping;
                 }
@@ -134,7 +134,7 @@ public class BundleProcessingGroupTest {
         boolean hasExcluded = false;
         boolean hasIncluded = false;
         for (final ArtifactSource bundle : bundles) {
-            looping: for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
+            looping: for (final StreamArtifactAboutToChange sa : bundle.getStreamArtifacts()) {
                 if (sa.getStatus() == null) {
                     continue looping;
                 }
@@ -161,7 +161,7 @@ public class BundleProcessingGroupTest {
         assertThat(hasExcluded, is(true));
 
         manager.processBundles(bundles);
-        final BundleProcessingGroup<StreamArtifact> lastGroup = ArtifactCounterBundleProcessor.getLastGroup();
+        final BundleProcessingGroup<StreamArtifactAboutToChange> lastGroup = ArtifactCounterBundleProcessor.getLastGroup();
         configurationManager.closeResources();
         assertThat(lastGroup.getAddedArtifacts().size(), is(this.addedSize));
         assertThat(lastGroup.getExcludedArtifacts().size(), is(this.excludedSize));
@@ -184,7 +184,7 @@ public class BundleProcessingGroupTest {
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
         manager.processBundles(bundles);
-        final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
+        final List<StreamArtifactAboutToChange> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
 
         assertThat(processed.size(), is(this.allArtifactsSize));
     }
@@ -206,7 +206,7 @@ public class BundleProcessingGroupTest {
         configurationManager.closeResources();
 
         manager.processBundles(bundles);
-        final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
+        final List<StreamArtifactAboutToChange> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
         assertThat(processed.size(), is(0));
     }
 
@@ -225,7 +225,7 @@ public class BundleProcessingGroupTest {
         configurationManager.closeResources();
 
         manager.processBundles(bundles);
-        final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
+        final List<StreamArtifactAboutToChange> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
         assertThat(processed.size(), is(0));
     }
 
@@ -244,7 +244,7 @@ public class BundleProcessingGroupTest {
         configurationManager.closeResources();
 
         manager.processBundles(bundles);
-        final List<StreamArtifact> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
+        final List<StreamArtifactAboutToChange> processed = ArtifactCounterBundleProcessor.getProcessedArtifacts();
         assertThat(processed.size(), is(this.newArtifactsSize));
     }
 

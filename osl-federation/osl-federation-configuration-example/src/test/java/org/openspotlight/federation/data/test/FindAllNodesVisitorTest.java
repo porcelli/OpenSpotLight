@@ -58,7 +58,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.openspotlight.federation.data.InstanceMetadata.FindAllNodesVisitor;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 
 /**
  * Test class for {@link FindAllNodesVisitor}
@@ -70,16 +70,16 @@ public class FindAllNodesVisitorTest extends NodeTest {
 
     @Test
     public void shouldFindAllNodes() throws Exception {
-        final FindAllNodesVisitor<StreamArtifact> allNodesVisitor = new FindAllNodesVisitor<StreamArtifact>(StreamArtifact.class);
+        final FindAllNodesVisitor<StreamArtifactAboutToChange> allNodesVisitor = new FindAllNodesVisitor<StreamArtifactAboutToChange>(StreamArtifactAboutToChange.class);
         final Configuration configurationNode = this.createSampleData();
         configurationNode.getInstanceMetadata().accept(allNodesVisitor);
-        final Set<StreamArtifact> foundNodes = allNodesVisitor.getFoundNodesAndInvalidate();
+        final Set<StreamArtifactAboutToChange> foundNodes = allNodesVisitor.getFoundNodesAndInvalidate();
         assertThat(foundNodes.size(), is(not(0)));
 
-        final FindAllNodesVisitor<StreamArtifact> oneRepositoryVisitor = new FindAllNodesVisitor<StreamArtifact>(
-                                                                                                                 StreamArtifact.class);
+        final FindAllNodesVisitor<StreamArtifactAboutToChange> oneRepositoryVisitor = new FindAllNodesVisitor<StreamArtifactAboutToChange>(
+                                                                                                                 StreamArtifactAboutToChange.class);
         configurationNode.getRepositoryByName("r1").getInstanceMetadata().accept(oneRepositoryVisitor);
-        final Set<StreamArtifact> repositoryFoundNodes = oneRepositoryVisitor.getFoundNodesAndInvalidate();
+        final Set<StreamArtifactAboutToChange> repositoryFoundNodes = oneRepositoryVisitor.getFoundNodesAndInvalidate();
         assertThat(repositoryFoundNodes.size(), is(not(0)));
         assertThat(repositoryFoundNodes.size(), is(not(foundNodes.size())));
 

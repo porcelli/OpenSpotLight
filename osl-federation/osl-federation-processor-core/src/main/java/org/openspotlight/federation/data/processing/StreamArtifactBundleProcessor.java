@@ -49,16 +49,16 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 
 /**
  * This interface marks the {@link BundleProcessor bundle processors} that will
- * process {@link StreamArtifact strean artifacts}.
+ * process {@link StreamArtifactAboutToChange strean artifacts}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 public interface StreamArtifactBundleProcessor extends
-        BundleProcessor<StreamArtifact> {
+        BundleProcessor<StreamArtifactAboutToChange> {
     // marker interface
 }

@@ -69,7 +69,7 @@ import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
@@ -165,9 +165,9 @@ public class JcrSessionConfigurationManagerTest extends AbstractConfigurationMan
         final JcrSessionConfigurationManager manager = (JcrSessionConfigurationManager)this.createInstance();
         final ArtifactSource bundle = configuration.getRepositoryByName("r1").getGroupByName("p-1,1").getArtifactSourceByName(
                                                                                                                               "b-1,1,1");
-        final StreamArtifact artifact = new StreamArtifact(bundle, "TABLE_NAME");
+        final StreamArtifactAboutToChange artifact = new StreamArtifactAboutToChange(bundle, "TABLE_NAME");
         manager.save(configuration);
-        final StreamArtifact found = manager.findNodeByUuidAndVersion(configuration, StreamArtifact.class, artifact.getUUID(),
+        final StreamArtifactAboutToChange found = manager.findNodeByUuidAndVersion(configuration, StreamArtifactAboutToChange.class, artifact.getUUID(),
                                                                       artifact.getVersionName());
         assertThat(found, is(notNullValue()));
         assertThat(found.getRelativeName(), is("TABLE_NAME"));
@@ -183,7 +183,7 @@ public class JcrSessionConfigurationManagerTest extends AbstractConfigurationMan
         final ConfigurationManager configurationManager = this.createInstance();
         configurationManager.save(configuration);
         final Configuration loadedConfiguration = configurationManager.load(type);
-        final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(loadedConfiguration, StreamArtifact.class);
+        final Set<StreamArtifactAboutToChange> loadedArtifacts = findAllNodesOfType(loadedConfiguration, StreamArtifactAboutToChange.class);
         assertThat(loadedArtifacts.iterator().next().getData(), is(notNullValue()));
         assertThat(loadedArtifacts.size(), is(not(0)));
     }

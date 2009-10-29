@@ -51,6 +51,10 @@ package org.openspotlight.federation.data.impl;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
+
+import java.io.InputStream;
+import java.util.Collection;
+
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.federation.data.ConfigurationNode;
@@ -58,23 +62,29 @@ import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
+import org.openspotlight.federation.data.impl.SyntaxInformation.SyntaxInformationType;
 
 /**
- * A Custom artifact is an artifact with hierarchical data. So, this artifact is easily represented with Jcr structure instead of
- * bytes to be parsed.
+ * A stream artifact is a artifact that can be readen as byte stream. LATER_TASK Do not replicate same artifacts
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class, Group.class}, propertyNames = {
-    "UUID", "version", "status"}, propertyTypes = {String.class, String.class, Status.class} )
-public class CustomArtifact implements ConfigurationNode, GeneratedNode, ArtifactAboutToChange {
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class, Group.class}, validChildrenTypes = {SyntaxInformation.class}, propertyNames = {
+    "name", "dataSha1", "UUID", "version", "data", "status"}, propertyTypes = {String.class, String.class, String.class,
+    String.class, InputStream.class, Status.class} )
+public final class StreamArtifactAboutToChange implements ConfigurationNode, GeneratedNode, ArtifactAboutToChange {
 
     /**
 	 * 
 	 */
     private static final long      serialVersionUID = -889016915372708085L;
+
+    private static final String    DATA             = "data";              //$NON-NLS-1$
+
     private static final String    STATUS           = "status";            //$NON-NLS-1$
+
+    private static final String    DATA_SHA1        = "dataSha1";          //$NON-NLS-1$
 
     private final InstanceMetadata instanceMetadata;
 
@@ -84,13 +94,13 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifac
      * @param bundle
      * @param relativeName
      */
-    public CustomArtifact(
+    public StreamArtifactAboutToChange(
                            final ArtifactSource bundle, final String relativeName ) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, relativeName);
-        checkCondition("noCustomArtifact", //$NON-NLS-1$
-                       bundle.getCustomArtifactByName(relativeName) == null);
+        checkCondition("noStreamArtifact", //$NON-NLS-1$
+                       bundle.getStreamArtifactByName(relativeName) == null);
         bundle.getInstanceMetadata().addChild(this);
-        this.instanceMetadata.setProperty(STATUS, Status.ALREADY_PROCESSED);
+        //        this.instanceMetadata.setProperty(STATUS, Status.ALREADY_PROCESSED);
     }
 
     /**
@@ -99,12 +109,39 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifac
      * @param project
      * @param relativeName
      */
-    public CustomArtifact(
+    public StreamArtifactAboutToChange(
                            final Group project, final String relativeName ) {
         this.instanceMetadata = createWithKeyProperty(this, project, relativeName);
-        checkCondition("noCustomArtifact", //$NON-NLS-1$
-                       project.getCustomArtifactByName(relativeName) == null);
+        checkCondition("noStreamArtifact", //$NON-NLS-1$
+                       project.getStreamArtifactByName(relativeName) == null);
         project.getInstanceMetadata().addChild(this);
+    }
+
+    /**
+     * Adds a new syntax information if this object does not contains one with the same parameters.
+     * 
+     * @param lineStart
+     * @param lineEnd
+     * @param columnStart
+     * @param columnEnd
+     * @param type
+     */
+    public void addSyntaxInformation( final Integer lineStart,
+                                      final Integer lineEnd,
+                                      final Integer columnStart,
+                                      final Integer columnEnd,
+                                      final SyntaxInformationType type ) {
+        final String describedKey = SyntaxInformation.getDescribedKey(lineStart, lineEnd, columnStart, columnEnd, type);
+        if (this.instanceMetadata.getChildByKeyValue(SyntaxInformation.class, describedKey) == null) {
+            new SyntaxInformation(this, lineStart, lineEnd, columnStart, columnEnd, type);
+        }
+    }
+
+    /**
+     * This method clear the syntax information of this {@link StreamArtifactAboutToChange}.
+     */
+    public void clearSyntaxInformation() {
+        this.instanceMetadata.removeAllChildrenOfType(SyntaxInformation.class);
     }
 
     /**
@@ -120,6 +157,27 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifac
     @Override
     public final boolean equals( final Object obj ) {
         return this.instanceMetadata.equals(obj);
+    }
+
+    /**
+     * @return all syntax information of this {@link StreamArtifactAboutToChange}
+     */
+    public Collection<SyntaxInformation> getAllSyntaxInformation() {
+        return this.instanceMetadata.getChildrensOfType(SyntaxInformation.class);
+    }
+
+    /**
+     * @return a data stream for this artifact as a transient property
+     */
+    public InputStream getData() {
+        return this.instanceMetadata.getStreamProperty(DATA);
+    }
+
+    /**
+     * @return a valid signature for this data
+     */
+    public String getDataSha1() {
+        return this.instanceMetadata.getProperty(DATA_SHA1);
     }
 
     /**
@@ -162,8 +220,34 @@ public class CustomArtifact implements ConfigurationNode, GeneratedNode, Artifac
         return this.instanceMetadata.hashCode();
     }
 
+    /**
+     * Sets a data stream for this artifact as a transient property.
+     * 
+     * @param data
+     */
+    public void setData( final InputStream data ) {
+        this.instanceMetadata.setStreamProperty(DATA, data);
+    }
+
+    /**
+     * Sets a valid signature for this data
+     * 
+     * @param dataSha1
+     */
+    public void setDataSha1( final String dataSha1 ) {
+        this.instanceMetadata.setProperty(DATA_SHA1, dataSha1);
+    }
+
     public void setStatus( final Status status ) {
         this.instanceMetadata.setProperty(STATUS, status);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.instanceMetadata.toString();
     }
 
 }

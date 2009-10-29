@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
 
 /**
  * This interface create some callback methods to be called durring bundle processor phase.
@@ -57,7 +57,7 @@ import org.openspotlight.federation.data.impl.Artifact;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @param <T> artifact type
  */
-public interface BundleProcessorWithCallback<T extends Artifact> extends BundleProcessor<T> {
+public interface BundleProcessorWithCallback<T extends ArtifactAboutToChange> extends BundleProcessor<T> {
 
     /**
      * Callback method to notify that the target artifact is finalized.
@@ -66,7 +66,7 @@ public interface BundleProcessorWithCallback<T extends Artifact> extends BundleP
      * @param bundleProcessingGroup with lists of all processed attributes and so on
      * @param graphContext with all convenient object for graph manipulation
      * @param returnStatus the {@link BundleProcessor.ProcessingAction} returned by
-     *        {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext) processing method}
+     *        {@link BundleProcessor#processArtifact(ArtifactAboutToChange, BundleProcessingGroup, BundleProcessingContext) processing method}
      */
     public void artifactProcessingFinalized( T targetArtifact,
                                              BundleProcessingGroup<T> bundleProcessingGroup,

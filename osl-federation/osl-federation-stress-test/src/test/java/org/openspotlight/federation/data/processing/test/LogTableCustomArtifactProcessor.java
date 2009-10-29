@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
 import org.openspotlight.federation.data.impl.Column;
 import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.TableArtifact;
@@ -66,7 +66,7 @@ public class LogTableCustomArtifactProcessor implements
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     public void globalProcessingFinalized(
-            final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+            final BundleProcessingGroup<? extends ArtifactAboutToChange> bundleProcessingGroup,
             final BundleProcessingContext graphContext) {
         // nothing to do
         

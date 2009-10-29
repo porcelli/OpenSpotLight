@@ -56,7 +56,7 @@ import org.openspotlight.federation.data.ConfigurationNode;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public interface Artifact extends ConfigurationNode {
+public interface ArtifactAboutToChange extends ConfigurationNode {
 
     /**
      * Key properties to load an artifact in a unique way

@@ -83,7 +83,7 @@ import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.NullableSqlType;
 import org.openspotlight.federation.data.impl.RoutineArtifact;
 import org.openspotlight.federation.data.impl.RoutineParameter;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.impl.ViewArtifact;
 import org.openspotlight.federation.data.impl.RoutineArtifact.RoutineType;
@@ -94,7 +94,7 @@ import org.openspotlight.federation.data.util.AggregateNodesListener;
 /**
  * Artifact loader responsible to load information from database using jdbc
  * metadata. It can load information from tables, views and routines using just
- * the jdbc driver. This loades does not get {@link StreamArtifact} information.
+ * the jdbc driver. This loades does not get {@link StreamArtifactAboutToChange} information.
  * It just get information for {@link CustomArtifact}.
  * 
  * This loader has some different behaviors also, such as firing table changes
@@ -326,7 +326,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 	/**
 	 * {@link GlobalExecutionContext} used on this {@link ArtifactLoader}. This
 	 * {@link GlobalExecutionContext} also fire changes on
-	 * {@link StreamArtifact} related to changed views and fires changes on
+	 * {@link StreamArtifactAboutToChange} related to changed views and fires changes on
 	 * {@link TableArtifact tables } related to changed {@link Column columns}.
 	 * 
 	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -374,7 +374,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 		/**
 		 * This method searchs changed {@link ViewArtifact} and fires
 		 * {@link ItemChangeEvent change events} on the related
-		 * {@link StreamArtifact view stream artifacts}.
+		 * {@link StreamArtifactAboutToChange view stream artifacts}.
 		 * 
 		 * @param bundle
 		 */
@@ -386,7 +386,7 @@ public class DatabaseCustomArtifactLoader extends AbstractArtifactLoader {
 					final ViewArtifact view = (ViewArtifact) node;
 					final ConfigurationNode parent = view.getInstanceMetadata()
 							.getDefaultParent();
-					StreamArtifact stream = null;
+					StreamArtifactAboutToChange stream = null;
 					if (parent instanceof ArtifactSource) {
 						final ArtifactSource b = (ArtifactSource) parent;
 						stream = b.getStreamArtifactByName(view
