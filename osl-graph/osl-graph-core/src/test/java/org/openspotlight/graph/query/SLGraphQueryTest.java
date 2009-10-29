@@ -50,8 +50,8 @@ package org.openspotlight.graph.query;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.isOneOf;
+import static org.hamcrest.Matchers.not;
 
 import java.lang.reflect.Method;
 import java.text.Collator;
@@ -3980,5 +3980,46 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         assertThat(result.getQueryId(), is(not(result2.getQueryId())));
 
+    }
+
+    @Test
+    public void testVerifyWhereInStack() {
+
+        try {
+
+            final SLQueryApi query = this.session.createQueryApi();
+
+            query.
+            select().
+                type(JavaPackage.class.getName()).subTypes().
+            selectEnd().
+                where().
+                    type(JavaPackage.class.getName()).subTypes().
+                        each().property("caption").contains().value("java.util").
+                    typeEnd().
+                whereEnd().
+            select().
+                 type(JavaType.class.getName()).subTypes().comma().
+                 byLink(PackageContainsType.class.getName()).b().
+            selectEnd().
+            select().
+                 allTypes()
+            .selectEnd().
+                 where().
+                     type(JavaType.class.getName()).subTypes().
+                         each().property("caption").contains().value("Map").and().
+                         each().link(TypeContainsMethod.class.getName()).a().count().equalsTo().value(6).
+                         typeEnd().
+                 whereEnd();
+
+            final SLQueryResult initialData = query.execute(this.sortMode, this.printInfo);
+            final NodeWrapper[] wrappers = this.wrapNodes(initialData.getNodes());
+
+            this.printInfo = true;
+            this.printResult(initialData.getNodes());
+
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }

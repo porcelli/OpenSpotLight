@@ -187,6 +187,8 @@ public interface RemoteObjectServer {
         }
     }
 
+    public void closeAllObjects();
+
     /**
      * Creates the remote reference.
      * 

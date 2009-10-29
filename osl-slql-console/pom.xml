@@ -27,43 +27,19 @@
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.testng</groupId>
-					<artifactId>testng</artifactId>
-				</exclusion>
-			</exclusions>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-client</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.testng</groupId>
-					<artifactId>testng</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-api</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.testng</groupId>
-					<artifactId>testng</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.testng</groupId>
-					<artifactId>testng</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- External dependencies -->
 		<dependency>

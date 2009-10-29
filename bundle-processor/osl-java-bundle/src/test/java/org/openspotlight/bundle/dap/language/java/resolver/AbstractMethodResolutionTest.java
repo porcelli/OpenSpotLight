@@ -31,7 +31,6 @@ import org.openspotlight.graph.SLInvalidNodeTypeException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public abstract class AbstractMethodResolutionTest {
 
@@ -140,7 +139,7 @@ public abstract class AbstractMethodResolutionTest {
     }
 
     protected JavaTypePrimitive createPrimitiveType( final String type ) throws Exception {
-        return this.helper.addTypeOnCurrentContext(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
+        return this.helper.addTypeOnCurrentContext(JavaTypePrimitive.class, "", type, Opcodes.ACC_PUBLIC);
     }
 
     protected JavaType createType( final String packageName,
@@ -215,6 +214,22 @@ public abstract class AbstractMethodResolutionTest {
         this.helper = new JavaGraphNodeSupport(this.graphSession, currentContextRootNode, abstractContextRootNode);
         this.helper.setupJavaTypesOnCurrentContext();
         final JavaTypeResolver typeResolver = new JavaTypeResolver(this.abstractContex, contexts, true, this.graphSession);
+
+        this.methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, this.graphSession, JavaMethod.class,
+                                                                       TypeDeclares.class, MethodParameterDefinition.class,
+                                                                       "simpleName", "Order");
+
+    }
+
+    public void setupMethodResolverDisablingAutoboxing() throws Exception {
+        final SLContext testCtx = this.graphSession.getContext("test");
+        final List<SLContext> contexts = new ArrayList<SLContext>();
+        contexts.add(testCtx);
+        final SLNode currentContextRootNode = this.graphSession.getContext("test").getRootNode();
+        final SLNode abstractContextRootNode = this.abstractContex.getRootNode();
+        this.helper = new JavaGraphNodeSupport(this.graphSession, currentContextRootNode, abstractContextRootNode);
+        this.helper.setupJavaTypesOnCurrentContext();
+        final JavaTypeResolver typeResolver = new JavaTypeResolver(this.abstractContex, contexts, false, this.graphSession);
 
         this.methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, this.graphSession, JavaMethod.class,
                                                                        TypeDeclares.class, MethodParameterDefinition.class,
