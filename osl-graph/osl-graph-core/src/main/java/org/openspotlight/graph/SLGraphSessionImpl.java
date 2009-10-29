@@ -307,7 +307,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 final SLContext context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
                 return context;
             } else {
-                throw new SLContextAlreadyExistsException(id);
+                return this.getContext(id);
             }
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLGraphSessionException("Error on attempt to create context node.", e);

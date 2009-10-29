@@ -15,6 +15,7 @@ import gnu.cajo.invoke.Remote;
 import gnu.cajo.utils.ItemServer;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
@@ -232,6 +233,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
     }
 
+    private static final Class<Annotation>                                DisposeMethod            = null;
+
     private final Logger                                                  logger                   = LoggerFactory.getLogger(this.getClass());
 
     /** The closed. */
@@ -296,6 +299,12 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         } catch (final RemoteException e) {
             throw logAndReturnNew(format("Problem starting remote object server inside port {0}", portToUse), e,
                                   ConfigurationException.class);
+        }
+    }
+
+    public synchronized void closeAllObjects() {
+        for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> e : this.remoteReferences.entrySet()) {
+            this.removeDeathEntry(e.getValue());
         }
     }
 
@@ -686,11 +695,14 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         final Method[] methods = deathEntry.getObject().getClass().getMethods();
         for (final Method m : methods) {
             if (m.isAnnotationPresent(DisposeMethod.class) && m.getParameterTypes().length == 0) {
-                try {
-                    m.invoke(deathEntry.getObject());
-                    return;
-                } catch (final Exception e) {
-                    catchAndLog(e);
+                final DisposeMethod disposeAnnotation = m.getAnnotation(DisposeMethod.class);
+                if (disposeAnnotation.callOnTimeout()) {
+                    try {
+                        m.invoke(deathEntry.getObject());
+                        return;
+                    } catch (final Exception e) {
+                        catchAndLog(e);
+                    }
                 }
             }
         }
@@ -699,7 +711,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     /**
      * Shutdown.
      */
-    public void shutdown() {
+    public synchronized void shutdown() {
         Remote.shutdown();
 
         this.closed.set(true);
@@ -707,9 +719,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             entry.getValue().shutdown();
         }
 
-        for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> e : this.remoteReferences.entrySet()) {
-            this.removeDeathEntry(e.getValue());
-        }
+        this.closeAllObjects();
     }
 
     /**
