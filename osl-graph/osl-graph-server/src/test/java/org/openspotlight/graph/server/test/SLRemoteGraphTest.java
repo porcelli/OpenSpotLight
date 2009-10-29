@@ -74,7 +74,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.util.Files;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
@@ -144,7 +143,6 @@ public class SLRemoteGraphTest {
      */
     @BeforeClass
     public static void init() throws Exception {
-        Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
 
         server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
@@ -154,25 +152,6 @@ public class SLRemoteGraphTest {
                 return true;
             }
         }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-
-        client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
-
-            public String getHost() {
-                return "localhost";
-            }
-
-            public String getPassword() {
-                return "***";
-            }
-
-            public int getPort() {
-                return 7070;
-            }
-
-            public String getUserName() {
-                return "***";
-            }
-        });
 
     }
 
@@ -342,6 +321,7 @@ public class SLRemoteGraphTest {
     @After
     public void afterTest() throws SLGraphSessionException {
         this.session.clear();
+
         // session.save();
         // session.close();
     }
@@ -475,6 +455,33 @@ public class SLRemoteGraphTest {
             set.add(metaNode.getType().getName());
         }
         return set;
+    }
+
+    @Before
+    public void setupClient() throws Exception {
+        if (this.session != null) {
+            this.session.clear();
+        }
+        server.remoteAllObjectsFromServer();
+        client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
+
+            public String getHost() {
+                return "localhost";
+            }
+
+            public String getPassword() {
+                return "***";
+            }
+
+            public int getPort() {
+                return 7070;
+            }
+
+            public String getUserName() {
+                return "***";
+            }
+        });
+
     }
 
     /**

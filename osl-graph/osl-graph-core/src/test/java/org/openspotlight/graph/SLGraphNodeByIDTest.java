@@ -59,7 +59,6 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.JavaInterface;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphNodeByIDTest.

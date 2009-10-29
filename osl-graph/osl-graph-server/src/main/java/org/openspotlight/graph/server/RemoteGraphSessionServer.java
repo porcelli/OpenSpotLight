@@ -95,6 +95,10 @@ public class RemoteGraphSessionServer {
         this.remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(descriptor));
     }
 
+    public void remoteAllObjectsFromServer() {
+        this.remoteObjectServer.closeAllObjects();
+    }
+
     /**
      * Shutdown. This method should be called <b>only one time during the VM life cycle</b>. This is necessary due some static
      * garbage on RMI.

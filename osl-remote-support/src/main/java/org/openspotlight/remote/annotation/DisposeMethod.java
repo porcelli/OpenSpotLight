@@ -5,5 +5,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention( RetentionPolicy.RUNTIME )
 public @interface DisposeMethod {
-    boolean callOnTimeout() default true;
+    boolean callOnTimeout() default false;
 }

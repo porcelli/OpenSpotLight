@@ -71,7 +71,6 @@ import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class SLGraphQueryLinkCountTest.

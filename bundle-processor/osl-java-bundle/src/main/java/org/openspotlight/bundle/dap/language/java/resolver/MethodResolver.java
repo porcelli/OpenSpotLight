@@ -291,18 +291,24 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
         }
 
         //FIXME is this method called in the correct way?
-        final List<T> typeHierarchy = this.typeResolver.getAllParents(type, ResultOrder.ASC,
+        final List<T> typeHierarchy = this.typeResolver.getAllParents(type, ResultOrder.DESC,
                                                                       IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
         final SLQueryApi query = this.graphSession.createQueryApi();
 
-        query.select().type(this.methodSuperType.getName()).subTypes().comma().byLink(this.typeMethodLink.getName()).b().selectEnd().select().type(
-                                                                                                                                                   this.methodSuperType.getName()).subTypes().selectEnd().where().type(
-                                                                                                                                                                                                                       this.methodSuperType.getName()).subTypes().each().link(
-                                                                                                                                                                                                                                                                              this.methodParameterDefinitionLink.getName()).a().count().equalsTo().value(
-                                                                                                                                                                                                                                                                                                                                                         paramSize).and().each().property(
-                                                                                                                                                                                                                                                                                                                                                                                          this.propertySimpleMethodName).equalsTo().value(
-                                                                                                                                                                                                                                                                                                                                                                                                                                          methodName).typeEnd().whereEnd();
+        query.select().
+                type(this.methodSuperType.getName()).subTypes().comma().
+                byLink(this.typeMethodLink.getName()).b().
+              selectEnd().
+              select().
+                  type(this.methodSuperType.getName()).subTypes().
+              selectEnd().
+                  where().
+                      type(this.methodSuperType.getName()).subTypes().
+                          each().link(this.methodParameterDefinitionLink.getName()).a().count().equalsTo().value(paramSize).and().
+                          each().property(this.propertySimpleMethodName).equalsTo().value(methodName).
+                       typeEnd().
+                  whereEnd();
 
         for (final T activeType : typeHierarchy) {
             final List<T> inputType = new LinkedList<T>();

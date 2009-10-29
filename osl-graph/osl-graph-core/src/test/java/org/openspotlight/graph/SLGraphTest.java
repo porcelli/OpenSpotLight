@@ -147,7 +147,7 @@ public class SLGraphTest {
     private SLLink         linkBoth;
 
     /**
-     * ======= >>>>>>> 51720a0fa81fe82484c076efdb19ffee0d4bfe42 Adds the add multiple link empty case.
+     *  Adds the add multiple link empty case.
      */
     @Test
     public void addAddMultipleLinkEmptyCase() {

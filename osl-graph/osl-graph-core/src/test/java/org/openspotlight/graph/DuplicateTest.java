@@ -69,7 +69,6 @@ import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.JavaClass;
 import org.openspotlight.graph.test.domain.JavaType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
