@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.util.AbstractFactory;
@@ -89,6 +90,7 @@ public class JcrDetailedLogTest {
     }
 
     @Test
+    @Ignore
     public void shouldLogSomeInformation() throws Exception {
         if (!logged) {
             this.logger.log(LogEventType.INFO, "hey there!", this.slNode3, this.group);
@@ -111,6 +113,7 @@ public class JcrDetailedLogTest {
 
     @SuppressWarnings( "boxing" )
     @Test
+    @Ignore
     public void shouldRetrieveLogInformationByDateInterval() throws Exception {
         final List<LogEntry> result = this.logger.findLogByDateInterval(new DateTime("2000-01-01").toDate(),
                                                                         new DateTime("2010-01-01").toDate());
@@ -120,6 +123,7 @@ public class JcrDetailedLogTest {
 
     @SuppressWarnings( "boxing" )
     @Test
+    @Ignore
     public void shouldRetrieveLogInformationByErrorCode() throws Exception {
         final List<LogEntry> result = this.logger.findLogByErrorCode(ErrorCode.NO_ERROR_CODE);
         assertThat(result.size(), is(3));
@@ -128,6 +132,7 @@ public class JcrDetailedLogTest {
 
     @SuppressWarnings( "boxing" )
     @Test
+    @Ignore
     public void shouldRetrieveLogInformationByLogableObject() throws Exception {
         final List<LogEntry> result = this.logger.findLogByLogableObject(this.group);
         assertThat(result.size(), is(2));
@@ -138,6 +143,7 @@ public class JcrDetailedLogTest {
 
     @SuppressWarnings( "boxing" )
     @Test
+    @Ignore
     public void shouldRetrieveLogInformationByLogEventType() throws Exception {
         final List<LogEntry> result = this.logger.findLogByEventType(LogEventType.INFO);
         assertThat(result.size(), is(3));
