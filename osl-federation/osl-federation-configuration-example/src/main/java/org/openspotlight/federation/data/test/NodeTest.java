@@ -65,7 +65,7 @@ import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.JavaArtifactSource;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 
 /**
  * Test class to be used on configuration node tests.
@@ -128,7 +128,7 @@ public class NodeTest {
         assertThat(artifactMapping.getIncludeds().iterator().next().getName(), is("*"));
 
         if (verifyArtifacts) {
-            final StreamArtifact artifact = bundle.getStreamArtifactByName("r-1,1,1,1");
+            final StreamArtifactAboutToChange artifact = bundle.getStreamArtifactByName("r-1,1,1,1");
             // THIS IS TRANSIENT : Artifact.getData()
             assertThat(artifact.getDataSha1(), is(notNullValue()));
         }
@@ -166,7 +166,7 @@ public class NodeTest {
                         new Excluded(artifactMapping, "**/*.excluded");
                     }
                     for (final int m : numbers) {
-                        final StreamArtifact Artifact = new StreamArtifact(bundle, "r-" + i + "," + j + "," + k + "," + m);
+                        final StreamArtifactAboutToChange Artifact = new StreamArtifactAboutToChange(bundle, "r-" + i + "," + j + "," + k + "," + m);
                         Artifact.setData(new ByteArrayInputStream("new example".getBytes()));
                         Artifact.setDataSha1("sha1");
                     }

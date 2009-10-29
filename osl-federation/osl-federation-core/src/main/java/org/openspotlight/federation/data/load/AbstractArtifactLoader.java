@@ -82,7 +82,7 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.Excluded;
 import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 
 /**
  * The AbstractArtifactLoader class is itself a {@link ArtifactLoader} that do the common stuff such as filtering artifacts before
@@ -465,7 +465,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                     final String newName = name.startsWith(mapping.getRelative()) ? removeBegginingFrom(mapping.getRelative(),
                                                                                                         name) : name;
                     if (!namesToProcess.contains(newName) && !namesToProcess.contains(name)) {
-                        final StreamArtifact artifactToDelete = bundle.getStreamArtifactByName(name);
+                        final StreamArtifactAboutToChange artifactToDelete = bundle.getStreamArtifactByName(name);
                         bundle.markStreamArtifactAsRemoved(artifactToDelete);
                     }
                 }
@@ -544,7 +544,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                     }
                     final String sha1 = getSha1SignatureEncodedAsBase64(content);
                     final InputStream is = new ByteArrayInputStream(content);
-                    final StreamArtifact artifact = bundle.addStreamArtifact(artifactName);
+                    final StreamArtifactAboutToChange artifact = bundle.addStreamArtifact(artifactName);
                     artifact.setData(is);
                     artifact.setDataSha1(sha1);
                     loadCounter.incrementAndGet();

@@ -64,7 +64,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 @ThreadSafe
 @StaticMetadata(propertyNames = { "active", "initialLookup", "user", "password" }, propertyTypes = {
 		Boolean.class, String.class, String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-		BundleProcessorType.class, Group.class, StreamArtifact.class,
+		BundleProcessorType.class, Group.class, StreamArtifactAboutToChange.class,
 		CustomArtifact.class, ArtifactMapping.class })
 public class DnaSvnArtifactSource extends ArtifactSource {
 

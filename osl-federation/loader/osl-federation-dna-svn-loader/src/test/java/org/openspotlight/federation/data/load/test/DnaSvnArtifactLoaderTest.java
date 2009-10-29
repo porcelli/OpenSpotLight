@@ -69,7 +69,7 @@ import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.DNASvnArtifactLoader;
 
 /**

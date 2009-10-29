@@ -61,7 +61,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 @StaticMetadata(propertyNames = { "active", "initialLookup",
         "virtualMachineVersion" }, propertyTypes = { Boolean.class,
         String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-        Group.class, BundleProcessorType.class, StreamArtifact.class,
+        Group.class, BundleProcessorType.class, StreamArtifactAboutToChange.class,
         CustomArtifact.class, ArtifactMapping.class })
 public class JavaArtifactSource extends ArtifactSource {
     

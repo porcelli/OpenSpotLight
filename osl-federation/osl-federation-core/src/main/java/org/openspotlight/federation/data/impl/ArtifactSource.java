@@ -63,7 +63,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 
 /**
  * A bundle is a group of artifact sources such as source folders, database tables and so on. The bundle should group similar
@@ -74,7 +74,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
 @SuppressWarnings( "unchecked" )
 @ThreadSafe
 @StaticMetadata( propertyNames = {"active", "initialLookup"}, propertyTypes = {Boolean.class, String.class}, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {Group.class}, validChildrenTypes = {
-    BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class, ArtifactMapping.class, ScheduleData.class} )
+    BundleProcessorType.class, StreamArtifactAboutToChange.class, CustomArtifact.class, ArtifactMapping.class, ScheduleData.class} )
 public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSource> {
 
     /** The Constant ACTIVE. */
@@ -105,18 +105,18 @@ public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSo
     }
 
     /**
-     * Adds a new {@link StreamArtifact} to this bundle if there's no {@link StreamArtifact} with the artifactName passed as a
-     * param. If there's any {@link StreamArtifact} with this artifactName, this method just returns the existing one.
+     * Adds a new {@link StreamArtifactAboutToChange} to this bundle if there's no {@link StreamArtifactAboutToChange} with the artifactName passed as a
+     * param. If there's any {@link StreamArtifactAboutToChange} with this artifactName, this method just returns the existing one.
      * 
      * @param artifactName the artifact name
      * @return a stream artifact
      */
-    public StreamArtifact addStreamArtifact( final String artifactName ) {
-        final StreamArtifact streamArtifact = this.getStreamArtifactByName(artifactName);
+    public StreamArtifactAboutToChange addStreamArtifact( final String artifactName ) {
+        final StreamArtifactAboutToChange streamArtifact = this.getStreamArtifactByName(artifactName);
         if (streamArtifact != null) {
             return streamArtifact;
         }
-        return new StreamArtifact(this, artifactName);
+        return new StreamArtifactAboutToChange(this, artifactName);
     }
 
     /**
@@ -367,8 +367,8 @@ public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSo
      * @param name the name
      * @return an artifact
      */
-    public final StreamArtifact getStreamArtifactByName( final String name ) {
-        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class, name);
+    public final StreamArtifactAboutToChange getStreamArtifactByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(StreamArtifactAboutToChange.class, name);
     }
 
     /**
@@ -377,7 +377,7 @@ public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSo
      * @return all artifact names
      */
     public final Set<String> getStreamArtifactNames() {
-        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(StreamArtifact.class);
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(StreamArtifactAboutToChange.class);
     }
 
     /**
@@ -385,8 +385,8 @@ public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSo
      * 
      * @return all artifacts
      */
-    public final Collection<StreamArtifact> getStreamArtifacts() {
-        return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
+    public final Collection<StreamArtifactAboutToChange> getStreamArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(StreamArtifactAboutToChange.class);
     }
 
     /**
@@ -411,7 +411,7 @@ public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSo
      * 
      * @param streamArtifact the artifact
      */
-    public final void markStreamArtifactAsRemoved( final StreamArtifact streamArtifact ) {
+    public final void markStreamArtifactAsRemoved( final StreamArtifactAboutToChange streamArtifact ) {
         streamArtifact.getInstanceMetadata().setProperty("status", Status.EXCLUDED);
     }
 

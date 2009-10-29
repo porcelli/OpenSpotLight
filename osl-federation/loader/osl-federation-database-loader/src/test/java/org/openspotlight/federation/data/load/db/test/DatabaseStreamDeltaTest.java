@@ -67,8 +67,8 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 
 /**
@@ -167,7 +167,7 @@ public class DatabaseStreamDeltaTest {
         assertThat(sharedData.getDirtyNodes().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
-        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+        final StreamArtifactAboutToChange changed = (StreamArtifactAboutToChange)sharedData.getDirtyNodes().iterator().next();
         assertThat(changed.getStatus(), is(Status.EXCLUDED));
 
     }

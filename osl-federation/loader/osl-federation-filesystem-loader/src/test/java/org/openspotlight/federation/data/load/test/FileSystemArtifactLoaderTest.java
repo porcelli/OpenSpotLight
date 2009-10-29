@@ -67,8 +67,8 @@ import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 
 /**
@@ -160,7 +160,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         assertThat(sharedData.getDirtyNodes().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
-        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+        final StreamArtifactAboutToChange changed = (StreamArtifactAboutToChange)sharedData.getDirtyNodes().iterator().next();
         assertThat(changed.getStatus(), is(Status.EXCLUDED));
     }
 
@@ -181,7 +181,7 @@ public class FileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
         fos.close();
         this.artifactLoader.loadArtifactsFromMappings(bundle);
 
-        final StreamArtifact sa = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
+        final StreamArtifactAboutToChange sa = (StreamArtifactAboutToChange)sharedData.getDirtyNodes().iterator().next();
 
         for (final ItemChangeEvent<ConfigurationNode> change : sharedData.getNodeChangesSinceLastSave()) {
             System.out.println(change.getType() + " " + change.getNewItem());

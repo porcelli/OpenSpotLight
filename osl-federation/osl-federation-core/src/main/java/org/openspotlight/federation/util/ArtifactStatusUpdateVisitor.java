@@ -6,8 +6,8 @@ import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
-import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 
 /**
  * This class will change all status of artifacts been changed to the convenient one.
@@ -26,8 +26,8 @@ public enum ArtifactStatusUpdateVisitor implements ItemEventListener<Configurati
      */
     public void changeEventHappened( final ItemChangeEvent<ConfigurationNode> event ) {
         final ConfigurationNode target = event.getNewItem() == null ? event.getOldItem() : event.getNewItem();
-        if (target instanceof Artifact) {
-            final Artifact artifact = (Artifact)target;
+        if (target instanceof ArtifactAboutToChange) {
+            final ArtifactAboutToChange artifact = (ArtifactAboutToChange)target;
             final ItemChangeType changeStatus = event.getType();
             Status newStatus;
             switch (changeStatus) {

@@ -60,7 +60,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.Artifact.Status;
+import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 
 /**
  * A project represents a group of artifacts such as source folders with program files, database artifacts such as tables,
@@ -72,7 +72,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
 @SuppressWarnings( "unchecked" )
 @ThreadSafe
 @StaticMetadata( propertyNames = {"active", "graphRoot", "type"}, propertyTypes = {Boolean.class, Boolean.class, String.class}, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {
-    Group.class, Repository.class}, validChildrenTypes = {ScheduleData.class, Group.class, StreamArtifact.class,
+    Group.class, Repository.class}, validChildrenTypes = {ScheduleData.class, Group.class, StreamArtifactAboutToChange.class,
     CustomArtifact.class, ArtifactMapping.class, ArtifactSource.class} )
 public final class Group implements ConfigurationNode, Schedulable<Group> {
 
@@ -164,14 +164,14 @@ public final class Group implements ConfigurationNode, Schedulable<Group> {
      * @return all artifact names
      */
     public final Set<String> getArtifactNames() {
-        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(StreamArtifact.class);
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(StreamArtifactAboutToChange.class);
     }
 
     /**
      * @return all artifacts
      */
-    public final Collection<StreamArtifact> getArtifacts() {
-        return this.instanceMetadata.getChildrensOfType(StreamArtifact.class);
+    public final Collection<StreamArtifactAboutToChange> getArtifacts() {
+        return this.instanceMetadata.getChildrensOfType(StreamArtifactAboutToChange.class);
     }
 
     /**
@@ -312,8 +312,8 @@ public final class Group implements ConfigurationNode, Schedulable<Group> {
      * @param name
      * @return an artifact
      */
-    public final StreamArtifact getStreamArtifactByName( final String name ) {
-        return this.instanceMetadata.getChildByKeyValue(StreamArtifact.class, name);
+    public final StreamArtifactAboutToChange getStreamArtifactByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(StreamArtifactAboutToChange.class, name);
     }
 
     /**
@@ -345,7 +345,7 @@ public final class Group implements ConfigurationNode, Schedulable<Group> {
      * 
      * @param streamArtifact the artifact
      */
-    public final void markStreamArtifactAsRemoved( final StreamArtifact streamArtifact ) {
+    public final void markStreamArtifactAsRemoved( final StreamArtifactAboutToChange streamArtifact ) {
         streamArtifact.getInstanceMetadata().setProperty("status", Status.EXCLUDED);
     }
 

@@ -77,7 +77,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 @StaticMetadata(propertyNames = { "lineStart", "lineEnd", "columnStart",
         "columnEnd", "type" }, propertyTypes = { Integer.class, Integer.class,
         Integer.class, Integer.class,
-        SyntaxInformation.SyntaxInformationType.class }, keyPropertyName = "describedKey", keyPropertyType = String.class, validParentTypes = { Artifact.class })
+        SyntaxInformation.SyntaxInformationType.class }, keyPropertyName = "describedKey", keyPropertyType = String.class, validParentTypes = { ArtifactAboutToChange.class })
 public class SyntaxInformation implements ConfigurationNode {
     
     /**
@@ -165,7 +165,7 @@ public class SyntaxInformation implements ConfigurationNode {
      * @param columnEnd
      * @param type
      */
-    public SyntaxInformation(final Artifact artifact, final Integer lineStart,
+    public SyntaxInformation(final ArtifactAboutToChange artifact, final Integer lineStart,
             final Integer lineEnd, final Integer columnStart,
             final Integer columnEnd, final SyntaxInformationType type) {
         checkNotNull("artifact", artifact); //$NON-NLS-1$
@@ -198,7 +198,7 @@ public class SyntaxInformation implements ConfigurationNode {
      * @param describedKey
      * 
      */
-    public SyntaxInformation(final Artifact artifact, final String describedKey) {
+    public SyntaxInformation(final ArtifactAboutToChange artifact, final String describedKey) {
         this.instanceMetadata = createWithKeyProperty(this, artifact,
                 describedKey);
         final StringTokenizer tok = new StringTokenizer(describedKey, " "); //$NON-NLS-1$
