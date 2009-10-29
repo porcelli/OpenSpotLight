@@ -103,7 +103,7 @@ public interface SLGraphSession {
     /**
      * Close.
      */
-    @DisposeMethod
+    @DisposeMethod( callOnTimeout = true )
     public void close();
 
     /**
