@@ -446,6 +446,7 @@ public final class StreamArtifact {
         this.hashcode = HashCodes.hashOf(this.getArtifactCompleteName(), this.changeType);
         this.syntaxInformationSet = new CopyOnWriteArraySet<SyntaxInformation>();
         this.immutableSyntaxInformationSet = Collections.unmodifiableSet(this.syntaxInformationSet);
+        this.syntaxInformationSet.addAll(this.lazyContentLoader.loadSyntaxInformations(this.hash, this));
     }
 
     /**
