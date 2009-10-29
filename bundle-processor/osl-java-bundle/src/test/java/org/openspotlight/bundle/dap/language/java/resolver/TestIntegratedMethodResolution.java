@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.TypeDeclares;
@@ -416,7 +417,8 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    //FIXME needs to review how to address ParameterizedTypes at TypeResolution (its bases on instanced classes)
+    @Test
+    @Ignore( value = "needs to review how to address ParameterizedTypes at TypeResolution (its bases on instanced classes)" )
     public void getMethodParameterizedByClass() throws Exception {
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
@@ -465,7 +467,8 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         assertThat(foundMethod.getContext(), is(not(this.abstractContex)));
     }
 
-    //FIXME needs to review how to address ParameterizedTypes at TypeResolution (its bases on instanced classes)
+    @Test
+    @Ignore( value = "needs to review how to address ParameterizedTypes at TypeResolution (its bases on instanced classes)" )
     public void getMethodParameterizedByMethod() throws Exception {
         final JavaType objectType = this.createType("java.lang", "Object", null, false);
         final JavaType stringType = this.createType("java.lang", "String", objectType, true);
@@ -753,7 +756,6 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         final JavaType typeSLObject4 = this.createType("org.openspotlight", "SLObject4", typeSLObject3, false);
         final JavaType typeSLObject5 = this.createType("org.openspotlight", "SLObject5", typeSLObject4, false);
 
-        @SuppressWarnings( "unchecked" )
         final JavaMethodMethod foundMethod = (JavaMethodMethod)this.methodResolver.getMethod(typeSLObject5, "toString");
 
         assertThat(foundMethod, is(notNullValue()));
