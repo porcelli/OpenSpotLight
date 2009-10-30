@@ -69,7 +69,6 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Configuration;
 
 /**

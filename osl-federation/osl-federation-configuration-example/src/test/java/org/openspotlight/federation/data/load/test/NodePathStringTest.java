@@ -54,7 +54,6 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOracleOciDbConfiguration;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.impl.Bundle;
 
 /**
