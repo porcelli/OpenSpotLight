@@ -57,6 +57,9 @@ import org.openspotlight.common.SharedConstants;
  */
 public class SLConsts implements SharedConstants {
 
+    /** The Constant DEFAULT_REPOSITORY_NAME. */
+    public static final String DEFAULT_REPOSITORY_NAME                     = "default";
+
     /** The Constant NODE_NAME_LINK. */
     public static final String NODE_NAME_LINK                              = "link";
 

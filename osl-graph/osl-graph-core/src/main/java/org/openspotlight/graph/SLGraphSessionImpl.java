@@ -302,10 +302,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
     public SLContext createContext( final String id ) throws SLContextAlreadyExistsException, SLGraphSessionException {
         try {
             final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
-            final SLContext context;
             if (contextsPersistentNode.getNode(id) == null) {
                 final SLPersistentNode contextRootPersistentNode = contextsPersistentNode.addNode("" + id);
-                context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
+                return new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
             }
             return this.getContext(id);
             

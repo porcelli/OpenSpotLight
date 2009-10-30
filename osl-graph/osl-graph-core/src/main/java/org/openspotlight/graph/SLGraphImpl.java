@@ -86,12 +86,13 @@ public class SLGraphImpl implements SLGraph {
      */
     public void gc() throws SLPersistentTreeException {
         if (this.graphState != GraphState.SHUTDOWN) {
-            final SLPersistentTreeSession treeSession = this.tree.openSession();
-            if (SLCommonSupport.containsQueryCache(treeSession)) {
-                final SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
-                pNode.remove();
-            }
-            treeSession.close();
+            //FIXME here
+            //            final SLPersistentTreeSession treeSession = this.tree.openSession();
+            //            if (SLCommonSupport.containsQueryCache(treeSession)) {
+            //                final SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
+            //                pNode.remove();
+            //            }
+            //            treeSession.close();
         }
     }
 
@@ -105,19 +106,27 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession openSession() throws SLGraphException {
+    public SLGraphSession openSession( String repositoryName ) throws SLGraphException {
         if (this.graphState == GraphState.SHUTDOWN) {
             throw new SLGraphException("Could not open SL graph session. Graph is already shutdown.");
         }
 
         try {
-            final SLPersistentTreeSession treeSession = this.tree.openSession();
+            final SLPersistentTreeSession treeSession = this.tree.openSession(repositoryName);
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             return factory.createGraphSession(treeSession);
         } catch (final Exception e) {
             throw new SLGraphException("Could not open SL graph session.", e);
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public SLGraphSession openSession() throws SLGraphException {
+        return openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
+    }
+
 
     /**
      * {@inheritDoc}
@@ -127,4 +136,5 @@ public class SLGraphImpl implements SLGraph {
         this.graphState = GraphState.SHUTDOWN;
         this.listener.graphClosed(this);
     }
+
 }

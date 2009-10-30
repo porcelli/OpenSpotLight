@@ -378,7 +378,7 @@ public class AbstractGeneralQueryTest {
     }
 
     protected static void openNewSession() throws Exception {
-        session = graph.openSession();
+        session = graph.openSession("testRepo");
     }
 
     /**
@@ -457,7 +457,7 @@ public class AbstractGeneralQueryTest {
     protected static void setupSession() throws Exception {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        session = graph.openSession();
+        session = graph.openSession("testRepo");
     }
 
     protected static void shutdownTest() {

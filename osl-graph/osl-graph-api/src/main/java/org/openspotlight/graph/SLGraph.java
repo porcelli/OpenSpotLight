@@ -73,9 +73,20 @@ public interface SLGraph {
     }
 
     /**
-     * Open session.
+     * Open repository session.
+     * 
+     * @param repositoryName the repository name
+     * @return the sL graph session
+     * @throws SLGraphException the SL graph exception
+     */
+    public SLGraphSession openSession( String repositoryName ) throws SLGraphException;
+
+    
+    /**
+     * Open default repository session.
      * 
      * @return the sL graph session
+     * 
      * @throws SLGraphException the SL graph exception
      */
     public SLGraphSession openSession() throws SLGraphException;
