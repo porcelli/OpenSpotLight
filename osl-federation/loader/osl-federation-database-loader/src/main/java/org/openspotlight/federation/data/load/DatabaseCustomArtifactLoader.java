@@ -72,12 +72,10 @@ import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.Column;
 import org.openspotlight.federation.data.impl.ColumnType;
-import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.NullableSqlType;

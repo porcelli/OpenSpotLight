@@ -2146,7 +2146,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         final SLQueryTextInternal query = this.queryBuilder.build(slqlInput);
 
         final SLQueryResult result = query.execute(session, null, null, sortMode, this.printInfo, null, null);
-//        final NodeWrapper[] wrappers = this.wrapNodes(result.getNodes());
+        //        final NodeWrapper[] wrappers = this.wrapNodes(result.getNodes());
 
         new AssertResult() {
             public void execute() {

@@ -60,7 +60,11 @@ import org.openspotlight.graph.SLNodePredicate;
  */
 public class NamePredicate implements SLNodePredicate {
 	
-	/** The name. */
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -8119875059064738404L;
+    /** The name. */
 	private String name;
 	
 	/**

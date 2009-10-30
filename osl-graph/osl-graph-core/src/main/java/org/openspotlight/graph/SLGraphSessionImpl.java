@@ -306,9 +306,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
             if (contextsPersistentNode.getNode(id) == null) {
                 final SLPersistentNode contextRootPersistentNode = contextsPersistentNode.addNode("" + id);
                 context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
+            } else {
+                context = this.getContext(id);
             }
-            return this.getContext(id);
-            
+            return context;
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLGraphSessionException("Error on attempt to create context node.", e);
         }

@@ -58,7 +58,6 @@ import org.junit.Test;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;

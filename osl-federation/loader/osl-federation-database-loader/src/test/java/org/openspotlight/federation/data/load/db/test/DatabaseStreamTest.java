@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.impl.DbBundle;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
