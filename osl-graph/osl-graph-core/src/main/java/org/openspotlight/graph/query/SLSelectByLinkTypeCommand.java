@@ -65,7 +65,7 @@ public class SLSelectByLinkTypeCommand extends SLSelectAbstractCommand {
 			if (!inputNodeWrappers.isEmpty()) {
 
 				List<SLSelectTypeInfo> selectTypeInfoList = selectInfo.getTypeInfoList();
-		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/links/*//*");
+		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/links/*//*");
 		 		Statement rootStatement = statementBuilder.getRootStatement();
 		 		
 				List<SLSelectByLinkInfo> byLinkInfoList = selectInfo.getByLinkInfoList();

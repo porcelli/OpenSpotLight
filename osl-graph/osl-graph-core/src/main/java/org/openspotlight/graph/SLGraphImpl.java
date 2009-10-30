@@ -84,16 +84,22 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public void gc() throws SLPersistentTreeException {
+    public void gc( String repositoryName ) throws SLPersistentTreeException {
         if (this.graphState != GraphState.SHUTDOWN) {
-            //FIXME here
-            //            final SLPersistentTreeSession treeSession = this.tree.openSession();
-            //            if (SLCommonSupport.containsQueryCache(treeSession)) {
-            //                final SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
-            //                pNode.remove();
-            //            }
-            //            treeSession.close();
+            final SLPersistentTreeSession treeSession = this.tree.openSession(repositoryName);
+            if (SLCommonSupport.containsQueryCache(treeSession)) {
+                final SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
+                pNode.remove();
+            }
+            treeSession.close();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void gc() throws SLPersistentTreeException {
+        this.gc(SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 
     /**
@@ -119,14 +125,13 @@ public class SLGraphImpl implements SLGraph {
             throw new SLGraphException("Could not open SL graph session.", e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public SLGraphSession openSession() throws SLGraphException {
-        return openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
+        return this.openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
     }
-
 
     /**
      * {@inheritDoc}
@@ -136,5 +141,4 @@ public class SLGraphImpl implements SLGraph {
         this.graphState = GraphState.SHUTDOWN;
         this.listener.graphClosed(this);
     }
-
 }

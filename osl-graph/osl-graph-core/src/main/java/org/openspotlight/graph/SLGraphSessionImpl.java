@@ -517,7 +517,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private Collection<Class<? extends SLLink>> getLinkClasses() throws SLGraphSessionException {
         try {
             final Collection<Class<? extends SLLink>> linkClasses = new ArrayList<Class<? extends SLLink>>();
-            final SLPersistentQuery query = this.treeSession.createQuery("//osl/links/*", SLPersistentQuery.TYPE_XPATH);
+            final SLPersistentQuery query = this.treeSession.createQuery(treeSession.getXPathRootPath() + "/links/*", SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             final Collection<SLPersistentNode> linkClassNodes = result.getNodes();
             for (final SLPersistentNode linkClassNode : linkClassNodes) {
@@ -585,7 +585,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
             // order by @linkCount ascending
 
             final StringBuilder statement = new StringBuilder();
-            statement.append("//osl/links/").append(linkClass.getName()).append("/*");
+            statement.append(treeSession.getXPathRootPath() + "/links/").append(linkClass.getName()).append("/*");
 
             if (source != null || target != null) {
 
@@ -759,7 +759,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see org.openspotlight.graph.SLGraphSession#getNodeByID(java.lang.String)
      */
     public SLNode getNodeByID( final String id ) throws SLNodeNotFoundException, SLGraphSessionException {
-        final int INDEX_CONTEXT_ID = 2;
+        final int INDEX_CONTEXT_ID = 3;
         try {
             SLNode node = null;
             final SLPersistentNode pNode = this.treeSession.getNodeByID(id);
@@ -929,7 +929,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     public Collection<SLNode> getNodesByPredicate( final SLNodePredicate predicate ) throws SLGraphSessionException {
         try {
             final Collection<SLNode> nodes = new ArrayList<SLNode>();
-            final SLPersistentQuery query = this.treeSession.createQuery("//osl/contexts/*//descendant::node()",
+            final SLPersistentQuery query = this.treeSession.createQuery(treeSession.getXPathRootPath() + "/contexts/*//descendant::node()",
                                                                          SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             final Collection<SLPersistentNode> pNodes = result.getNodes();

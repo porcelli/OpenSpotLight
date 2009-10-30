@@ -182,7 +182,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
 	 */
 	private List<PNodeWrapper> getPNodeWrappersOfType(String name) throws SLPersistentTreeSessionException {
 		List<PNodeWrapper> pNodeWrappers = new ArrayList<PNodeWrapper>();
- 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/contexts//*");
+ 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
  		Statement rootStatement = statementBuilder.getRootStatement();
 		String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
 		rootStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(name);
@@ -263,7 +263,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
 					Map<String, Integer> numberOcurrencesMap = createNodeOccurencesMap(inputNodeWrappers);
 					map.put(conditionInfo, numberOcurrencesMap);
 					
-					SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/links/*//*");
+					SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/links/*//*");
 					Statement rootStatement = statementBuilder.getRootStatement();
 					
 					SLSideType side = conditionInfo.getSide();

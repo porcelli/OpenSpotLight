@@ -81,12 +81,10 @@ public interface SLGraph {
      */
     public SLGraphSession openSession( String repositoryName ) throws SLGraphException;
 
-    
     /**
      * Open default repository session.
      * 
      * @return the sL graph session
-     * 
      * @throws SLGraphException the SL graph exception
      */
     public SLGraphSession openSession() throws SLGraphException;
@@ -97,11 +95,18 @@ public interface SLGraph {
     public void shutdown();
 
     /**
-     * Runs the garbage collector.
+     * Runs the garbage collector on default repository.
      * 
      * @throws SLPersistentTreeException the SL persistent tree exception
      */
     public void gc() throws SLPersistentTreeException;
+
+    /**
+     * Runs the garbage collector.
+     * 
+     * @throws SLPersistentTreeException the SL persistent tree exception
+     */
+    public void gc( String repositoryName ) throws SLPersistentTreeException;
 
     /**
      * Gets the graph state.

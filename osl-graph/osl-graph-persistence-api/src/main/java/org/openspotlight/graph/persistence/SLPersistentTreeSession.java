@@ -48,74 +48,74 @@
  */
 package org.openspotlight.graph.persistence;
 
-
 /**
  * The Interface SLPersistentTreeSession.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLPersistentTreeSession {
-	
-	/**
-	 * Gets the root node.
-	 * 
-	 * @return the root node
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Close.
-	 */
-	public void close();
-	
-	/**
-	 * Save.
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void save() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Clear.
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void clear() throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Creates the query.
-	 * 
-	 * @param statement the statement
-	 * @param type the type
-	 * 
-	 * @return the sL persistent query
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public SLPersistentQuery createQuery(String statement, int type) throws SLPersistentTreeSessionException;
+    /**
+     * Gets the root node.
+     * 
+     * @return the root node
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the node by id.
-	 * 
-	 * @param id the id
-	 * 
-	 * @return the node by id
-	 * 
-	 * @throws SLPersistentNodeNotFoundException the SL persistent node not found exception
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public SLPersistentNode getNodeByID(String id) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException;
+    /**
+     * Gets the XPath root path.
+     * 
+     * @return the XPath root path
+     */
+    public String getXPathRootPath();
 
-	/**
-	 * Gets the node by path.
-	 * 
-	 * @param path the path
-	 * 
-	 * @return the node by path
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public SLPersistentNode getNodeByPath(String path) throws SLPersistentTreeSessionException;
+    /**
+     * Close.
+     */
+    public void close();
+
+    /**
+     * Save.
+     * 
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void save() throws SLPersistentTreeSessionException;
+
+    /**
+     * Clear.
+     * 
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void clear() throws SLPersistentTreeSessionException;
+
+    /**
+     * Creates the query.
+     * 
+     * @param statement the statement
+     * @param type the type
+     * @return the sL persistent query
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentQuery createQuery( String statement,
+                                          int type ) throws SLPersistentTreeSessionException;
+
+    /**
+     * Gets the node by id.
+     * 
+     * @param id the id
+     * @return the node by id
+     * @throws SLPersistentNodeNotFoundException the SL persistent node not found exception
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentNode getNodeByID( String id ) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException;
+
+    /**
+     * Gets the node by path.
+     * 
+     * @param path the path
+     * @return the node by path
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentNode getNodeByPath( String path ) throws SLPersistentTreeSessionException;
 }

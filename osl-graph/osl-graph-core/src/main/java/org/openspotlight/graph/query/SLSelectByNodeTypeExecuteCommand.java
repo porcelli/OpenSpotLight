@@ -132,7 +132,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 	 			typesNotFiltered.addAll(hierarchyTypeNames);
 			}
 
-	 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/contexts//*");
+	 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
 	 		Statement rootStatement = statementBuilder.getRootStatement();
 	 		
 	 		if (whereStatementInfo != null) {
