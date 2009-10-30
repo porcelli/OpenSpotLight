@@ -77,10 +77,8 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.CustomArtifact;
-import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.ConfigurationManager;
@@ -91,7 +89,6 @@ import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingAc
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingStartAction;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

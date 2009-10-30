@@ -158,11 +158,11 @@ public abstract class JcrConnectionProvider {
                     public void sessionClosed( final int id,
                                                final SessionWrapper wrapper,
                                                final Session session ) {
-                        JackRabbitConnectionProvider.this.openSessions.remove(wrapper);
+                        JackRabbitConnectionProvider.openSessions.remove(wrapper);
 
                     }
                 });
-                this.openSessions.add(wrappedSession);
+                openSessions.add(wrappedSession);
                 return wrappedSession;
             } catch (final Exception e) {
                 throw logAndReturnNew(e, ConfigurationException.class);

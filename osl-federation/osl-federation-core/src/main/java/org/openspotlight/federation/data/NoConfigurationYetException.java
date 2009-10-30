@@ -1,7 +1,6 @@
 package org.openspotlight.federation.data;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.federation.data.load.ConfigurationManager;
 
 /**
  * This exception is thrown by the {@link ConfigurationManager} instances. This exception describes a load invocation before

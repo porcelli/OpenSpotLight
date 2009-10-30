@@ -6,9 +6,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,14 +25,12 @@ import org.openspotlight.federation.data.impl.ArtifactMapping;
 import org.openspotlight.federation.data.impl.Bundle;
 import org.openspotlight.federation.data.impl.DatabaseType;
 import org.openspotlight.federation.data.impl.DbBundle;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**
