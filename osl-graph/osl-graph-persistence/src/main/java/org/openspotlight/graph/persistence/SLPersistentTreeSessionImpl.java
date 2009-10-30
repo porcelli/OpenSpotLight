@@ -85,6 +85,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
     /** The repository name. */
     private final String                  repositoryName;
 
+    private final String                  xpathRootPath;
+
     /**
      * Instantiates a new sL persistent tree session impl.
      * 
@@ -96,6 +98,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         final SLPersistentEventListener listener = new SLPersistentEventListenerImpl();
         this.eventPoster = new SLPersistentEventPosterImpl(listener);
         this.repositoryName = repositoryName;
+        this.xpathRootPath = "//" + SharedConstants.DEFAULT_JCR_ROOT_NAME + "/" + repositoryName;
     }
 
     //@Override
@@ -138,12 +141,12 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
      * 
      * @throws RepositoryException the repository exception
      */
-    private void createRepositoryRootNode(Node repositoryRootNode) throws RepositoryException {
+    private void createRepositoryRootNode( Node repositoryRootNode ) throws RepositoryException {
         this.rootNode = repositoryRootNode.addNode(repositoryName);
         JCRUtil.makeVersionable(this.rootNode);
         JCRUtil.makeReferenceable(this.rootNode);
     }
-    
+
     /**
      * Creates the product root node.
      * 
@@ -162,7 +165,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         try {
             SLPersistentNode persistentNode = null;
             final Node jcrNode = this.jcrSession.getNodeByUUID(id);
-            final String[] names = jcrNode.getPath().substring(1).split("/");
+            final String[] names = jcrNode.getPath().substring(5).split("/");
             for (final String name : names) {
                 if (persistentNode == null) {
                     persistentNode = this.getRootNode();
@@ -196,7 +199,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         if (this.rootNode == null) {
             try {
                 Node oslRootNode = JCRUtil.getChildNode(this.jcrSession.getRootNode(), SharedConstants.DEFAULT_JCR_ROOT_NAME);
-                if (oslRootNode == null){
+                if (oslRootNode == null) {
                     oslRootNode = this.createProductRootNode();
                 }
                 this.rootNode = JCRUtil.getChildNode(oslRootNode, repositoryName);
@@ -226,6 +229,13 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
             }
         }
         return new SLPersistentNodeImpl(this, null, this.rootNode, this.eventPoster);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getXPathRootPath() {
+        return xpathRootPath;
     }
 
     //@Override

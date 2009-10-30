@@ -498,7 +498,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                                               String typeName ) throws SLPersistentTreeSessionException {
         SLPersistentNode metaNodeType = metaNodeTypeCache.get(typeName);
         if (metaNodeType == null) {
-            StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
+            StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types//*");
             StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
             SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             SLPersistentQueryResult result = query.execute();

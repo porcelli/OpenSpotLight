@@ -15,12 +15,12 @@
 
 	<modules>
 		<module>osl-graph-api</module>
+		<module>osl-graph-persistence-api</module>
+		<module>osl-graph-persistence</module>
 		<module>osl-graph-core</module>
 		<module>osl-graph-client</module>
 		<module>osl-graph-server</module>
 		<module>osl-graph-import-test</module>
-		<module>osl-graph-persistence-api</module>
-		<module>osl-graph-persistence</module>
 		<module>osl-graph-test-data</module>
 	</modules>
 </project>

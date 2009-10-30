@@ -63,6 +63,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLCommonSupport;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -157,7 +158,7 @@ public class SLGraphQueryCacheTest {
 
             final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
             final SLPersistentTree tree = pFactory.createPersistentTree(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            treeSession = tree.openSession();
+            treeSession = tree.openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
 
             queryCache = new SLQueryCacheImpl(treeSession, session);
 
