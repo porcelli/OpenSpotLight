@@ -63,7 +63,6 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLogger;
@@ -71,7 +70,6 @@ import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLEncoder;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLUUIDEncoder;
 
 /**
