@@ -56,6 +56,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 
+import org.openspotlight.common.SharedConstants;
+
 /**
  * The Class SLPersistentQueryResultImpl.
  * 
@@ -99,7 +101,7 @@ public class SLPersistentQueryResultImpl implements SLPersistentQueryResult {
 					SLPersistentNode persistentNode = null;
 					for (int i = 0; i < names.length; i++) {
 						if (names[i].trim().equals("")) continue;
-						if (persistentNode == null && names[i].equals("osl")) {
+						if (persistentNode == null && names[i].equals(SharedConstants.DEFAULT_JCR_ROOT_NAME)) {
 							persistentNode = treeSession.getRootNode();
 						}
 						else {
