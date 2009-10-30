@@ -50,7 +50,6 @@ package org.openspotlight.graph;
 
 import org.openspotlight.graph.persistence.SLPersistentTreeException;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface SLGraph.
  * 
