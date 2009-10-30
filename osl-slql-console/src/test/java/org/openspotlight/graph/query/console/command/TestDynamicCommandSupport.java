@@ -20,6 +20,6 @@ public class TestDynamicCommandSupport {
         commands = DynamicCommandSupport.getRegisteredDynamicCommands();
         assertThat(commands, is(notNullValue()));
 
-        assertThat(commands.size(), is(13));
+        assertThat(commands.size(), is(15));
     }
 }
