@@ -21,6 +21,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 public class SLGraphCollatorTest {
 
@@ -39,7 +40,7 @@ public class SLGraphCollatorTest {
     }
 
     @BeforeClass
-    public static void init() throws AbstractFactoryException, SLInvalidCredentialsException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
@@ -54,7 +55,7 @@ public class SLGraphCollatorTest {
     }
 
     @Before
-    public void beforeTest() throws SLGraphException, SLInvalidCredentialsException {
+    public void beforeTest() throws SLGraphException, SLInvalidCredentialException {
         if (session == null) {
             session = graph.openSession(user);
         }
@@ -90,7 +91,7 @@ public class SLGraphCollatorTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
-        } catch (SLInvalidCredentialsException e) {
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -118,7 +119,7 @@ public class SLGraphCollatorTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
-        } catch (SLInvalidCredentialsException e) {
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -149,7 +150,7 @@ public class SLGraphCollatorTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
-        } catch (SLInvalidCredentialsException e) {
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }

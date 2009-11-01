@@ -84,7 +84,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
                                              String statement,
                                              String artifactId,
                                              String artifactVersion )
-        throws SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -98,7 +98,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
      */
     public <T extends SLNode> T addNode( Class<T> clazz,
                                          String name )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -116,7 +116,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
                                          String name,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -132,7 +132,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
     public <T extends SLNode> T addNode( Class<T> clazz,
                                          String name,
                                          SLEncoder encoder )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -152,7 +152,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
                                          SLEncoder encoder,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -170,7 +170,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
                                          String name,
                                          SLEncoder encoder,
                                          SLPersistenceMode persistenceMode )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -192,7 +192,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
                                          SLPersistenceMode persistenceMode,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -208,7 +208,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
     public <T extends SLNode> T addNode( Class<T> clazz,
                                          String name,
                                          SLPersistenceMode persistenceMode )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -228,7 +228,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
                                          SLPersistenceMode persistenceMode,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -240,7 +240,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public SLNode addNode( String name )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the node.
@@ -254,7 +254,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
      */
     public SLNode addNode( String name,
                            SLEncoder encoder )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Gets the context.
@@ -417,7 +417,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     @DisposeMethod
-    public void remove() throws SLGraphSessionException, SLInvalidCredentialsException;
+    public void remove() throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Sets the property.
@@ -432,5 +432,5 @@ public interface SLNode extends Comparable<SLNode>, LogableObject {
     public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
                                                                    String name,
                                                                    V value )
-        throws SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLGraphSessionException, SLInvalidCredentialException;
 }

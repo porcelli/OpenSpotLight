@@ -46,19 +46,55 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.security.idm;
+package org.openspotlight.security.idm.auth;
+
+import java.security.GeneralSecurityException;
 
 /**
- * The Common User Interface. This class is used to authenticate users.
+ * This exception is thrown by the {@link IdentityManager} instances. This exception describes a identity related problem.
  * 
  * @author porcelli
  */
-public interface User {
+public class IdentityException extends GeneralSecurityException {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -5853165940667412282L;
 
     /**
-     * Gets the id (unique identifier).
-     * 
-     * @return the id
+     * Instantiates a new identity exception.
      */
-    public String getId();
+    public IdentityException() {
+        super();
+    }
+
+    /**
+     * Instantiates a new identity exception.
+     * 
+     * @param message the message
+     */
+    public IdentityException(
+                              final String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new identity exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public IdentityException(
+                              final String message, final Throwable cause ) {
+        super(message, cause);
+    }
+
+    /**
+     * Instantiates a new identity exception.
+     * 
+     * @param cause the cause
+     */
+    public IdentityException(
+                              final Throwable cause ) {
+        super(cause);
+    }
 }

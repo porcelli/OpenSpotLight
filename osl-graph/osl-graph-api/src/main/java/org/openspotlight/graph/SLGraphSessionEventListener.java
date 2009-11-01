@@ -65,7 +65,7 @@ public interface SLGraphSessionEventListener {
      * @param event the event
      * @throws SLGraphSessionException the SL graph session exception
      */
-    public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialsException;
+    public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Link added.

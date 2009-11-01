@@ -83,7 +83,7 @@ public interface SLGraph {
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public SLGraphSession openSession( AuthenticatedUser user,
-                                       String repositoryName ) throws SLGraphException, SLInvalidCredentialsException;
+                                       String repositoryName ) throws SLGraphException, SLInvalidCredentialException;
 
     /**
      * Open default repository session.
@@ -93,7 +93,7 @@ public interface SLGraph {
      * @throws SLGraphException the SL graph exception
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialsException;
+    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialException;
 
     /**
      * Shutdown.
@@ -107,7 +107,7 @@ public interface SLGraph {
      * @throws SLPersistentTreeException the SL persistent tree exception
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public void gc( AuthenticatedUser user ) throws SLPersistentTreeException, SLInvalidCredentialsException;
+    public void gc( AuthenticatedUser user ) throws SLPersistentTreeException, SLInvalidCredentialException;
 
     /**
      * Runs the garbage collector.
@@ -118,7 +118,7 @@ public interface SLGraph {
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public void gc( AuthenticatedUser user,
-                    String repositoryName ) throws SLPersistentTreeException, SLInvalidCredentialsException;
+                    String repositoryName ) throws SLPersistentTreeException, SLInvalidCredentialException;
 
     /**
      * Gets the graph state.

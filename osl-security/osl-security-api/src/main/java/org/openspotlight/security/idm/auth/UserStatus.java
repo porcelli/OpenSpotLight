@@ -46,19 +46,21 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.security.idm;
+package org.openspotlight.security.idm.auth;
 
 /**
- * The Common User Interface. This class is used to authenticate users.
+ * The Enum UserStatus.
  * 
  * @author porcelli
  */
-public interface User {
+public enum UserStatus {
 
-    /**
-     * Gets the id (unique identifier).
-     * 
-     * @return the id
-     */
-    public String getId();
+    /** The OK. When user exists and enabled. */
+    OK,
+
+    /** The DISABLE. When user exists but its disabled. */
+    DISABLE,
+
+    /** The UNEXISTING. When user does not exists. */
+    UNEXISTING;
 }

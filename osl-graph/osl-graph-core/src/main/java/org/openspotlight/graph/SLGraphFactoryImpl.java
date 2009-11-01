@@ -109,7 +109,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 
     @Override
     public synchronized SLGraph createGraph( final JcrConnectionDescriptor descriptor )
-        throws SLGraphFactoryException, SLInvalidCredentialsException {
+        throws SLGraphFactoryException, SLInvalidCredentialException {
         SLGraph cached = this.cache.get(descriptor);
         if (cached == null) {
             try {
@@ -127,8 +127,8 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
                 this.cache.put(descriptor, cached);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
-            } catch (final SLInvalidCredentialsException e) {
-                throw logAndReturnNew(e, SLInvalidCredentialsException.class);
+            } catch (final SLInvalidCredentialException e) {
+                throw logAndReturnNew(e, SLInvalidCredentialException.class);
             }
         }
         return cached;
