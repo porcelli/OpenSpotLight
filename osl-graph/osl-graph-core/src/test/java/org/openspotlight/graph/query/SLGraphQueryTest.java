@@ -80,6 +80,8 @@ import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class SLGraphQueryTest.
@@ -104,9 +106,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                     methodMap.put(++count, method);
                 }
             }
+            
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            final SLGraphSession session = graph.openSession();
+            final SLGraphSession session = graph.openSession(user);
             final AbstractGeneralQueryTest test = new SLGraphQueryTest(session, SortMode.SORTED, true);
             int option = 0;
             final Scanner in = new Scanner(System.in);

@@ -27,10 +27,14 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialsException;
 import org.openspotlight.graph.SLInvalidNodeTypeException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 public abstract class AbstractMethodResolutionTest {
 
@@ -48,7 +52,11 @@ public abstract class AbstractMethodResolutionTest {
      * @throws AbstractFactoryException the abstract factory exception
      */
     @BeforeClass
-    public static void init() throws AbstractFactoryException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialsException {
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
     }
@@ -60,6 +68,7 @@ public abstract class AbstractMethodResolutionTest {
     protected SLContext                            abstractContex = null;
 
     protected static SLGraph                       graph          = null;
+    protected static AuthenticatedUser             user           = null;
 
     /**
      * After test.
@@ -194,7 +203,7 @@ public abstract class AbstractMethodResolutionTest {
     public void setupGraphSession() throws Exception {
         //FIXME this == null should be removed -> NOT I CAN'T OPEN ONE SESSION PER METHOD EXECUTION!!
         if (this.graphSession == null) {
-            this.graphSession = this.graph.openSession();
+            this.graphSession = this.graph.openSession(user);
         }
 
         this.abstractContex = this.graphSession.getContext(Constants.ABSTRACT_CONTEXT);

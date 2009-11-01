@@ -7,11 +7,15 @@ import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 public class MultipleGraphSessionsTest {
 
-    private static SLGraph        graph   = null;
-    private static SLGraphSession session = null;
+    private static SLGraph           graph   = null;
+    private static SLGraphSession    session = null;
+    private static AuthenticatedUser user;
 
     @AfterClass
     public static void finish() {
@@ -20,15 +24,19 @@ public class MultipleGraphSessionsTest {
     }
 
     @BeforeClass
-    public static void init() throws AbstractFactoryException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialsException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
     }
 
     @Test
-    public void testMultipleSessions() throws AbstractFactoryException, SLGraphException {
-        session = graph.openSession();
-        final SLGraphSession session2 = graph.openSession();
+    public void testMultipleSessions() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialsException {
+        session = graph.openSession(user);
+        final SLGraphSession session2 = graph.openSession(user);
 
         final SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();
         final SLNode node1 = abstractTestNode.addNode("teste!");
@@ -62,8 +70,8 @@ public class MultipleGraphSessionsTest {
     }
 
     @Test
-    public void testOpenCloseSessions() throws AbstractFactoryException, SLGraphException {
-        session = graph.openSession();
+    public void testOpenCloseSessions() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialsException {
+        session = graph.openSession(user);
 
         SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();
         SLNode node1 = abstractTestNode.addNode("teste!");
@@ -72,7 +80,7 @@ public class MultipleGraphSessionsTest {
 
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));
         session.close();
-        session = graph.openSession();
+        session = graph.openSession(user);
 
         abstractTestNode = session.createContext("abstractTest").getRootNode();
         node1 = abstractTestNode.addNode("teste!");

@@ -21,6 +21,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-test-data</artifactId>
 			<scope>test</scope>
 		</dependency>

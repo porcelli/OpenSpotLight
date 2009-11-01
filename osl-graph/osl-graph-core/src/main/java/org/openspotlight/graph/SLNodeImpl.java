@@ -49,6 +49,7 @@
 
 package org.openspotlight.graph;
 
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.graph.SLCommonSupport.getInternalPropertyAsString;
 import static org.openspotlight.graph.SLCommonSupport.setInternalStringProperty;
 
@@ -70,6 +71,11 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
+import org.openspotlight.security.authz.Action;
+import org.openspotlight.security.authz.EnforcementContext;
+import org.openspotlight.security.authz.EnforcementException;
+import org.openspotlight.security.authz.EnforcementResponse;
+import org.openspotlight.security.authz.GraphElement;
 
 /**
  * The Class SLNodeImpl.
@@ -158,7 +164,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /* (non-Javadoc)
      * @see org.openspotlight.graph.SLNode#addNode(java.lang.String)
      */
-    public SLNode addNode( String name ) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+    public SLNode addNode( String name )
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(SLNode.class, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
     }
 
@@ -166,7 +173,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * @see org.openspotlight.graph.SLNode#addNode(java.lang.String, org.openspotlight.graph.SLEncoder)
      */
     public SLNode addNode( String name,
-                           SLEncoder encoder ) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+                           SLEncoder encoder )
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(SLNode.class, name, encoder, SLPersistenceMode.NORMAL, null, null);
     }
 
@@ -175,7 +183,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String)
      */
     public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name ) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+                                         String name )
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
     }
 
@@ -184,7 +193,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      */
     public <T extends SLNode> T addNode( Class<T> clazz,
                                          String name,
-                                         SLEncoder encoder ) throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+                                         SLEncoder encoder )
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, encoder, SLPersistenceMode.NORMAL, null, null);
     }
 
@@ -194,7 +204,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     public <T extends SLNode> T addNode( Class<T> clazz,
                                          String name,
                                          SLPersistenceMode persistenceMode )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, getSession().getDefaultEncoder(), persistenceMode, null, null);
     }
 
@@ -205,7 +215,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                          String name,
                                          SLEncoder encoder,
                                          SLPersistenceMode persistenceMode )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, encoder, persistenceMode, null, null);
     }
 
@@ -216,7 +226,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                          String name,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
     }
 
@@ -228,7 +238,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                          SLPersistenceMode persistenceMode,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, getSession().getDefaultEncoder(), persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
     }
 
@@ -240,7 +250,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                          SLEncoder encoder,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
     }
 
@@ -253,7 +263,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                          SLPersistenceMode persistenceMode,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialsException {
         return addChildNode(clazz, name, encoder, persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
     }
 
@@ -299,8 +309,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /* (non-Javadoc)
      * @see org.openspotlight.graph.SLNode#remove()
      */
-    public void remove() throws SLGraphSessionException {
+    public void remove() throws SLGraphSessionException, SLInvalidCredentialsException {
         try {
+            if (!hasPrivileges(GraphElement.NODE, Action.DELETE)) {
+                throw new SLInvalidCredentialsException("User does not have privilegies to delete nodes.");
+            }
+
             Collection<SLNode> childNodes = new ArrayList<SLNode>();
             Iterator<SLNode> iter = getNodes().iterator();
             while (iter.hasNext()) {
@@ -332,7 +346,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      */
     public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
                                                                    String name,
-                                                                   V value ) throws SLGraphSessionException {
+                                                                   V value )
+        throws SLGraphSessionException, SLInvalidCredentialsException {
         try {
             String propName = SLCommonSupport.toUserPropertyName(name);
             SLPersistentProperty<V> pProperty = pNode.setProperty(clazz, propName, value);
@@ -444,9 +459,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                              int endColumn,
                                              String statement,
                                              String artifactId,
-                                             String artifactVersion ) throws SLGraphSessionException {
+                                             String artifactVersion )
+        throws SLGraphSessionException, SLInvalidCredentialsException {
 
         try {
+
+            if (!hasPrivileges(GraphElement.LINE_REFERENCE, Action.WRITE)) {
+                throw new SLInvalidCredentialsException("User does not have privilegies to line references.");
+            }
 
             StringBuilder lineReferenceKey = new StringBuilder()
                                                                 .append(startLine).append('.').append(endLine).append('.')
@@ -512,7 +532,6 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals( Object obj ) {
-        //TODO isn't better to compare by getId()? -> not by getPath?
         try {
             if (obj == null || !(obj instanceof SLNode)) return false;
             SLPersistentNode pNode = SLCommonSupport.getPNode((SLNode)obj);
@@ -604,8 +623,13 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                                SLPersistenceMode persistenceMode,
                                                Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                                Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLGraphSessionException {
+        throws SLGraphSessionException, SLInvalidCredentialsException {
         try {
+
+            if (!hasPrivileges(GraphElement.NODE, Action.WRITE)) {
+                throw new SLInvalidCredentialsException("User does not have privilegies to add nodes.");
+            }
+
             Class<T> type = null;
             String encodedName = encoder.encode(name);
             SLPersistentNode pChildNode = getHierarchyChildNode(clazz, name, encodedName);
@@ -818,5 +842,32 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             childNodes.add(childNodeProxy);
         }
         return childNodes;
+    }
+
+    /**
+     * Checks for privileges.
+     * 
+     * @param element the element
+     * @param action the action
+     * 
+     * @return true, if successful
+     */
+    private boolean hasPrivileges( GraphElement element,
+                                   Action action ) {
+        EnforcementContext enforcementContext = new EnforcementContext();
+        enforcementContext.setAttribute("user", getSession().getUser());
+        enforcementContext.setAttribute("graphElement", element);
+        enforcementContext.setAttribute("action", action);
+
+        try {
+            EnforcementResponse response = getSession().getPolicyEnforcement().checkAccess(enforcementContext);
+            if (response.equals(EnforcementResponse.GRANTED)) {
+                return true;
+            }
+            return false;
+        } catch (EnforcementException e) {
+            catchAndLog(e);
+            return false;
+        }
     }
 }

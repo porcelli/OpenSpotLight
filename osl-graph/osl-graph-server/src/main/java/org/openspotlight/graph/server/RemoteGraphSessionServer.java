@@ -10,6 +10,7 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLInvalidCredentialsException;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.RemoteObjectServer;
@@ -34,13 +35,15 @@ public class RemoteGraphSessionServer {
          * Instantiates a new internal graph session factory.
          */
         public InternalGraphSessionFactory(
-                                            final JcrConnectionDescriptor descriptor ) {
+                                            final JcrConnectionDescriptor descriptor ) throws SLInvalidCredentialsException {
             try {
                 this.descriptor = descriptor;
                 final SLGraphFactory graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
                 this.graph = graphFactory.createGraph(descriptor);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
+            } catch (SLInvalidCredentialsException e) {
+                throw logAndReturnNew(e, SLInvalidCredentialsException.class);
             }
         }
 
@@ -85,7 +88,8 @@ public class RemoteGraphSessionServer {
      */
     public RemoteGraphSessionServer(
                                      final UserAuthenticator userAutenticator, final Integer portToUse,
-                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor ) {
+                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor )
+        throws SLInvalidCredentialsException {
         checkNotNull("userAutenticator", userAutenticator);
         checkNotNull("portToUse", portToUse);
         checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);

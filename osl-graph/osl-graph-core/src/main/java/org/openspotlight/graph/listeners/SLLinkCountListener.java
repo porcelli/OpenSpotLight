@@ -60,6 +60,7 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The listener interface for receiving SLLinkCount events.
  * The class that is interested in processing a SLLinkCount
@@ -75,6 +76,9 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 	
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded(org.openspotlight.graph.SLLinkEvent)
+	 */
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {
@@ -107,6 +111,9 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 	
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkRemoved(org.openspotlight.graph.SLLinkEvent)
+	 */
+	/**
+	 * {@inheritDoc}
 	 */
 	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException {
 		try {

@@ -73,12 +73,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialsException;
 import org.openspotlight.graph.SLInvalidNodePropertyTypeException;
 import org.openspotlight.graph.SLLineReference;
 import org.openspotlight.graph.SLLink;
@@ -150,9 +149,9 @@ public class SLRemoteGraphTest {
             public boolean canConnect( final String userName,
                                        final String password,
                                        final String clientHost ) {
-                return true;
-            }
-        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+                                              return true;
+                                              }
+                                                      }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
     }
 
@@ -203,6 +202,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -237,6 +239,9 @@ public class SLRemoteGraphTest {
             Assert.assertNotSame(linkBoth, this.linkAB);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -275,6 +280,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -309,6 +317,9 @@ public class SLRemoteGraphTest {
             Assert.assertNotSame(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -467,21 +478,21 @@ public class SLRemoteGraphTest {
         client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
             public String getHost() {
-                return "localhost";
-            }
+                                               return "localhost";
+                                               }
 
             public String getPassword() {
-                return "***";
-            }
+                                               return "***";
+                                               }
 
             public int getPort() {
-                return 7070;
-            }
+                                               return 7070;
+                                               }
 
             public String getUserName() {
-                return "***";
-            }
-        });
+                                               return "***";
+                                               }
+                                                       });
 
     }
 
@@ -497,6 +508,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -506,7 +520,8 @@ public class SLRemoteGraphTest {
      * @param linkClass the new up existent ab link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentABLinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
+    private void setUpExistentABLinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialsException {
         this.session.clear();
         final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
@@ -522,7 +537,8 @@ public class SLRemoteGraphTest {
      * @param linkClass the new up existent ba link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentBALinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
+    private void setUpExistentBALinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialsException {
         this.session.clear();
         final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
@@ -538,7 +554,8 @@ public class SLRemoteGraphTest {
      * @param linkClass the new up existent both link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentBothLinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
+    private void setUpExistentBothLinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialsException {
         this.session.clear();
         final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
@@ -563,6 +580,9 @@ public class SLRemoteGraphTest {
             Assert.assertEquals(javaClassNode1, javaClassNode2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -601,6 +621,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -631,6 +654,9 @@ public class SLRemoteGraphTest {
                                                          this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -667,6 +693,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -700,6 +729,9 @@ public class SLRemoteGraphTest {
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkAB);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -739,6 +771,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -773,6 +808,9 @@ public class SLRemoteGraphTest {
             Assert.assertNotSame(linkBoth, this.linkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -812,6 +850,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -845,6 +886,9 @@ public class SLRemoteGraphTest {
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertEquals(linkBoth, this.linkBoth);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -882,6 +926,9 @@ public class SLRemoteGraphTest {
             Assert.assertEquals(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -926,6 +973,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -966,6 +1016,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -990,6 +1043,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1000,7 +1056,7 @@ public class SLRemoteGraphTest {
      */
     @Test
     //( dependsOnMethods = "testChiLdNodesRetrieval" )
-    public void testContextOperations() throws SLGraphSessionException {
+    public void testContextOperations() throws SLGraphSessionException, SLInvalidCredentialsException {
         final SLContext context1 = this.session.createContext("1L");
         Assert.assertNotNull("context1 should not be null.", context1);
         final SLContext context2 = this.session.getContext("1L");
@@ -1062,6 +1118,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1114,6 +1173,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1150,6 +1212,9 @@ public class SLRemoteGraphTest {
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1193,6 +1258,9 @@ public class SLRemoteGraphTest {
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1369,6 +1437,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1405,6 +1476,9 @@ public class SLRemoteGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1446,6 +1520,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1476,6 +1553,9 @@ public class SLRemoteGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1515,6 +1595,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1552,6 +1635,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1574,6 +1660,9 @@ public class SLRemoteGraphTest {
             this.assertMetaNodes(metaNodes, JavaElementNode.class, JavaPackageNode.class, JavaClassNode.class);
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1605,6 +1694,9 @@ public class SLRemoteGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1633,6 +1725,9 @@ public class SLRemoteGraphTest {
             }
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1686,6 +1781,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1731,6 +1829,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1767,6 +1868,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1788,6 +1892,9 @@ public class SLRemoteGraphTest {
             Assert.assertEquals(value, "8");
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1819,6 +1926,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1848,6 +1958,9 @@ public class SLRemoteGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1900,6 +2013,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1947,6 +2063,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1992,6 +2111,9 @@ public class SLRemoteGraphTest {
             this.assertLinks(links, simpleLinkBA, multipleLinkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2047,6 +2169,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2089,6 +2214,9 @@ public class SLRemoteGraphTest {
             }
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2133,6 +2261,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2160,6 +2291,9 @@ public class SLRemoteGraphTest {
             Assert.assertNotNull(link.getCreationTime());
             Assert.assertEquals(link.getCreationTime(), creationTime);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2206,6 +2340,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2243,6 +2380,9 @@ public class SLRemoteGraphTest {
             Assert.assertEquals(links.size(), 2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2283,6 +2423,9 @@ public class SLRemoteGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2321,6 +2464,9 @@ public class SLRemoteGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2355,6 +2501,9 @@ public class SLRemoteGraphTest {
             Assert.assertTrue(nodes.isEmpty());
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2409,6 +2558,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2432,6 +2584,9 @@ public class SLRemoteGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2452,6 +2607,9 @@ public class SLRemoteGraphTest {
             Assert.assertEquals(description, "Java Class");
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2487,6 +2645,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2511,6 +2672,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2533,6 +2697,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2550,6 +2717,9 @@ public class SLRemoteGraphTest {
             Assert.assertEquals(prop2.getValue(), new Integer(71));
             Assert.assertEquals(prop1.getValue(), prop2.getValue());
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2592,6 +2762,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2624,6 +2797,9 @@ public class SLRemoteGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2664,6 +2840,9 @@ public class SLRemoteGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2697,6 +2876,9 @@ public class SLRemoteGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2732,6 +2914,9 @@ public class SLRemoteGraphTest {
             Assert.assertNull(javaMethodNode1.getNode(TransientNode.class, "transNode2"));
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2770,6 +2955,9 @@ public class SLRemoteGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2795,6 +2983,9 @@ public class SLRemoteGraphTest {
 
             Assert.assertFalse(javaClassNode1.getID().equals(javaClassNode2.getID()));
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialsException e) {
             LOGGER.error(e);
             Assert.fail();
         }
