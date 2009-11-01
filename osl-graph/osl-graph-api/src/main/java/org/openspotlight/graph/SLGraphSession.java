@@ -54,6 +54,8 @@ import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.remote.annotation.DisposeMethod;
+import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Interface SLGraphSession.
@@ -61,6 +63,21 @@ import org.openspotlight.remote.annotation.DisposeMethod;
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSession {
+
+    /**
+     * Gets the user.
+     * 
+     * @return the user
+     */
+    public User getUser();
+
+    /**
+     * Gets the policy enforcement.
+     * 
+     * @return the policy enforcement
+     */
+    public PolicyEnforcement getPolicyEnforcement();
+
     /**
      * Adds the link.
      * 
@@ -70,11 +87,12 @@ public interface SLGraphSession {
      * @param bidirecional the bidirecional
      * @return the l
      * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public <L extends SLLink> L addLink( Class<L> linkClass,
                                          SLNode source,
                                          SLNode target,
-                                         boolean bidirecional ) throws SLGraphSessionException;
+                                         boolean bidirecional ) throws SLGraphSessionException, SLInvalidCredentialsException;
 
     /**
      * Adds the link.
@@ -86,12 +104,14 @@ public interface SLGraphSession {
      * @param persistenceMode the persistence mode
      * @return the l
      * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public <L extends SLLink> L addLink( Class<L> linkClass,
                                          SLNode source,
                                          SLNode target,
                                          boolean bidirecional,
-                                         SLPersistenceMode persistenceMode ) throws SLGraphSessionException;
+                                         SLPersistenceMode persistenceMode )
+        throws SLGraphSessionException, SLInvalidCredentialsException;
 
     /**
      * Clear.
@@ -113,8 +133,10 @@ public interface SLGraphSession {
      * @return the sL context
      * @throws SLContextAlreadyExistsException the SL context already exists exception
      * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public SLContext createContext( String id ) throws SLContextAlreadyExistsException, SLGraphSessionException;
+    public SLContext createContext( String id )
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialsException;
 
     /**
      * Creates the api query.
@@ -127,13 +149,19 @@ public interface SLGraphSession {
     /**
      * Creates the text query.
      * 
-     * @param slqlInput
+     * @param slqlInput the slql input
      * @return the sL query
      * @throws SLGraphSessionException the SL graph session exception
      * @throws SLInvalidQuerySyntaxException the invalid synyax exception
      */
     public SLQueryText createQueryText( String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException;
 
+    /**
+     * Equals.
+     * 
+     * @param o the o
+     * @return true, if successful
+     */
     public boolean equals( Object o );
 
     /**
@@ -460,14 +488,20 @@ public interface SLGraphSession {
      */
     public Collection<SLLink> getUnidirectionalLinksByTarget( SLNode target ) throws SLGraphSessionException;
 
+    /**
+     * Hash code.
+     * 
+     * @return the int
+     */
     public int hashCode();
 
     /**
      * Save.
      * 
      * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public void save() throws SLGraphSessionException;
+    public void save() throws SLGraphSessionException, SLInvalidCredentialsException;
 
     /**
      * Sets the default encoder.

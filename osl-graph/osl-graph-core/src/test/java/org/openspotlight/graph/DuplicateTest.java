@@ -69,20 +69,29 @@ import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.JavaClass;
 import org.openspotlight.graph.test.domain.JavaType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class DuplicateTest {
 
-    SLGraph        graph   = null;
-    SLGraphSession session = null;
+    SLGraph           graph   = null;
+    SLGraphSession    session = null;
+    AuthenticatedUser user    = null;
 
     @Before
-    public void setup() throws AbstractFactoryException, SLGraphException {
+    public void setup() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialsException {
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        this.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         this.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        this.session = this.graph.openSession();
+        this.session = this.graph.openSession(this.user);
     }
 
     @Test
@@ -111,7 +120,7 @@ public class DuplicateTest {
         n3_.setCaption("someName");
         this.session.save();
         this.session.close();
-        this.session = this.graph.openSession();
+        this.session = this.graph.openSession(this.user);
         final SLQueryApi query = this.session.createQueryApi();
         query
 
@@ -162,7 +171,7 @@ public class DuplicateTest {
         n3_.setCaption("someName");
         this.session.save();
         this.session.close();
-        this.session = this.graph.openSession();
+        this.session = this.graph.openSession(this.user);
         final SLQueryApi query = this.session.createQueryApi();
         query
 

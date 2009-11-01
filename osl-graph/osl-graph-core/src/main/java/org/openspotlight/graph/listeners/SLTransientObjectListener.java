@@ -57,6 +57,7 @@ import java.util.Set;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLGraphSessionEvent;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialsException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLLinkEvent;
 import org.openspotlight.graph.SLNode;
@@ -101,9 +102,12 @@ public class SLTransientObjectListener extends
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#beforeSave
      * (org.openspotlight.graph.SLGraphSessionEvent)
      */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void beforeSave(final SLGraphSessionEvent event)
-            throws SLGraphSessionException {
+            throws SLGraphSessionException, SLInvalidCredentialsException {
         for (final SLLink link : this.transientLinks) {
             link.remove();
         }
@@ -115,8 +119,7 @@ public class SLTransientObjectListener extends
     /**
      * Checks for transient annotation.
      * 
-     * @param object
-     *            the object
+     * @param object the object
      * 
      * @return true, if successful
      */
@@ -133,6 +136,9 @@ public class SLTransientObjectListener extends
      * @see
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
      * (org.openspotlight.graph.SLLinkEvent)
+     */
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void linkAdded(final SLLinkEvent event)
@@ -157,6 +163,9 @@ public class SLTransientObjectListener extends
      * @see
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
      * (org.openspotlight.graph.SLNodeEvent)
+     */
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void nodeAdded(final SLNodeEvent event)

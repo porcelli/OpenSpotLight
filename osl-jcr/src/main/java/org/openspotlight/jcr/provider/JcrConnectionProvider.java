@@ -150,19 +150,18 @@ public abstract class JcrConnectionProvider {
         public Session openSession() {
             try {
                 this.openRepository();
-                Session newSession;
-                newSession = this.repository.login(this.getData().getCredentials());
+                final Session newSession = this.repository.login(this.getData().getCredentials());
                 final int sessionId = sessionIdFactory.getAndIncrement();
                 final SessionWrapper wrappedSession = new SessionWrapper(newSession, sessionId, new SessionClosingListener() {
 
                     public void sessionClosed( final int id,
                                                final SessionWrapper wrapper,
                                                final Session session ) {
-                        JackRabbitConnectionProvider.this.openSessions.remove(wrapper);
+                        JackRabbitConnectionProvider.openSessions.remove(wrapper);
 
                     }
                 });
-                this.openSessions.add(wrappedSession);
+                openSessions.add(wrappedSession);
                 return wrappedSession;
             } catch (final Exception e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
