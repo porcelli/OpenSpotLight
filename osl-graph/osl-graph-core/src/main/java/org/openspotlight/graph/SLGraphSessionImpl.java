@@ -86,8 +86,8 @@ import org.openspotlight.security.authz.Action;
 import org.openspotlight.security.authz.EnforcementContext;
 import org.openspotlight.security.authz.EnforcementException;
 import org.openspotlight.security.authz.EnforcementResponse;
-import org.openspotlight.security.authz.GraphElement;
 import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.authz.graph.GraphElement;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 
@@ -177,7 +177,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                          final SLNode source,
                                          final SLNode target,
                                          final boolean bidirecional )
-        throws SLGraphSessionException, SLInvalidCredentialsException {
+        throws SLGraphSessionException, SLInvalidCredentialException {
         return this.addLink(linkClass, source, target, bidirecional, SLPersistenceMode.NORMAL);
     }
 
@@ -196,12 +196,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                          final SLNode target,
                                          final boolean bidirecional,
                                          final SLPersistenceMode persistenceMode )
-        throws SLGraphSessionException, SLInvalidCredentialsException {
+        throws SLGraphSessionException, SLInvalidCredentialException {
 
         try {
 
             if (!hasPrivileges(GraphElement.LINK, Action.WRITE)) {
-                throw new SLInvalidCredentialsException("User does not have privilegies to add links.");
+                throw new SLInvalidCredentialException("User does not have privilegies to add links.");
             }
 
             SLPersistentNode linkNode = null;
@@ -362,10 +362,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * {@inheritDoc}
      */
     public SLContext createContext( final String id )
-        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialsException {
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
         try {
             if (!hasPrivileges(GraphElement.CONTEXT, Action.WRITE)) {
-                throw new SLInvalidCredentialsException("User does not have privilegies to create contexts.");
+                throw new SLInvalidCredentialException("User does not have privilegies to create contexts.");
             }
 
             final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
@@ -1284,10 +1284,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public void save() throws SLGraphSessionException, SLInvalidCredentialsException {
+    public void save() throws SLGraphSessionException, SLInvalidCredentialException {
         try {
             if (!hasPrivileges(GraphElement.SESSION, Action.OPERATE)) {
-                throw new SLInvalidCredentialsException("User does not have privilegies to save session.");
+                throw new SLInvalidCredentialException("User does not have privilegies to save session.");
             }
 
             this.eventPoster.post(new SLGraphSessionEvent(SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));

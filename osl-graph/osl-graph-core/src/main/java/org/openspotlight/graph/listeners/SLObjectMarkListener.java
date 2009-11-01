@@ -56,7 +56,7 @@ import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionEvent;
 import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialsException;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLLinkEvent;
 import org.openspotlight.graph.SLNode;
@@ -103,7 +103,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
      */
     @Override
     public void beforeSave(final SLGraphSessionEvent event)
-            throws SLGraphSessionException, SLInvalidCredentialsException {
+            throws SLGraphSessionException, SLInvalidCredentialException {
         
         // delete links ...
         for (final SLLink link : this.linksForDeletion) {

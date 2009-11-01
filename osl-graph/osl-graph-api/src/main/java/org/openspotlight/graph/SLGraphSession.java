@@ -92,7 +92,7 @@ public interface SLGraphSession {
     public <L extends SLLink> L addLink( Class<L> linkClass,
                                          SLNode source,
                                          SLNode target,
-                                         boolean bidirecional ) throws SLGraphSessionException, SLInvalidCredentialsException;
+                                         boolean bidirecional ) throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Adds the link.
@@ -111,7 +111,7 @@ public interface SLGraphSession {
                                          SLNode target,
                                          boolean bidirecional,
                                          SLPersistenceMode persistenceMode )
-        throws SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Clear.
@@ -136,7 +136,7 @@ public interface SLGraphSession {
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public SLContext createContext( String id )
-        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialsException;
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Creates the api query.
@@ -501,7 +501,7 @@ public interface SLGraphSession {
      * @throws SLGraphSessionException the SL graph session exception
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public void save() throws SLGraphSessionException, SLInvalidCredentialsException;
+    public void save() throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Sets the default encoder.

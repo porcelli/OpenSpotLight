@@ -72,6 +72,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -83,7 +84,7 @@ public class DuplicateTest {
     AuthenticatedUser user    = null;
 
     @Before
-    public void setup() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialsException {
+    public void setup() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialException, IdentityException {
 
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");

@@ -72,7 +72,7 @@ public abstract class SLGraphFactory extends AbstractFactory {
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public abstract SLGraph createGraph( final JcrConnectionDescriptor descriptor )
-        throws SLGraphFactoryException, SLInvalidCredentialsException;
+        throws SLGraphFactoryException, SLInvalidCredentialException;
 
     /**
      * Creates the graph session.
@@ -87,7 +87,7 @@ public abstract class SLGraphFactory extends AbstractFactory {
     abstract SLGraphSession createGraphSession( SLPersistentTreeSession treeSession,
                                                 PolicyEnforcement policyEnforcement,
                                                 AuthenticatedUser user )
-        throws SLGraphFactoryException, SLInvalidCredentialsException;
+        throws SLGraphFactoryException, SLInvalidCredentialException;
 
     /**
      * Creates a new SLGraph object.

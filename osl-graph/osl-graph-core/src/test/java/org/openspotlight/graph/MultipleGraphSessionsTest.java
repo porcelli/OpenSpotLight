@@ -10,6 +10,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 public class MultipleGraphSessionsTest {
 
@@ -24,7 +25,7 @@ public class MultipleGraphSessionsTest {
     }
 
     @BeforeClass
-    public static void init() throws AbstractFactoryException, SLInvalidCredentialsException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
@@ -34,7 +35,7 @@ public class MultipleGraphSessionsTest {
     }
 
     @Test
-    public void testMultipleSessions() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialsException {
+    public void testMultipleSessions() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialException {
         session = graph.openSession(user);
         final SLGraphSession session2 = graph.openSession(user);
 
@@ -70,7 +71,7 @@ public class MultipleGraphSessionsTest {
     }
 
     @Test
-    public void testOpenCloseSessions() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialsException {
+    public void testOpenCloseSessions() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialException {
         session = graph.openSession(user);
 
         SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();

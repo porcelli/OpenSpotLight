@@ -62,7 +62,7 @@ public interface SLGraphSessionEventPoster {
      * @throws SLGraphSessionException the SL graph session exception
      * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public void post( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialsException;
+    public void post( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException;
 
     /**
      * Post.

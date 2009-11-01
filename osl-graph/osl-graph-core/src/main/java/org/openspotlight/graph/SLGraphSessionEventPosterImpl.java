@@ -78,7 +78,7 @@ public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster 
      * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
      * .graph.SLGraphSessionEvent)
      */
-    public void post( final SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialsException {
+    public void post( final SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException {
         if (event.getType() == SLGraphSessionEvent.TYPE_BEFORE_SAVE) {
             for (final SLGraphSessionEventListener listener : this.listeners) {
                 listener.beforeSave(event);

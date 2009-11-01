@@ -61,8 +61,8 @@ import org.openspotlight.security.authz.Action;
 import org.openspotlight.security.authz.EnforcementContext;
 import org.openspotlight.security.authz.EnforcementException;
 import org.openspotlight.security.authz.EnforcementResponse;
-import org.openspotlight.security.authz.GraphElement;
 import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.authz.graph.GraphElement;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
@@ -107,14 +107,14 @@ public class SLGraphImpl implements SLGraph {
                         final IdentityManager identityManager,
                         final PolicyEnforcement policyEnforcement,
                         final SystemUser user )
-        throws SLInvalidCredentialsException {
+        throws SLInvalidCredentialException {
         Assertions.checkNotNull("tree", tree);
         Assertions.checkNotNull("identityManager", identityManager);
         Assertions.checkNotNull("policyEnforcement", policyEnforcement);
         Assertions.checkNotNull("user", user);
 
         if (!identityManager.isValid(user)) {
-            throw new SLInvalidCredentialsException("SystemUser is not valid.");
+            throw new SLInvalidCredentialException("SystemUser is not valid.");
         }
 
         this.tree = tree;
@@ -129,18 +129,18 @@ public class SLGraphImpl implements SLGraph {
      * {@inheritDoc}
      */
     public void gc( AuthenticatedUser user,
-                    String repositoryName ) throws SLPersistentTreeException, SLInvalidCredentialsException {
+                    String repositoryName ) throws SLPersistentTreeException, SLInvalidCredentialException {
         if (this.graphState != GraphState.SHUTDOWN) {
 
             Assertions.checkNotNull("repositoryName", repositoryName);
             Assertions.checkNotNull("user", user);
 
             if (!this.identityManager.isValid(user)) {
-                throw new SLInvalidCredentialsException("Invalid user.");
+                throw new SLInvalidCredentialException("Invalid user.");
             }
 
             if (!hasPrivileges(user, repositoryName, Action.MANAGE)) {
-                throw new SLInvalidCredentialsException("User does not have privilegies to manage repository.");
+                throw new SLInvalidCredentialException("User does not have privilegies to manage repository.");
             }
 
             final SLPersistentTreeSession treeSession = this.tree.openSession(repositoryName);
@@ -155,7 +155,7 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public void gc( AuthenticatedUser user ) throws SLPersistentTreeException, SLInvalidCredentialsException {
+    public void gc( AuthenticatedUser user ) throws SLPersistentTreeException, SLInvalidCredentialException {
         this.gc(user, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 
@@ -170,7 +170,7 @@ public class SLGraphImpl implements SLGraph {
      * {@inheritDoc}
      */
     public SLGraphSession openSession( AuthenticatedUser user,
-                                       String repositoryName ) throws SLGraphException, SLInvalidCredentialsException {
+                                       String repositoryName ) throws SLGraphException, SLInvalidCredentialException {
         if (this.graphState == GraphState.SHUTDOWN) {
             throw new SLGraphException("Could not open SL graph session. Graph is already shutdown.");
         }
@@ -179,11 +179,11 @@ public class SLGraphImpl implements SLGraph {
         Assertions.checkNotNull("user", user);
 
         if (!this.identityManager.isValid(user)) {
-            throw new SLInvalidCredentialsException("Invalid user.");
+            throw new SLInvalidCredentialException("Invalid user.");
         }
 
         if (!hasPrivileges(user, repositoryName, Action.READ)) {
-            throw new SLInvalidCredentialsException("User does not have privilegies to access repository.");
+            throw new SLInvalidCredentialException("User does not have privilegies to access repository.");
         }
 
         try {
@@ -198,7 +198,7 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialsException {
+    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialException {
         return this.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 

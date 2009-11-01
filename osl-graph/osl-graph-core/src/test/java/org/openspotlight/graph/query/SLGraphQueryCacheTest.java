@@ -69,7 +69,7 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialsException;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeException;
@@ -179,7 +179,7 @@ public class SLGraphQueryCacheTest {
 
     @Test
     //( dependsOnMethods = "selectTypes" )
-    public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialsException {
+    public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialException {
         String queryId = null;
         assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
 
@@ -207,7 +207,7 @@ public class SLGraphQueryCacheTest {
 
     @Test
     public void selectTypes()
-        throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialsException {
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialException {
         String queryId = null;
         assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
 

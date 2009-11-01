@@ -46,19 +46,39 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.security.idm;
+package org.openspotlight.security.authz.graph;
 
 /**
- * The Common User Interface. This class is used to authenticate users.
+ * The Enum GraphElement that represents all graph elements .
  * 
  * @author porcelli
  */
-public interface User {
+public enum GraphElement {
 
-    /**
-     * Gets the id (unique identifier).
-     * 
-     * @return the id
-     */
-    public String getId();
+    /** The GRAPH. */
+    GRAPH,
+
+    /** The REPOSITORY. */
+    REPOSITORY,
+
+    /** The SESSION. */
+    SESSION,
+
+    /** The CONTEXT. */
+    CONTEXT,
+
+    /** The NODE. */
+    NODE,
+
+    /** The LINE_REFERENCE. */
+    LINE_REFERENCE,
+
+    /** The NODE_PROPERTY. */
+    NODE_PROPERTY,
+
+    /** The LINK. */
+    LINK,
+
+    /** The LINK_PROPERTY. */
+    LINK_PROPERTY;
 }
