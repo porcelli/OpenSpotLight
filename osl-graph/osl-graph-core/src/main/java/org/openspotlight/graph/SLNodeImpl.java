@@ -858,6 +858,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
         enforcementContext.setAttribute("user", getSession().getUser());
         enforcementContext.setAttribute("graphElement", element);
         enforcementContext.setAttribute("action", action);
+        enforcementContext.setAttribute("node", this);
 
         try {
             EnforcementResponse response = getSession().getPolicyEnforcement().checkAccess(enforcementContext);
