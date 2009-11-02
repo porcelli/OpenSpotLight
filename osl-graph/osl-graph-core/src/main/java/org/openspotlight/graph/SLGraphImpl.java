@@ -234,6 +234,7 @@ public class SLGraphImpl implements SLGraph {
         enforcementContext.setAttribute("graphElement", GraphElement.REPOSITORY);
         enforcementContext.setAttribute("repository", repositoryName);
         enforcementContext.setAttribute("action", action);
+        enforcementContext.setAttribute("graph", this);
 
         try {
             EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);

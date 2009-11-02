@@ -1324,6 +1324,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         enforcementContext.setAttribute("user", user);
         enforcementContext.setAttribute("graphElement", element);
         enforcementContext.setAttribute("action", action);
+        enforcementContext.setAttribute("graphSession", this);
 
         try {
             EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);
