@@ -17,6 +17,9 @@ import org.openspotlight.remote.server.RemoteObjectServer;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class RemoteGraphSessionServer.
@@ -42,7 +45,7 @@ public class RemoteGraphSessionServer {
                 this.graph = graphFactory.createGraph(descriptor);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
-            } catch (SLInvalidCredentialException e) {
+            } catch (final SLInvalidCredentialException e) {
                 throw logAndReturnNew(e, SLInvalidCredentialException.class);
             }
         }
@@ -52,8 +55,18 @@ public class RemoteGraphSessionServer {
          */
         public synchronized SLGraphSession createNewInstance( final Object... parameters ) throws Exception {
             checkNotNull("parameters", parameters);
-            checkCondition("correctParamSize", parameters.length == 0);
-            return this.graph.openSession();
+            checkCondition("correctParamSize", parameters.length == 2);
+            checkCondition("correctTypeForFirstParam", parameters[0] instanceof String);
+            checkCondition("correctTypeForSecondParam", parameters[1] instanceof String);
+            final String user = (String)parameters[0];
+            final String pass = (String)parameters[1];
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser(user);
+            final AuthenticatedUser authenticatedUser = securityFactory.createIdentityManager(this.descriptor).authenticate(
+                                                                                                                            simpleUser,
+                                                                                                                            pass);
+
+            return this.graph.openSession(authenticatedUser);
         }
 
         /* (non-Javadoc)
