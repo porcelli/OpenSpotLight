@@ -5,11 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.StreamArtifact.ChangeType;
 
@@ -61,15 +64,41 @@ public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
         return null;
     }
 
-    public Set<StreamArtifact> listByPath( final String path ) {
-        // TODO Auto-generated method stub
-        return null;
+    public Set<StreamArtifact> listByPath( final String initialPath ) {
+        Assertions.checkNotEmpty("initialPath", initialPath);
+        try {
+            final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
+            for (final ChangeType t : ChangeType.values()) {
+
+                final String path = MessageFormat.format("./src/test/resources/artifacts/{0}/{1}", t.toString().toLowerCase(),
+                                                         initialPath);
+                final File initialDir = new File(path);
+                final String pathToRemove = initialDir.getCanonicalPath().substring(
+                                                                                    0,
+                                                                                    initialDir.getCanonicalPath().length()
+                                                                                    - initialPath.length() - 1);
+                final Set<String> pathList = Files.listFileNamesFrom(path);
+
+                for (final String p : pathList) {
+                    final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
+                    final StreamArtifact sa = this.findByPath(correctRelativePath);
+                    if (sa != null) {
+                        result.add(sa);
+                    }
+                }
+            }
+            return result;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
     }
 
     public Set<StreamArtifact> listByPath( final String artifactSourceReference,
                                            final String path ) {
-        // TODO Auto-generated method stub
-        return null;
+        Assertions.checkNotEmpty("artifactSourceReference", artifactSourceReference);
+        Assertions.checkNotEmpty("path", path);
+        Assertions.checkCondition("correctArtifactSourceRef", "classpath:".equals(artifactSourceReference));
+        return this.listByPath(path);
     }
 
 }
