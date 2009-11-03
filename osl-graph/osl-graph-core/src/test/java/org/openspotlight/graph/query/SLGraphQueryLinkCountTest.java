@@ -71,6 +71,9 @@ import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class SLGraphQueryLinkCountTest.
@@ -81,13 +84,15 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 public class SLGraphQueryLinkCountTest {
 
     /** The Constant LOGGER. */
-    static final Logger           LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
+    static final Logger              LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
 
     /** The graph. */
-    private static SLGraph        graph;
+    private static SLGraph           graph;
 
     /** The session. */
-    private static SLGraphSession session;
+    private static SLGraphSession    session;
+
+    private static AuthenticatedUser user;
 
     /**
      * Finish.
@@ -119,9 +124,13 @@ public class SLGraphQueryLinkCountTest {
     @BeforeClass
     public static void quickGraphPopulation() {
         try {
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            session = graph.openSession();
+            session = graph.openSession(user);
             final SLContext context = session.createContext("linkCountTest");
             final SLNode root = context.getRootNode();
             final Set<Class<?>> types = getIFaceTypeSet();
@@ -145,7 +154,7 @@ public class SLGraphQueryLinkCountTest {
             }
             session.save();
             session.close();
-            session = graph.openSession();
+            session = graph.openSession(user);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

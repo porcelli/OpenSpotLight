@@ -18,6 +18,10 @@ import org.openspotlight.graph.test.domain.JavaClassNode;
 import org.openspotlight.graph.test.domain.JavaMethodNode;
 import org.openspotlight.graph.test.domain.SQLElement;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 public class SLGraphCollatorTest {
 
@@ -27,6 +31,8 @@ public class SLGraphCollatorTest {
 
     private static SLGraphSession session;
 
+    private static AuthenticatedUser user;
+
     @AfterClass( )
     public static void finish() {
         session.close();
@@ -34,9 +40,13 @@ public class SLGraphCollatorTest {
     }
 
     @BeforeClass
-    public static void init() throws AbstractFactoryException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
     }
 
     @After
@@ -45,9 +55,9 @@ public class SLGraphCollatorTest {
     }
 
     @Before
-    public void beforeTest() throws SLGraphException {
+    public void beforeTest() throws SLGraphException, SLInvalidCredentialException {
         if (session == null) {
-            session = graph.openSession();
+            session = graph.openSession(user);
         }
     }
 
@@ -81,6 +91,9 @@ public class SLGraphCollatorTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -105,6 +118,9 @@ public class SLGraphCollatorTest {
             Assert.assertEquals(element3.getName(), "selecao");
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -133,6 +149,9 @@ public class SLGraphCollatorTest {
             }
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }

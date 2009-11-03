@@ -61,6 +61,7 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The listener interface for receiving SLCollator events.
  * The class that is interested in processing a SLCollator
@@ -76,6 +77,9 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 	
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet(org.openspotlight.graph.SLNodePropertyEvent)
+	 */
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void nodePropertySet(SLNodePropertyEvent event) throws SLGraphSessionException {
@@ -118,6 +122,9 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 	
 	/* (non-Javadoc)
 	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
+	 */
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void nodePropertyRemoved(SLNodePropertyEvent event) throws SLGraphSessionException {

@@ -69,6 +69,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterfa
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.ResultOrder;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -76,6 +77,9 @@ import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -97,6 +101,8 @@ public class JavaTypeResolverTest {
 
     /** The session. */
     static SLGraphSession         session;
+
+    static AuthenticatedUser      user;
 
     // FIXME not retrieving the correct type when using inheritance. Need to retest with the new graph version
 
@@ -183,10 +189,13 @@ public class JavaTypeResolverTest {
     @SuppressWarnings( "deprecation" )
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
-        final SLGraphFactory factory = new SLGraphFactoryImpl();
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
+        final SLGraphFactory factory = new SLGraphFactoryImpl();
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        session = graph.openSession();
+        session = graph.openSession(user);
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");
         SLContext jre15ctx = session.createContext("JRE-util-1.5");
@@ -209,7 +218,7 @@ public class JavaTypeResolverTest {
         createCrudNodes(crudFrameworkLegacySupport);
         session.save();
         session.close();
-        session = graph.openSession();
+        session = graph.openSession(user);
         abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
         jre15ctx = session.getContext("JRE-util-1.5");
         jre14ctx = session.getContext("JRE-util-1.4");

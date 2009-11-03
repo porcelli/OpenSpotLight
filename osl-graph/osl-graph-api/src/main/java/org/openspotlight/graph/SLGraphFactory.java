@@ -55,22 +55,39 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
  * A factory for creating SLGraph objects.
  */
 public abstract class SLGraphFactory extends AbstractFactory {
 
-    public abstract SLGraph createGraph( final JcrConnectionDescriptor descriptor ) throws SLGraphFactoryException;
-
     /**
      * Creates a new SLGraph object.
      * 
+     * @param descriptor the descriptor
+     * @return the SL graph
+     * @throws SLGraphFactoryException the SL graph factory exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
+     */
+    public abstract SLGraph createGraph( final JcrConnectionDescriptor descriptor )
+        throws SLGraphFactoryException, SLInvalidCredentialException;
+
+    /**
+     * Creates the graph session.
+     * 
      * @param treeSession the tree session
+     * @param user the user
+     * @param policyEnforcement the policy enforcement
      * @return the SL graph session
      * @throws SLGraphFactoryException the SL graph factory exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    abstract SLGraphSession createGraphSession( SLPersistentTreeSession treeSession ) throws SLGraphFactoryException;
+    abstract SLGraphSession createGraphSession( SLPersistentTreeSession treeSession,
+                                                PolicyEnforcement policyEnforcement,
+                                                AuthenticatedUser user )
+        throws SLGraphFactoryException, SLInvalidCredentialException;
 
     /**
      * Creates a new SLGraph object.
@@ -120,6 +137,7 @@ public abstract class SLGraphFactory extends AbstractFactory {
      * 
      * @param node the node
      * @param persistentProperty the persistent property
+     * @param eventPoster the event poster
      * @return the SL node property< v>
      * @throws SLGraphFactoryException the SL graph factory exception
      */

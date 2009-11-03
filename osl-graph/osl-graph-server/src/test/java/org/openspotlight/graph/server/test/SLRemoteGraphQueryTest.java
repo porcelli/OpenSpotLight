@@ -89,8 +89,12 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
     private static RemoteGraphSessionServer  server;
 
+    private static final String              user = "testUser";
+
+    private static final String              pass = "password";
+
     protected static void openNewSession() throws Exception {
-        session = factory.createRemoteGraphSession();
+        session = factory.createRemoteGraphSession(user, pass);
     }
 
     protected static void setupSession() throws Exception {
@@ -124,7 +128,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                 return "***";
             }
         });
-        session = factory.createRemoteGraphSession();
+        session = factory.createRemoteGraphSession(user, pass);
     }
 
     protected static void shutdownTest() {

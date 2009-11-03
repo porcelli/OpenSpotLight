@@ -54,19 +54,19 @@ package org.openspotlight.graph.persistence;
  * @author Vitor Hugo Chagas
  */
 public interface SLPersistentTree {
-	
-	/**
-	 * Open session.
-	 * 
-	 * @return the sL persistent tree session
-	 * 
-	 * @throws SLPersistentTreeException the SL persistent tree exception
-	 */
-	public SLPersistentTreeSession openSession() throws SLPersistentTreeException;
-	
-	/**
-	 * Shutdown.
-	 */
-	public void shutdown();
+
+    /**
+     * Open session.
+     * 
+     * @param repositoryName the repository name
+     * @return the sL persistent tree session
+     * @throws SLPersistentTreeException the SL persistent tree exception
+     */
+    public SLPersistentTreeSession openSession( String repositoryName ) throws SLPersistentTreeException;
+
+    /**
+     * Shutdown.
+     */
+    public void shutdown();
 
 }

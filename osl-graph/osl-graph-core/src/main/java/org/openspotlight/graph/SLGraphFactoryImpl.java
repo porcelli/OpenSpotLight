@@ -59,6 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTree;
@@ -66,6 +67,11 @@ import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.SystemUser;
+import org.openspotlight.security.idm.auth.IdentityManager;
 
 /**
  * The Class SLGraphFactoryImpl.
@@ -102,38 +108,47 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
     private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
 
     @Override
-    public synchronized SLGraph createGraph( final JcrConnectionDescriptor descriptor ) throws SLGraphFactoryException {
+    public synchronized SLGraph createGraph( final JcrConnectionDescriptor descriptor )
+        throws SLGraphFactoryException, SLInvalidCredentialException {
         SLGraph cached = this.cache.get(descriptor);
         if (cached == null) {
             try {
-                SLPersistentTreeFactory factory;
-                factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
+                final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+                final SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
                 final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
                 provider.openRepositoryAndCleanIfItIsTemporary();//this is necessary only because test issues. DO NOT REMOVE THIS LINE!
+
                 final SLPersistentTree tree = factory.createPersistentTree(descriptor);
-                cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl());
+                final SystemUser systemUser = securityFactory.createSystemUser();
+                final IdentityManager identityManager = securityFactory.createIdentityManager(descriptor);
+                final PolicyEnforcement graphPolicyEnforcement = securityFactory.createGraphPolicyEnforcement(descriptor);
+
+                cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl(), identityManager, graphPolicyEnforcement, systemUser);
                 this.cache.put(descriptor, cached);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
+            } catch (final SLInvalidCredentialException e) {
+                throw logAndReturnNew(e, SLInvalidCredentialException.class);
             }
-
         }
         return cached;
     }
 
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLGraphFactory#createGraphSession(org.openspotlight.graph.persistence.SLPersistentTreeSession)
-     */
     /**
      * Creates the graph session.
      * 
      * @param treeSession the tree session
+     * @param user the user
      * @return the sL graph session
      */
     @Override
-    SLGraphSession createGraphSession( final SLPersistentTreeSession treeSession ) {
-        return new SLGraphSessionImpl(treeSession);
+    SLGraphSession createGraphSession( final SLPersistentTreeSession treeSession,
+                                       PolicyEnforcement policyEnforcement,
+                                       AuthenticatedUser user ) {
+        Assertions.checkNotNull("treeSession", treeSession);
+        Assertions.checkNotNull("policyEnforcement", policyEnforcement);
+        Assertions.checkNotNull("user", user);
+        return new SLGraphSessionImpl(treeSession, policyEnforcement, user);
     }
 
     //@Override

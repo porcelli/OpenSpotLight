@@ -60,6 +60,8 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.exception.AbstractFactoryException;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -74,11 +76,31 @@ import org.openspotlight.federation.data.load.db.test.H2Support;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.federation.data.util.JcrConfigurationManagerProvider;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 @SuppressWarnings( "all" )
 public class DbStreamArtifactProcessing {
+
+    private static AuthenticatedUser user;
+
+    /**
+     * Inits the.
+     * 
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @BeforeClass
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+    }
 
     @BeforeClass
     public static void setupH2() throws Exception {
@@ -124,7 +146,7 @@ public class DbStreamArtifactProcessing {
         final Configuration configuration = this.loadAllArtifactsFromThisConfiguration(createH2DbConfiguration("DbStreamArtifactProcessing"));
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         configurationManager.save(configuration);
         configurationManager.closeResources();

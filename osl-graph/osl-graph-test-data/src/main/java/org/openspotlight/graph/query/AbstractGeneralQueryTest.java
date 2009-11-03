@@ -74,6 +74,7 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
@@ -89,7 +90,9 @@ import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 public class AbstractGeneralQueryTest {
 
@@ -224,14 +227,17 @@ public class AbstractGeneralQueryTest {
     }
 
     /** The LOGGER. */
-    protected static Logger         LOGGER   = Logger.getLogger(AbstractGeneralQueryTest.class);
+    protected static Logger            LOGGER   = Logger.getLogger(AbstractGeneralQueryTest.class);
     /** The graph. */
-    protected static SLGraph        graph;
+    protected static SLGraph           graph;
     /** The session. */
-    protected static SLGraphSession session;
+    protected static SLGraphSession    session;
+
+    /** The session. */
+    protected static AuthenticatedUser user;
 
     /** The sort mode. */
-    protected static SortMode       sortMode = SortMode.NOT_SORTED;
+    protected static SortMode          sortMode = SortMode.NOT_SORTED;
 
     /**
      * Adds the class implements interface links.
@@ -243,7 +249,8 @@ public class AbstractGeneralQueryTest {
      */
     private static void addClassImplementsInterfaceLinks( final SLNode root,
                                                           final Class<?> clazz,
-                                                          final JavaClass javaClass ) throws SLGraphSessionException {
+                                                          final JavaClass javaClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         final Class<?>[] iFaces = clazz.getInterfaces();
         for (final Class<?> iFace : iFaces) {
             final Package iFacePack = iFace.getPackage();
@@ -266,7 +273,7 @@ public class AbstractGeneralQueryTest {
      */
     private static void addJavaClassContainsJavaClassMethod( final Class<?> clazz,
                                                              final JavaClass javaClass )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
         final Method[] methods = clazz.getDeclaredMethods();
         for (final Method method : methods) {
             final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
@@ -286,7 +293,8 @@ public class AbstractGeneralQueryTest {
      */
     private static void addJavaClassHirarchyLinks( final SLNode root,
                                                    final Class<?> clazz,
-                                                   final JavaClass javaClass ) throws SLGraphSessionException {
+                                                   final JavaClass javaClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         final Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
             final Package classPack = clazz.getPackage();
@@ -309,7 +317,7 @@ public class AbstractGeneralQueryTest {
      */
     private static void addJavaInterfaceContainsJavaMethod( final Class<?> iFace,
                                                             final JavaInterface javaInterface )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
         final Method[] methods = iFace.getDeclaredMethods();
         for (final Method method : methods) {
             final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
@@ -329,7 +337,8 @@ public class AbstractGeneralQueryTest {
      */
     private static void addJavaInterfaceHirarchyLinks( final SLNode root,
                                                        final Class<?> iFace,
-                                                       final JavaInterface javaInterface ) throws SLGraphSessionException {
+                                                       final JavaInterface javaInterface )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         final Class<?>[] superIFaces = iFace.getInterfaces();
         for (final Class<?> superIFace : superIFaces) {
             final Package iFacePack = iFace.getPackage();
@@ -378,7 +387,7 @@ public class AbstractGeneralQueryTest {
     }
 
     protected static void openNewSession() throws Exception {
-        session = graph.openSession();
+        session = graph.openSession(user);
     }
 
     /**
@@ -455,9 +464,13 @@ public class AbstractGeneralQueryTest {
     }
 
     protected static void setupSession() throws Exception {
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+        
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        session = graph.openSession();
+        session = graph.openSession(user);
     }
 
     protected static void shutdownTest() {

@@ -48,6 +48,8 @@
  */
 package org.openspotlight.graph;
 
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,6 +58,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.annotation.SLLinkAttribute;
 import org.openspotlight.graph.listeners.SLCollatorListener;
 import org.openspotlight.graph.listeners.SLLinkCountListener;
@@ -79,6 +82,14 @@ import org.openspotlight.graph.query.SLQueryTextImpl;
 import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.parser.SLQueryTextInternalBuilder;
 import org.openspotlight.graph.util.ProxyUtil;
+import org.openspotlight.security.authz.Action;
+import org.openspotlight.security.authz.EnforcementContext;
+import org.openspotlight.security.authz.EnforcementException;
+import org.openspotlight.security.authz.EnforcementResponse;
+import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.authz.graph.GraphElement;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class SLGraphSessionImpl.
@@ -105,14 +116,30 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /** The slql query cache. */
     private final SLQueryCache               queryCache;
 
+    /** The user. */
+    private final AuthenticatedUser          user;
+
+    /** The policy enforcement. */
+    private final PolicyEnforcement          policyEnforcement;
+
     /**
      * Instantiates a new sL graph session impl.
      * 
      * @param treeSession the tree session
+     * @param policyEnforcement the policy enforcement
+     * @param user the user
      */
     public SLGraphSessionImpl(
-                               final SLPersistentTreeSession treeSession ) {
+                               final SLPersistentTreeSession treeSession, final PolicyEnforcement policyEnforcement,
+                               final AuthenticatedUser user ) {
+
+        Assertions.checkNotNull("treeSession", treeSession);
+        Assertions.checkNotNull("policyEnforcement", policyEnforcement);
+        Assertions.checkNotNull("user", user);
+
         this.treeSession = treeSession;
+        this.user = user;
+        this.policyEnforcement = policyEnforcement;
         final Collection<SLGraphSessionEventListener> listeners = new ArrayList<SLGraphSessionEventListener>();
         listeners.add(new SLObjectMarkListener());
         listeners.add(new SLTransientObjectListener());
@@ -126,13 +153,31 @@ public class SLGraphSessionImpl implements SLGraphSession {
         this.queryCache = new SLQueryCacheImpl(this.treeSession, this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PolicyEnforcement getPolicyEnforcement() {
+        return this.policyEnforcement;
+    }
+
     /* (non-Javadoc)
      * @see org.openspotlight.graph.SLGraphSession#addLink(java.lang.Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, boolean)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <L extends SLLink> L addLink( final Class<L> linkClass,
                                          final SLNode source,
                                          final SLNode target,
-                                         final boolean bidirecional ) throws SLGraphSessionException {
+                                         final boolean bidirecional )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         return this.addLink(linkClass, source, target, bidirecional, SLPersistenceMode.NORMAL);
     }
 
@@ -143,13 +188,21 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see org.openspotlight.graph.SLGraphSession#addLink(java.lang.Class,
      * org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, boolean)
      */
+    /**
+     * {@inheritDoc}
+     */
     public <L extends SLLink> L addLink( final Class<L> linkClass,
                                          final SLNode source,
                                          final SLNode target,
                                          final boolean bidirecional,
-                                         final SLPersistenceMode persistenceMode ) throws SLGraphSessionException {
+                                         final SLPersistenceMode persistenceMode )
+        throws SLGraphSessionException, SLInvalidCredentialException {
 
         try {
+
+            if (!hasPrivileges(GraphElement.LINK, Action.WRITE)) {
+                throw new SLInvalidCredentialException("User does not have privilegies to add links.");
+            }
 
             SLPersistentNode linkNode = null;
 
@@ -274,6 +327,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#clear()
      */
+    /**
+     * {@inheritDoc}
+     */
     public void clear() throws SLGraphSessionException {
         try {
             this.eventPoster.sessionCleaned();
@@ -289,6 +345,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#close()
      */
+    /**
+     * {@inheritDoc}
+     */
     public void close() {
         this.treeSession.close();
     }
@@ -299,16 +358,23 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#createContext(java.lang.Long)
      */
-    public SLContext createContext( final String id ) throws SLContextAlreadyExistsException, SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+    public SLContext createContext( final String id )
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
         try {
+            if (!hasPrivileges(GraphElement.CONTEXT, Action.WRITE)) {
+                throw new SLInvalidCredentialException("User does not have privilegies to create contexts.");
+            }
+
             final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(this.treeSession);
-            final SLContext context;
             if (contextsPersistentNode.getNode(id) == null) {
                 final SLPersistentNode contextRootPersistentNode = contextsPersistentNode.addNode("" + id);
-                context = new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
+                return new SLContextImpl(this, contextRootPersistentNode, this.eventPoster);
             }
             return this.getContext(id);
-            
+
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLGraphSessionException("Error on attempt to create context node.", e);
         }
@@ -318,6 +384,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /* (non-Javadoc)
      * @see org.openspotlight.graph.SLGraphSession#createQuery()
      */
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryApi createQueryApi() throws SLGraphSessionException {
         return new SLQueryApiImpl(this, this.treeSession, this.queryCache);
     }
@@ -325,6 +394,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /* (non-Javadoc)
     * @see org.openspotlight.graph.SLGraphSession#createQuery()
     */
+    /**
+     * {@inheritDoc}
+     */
     public SLQueryText createQueryText( final String slqlInput ) throws SLGraphSessionException, SLInvalidQuerySyntaxException {
         final SLQueryTextInternal query = this.queryBuilder.build(slqlInput);
         return new SLQueryTextImpl(this, this.treeSession, query);
@@ -397,6 +469,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getBidirectionalLinks(java.lang
      * .Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public <L extends SLLink> Collection<L> getBidirectionalLinks( final Class<L> linkClass,
                                                                    final SLNode side1,
                                                                    final SLNode side2 ) throws SLGraphSessionException {
@@ -409,6 +484,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @seeorg.openspotlight.graph.SLGraphSession#getBidirectionalLinks(org.
      * openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+     */
+    /**
+     * {@inheritDoc}
      */
     public Collection<SLLink> getBidirectionalLinks( final SLNode side1,
                                                      final SLNode side2 ) throws SLGraphSessionException {
@@ -423,6 +501,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getBidirectionalLinksBySide(java
      * .lang.Class, org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public <L extends SLLink> Collection<L> getBidirectionalLinksBySide( final Class<L> linkClass,
                                                                          final SLNode side ) throws SLGraphSessionException {
         return this.getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
@@ -435,6 +516,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getBidirectionalLinksBySide(org
      * .openspotlight.graph.SLNode)
+     */
+    /**
+     * {@inheritDoc}
      */
     public Collection<SLLink> getBidirectionalLinksBySide( final SLNode side ) throws SLGraphSessionException {
         return this.getLinks(side, null, SLLink.DIRECTION_BI);
@@ -459,6 +543,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#getContext(java.lang.Long)
      */
+    /**
+     * {@inheritDoc}
+     */
     public SLContext getContext( final String id ) throws SLGraphSessionException {
         try {
             SLContext context = null;
@@ -477,6 +564,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * (non-Javadoc)
      * 
      * @see org.openspotlight.graph.SLGraphSession#getDefaultEncoder()
+     */
+    /**
+     * {@inheritDoc}
      */
     public SLEncoder getDefaultEncoder() throws SLGraphSessionException {
         return this.encoder;
@@ -504,6 +594,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /* (non-Javadoc)
      * @see org.openspotlight.graph.SLGraphSession#getEncoderFactory()
      */
+    /**
+     * {@inheritDoc}
+     */
     public SLEncoderFactory getEncoderFactory() throws SLGraphSessionException {
         return this.encoderFactory;
     }
@@ -518,7 +611,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private Collection<Class<? extends SLLink>> getLinkClasses() throws SLGraphSessionException {
         try {
             final Collection<Class<? extends SLLink>> linkClasses = new ArrayList<Class<? extends SLLink>>();
-            final SLPersistentQuery query = this.treeSession.createQuery("//osl/links/*", SLPersistentQuery.TYPE_XPATH);
+            final SLPersistentQuery query = this.treeSession.createQuery(treeSession.getXPathRootPath() + "/links/*", SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             final Collection<SLPersistentNode> linkClassNodes = result.getNodes();
             for (final SLPersistentNode linkClassNode : linkClassNodes) {
@@ -558,6 +651,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see org.openspotlight.graph.SLGraphSession#getLinks(java.lang.Class,
      * org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public <L extends SLLink> Collection<L> getLinks( final Class<L> linkClass,
                                                       final SLNode source,
                                                       final SLNode target ) throws SLGraphSessionException {
@@ -570,6 +666,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#getLinks(java.lang.Class,
      * org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode, int)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <L extends SLLink> Collection<L> getLinks( final Class<L> linkClass,
                                                       final SLNode source,
@@ -586,7 +685,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
             // order by @linkCount ascending
 
             final StringBuilder statement = new StringBuilder();
-            statement.append("//osl/links/").append(linkClass.getName()).append("/*");
+            statement.append(treeSession.getXPathRootPath() + "/links/").append(linkClass.getName()).append("/*");
 
             if (source != null || target != null) {
 
@@ -719,6 +818,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getLinks(org.openspotlight.graph
      * .SLNode, org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLLink> getLinks( final SLNode source,
                                         final SLNode target ) throws SLGraphSessionException {
         return this.getLinks(source, target, SLLink.DIRECTION_ANY);
@@ -731,6 +833,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getLinks(org.openspotlight.graph
      * .SLNode, org.openspotlight.graph.SLNode, int)
+     */
+    /**
+     * {@inheritDoc}
      */
     public Collection<SLLink> getLinks( final SLNode source,
                                         final SLNode target,
@@ -749,6 +854,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#getMetadata()
      */
+    /**
+     * {@inheritDoc}
+     */
     public SLMetadata getMetadata() {
         return new SLMetadataImpl(this.treeSession);
     }
@@ -759,8 +867,11 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#getNodeByID(java.lang.String)
      */
+    /**
+     * {@inheritDoc}
+     */
     public SLNode getNodeByID( final String id ) throws SLNodeNotFoundException, SLGraphSessionException {
-        final int INDEX_CONTEXT_ID = 2;
+        final int INDEX_CONTEXT_ID = 3;
         try {
             SLNode node = null;
             final SLPersistentNode pNode = this.treeSession.getNodeByID(id);
@@ -795,6 +906,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLNode> getNodesByLink( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
         return this.getNodesByLink(linkClass, null);
     }
@@ -807,6 +921,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class,
      * org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLNode> getNodesByLink( final Class<? extends SLLink> linkClass,
                                               final SLNode node ) throws SLGraphSessionException {
         return this.getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
@@ -818,6 +935,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class,
      * org.openspotlight.graph.SLNode, java.lang.Class, boolean)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <N extends SLNode> Collection<N> getNodesByLink( final Class<? extends SLLink> linkClass,
                                                             final SLNode node,
@@ -833,6 +953,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class,
      * org.openspotlight.graph.SLNode, java.lang.Class, boolean, int)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <N extends SLNode> Collection<N> getNodesByLink( final Class<? extends SLLink> linkClass,
                                                             final SLNode node,
@@ -855,6 +978,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(java.lang.Class,
      * org.openspotlight.graph.SLNode, int)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLNode> getNodesByLink( final Class<? extends SLLink> linkClass,
                                               final SLNode node,
                                               final int direction ) throws SLGraphSessionException {
@@ -869,6 +995,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight
      * .graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLNode> getNodesByLink( final SLNode node ) throws SLGraphSessionException {
         return this.getNodesByLink(node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
     }
@@ -879,6 +1008,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight
      * .graph.SLNode, java.lang.Class, boolean)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <N extends SLNode> Collection<N> getNodesByLink( final SLNode node,
                                                             final Class<N> nodeClass,
@@ -893,6 +1025,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight
      * .graph.SLNode, java.lang.Class, boolean, int)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <N extends SLNode> Collection<N> getNodesByLink( final SLNode node,
                                                             final Class<N> nodeClass,
@@ -914,6 +1049,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getNodesByLink(org.openspotlight
      * .graph.SLNode, int)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLNode> getNodesByLink( final SLNode node,
                                               final int direction ) throws SLGraphSessionException {
         return this.getNodesByLink(node, SLNode.class, true, direction);
@@ -927,10 +1065,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getNodesByPredicate(org.openspotlight
      * .graph.SLNodePredicate)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLNode> getNodesByPredicate( final SLNodePredicate predicate ) throws SLGraphSessionException {
         try {
             final Collection<SLNode> nodes = new ArrayList<SLNode>();
-            final SLPersistentQuery query = this.treeSession.createQuery("//osl/contexts/*//descendant::node()",
+            final SLPersistentQuery query = this.treeSession.createQuery(treeSession.getXPathRootPath() + "/contexts/*//descendant::node()",
                                                                          SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             final Collection<SLPersistentNode> pNodes = result.getNodes();
@@ -1018,6 +1159,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getUnidirectionalLinks(java.lang
      * .Class, org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public <L extends SLLink> Collection<L> getUnidirectionalLinks( final Class<L> linkClass,
                                                                     final SLNode source,
                                                                     final SLNode target ) throws SLGraphSessionException {
@@ -1030,6 +1174,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @seeorg.openspotlight.graph.SLGraphSession#getUnidirectionalLinks(org.
      * openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
+     */
+    /**
+     * {@inheritDoc}
      */
     public Collection<SLLink> getUnidirectionalLinks( final SLNode source,
                                                       final SLNode target ) throws SLGraphSessionException {
@@ -1044,6 +1191,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksBySource
      * (java.lang.Class, org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource( final Class<L> linkClass,
                                                                             final SLNode source ) throws SLGraphSessionException {
         return this.getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
@@ -1057,6 +1207,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksBySource
      * (org.openspotlight.graph.SLNode)
      */
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLLink> getUnidirectionalLinksBySource( final SLNode source ) throws SLGraphSessionException {
         return this.getLinks(source, null, SLLink.DIRECTION_UNI);
     }
@@ -1068,6 +1221,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksByTarget
      * (java.lang.Class, org.openspotlight.graph.SLNode)
+     */
+    /**
+     * {@inheritDoc}
      */
     public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget( final Class<L> linkClass,
                                                                             final SLNode target ) throws SLGraphSessionException {
@@ -1081,6 +1237,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @see
      * org.openspotlight.graph.SLGraphSession#getUnidirectionalLinksByTarget
      * (org.openspotlight.graph.SLNode)
+     */
+    /**
+     * {@inheritDoc}
      */
     public Collection<SLLink> getUnidirectionalLinksByTarget( final SLNode target ) throws SLGraphSessionException {
         return this.getLinks(null, target, SLLink.DIRECTION_UNI);
@@ -1122,8 +1281,15 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * 
      * @see org.openspotlight.graph.SLGraphSession#save()
      */
-    public void save() throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+    public void save() throws SLGraphSessionException, SLInvalidCredentialException {
         try {
+            if (!hasPrivileges(GraphElement.SESSION, Action.OPERATE)) {
+                throw new SLInvalidCredentialException("User does not have privilegies to save session.");
+            }
+
             this.eventPoster.post(new SLGraphSessionEvent(SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));
             this.treeSession.save();
         } catch (final SLException e) {
@@ -1138,8 +1304,37 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * org.openspotlight.graph.SLGraphSession#setDefaultEncoder(org.openspotlight
      * .graph.SLEncoder)
      */
+    /**
+     * {@inheritDoc}
+     */
     public void setDefaultEncoder( final SLEncoder encoder ) throws SLGraphSessionException {
         this.encoder = encoder;
     }
 
+    /**
+     * Checks for privileges.
+     * 
+     * @param element the element
+     * @param action the action
+     * @return true, if successful
+     */
+    private boolean hasPrivileges( GraphElement element,
+                                   Action action ) {
+        EnforcementContext enforcementContext = new EnforcementContext();
+        enforcementContext.setAttribute("user", user);
+        enforcementContext.setAttribute("graphElement", element);
+        enforcementContext.setAttribute("action", action);
+        enforcementContext.setAttribute("graphSession", this);
+
+        try {
+            EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);
+            if (response.equals(EnforcementResponse.GRANTED)) {
+                return true;
+            }
+            return false;
+        } catch (EnforcementException e) {
+            catchAndLog(e);
+            return false;
+        }
+    }
 }

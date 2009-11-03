@@ -122,7 +122,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 					typeNames.addAll(hierarchyTypeNames);
 				}
 				
-		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder("//osl/links/*//*");
+		 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/links/*//*");
 		 		Statement rootStatement = statementBuilder.getRootStatement();
 		 		
 				List<SLSelectByLinkInfo> byLinkInfoList = selectInfo.getByLinkInfoList();
