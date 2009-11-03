@@ -93,6 +93,10 @@ import org.openspotlight.graph.test.domain.NamePredicate;
 import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 /**
  * The Class SLGraphTest.
@@ -103,13 +107,15 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 public class SLGraphTest {
 
     /** The Constant LOGGER. */
-    static final Logger           LOGGER = Logger.getLogger(SLGraphTest.class);
+    static final Logger              LOGGER = Logger.getLogger(SLGraphTest.class);
 
     /** The graph. */
-    private static SLGraph        graph;
+    private static SLGraph           graph;
 
     /** The session. */
-    private static SLGraphSession session;
+    private static SLGraphSession    session;
+
+    private static AuthenticatedUser user;
 
     /**
      * Finish.
@@ -126,9 +132,13 @@ public class SLGraphTest {
      * @throws AbstractFactoryException the abstract factory exception
      */
     @BeforeClass
-    public static void init() throws AbstractFactoryException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
     }
 
     /** The java class node. */
@@ -147,7 +157,7 @@ public class SLGraphTest {
     private SLLink         linkBoth;
 
     /**
-     *  Adds the add multiple link empty case.
+     * Adds the add multiple link empty case.
      */
     @Test
     public void addAddMultipleLinkEmptyCase() {
@@ -179,6 +189,9 @@ public class SLGraphTest {
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -223,6 +236,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -265,6 +281,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -305,6 +324,9 @@ public class SLGraphTest {
             Assert.assertNotSame(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -416,9 +438,9 @@ public class SLGraphTest {
      * @throws SLGraphException the SL graph exception
      */
     @Before
-    public void beforeTest() throws SLGraphException {
+    public void beforeTest() throws SLGraphException, SLInvalidCredentialException {
         if (session == null) {
-            session = graph.openSession();
+            session = graph.openSession(user);
         }
     }
 
@@ -464,6 +486,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -473,7 +498,8 @@ public class SLGraphTest {
      * @param linkClass the new up existent ab link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentABLinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
+    private void setUpExistentABLinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         this.session.clear();
         final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
@@ -489,7 +515,8 @@ public class SLGraphTest {
      * @param linkClass the new up existent ba link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentBALinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
+    private void setUpExistentBALinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         this.session.clear();
         final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
@@ -505,7 +532,8 @@ public class SLGraphTest {
      * @param linkClass the new up existent both link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentBothLinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
+    private void setUpExistentBothLinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
         this.session.clear();
         final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
@@ -530,6 +558,9 @@ public class SLGraphTest {
             Assert.assertEquals(javaClassNode1, javaClassNode2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -568,6 +599,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -604,6 +638,9 @@ public class SLGraphTest {
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -645,6 +682,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -684,6 +724,9 @@ public class SLGraphTest {
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkAB);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -728,6 +771,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -767,6 +813,9 @@ public class SLGraphTest {
             Assert.assertNotSame(linkBoth, this.linkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -809,6 +858,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -849,6 +901,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -885,6 +940,9 @@ public class SLGraphTest {
             Assert.assertEquals(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -929,6 +987,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -969,6 +1030,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -993,6 +1057,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1003,7 +1070,7 @@ public class SLGraphTest {
      */
     @Test
     // ( dependsOnMethods = "testChiLdNodesRetrieval" )
-    public void testContextOperations() throws SLGraphSessionException {
+    public void testContextOperations() throws SLGraphSessionException, SLInvalidCredentialException {
         final SLContext context1 = this.session.createContext("1L");
         Assert.assertNotNull("context1 should not be null.", context1);
         final SLContext context2 = this.session.getContext("1L");
@@ -1065,6 +1132,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1117,6 +1187,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1153,6 +1226,9 @@ public class SLGraphTest {
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1196,6 +1272,9 @@ public class SLGraphTest {
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1376,6 +1455,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1412,6 +1494,9 @@ public class SLGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1453,6 +1538,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1483,6 +1571,9 @@ public class SLGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1522,6 +1613,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1559,6 +1653,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1581,6 +1678,9 @@ public class SLGraphTest {
             this.assertMetaNodes(metaNodes, JavaElementNode.class, JavaPackageNode.class, JavaClassNode.class);
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1612,6 +1712,9 @@ public class SLGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1640,6 +1743,9 @@ public class SLGraphTest {
             }
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1693,6 +1799,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1738,6 +1847,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1774,6 +1886,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1795,6 +1910,9 @@ public class SLGraphTest {
             Assert.assertEquals(value, "8");
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1826,6 +1944,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1855,6 +1976,9 @@ public class SLGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1908,6 +2032,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1955,6 +2082,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2000,6 +2130,9 @@ public class SLGraphTest {
             this.assertLinks(links, simpleLinkBA, multipleLinkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2055,6 +2188,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2063,7 +2199,8 @@ public class SLGraphTest {
      */
     @Test
     // ( dependsOnMethods = "testIntegerProperty" )
-    public void testLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
+    public void testLineReference()
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
         final SLNode root1 = this.session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
@@ -2135,6 +2272,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2162,6 +2302,9 @@ public class SLGraphTest {
             Assert.assertNotNull(link.getCreationTime());
             Assert.assertEquals(link.getCreationTime(), creationTime);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2208,6 +2351,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2236,7 +2382,7 @@ public class SLGraphTest {
 
             this.session.save();
             this.session.close();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2246,6 +2392,9 @@ public class SLGraphTest {
             Assert.assertEquals(links.size(), 2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2272,7 +2421,7 @@ public class SLGraphTest {
             root1.addNode(JavaMethodNode.class, "javaMethodNode2", linkTypesForLinkDeletion, null);
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2285,6 +2434,9 @@ public class SLGraphTest {
             Assert.assertEquals(link.getTarget(), javaMethodNode1);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2313,7 +2465,7 @@ public class SLGraphTest {
             javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2323,6 +2475,9 @@ public class SLGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2349,7 +2504,7 @@ public class SLGraphTest {
             root1.addNode(JavaClassNode.class, "javaClassNode1", null, linkTypesForLinkedNodesDeletion);
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2357,6 +2512,9 @@ public class SLGraphTest {
             Assert.assertTrue(nodes.isEmpty());
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2411,6 +2569,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2434,6 +2595,9 @@ public class SLGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2454,6 +2618,9 @@ public class SLGraphTest {
             Assert.assertEquals(description, "Java Class");
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2489,6 +2656,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2513,6 +2683,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2535,6 +2708,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2552,6 +2728,9 @@ public class SLGraphTest {
             Assert.assertEquals(prop2.getValue(), new Integer(71));
             Assert.assertEquals(prop1.getValue(), prop2.getValue());
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2594,6 +2773,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2615,7 +2797,7 @@ public class SLGraphTest {
             this.session.addLink(TransientLink.class, javaClassNode1, javaMethodNode2, false);
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2626,6 +2808,9 @@ public class SLGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2651,7 +2836,7 @@ public class SLGraphTest {
             this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, NORMAL);
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2664,6 +2849,9 @@ public class SLGraphTest {
             Assert.assertEquals(link.getTarget(), javaMethodNode2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2685,7 +2873,7 @@ public class SLGraphTest {
             javaMethodNode1.addNode(TransientNode.class, "transNode2");
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2698,6 +2886,9 @@ public class SLGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2722,7 +2913,7 @@ public class SLGraphTest {
             javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
 
             this.session.save();
-            this.session = this.graph.openSession();
+            this.session = this.graph.openSession(user);
 
             root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
@@ -2734,12 +2925,16 @@ public class SLGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
     @Test
     // ( dependsOnMethods = "testLineReference" )
-    public void testTreeLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
+    public void testTreeLineReference()
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
         final SLNode root1 = this.session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
@@ -2812,6 +3007,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2837,6 +3035,9 @@ public class SLGraphTest {
 
             Assert.assertFalse(javaClassNode1.getID().equals(javaClassNode2.getID()));
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }

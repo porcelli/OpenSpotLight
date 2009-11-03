@@ -16,6 +16,7 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 import org.openspotlight.graph.query.console.GraphConnection;
@@ -32,6 +33,10 @@ import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 public class ExampleRemoteServerWithData {
 
@@ -48,7 +53,8 @@ public class ExampleRemoteServerWithData {
         private void addClassImplementsInterfaceLinks( final SLGraphSession session,
                                                        final SLNode root,
                                                        final Class<?> clazz,
-                                                       final JavaClass javaClass ) throws SLGraphSessionException {
+                                                       final JavaClass javaClass )
+            throws SLGraphSessionException, SLInvalidCredentialException {
             final Class<?>[] iFaces = clazz.getInterfaces();
             for (final Class<?> iFace : iFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -72,7 +78,7 @@ public class ExampleRemoteServerWithData {
         private void addJavaClassContainsJavaClassMethod( final SLGraphSession session,
                                                           final Class<?> clazz,
                                                           final JavaClass javaClass )
-            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
             final Method[] methods = clazz.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
@@ -93,7 +99,8 @@ public class ExampleRemoteServerWithData {
         private void addJavaClassHirarchyLinks( final SLGraphSession session,
                                                 final SLNode root,
                                                 final Class<?> clazz,
-                                                final JavaClass javaClass ) throws SLGraphSessionException {
+                                                final JavaClass javaClass )
+            throws SLGraphSessionException, SLInvalidCredentialException {
             final Class<?> superClass = clazz.getSuperclass();
             if (superClass != null) {
                 final Package classPack = clazz.getPackage();
@@ -118,7 +125,7 @@ public class ExampleRemoteServerWithData {
         private void addJavaInterfaceContainsJavaMethod( final SLGraphSession session,
                                                          final Class<?> iFace,
                                                          final JavaInterface javaInterface )
-            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException {
+            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
             final Method[] methods = iFace.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
@@ -139,7 +146,8 @@ public class ExampleRemoteServerWithData {
         private void addJavaInterfaceHirarchyLinks( final SLGraphSession session,
                                                     final SLNode root,
                                                     final Class<?> iFace,
-                                                    final JavaInterface javaInterface ) throws SLGraphSessionException {
+                                                    final JavaInterface javaInterface )
+            throws SLGraphSessionException, SLInvalidCredentialException {
             final Class<?>[] superIFaces = iFace.getInterfaces();
             for (final Class<?> superIFace : superIFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -185,10 +193,14 @@ public class ExampleRemoteServerWithData {
          * @throws IOException Signals that an I/O exception has occurred.
          * @throws ClassNotFoundException the class not found exception
          */
-        public void populateGraph() throws SLException, IOException, ClassNotFoundException {
+        public void populateGraph() throws SLException, IOException, ClassNotFoundException, SLInvalidCredentialException, IdentityException {
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            final SLGraphSession session = graph.openSession();
+            final SLGraphSession session = graph.openSession(user);
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");

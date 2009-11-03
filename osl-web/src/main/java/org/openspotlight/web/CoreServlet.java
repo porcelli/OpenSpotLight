@@ -21,6 +21,7 @@ import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.web.command.WebCommand;
 import org.openspotlight.web.command.WebCommand.WebCommandContext;
 
@@ -101,7 +102,8 @@ public class CoreServlet extends HttpServlet {
             final SLGraph graph = OslServletContextSupport.getGraphFrom(this.getServletContext());
             final JcrConnectionProvider provider = OslServletContextSupport.getJcrConnectionFrom(this.getServletContext());
             final Scheduler scheduler = OslServletContextSupport.getSchedulerFrom(this.getServletContext());
-            context = new WebCommandContext(graph, provider, scheduler);
+            final AuthenticatedUser user = OslServletContextSupport.getAuthenticatedUerFrom(this.getServletContext());
+            context = new WebCommandContext(user, graph, provider, scheduler);
             final String action = req.getParameter("action");
             final WebCommand command = this.loader.loadCommand(action);
             final Map<String, String> parameters = new TreeMap<String, String>();

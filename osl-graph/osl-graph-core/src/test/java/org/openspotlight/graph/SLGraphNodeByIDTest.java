@@ -59,6 +59,9 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.JavaInterface;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class SLGraphNodeByIDTest.
@@ -69,13 +72,15 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 public class SLGraphNodeByIDTest {
 
     /** The Constant LOGGER. */
-    static final Logger           LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+    static final Logger              LOGGER = Logger.getLogger(SLGraphQueryTest.class);
 
     /** The graph. */
-    private static SLGraph        graph;
+    private static SLGraph           graph;
 
     /** The session. */
-    private static SLGraphSession session;
+    private static SLGraphSession    session;
+
+    private static AuthenticatedUser user;
 
     /**
      * Finish.
@@ -92,9 +97,14 @@ public class SLGraphNodeByIDTest {
     @BeforeClass
     public static void setUp() {
         try {
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+
+            final User simpleUser = securityFactory.createUser("testUser");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            session = graph.openSession();
+            session = graph.openSession(user);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

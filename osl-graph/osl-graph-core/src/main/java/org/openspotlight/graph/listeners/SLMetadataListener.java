@@ -83,6 +83,7 @@ import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The listener interface for receiving SLMetadata events. The class that is interested in processing a SLMetadata event
  * implements this interface, and the object created with that class is registered with a component using the component's
@@ -115,6 +116,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param type the type
      * @param pNode the node
+     * 
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private void addDescription( final Class<?> type,
@@ -134,7 +136,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param pairKeyNode the pair key node
      * @param direction the direction
+     * 
      * @return the sL persistent node
+     * 
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private SLPersistentNode addLinkNode( final SLPersistentNode pairKeyNode,
@@ -152,6 +156,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param nodeType the node type
      * @param pMetaNode the meta node
+     * 
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private void addRenderHints( final Class<? extends SLNode> nodeType,
@@ -174,7 +179,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param sourceClass the source class
      * @param targetClass the target class
+     * 
      * @return the a class
+     * 
      * @throws SLException the SL exception
      */
     private Class<?> getAClass( final Class<?> sourceClass,
@@ -187,7 +194,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param sourceClass the source class
      * @param targetClass the target class
+     * 
      * @return the b class
+     * 
      * @throws SLException the SL exception
      */
     private Class<?> getBClass( final Class<?> sourceClass,
@@ -203,7 +212,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @param sourceClass the source class
      * @param targetClass the target class
      * @param typePairKey the type pair key
+     * 
      * @return the class pair key node
+     * 
      * @throws SLException the SL exception
      */
     private SLPersistentNode getTypePairKeyNode( final SLPersistentTreeSession treeSession,
@@ -240,7 +251,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @param sourceClass the source class
      * @param targetClass the target class
      * @param bidirecional the bidirecional
+     * 
      * @return the meta link direction
+     * 
      * @throws SLException the SL exception
      */
     private int getMetaLinkDirection( final Class<?> sourceClass,
@@ -257,7 +270,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * Inc link count.
      * 
      * @param linkKeyPairNode the link key pair node
+     * 
      * @return the long
+     * 
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private long incLinkCount( final SLPersistentNode linkKeyPairNode ) throws SLPersistentTreeSessionException {
@@ -273,6 +288,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @see
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
      * (org.openspotlight.graph.SLLinkEvent)
+     */
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
     @Override
@@ -321,6 +339,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @see
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkPropertySet
      * (org.openspotlight.graph.SLLinkPropertyEvent)
+     */
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
     @Override
@@ -378,6 +399,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
      * (org.openspotlight.graph.SLNodeEvent)
      */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings( "unchecked" )
     public void nodeAdded( final SLNodeEvent event ) throws SLGraphSessionException {
@@ -420,6 +444,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet
      * (org.openspotlight.graph.SLNodePropertyEvent)
      */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void nodePropertySet( final SLNodePropertyEvent event ) throws SLGraphSessionException {
 
@@ -453,6 +480,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
         this.linkPropertyKeyCache.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException {
         sessionCleaned();
@@ -462,6 +492,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * Gets the node type hierarchy.
      * 
      * @param nodeType the node type
+     * 
      * @return the node type hierarchy
      */
     private Collection<Class<? extends SLNode>> getNodeTypeHierarchy( Class<? extends SLNode> nodeType ) {
@@ -491,14 +522,16 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param typeName the type name
      * @param treeSession the tree session
+     * 
      * @return the meta node type
+     * 
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private SLPersistentNode getMetaNodeType( SLPersistentTreeSession treeSession,
                                               String typeName ) throws SLPersistentTreeSessionException {
         SLPersistentNode metaNodeType = metaNodeTypeCache.get(typeName);
         if (metaNodeType == null) {
-            StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
+            StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types//*");
             StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
             SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             SLPersistentQueryResult result = query.execute();
@@ -514,7 +547,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * 
      * @param sourceClass the source class
      * @param targetClass the target class
+     * 
      * @return the type pair key
+     * 
      * @throws SLException the SL exception
      */
     private String getTypePairKey( Class<?> sourceClass,

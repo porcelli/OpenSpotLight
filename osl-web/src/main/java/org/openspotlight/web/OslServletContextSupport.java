@@ -5,11 +5,16 @@ import javax.servlet.ServletContext;
 import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
  * The Class OslServletContextSupport contains methods to retrieve some useful objects from {@link ServletContext}.
  */
 public class OslServletContextSupport implements ServletContextConstants {
+
+    public static AuthenticatedUser getAuthenticatedUerFrom( final ServletContext ctx ) {
+        return (AuthenticatedUser)ctx.getAttribute(AUTHENTICATED_USER);
+    }
 
     /**
      * Gets the graph from.

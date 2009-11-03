@@ -53,6 +53,7 @@ package org.openspotlight.bundle.dap.language.java.resolver;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.bundle.dap.language.java.resolver.JavaTypeResolverTest.user;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,11 +64,13 @@ import org.openspotlight.bundle.dap.language.java.Constants;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.ResultOrder;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.User;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -86,10 +89,14 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
      */
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
         final SLGraphFactory factory = new SLGraphFactoryImpl();
 
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        session = graph.openSession();
+        session = graph.openSession(user);
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");
         SLContext jre15ctx = session.createContext("JRE-util-1.5");
@@ -112,7 +119,7 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
         createCrudNodes(crudFrameworkLegacySupport);
         session.save();
         session.close();
-        session = graph.openSession();
+        session = graph.openSession(user);
         abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
         jre15ctx = session.getContext("JRE-util-1.5");
         jre14ctx = session.getContext("JRE-util-1.4");
