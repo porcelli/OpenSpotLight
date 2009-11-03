@@ -221,6 +221,10 @@ public final class StreamArtifact {
             return this.parent == null;
         }
 
+        public String toString() {
+            return "PathElement: " + this.getCompletePath();
+        }
+
     }
 
     /**
@@ -423,7 +427,7 @@ public final class StreamArtifact {
     public static StreamArtifact createNewStreamArtifact( final String artifactCompletePath,
                                                           final ChangeType changeType,
                                                           final LazyContentLoader lazyContentLoader ) {
-        final String internalArtifactName = artifactCompletePath.substring(0, artifactCompletePath.indexOf('/'));
+        final String internalArtifactName = artifactCompletePath.substring(artifactCompletePath.lastIndexOf('/') + 1);
         final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
         final PathElement pathElement = PathElement.createFromPathString(path);
         final StreamArtifact streamArtifact = new StreamArtifact(pathElement, internalArtifactName, changeType, lazyContentLoader);
@@ -442,7 +446,7 @@ public final class StreamArtifact {
                                                           final ChangeType changeType,
                                                           final String content ) {
 
-        final String internalArtifactName = artifactCompletePath.substring(0, artifactCompletePath.indexOf('/'));
+        final String internalArtifactName = artifactCompletePath.substring(artifactCompletePath.lastIndexOf('/') + 1);
         final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
         final PathElement pathElement = PathElement.createFromPathString(path);
         final StreamArtifact streamArtifact = new StreamArtifact(pathElement, internalArtifactName, changeType, content);
@@ -695,6 +699,10 @@ public final class StreamArtifact {
      */
     public void removeSyntaxInformation( final SyntaxInformation syntaxInformation ) {
         this.syntaxInformationSet.remove(syntaxInformation);
+    }
+
+    public String toString() {
+        return "StreamArtifact: " + this.getArtifactCompleteName();
     }
 
 }
