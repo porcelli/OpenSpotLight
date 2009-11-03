@@ -14,6 +14,7 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.Sha1;
+import org.openspotlight.common.util.Strings;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -75,14 +76,30 @@ public final class StreamArtifact {
          * @param pathString the path string
          * @return the path element
          */
-        static PathElement createFromPathString( final String pathString ) {
+        public static PathElement createFromPathString( final String pathString ) {
             Assertions.checkNotEmpty("pathString", pathString);
             final StringTokenizer tok = new StringTokenizer(pathString, "/");
             PathElement lastPath = new PathElement(tok.nextToken());
             while (tok.hasMoreTokens()) {
-                lastPath = new PathElement(tok.nextToken(), lastPath);
+                final String nextToken = tok.nextToken();
+                if (nextToken.equals(".")) {
+                    continue;
+                }
+                if (nextToken.equals("..")) {
+                    lastPath = lastPath.getParent();
+                    continue;
+                }
+                lastPath = new PathElement(nextToken, lastPath);
             }
             return lastPath;
+
+        }
+
+        public static PathElement createRelativePath( final PathElement initialPathElement,
+                                                      final String pathString ) {
+            final String newPathString = pathString.startsWith("/") ? Strings.removeBegginingFrom("/", pathString) : pathString;
+
+            return createFromPathString(initialPathElement.getCompletePath() + SEPARATOR + newPathString);
 
         }
 
