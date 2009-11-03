@@ -2,6 +2,7 @@ package org.openspotlight.federation.data.impl;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.openspotlight.common.exception.SLException;
@@ -27,7 +28,7 @@ public final class StreamArtifact {
     public static enum ChangeType {
 
         /** The N o_ change. */
-        NO_CHANGE,
+        NOT_CHANGED,
 
         /** The INCLUDED. */
         INCLUDED,
@@ -68,6 +69,23 @@ public final class StreamArtifact {
      */
     public final static class PathElement implements Comparable<PathElement> {
 
+        /**
+         * Creates the from path string.
+         * 
+         * @param pathString the path string
+         * @return the path element
+         */
+        static PathElement createFromPathString( final String pathString ) {
+            Assertions.checkNotEmpty("pathString", pathString);
+            final StringTokenizer tok = new StringTokenizer(pathString, "/");
+            PathElement lastPath = new PathElement(tok.nextToken());
+            while (tok.hasMoreTokens()) {
+                lastPath = new PathElement(tok.nextToken(), lastPath);
+            }
+            return lastPath;
+
+        }
+
         /** The name. */
         private final String      name;
 
@@ -85,8 +103,8 @@ public final class StreamArtifact {
          * 
          * @param name the name
          */
-        public PathElement(
-                            final String name ) {
+        private PathElement(
+                             final String name ) {
             Assertions.checkNotEmpty("name", name);
             this.name = name;
             this.hash = getHashFromString(name);
@@ -100,8 +118,8 @@ public final class StreamArtifact {
          * @param name the name
          * @param parent the parent
          */
-        public PathElement(
-                            final String name, final PathElement parent ) {
+        private PathElement(
+                             final String name, final PathElement parent ) {
             Assertions.checkNotEmpty("name", name);
             Assertions.checkNotNull("parent", parent);
             this.name = name;
@@ -378,6 +396,44 @@ public final class StreamArtifact {
     private static final String SEPARATOR = "/";
 
     /**
+     * Creates the new stream artifact.
+     * 
+     * @param artifactCompletePath the artifact complete path
+     * @param changeType the change type
+     * @param lazyContentLoader the lazy content loader
+     * @return the stream artifact
+     */
+    public static StreamArtifact createNewStreamArtifact( final String artifactCompletePath,
+                                                          final ChangeType changeType,
+                                                          final LazyContentLoader lazyContentLoader ) {
+        final String internalArtifactName = artifactCompletePath.substring(0, artifactCompletePath.indexOf('/'));
+        final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
+        final PathElement pathElement = PathElement.createFromPathString(path);
+        final StreamArtifact streamArtifact = new StreamArtifact(pathElement, internalArtifactName, changeType, lazyContentLoader);
+        return streamArtifact;
+    }
+
+    /**
+     * Creates the new stream artifact.
+     * 
+     * @param artifactCompletePath the artifact complete path
+     * @param changeType the change type
+     * @param content the content
+     * @return the stream artifact
+     */
+    public static StreamArtifact createNewStreamArtifact( final String artifactCompletePath,
+                                                          final ChangeType changeType,
+                                                          final String content ) {
+
+        final String internalArtifactName = artifactCompletePath.substring(0, artifactCompletePath.indexOf('/'));
+        final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
+        final PathElement pathElement = PathElement.createFromPathString(path);
+        final StreamArtifact streamArtifact = new StreamArtifact(pathElement, internalArtifactName, changeType, content);
+        return streamArtifact;
+
+    }
+
+    /**
      * Gets the hash from string.
      * 
      * @param name the name
@@ -429,9 +485,9 @@ public final class StreamArtifact {
      * @param changeType the change type
      * @param lazyContentLoader the lazy content loader
      */
-    public StreamArtifact(
-                           final PathElement parent, final String artifactName, final ChangeType changeType,
-                           final LazyContentLoader lazyContentLoader ) {
+    private StreamArtifact(
+                            final PathElement parent, final String artifactName, final ChangeType changeType,
+                            final LazyContentLoader lazyContentLoader ) {
         Assertions.checkNotNull("parent", parent);
         Assertions.checkNotEmpty("artifactName", "artifactName");
         Assertions.checkNotNull("changeType", changeType);
@@ -457,8 +513,8 @@ public final class StreamArtifact {
      * @param changeType the change type
      * @param content the content
      */
-    public StreamArtifact(
-                           final PathElement parent, final String artifactName, final ChangeType changeType, final String content ) {
+    private StreamArtifact(
+                            final PathElement parent, final String artifactName, final ChangeType changeType, final String content ) {
         Assertions.checkNotNull("parent", parent);
         Assertions.checkNotEmpty("artifactName", "artifactName");
         Assertions.checkNotNull("changeType", changeType);
