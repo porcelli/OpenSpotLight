@@ -61,7 +61,7 @@ import javax.jcr.Session;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.MutableType;
-import org.openspotlight.federation.data.ArtifactFinder;
+import org.openspotlight.federation.data.StreamArtifactFinder;
 import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
 import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
@@ -97,7 +97,7 @@ public interface BundleProcessor<T extends ArtifactAboutToChange> {
         /** The session. */
         private final SLGraphSession session;
 
-        private ArtifactFinder       artifactFinder;
+        private StreamArtifactFinder       artifactFinder;
 
         private String               currentArtifactSourceReference;
 
@@ -143,7 +143,7 @@ public interface BundleProcessor<T extends ArtifactAboutToChange> {
             //            this.context = tempContext;
         }
 
-        public ArtifactFinder getArtifactFinder() {
+        public StreamArtifactFinder getArtifactFinder() {
             return artifactFinder;
         }
 
@@ -191,7 +191,7 @@ public interface BundleProcessor<T extends ArtifactAboutToChange> {
             //
         }
 
-        public void setArtifactFinder( final ArtifactFinder artifactFinder ) {
+        public void setArtifactFinder( final StreamArtifactFinder artifactFinder ) {
             this.artifactFinder = artifactFinder;
         }
 
