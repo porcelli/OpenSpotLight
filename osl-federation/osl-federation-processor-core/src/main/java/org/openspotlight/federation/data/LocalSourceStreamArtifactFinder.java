@@ -18,8 +18,10 @@ import org.openspotlight.federation.data.impl.StreamArtifact.ChangeType;
 
 public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
 
-    public StreamArtifact findByPath( final String path ) {
-        Assertions.checkNotEmpty("path", path);
+    public StreamArtifact findByPath( final String initialPath ) {
+        Assertions.checkNotEmpty("initialPath", initialPath);
+        Assertions.checkCondition("correctStarting", initialPath.startsWith("classpath:"));
+        final String path = Strings.removeBegginingFrom("classpath:", initialPath);
         for (final ChangeType t : ChangeType.values()) {
             try {
 
@@ -55,17 +57,19 @@ public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
         Assertions.checkNotEmpty("artifactSourceReference", artifactSourceReference);
         Assertions.checkNotEmpty("path", path);
         Assertions.checkCondition("correctArtifactSourceRef", "classpath:".equals(artifactSourceReference));
-        return this.findByPath(path);
+        return this.findByPath(artifactSourceReference + path);
     }
 
     public StreamArtifact findByRelativePath( final StreamArtifact relativeTo,
                                               final String path ) {
-        // TODO Auto-generated method stub
-        return null;
+        final String newPath = StreamArtifact.PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
+        return this.findByPath(newPath);
     }
 
-    public Set<StreamArtifact> listByPath( final String initialPath ) {
-        Assertions.checkNotEmpty("initialPath", initialPath);
+    public Set<StreamArtifact> listByPath( final String rawInitialPath ) {
+        Assertions.checkNotEmpty("rawInitialPath", rawInitialPath);
+        Assertions.checkCondition("correctStarting", rawInitialPath.startsWith("classpath:"));
+        final String initialPath = Strings.removeBegginingFrom("classpath:", rawInitialPath);
         try {
             final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
             for (final ChangeType t : ChangeType.values()) {
@@ -81,7 +85,7 @@ public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
 
                 for (final String p : pathList) {
                     final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
-                    final StreamArtifact sa = this.findByPath(correctRelativePath);
+                    final StreamArtifact sa = this.findByPath("classpath:", correctRelativePath);
                     if (sa != null) {
                         result.add(sa);
                     }
@@ -98,7 +102,7 @@ public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
         Assertions.checkNotEmpty("artifactSourceReference", artifactSourceReference);
         Assertions.checkNotEmpty("path", path);
         Assertions.checkCondition("correctArtifactSourceRef", "classpath:".equals(artifactSourceReference));
-        return this.listByPath(path);
+        return this.listByPath(artifactSourceReference + path);
     }
 
 }

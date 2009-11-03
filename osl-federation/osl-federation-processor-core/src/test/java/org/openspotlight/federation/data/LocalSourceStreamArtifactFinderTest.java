@@ -15,6 +15,15 @@ public class LocalSourceStreamArtifactFinderTest {
     private final LocalSourceStreamArtifactFinder streamArtifactFinder = new LocalSourceStreamArtifactFinder();
 
     @Test
+    public void shouldFindByRelativePath() throws Exception {
+        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath("classpath:",
+                                                                                    "folder/subfolder/file_included1");
+        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByRelativePath(streamArtifact1, "../file_included1");
+        assertThat(streamArtifact2, is(notNullValue()));
+        assertThat(streamArtifact2.getArtifactCompleteName(), is("classpath:/folder/file_included1"));
+    }
+
+    @Test
     public void shouldLoadAddedArtifact() throws Exception {
         final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath("classpath:", "folder/file_included1");
         final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByPath("classpath:",
