@@ -4,15 +4,18 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -20,35 +23,34 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.ValueFormatException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.version.VersionException;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
+import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SimplePersistSupport.
  */
 public class SimplePersistSupport {
 
-    //FIXME collectionOfSimpleProperties
-
     //FIXME collectionOfNodeProperties
 
-    //FIXME mapOfSimpleProperties
-
     //FIXME mapOfNodeProperties
-
-    //FIXME singleNodeProperty
-
-    //FIXME testAddSimplePropertyOnCollection
 
     //FIXME testAddNodePropertyOnCollection
 
@@ -56,11 +58,7 @@ public class SimplePersistSupport {
 
     //FIXME testAddNodePropertyOnMap
 
-    //FIXME testRemoveSimplePropertyOnCollection
-
     //FIXME testRemoveNodePropertyOnCollection
-
-    //FIXME testRemoveSimplePropertyOnMap
 
     //FIXME testRemoveNodePropertyOnMap
 
@@ -70,19 +68,22 @@ public class SimplePersistSupport {
     private static class BeanDescriptor {
 
         /** The node name. */
-        String                            nodeName;
+        String                                  nodeName;
 
         /** The parent. */
-        BeanDescriptor                    parent;
+        BeanDescriptor                          parent;
 
         /** The node properties. */
-        Map<String, BeanDescriptor>       nodeProperties             = new HashMap<String, BeanDescriptor>();
+        Map<String, BeanDescriptor>             nodeProperties             = new HashMap<String, BeanDescriptor>();
+
+        Map<String, MultiplePropertyDescriptor> multipleSimpleProperties   = new HashMap<String, MultiplePropertyDescriptor>();
 
         /** The collection of node properties. */
-        Map<String, List<BeanDescriptor>> collectionOfNodeProperties = new HashMap<String, List<BeanDescriptor>>();
+        Map<String, List<BeanDescriptor>>       collectionOfNodeProperties = new HashMap<String, List<BeanDescriptor>>();
 
         /** The properties. */
-        final Map<String, String>         properties                 = new HashMap<String, String>();
+        final Map<String, String>               properties                 = new HashMap<String, String>();
+
     }
 
     /**
@@ -97,83 +98,83 @@ public class SimplePersistSupport {
         NODE_PROPERTY
     }
 
+    private static class MultiplePropertyDescriptor {
+
+        String       name;
+        String       multipleType;
+        List<String> keysAsStrings   = new ArrayList<String>();
+        List<String> valuesAsStrings = new ArrayList<String>();
+        String       keyType;
+        String       valueType;
+
+    }
+
+    private static final String NULL_VALUE                      = "!!! <null value> !!!";
+
     /** The Constant defaultPrefix. */
-    private static final String defaultNodePrefix = "node.";
+    private static final String DEFAULT_NODE_PREFIX             = "node.";
 
     /** The Constant typeName. */
-    private static final String typeName          = "node.typeName";
+    private static final String TYPE_NAME                       = "node.typeName";
+
+    /** The Constant MULTIPLE_PROPERTY_KEYS. */
+    private static final String MULTIPLE_PROPERTY_KEYS          = "multiple.property.{0}.keys";
+
+    /** The Constant MULTIPLE_PROPERTY_VALUES. */
+    private static final String MULTIPLE_PROPERTY_VALUES        = "multiple.property.{0}.values";
+
+    private static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE = "multiple.property.{0}.multiple.type";
+    private static final String MULTIPLE_PROPERTY_VALUE_TYPE    = "multiple.property.{0}.value.type";
+    private static final String MULTIPLE_PROPERTY_KEY_TYPE      = "multiple.property.{0}.key.type";
 
     /** The Constant nodePropertyName. */
-    private static final String nodePropertyName  = "property.name";
+    private static final String PROPERTY_NAME                   = "property.name";
 
     /** The Constant hashValue. */
-    private static final String hashValue         = "node.hashValue";
+    private static final String HASH_VALUE                      = "node.hashValue";
 
     /** The Constant propertyValue. */
-    private static final String propertyValue     = "node.property.{0}.value";
+    private static final String PROPERTY_VALUE                  = "node.property.{0}.value";
 
     /** The Constant propertyType. */
-    private static final String propertyType      = "node.property.{0}.type";
+    private static final String PROPERTY_TYPE                   = "node.property.{0}.type";
 
     /** The Constant keyValue. */
-    private static final String keyValue          = "node.key.{0}.value";
+    private static final String KEY_VALUE                       = "node.key.{0}.value";
 
     /** The Constant keyType. */
-    private static final String keyType           = "node.key.{0}.type";
+    private static final String KEY_TYPE                        = "node.key.{0}.type";
 
     /**
      * Adds the or create jcr node.
      * 
      * @param session the session
      * @param parentNode the parent node
-     * @param itObj the it obj
+     * @param descriptor the it obj
      * @param nodeType the node type
      * @param propertyName the property name
      * @return the node
      * @throws RepositoryException the repository exception
      */
-    private static Node addOrCreateJcrNode( final JcrNodeType nodeType,
-                                            final Session session,
-                                            final Node parentNode,
-                                            final BeanDescriptor itObj,
-                                            final String propertyName ) throws RepositoryException {
+    private static Node addUpdateOrRemoveJcrNode( final JcrNodeType nodeType,
+                                                  final Session session,
+                                                  final Node parentNode,
+                                                  final BeanDescriptor descriptor,
+                                                  final String propertyName ) throws RepositoryException {
         Node result = null;
-        final String nodeName = nodeType.toString() + "_" + (propertyName == null ? itObj.nodeName : propertyName);
+        final String nodeName = nodeType.toString() + "_" + (propertyName == null ? descriptor.nodeName : propertyName);
         if (propertyName != null) {
-            try {
-                result = parentNode.getNode(nodeName);
-            } catch (final PathNotFoundException e) {
-                //there's no property node yet
-            }
-            if (itObj == null) {
-                if (result != null) {
-                    result.remove();
-                }
-                return null;
-            }
-            if (result == null) {
-                final Node newNode = parentNode.addNode(nodeName);
-                result = newNode;
-            }
-            if (result != null) {
-                result.setProperty(nodePropertyName, propertyName);
-            }
-
+            result = addUpdateOrRemoveNodeProperty(parentNode, descriptor, propertyName, nodeName);
         } else {
             try {
-
-                if (result == null) {
-                    final NodeIterator it = parentNode.getNodes(nodeName);
-                    while (it.hasNext()) {
-                        final Node nextNode = it.nextNode();
-                        final String hashProperty = nextNode.getProperty(hashValue).getString();
-                        final String expectedHash = itObj.properties.get(hashValue);
-                        if (expectedHash.equals(hashProperty)) {
-
-                            result = nextNode;
-                            break;
-                        }
-
+                final NodeIterator it = parentNode.getNodes(nodeName);
+                while (it.hasNext()) {
+                    final Node nextNode = it.nextNode();
+                    final String hashProperty = nextNode.getProperty(HASH_VALUE).getString();
+                    final String expectedHash = descriptor.properties.get(HASH_VALUE);
+                    if (expectedHash.equals(hashProperty)) {
+                        result = nextNode;
+                        break;
                     }
                 }
             } catch (final PathNotFoundException e) {
@@ -185,9 +186,69 @@ public class SimplePersistSupport {
             }
         }
         if (result != null) {
-            for (final Map.Entry<String, String> entry : itObj.properties.entrySet()) {
+            for (final Map.Entry<String, String> entry : descriptor.properties.entrySet()) {
                 result.setProperty(entry.getKey(), entry.getValue());
             }
+            for (final Map.Entry<String, MultiplePropertyDescriptor> entry : descriptor.multipleSimpleProperties.entrySet()) {
+                final String keys = MessageFormat.format(MULTIPLE_PROPERTY_KEYS, entry.getKey());
+                final String values = MessageFormat.format(MULTIPLE_PROPERTY_VALUES, entry.getKey());
+                final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, entry.getKey());
+                final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, entry.getKey());
+                final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, entry.getKey());
+                final MultiplePropertyDescriptor desc = entry.getValue();
+                result.setProperty(type, desc.multipleType);
+                result.setProperty(valueType, desc.valueType);
+                result.setProperty(values, desc.valuesAsStrings.toArray(new String[0]));
+                if (desc.keyType != null) {
+                    result.setProperty(keyType, desc.keyType);
+                    result.setProperty(keys, desc.keysAsStrings.toArray(new String[0]));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Adds the update or remove node property.
+     * 
+     * @param parentNode the parent node
+     * @param itObj the it obj
+     * @param propertyName the property name
+     * @param result the result
+     * @param nodeName the node name
+     * @return the node
+     * @throws RepositoryException the repository exception
+     * @throws VersionException the version exception
+     * @throws LockException the lock exception
+     * @throws ConstraintViolationException the constraint violation exception
+     * @throws ItemExistsException the item exists exception
+     * @throws PathNotFoundException the path not found exception
+     * @throws ValueFormatException the value format exception
+     */
+    private static Node addUpdateOrRemoveNodeProperty( final Node parentNode,
+                                                       final BeanDescriptor itObj,
+                                                       final String propertyName,
+                                                       final String nodeName )
+        throws RepositoryException, VersionException, LockException, ConstraintViolationException, ItemExistsException,
+        PathNotFoundException, ValueFormatException {
+        Node result = null;
+        try {
+            result = parentNode.getNode(nodeName);
+        } catch (final PathNotFoundException e) {
+            //there's no property node yet
+        }
+        if (itObj == null) {
+            if (result != null) {
+                result.remove();
+            }
+            return null;
+        }
+        if (result == null) {
+            final Node newNode = parentNode.addNode(nodeName);
+            result = newNode;
+        }
+        if (result != null) {
+            result.setProperty(PROPERTY_NAME, propertyName);
         }
         return result;
     }
@@ -199,7 +260,8 @@ public class SimplePersistSupport {
      * @param bean the bean
      * @return the node
      */
-    public static <T> Node convertBeanToJcr( final Session session,
+    public static <T> Node convertBeanToJcr( final String startNodePath,
+                                             final Session session,
                                              final T bean ) {
         Assertions.checkCondition("correctInstance", bean instanceof SimpleNodeType);
         Assertions.checkNotNull("session", session);
@@ -213,15 +275,23 @@ public class SimplePersistSupport {
             Node parentNode = null;
             for (final BeanDescriptor itObj : list) {
                 if (parentNode == null) {
-                    try {
-                        parentNode = session.getRootNode().getNode(SharedConstants.DEFAULT_JCR_ROOT_NAME);
-                    } catch (final PathNotFoundException e) {
-                        parentNode = session.getRootNode().addNode(SharedConstants.DEFAULT_JCR_ROOT_NAME);
+                    parentNode = session.getRootNode();
+                    final StringTokenizer tok = new StringTokenizer(startNodePath, "/");
+                    while (tok.hasMoreTokens()) {
+                        final String currentToken = tok.nextToken();
+                        if (currentToken.length() == 0) {
+                            continue;
+                        }
+                        try {
+                            parentNode = parentNode.getNode(currentToken);
+                        } catch (final PathNotFoundException e) {
+                            parentNode = parentNode.addNode(currentToken);
+                        }
                     }
                 }
-                final Node node = addOrCreateJcrNode(JcrNodeType.NODE, session, parentNode, itObj, null);
+                final Node node = addUpdateOrRemoveJcrNode(JcrNodeType.NODE, session, parentNode, itObj, null);
                 for (final Entry<String, BeanDescriptor> entry : itObj.nodeProperties.entrySet()) {
-                    addOrCreateJcrNode(JcrNodeType.NODE_PROPERTY, session, node, entry.getValue(), entry.getKey());
+                    addUpdateOrRemoveJcrNode(JcrNodeType.NODE_PROPERTY, session, node, entry.getValue(), entry.getKey());
                 }
                 parentNode = node;
             }
@@ -244,12 +314,10 @@ public class SimplePersistSupport {
                                           final Node jcrNode ) throws Exception {
         Assertions.checkNotNull("session", session);
         Assertions.checkNotNull("jcrNode", jcrNode);
+        Assertions.checkCondition("correctJcrNode", jcrNode.getName().startsWith(JcrNodeType.NODE.toString()));
 
         try {
 
-            if (!jcrNode.getName().startsWith(JcrNodeType.NODE.toString())) {
-                return null;//not a simplePersist node
-            }
             final LinkedList<Node> list = new LinkedList<Node>();
             Node parentNode = jcrNode;
             while (parentNode != null && parentNode.getName().startsWith(JcrNodeType.NODE.toString())) {
@@ -285,7 +353,7 @@ public class SimplePersistSupport {
         if (beanDescriptor == null) {
             return null;
         }
-        final Class<T> typeClass = (Class<T>)Class.forName(beanDescriptor.properties.get(typeName));
+        final Class<T> typeClass = (Class<T>)Class.forName(beanDescriptor.properties.get(TYPE_NAME));
         final T newObject = typeClass.newInstance();
         final PropertyDescriptor[] allProperties = PropertyUtils.getPropertyDescriptors(newObject);
         for (final PropertyDescriptor desc : allProperties) {
@@ -309,7 +377,7 @@ public class SimplePersistSupport {
             final String propertyName = desc.getName();
 
             if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
-                setPropertyFromDescriptorToBean(beanDescriptor, newObject, desc, propertyName, keyType, keyValue);
+                setPropertyFromDescriptorToBean(beanDescriptor, newObject, desc, propertyName, KEY_TYPE, KEY_VALUE);
                 continue;
             }
             if (SimpleNodeType.class.isAssignableFrom(desc.getPropertyType())) {
@@ -319,7 +387,7 @@ public class SimplePersistSupport {
                 continue;
             }
 
-            setPropertyFromDescriptorToBean(beanDescriptor, newObject, desc, propertyName, propertyType, propertyValue);
+            setPropertyFromDescriptorToBean(beanDescriptor, newObject, desc, propertyName, PROPERTY_TYPE, PROPERTY_VALUE);
 
         }
 
@@ -342,7 +410,7 @@ public class SimplePersistSupport {
         descriptor.nodeName = bean.getClass().getName().replaceAll("[.]", "_").replaceAll("[$]", "_");
         final String beanTypeName = bean.getClass().getName();
         final List<String> attributesToHash = new ArrayList<String>();
-        descriptor.properties.put(typeName, beanTypeName);
+        descriptor.properties.put(TYPE_NAME, beanTypeName);
         final PropertyDescriptor[] allProperties = PropertyUtils.getPropertyDescriptors(bean);
         for (final PropertyDescriptor desc : allProperties) {
             if (desc.getName().equals("class")) {
@@ -375,8 +443,8 @@ public class SimplePersistSupport {
             }
 
             if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
-                setPropertyFromBeanToDescriptor(bean, descriptor, desc, keyType, keyValue);
-                attributesToHash.add(MessageFormat.format(keyValue, desc.getName()));
+                setPropertyFromBeanToDescriptor(bean, descriptor, desc, KEY_TYPE, KEY_VALUE);
+                attributesToHash.add(MessageFormat.format(KEY_VALUE, desc.getName()));
                 continue;
             }
             if (SimpleNodeType.class.isAssignableFrom(desc.getPropertyType())) {
@@ -387,8 +455,48 @@ public class SimplePersistSupport {
                 }
                 continue;
             }
-            setPropertyFromBeanToDescriptor(bean, descriptor, desc, propertyType, propertyValue);
-
+            if (Collection.class.isAssignableFrom(desc.getPropertyType())) {
+                final MultiplePropertyDescriptor multiplePropertyDescriptor = new MultiplePropertyDescriptor();
+                final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection.unwrapCollectionFromMethodReturn(desc.getReadMethod());
+                multiplePropertyDescriptor.multipleType = metadata.getCollectionType().getName();
+                multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
+                multiplePropertyDescriptor.name = desc.getName();
+                final Collection<Object> collection = (Collection<Object>)desc.getReadMethod().invoke(bean);
+                if (collection != null) {
+                    for (final Object value : collection) {
+                        String valueAsString = Conversion.convert(value, String.class);
+                        if (value == null) {
+                            valueAsString = NULL_VALUE;
+                        }
+                        multiplePropertyDescriptor.valuesAsStrings.add(valueAsString);
+                    }
+                }
+                descriptor.multipleSimpleProperties.put(desc.getName(), multiplePropertyDescriptor);
+                continue;
+            }
+            if (Map.class.isAssignableFrom(desc.getPropertyType())) {
+                final MultiplePropertyDescriptor multiplePropertyDescriptor = new MultiplePropertyDescriptor();
+                final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection.unwrapMapFromMethodReturn(desc.getReadMethod());
+                multiplePropertyDescriptor.multipleType = Map.class.getName();
+                multiplePropertyDescriptor.keyType = metadata.getItemType().getK1().getName();
+                multiplePropertyDescriptor.valueType = metadata.getItemType().getK2().getName();
+                multiplePropertyDescriptor.name = desc.getName();
+                final Map<Object, Object> map = (Map<Object, Object>)desc.getReadMethod().invoke(bean);
+                if (map != null) {
+                    for (final Entry<Object, Object> entry : map.entrySet()) {
+                        final String keyAsString = Conversion.convert(entry.getKey(), String.class);
+                        String valueAsString = Conversion.convert(entry.getValue(), String.class);
+                        if (entry.getValue() == null) {
+                            valueAsString = NULL_VALUE;
+                        }
+                        multiplePropertyDescriptor.keysAsStrings.add(keyAsString);
+                        multiplePropertyDescriptor.valuesAsStrings.add(valueAsString);
+                    }
+                }
+                descriptor.multipleSimpleProperties.put(desc.getName(), multiplePropertyDescriptor);
+                continue;
+            }
+            setPropertyFromBeanToDescriptor(bean, descriptor, desc, PROPERTY_TYPE, PROPERTY_VALUE);
         }
         final StringBuilder hashBuffer = new StringBuilder();
         hashBuffer.append(bean.getClass().getName());
@@ -403,7 +511,7 @@ public class SimplePersistSupport {
             hashBuffer.append(';');
         }
         final String hash = UUID.nameUUIDFromBytes(hashBuffer.toString().getBytes()).toString();
-        descriptor.properties.put(SimplePersistSupport.hashValue, hash);
+        descriptor.properties.put(SimplePersistSupport.HASH_VALUE, hash);
         return descriptor;
     }
 
@@ -424,7 +532,7 @@ public class SimplePersistSupport {
         final PropertyIterator properties = jcrNode.getProperties();
         while (properties.hasNext()) {
             final Property property = properties.nextProperty();
-            if (property.getName().startsWith(defaultNodePrefix)) {
+            if (property.getName().startsWith(DEFAULT_NODE_PREFIX)) {
                 descriptor.properties.put(property.getName(), property.getValue().getString());
 
             }
@@ -432,9 +540,9 @@ public class SimplePersistSupport {
         final NodeIterator propertyNodes = jcrNode.getNodes(JcrNodeType.NODE_PROPERTY.toString() + "_*");
         while (propertyNodes.hasNext()) {
             final Node property = propertyNodes.nextNode();
-            final String propertyName = property.getProperty(nodePropertyName).getString();
+            final String propName = property.getProperty(PROPERTY_NAME).getString();
             final BeanDescriptor propertyDesc = createDescriptorFromJcr(property, descriptor);
-            descriptor.nodeProperties.put(propertyName, propertyDesc);
+            descriptor.nodeProperties.put(propName, propertyDesc);
         }
         return descriptor;
 
@@ -502,7 +610,6 @@ public class SimplePersistSupport {
         throws ClassNotFoundException, SLException, IllegalAccessException, InvocationTargetException {
         final String propertyTypeString = beanDescriptor.properties.get(MessageFormat.format(type, propertyName));
         final String propertyValueAsString = beanDescriptor.properties.get(MessageFormat.format(value, propertyName));
-        @SuppressWarnings( "hiding" )
         Class<?> propertyType = Conversion.getPrimitiveClass(propertyTypeString);
         if (propertyType == null) {
             propertyType = Class.forName(propertyTypeString);

@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.support.SimplePersistSupport;
@@ -72,7 +73,7 @@ public class SimplePersistSupportTest {
         obj2.setPropertyObj(propertyObj);
         obj3.setLevelTwoObj(obj2);
         obj2.setProperty("propVal");
-        final Node node = SimplePersistSupport.convertBeanToJcr(this.session, obj3);
+        final Node node = SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME, this.session, obj3);
         final String path = node.getPath();
         Assert.assertThat(
                           path,
@@ -120,7 +121,8 @@ public class SimplePersistSupportTest {
         propertyObj.setValue(2);
         obj2.setPropertyObj(propertyObj);
 
-        final Node node = SimplePersistSupport.convertBeanToJcr(this.session, obj3);
+        final Node node = SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
+                                                                this.session, obj3);
         final LevelThreeObj convertedFromJcr = SimplePersistSupport.convertJcrToBean(this.session, node);
         Assert.assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
         Assert.assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
