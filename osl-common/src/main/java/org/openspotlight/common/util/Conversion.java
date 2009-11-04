@@ -54,8 +54,10 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -125,11 +127,27 @@ public class Conversion {
     public static <E> E convert( final Object rawValue,
                                  final Class<E> targetType ) throws SLException {
         checkNotNull("targetType", targetType); //$NON-NLS-1$
-        checkCondition("validTargetType", CONVERTERS.containsKey(targetType)); //$NON-NLS-1$
+        checkCondition("validTargetType", CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
         if (rawValue == null) {
             return null;
         }
+
         try {
+            if (targetType.isEnum()) {
+                final String rawValueAsString = rawValue.toString();
+                final Field[] flds = targetType.getDeclaredFields();
+                for (final Field f : flds) {
+                    if (f.isEnumConstant()) {
+                        if (f.getName().equals(rawValueAsString)) {
+                            final Object value = f.get(null);
+                            return (E)value;
+
+                        }
+                    }
+                }
+                throw new IllegalStateException(MessageFormat.format("Invalid enum constant:{0} for type {1}", rawValueAsString,
+                                                                     targetType));
+            }
             final Converter converter = CONVERTERS.get(targetType);
             final E converted = (E)converter.convert(targetType, rawValue);
             return converted;
