@@ -611,7 +611,7 @@ public class SimplePersistSupport {
             }
             if (rawName.startsWith(DEFAULT_MULTIPLE_PROPERTY_PREFIX)) {
                 String name = Strings.removeBegginingFrom(DEFAULT_MULTIPLE_PROPERTY_PREFIX, rawName);
-                name = name.substring(0, name.lastIndexOf('.') - 1);
+                name = name.substring(0, name.lastIndexOf('.'));
                 if (multiplePropertiesAlreadyLoaded.contains(name)) {
                     continue;
                 }
@@ -623,20 +623,26 @@ public class SimplePersistSupport {
                 final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, name);
                 final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, name);
                 final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, name);
-                desc.valueType = jcrNode.getProperty(valueType).getString();
-                desc.multipleType = jcrNode.getProperty(type).getString();
-                final Value[] rawValues = jcrNode.getProperty(values).getValues();
-                for (final Value v : rawValues) {
-                    desc.valuesAsStrings.add(v.getString());
-                }
-                if (jcrNode.hasProperty(keyType)) {
-                    desc.keyType = jcrNode.getProperty(keyType).getString();
-                    final Value[] rawKeys = jcrNode.getProperty(keys).getValues();
-                    for (final Value v : rawKeys) {
-                        desc.keysAsStrings.add(v.getString());
+                try {
+                    desc.valueType = jcrNode.getProperty(valueType).getString();
+                    desc.multipleType = jcrNode.getProperty(type).getString();
+                    final Value[] rawValues = jcrNode.getProperty(values).getValues();
+                    for (final Value v : rawValues) {
+                        desc.valuesAsStrings.add(v.getString());
                     }
+                    if (jcrNode.hasProperty(keyType)) {
+                        desc.keyType = jcrNode.getProperty(keyType).getString();
+                        final Value[] rawKeys = jcrNode.getProperty(keys).getValues();
+                        for (final Value v : rawKeys) {
+                            desc.keysAsStrings.add(v.getString());
+                        }
+                    }
+                    descriptor.multipleSimpleProperties.put(name, desc);
+
+                } catch (final PathNotFoundException e) {
+                    continue;
+
                 }
-                descriptor.multipleSimpleProperties.put(name, desc);
             }
         }
         final NodeIterator propertyNodes = jcrNode.getNodes(JcrNodeType.NODE_PROPERTY.toString() + "_*");

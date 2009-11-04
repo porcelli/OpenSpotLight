@@ -1,5 +1,9 @@
 package org.openspotlight.persist.test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import javax.jcr.Node;
 import javax.jcr.Session;
 
@@ -115,6 +119,16 @@ public class SimplePersistSupportTest {
         obj1.setRootObj(root);
         obj2.setLevelOneObj(obj1);
         obj3.setLevelTwoObj(obj2);
+        obj3.setBooleanList(new ArrayList<Boolean>());
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.FALSE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.setNumberMap(new HashMap<Double, Integer>());
+        obj3.getNumberMap().put(1.0, 3);
+        obj3.getNumberMap().put(2.0, 2);
+        obj3.getNumberMap().put(3.0, 1);
+
         obj2.setProperty("propVal");
         final PropertyObj propertyObj = new PropertyObj();
         propertyObj.setName("name");
@@ -131,6 +145,11 @@ public class SimplePersistSupportTest {
                           Is.is(convertedFromJcr.getLevelTwoObj().getPropertyObj().getName()));
         Assert.assertThat(obj3.getLevelTwoObj().getLevelOneObj().getProperty(),
                           Is.is(convertedFromJcr.getLevelTwoObj().getLevelOneObj().getProperty()));
+        Assert.assertThat(obj3.getBooleanList(), Is.is(Arrays.asList(true, false, true, true)));
+        Assert.assertThat(obj3.getNumberMap().get(1.0), Is.is(3));
+        Assert.assertThat(obj3.getNumberMap().get(2.0), Is.is(2));
+        Assert.assertThat(obj3.getNumberMap().get(3.0), Is.is(1));
+
     }
 
 }
