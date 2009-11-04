@@ -11,6 +11,8 @@ public class LevelTwoObj implements SimpleNodeType {
 
     private LevelOneObj parentObj;
 
+    private PropertyObj propertyObj;
+
     @KeyProperty
     public String getKey() {
         return this.key;
@@ -25,6 +27,10 @@ public class LevelTwoObj implements SimpleNodeType {
         return this.property;
     }
 
+    public PropertyObj getPropertyObj() {
+        return this.propertyObj;
+    }
+
     public void setKey( final String key ) {
         this.key = key;
     }
@@ -35,6 +41,10 @@ public class LevelTwoObj implements SimpleNodeType {
 
     public void setProperty( final String property ) {
         this.property = property;
+    }
+
+    public void setPropertyObj( final PropertyObj propertyObj ) {
+        this.propertyObj = propertyObj;
     }
 
 }

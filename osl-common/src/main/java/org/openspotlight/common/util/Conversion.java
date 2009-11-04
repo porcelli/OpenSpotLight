@@ -84,10 +84,22 @@ import org.openspotlight.common.exception.SLException;
  */
 public class Conversion {
 
+    private static final Map<String, Class<?>>    PRIMITIVE_TYPES = new HashMap<String, Class<?>>();
+    static {
+        PRIMITIVE_TYPES.put("int", int.class);
+        PRIMITIVE_TYPES.put("double", double.class);
+        PRIMITIVE_TYPES.put("short", short.class);
+        PRIMITIVE_TYPES.put("char", char.class);
+        PRIMITIVE_TYPES.put("long", long.class);
+        PRIMITIVE_TYPES.put("boolean", boolean.class);
+        PRIMITIVE_TYPES.put("byte", byte.class);
+        PRIMITIVE_TYPES.put("float", float.class);
+    }
+
     /**
      * Internal map of types and converters.
      */
-    private static final Map<Class<?>, Converter> CONVERTERS = new HashMap<Class<?>, Converter>();
+    private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
 
     static {
         CONVERTERS.put(Date.class, new DateConverter());
@@ -154,6 +166,10 @@ public class Conversion {
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLException.class);
         }
+    }
+
+    public static Class<?> getPrimitiveClass( final String name ) {
+        return PRIMITIVE_TYPES.get(name);
     }
 
     /**
