@@ -2,8 +2,9 @@ package org.openspotlight.persist.test;
 
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public class LevelOneObj {
+public class LevelOneObj implements SimpleNodeType {
 
     private String  key;
 

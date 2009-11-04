@@ -24,10 +24,12 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
 public class SimplePersistSupport {
@@ -78,6 +80,8 @@ public class SimplePersistSupport {
 
     public static <T> Node convertBeanToJcr( final Session session,
                                              final T bean ) {
+        Assertions.checkCondition("correctInstance", bean instanceof SimpleNodeType);
+        Assertions.checkNotNull("session", session);
         try {
             BeanDescriptor descriptor = createDescriptorFromBean(bean);
             final LinkedList<BeanDescriptor> list = new LinkedList<BeanDescriptor>();
@@ -105,6 +109,9 @@ public class SimplePersistSupport {
 
     public static <T> T convertJcrToBean( final Session session,
                                           final Node jcrNode ) throws Exception {
+        Assertions.checkNotNull("session", session);
+        Assertions.checkNotNull("jcrNode", jcrNode);
+
         try {
 
             if (!jcrNode.hasProperty(hashValue)) {
@@ -122,6 +129,7 @@ public class SimplePersistSupport {
                 parentDescriptor = createDescriptorFromJcr(node, parentDescriptor);
                 parent = createBeanFromBeanDescriptor(parentDescriptor, parent);
             }
+            Assertions.checkCondition("correctInstance", parent instanceof SimpleNodeType);
 
             return (T)parent;
 
@@ -155,6 +163,7 @@ public class SimplePersistSupport {
                 continue;
             }
             final String propertyName = desc.getName();
+
             if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
                 setPropertyFromDescriptorToBean(beanDescriptor, newObject, desc, propertyName, keyType, keyValue);
             } else {
