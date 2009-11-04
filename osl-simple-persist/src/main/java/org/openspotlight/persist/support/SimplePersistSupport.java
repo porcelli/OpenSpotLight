@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
@@ -31,10 +33,12 @@ import javax.jcr.version.VersionException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.KeyProperty;
@@ -76,6 +80,7 @@ public class SimplePersistSupport {
         /** The node properties. */
         Map<String, BeanDescriptor>             nodeProperties             = new HashMap<String, BeanDescriptor>();
 
+        /** The multiple simple properties. */
         Map<String, MultiplePropertyDescriptor> multipleSimpleProperties   = new HashMap<String, MultiplePropertyDescriptor>();
 
         /** The collection of node properties. */
@@ -98,52 +103,75 @@ public class SimplePersistSupport {
         NODE_PROPERTY
     }
 
+    /**
+     * The Class MultiplePropertyDescriptor.
+     */
     private static class MultiplePropertyDescriptor {
 
+        /** The name. */
         String       name;
+
+        /** The multiple type. */
         String       multipleType;
+
+        /** The keys as strings. */
         List<String> keysAsStrings   = new ArrayList<String>();
+
+        /** The values as strings. */
         List<String> valuesAsStrings = new ArrayList<String>();
+
+        /** The key type. */
         String       keyType;
+
+        /** The value type. */
         String       valueType;
 
     }
 
-    private static final String NULL_VALUE                      = "!!! <null value> !!!";
+    /** The Constant NULL_VALUE. */
+    private static final String NULL_VALUE                       = "!!! <null value> !!!";
 
     /** The Constant defaultPrefix. */
-    private static final String DEFAULT_NODE_PREFIX             = "node.";
+    private static final String DEFAULT_NODE_PREFIX              = "node.";
+
+    /** The Constant defaultPrefix. */
+    private static final String DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple.property.";
 
     /** The Constant typeName. */
-    private static final String TYPE_NAME                       = "node.typeName";
+    private static final String TYPE_NAME                        = "node.typeName";
 
     /** The Constant MULTIPLE_PROPERTY_KEYS. */
-    private static final String MULTIPLE_PROPERTY_KEYS          = "multiple.property.{0}.keys";
+    private static final String MULTIPLE_PROPERTY_KEYS           = "multiple.property.{0}.keys";
 
     /** The Constant MULTIPLE_PROPERTY_VALUES. */
-    private static final String MULTIPLE_PROPERTY_VALUES        = "multiple.property.{0}.values";
+    private static final String MULTIPLE_PROPERTY_VALUES         = "multiple.property.{0}.values";
 
-    private static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE = "multiple.property.{0}.multiple.type";
-    private static final String MULTIPLE_PROPERTY_VALUE_TYPE    = "multiple.property.{0}.value.type";
-    private static final String MULTIPLE_PROPERTY_KEY_TYPE      = "multiple.property.{0}.key.type";
+    /** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE. */
+    private static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE  = "multiple.property.{0}.multiple.type";
+
+    /** The Constant MULTIPLE_PROPERTY_VALUE_TYPE. */
+    private static final String MULTIPLE_PROPERTY_VALUE_TYPE     = "multiple.property.{0}.value.type";
+
+    /** The Constant MULTIPLE_PROPERTY_KEY_TYPE. */
+    private static final String MULTIPLE_PROPERTY_KEY_TYPE       = "multiple.property.{0}.key.type";
 
     /** The Constant nodePropertyName. */
-    private static final String PROPERTY_NAME                   = "property.name";
+    private static final String PROPERTY_NAME                    = "property.name";
 
     /** The Constant hashValue. */
-    private static final String HASH_VALUE                      = "node.hashValue";
+    private static final String HASH_VALUE                       = "node.hashValue";
 
     /** The Constant propertyValue. */
-    private static final String PROPERTY_VALUE                  = "node.property.{0}.value";
+    private static final String PROPERTY_VALUE                   = "node.property.{0}.value";
 
     /** The Constant propertyType. */
-    private static final String PROPERTY_TYPE                   = "node.property.{0}.type";
+    private static final String PROPERTY_TYPE                    = "node.property.{0}.type";
 
     /** The Constant keyValue. */
-    private static final String KEY_VALUE                       = "node.key.{0}.value";
+    private static final String KEY_VALUE                        = "node.key.{0}.value";
 
     /** The Constant keyType. */
-    private static final String KEY_TYPE                        = "node.key.{0}.type";
+    private static final String KEY_TYPE                         = "node.key.{0}.type";
 
     /**
      * Adds the or create jcr node.
@@ -214,7 +242,6 @@ public class SimplePersistSupport {
      * @param parentNode the parent node
      * @param itObj the it obj
      * @param propertyName the property name
-     * @param result the result
      * @param nodeName the node name
      * @return the node
      * @throws RepositoryException the repository exception
@@ -258,6 +285,7 @@ public class SimplePersistSupport {
      * 
      * @param session the session
      * @param bean the bean
+     * @param startNodePath the start node path
      * @return the node
      */
     public static <T> Node convertBeanToJcr( final String startNodePath,
@@ -384,6 +412,48 @@ public class SimplePersistSupport {
                 final BeanDescriptor propertyDesc = beanDescriptor.nodeProperties.get(propertyName);
                 final Object bean = createBeanFromBeanDescriptor(propertyDesc, parent);
                 desc.getWriteMethod().invoke(newObject, bean);
+                continue;
+            }
+            if (Collection.class.isAssignableFrom(desc.getPropertyType())) {
+                final MultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties.get(desc.getName());
+                final Class<? extends Collection> type = (Class<? extends Collection>)desc.getPropertyType();
+                final Collection<Object> instance = org.openspotlight.common.util.Collections.createNewCollection(
+                                                                                                                  type,
+                                                                                                                  multipleBeanDescriptor.valuesAsStrings.size());
+                final Class<?> valueType = Class.forName(multipleBeanDescriptor.valueType);
+                for (final String valueAsString : multipleBeanDescriptor.valuesAsStrings) {
+                    Object valueAsObject = null;
+                    if (!valueAsString.equals(NULL_VALUE)) {
+                        valueAsObject = Conversion.convert(valueAsString, valueType);
+                    }
+                    instance.add(valueAsObject);
+                }
+                desc.getWriteMethod().invoke(newObject, instance);
+
+                continue;
+            }
+            if (Map.class.isAssignableFrom(desc.getPropertyType())) {
+                final MultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties.get(desc.getName());
+                final List<Object> values = new ArrayList<Object>();
+                final List<Object> keys = new ArrayList<Object>();
+
+                final Class<?> valueType = Class.forName(multipleBeanDescriptor.valueType);
+                for (final String valueAsString : multipleBeanDescriptor.valuesAsStrings) {
+                    Object valueAsObject = null;
+                    if (!valueAsString.equals(NULL_VALUE)) {
+                        valueAsObject = Conversion.convert(valueAsString, valueType);
+                    }
+                    values.add(valueAsObject);
+                }
+                final Class<?> keyType = Class.forName(multipleBeanDescriptor.keyType);
+                for (final String keyAsString : multipleBeanDescriptor.keysAsStrings) {
+                    final Object keyAsObject = Conversion.convert(keyAsString, keyType);
+
+                    keys.add(keyAsObject);
+                }
+                final Map<Object, Object> map = Arrays.map(keys.toArray(), values.toArray());
+                desc.getWriteMethod().invoke(newObject, map);
+
                 continue;
             }
 
@@ -530,11 +600,43 @@ public class SimplePersistSupport {
         descriptor.parent = parent;
         descriptor.nodeName = jcrNode.getName();
         final PropertyIterator properties = jcrNode.getProperties();
+        final Set<String> multiplePropertiesAlreadyLoaded = new HashSet<String>();
         while (properties.hasNext()) {
-            final Property property = properties.nextProperty();
-            if (property.getName().startsWith(DEFAULT_NODE_PREFIX)) {
-                descriptor.properties.put(property.getName(), property.getValue().getString());
 
+            final Property property = properties.nextProperty();
+            final String rawName = property.getName();
+            if (rawName.startsWith(DEFAULT_NODE_PREFIX)) {
+                descriptor.properties.put(property.getName(), property.getValue().getString());
+                continue;
+            }
+            if (rawName.startsWith(DEFAULT_MULTIPLE_PROPERTY_PREFIX)) {
+                String name = Strings.removeBegginingFrom(DEFAULT_MULTIPLE_PROPERTY_PREFIX, rawName);
+                name = name.substring(0, name.lastIndexOf('.') - 1);
+                if (multiplePropertiesAlreadyLoaded.contains(name)) {
+                    continue;
+                }
+                multiplePropertiesAlreadyLoaded.add(name);
+                final MultiplePropertyDescriptor desc = new MultiplePropertyDescriptor();
+                desc.name = name;
+                final String keys = MessageFormat.format(MULTIPLE_PROPERTY_KEYS, name);
+                final String values = MessageFormat.format(MULTIPLE_PROPERTY_VALUES, name);
+                final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, name);
+                final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, name);
+                final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, name);
+                desc.valueType = jcrNode.getProperty(valueType).getString();
+                desc.multipleType = jcrNode.getProperty(type).getString();
+                final Value[] rawValues = jcrNode.getProperty(values).getValues();
+                for (final Value v : rawValues) {
+                    desc.valuesAsStrings.add(v.getString());
+                }
+                if (jcrNode.hasProperty(keyType)) {
+                    desc.keyType = jcrNode.getProperty(keyType).getString();
+                    final Value[] rawKeys = jcrNode.getProperty(keys).getValues();
+                    for (final Value v : rawKeys) {
+                        desc.keysAsStrings.add(v.getString());
+                    }
+                }
+                descriptor.multipleSimpleProperties.put(name, desc);
             }
         }
         final NodeIterator propertyNodes = jcrNode.getNodes(JcrNodeType.NODE_PROPERTY.toString() + "_*");
