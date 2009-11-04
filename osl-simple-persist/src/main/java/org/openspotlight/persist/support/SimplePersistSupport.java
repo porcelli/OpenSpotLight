@@ -31,6 +31,8 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.openspotlight.common.LazyType;
+import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
@@ -72,22 +74,41 @@ public class SimplePersistSupport {
     private static class BeanDescriptor {
 
         /** The node name. */
-        String                                  nodeName;
+        String                                         nodeName;
 
         /** The parent. */
-        BeanDescriptor                          parent;
+        BeanDescriptor                                 parent;
 
         /** The node properties. */
-        Map<String, BeanDescriptor>             nodeProperties             = new HashMap<String, BeanDescriptor>();
+        Map<String, BeanDescriptor>                    nodeProperties            = new HashMap<String, BeanDescriptor>();
 
         /** The multiple simple properties. */
-        Map<String, MultiplePropertyDescriptor> multipleSimpleProperties   = new HashMap<String, MultiplePropertyDescriptor>();
+        Map<String, SimpleMultiplePropertyDescriptor>  multipleSimpleProperties  = new HashMap<String, SimpleMultiplePropertyDescriptor>();
 
-        /** The collection of node properties. */
-        Map<String, List<BeanDescriptor>>       collectionOfNodeProperties = new HashMap<String, List<BeanDescriptor>>();
+        /** The multiple complex properties. */
+        Map<String, ComplexMultiplePropertyDescriptor> multipleComplexProperties = new HashMap<String, ComplexMultiplePropertyDescriptor>();
 
         /** The properties. */
-        final Map<String, String>               properties                 = new HashMap<String, String>();
+        final Map<String, String>                      properties                = new HashMap<String, String>();
+
+    }
+
+    /**
+     * The Class ComplexMultiplePropertyDescriptor.
+     */
+    private static class ComplexMultiplePropertyDescriptor {
+
+        /** The multiple type. */
+        String                             multipleType;
+
+        /** The values as strings. */
+        List<Pair<String, BeanDescriptor>> valuesAsBeanDescriptors = new ArrayList<Pair<String, BeanDescriptor>>();
+
+        /** The key type. */
+        String                             keyType;
+
+        /** The value type. */
+        String                             valueType;
 
     }
 
@@ -96,20 +117,21 @@ public class SimplePersistSupport {
      */
     private static enum JcrNodeType {
 
+        /** The MULTIPL e_ nod e_ property. */
+        MULTIPLE_NODE_PROPERTY,
+
         /** The NODE. */
         NODE,
 
         /** The NOD e_ property. */
         NODE_PROPERTY
+
     }
 
     /**
-     * The Class MultiplePropertyDescriptor.
+     * The Class SimpleMultiplePropertyDescriptor.
      */
-    private static class MultiplePropertyDescriptor {
-
-        /** The name. */
-        String       name;
+    private static class SimpleMultiplePropertyDescriptor {
 
         /** The multiple type. */
         String       multipleType;
@@ -155,6 +177,9 @@ public class SimplePersistSupport {
     /** The Constant MULTIPLE_PROPERTY_KEY_TYPE. */
     private static final String MULTIPLE_PROPERTY_KEY_TYPE       = "multiple.property.{0}.key.type";
 
+    /** The Constant MULTIPLE_PROPERTY_KEY_VALUE. */
+    private static final String MULTIPLE_PROPERTY_KEY_VALUE      = "multiple.property.{0}.key.value";
+
     /** The Constant nodePropertyName. */
     private static final String PROPERTY_NAME                    = "property.name";
 
@@ -183,15 +208,16 @@ public class SimplePersistSupport {
      * @param propertyName the property name
      * @return the node
      * @throws RepositoryException the repository exception
+     * @throws Exception the exception
      */
     private static Node addUpdateOrRemoveJcrNode( final JcrNodeType nodeType,
                                                   final Session session,
                                                   final Node parentNode,
                                                   final BeanDescriptor descriptor,
-                                                  final String propertyName ) throws RepositoryException {
+                                                  final String propertyName ) throws Exception {
         Node result = null;
-        final String nodeName = nodeType.toString() + "_" + (propertyName == null ? descriptor.nodeName : propertyName);
-        if (propertyName != null) {
+        final String nodeName = getNodeName(nodeType, descriptor, propertyName);
+        if (JcrNodeType.NODE_PROPERTY.equals(nodeType)) {
             result = addUpdateOrRemoveNodeProperty(parentNode, descriptor, propertyName, nodeName);
         } else {
             try {
@@ -217,21 +243,8 @@ public class SimplePersistSupport {
             for (final Map.Entry<String, String> entry : descriptor.properties.entrySet()) {
                 result.setProperty(entry.getKey(), entry.getValue());
             }
-            for (final Map.Entry<String, MultiplePropertyDescriptor> entry : descriptor.multipleSimpleProperties.entrySet()) {
-                final String keys = MessageFormat.format(MULTIPLE_PROPERTY_KEYS, entry.getKey());
-                final String values = MessageFormat.format(MULTIPLE_PROPERTY_VALUES, entry.getKey());
-                final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, entry.getKey());
-                final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, entry.getKey());
-                final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, entry.getKey());
-                final MultiplePropertyDescriptor desc = entry.getValue();
-                result.setProperty(type, desc.multipleType);
-                result.setProperty(valueType, desc.valueType);
-                result.setProperty(values, desc.valuesAsStrings.toArray(new String[0]));
-                if (desc.keyType != null) {
-                    result.setProperty(keyType, desc.keyType);
-                    result.setProperty(keys, desc.keysAsStrings.toArray(new String[0]));
-                }
-            }
+            saveSimplePropertiesOnJcr(descriptor, result);
+            saveComplexMultiplePropertiesOnJcr(session, descriptor, result);
         }
         return result;
     }
@@ -334,12 +347,14 @@ public class SimplePersistSupport {
      * 
      * @param session the session
      * @param jcrNode the jcr node
+     * @param multipleLoadingStrategy the multiple loading strategy
      * @return the t
      * @throws Exception the exception
      */
     @SuppressWarnings( "unchecked" )
     public static <T> T convertJcrToBean( final Session session,
-                                          final Node jcrNode ) throws Exception {
+                                          final Node jcrNode,
+                                          final LazyType multipleLoadingStrategy ) throws Exception {
         Assertions.checkNotNull("session", session);
         Assertions.checkNotNull("jcrNode", jcrNode);
         Assertions.checkCondition("correctJcrNode", jcrNode.getName().startsWith(JcrNodeType.NODE.toString()));
@@ -415,7 +430,7 @@ public class SimplePersistSupport {
                 continue;
             }
             if (Collection.class.isAssignableFrom(desc.getPropertyType())) {
-                final MultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties.get(desc.getName());
+                final SimpleMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties.get(desc.getName());
                 final Class<? extends Collection> type = (Class<? extends Collection>)desc.getPropertyType();
                 final Collection<Object> instance = org.openspotlight.common.util.Collections.createNewCollection(
                                                                                                                   type,
@@ -433,7 +448,7 @@ public class SimplePersistSupport {
                 continue;
             }
             if (Map.class.isAssignableFrom(desc.getPropertyType())) {
-                final MultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties.get(desc.getName());
+                final SimpleMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties.get(desc.getName());
                 final List<Object> values = new ArrayList<Object>();
                 final List<Object> keys = new ArrayList<Object>();
 
@@ -491,24 +506,7 @@ public class SimplePersistSupport {
                 continue;
             }
             if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
-                final BeanDescriptor parentDescriptor;
-                if (defaultBeanParentDescriptor == null) {
-
-                    final Object parent = desc.getReadMethod().invoke(bean);
-
-                    if (parent != null && descriptor.parent != null) {
-                        throw Exceptions.logAndReturn(new IllegalStateException(
-                                                                                MessageFormat.format(
-                                                                                                     "Bean {0} of class {1} with more than one parent. Recheck the annotations",
-                                                                                                     bean, bean.getClass())));
-
-                    }
-                    parentDescriptor = createDescriptorFromBean(parent, null);
-                } else {
-                    parentDescriptor = defaultBeanParentDescriptor;
-
-                }
-                descriptor.parent = parentDescriptor;
+                handleParentProperty(bean, defaultBeanParentDescriptor, descriptor, desc);
                 continue;
             }
 
@@ -526,61 +524,26 @@ public class SimplePersistSupport {
                 continue;
             }
             if (Collection.class.isAssignableFrom(desc.getPropertyType())) {
-                final MultiplePropertyDescriptor multiplePropertyDescriptor = new MultiplePropertyDescriptor();
                 final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection.unwrapCollectionFromMethodReturn(desc.getReadMethod());
-                multiplePropertyDescriptor.multipleType = metadata.getCollectionType().getName();
-                multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
-                multiplePropertyDescriptor.name = desc.getName();
-                final Collection<Object> collection = (Collection<Object>)desc.getReadMethod().invoke(bean);
-                if (collection != null) {
-                    for (final Object value : collection) {
-                        String valueAsString = Conversion.convert(value, String.class);
-                        if (value == null) {
-                            valueAsString = NULL_VALUE;
-                        }
-                        multiplePropertyDescriptor.valuesAsStrings.add(valueAsString);
-                    }
+                if (SimpleNodeType.class.isAssignableFrom(metadata.getItemType())) {
+                    handlePropertyOfComplexCollection(bean, descriptor, desc, metadata);
+                } else {
+                    handlePropertyOfSimpleCollection(bean, descriptor, desc, metadata);
                 }
-                descriptor.multipleSimpleProperties.put(desc.getName(), multiplePropertyDescriptor);
                 continue;
             }
             if (Map.class.isAssignableFrom(desc.getPropertyType())) {
-                final MultiplePropertyDescriptor multiplePropertyDescriptor = new MultiplePropertyDescriptor();
                 final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection.unwrapMapFromMethodReturn(desc.getReadMethod());
-                multiplePropertyDescriptor.multipleType = Map.class.getName();
-                multiplePropertyDescriptor.keyType = metadata.getItemType().getK1().getName();
-                multiplePropertyDescriptor.valueType = metadata.getItemType().getK2().getName();
-                multiplePropertyDescriptor.name = desc.getName();
-                final Map<Object, Object> map = (Map<Object, Object>)desc.getReadMethod().invoke(bean);
-                if (map != null) {
-                    for (final Entry<Object, Object> entry : map.entrySet()) {
-                        final String keyAsString = Conversion.convert(entry.getKey(), String.class);
-                        String valueAsString = Conversion.convert(entry.getValue(), String.class);
-                        if (entry.getValue() == null) {
-                            valueAsString = NULL_VALUE;
-                        }
-                        multiplePropertyDescriptor.keysAsStrings.add(keyAsString);
-                        multiplePropertyDescriptor.valuesAsStrings.add(valueAsString);
-                    }
+                if (SimpleNodeType.class.isAssignableFrom(metadata.getItemType().getK2())) {
+                    handlePropertyOfComplexMap(bean, descriptor, desc, metadata);
+                } else {
+                    handlePropertyOfSimpleMap(bean, descriptor, desc, metadata);
                 }
-                descriptor.multipleSimpleProperties.put(desc.getName(), multiplePropertyDescriptor);
                 continue;
             }
             setPropertyFromBeanToDescriptor(bean, descriptor, desc, PROPERTY_TYPE, PROPERTY_VALUE);
         }
-        final StringBuilder hashBuffer = new StringBuilder();
-        hashBuffer.append(bean.getClass().getName());
-        hashBuffer.append(';');
-        Collections.sort(attributesToHash);
-        if (descriptor.parent != null) {
-            hashBuffer.append(descriptor.parent.properties.get(hashBuffer));
-            hashBuffer.append(';');
-        }
-        for (final String keyProp : attributesToHash) {
-            hashBuffer.append(descriptor.properties.get(keyProp));
-            hashBuffer.append(';');
-        }
-        final String hash = UUID.nameUUIDFromBytes(hashBuffer.toString().getBytes()).toString();
+        final String hash = createHash(bean, descriptor, attributesToHash);
         descriptor.properties.put(SimplePersistSupport.HASH_VALUE, hash);
         return descriptor;
     }
@@ -616,8 +579,7 @@ public class SimplePersistSupport {
                     continue;
                 }
                 multiplePropertiesAlreadyLoaded.add(name);
-                final MultiplePropertyDescriptor desc = new MultiplePropertyDescriptor();
-                desc.name = name;
+                final SimpleMultiplePropertyDescriptor desc = new SimpleMultiplePropertyDescriptor();
                 final String keys = MessageFormat.format(MULTIPLE_PROPERTY_KEYS, name);
                 final String values = MessageFormat.format(MULTIPLE_PROPERTY_VALUES, name);
                 final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, name);
@@ -657,6 +619,33 @@ public class SimplePersistSupport {
     }
 
     /**
+     * Creates the hash.
+     * 
+     * @param bean the bean
+     * @param descriptor the descriptor
+     * @param attributesToHash the attributes to hash
+     * @return the string
+     */
+    private static <T> String createHash( final T bean,
+                                          final BeanDescriptor descriptor,
+                                          final List<String> attributesToHash ) {
+        final StringBuilder hashBuffer = new StringBuilder();
+        hashBuffer.append(bean.getClass().getName());
+        hashBuffer.append(';');
+        Collections.sort(attributesToHash);
+        if (descriptor.parent != null) {
+            hashBuffer.append(descriptor.parent.properties.get(hashBuffer));
+            hashBuffer.append(';');
+        }
+        for (final String keyProp : attributesToHash) {
+            hashBuffer.append(descriptor.properties.get(keyProp));
+            hashBuffer.append(';');
+        }
+        final String hash = UUID.nameUUIDFromBytes(hashBuffer.toString().getBytes()).toString();
+        return hash;
+    }
+
+    /**
      * Find children.
      * 
      * @param session the session
@@ -666,6 +655,251 @@ public class SimplePersistSupport {
     public static <T, C> Set<C> findChildren( final Session session,
                                               final T node ) {
         return null;
+    }
+
+    private static String getNodeName( final JcrNodeType nodeType,
+                                       final BeanDescriptor descriptor,
+                                       final String propertyName ) {
+        final String nodeName = nodeType.toString() + "_" + (propertyName == null ? descriptor.nodeName : propertyName);
+        return nodeName;
+    }
+
+    /**
+     * Handle parent property.
+     * 
+     * @param bean the bean
+     * @param defaultBeanParentDescriptor the default bean parent descriptor
+     * @param descriptor the descriptor
+     * @param desc the desc
+     * @throws IllegalAccessException the illegal access exception
+     * @throws InvocationTargetException the invocation target exception
+     * @throws Exception the exception
+     */
+    private static <T> void handleParentProperty( final T bean,
+                                                  final BeanDescriptor defaultBeanParentDescriptor,
+                                                  final BeanDescriptor descriptor,
+                                                  final PropertyDescriptor desc )
+        throws IllegalAccessException, InvocationTargetException, Exception {
+        final BeanDescriptor parentDescriptor;
+        if (defaultBeanParentDescriptor == null) {
+
+            final Object parent = desc.getReadMethod().invoke(bean);
+
+            if (parent != null && descriptor.parent != null) {
+                throw Exceptions.logAndReturn(new IllegalStateException(
+                                                                        MessageFormat.format(
+                                                                                             "Bean {0} of class {1} with more than one parent. Recheck the annotations",
+                                                                                             bean, bean.getClass())));
+
+            }
+            parentDescriptor = createDescriptorFromBean(parent, null);
+        } else {
+            parentDescriptor = defaultBeanParentDescriptor;
+
+        }
+        descriptor.parent = parentDescriptor;
+    }
+
+    /**
+     * Handle property of complex collection.
+     * 
+     * @param bean the bean
+     * @param descriptor the descriptor
+     * @param desc the desc
+     * @param metadata the metadata
+     * @throws Exception the exception
+     */
+    private static <T> void handlePropertyOfComplexCollection( final T bean,
+                                                               final BeanDescriptor descriptor,
+                                                               final PropertyDescriptor desc,
+                                                               final UnwrappedCollectionTypeFromMethodReturn<Object> metadata )
+        throws Exception {
+        final ComplexMultiplePropertyDescriptor multiplePropertyDescriptor = new ComplexMultiplePropertyDescriptor();
+        multiplePropertyDescriptor.multipleType = metadata.getCollectionType().getName();
+        multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
+        final Collection<Object> collection = (Collection<Object>)desc.getReadMethod().invoke(bean);
+        if (collection != null) {
+            for (final Object value : collection) {
+                final BeanDescriptor valueAsDescriptor = createDescriptorFromBean(value, descriptor);
+
+                multiplePropertyDescriptor.valuesAsBeanDescriptors.add(new Pair<String, BeanDescriptor>(null, valueAsDescriptor));
+            }
+        }
+        descriptor.multipleComplexProperties.put(desc.getName(), multiplePropertyDescriptor);
+    }
+
+    /**
+     * Handle property of complex map.
+     * 
+     * @param bean the bean
+     * @param descriptor the descriptor
+     * @param desc the desc
+     * @param metadata the metadata
+     * @throws Exception the exception
+     */
+    private static <T> void handlePropertyOfComplexMap( final T bean,
+                                                        final BeanDescriptor descriptor,
+                                                        final PropertyDescriptor desc,
+                                                        final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata )
+        throws Exception {
+        final ComplexMultiplePropertyDescriptor multiplePropertyDescriptor = new ComplexMultiplePropertyDescriptor();
+        multiplePropertyDescriptor.multipleType = Map.class.getName();
+        multiplePropertyDescriptor.keyType = metadata.getItemType().getK1().getName();
+        multiplePropertyDescriptor.valueType = metadata.getItemType().getK2().getName();
+        final Map<Object, Object> map = (Map<Object, Object>)desc.getReadMethod().invoke(bean);
+        if (map != null) {
+            for (final Entry<Object, Object> entry : map.entrySet()) {
+                final String keyAsString = Conversion.convert(entry.getKey(), String.class);
+                final BeanDescriptor valueAsDescriptor = createDescriptorFromBean(entry.getValue(), descriptor);
+                multiplePropertyDescriptor.valuesAsBeanDescriptors.add(new Pair<String, BeanDescriptor>(keyAsString,
+                                                                                                        valueAsDescriptor));
+            }
+        }
+        descriptor.multipleComplexProperties.put(desc.getName(), multiplePropertyDescriptor);
+    }
+
+    /**
+     * Handle property of simple collection.
+     * 
+     * @param bean the bean
+     * @param descriptor the descriptor
+     * @param desc the desc
+     * @param metadata the metadata
+     * @throws IllegalAccessException the illegal access exception
+     * @throws InvocationTargetException the invocation target exception
+     * @throws SLException the SL exception
+     */
+    private static <T> void handlePropertyOfSimpleCollection( final T bean,
+                                                              final BeanDescriptor descriptor,
+                                                              final PropertyDescriptor desc,
+                                                              final UnwrappedCollectionTypeFromMethodReturn<Object> metadata )
+        throws IllegalAccessException, InvocationTargetException, SLException {
+        final SimpleMultiplePropertyDescriptor multiplePropertyDescriptor = new SimpleMultiplePropertyDescriptor();
+        multiplePropertyDescriptor.multipleType = metadata.getCollectionType().getName();
+        multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
+        final Collection<Object> collection = (Collection<Object>)desc.getReadMethod().invoke(bean);
+        if (collection != null) {
+            for (final Object value : collection) {
+                String valueAsString = Conversion.convert(value, String.class);
+                if (value == null) {
+                    valueAsString = NULL_VALUE;
+                }
+                multiplePropertyDescriptor.valuesAsStrings.add(valueAsString);
+            }
+        }
+        descriptor.multipleSimpleProperties.put(desc.getName(), multiplePropertyDescriptor);
+    }
+
+    /**
+     * Handle property of simple map.
+     * 
+     * @param bean the bean
+     * @param descriptor the descriptor
+     * @param desc the desc
+     * @param metadata the metadata
+     * @throws IllegalAccessException the illegal access exception
+     * @throws InvocationTargetException the invocation target exception
+     * @throws SLException the SL exception
+     */
+    private static <T> void handlePropertyOfSimpleMap( final T bean,
+                                                       final BeanDescriptor descriptor,
+                                                       final PropertyDescriptor desc,
+                                                       final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata )
+        throws IllegalAccessException, InvocationTargetException, SLException {
+        final SimpleMultiplePropertyDescriptor multiplePropertyDescriptor = new SimpleMultiplePropertyDescriptor();
+        multiplePropertyDescriptor.multipleType = Map.class.getName();
+        multiplePropertyDescriptor.keyType = metadata.getItemType().getK1().getName();
+        multiplePropertyDescriptor.valueType = metadata.getItemType().getK2().getName();
+        final Map<Object, Object> map = (Map<Object, Object>)desc.getReadMethod().invoke(bean);
+        if (map != null) {
+            for (final Entry<Object, Object> entry : map.entrySet()) {
+                final String keyAsString = Conversion.convert(entry.getKey(), String.class);
+                String valueAsString = Conversion.convert(entry.getValue(), String.class);
+                if (entry.getValue() == null) {
+                    valueAsString = NULL_VALUE;
+                }
+                multiplePropertyDescriptor.keysAsStrings.add(keyAsString);
+                multiplePropertyDescriptor.valuesAsStrings.add(valueAsString);
+            }
+        }
+        descriptor.multipleSimpleProperties.put(desc.getName(), multiplePropertyDescriptor);
+    }
+
+    /**
+     * Save complex properties on jcr.
+     * 
+     * @param descriptor the descriptor
+     * @param session the session
+     * @param parent the parent
+     * @throws ValueFormatException the value format exception
+     * @throws VersionException the version exception
+     * @throws LockException the lock exception
+     * @throws ConstraintViolationException the constraint violation exception
+     * @throws RepositoryException the repository exception
+     * @throws Exception the exception
+     */
+    private static void saveComplexMultiplePropertiesOnJcr( final Session session,
+                                                    final BeanDescriptor descriptor,
+                                                    final Node parent ) throws Exception {
+        for (final Map.Entry<String, ComplexMultiplePropertyDescriptor> entry : descriptor.multipleComplexProperties.entrySet()) {
+            final String keyValue = MessageFormat.format(MULTIPLE_PROPERTY_KEY_VALUE, entry.getKey());
+            final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, entry.getKey());
+            final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, entry.getKey());
+            final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, entry.getKey());
+            final ComplexMultiplePropertyDescriptor desc = entry.getValue();
+            final String nodeName = getNodeName(JcrNodeType.MULTIPLE_NODE_PROPERTY, null, entry.getKey());
+            final NodeIterator existentNodesIterator = parent.getNodes(nodeName);
+            final Set<Node> existentNodes = new HashSet<Node>();
+            while (existentNodesIterator.hasNext()) {
+                final Node existentNode = existentNodesIterator.nextNode();
+                existentNodes.add(existentNode);
+            }
+            for (final Pair<String, BeanDescriptor> propertyEntry : desc.valuesAsBeanDescriptors) {
+                final Node propertyNode = addUpdateOrRemoveJcrNode(JcrNodeType.MULTIPLE_NODE_PROPERTY, session, parent,
+                                                                   propertyEntry.getK2(), entry.getKey());
+                propertyNode.setProperty(type, desc.multipleType);
+                propertyNode.setProperty(valueType, desc.valueType);
+                if (desc.keyType != null) {
+                    propertyNode.setProperty(keyType, desc.keyType);
+                    propertyNode.setProperty(keyValue, propertyEntry.getK1());
+                }
+                existentNodes.remove(propertyNode);
+            }
+            for (final Node toBeRemoved : existentNodes) {
+                toBeRemoved.remove();
+            }
+        }
+    }
+
+    /**
+     * Save simple properties on jcr.
+     * 
+     * @param descriptor the descriptor
+     * @param result the result
+     * @throws ValueFormatException the value format exception
+     * @throws VersionException the version exception
+     * @throws LockException the lock exception
+     * @throws ConstraintViolationException the constraint violation exception
+     * @throws RepositoryException the repository exception
+     */
+    private static void saveSimplePropertiesOnJcr( final BeanDescriptor descriptor,
+                                                   final Node result )
+        throws ValueFormatException, VersionException, LockException, ConstraintViolationException, RepositoryException {
+        for (final Map.Entry<String, SimpleMultiplePropertyDescriptor> entry : descriptor.multipleSimpleProperties.entrySet()) {
+            final String keys = MessageFormat.format(MULTIPLE_PROPERTY_KEYS, entry.getKey());
+            final String values = MessageFormat.format(MULTIPLE_PROPERTY_VALUES, entry.getKey());
+            final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, entry.getKey());
+            final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, entry.getKey());
+            final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, entry.getKey());
+            final SimpleMultiplePropertyDescriptor desc = entry.getValue();
+            result.setProperty(type, desc.multipleType);
+            result.setProperty(valueType, desc.valueType);
+            result.setProperty(values, desc.valuesAsStrings.toArray(new String[0]));
+            if (desc.keyType != null) {
+                result.setProperty(keyType, desc.keyType);
+                result.setProperty(keys, desc.keysAsStrings.toArray(new String[0]));
+            }
+        }
     }
 
     /**

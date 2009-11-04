@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -137,7 +138,7 @@ public class SimplePersistSupportTest {
 
         final Node node = SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
                                                                 this.session, obj3);
-        final LevelThreeObj convertedFromJcr = SimplePersistSupport.convertJcrToBean(this.session, node);
+        final LevelThreeObj convertedFromJcr = SimplePersistSupport.convertJcrToBean(this.session, node, LazyType.EAGER);
         Assert.assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
         Assert.assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
         Assert.assertThat(obj3.getLevelTwoObj().getKey(), Is.is(convertedFromJcr.getLevelTwoObj().getKey()));
