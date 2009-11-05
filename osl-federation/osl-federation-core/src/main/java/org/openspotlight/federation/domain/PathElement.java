@@ -52,7 +52,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType, Ser
                                                   final String pathString ) {
         final String newPathString = pathString.startsWith("/") ? Strings.removeBegginingFrom("/", pathString) : pathString;
 
-        return createFromPathString(initialPathElement.getCompletePath() + StreamArtifact.SEPARATOR + newPathString);
+        return createFromPathString(initialPathElement.getCompletePath() + Artifact.SEPARATOR + newPathString);
 
     }
 
@@ -95,7 +95,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType, Ser
         if (this.isRootElement()) {
             return this.getName();
         }
-        return this.getParent().getCompletePath() + StreamArtifact.SEPARATOR + this.getName();
+        return this.getParent().getCompletePath() + Artifact.SEPARATOR + this.getName();
     }
 
     /**

@@ -1,21 +1,8 @@
 package org.openspotlight.federation.domain;
 
-import java.io.Serializable;
 import java.util.Set;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.common.util.Sha1;
-import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
-import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -23,10 +10,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * {@link StreamArtifact} based on another one.
  */
 @Name( "stream_artifact" )
-public class StreamArtifact implements SimpleNodeType, Serializable {
-
-    /** The Constant SEPARATOR. */
-    final static String SEPARATOR = "/";
+public class StreamArtifact extends Artifact {
 
     /**
      * Creates the new stream artifact.
@@ -52,37 +36,8 @@ public class StreamArtifact implements SimpleNodeType, Serializable {
 
     }
 
-    /**
-     * Gets the hash from string.
-     * 
-     * @param name the name
-     * @return the hash from string
-     */
-    public static String getHashFromString( final String name ) {
-        try {
-            return Sha1.getSha1SignatureEncodedAsHexa(name);
-        } catch (final SLException e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    /** The artifact name. */
-    private String                 artifactName;
-
-    /** The artifact complete name. */
-    private volatile String        artifactCompleteName;
-
-    /** The change type. */
-    private ChangeType             changeType;
-
-    /** The parent. */
-    private PathElement            parent;
-
     /** The content. */
     private String                 content;
-
-    /** The hashcode. */
-    private volatile int           hashcode;
 
     /** The syntax information set. */
     private Set<SyntaxInformation> syntaxInformationSet;
@@ -112,71 +67,10 @@ public class StreamArtifact implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Adds the syntax information.
-     * 
-     * @param syntaxInformation the syntax information
-     */
-    public void addSyntaxInformation( final SyntaxInformation syntaxInformation ) {
-        Assertions.checkNotNull("syntaxInformation", syntaxInformation);
-        this.syntaxInformationSet.add(syntaxInformation);
-    }
-
-    /**
      * Clear syntax information set.
      */
     public void clearSyntaxInformationSet() {
         this.syntaxInformationSet.clear();
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @SuppressWarnings( "unchecked" )
-    @Override
-    public boolean equals( final Object o ) {
-        if (!(o instanceof StreamArtifact)) {
-            return false;
-        }
-        final StreamArtifact that = (StreamArtifact)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.parent, this.artifactName, this.changeType),
-                                                   Arrays.andOf(that.parent, that.artifactName, that.changeType));
-        return result;
-    }
-
-    /**
-     * Gets the artifact complete name.
-     * 
-     * @return the artifact complete name
-     */
-    @TransientProperty
-    public String getArtifactCompleteName() {
-        String result = this.artifactCompleteName;
-        if (result == null) {
-            if (this.parent != null && this.artifactName != null) {
-                result = this.parent.getCompletePath() + SEPARATOR + this.artifactName;
-                this.artifactCompleteName = result;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Gets the artifact name.
-     * 
-     * @return the artifact name
-     */
-    @KeyProperty
-    public String getArtifactName() {
-        return this.artifactName;
-    }
-
-    /**
-     * Gets the change type.
-     * 
-     * @return the change type
-     */
-    public ChangeType getChangeType() {
-        return this.changeType;
     }
 
     /**
@@ -184,18 +78,8 @@ public class StreamArtifact implements SimpleNodeType, Serializable {
      * 
      * @return the content
      */
-    public synchronized String getContent() {
+    public String getContent() {
         return this.content;
-    }
-
-    /**
-     * Gets the parent.
-     * 
-     * @return the parent
-     */
-    @ParentProperty
-    public PathElement getParent() {
-        return this.parent;
     }
 
     /**
@@ -205,19 +89,6 @@ public class StreamArtifact implements SimpleNodeType, Serializable {
      */
     public Set<SyntaxInformation> getSyntaxInformationSet() {
         return this.syntaxInformationSet;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        int result = this.hashcode;
-        if (result == 0) {
-            result = HashCodes.hashOf(this.parent, this.artifactName, this.changeType);
-            this.hashcode = result;
-        }
-        return result;
     }
 
     /**
@@ -254,24 +125,6 @@ public class StreamArtifact implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Sets the artifact name.
-     * 
-     * @param artifactName the new artifact name
-     */
-    public void setArtifactName( final String artifactName ) {
-        this.artifactName = artifactName;
-    }
-
-    /**
-     * Sets the change type.
-     * 
-     * @param changeType the new change type
-     */
-    public void setChangeType( final ChangeType changeType ) {
-        this.changeType = changeType;
-    }
-
-    /**
      * Sets the content.
      * 
      * @param content the new content
@@ -281,28 +134,12 @@ public class StreamArtifact implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Sets the parent.
-     * 
-     * @param parent the new parent
-     */
-    public void setParent( final PathElement parent ) {
-        this.parent = parent;
-    }
-
-    /**
      * Sets the syntax information set.
      * 
      * @param syntaxInformationSet the new syntax information set
      */
     public void setSyntaxInformationSet( final Set<SyntaxInformation> syntaxInformationSet ) {
         this.syntaxInformationSet = syntaxInformationSet;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return "StreamArtifact: " + this.getArtifactCompleteName();
     }
 
 }
