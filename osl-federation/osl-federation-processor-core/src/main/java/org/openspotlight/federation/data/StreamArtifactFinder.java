@@ -2,7 +2,7 @@ package org.openspotlight.federation.data;
 
 import java.util.Set;
 
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * The Interface StreamArtifactFinder.

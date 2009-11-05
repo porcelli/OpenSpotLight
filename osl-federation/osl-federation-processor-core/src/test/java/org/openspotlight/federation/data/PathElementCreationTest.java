@@ -4,7 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.StreamArtifact.PathElement;
+import org.openspotlight.federation.domain.PathElement;
 
 public class PathElementCreationTest {
 
