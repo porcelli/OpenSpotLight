@@ -23,5 +23,5 @@ public interface LazyContentLoader {
      * @return the set< syntax information>
      */
     public Set<SyntaxInformation> loadSyntaxInformations( String hash,
-                                                          StreamArtifact artifact );
+                                                          Artifact artifact );
 }

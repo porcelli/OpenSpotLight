@@ -17,7 +17,7 @@ import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.PathElement;
 import org.openspotlight.federation.domain.StreamArtifact;
 
-public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
+public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArtifact> {
 
     public StreamArtifact findByPath( final String initialPath ) {
         Assertions.checkNotEmpty("initialPath", initialPath);

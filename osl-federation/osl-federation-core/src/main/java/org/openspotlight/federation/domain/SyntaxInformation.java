@@ -20,7 +20,7 @@ public class SyntaxInformation implements Comparable<SyntaxInformation>, SimpleN
     private volatile int          hashcode;
 
     /** The stream artifact. */
-    private StreamArtifact        streamArtifact;
+    private Artifact        streamArtifact;
 
     /** The line start. */
     private int                   lineStart;
@@ -133,7 +133,7 @@ public class SyntaxInformation implements Comparable<SyntaxInformation>, SimpleN
      * @return the stream artifact
      */
     @ParentProperty
-    public StreamArtifact getStreamArtifact() {
+    public Artifact getStreamArtifact() {
         return this.streamArtifact;
     }
 
@@ -171,7 +171,7 @@ public class SyntaxInformation implements Comparable<SyntaxInformation>, SimpleN
         this.lineStart = lineStart;
     }
 
-    public void setStreamArtifact( final StreamArtifact streamArtifact ) {
+    public void setStreamArtifact( final Artifact streamArtifact ) {
         this.streamArtifact = streamArtifact;
     }
 
