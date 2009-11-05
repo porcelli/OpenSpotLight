@@ -117,6 +117,24 @@ public class SimplePersistSupportTest {
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
         final LevelThreeObj obj3 = new LevelThreeObj();
+        final ListItemObj li1 = new ListItemObj();
+        li1.setName("1");
+        final ListItemObj li2 = new ListItemObj();
+        li2.setName("2");
+        final ListItemObj li3 = new ListItemObj();
+        li3.setName("3");
+        obj3.getObjList().add(li1);
+        obj3.getObjList().add(li2);
+        obj3.getObjList().add(li3);
+        final MapValueObj mapVal1 = new MapValueObj();
+        mapVal1.setName("1");
+        final MapValueObj mapVal2 = new MapValueObj();
+        mapVal2.setName("2");
+        final MapValueObj mapVal3 = new MapValueObj();
+        mapVal3.setName("3");
+        obj3.getObjMap().put(1, mapVal1);
+        obj3.getObjMap().put(2, mapVal2);
+        obj3.getObjMap().put(3, mapVal3);
         obj1.setRootObj(root);
         obj2.setLevelOneObj(obj1);
         obj3.setLevelTwoObj(obj2);
@@ -150,6 +168,12 @@ public class SimplePersistSupportTest {
         Assert.assertThat(obj3.getNumberMap().get(1.0), Is.is(3));
         Assert.assertThat(obj3.getNumberMap().get(2.0), Is.is(2));
         Assert.assertThat(obj3.getNumberMap().get(3.0), Is.is(1));
+        Assert.assertThat(obj3.getObjList().get(0).getName(), Is.is("1"));
+        Assert.assertThat(obj3.getObjList().get(1).getName(), Is.is("2"));
+        Assert.assertThat(obj3.getObjList().get(2).getName(), Is.is("3"));
+        Assert.assertThat(obj3.getObjMap().get(1).getName(), Is.is("1"));
+        Assert.assertThat(obj3.getObjMap().get(2).getName(), Is.is("2"));
+        Assert.assertThat(obj3.getObjMap().get(3).getName(), Is.is("3"));
 
     }
 
