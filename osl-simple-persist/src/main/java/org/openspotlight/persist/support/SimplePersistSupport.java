@@ -643,7 +643,6 @@ public class SimplePersistSupport {
             final String hash = createHashUsingOnlyPrimaryKey(nodeType, fakeBeanDescriptor, attributesToHash);
             final String jcrNodeName = getNodeName(JcrNodeType.NODE, fakeBeanDescriptor, null);
             final String xpath = MessageFormat.format("//*/{0}[@{1}=''{2}'']", jcrNodeName, LOCAL_HASH_VALUE, hash);
-            System.err.println(xpath);
             final Query query = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
             final QueryResult result = query.execute();
             final NodeIterator nodes = result.getNodes();

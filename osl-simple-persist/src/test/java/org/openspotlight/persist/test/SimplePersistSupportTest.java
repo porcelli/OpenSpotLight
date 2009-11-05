@@ -236,17 +236,11 @@ public class SimplePersistSupportTest {
         final LevelTwoObj obj2_1 = new LevelTwoObj();
         obj2_1.setKey("2");
         final LevelTwoObj obj2_2 = new LevelTwoObj();
-        obj2_1.setKey("3");
+        obj2_2.setKey("3");
 
-        final Node node1 = SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-                                                                 this.session, obj3);
-        final Node node2 = SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-                                                                 this.session, obj2_1);
-        final Node node3 = SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-                                                                 this.session, obj2_2);
-        System.out.println(node1.getPath() + " " + node1.getProperty("node.pkonly.hashValue").getString());
-        System.out.println(node2.getPath() + " " + node2.getProperty("node.pkonly.hashValue").getString());
-        System.out.println(node3.getPath() + " " + node3.getProperty("node.pkonly.hashValue").getString());
+        SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele", this.session, obj2);
+        SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele", this.session, obj2_1);
+        SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele", this.session, obj2_2);
 
         this.session.save();//necessary for the xpath to work
         final Set<LevelTwoObj> result1 = SimplePersistSupport.findNodesByPrimaryKeyElements(
@@ -269,12 +263,12 @@ public class SimplePersistSupportTest {
                                                                                             org.openspotlight.common.util.Arrays.of("3"));
 
         Assert.assertThat(result1.size(), Is.is(1));
-        Assert.assertThat(result2.size(), Is.is(1));
         Assert.assertThat(result3.size(), Is.is(1));
+        Assert.assertThat(result2.size(), Is.is(1));
         Assert.assertThat(result1.iterator().next().getKey(), Is.is("1"));
         Assert.assertThat(result2.iterator().next().getKey(), Is.is("2"));
         Assert.assertThat(result3.iterator().next().getKey(), Is.is("3"));
-        Assert.assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), Is.is(root));
+        Assert.assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), IsNull.notNullValue());
         Assert.assertThat(result2.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
         Assert.assertThat(result3.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
 
