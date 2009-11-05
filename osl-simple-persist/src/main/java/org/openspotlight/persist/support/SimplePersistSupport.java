@@ -46,6 +46,7 @@ import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
@@ -677,8 +678,11 @@ public class SimplePersistSupport {
      * @return the node name
      */
     private static String getNodeName( final Class<? extends Object> class1 ) {
-        return class1.getName().replaceAll("[.]", "_").replaceAll("[$]", "_");
-
+        if (class1.isAnnotationPresent(Name.class)) {
+            return class1.getAnnotation(Name.class).value();
+        } else {
+            return class1.getName().replaceAll("[.]", "_").replaceAll("[$]", "_");
+        }
     }
 
     /**
