@@ -28,6 +28,8 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionException;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -53,20 +55,6 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * The Class SimplePersistSupport.
  */
 public class SimplePersistSupport {
-
-    //FIXME collectionOfNodeProperties
-
-    //FIXME mapOfNodeProperties
-
-    //FIXME testAddNodePropertyOnCollection
-
-    //FIXME testAddSimplePropertyOnMap
-
-    //FIXME testAddNodePropertyOnMap
-
-    //FIXME testRemoveNodePropertyOnCollection
-
-    //FIXME testRemoveNodePropertyOnMap
 
     /**
      * The Class BeanDescriptor.
@@ -185,6 +173,9 @@ public class SimplePersistSupport {
 
     /** The Constant hashValue. */
     private static final String HASH_VALUE                       = "node.hashValue";
+
+    /** The Constant hashValue. */
+    private static final String LOCAL_HASH_VALUE                 = "node.pkonly.hashValue";
 
     /** The Constant propertyValue. */
     private static final String PROPERTY_VALUE                   = "node.property.{0}.value";
@@ -370,7 +361,7 @@ public class SimplePersistSupport {
             BeanDescriptor parentDescriptor = null;
             for (final Node node : list) {
                 parentDescriptor = createDescriptorFromJcr(node, parentDescriptor, multipleLoadingStrategy, session);
-                parent = createBeanFromBeanDescriptor(parentDescriptor, parent);
+                parent = createBeanFromDescriptor(parentDescriptor, parent);
             }
             Assertions.checkCondition("correctInstance", parent instanceof SimpleNodeType);
 
@@ -390,8 +381,8 @@ public class SimplePersistSupport {
      * @throws Exception the exception
      */
     @SuppressWarnings( "unchecked" )
-    private static <T> T createBeanFromBeanDescriptor( final BeanDescriptor beanDescriptor,
-                                                       final Object parent ) throws Exception {
+    private static <T> T createBeanFromDescriptor( final BeanDescriptor beanDescriptor,
+                                                   final Object parent ) throws Exception {
         if (beanDescriptor == null) {
             return null;
         }
@@ -461,8 +452,11 @@ public class SimplePersistSupport {
     private static <T> BeanDescriptor createDescriptorFromBean( final T bean,
                                                                 final BeanDescriptor defaultBeanParentDescriptor )
         throws Exception {
+        if (bean == null) {
+            return null;
+        }
         final BeanDescriptor descriptor = new BeanDescriptor();
-        descriptor.nodeName = bean.getClass().getName().replaceAll("[.]", "_").replaceAll("[$]", "_");
+        descriptor.nodeName = getNodeName(bean.getClass());
         final String beanTypeName = bean.getClass().getName();
         final List<String> attributesToHash = new ArrayList<String>();
         descriptor.properties.put(TYPE_NAME, beanTypeName);
@@ -513,8 +507,8 @@ public class SimplePersistSupport {
             }
             setPropertyFromBeanToDescriptor(bean, descriptor, desc, PROPERTY_TYPE, PROPERTY_VALUE);
         }
-        final String hash = createHash(bean, descriptor, attributesToHash);
-        descriptor.properties.put(SimplePersistSupport.HASH_VALUE, hash);
+        createHash(bean.getClass(), descriptor, attributesToHash);
+        createHashUsingOnlyPrimaryKey(bean.getClass(), descriptor, attributesToHash);
         return descriptor;
     }
 
@@ -567,20 +561,20 @@ public class SimplePersistSupport {
     /**
      * Creates the hash.
      * 
-     * @param bean the bean
      * @param descriptor the descriptor
      * @param attributesToHash the attributes to hash
+     * @param beanClass the bean class
      * @return the string
      */
-    private static <T> String createHash( final T bean,
+    private static <T> String createHash( final Class<T> beanClass,
                                           final BeanDescriptor descriptor,
                                           final List<String> attributesToHash ) {
         final StringBuilder hashBuffer = new StringBuilder();
-        hashBuffer.append(bean.getClass().getName());
+        hashBuffer.append(beanClass.getName());
         hashBuffer.append(';');
         Collections.sort(attributesToHash);
         if (descriptor.parent != null) {
-            hashBuffer.append(descriptor.parent.properties.get(hashBuffer));
+            hashBuffer.append(descriptor.parent.properties.get(HASH_VALUE));
             hashBuffer.append(';');
         }
         for (final String keyProp : attributesToHash) {
@@ -588,6 +582,31 @@ public class SimplePersistSupport {
             hashBuffer.append(';');
         }
         final String hash = UUID.nameUUIDFromBytes(hashBuffer.toString().getBytes()).toString();
+        descriptor.properties.put(HASH_VALUE, hash);
+        return hash;
+    }
+
+    /**
+     * Creates the hash.
+     * 
+     * @param descriptor the descriptor
+     * @param attributesToHash the attributes to hash
+     * @param beanClass the bean class
+     * @return the string
+     */
+    private static <T> String createHashUsingOnlyPrimaryKey( final Class<T> beanClass,
+                                                             final BeanDescriptor descriptor,
+                                                             final List<String> attributesToHash ) {
+        final StringBuilder hashBuffer = new StringBuilder();
+        hashBuffer.append(beanClass.getName());
+        hashBuffer.append(';');
+        Collections.sort(attributesToHash);
+        for (final String keyProp : attributesToHash) {
+            hashBuffer.append(descriptor.properties.get(keyProp));
+            hashBuffer.append(';');
+        }
+        final String hash = UUID.nameUUIDFromBytes(hashBuffer.toString().getBytes()).toString();
+        descriptor.properties.put(LOCAL_HASH_VALUE, hash);
         return hash;
     }
 
@@ -595,12 +614,61 @@ public class SimplePersistSupport {
      * Find children.
      * 
      * @param session the session
-     * @param node the node
+     * @param nodeType the node type
+     * @param multipleLoadingStrategy the multiple loading strategy
+     * @param keyElementNames the key element names
+     * @param keyElementValues the key element values
      * @return the set< c>
      */
-    public static <T, C> Set<C> findChildren( final Session session,
-                                              final T node ) {
-        return null;
+    public static <T> Set<T> findNodesByPrimaryKeyElements( final Session session,
+                                                            final Class<T> nodeType,
+                                                            final LazyType multipleLoadingStrategy,
+                                                            final String[] keyElementNames,
+                                                            final Object[] keyElementValues ) {
+        try {
+
+            Assertions.checkNotNull("session", session);
+            Assertions.checkNotNull("nodeType", nodeType);
+            Assertions.checkNotNull("keyElementNames", keyElementNames);
+            Assertions.checkNotNull("keyElementValues", keyElementValues);
+            Assertions.checkCondition("sameSize", keyElementNames.length == keyElementValues.length);
+            final BeanDescriptor fakeBeanDescriptor = new BeanDescriptor();
+            fakeBeanDescriptor.nodeName = getNodeName(nodeType);
+            final List<String> attributesToHash = new ArrayList<String>();
+            for (int i = 0, size = keyElementNames.length; i < size; i++) {
+                final String keyString = MessageFormat.format(KEY_VALUE, keyElementNames[i]);
+                fakeBeanDescriptor.properties.put(keyString, Conversion.convert(keyElementValues[i], String.class));
+                attributesToHash.add(keyString);
+            }
+            final String hash = createHashUsingOnlyPrimaryKey(nodeType, fakeBeanDescriptor, attributesToHash);
+            final String jcrNodeName = getNodeName(JcrNodeType.NODE, fakeBeanDescriptor, null);
+            final String xpath = MessageFormat.format("//*/{0}[@{1}=''{2}'']", jcrNodeName, LOCAL_HASH_VALUE, hash);
+            System.err.println(xpath);
+            final Query query = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
+            final QueryResult result = query.execute();
+            final NodeIterator nodes = result.getNodes();
+            final Set<T> resultNodes = new HashSet<T>();
+            while (nodes.hasNext()) {
+                final Node jcrNode = nodes.nextNode();
+                final T bean = convertJcrToBean(session, jcrNode, multipleLoadingStrategy);
+                resultNodes.add(bean);
+            }
+            return resultNodes;
+
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    /**
+     * Gets the node name.
+     * 
+     * @param class1 the class1
+     * @return the node name
+     */
+    private static String getNodeName( final Class<? extends Object> class1 ) {
+        return class1.getName().replaceAll("[.]", "_").replaceAll("[$]", "_");
+
     }
 
     /**
@@ -874,7 +942,7 @@ public class SimplePersistSupport {
                                                                                                               type,
                                                                                                               multipleBeanDescriptor.valuesAsBeanDescriptors.size());
             for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
-                final Object valueAsObject = createBeanFromBeanDescriptor(valueAsDescriptor.getK2(), newObject);
+                final Object valueAsObject = createBeanFromDescriptor(valueAsDescriptor.getK2(), newObject);
                 instance.add(valueAsObject);
             }
             desc.getWriteMethod().invoke(newObject, instance);
@@ -897,7 +965,7 @@ public class SimplePersistSupport {
             final Map<Object, Object> map = new HashMap<Object, Object>();
             final Class<?> keyType = Class.forName(multipleBeanDescriptor.keyType);
             for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
-                final Object valueAsObject = createBeanFromBeanDescriptor(valueAsDescriptor.getK2(), newObject);
+                final Object valueAsObject = createBeanFromDescriptor(valueAsDescriptor.getK2(), newObject);
                 final Object keyAsObject = Conversion.convert(valueAsDescriptor.getK1(), keyType);
                 map.put(keyAsObject, valueAsObject);
             }
@@ -1030,7 +1098,7 @@ public class SimplePersistSupport {
                                                           final String propertyName )
         throws Exception, IllegalAccessException, InvocationTargetException {
         final BeanDescriptor propertyDesc = beanDescriptor.nodeProperties.get(propertyName);
-        final Object bean = createBeanFromBeanDescriptor(propertyDesc, parent);
+        final Object bean = createBeanFromDescriptor(propertyDesc, parent);
         desc.getWriteMethod().invoke(newObject, bean);
     }
 
