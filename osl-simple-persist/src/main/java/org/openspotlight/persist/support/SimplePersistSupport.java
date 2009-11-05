@@ -869,14 +869,16 @@ public class SimplePersistSupport {
                                                                               final PropertyDescriptor desc ) throws Exception {
         final ComplexMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleComplexProperties.get(desc.getName());
         final Class<? extends Collection> type = (Class<? extends Collection>)desc.getPropertyType();
-        final Collection<Object> instance = org.openspotlight.common.util.Collections.createNewCollection(
-                                                                                                          type,
-                                                                                                          multipleBeanDescriptor.valuesAsBeanDescriptors.size());
-        for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
-            final Object valueAsObject = createBeanFromBeanDescriptor(valueAsDescriptor.getK2(), newObject);
-            instance.add(valueAsObject);
+        if (multipleBeanDescriptor != null) {
+            final Collection<Object> instance = org.openspotlight.common.util.Collections.createNewCollection(
+                                                                                                              type,
+                                                                                                              multipleBeanDescriptor.valuesAsBeanDescriptors.size());
+            for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
+                final Object valueAsObject = createBeanFromBeanDescriptor(valueAsDescriptor.getK2(), newObject);
+                instance.add(valueAsObject);
+            }
+            desc.getWriteMethod().invoke(newObject, instance);
         }
-        desc.getWriteMethod().invoke(newObject, instance);
     }
 
     /**
@@ -891,14 +893,16 @@ public class SimplePersistSupport {
                                                                        final T newObject,
                                                                        final PropertyDescriptor desc ) throws Exception {
         final ComplexMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleComplexProperties.get(desc.getName());
-        final Map<Object, Object> map = new HashMap<Object, Object>();
-        final Class<?> keyType = Class.forName(multipleBeanDescriptor.keyType);
-        for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
-            final Object valueAsObject = createBeanFromBeanDescriptor(valueAsDescriptor.getK2(), newObject);
-            final Object keyAsObject = Conversion.convert(valueAsDescriptor.getK1(), keyType);
-            map.put(keyAsObject, valueAsObject);
+        if (multipleBeanDescriptor != null) {
+            final Map<Object, Object> map = new HashMap<Object, Object>();
+            final Class<?> keyType = Class.forName(multipleBeanDescriptor.keyType);
+            for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
+                final Object valueAsObject = createBeanFromBeanDescriptor(valueAsDescriptor.getK2(), newObject);
+                final Object keyAsObject = Conversion.convert(valueAsDescriptor.getK1(), keyType);
+                map.put(keyAsObject, valueAsObject);
+            }
+            desc.getWriteMethod().invoke(newObject, map);
         }
-        desc.getWriteMethod().invoke(newObject, map);
     }
 
     /**
