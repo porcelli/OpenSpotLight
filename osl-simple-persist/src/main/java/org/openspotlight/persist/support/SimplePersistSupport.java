@@ -856,6 +856,14 @@ public class SimplePersistSupport {
         }
     }
 
+    /**
+     * Sets the complex collection property from descriptor to bean.
+     * 
+     * @param beanDescriptor the bean descriptor
+     * @param newObject the new object
+     * @param desc the desc
+     * @throws Exception the exception
+     */
     private static <T> void setComplexCollectionPropertyFromDescriptorToBean( final BeanDescriptor beanDescriptor,
                                                                               final T newObject,
                                                                               final PropertyDescriptor desc ) throws Exception {
@@ -871,6 +879,14 @@ public class SimplePersistSupport {
         desc.getWriteMethod().invoke(newObject, instance);
     }
 
+    /**
+     * Sets the complex map property from descriptor to bean.
+     * 
+     * @param beanDescriptor the bean descriptor
+     * @param newObject the new object
+     * @param desc the desc
+     * @throws Exception the exception
+     */
     private static <T> void setComplexMapPropertyFromDescriptorToBean( final BeanDescriptor beanDescriptor,
                                                                        final T newObject,
                                                                        final PropertyDescriptor desc ) throws Exception {
@@ -991,6 +1007,18 @@ public class SimplePersistSupport {
         }
     }
 
+    /**
+     * Sets the node property from jcr to bean.
+     * 
+     * @param beanDescriptor the bean descriptor
+     * @param parent the parent
+     * @param newObject the new object
+     * @param desc the desc
+     * @param propertyName the property name
+     * @throws Exception the exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     private static <T> void setNodePropertyFromJcrToBean( final BeanDescriptor beanDescriptor,
                                                           final Object parent,
                                                           final T newObject,
@@ -1060,6 +1088,17 @@ public class SimplePersistSupport {
         desc.getWriteMethod().invoke(newObject, newPropertyValue);
     }
 
+    /**
+     * Sets the simple collection property from descriptor to bean.
+     * 
+     * @param beanDescriptor the bean descriptor
+     * @param newObject the new object
+     * @param desc the desc
+     * @throws ClassNotFoundException the class not found exception
+     * @throws SLException the SL exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     private static <T> void setSimpleCollectionPropertyFromDescriptorToBean( final BeanDescriptor beanDescriptor,
                                                                              final T newObject,
                                                                              final PropertyDescriptor desc )
@@ -1080,6 +1119,17 @@ public class SimplePersistSupport {
         desc.getWriteMethod().invoke(newObject, instance);
     }
 
+    /**
+     * Sets the simple map property from descriptor to bean.
+     * 
+     * @param beanDescriptor the bean descriptor
+     * @param newObject the new object
+     * @param desc the desc
+     * @throws ClassNotFoundException the class not found exception
+     * @throws SLException the SL exception
+     * @throws IllegalAccessException the illegal access exception
+     * @throws InvocationTargetException the invocation target exception
+     */
     private static <T> void setSimpleMapPropertyFromDescriptorToBean( final BeanDescriptor beanDescriptor,
                                                                       final T newObject,
                                                                       final PropertyDescriptor desc )
