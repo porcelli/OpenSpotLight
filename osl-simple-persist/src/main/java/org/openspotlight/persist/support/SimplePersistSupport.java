@@ -291,11 +291,12 @@ public class SimplePersistSupport {
      * @param startNodePath the start node path
      * @return the node
      */
-    public static <T> Node convertBeanToJcr( final String startNodePath,
+    public static <T> Node convertBeanToJcr( final Node parentJcrNode,
                                              final Session session,
                                              final T bean ) {
         Assertions.checkCondition("correctInstance", bean instanceof SimpleNodeType);
         Assertions.checkNotNull("session", session);
+        Assertions.checkNotNull("parentJcrNode", parentJcrNode);
         try {
             BeanDescriptor descriptor = createDescriptorFromBean(bean, null);
             final LinkedList<BeanDescriptor> list = new LinkedList<BeanDescriptor>();
@@ -303,30 +304,40 @@ public class SimplePersistSupport {
                 list.addFirst(descriptor);
                 descriptor = descriptor.parent;
             }
-            Node parentNode = null;
+
+            Node parentNode = parentJcrNode;
             for (final BeanDescriptor itObj : list) {
-                if (parentNode == null) {
-                    parentNode = session.getRootNode();
-                    final StringTokenizer tok = new StringTokenizer(startNodePath, "/");
-                    while (tok.hasMoreTokens()) {
-                        final String currentToken = tok.nextToken();
-                        if (currentToken.length() == 0) {
-                            continue;
-                        }
-                        try {
-                            parentNode = parentNode.getNode(currentToken);
-                        } catch (final PathNotFoundException e) {
-                            parentNode = parentNode.addNode(currentToken);
-                        }
-                    }
-                }
-                final Node node = addUpdateOrRemoveJcrNode(JcrNodeType.NODE, session, parentNode, itObj, null);
+
+                parentNode = addUpdateOrRemoveJcrNode(JcrNodeType.NODE, session, parentNode, itObj, null);
                 for (final Entry<String, BeanDescriptor> entry : itObj.nodeProperties.entrySet()) {
-                    addUpdateOrRemoveJcrNode(JcrNodeType.NODE_PROPERTY, session, node, entry.getValue(), entry.getKey());
+                    addUpdateOrRemoveJcrNode(JcrNodeType.NODE_PROPERTY, session, parentNode, entry.getValue(), entry.getKey());
                 }
-                parentNode = node;
             }
             return parentNode;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    public static <T> Node convertBeanToJcr( final String startNodePath,
+                                             final Session session,
+                                             final T bean ) {
+        try {
+            Node parentNode = null;
+            parentNode = session.getRootNode();
+            final StringTokenizer tok = new StringTokenizer(startNodePath, "/");
+            while (tok.hasMoreTokens()) {
+                final String currentToken = tok.nextToken();
+                if (currentToken.length() == 0) {
+                    continue;
+                }
+                try {
+                    parentNode = parentNode.getNode(currentToken);
+                } catch (final PathNotFoundException e) {
+                    parentNode = parentNode.addNode(currentToken);
+                }
+            }
+            return convertBeanToJcr(parentNode, session, bean);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
