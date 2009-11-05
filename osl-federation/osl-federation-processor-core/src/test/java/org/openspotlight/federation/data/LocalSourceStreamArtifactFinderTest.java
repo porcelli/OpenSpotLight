@@ -7,8 +7,8 @@ import static org.junit.Assert.assertThat;
 import java.util.Set;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.StreamArtifact.ChangeType;
+import org.openspotlight.federation.domain.ChangeType;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 public class LocalSourceStreamArtifactFinderTest {
 

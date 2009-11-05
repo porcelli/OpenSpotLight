@@ -13,8 +13,9 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.StreamArtifact.ChangeType;
+import org.openspotlight.federation.domain.ChangeType;
+import org.openspotlight.federation.domain.PathElement;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
 
@@ -62,7 +63,7 @@ public class LocalSourceStreamArtifactFinder implements StreamArtifactFinder {
 
     public StreamArtifact findByRelativePath( final StreamArtifact relativeTo,
                                               final String path ) {
-        final String newPath = StreamArtifact.PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
+        final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
         return this.findByPath(newPath);
     }
 
