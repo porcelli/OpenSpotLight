@@ -57,15 +57,13 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Excluded;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.JavaArtifactSource;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.JavaArtifactSource;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test class to be used on configuration node tests.
@@ -116,7 +114,7 @@ public class NodeTest {
         assertThat(bundle.getActive(), is(true));
         assertThat(bundle.getInitialLookup(), is("initialLookup"));
         assertThat(bundle.getProject(), is(project));
-        assertThat(bundle.getArtifactMappings().size(), is(not(0)));
+        assertThat(bundle.getMappings().size(), is(not(0)));
         assertThat(bundle.getArtifactMappingNames().size(), is(not(0)));
         if (verifyArtifacts) {
             assertThat(bundle.getStreamArtifacts().size(), is(not(0)));

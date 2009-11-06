@@ -52,9 +52,9 @@ package org.openspotlight.federation.data.load;
 import org.jboss.dna.connector.svn.SVNRepositorySource;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System

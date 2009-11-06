@@ -55,9 +55,11 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.openspotlight.common.MutableType;
 
 // TODO: Auto-generated Javadoc

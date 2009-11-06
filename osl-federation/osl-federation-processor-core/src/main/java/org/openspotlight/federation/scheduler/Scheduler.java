@@ -59,15 +59,11 @@ import java.util.Set;
 
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Schedulable;
-import org.openspotlight.federation.data.impl.ScheduleData;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessor;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
-import org.openspotlight.federation.data.util.ConfigurationNodes;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ScheduleData;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;

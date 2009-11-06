@@ -6,7 +6,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.sql.Connection;
 
-import org.openspotlight.federation.data.impl.DbArtifactSource;
+import org.openspotlight.federation.domain.DbArtifactSource;
 
 /**
  * Helper methods to manipulate database resources.

@@ -49,28 +49,11 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.io.FileOutputStream;
-
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DNASvnArtifactLoader;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 
 /**
  * Test for class {@link DNASvnArtifactLoader}

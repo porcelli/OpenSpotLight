@@ -50,12 +50,10 @@
 package org.openspotlight.federation.data.test;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,16 +67,6 @@ import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.omg.CosNaming.NameHolder;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Excluded;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.JavaArtifactSource;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.util.JcrNodeVisitor;
 import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
 

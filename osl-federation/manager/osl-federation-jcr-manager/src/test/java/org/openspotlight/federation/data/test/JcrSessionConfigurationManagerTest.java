@@ -55,7 +55,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.Set;
 
@@ -67,13 +66,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test class to see if the Jcr configuration is working ok. This test was based on tests found on DNA project

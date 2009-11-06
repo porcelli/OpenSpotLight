@@ -8,11 +8,9 @@ import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.data.NoConfigurationYetException;
-import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
-import org.openspotlight.federation.util.MarkAllAsDirtyVisitor;
 
 /**
  * The Class ConfigurationSupport contains methods to be used on {@link ConfigurationManager} saved data.

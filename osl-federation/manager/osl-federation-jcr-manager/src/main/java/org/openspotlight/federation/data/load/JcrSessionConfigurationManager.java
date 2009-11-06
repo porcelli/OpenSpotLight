@@ -66,7 +66,6 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -99,15 +98,8 @@ import javax.jcr.version.Version;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
-import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.InstanceMetadata.DataLoader;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.util.ParentNumberComparator;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.jcr.provider.CommonJcrSupport;
 
 /**

@@ -53,7 +53,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOslValidConfiguration;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.Set;
 
@@ -61,18 +60,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext;
-import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.federation.data.util.JcrConfigurationManagerProvider;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;

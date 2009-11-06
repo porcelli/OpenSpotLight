@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * This interface marks the {@link BundleProcessor bundle processors} that will

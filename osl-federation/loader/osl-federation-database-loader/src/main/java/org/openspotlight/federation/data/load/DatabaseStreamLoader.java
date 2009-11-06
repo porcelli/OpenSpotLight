@@ -23,11 +23,6 @@ import java.util.StringTokenizer;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
@@ -35,6 +30,11 @@ import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**

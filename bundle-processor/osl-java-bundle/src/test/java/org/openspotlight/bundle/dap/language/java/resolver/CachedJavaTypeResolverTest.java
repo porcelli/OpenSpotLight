@@ -53,7 +53,6 @@ package org.openspotlight.bundle.dap.language.java.resolver;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.bundle.dap.language.java.resolver.JavaTypeResolverTest.user;
 
 import java.util.Arrays;
 import java.util.List;
