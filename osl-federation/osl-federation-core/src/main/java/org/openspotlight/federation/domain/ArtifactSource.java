@@ -7,6 +7,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -103,6 +104,11 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
      */
     public Set<ScheduleData> getScheduleDatas() {
         return this.scheduleDatas;
+    }
+
+    @TransientProperty
+    public String getUniqueReference() {
+        return this.getName() + ":" + this.getInitialLookup();
     }
 
     /**
