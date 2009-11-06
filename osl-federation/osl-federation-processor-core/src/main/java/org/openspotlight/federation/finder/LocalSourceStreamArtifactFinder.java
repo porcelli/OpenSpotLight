@@ -21,7 +21,12 @@ import org.openspotlight.federation.domain.StreamArtifact;
 public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArtifact> {
 
     public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
-        return true;
+        for (final ChangeType t : ChangeType.values()) {
+            if (new File(artifactSource.getInitialLookup() + "/" + t.toString().toLowerCase()).exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public StreamArtifact findByPath( final ArtifactSource artifactSource,
@@ -31,7 +36,7 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
         for (final ChangeType t : ChangeType.values()) {
             try {
 
-                final String location = MessageFormat.format("./{0}/{1}/{2}", artifactSource.getInitialLookup(),
+                final String location = MessageFormat.format("{0}/{1}/{2}", artifactSource.getInitialLookup(),
                                                              t.toString().toLowerCase(), rawPath);
 
                 final File file = new File(location);
@@ -93,7 +98,7 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
             final Set<String> result = new HashSet<String>();
             for (final ChangeType t : ChangeType.values()) {
 
-                final String location = MessageFormat.format("./{0}/{1}/{2}", artifactSource.getInitialLookup(),
+                final String location = MessageFormat.format("{0}/{1}/{2}", artifactSource.getInitialLookup(),
                                                              t.toString().toLowerCase(), rawPath);
 
                 final File initialDir = new File(location);

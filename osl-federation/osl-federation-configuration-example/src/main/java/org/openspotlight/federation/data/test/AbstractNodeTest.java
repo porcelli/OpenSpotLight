@@ -56,12 +56,12 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
-import org.openspotlight.federation.data.InstanceMetadata.PropertyValue;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.finder.test.ConfigurationNode;
+import org.openspotlight.federation.finder.test.InstanceMetadata.ItemChangeEvent;
+import org.openspotlight.federation.finder.test.InstanceMetadata.ItemChangeType;
+import org.openspotlight.federation.finder.test.InstanceMetadata.ItemEventListener;
+import org.openspotlight.federation.finder.test.InstanceMetadata.PropertyValue;
 
 /**
  * Test for class {@link AbstractConfigurationNode} and {@link ConfigurationNodeMetadata}

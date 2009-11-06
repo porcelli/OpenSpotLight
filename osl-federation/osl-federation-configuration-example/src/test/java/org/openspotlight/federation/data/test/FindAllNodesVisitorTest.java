@@ -56,8 +56,8 @@ import static org.junit.Assert.assertThat;
 import java.util.Set;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.InstanceMetadata.FindAllNodesVisitor;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.test.InstanceMetadata.FindAllNodesVisitor;
 
 /**
  * Test class for {@link FindAllNodesVisitor}

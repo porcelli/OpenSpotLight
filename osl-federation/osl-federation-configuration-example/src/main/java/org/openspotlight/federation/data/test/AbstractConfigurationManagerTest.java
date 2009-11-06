@@ -58,8 +58,8 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.GeneratedNode;
 import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.finder.test.GeneratedNode;
 
 /**
  * Base test for {@link ConfigurationManager} classes.

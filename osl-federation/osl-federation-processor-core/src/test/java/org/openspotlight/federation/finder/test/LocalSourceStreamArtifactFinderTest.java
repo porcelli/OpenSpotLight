@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data;
+package org.openspotlight.federation.finder.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
