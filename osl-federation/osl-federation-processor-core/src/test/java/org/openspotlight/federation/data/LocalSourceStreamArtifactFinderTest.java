@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data;
+package org.openspotlight.federation.finder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -72,9 +72,25 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
     public Set<StreamArtifact> listByPath( final ArtifactSource artifactSource,
                                            final String rawPath ) {
         Assertions.checkNotNull("artifactSource", artifactSource);
-        Assertions.checkNotEmpty("rawPath", rawPath);
         try {
             final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
+            final Set<String> allFilePaths = this.retrieveAllArtifactNames(artifactSource, rawPath);
+            for (final String path : allFilePaths) {
+                final StreamArtifact sa = this.findByPath(artifactSource, path);
+                result.add(sa);
+            }
+            return result;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
+                                                 final String initialPath ) {
+        Assertions.checkNotNull("artifactSource", artifactSource);
+        final String rawPath = initialPath == null ? "." : initialPath;
+        try {
+            final Set<String> result = new HashSet<String>();
             for (final ChangeType t : ChangeType.values()) {
 
                 final String location = MessageFormat.format("./{0}/{1}/{2}", artifactSource.getInitialLookup(),
@@ -89,23 +105,10 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
 
                 for (final String p : pathList) {
                     final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
-                    final StreamArtifact sa = this.findByPath(artifactSource, correctRelativePath);
-                    if (sa != null) {
-                        result.add(sa);
-                    }
+                    result.add(correctRelativePath);
                 }
             }
             return result;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource ) {
-        try {
-            final Set<String> pathList = Files.listFileNamesFrom(artifactSource.getInitialLookup());
-
-            return pathList;
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
