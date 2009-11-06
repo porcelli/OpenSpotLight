@@ -54,7 +54,8 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createOracleOciDbConfiguration;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.InstanceMetadata;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 
 /**
  * Just a test to verify if the method {@link InstanceMetadata#getPath()} is working.
@@ -66,13 +67,13 @@ public class NodePathStringTest {
      */
     @Test
     public void shouldGetCorrectString() {
-        final Bundle exampleBundle = createOracleOciDbConfiguration().getRepositoryByName("oracle Repository").getGroupByName(
-                                                                                                                              "oracle Group").getBundleByName(
-                                                                                                                                                              "oracle Connection");
+        final ArtifactSource exampleBundle = createOracleOciDbConfiguration().getRepositoryByName("oracle Repository").getGroupByName(
+                                                                                                                                      "oracle Group").getArtifactSourceByName(
+                                                                                                                                                                              "oracle Connection");
         final String path = exampleBundle.getInstanceMetadata().getPath();
         assertThat(
                    path,
-                   is("/Configuration/Repository[name='oracle Repository']/Group[name='oracle Group']/DbBundle[name='oracle Connection']"));
+                   is("/Configuration/Repository[name='oracle Repository']/Group[name='oracle Group']/DbArtifactSource[name='oracle Connection']"));
 
     }
 

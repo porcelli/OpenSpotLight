@@ -80,6 +80,8 @@ import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.PackageContainsType;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class SLGraphQueryTest.
@@ -104,9 +106,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                     methodMap.put(++count, method);
                 }
             }
+            
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            final SLGraphSession session = graph.openSession();
+            final SLGraphSession session = graph.openSession(user);
             final AbstractGeneralQueryTest test = new SLGraphQueryTest(session, SortMode.SORTED, true);
             int option = 0;
             final Scanner in = new Scanner(System.in);
@@ -144,10 +151,10 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
      * @param printInfo the print info
      */
     public SLGraphQueryTest(
-                             final SLGraphSession sessionParam, final SortMode sortModeParam, final boolean printInfoParam ) {
-        session = sessionParam;
-        sortMode = sortModeParam;
-        printInfo = printInfoParam;
+                             final SLGraphSession session, final SortMode sortMode, final boolean printInfo ) {
+        this.session = session;
+        this.sortMode = sortMode;
+        this.printInfo = printInfo;
         LOGGER = Logger.getLogger(SLGraphQueryTest.class);
     }
 
@@ -156,7 +163,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -195,7 +202,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
             query.select().allTypes().onWhere().selectEnd()
 
             .where().type(JavaType.class.getName()).subTypes().each().property("caption").contains().value("Set").and().not().openBracket().each().property(
@@ -204,7 +211,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                                                                      "caption").contains().value(
                                                                                                                                                                                                                                                  "Bit").closeBracket().typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -238,13 +245,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd()
 
             .where().type(JavaInterface.class.getName()).each().property("caption").not().contains().value("Set").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -303,7 +310,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectAllDateMethods() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -311,7 +318,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             new AssertResult() {
@@ -332,11 +339,11 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectAllJavaClasses() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaClass.class.getName()).selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -451,11 +458,11 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -517,11 +524,11 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -674,11 +681,11 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaPackage.class.getName()).selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, true);
+            final SLQueryResult result = query.execute(this.sortMode, true);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -695,10 +702,10 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                 }
             }.execute();
 
-            final SLQueryApi nquery = session.createQueryApi();
+            final SLQueryApi nquery = this.session.createQueryApi();
             nquery.select().type(JavaPackage.class.getName()).selectEnd();
 
-            nquery.execute(sortMode, true);
+            nquery.execute(this.sortMode, true);
 
             this.printResult(nodes);
         } catch (final SLException e) {
@@ -714,7 +721,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().selectEnd()
 
@@ -723,7 +730,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                                  "caption").contains().value(
                                                                                                                                                                                                              "Set").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             //final NodeWrapper[] wrappers = wrapNodes(nodes);
 
@@ -748,7 +755,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd()
 
@@ -757,7 +764,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                            "caption").contains().value(
                                                                                                                                                                                                        "Set").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -851,13 +858,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorDescriptionPrimary() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
                                                                                                                                                     "\u00E7ollecTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                      Collator.PRIMARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -875,13 +882,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorDescriptionSecondary() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
                                                                                                                                                     "CollecTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                 Collator.SECONDARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -899,13 +906,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorDescriptionTertiary() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
                                                                                                                                                     "\u00C7ollection").typeEnd().whereEnd().collator(
                                                                                                                                                                                                      Collator.TERTIARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -926,13 +933,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyPrimaryChangeAccent() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.\u00C7ollection").typeEnd().whereEnd().collator(
                                                                                                                                                                                                                Collator.PRIMARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -950,13 +957,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyPrimaryChangeAccentAndCase() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.\u00C7oll\u00E9cTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                                     Collator.PRIMARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -974,13 +981,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyPrimaryChangeCase() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.CollecTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.PRIMARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1001,13 +1008,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeySecondaryChangeAccent() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.Çollection").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.SECONDARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1023,13 +1030,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeySecondaryChangeAccentAndCase() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.ÇollécTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.SECONDARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1045,13 +1052,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeySecondaryChangeCase() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.CollecTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.SECONDARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1069,13 +1076,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyTertiaryChangeAccent() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.Çollection").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.TERTIARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1091,13 +1098,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyTertiaryChangeAccentAndCase() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.ÇollécTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.TERTIARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1113,13 +1120,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByCollatorKeyTertiaryChangeCase() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
                                                                                                                                                     "java.util.CollecTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                           Collator.TERTIARY);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1138,7 +1145,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectByLinkCount() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
                                                                                                                               "caption").contains().value(
@@ -1155,7 +1162,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                                                                                                                       TypeContainsMethod.class.getName()).a().count().lesserOrEqualThan().value(
                                                                                                                                                                                                                                                                                                                                                 12).typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1187,7 +1194,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).comma().type(JavaTypeMethod.class.getName()).selectEnd()
 
@@ -1196,7 +1203,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .select().type(JavaInterface.class.getName()).comma().type(JavaTypeMethod.class.getName()).subTypes().comma().byLink(
                                                                                                                                  TypeContainsMethod.class.getName()).any().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1464,7 +1471,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).comma().type(JavaTypeMethod.class.getName()).selectEnd()
 
@@ -1473,7 +1480,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .select().type(JavaInterface.class.getName()).comma().type(JavaTypeMethod.class.getName()).subTypes().comma().byLink(
                                                                                                                                  TypeContainsMethod.class.getName()).any().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1740,7 +1747,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectCollectionMethods() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -1748,7 +1755,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1799,7 +1806,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectCollectionMethodsWithKeepResult() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -1809,7 +1816,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1862,7 +1869,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethods() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd()
 
@@ -1870,7 +1877,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -1965,7 +1972,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimit() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
@@ -1974,7 +1981,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd().limit(
                                                                                                                                     10);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2019,7 +2026,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimit2() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
             .where().type(JavaClass.class.getName()).each().property("caption").equalsTo().value("java.util.Date").typeEnd().whereEnd()
@@ -2027,7 +2034,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd().limit(
                                                                                                                                     20);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2092,7 +2099,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimitGeneral() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
@@ -2100,7 +2107,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo, 10, null);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo, 10, null);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2143,7 +2150,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimitGeneral2() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
@@ -2151,7 +2158,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo, 20, null);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo, 20, null);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2214,7 +2221,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimitGeneralOffset2() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
@@ -2222,7 +2229,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo, 20, 21);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo, 20, 21);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2278,7 +2285,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     @Test
     public void testSelectDateMethodsLimitOffset() {
         try {
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
@@ -2288,7 +2295,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                     10,
                                                                                                                                     11);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2334,7 +2341,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimitOffset2() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
             .where().type(JavaClass.class.getName()).each().property("caption").equalsTo().value("java.util.Date").typeEnd().whereEnd()
@@ -2343,7 +2350,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                     20,
                                                                                                                                     21);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2400,7 +2407,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsLimitOffsetGeneral() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().keepResult()
 
@@ -2408,7 +2415,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaTypeMethod.class.getName()).comma().byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo, 10, 11);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo, 10, 11);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2451,7 +2458,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagBetween30And70() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2463,7 +2470,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                        "tag").lesserThan().value(
                                                                                                                                                                  70).linkTypeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             new AssertResult() {
@@ -2484,7 +2491,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagGreaterThan50() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2494,7 +2501,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .where().linkType(TypeContainsMethod.class.getName()).each().property("tag").greaterThan().value(50).linkTypeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             new AssertResult() {
@@ -2515,7 +2522,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagLesserOrEqualTo30OrGreaterOrEqualTo70() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2527,7 +2534,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                             "tag").greaterOrEqualThan().value(
                                                                                                                                                                               70).linkTypeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             new AssertResult() {
@@ -2548,7 +2555,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectDateMethodsWithTagLesserOrEqualTo50() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2558,7 +2565,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .where().linkType(TypeContainsMethod.class.getName()).each().property("tag").lesserOrEqualThan().value(50).linkTypeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             new AssertResult() {
@@ -2580,7 +2587,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2589,7 +2596,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                       "caption").contains().value(
                                                                                                                                                                                                   "Map").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2629,7 +2636,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectInterfacesWithSetOverTypesFromUtil() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2639,7 +2646,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .where().type(JavaInterface.class.getName()).each().property("caption").contains().value("Set").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2666,7 +2673,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectInterfacesWithSetOverTypesFromUtilWithKeepResult() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -2678,7 +2685,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .where().type(JavaInterface.class.getName()).each().property("caption").contains().value("Set").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2811,14 +2818,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByAscending() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
                                                                                                                                                     "Set").typeEnd().whereEnd().orderBy().type(
                                                                                                                                                                                                JavaInterface.class.getName()).property(
                                                                                                                                                                                                                                        "caption").ascending().orderByEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2842,7 +2849,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByAscendingAndDescending() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
                                                                                                                               "caption").contains().value(
@@ -2852,7 +2859,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                                                                                                                          JavaClass.class.getName()).property(
                                                                                                                                                                                                                                                                                                              "caption").descending().orderByEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2887,7 +2894,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByCrossType() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
                                                                                                                               "caption").contains().value(
@@ -2895,7 +2902,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                                                      JavaType.class.getName()).property(
                                                                                                                                                                                                                                         "caption").orderByEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2932,14 +2939,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectOrderByDescending() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().allTypes().onWhere().selectEnd().where().type(JavaClass.class.getName()).each().property("caption").contains().value(
                                                                                                                                                 "Set").typeEnd().whereEnd().orderBy().type(
                                                                                                                                                                                            JavaClass.class.getName()).property(
                                                                                                                                                                                                                                "caption").descending().orderByEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -2973,7 +2980,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -2988,7 +2995,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .executeXTimes(3);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -3021,7 +3028,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -3033,7 +3040,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .select().type(JavaInterface.class.getName()).comma().byLink(JavaInterfaceHierarchy.class.getName()).b().selectEnd().executeXTimes(
                                                                                                                                                3);
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -3066,7 +3073,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -3077,7 +3084,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaInterface.class.getName()).comma().byLink(JavaInterfaceHierarchy.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -3106,7 +3113,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -3121,7 +3128,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaInterface.class.getName()).comma().byLink(JavaInterfaceHierarchy.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -3152,7 +3159,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaInterface.class.getName()).selectEnd()
 
@@ -3171,7 +3178,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaInterface.class.getName()).comma().byLink(JavaInterfaceHierarchy.class.getName()).b().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
 
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
@@ -3204,13 +3211,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
             .where().type(JavaType.class.getName()).subTypes().each().property("caption").startsWith().value("java.util").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -3344,7 +3351,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectTypesFromMethodsWithGet() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaTypeMethod.class.getName()).selectEnd()
 
@@ -3352,7 +3359,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaType.class.getName()).subTypes().comma().byLink(TypeContainsMethod.class.getName()).a().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -3437,7 +3444,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSelectTypesFromMethodsWithGetWithKeepResult() {
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaTypeMethod.class.getName()).selectEnd()
 
@@ -3447,7 +3454,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             .select().type(JavaType.class.getName()).subTypes().comma().byLink(TypeContainsMethod.class.getName()).a().selectEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -3809,7 +3816,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -3821,7 +3828,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                                                                                                                                                                "caption").contains().value(
                                                                                                                                                                                                                                                                                                            "Map").closeBracket().typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -3894,7 +3901,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         try {
 
-            final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = this.session.createQueryApi();
 
             query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 
@@ -3902,7 +3909,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                                                                                        "caption").contains().value(
                                                                                                                                                                    "List").typeEnd().whereEnd();
 
-            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final SLQueryResult result = query.execute(this.sortMode, this.printInfo);
             final List<SLNode> nodes = result.getNodes();
             final NodeWrapper[] wrappers = this.wrapNodes(nodes);
 
@@ -3954,29 +3961,29 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     @Test
     public void testDifferentQueryIds() throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 
-        final SLQueryApi initQuery = session.createQueryApi();
+        final SLQueryApi initQuery = this.session.createQueryApi();
 
         initQuery.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").contains().value(
                                                                                                                                                     "\u00E7ollecTION").typeEnd().whereEnd().collator(
                                                                                                                                                                                                      Collator.PRIMARY);
 
-        final SLQueryResult initialData = initQuery.execute(sortMode, printInfo);
+        final SLQueryResult initialData = initQuery.execute(this.sortMode, this.printInfo);
 
-        final SLQueryApi query = session.createQueryApi();
+        final SLQueryApi query = this.session.createQueryApi();
 
         query.select().allTypes().
              byLink(TypeContainsMethod.class.getName()).b().
              selectEnd();
 
-        final SLQueryResult result = query.execute(new String[] {initialData.getNodes().get(0).getID()}, sortMode, printInfo);
+        final SLQueryResult result = query.execute(new String[] {initialData.getNodes().get(0).getID()}, this.sortMode, this.printInfo);
 
-        final SLQueryApi query2 = session.createQueryApi();
+        final SLQueryApi query2 = this.session.createQueryApi();
 
         query2.select().allTypes().
               byLink(PackageContainsType.class.getName()).b().
               selectEnd();
 
-        final SLQueryResult result2 = query2.execute(new String[] {initialData.getNodes().get(0).getID()}, sortMode, printInfo);
+        final SLQueryResult result2 = query2.execute(new String[] {initialData.getNodes().get(0).getID()}, this.sortMode, this.printInfo);
 
         assertThat(result.getQueryId(), is(not(result2.getQueryId())));
 

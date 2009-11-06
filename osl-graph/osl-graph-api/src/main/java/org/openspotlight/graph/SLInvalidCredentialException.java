@@ -48,12 +48,14 @@
  */
 package org.openspotlight.graph;
 
+import java.security.GeneralSecurityException;
+
 /**
  * The Class SLInvalidCredentialException.
  * 
  * @author porcelli
  */
-public class SLInvalidCredentialException extends SLGraphSessionException {
+public class SLInvalidCredentialException extends GeneralSecurityException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -1891819028100700399L;

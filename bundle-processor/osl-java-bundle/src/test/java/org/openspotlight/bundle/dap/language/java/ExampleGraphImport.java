@@ -55,22 +55,29 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.dap.language.java.resolver.JavaGraphNodeSupport;
+import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 public class ExampleGraphImport {
 
     @Test
     public void shouldImportSomeData() throws Exception {
 
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        final AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
         final SLGraphFactory factory = new SLGraphFactoryImpl();
         final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        final SLGraphSession session = graph.openSession();
+        final SLGraphSession session = graph.openSession(user);
         final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
         final SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
         final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode, abstractContextRootNode);

@@ -67,7 +67,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
@@ -76,147 +76,126 @@ import org.openspotlight.federation.data.load.FileSystemArtifactLoader;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
 
 /**
- * Test class to see if the Jcr configuration is working ok. This test was based
- * on tests found on DNA project http://jboss.org/dna/
- * 
+ * Test class to see if the Jcr configuration is working ok. This test was based on tests found on DNA project
+ * http://jboss.org/dna/
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 
-@SuppressWarnings("all")
-public class JcrSessionConfigurationManagerTest extends
-		AbstractConfigurationManagerTest {
+@SuppressWarnings( "all" )
+public class JcrSessionConfigurationManagerTest extends AbstractConfigurationManagerTest {
 
-	public static final String TESDATA_PATH = "./src/test/resources/";
+    public static final String          TESDATA_PATH              = "./src/test/resources/";
 
-	public static final String JACKRABBIT_DATA_PATH = "./target/test-data/JcrSessionConfigurationManagerTest/";
+    public static final String          JACKRABBIT_DATA_PATH      = "./target/test-data/JcrSessionConfigurationManagerTest/";
 
-	public static final String REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH
-			+ "repository";
-	public static final String REPOSITORY_CONFIG_PATH = TESDATA_PATH
-			+ "configuration/JcrSessionConfigurationManagerTest/jackrabbit.xml";
-	public static final String DERBY_SYSTEM_HOME = JACKRABBIT_DATA_PATH
-			+ "/derby";
-	private static Session session;
-	private static TransientRepository repository;
+    public static final String          REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH + "repository";
+    public static final String          REPOSITORY_CONFIG_PATH    = TESDATA_PATH
+                                                                    + "configuration/JcrSessionConfigurationManagerTest/jackrabbit.xml";
+    public static final String          DERBY_SYSTEM_HOME         = JACKRABBIT_DATA_PATH + "/derby";
+    private static Session              session;
+    private static TransientRepository  repository;
 
-	private static ConfigurationManager implementation;
+    private static ConfigurationManager implementation;
 
-	private static Configuration configuration;
+    private static Configuration        configuration;
 
-	@BeforeClass
-	public static void initializeSomeConfiguration() throws Exception {
-		delete(JACKRABBIT_DATA_PATH);
-		System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
-		repository = new TransientRepository(REPOSITORY_CONFIG_PATH,
-				REPOSITORY_DIRECTORY_PATH);
-		final SimpleCredentials creds = new SimpleCredentials("jsmith",
-				"password".toCharArray());
-		session = repository.login(creds);
-		assertThat(session, is(notNullValue()));
-		implementation = new JcrSessionConfigurationManager(session);
-	}
+    @BeforeClass
+    public static void initializeSomeConfiguration() throws Exception {
+        delete(JACKRABBIT_DATA_PATH);
+        System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
+        repository = new TransientRepository(REPOSITORY_CONFIG_PATH, REPOSITORY_DIRECTORY_PATH);
+        final SimpleCredentials creds = new SimpleCredentials("jsmith", "password".toCharArray());
+        session = repository.login(creds);
+        assertThat(session, is(notNullValue()));
+        implementation = new JcrSessionConfigurationManager(session);
+    }
 
-	public static Configuration loadAllFilesFromThisConfiguration(
-			final Configuration configuration) throws Exception {
-		final ArtifactLoaderGroup group = new ArtifactLoaderGroup(
-				new FileSystemArtifactLoader());
-		final Set<Bundle> bundles = findAllNodesOfType(configuration,
-				Bundle.class);
-		for (final Bundle bundle : bundles) {
-			group.loadArtifactsFromMappings(bundle);
+    public static Configuration loadAllFilesFromThisConfiguration( final Configuration configuration ) throws Exception {
+        final ArtifactLoaderGroup group = new ArtifactLoaderGroup(new FileSystemArtifactLoader());
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
+            group.loadArtifactsFromMappings(bundle);
 
-		}
-		return configuration;
+        }
+        return configuration;
 
-	}
+    }
 
-	@BeforeClass
-	public static void loadSourceCodeIntoValidConfiguration() throws Exception {
-		configuration = createOslValidConfiguration("JcrSessionConfigurationManagerTest");
-		configuration = loadAllFilesFromThisConfiguration(configuration);
+    @BeforeClass
+    public static void loadSourceCodeIntoValidConfiguration() throws Exception {
+        configuration = createOslValidConfiguration("JcrSessionConfigurationManagerTest");
+        configuration = loadAllFilesFromThisConfiguration(configuration);
 
-	}
+    }
 
-	@AfterClass
-	public static void shutdown() throws Exception {
-		if (session != null) {
-			session.logout();
-		}
-		if (repository != null) {
-			repository.shutdown();
-		}
-	}
+    @AfterClass
+    public static void shutdown() throws Exception {
+        if (session != null) {
+            session.logout();
+        }
+        if (repository != null) {
+            repository.shutdown();
+        }
+    }
 
-	@Override
-	protected boolean assertAllData() {
-		return true;
-	}
+    @Override
+    protected boolean assertAllData() {
+        return true;
+    }
 
-	@Override
-	protected ConfigurationManager createInstance() {
-		return implementation;
-	}
+    @Override
+    protected ConfigurationManager createInstance() {
+        return implementation;
+    }
 
-	@Override
-	protected LazyType getDefaultLazyType() {
-		return LazyType.LAZY;
-	}
+    @Override
+    protected LazyType getDefaultLazyType() {
+        return LazyType.LAZY;
+    }
 
-	@Test
-	public void shouldDeleteNodesFromTheConfigurationWithLazyType()
-			throws Exception {
-		this.deleteNodesFromTheConfiguration(LazyType.LAZY);
-	}
+    @Test
+    public void shouldDeleteNodesFromTheConfigurationWithLazyType() throws Exception {
+        this.deleteNodesFromTheConfiguration(LazyType.LAZY);
+    }
 
-	@Test
-	public void shouldFindArtifactByUuid() throws Exception {
-		final Configuration configuration = this.createSampleData();
-		final JcrSessionConfigurationManager manager = (JcrSessionConfigurationManager) this
-				.createInstance();
-		final Bundle bundle = configuration.getRepositoryByName("r-1")
-				.getGroupByName("p-1,1").getBundleByName("b-1,1,1");
-		final StreamArtifact artifact = new StreamArtifact(bundle, "TABLE_NAME");
-		manager.save(configuration);
-		final StreamArtifact found = manager.findNodeByUuidAndVersion(
-				configuration, StreamArtifact.class, artifact.getUUID(),
-				artifact.getVersionName());
-		assertThat(found, is(notNullValue()));
-		assertThat(found.getRelativeName(), is("TABLE_NAME"));
+    @Test
+    public void shouldFindArtifactByUuid() throws Exception {
+        final Configuration configuration = this.createSampleData();
+        final JcrSessionConfigurationManager manager = (JcrSessionConfigurationManager)this.createInstance();
+        final ArtifactSource bundle = configuration.getRepositoryByName("r1").getGroupByName("p-1,1").getArtifactSourceByName(
+                                                                                                                              "b-1,1,1");
+        final StreamArtifact artifact = new StreamArtifact(bundle, "TABLE_NAME");
+        manager.save(configuration);
+        final StreamArtifact found = manager.findNodeByUuidAndVersion(configuration, StreamArtifact.class, artifact.getUUID(),
+                                                                      artifact.getVersionName());
+        assertThat(found, is(notNullValue()));
+        assertThat(found.getRelativeName(), is("TABLE_NAME"));
 
-	}
+    }
 
-	@Test
-	public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyLoad()
-			throws Exception {
-		this
-				.shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(LazyType.LAZY);
-	}
+    @Test
+    public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyLoad() throws Exception {
+        this.shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(LazyType.LAZY);
+    }
 
-	public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(
-			final LazyType type) throws Exception {
-		final ConfigurationManager configurationManager = this.createInstance();
-		configurationManager.save(configuration);
-		final Configuration loadedConfiguration = configurationManager
-				.load(type);
-		final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(
-				loadedConfiguration, StreamArtifact.class);
-		assertThat(loadedArtifacts.iterator().next().getData(),
-				is(notNullValue()));
-		assertThat(loadedArtifacts.size(), is(not(0)));
-	}
+    public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType( final LazyType type ) throws Exception {
+        final ConfigurationManager configurationManager = this.createInstance();
+        configurationManager.save(configuration);
+        final Configuration loadedConfiguration = configurationManager.load(type);
+        final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(loadedConfiguration, StreamArtifact.class);
+        assertThat(loadedArtifacts.iterator().next().getData(), is(notNullValue()));
+        assertThat(loadedArtifacts.size(), is(not(0)));
+    }
 
-	@Test
-	public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithNonLazyLoad()
-			throws Exception {
-		this
-				.shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(LazyType.EAGER);
-	}
+    @Test
+    public void shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithNonLazyLoad() throws Exception {
+        this.shouldSaveOslSourceDataIntoJcrAssertingValidLoadedStreamWithLazyType(LazyType.EAGER);
+    }
 
-	@Test
-	public void shouldSaveTheConfigurationWithLazyType() throws Exception {
-		this.saveTheConfiguration(LazyType.LAZY);
-	}
+    @Test
+    public void shouldSaveTheConfigurationWithLazyType() throws Exception {
+        this.saveTheConfiguration(LazyType.LAZY);
+    }
 
 }

@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
 @SuppressWarnings("all")
@@ -17,11 +17,11 @@ public class Db2DatabaseStreamTest extends DatabaseStreamTest implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DbBundle createValidConfigurationWithMappings() {
+	protected DbArtifactSource createValidConfigurationWithMappings() {
 		final Configuration configuration = createDb2Configuration();
-		return (DbBundle) configuration.getRepositoryByName("db2 Repository") //$NON-NLS-1$
+		return (DbArtifactSource) configuration.getRepositoryByName("db2 Repository") //$NON-NLS-1$
 				.getGroupByName("db2 Group") //$NON-NLS-1$
-				.getBundleByName("db2 Connection"); //$NON-NLS-1$
+				.getArtifactSourceByName("db2 Connection"); //$NON-NLS-1$
 	}
 
 	/**

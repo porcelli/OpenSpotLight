@@ -72,7 +72,7 @@ import org.openspotlight.federation.data.StaticMetadata;
 @SuppressWarnings("unchecked")
 @ThreadSafe
 @StaticMetadata(keyPropertyName = "relative", keyPropertyType = String.class, validParentTypes = {
-        Bundle.class, Group.class }, validChildrenTypes = { Excluded.class,
+        ArtifactSource.class, Group.class }, validChildrenTypes = { Excluded.class,
         Included.class })
 public final class ArtifactMapping implements ConfigurationNode {
     
@@ -89,7 +89,7 @@ public final class ArtifactMapping implements ConfigurationNode {
      * @param bundle
      * @param relative
      */
-    public ArtifactMapping(final Bundle bundle, final String relative) {
+    public ArtifactMapping(final ArtifactSource bundle, final String relative) {
         this.instanceMetadata = createWithKeyProperty(this, bundle, relative);
         checkCondition("noArtifactMapping", //$NON-NLS-1$
                 bundle.getArtifactMappingByName(relative) == null);

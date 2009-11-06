@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
 @SuppressWarnings("all")
@@ -24,11 +24,11 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DbBundle createValidConfigurationWithMappings() {
+	protected DbArtifactSource createValidConfigurationWithMappings() {
 		final Configuration configuration = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
-		return (DbBundle) configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
+		return (DbArtifactSource) configuration.getRepositoryByName("H2 Repository") //$NON-NLS-1$
 				.getGroupByName("h2 Group") //$NON-NLS-1$
-				.getBundleByName("H2 Connection"); //$NON-NLS-1$
+				.getArtifactSourceByName("H2 Connection"); //$NON-NLS-1$
 	}
 
 	/**

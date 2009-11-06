@@ -75,7 +75,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
 @ThreadSafe
 @StaticMetadata( propertyNames = {"active", "initialLookup"}, propertyTypes = {Boolean.class, String.class}, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = {Group.class}, validChildrenTypes = {
     BundleProcessorType.class, StreamArtifact.class, CustomArtifact.class, ArtifactMapping.class, ScheduleData.class} )
-public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
+public class ArtifactSource implements ConfigurationNode, Schedulable<ArtifactSource> {
 
     /** The Constant ACTIVE. */
     private static final String    ACTIVE           = "active";            //$NON-NLS-1$
@@ -95,11 +95,11 @@ public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
      * @param project the project
      * @param name the name
      */
-    public Bundle(
+    public ArtifactSource(
                    final Group project, final String name ) {
         this.instanceMetadata = createWithKeyProperty(this, project, name);
         checkCondition("noBundle", //$NON-NLS-1$
-                       project.getBundleByName(name) == null);
+                       project.getArtifactSourceByName(name) == null);
         project.getInstanceMetadata().addChild(this);
 
     }
@@ -195,8 +195,8 @@ public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
      * @param name the name
      * @return a bundle
      */
-    public final Bundle getBundleByName( final String name ) {
-        return this.instanceMetadata.getChildByKeyValue(Bundle.class, name);
+    public final ArtifactSource getBundleByName( final String name ) {
+        return this.instanceMetadata.getChildByKeyValue(ArtifactSource.class, name);
     }
 
     /**
@@ -205,7 +205,7 @@ public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
      * @return all bundle names
      */
     public final Set<String> getBundleNames() {
-        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(Bundle.class);
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(ArtifactSource.class);
     }
 
     /**
@@ -213,8 +213,8 @@ public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
      * 
      * @return all bundles
      */
-    public final Collection<Bundle> getBundles() {
-        return this.instanceMetadata.getChildrensOfType(Bundle.class);
+    public final Collection<ArtifactSource> getBundles() {
+        return this.instanceMetadata.getChildrensOfType(ArtifactSource.class);
     }
 
     /**
@@ -429,7 +429,7 @@ public class Bundle implements ConfigurationNode, Schedulable<Bundle> {
      * 
      * @param bundle the bundle
      */
-    public final void removeBundle( final Bundle bundle ) {
+    public final void removeArtifactSource( final ArtifactSource bundle ) {
         this.instanceMetadata.removeChild(bundle);
     }
 

@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.DatabaseCustomArtifactLoader;
@@ -40,10 +40,10 @@ public class ViewStreamArtifactChangingTest {
 			throws Exception {
 
 		final Configuration configuration = createH2DbConfiguration("ViewStreamArtifactChangingTest"); //$NON-NLS-1$
-		final DbBundle dbBundle = (DbBundle) configuration.getRepositoryByName(
+		final DbArtifactSource dbBundle = (DbArtifactSource) configuration.getRepositoryByName(
 				"H2 Repository") //$NON-NLS-1$
 				.getGroupByName("h2 Group") //$NON-NLS-1$
-				.getBundleByName("H2 Connection"); //$NON-NLS-1$
+				.getArtifactSourceByName("H2 Connection"); //$NON-NLS-1$
 		Connection conn = DatabaseSupport.createConnection(dbBundle);
 
 		conn

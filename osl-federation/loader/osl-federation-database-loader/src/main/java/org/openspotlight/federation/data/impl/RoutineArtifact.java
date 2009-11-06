@@ -49,6 +49,8 @@
 
 package org.openspotlight.federation.data.impl;
 
+import java.sql.DatabaseMetaData;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +69,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, propertyNames = {
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class, Group.class}, propertyNames = {
     "UUID", "version", "routineName", "catalogName", "schemaName", "type", "status"}, propertyTypes = {String.class,
     String.class, String.class, String.class, String.class, RoutineArtifact.RoutineType.class, Status.class}, validChildrenTypes = RoutineParameter.class )
 public class RoutineArtifact extends CustomArtifact {
@@ -147,7 +149,7 @@ public class RoutineArtifact extends CustomArtifact {
      * @param relativeName
      */
     public RoutineArtifact(
-                            final Bundle bundle, final String relativeName ) {
+                            final ArtifactSource bundle, final String relativeName ) {
         super(bundle, relativeName);
         this.instanceMetadata = super.getInstanceMetadata();
         this.loadProperties();

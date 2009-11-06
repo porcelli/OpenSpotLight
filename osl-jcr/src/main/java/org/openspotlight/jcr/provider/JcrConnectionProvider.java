@@ -150,8 +150,7 @@ public abstract class JcrConnectionProvider {
         public Session openSession() {
             try {
                 this.openRepository();
-                Session newSession;
-                newSession = this.repository.login(this.getData().getCredentials());
+                final Session newSession = this.repository.login(this.getData().getCredentials());
                 final int sessionId = sessionIdFactory.getAndIncrement();
                 final SessionWrapper wrappedSession = new SessionWrapper(newSession, sessionId, new SessionClosingListener() {
 

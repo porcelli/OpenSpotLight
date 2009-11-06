@@ -6,7 +6,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.sql.Connection;
 
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 
 /**
  * Helper methods to manipulate database resources.
@@ -16,13 +16,13 @@ import org.openspotlight.federation.data.impl.DbBundle;
  */
 public class DatabaseSupport {
 	/**
-	 * Helper method to create a connection using a {@link DbBundle}.
+	 * Helper method to create a connection using a {@link DbArtifactSource}.
 	 * 
 	 * @param dbBundle
 	 * @return the connection itself
 	 * @throws Exception
 	 */
-	public static Connection createConnection(DbBundle dbBundle) throws Exception {
+	public static Connection createConnection(DbArtifactSource dbBundle) throws Exception {
 		checkNotNull("dbBundle", dbBundle); //$NON-NLS-1$
 		Connection connection = null;
 		forName(dbBundle.getDriverClass());

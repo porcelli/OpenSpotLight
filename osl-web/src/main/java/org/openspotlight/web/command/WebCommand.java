@@ -9,9 +9,9 @@ import javax.jcr.Session;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.web.WebException;
 
 /**
@@ -39,6 +39,8 @@ public interface WebCommand {
         /** The graph. */
         private final SLGraph               graph;
 
+        private final AuthenticatedUser     user;
+
         /**
          * Instantiates a new web command context.
          * 
@@ -47,10 +49,12 @@ public interface WebCommand {
          * @param scheduler the scheduler
          */
         public WebCommandContext(
-                                  final SLGraph graph, final JcrConnectionProvider provider, final Scheduler scheduler ) {
+                                  final AuthenticatedUser user, final SLGraph graph, final JcrConnectionProvider provider,
+                                  final Scheduler scheduler ) {
             this.graph = graph;
             this.provider = provider;
             this.scheduler = scheduler;
+            this.user = user;
         }
 
         /**
@@ -75,8 +79,8 @@ public interface WebCommand {
         public SLGraphSession getGraphSession() {
             if (this.graphSession == null) {
                 try {
-                    this.graphSession = this.graph.openSession();
-                } catch (final SLGraphException e) {
+                    this.graphSession = this.graph.openSession(this.user);
+                } catch (final Exception e) {
                     throw logAndReturnNew(e, SLRuntimeException.class);
                 }
             }

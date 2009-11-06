@@ -62,7 +62,7 @@ public abstract class SLAbstractGraphSessionEventListener implements SLGraphSess
     /* (non-Javadoc)
      * @see org.openspotlight.graph.SLGraphSessionEventListener#beforeSave(org.openspotlight.graph.SLGraphSessionEvent)
      */
-    public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException {
+    public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException {
     }
 
     /* (non-Javadoc)

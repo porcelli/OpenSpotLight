@@ -60,6 +60,7 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionIterator;
 
 import org.apache.log4j.Logger;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.util.JCRUtil;
 
 /**
@@ -81,16 +82,23 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
     /** The root node. */
     private Node                          rootNode;
 
+    /** The repository name. */
+    private final String                  repositoryName;
+
+    private final String                  xpathRootPath;
+
     /**
      * Instantiates a new sL persistent tree session impl.
      * 
      * @param session the session
      */
     public SLPersistentTreeSessionImpl(
-                                        final Session session ) {
+                                        final Session session, String repositoryName ) {
         this.jcrSession = session;
         final SLPersistentEventListener listener = new SLPersistentEventListenerImpl();
         this.eventPoster = new SLPersistentEventPosterImpl(listener);
+        this.repositoryName = repositoryName;
+        this.xpathRootPath = "//" + SharedConstants.DEFAULT_JCR_ROOT_NAME + "/" + repositoryName;
     }
 
     //@Override
@@ -129,14 +137,23 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
     }
 
     /**
-     * Creates the root node.
+     * Creates the repository root node.
      * 
      * @throws RepositoryException the repository exception
      */
-    private void createRootNode() throws RepositoryException {
-        this.rootNode = this.jcrSession.getRootNode().addNode("osl");
+    private void createRepositoryRootNode( Node repositoryRootNode ) throws RepositoryException {
+        this.rootNode = repositoryRootNode.addNode(repositoryName);
         JCRUtil.makeVersionable(this.rootNode);
         JCRUtil.makeReferenceable(this.rootNode);
+    }
+
+    /**
+     * Creates the product root node.
+     * 
+     * @throws RepositoryException the repository exception
+     */
+    private Node createProductRootNode() throws RepositoryException {
+        return this.jcrSession.getRootNode().addNode(SharedConstants.DEFAULT_JCR_ROOT_NAME);
     }
 
     //@Override
@@ -148,7 +165,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         try {
             SLPersistentNode persistentNode = null;
             final Node jcrNode = this.jcrSession.getNodeByUUID(id);
-            final String[] names = jcrNode.getPath().substring(1).split("/");
+            final String[] names = jcrNode.getPath().substring(5).split("/");
             for (final String name : names) {
                 if (persistentNode == null) {
                     persistentNode = this.getRootNode();
@@ -181,9 +198,13 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
     public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException {
         if (this.rootNode == null) {
             try {
-                this.rootNode = JCRUtil.getChildNode(this.jcrSession.getRootNode(), "osl");
+                Node oslRootNode = JCRUtil.getChildNode(this.jcrSession.getRootNode(), SharedConstants.DEFAULT_JCR_ROOT_NAME);
+                if (oslRootNode == null) {
+                    oslRootNode = this.createProductRootNode();
+                }
+                this.rootNode = JCRUtil.getChildNode(oslRootNode, repositoryName);
                 if (this.rootNode == null) {
-                    this.createRootNode();
+                    this.createRepositoryRootNode(oslRootNode);
                     this.jcrSession.save();
                 } else {
                     final SortedSet<Double> versionNumbers = new TreeSet<Double>();
@@ -196,7 +217,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
                     }
                     if (versionNumbers.isEmpty()) {
                         this.rootNode.remove();
-                        this.createRootNode();
+                        this.createRepositoryRootNode(oslRootNode);
                         this.jcrSession.save();
                     } else {
                         //rootNode.restore(versionNumbers.last().toString(), true);
@@ -208,6 +229,13 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
             }
         }
         return new SLPersistentNodeImpl(this, null, this.rootNode, this.eventPoster);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getXPathRootPath() {
+        return xpathRootPath;
     }
 
     //@Override

@@ -10,12 +10,16 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.RemoteObjectServer;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class RemoteGraphSessionServer.
@@ -34,13 +38,15 @@ public class RemoteGraphSessionServer {
          * Instantiates a new internal graph session factory.
          */
         public InternalGraphSessionFactory(
-                                            final JcrConnectionDescriptor descriptor ) {
+                                            final JcrConnectionDescriptor descriptor ) throws SLInvalidCredentialException {
             try {
                 this.descriptor = descriptor;
                 final SLGraphFactory graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
                 this.graph = graphFactory.createGraph(descriptor);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
+            } catch (final SLInvalidCredentialException e) {
+                throw logAndReturnNew(e, SLInvalidCredentialException.class);
             }
         }
 
@@ -49,8 +55,18 @@ public class RemoteGraphSessionServer {
          */
         public synchronized SLGraphSession createNewInstance( final Object... parameters ) throws Exception {
             checkNotNull("parameters", parameters);
-            checkCondition("correctParamSize", parameters.length == 0);
-            return this.graph.openSession();
+            checkCondition("correctParamSize", parameters.length == 2);
+            checkCondition("correctTypeForFirstParam", parameters[0] instanceof String);
+            checkCondition("correctTypeForSecondParam", parameters[1] instanceof String);
+            final String user = (String)parameters[0];
+            final String pass = (String)parameters[1];
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser(user);
+            final AuthenticatedUser authenticatedUser = securityFactory.createIdentityManager(this.descriptor).authenticate(
+                                                                                                                            simpleUser,
+                                                                                                                            pass);
+
+            return this.graph.openSession(authenticatedUser);
         }
 
         /* (non-Javadoc)
@@ -85,7 +101,8 @@ public class RemoteGraphSessionServer {
      */
     public RemoteGraphSessionServer(
                                      final UserAuthenticator userAutenticator, final Integer portToUse,
-                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor ) {
+                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor )
+        throws SLInvalidCredentialException {
         checkNotNull("userAutenticator", userAutenticator);
         checkNotNull("portToUse", portToUse);
         checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);

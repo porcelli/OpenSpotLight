@@ -68,73 +68,64 @@ import org.openspotlight.federation.data.load.ConfigurationManager;
  * Base test for {@link ConfigurationManager} classes.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public abstract class AbstractConfigurationManagerTest extends NodeTest {
-    
+
     /**
-     * 
      * @return true if the {@link GeneratedNode} should be ignored by the tests
      */
     protected abstract boolean assertAllData();
-    
+
     /**
-     * 
      * @return a instance of the {@link ConfigurationManager} been tested
      */
     protected abstract ConfigurationManager createInstance();
-    
-    protected void deleteNodesFromTheConfiguration(final LazyType type)
-            throws Exception {
+
+    protected void deleteNodesFromTheConfiguration( final LazyType type ) throws Exception {
         final Configuration configuration = this.createSampleData();
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
-        configuration
-                .removeRepository(configuration.getRepositoryByName("r-1"));
+        configuration.removeRepository(configuration.getRepositoryByName("r1"));
         manager.save(configuration);
-        assertThat(configuration.getRepositoryByName("r-1"), is(nullValue()));
-        
+        assertThat(configuration.getRepositoryByName("r1"), is(nullValue()));
+
         final Configuration anotherGroup = manager.load(type);
-        
-        assertThat(anotherGroup.getRepositoryByName("r-1"), is(nullValue()));
+
+        assertThat(anotherGroup.getRepositoryByName("r1"), is(nullValue()));
     }
-    
+
     /**
-     * 
      * @return default lazy type to use on tests
      */
     protected abstract LazyType getDefaultLazyType();
-    
-    protected void saveTheConfiguration(final LazyType type) throws Exception {
+
+    protected void saveTheConfiguration( final LazyType type ) throws Exception {
         final Configuration configuration = this.createSampleData();
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
         final Configuration anotherGroup = manager.load(type);
-        this.assertTheSameInitialDataOnSomeNodes(anotherGroup, this
-                .assertAllData());
+        this.assertTheSameInitialDataOnSomeNodes(anotherGroup, this.assertAllData());
     }
-    
+
     @Test
     public final void shouldDeleteNodesFromTheConfiguration() throws Exception {
         this.deleteNodesFromTheConfiguration(LazyType.EAGER);
     }
-    
+
     @Test
     public void shouldFindChildrenNodes() throws Exception {
         Configuration configuration = this.createSampleData();
         final ConfigurationManager manager = this.createInstance();
         manager.save(configuration);
-        
+
         configuration = manager.load(this.getDefaultLazyType());
-        final Set<Group> projects = manager.findNodesByKey(configuration,
-                Group.class, "ip-1,1");
+        final Set<Group> projects = manager.findNodesByKey(configuration, Group.class, "ip-1,1");
         assertThat(projects.size(), is(not(0)));
-        final Set<Repository> repositories = manager.findNodesByKey(
-                configuration, Repository.class, "invalidKey");
+        final Set<Repository> repositories = manager.findNodesByKey(configuration, Repository.class, "invalidKey");
         assertThat(repositories.size(), is(0));
     }
-    
+
     @Test
     public final void shouldSaveTheConfiguration() throws Exception {
         this.saveTheConfiguration(LazyType.EAGER);

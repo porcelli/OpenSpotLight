@@ -57,8 +57,11 @@ import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllN
 
 import java.util.Set;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.common.exception.AbstractFactoryException;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
@@ -71,16 +74,35 @@ import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.federation.data.util.JcrConfigurationManagerProvider;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 @SuppressWarnings( "all" )
 public class DnaFileSystemLoaderProcessing {
+    private static AuthenticatedUser user;
+
+    /**
+     * Inits the.
+     * 
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @BeforeClass
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+    }
 
     public static Configuration loadAllFilesFromThisConfiguration( final Configuration configuration ) throws Exception {
         final ArtifactLoaderGroup group = new ArtifactLoaderGroup(new DNAFileSystemArtifactLoader());
-        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
-        for (final Bundle bundle : bundles) {
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
             final ArtifactProcessingCount count = group.loadArtifactsFromMappings(bundle);
             assertThat(count.getErrorCount(), is(0L));
         }
@@ -91,8 +113,8 @@ public class DnaFileSystemLoaderProcessing {
     @Test
     public void shouldLoadAllArtifactsFromOslSourceCode() throws Exception {
         final Configuration configuration = this.loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
-        final Set<Bundle> bundles = findAllNodesOfType(configuration, Bundle.class);
-        for (final Bundle bundle : bundles) {
+        final Set<ArtifactSource> bundles = findAllNodesOfType(configuration, ArtifactSource.class);
+        for (final ArtifactSource bundle : bundles) {
             assertThat(bundle.getStreamArtifacts().size() > 0, is(true));
         }
     }
@@ -102,7 +124,7 @@ public class DnaFileSystemLoaderProcessing {
         final Configuration configuration = this.loadAllFilesFromThisConfiguration(createOslValidDnaFileConnectorConfiguration("DnaFileSystemLoaderProcessing"));
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         configurationManager.save(configuration);
         configurationManager.closeResources();
@@ -110,7 +132,7 @@ public class DnaFileSystemLoaderProcessing {
         final BundleProcessingContext graphContext = mock(BundleProcessingContext.class);
         final Set<StreamArtifact> artifacts = findAllNodesOfType(configuration, StreamArtifact.class);
         final Repository repository = configuration.getRepositoryByName("OSL Group");
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         manager.processBundles(bundles);
         assertThat(LogPrinterBundleProcessor.count.get(), is(artifacts.size()));
     }

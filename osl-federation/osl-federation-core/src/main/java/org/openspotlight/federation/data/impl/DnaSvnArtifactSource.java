@@ -51,6 +51,7 @@ package org.openspotlight.federation.data.impl;
 
 import net.jcip.annotations.ThreadSafe;
 
+import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
@@ -61,25 +62,66 @@ import org.openspotlight.federation.data.StaticMetadata;
  * 
  */
 @ThreadSafe
-@StaticMetadata(propertyNames = { "active", "initialLookup" }, propertyTypes = {
-        Boolean.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-        BundleProcessorType.class, Group.class, StreamArtifact.class,
-        CustomArtifact.class, ArtifactMapping.class })
-public class DnaFileBundle extends Bundle {
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4360343678608898810L;
-    
-    /**
-     * creates a bundle inside this project.
-     * 
-     * @param project
-     * @param name
-     */
-    public DnaFileBundle(final Group project, final String name) {
-        super(project, name);
-    }
-    
+@StaticMetadata(propertyNames = { "active", "initialLookup", "user", "password" }, propertyTypes = {
+		Boolean.class, String.class, String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
+		BundleProcessorType.class, Group.class, StreamArtifact.class,
+		CustomArtifact.class, ArtifactMapping.class })
+public class DnaSvnArtifactSource extends ArtifactSource {
+
+	private static final String PASSWORD = "password"; //$NON-NLS-1$
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6055285487792875923L;
+
+	private static final String USER = "user"; //$NON-NLS-1$
+
+	private final InstanceMetadata instanceMetadata;
+
+	/**
+	 * creates a bundle inside this project.
+	 * 
+	 * @param project
+	 * @param name
+	 */
+	public DnaSvnArtifactSource(final Group project, final String name) {
+		super(project, name);
+		this.instanceMetadata = super.getInstanceMetadata();
+	}
+
+	/**
+	 * 
+	 * @return the password
+	 */
+	public String getPassword() {
+		return this.instanceMetadata.getProperty(PASSWORD);
+	}
+
+	/**
+	 * 
+	 * @return user name
+	 */
+	public String getUser() {
+		return this.instanceMetadata.getProperty(USER);
+	}
+
+	/**
+	 * Sets the password
+	 * 
+	 * @param password
+	 */
+	public void setPassword(final String password) {
+		this.instanceMetadata.setProperty(PASSWORD, password);
+	}
+
+	/**
+	 * Sets username
+	 * 
+	 * @param user
+	 */
+	public void setUser(final String user) {
+		this.instanceMetadata.setProperty(USER, user);
+	}
+
 }

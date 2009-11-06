@@ -97,6 +97,7 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.version.Version;
 
 import org.openspotlight.common.LazyType;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
@@ -107,6 +108,7 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.impl.Artifact;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.util.ParentNumberComparator;
+import org.openspotlight.jcr.provider.CommonJcrSupport;
 
 /**
  * Configuration manager that stores and loads the configuration from a JcrRepository. LATER_TASK implement node property
@@ -918,7 +920,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
         final String defaultRootNode = classHelper.getNameFromNodeClass(Configuration.class);
         Node rootJcrNode;
         try {
-            rootJcrNode = this.session.getRootNode().getNode(defaultRootNode);
+
+            rootJcrNode = this.session.getRootNode().getNode(SharedConstants.DEFAULT_JCR_ROOT_NAME).getNode(defaultRootNode);
         } catch (final PathNotFoundException e) {
             throw logAndReturnNew(e, NoConfigurationYetException.class);
         } catch (final Exception e) {
@@ -988,6 +991,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
 
         try {
 
+            final String[] repositoryNames = configuration.getRepositoryNames().toArray(new String[0]);
+
+            CommonJcrSupport.createRepositoryNodes(this.session, repositoryNames);
+
             final Set<ConfigurationNode> dirtyNodes = configuration.getInstanceMetadata().getSharedData().getDirtyNodes();
 
             final ConfigurationNode[] dirtyNodesAsArray = dirtyNodes.toArray(new ConfigurationNode[0]);
@@ -1001,7 +1008,11 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 }
                 Node parentJcrNode = null;
                 if (node.getInstanceMetadata().getDefaultParent() == null) {
-                    parentJcrNode = this.session.getRootNode();
+                    try {
+                        parentJcrNode = this.session.getRootNode().getNode(SharedConstants.DEFAULT_JCR_ROOT_NAME);
+                    } catch (final PathNotFoundException e) {
+                        parentJcrNode = this.session.getRootNode().addNode(SharedConstants.DEFAULT_JCR_ROOT_NAME);
+                    }
                 } else if (node.getInstanceMetadata().getDefaultParent() != null) {
                     if (dirtyNodes.contains(node.getInstanceMetadata().getDefaultParent())) {
 
@@ -1047,7 +1058,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             this.session.save();
 
             final String configurationPath = classHelper.getNameFromNodeClass(Configuration.class);
-            final Node configurationJcrNode = this.session.getRootNode().getNode(configurationPath);
+            final Node configurationJcrNode = this.session.getRootNode().getNode(SharedConstants.DEFAULT_JCR_ROOT_NAME).getNode(
+                                                                                                                                configurationPath);
 
             final Version version = configurationJcrNode.checkin();
             configurationJcrNode.checkout();

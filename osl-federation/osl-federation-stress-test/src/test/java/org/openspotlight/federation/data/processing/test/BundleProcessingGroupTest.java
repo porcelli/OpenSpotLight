@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.common.exception.AbstractFactoryException;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.Group;
@@ -23,11 +26,31 @@ import org.openspotlight.federation.data.processing.BundleProcessor.BundleProces
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingStartAction;
 import org.openspotlight.federation.data.util.ConfigurationNodes;
 import org.openspotlight.federation.data.util.JcrConfigurationManagerProvider;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 @SuppressWarnings( "all" )
 public class BundleProcessingGroupTest {
+
+    private static AuthenticatedUser user;
+
+    /**
+     * Inits the.
+     * 
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @BeforeClass
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+    }
 
     final int addedSize        = 5;
 
@@ -48,7 +71,7 @@ public class BundleProcessingGroupTest {
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Configuration configuration = new Configuration();
         configuration.setNumberOfParallelThreads(Integer.valueOf(1));
@@ -57,7 +80,7 @@ public class BundleProcessingGroupTest {
         final Group project = new Group(repository, "project");
         project.setGraphRoot(Boolean.TRUE);
         project.setActive(Boolean.TRUE);
-        final Bundle bundle = new Bundle(project, "bundle");
+        final ArtifactSource bundle = new ArtifactSource(project, "bundle");
         bundle.setActive(Boolean.TRUE);
 
         new BundleProcessorType(bundle, "org.openspotlight.federation.data.processing.test.ArtifactCounterBundleProcessor").setActive(Boolean.TRUE);
@@ -80,12 +103,12 @@ public class BundleProcessingGroupTest {
         new StreamArtifact(bundle, "included4").setStatus(Status.INCLUDED);
         new StreamArtifact(bundle, "included5").setStatus(Status.INCLUDED);
 
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
         boolean hasProcessed = false;
         boolean hasChanged = false;
         boolean hasExcluded = false;
         boolean hasIncluded = false;
-        for (final Bundle b : bundles) {
+        for (final ArtifactSource b : bundles) {
             looping: for (final StreamArtifact sa : b.getStreamArtifacts()) {
                 if (sa.getStatus() == null) {
                     continue looping;
@@ -122,18 +145,18 @@ public class BundleProcessingGroupTest {
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
 
         configurationManager.save(repository.getConfiguration());
         final Configuration newConfiguration = configurationManager.load(LazyType.LAZY);
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(newConfiguration, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(newConfiguration, ArtifactSource.class);
         boolean hasProcessed = false;
         boolean hasChanged = false;
         boolean hasExcluded = false;
         boolean hasIncluded = false;
-        for (final Bundle bundle : bundles) {
+        for (final ArtifactSource bundle : bundles) {
             looping: for (final StreamArtifact sa : bundle.getStreamArtifacts()) {
                 if (sa.getStatus() == null) {
                     continue looping;
@@ -177,10 +200,10 @@ public class BundleProcessingGroupTest {
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
         manager.processBundles(bundles);
@@ -198,10 +221,10 @@ public class BundleProcessingGroupTest {
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
@@ -217,10 +240,10 @@ public class BundleProcessingGroupTest {
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 
@@ -236,10 +259,10 @@ public class BundleProcessingGroupTest {
         final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
         final ConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-        final BundleProcessorManager manager = new BundleProcessorManager(provider, configurationManagerProvider);
+        final BundleProcessorManager manager = new BundleProcessorManager(user, provider, configurationManagerProvider);
         final ConfigurationManager configurationManager = configurationManagerProvider.getNewInstance();
         final Repository repository = this.setupTemporaryRepository();
-        final Set<Bundle> bundles = ConfigurationNodes.findAllNodesOfType(repository, Bundle.class);
+        final Set<ArtifactSource> bundles = ConfigurationNodes.findAllNodesOfType(repository, ArtifactSource.class);
         configurationManager.save(repository.getConfiguration());
         configurationManager.closeResources();
 

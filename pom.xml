@@ -74,10 +74,11 @@
 		<module>osl-common</module>
 		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
-		<module>osl-web</module>
+		<module>osl-security</module>
 		<module>osl-graph</module>
 		<module>osl-slql-console</module>
 		<module>osl-federation</module>
+		<module>osl-web</module>
 		<module>bundle-processor/osl-java-bundle</module>
 	</modules>
 	<build>
@@ -110,6 +111,16 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-common</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-security-api</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-security-core</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -609,16 +620,18 @@
 				<artifactId>cajo</artifactId>
 				<version>1.127</version>
 			</dependency>
+
 			<dependency>
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
 				<version>2.2</version>
 			</dependency>
-				<dependency>
-				  <groupId>com.ibm.icu</groupId>
-				  <artifactId>icu4j</artifactId>
-				  <version>4.0.1</version>
-				</dependency>
+<dependency>
+  <groupId>com.ibm.icu</groupId>
+  <artifactId>icu4j</artifactId>
+  <version>4.0.1</version>
+</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 </project>

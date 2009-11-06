@@ -53,8 +53,8 @@ import org.jboss.dna.connector.svn.SVNRepositorySource;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
-import org.openspotlight.federation.data.impl.DnaSvnBundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
+import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System
@@ -70,13 +70,13 @@ public class DNASvnArtifactLoader extends DnaArtifactLoader {
 
 		@Override
 		protected void configureWithBundle(
-				RepositorySourceDefinition<?> sourceDefinition, Bundle bundle,
+				RepositorySourceDefinition<?> sourceDefinition, ArtifactSource bundle,
 				ArtifactMapping relative) {
-			if (!(bundle instanceof DnaSvnBundle)) {
+			if (!(bundle instanceof DnaSvnArtifactSource)) {
 				throw new ConfigurationException(
 						"Invalid bundle type. It's mandatory to use dnaSvnBundle");
 			}
-			DnaSvnBundle svnBundle = (DnaSvnBundle) bundle;
+			DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource) bundle;
 			sourceDefinition
 					.usingClass(SVNRepositorySource.class)
 					.setProperty("password", svnBundle.getPassword())

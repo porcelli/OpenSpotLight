@@ -64,30 +64,25 @@ import org.openspotlight.federation.data.impl.StreamArtifact;
  * Test class for {@link FindAllNodesVisitor}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
-public class FindAllNodesVisitorTest  extends NodeTest{
-    
+@SuppressWarnings( "all" )
+public class FindAllNodesVisitorTest extends NodeTest {
+
     @Test
     public void shouldFindAllNodes() throws Exception {
-        final FindAllNodesVisitor<StreamArtifact> allNodesVisitor = new FindAllNodesVisitor<StreamArtifact>(
-                StreamArtifact.class);
+        final FindAllNodesVisitor<StreamArtifact> allNodesVisitor = new FindAllNodesVisitor<StreamArtifact>(StreamArtifact.class);
         final Configuration configurationNode = this.createSampleData();
         configurationNode.getInstanceMetadata().accept(allNodesVisitor);
-        final Set<StreamArtifact> foundNodes = allNodesVisitor
-                .getFoundNodesAndInvalidate();
+        final Set<StreamArtifact> foundNodes = allNodesVisitor.getFoundNodesAndInvalidate();
         assertThat(foundNodes.size(), is(not(0)));
-        
+
         final FindAllNodesVisitor<StreamArtifact> oneRepositoryVisitor = new FindAllNodesVisitor<StreamArtifact>(
-                StreamArtifact.class);
-        configurationNode.getRepositoryByName("r-1").getInstanceMetadata()
-                .accept(oneRepositoryVisitor);
-        final Set<StreamArtifact> repositoryFoundNodes = oneRepositoryVisitor
-                .getFoundNodesAndInvalidate();
+                                                                                                                 StreamArtifact.class);
+        configurationNode.getRepositoryByName("r1").getInstanceMetadata().accept(oneRepositoryVisitor);
+        final Set<StreamArtifact> repositoryFoundNodes = oneRepositoryVisitor.getFoundNodesAndInvalidate();
         assertThat(repositoryFoundNodes.size(), is(not(0)));
         assertThat(repositoryFoundNodes.size(), is(not(foundNodes.size())));
-        
+
     }
-    
+
 }
