@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.data.impl.CustomArtifact;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.impl.RoutineArtifact;
 import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.impl.ViewArtifact;
@@ -37,9 +37,9 @@ public class DatabaseCustomTest {
 
 	@Test
 	public void shouldLoadProceduresAndFunctions() throws Exception {
-		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
+		final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getGroupByName("h2 Group").getBundleByName(
+				"H2 Repository").getGroupByName("h2 Group").getArtifactSourceByName(
 				"H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
@@ -80,9 +80,9 @@ public class DatabaseCustomTest {
 
 	@Test
 	public void shouldLoadTablesAndViews() throws Exception {
-		final DbBundle bundle = (DbBundle) createH2DbConfiguration(
+		final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration(
 				"DatabaseArtifactLoaderTest").getRepositoryByName(
-				"H2 Repository").getGroupByName("h2 Group").getBundleByName(
+				"H2 Repository").getGroupByName("h2 Group").getArtifactSourceByName(
 				"H2 Connection");
 		bundle
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");

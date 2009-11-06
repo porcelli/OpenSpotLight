@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
 @SuppressWarnings("all")
@@ -18,11 +18,11 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DbBundle createValidConfigurationWithMappings() {
+	protected DbArtifactSource createValidConfigurationWithMappings() {
 		final Configuration configuration = createMySqlDbConfiguration();
-		return (DbBundle) configuration.getRepositoryByName("mysql Repository") //$NON-NLS-1$
+		return (DbArtifactSource) configuration.getRepositoryByName("mysql Repository") //$NON-NLS-1$
 				.getGroupByName("mysql Group") //$NON-NLS-1$
-				.getBundleByName("mysql Connection"); //$NON-NLS-1$
+				.getArtifactSourceByName("mysql Connection"); //$NON-NLS-1$
 	}
 
 	@Override

@@ -63,9 +63,9 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.SharedData;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DnaSvnBundle;
+import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
 import org.openspotlight.federation.data.impl.Included;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Repository;
@@ -96,7 +96,7 @@ public class DnaSvnArtifactLoaderTest extends AbstractArtifactLoaderTest {
 				this.REPOSITORY_NAME);
 		this.configuration.setNumberOfParallelThreads(4);
 		final Group project = new Group(repository, this.PROJECT_NAME);
-		final DnaSvnBundle bundle = new DnaSvnBundle(project, this.BUNDLE_NAME);
+		final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource(project, this.BUNDLE_NAME);
 
 		bundle
 				.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");

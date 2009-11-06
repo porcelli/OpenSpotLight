@@ -48,12 +48,17 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.SharedConstants;
+
 /**
  * The Class SLConsts.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLConsts {
+public class SLConsts implements SharedConstants {
+
+    /** The Constant DEFAULT_REPOSITORY_NAME. */
+    public static final String DEFAULT_REPOSITORY_NAME                     = "default";
 
     /** The Constant NODE_NAME_LINK. */
     public static final String NODE_NAME_LINK                              = "link";

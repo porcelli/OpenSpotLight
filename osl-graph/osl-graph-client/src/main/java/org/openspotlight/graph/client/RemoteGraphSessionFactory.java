@@ -108,9 +108,10 @@ public class RemoteGraphSessionFactory {
      * 
      * @return the SL graph session
      */
-    public SLGraphSession createRemoteGraphSession() {
+    public SLGraphSession createRemoteGraphSession( final String username,
+                                                    final String password ) {
         try {
-            return this.remoteObjectFactory.createRemoteObject(SLGraphSession.class);
+            return this.remoteObjectFactory.createRemoteObject(SLGraphSession.class, username, password);
         } catch (final InvalidReferenceTypeException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }

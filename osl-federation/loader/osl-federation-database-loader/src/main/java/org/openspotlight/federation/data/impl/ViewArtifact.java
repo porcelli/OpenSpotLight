@@ -60,7 +60,7 @@ import org.openspotlight.federation.data.impl.Artifact.Status;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @ThreadSafe
-@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {Bundle.class, Group.class}, propertyNames = {
+@StaticMetadata( keyPropertyName = "relativeName", keyPropertyType = String.class, validParentTypes = {ArtifactSource.class, Group.class}, propertyNames = {
     "UUID", "version", "tableName", "catalogName", "schemaName", "status"}, propertyTypes = {String.class, String.class,
     String.class, String.class, String.class, Status.class}, validChildrenTypes = Column.class )
 public class ViewArtifact extends TableArtifact {
@@ -78,7 +78,7 @@ public class ViewArtifact extends TableArtifact {
      * @param relativeName
      */
     public ViewArtifact(
-                         final Bundle bundle, final String relativeName ) {
+                         final ArtifactSource bundle, final String relativeName ) {
         super(bundle, relativeName);
 
     }

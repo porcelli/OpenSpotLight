@@ -93,7 +93,7 @@ public class SLMetadataImpl implements SLMetadata {
      */
     public SLMetaNodeType findMetaNodeType( final String typeName ) throws SLGraphSessionException {
         try {
-            final StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
+            final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types//*");
             StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
             final SLPersistentQuery query = this.treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
@@ -113,7 +113,7 @@ public class SLMetadataImpl implements SLMetadata {
      */
     public SLMetaNodeType findMetaNodeTypeByDescription( final String description ) throws SLGraphSessionException {
         try {
-            final StringBuilder statement = new StringBuilder("//osl/metadata/types//*");
+            final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types//*");
             StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description, "']");
             final SLPersistentQuery query = this.treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
@@ -142,7 +142,7 @@ public class SLMetadataImpl implements SLMetadata {
     public SLMetaLinkType getMetaLinkType( final String name ) throws SLGraphSessionException {
         try {
             final StringBuilder statement = new StringBuilder();
-            statement.append("//osl/metadata/links/").append(name);
+            statement.append(treeSession.getXPathRootPath() + "/metadata/links/").append(name);
             final SLPersistentQuery query = this.treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             SLMetaLinkType metaLinkType = null;
@@ -161,7 +161,7 @@ public class SLMetadataImpl implements SLMetadata {
     public SLMetaLinkType getMetaLinkTypeByDescription( final String description ) throws SLGraphSessionException {
         try {
             final StringBuilder statement = new StringBuilder();
-            statement.append("//osl/metadata/links/*");
+            statement.append(treeSession.getXPathRootPath() + "/metadata/links/*");
             StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description, "']");
             final SLPersistentQuery query = this.treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
@@ -182,7 +182,7 @@ public class SLMetadataImpl implements SLMetadata {
     public Collection<SLMetaLinkType> getMetaLinkTypes() throws SLGraphSessionException {
         try {
             final Collection<SLMetaLinkType> metaLinkTypes = new ArrayList<SLMetaLinkType>();
-            final StringBuilder statement = new StringBuilder("//osl/metadata/links/*");
+            final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/links/*");
             final SLPersistentQuery query = this.treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
             final Collection<SLPersistentNode> linkTypeNodes = result.getNodes();
@@ -210,7 +210,7 @@ public class SLMetadataImpl implements SLMetadata {
     public Collection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode ) throws SLGraphSessionException {
         try {
             final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
-            final StringBuilder statement = new StringBuilder("//osl/metadata/types");
+            final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types");
             if (recursiveMode.equals(RECURSIVE)) {
                 statement.append("//*");
             } else {

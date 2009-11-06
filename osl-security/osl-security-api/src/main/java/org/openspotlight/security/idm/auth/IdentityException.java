@@ -46,82 +46,55 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.security.idm.auth;
 
-package org.openspotlight.federation.data.impl;
-
-import net.jcip.annotations.ThreadSafe;
-
-import org.openspotlight.federation.data.InstanceMetadata;
-import org.openspotlight.federation.data.StaticMetadata;
+import java.security.GeneralSecurityException;
 
 /**
- * This bundle class is used to load the file system artifacts using the DNA
- * FileSystem Connector.
+ * This exception is thrown by the {@link IdentityManager} instances. This exception describes a identity related problem.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * @author porcelli
  */
-@ThreadSafe
-@StaticMetadata(propertyNames = { "active", "initialLookup", "user", "password" }, propertyTypes = {
-		Boolean.class, String.class, String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-		BundleProcessorType.class, Group.class, StreamArtifact.class,
-		CustomArtifact.class, ArtifactMapping.class })
-public class DnaSvnBundle extends Bundle {
+public class IdentityException extends GeneralSecurityException {
 
-	private static final String PASSWORD = "password"; //$NON-NLS-1$
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -5853165940667412282L;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6055285487792875923L;
+    /**
+     * Instantiates a new identity exception.
+     */
+    public IdentityException() {
+        super();
+    }
 
-	private static final String USER = "user"; //$NON-NLS-1$
+    /**
+     * Instantiates a new identity exception.
+     * 
+     * @param message the message
+     */
+    public IdentityException(
+                              final String message ) {
+        super(message);
+    }
 
-	private final InstanceMetadata instanceMetadata;
+    /**
+     * Instantiates a new identity exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public IdentityException(
+                              final String message, final Throwable cause ) {
+        super(message, cause);
+    }
 
-	/**
-	 * creates a bundle inside this project.
-	 * 
-	 * @param project
-	 * @param name
-	 */
-	public DnaSvnBundle(final Group project, final String name) {
-		super(project, name);
-		this.instanceMetadata = super.getInstanceMetadata();
-	}
-
-	/**
-	 * 
-	 * @return the password
-	 */
-	public String getPassword() {
-		return this.instanceMetadata.getProperty(PASSWORD);
-	}
-
-	/**
-	 * 
-	 * @return user name
-	 */
-	public String getUser() {
-		return this.instanceMetadata.getProperty(USER);
-	}
-
-	/**
-	 * Sets the password
-	 * 
-	 * @param password
-	 */
-	public void setPassword(final String password) {
-		this.instanceMetadata.setProperty(PASSWORD, password);
-	}
-
-	/**
-	 * Sets username
-	 * 
-	 * @param user
-	 */
-	public void setUser(final String user) {
-		this.instanceMetadata.setProperty(USER, user);
-	}
-
+    /**
+     * Instantiates a new identity exception.
+     * 
+     * @param cause the cause
+     */
+    public IdentityException(
+                              final Throwable cause ) {
+        super(cause);
+    }
 }

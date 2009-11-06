@@ -5,7 +5,7 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import java.util.Arrays;
 
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
@@ -32,7 +32,7 @@ public class OslJob implements Job {
 
         try {
             final Configuration configuration = manager.load(LazyType.LAZY);
-            final Bundle bundle = manager.findNodeByUuidAndVersion(configuration, Bundle.class, bundleId, versionId);
+            final ArtifactSource bundle = manager.findNodeByUuidAndVersion(configuration, ArtifactSource.class, bundleId, versionId);
 
             bundleProcessorManager.processBundles(Arrays.asList(bundle));
         } catch (final Exception e) {

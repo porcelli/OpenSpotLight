@@ -6,7 +6,9 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -22,15 +24,17 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
+import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
+import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.PreferedType;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 /**
@@ -214,10 +218,10 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		/**
 		 * {@inheritDoc}
 		 */
-		public byte[] loadArtifactOrReturnNullToIgnore(final Bundle bundle,
+		public byte[] loadArtifactOrReturnNullToIgnore(final ArtifactSource bundle,
 				final ArtifactMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
-			final DbBundle dbBundle = (DbBundle) bundle;
+			final DbArtifactSource dbBundle = (DbArtifactSource) bundle;
 
 			final StringTokenizer tok = new StringTokenizer(artifactName, "/"); //$NON-NLS-1$
 			final int numberOfTokens = tok.countTokens();
@@ -473,11 +477,11 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void threadExecutionAboutToStart(final Bundle bundle,
+		public void threadExecutionAboutToStart(final ArtifactSource bundle,
 				final ArtifactMapping mapping,
 				final GlobalExecutionContext globalExecutionContext) {
 			try {
-				final DbBundle dbBundle = (DbBundle) bundle;
+				final DbArtifactSource dbBundle = (DbArtifactSource) bundle;
 				this.conn = createConnection(dbBundle);
 			} catch (final Exception e) {
 				logAndReturnNew(e, ConfigurationException.class);
@@ -488,7 +492,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void threadExecutionFinished(final Bundle bundle,
+		public void threadExecutionFinished(final ArtifactSource bundle,
 				final ArtifactMapping mapping,
 				final GlobalExecutionContext globalExecutionContext) {
 			try {
@@ -565,12 +569,12 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		/**
 		 * {@inheritDoc}
 		 */
-		public Set<String> getAllArtifactNames(final Bundle bundle,
+		public Set<String> getAllArtifactNames(final ArtifactSource bundle,
 				final ArtifactMapping mapping) throws ConfigurationException {
-			if (!(bundle instanceof DbBundle)) {
+			if (!(bundle instanceof DbArtifactSource)) {
 				return emptySet();
 			}
-			final DbBundle dbBundle = (DbBundle) bundle;
+			final DbArtifactSource dbBundle = (DbArtifactSource) bundle;
 			try {
 				Connection conn = null;
 				final Set<String> loadedNames = new HashSet<String>();
@@ -630,12 +634,12 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public Integer withThreadPoolSize(final Bundle bundle) {
+		public Integer withThreadPoolSize(final ArtifactSource bundle) {
 			final Integer defaultValue = super.withThreadPoolSize(bundle);
-			if (!(bundle instanceof DbBundle)) {
+			if (!(bundle instanceof DbArtifactSource)) {
 				return defaultValue;
 			}
-			final DbBundle dbBundle = (DbBundle) bundle;
+			final DbArtifactSource dbBundle = (DbArtifactSource) bundle;
 			final Integer maxConnections = dbBundle.getMaxConnections();
 			if ((maxConnections != null)
 					&& (maxConnections.compareTo(defaultValue) < 0)) {
@@ -691,7 +695,7 @@ public class DatabaseStreamLoader extends AbstractArtifactLoader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected String fixMapping(final String mapString, final Bundle bundle,
+	protected String fixMapping(final String mapString, final ArtifactSource bundle,
 			final ArtifactMapping mapping) {
 		return mapping.getRelative() + mapString;
 	}

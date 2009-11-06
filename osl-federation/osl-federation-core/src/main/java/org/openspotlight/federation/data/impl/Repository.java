@@ -57,151 +57,143 @@ import java.util.Set;
 
 import net.jcip.annotations.ThreadSafe;
 
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.InstanceMetadata;
 import org.openspotlight.federation.data.StaticMetadata;
 
 /**
- * A repository represents a group of projects. There's some properties that can
- * reflect on project processing such as number or threads for processing this
- * repository.
+ * A repository represents a group of projects. There's some properties that can reflect on project processing such as number or
+ * threads for processing this repository.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings( "unchecked" )
 @ThreadSafe
-@StaticMetadata(propertyNames = { "active" }, propertyTypes = { Boolean.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = Configuration.class, validChildrenTypes = Group.class)
+@StaticMetadata( propertyNames = {"active"}, propertyTypes = {Boolean.class}, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = Configuration.class, validChildrenTypes = Group.class )
 public final class Repository implements ConfigurationNode {
-    
-    private static final String ACTIVE = "active"; //$NON-NLS-1$
-    
+
+    private static final String    ACTIVE           = "active";             //$NON-NLS-1$
+
     private final InstanceMetadata instanceMetadata;
-    
-    private static final long serialVersionUID = -3606246260530743008L;
-    
+
+    private static final long      serialVersionUID = -3606246260530743008L;
+
     /**
      * Creates a repository within a configuration.
      * 
      * @param configuration
      * @param name
      */
-    public Repository(final Configuration configuration, final String name) {
+    public Repository(
+                       final Configuration configuration, final String name ) {
         this.instanceMetadata = createWithKeyProperty(this, configuration, name);
         checkCondition("noRepository", //$NON-NLS-1$
-                configuration.getRepositoryByName(name) == null);
+                       configuration.getRepositoryByName(name) == null);
+        checkCondition("validJcrName", name.matches(SharedConstants.VALID_JCR_NODE_NAME_REGEXP));
         configuration.getInstanceMetadata().addChild(this);
-        
+
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public final int compareTo(final ConfigurationNode o) {
+    public final int compareTo( final ConfigurationNode o ) {
         return this.instanceMetadata.compare(this, o);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
-    public final boolean equals(final Object obj) {
+    public final boolean equals( final Object obj ) {
         return this.instanceMetadata.equals(obj);
     }
-    
+
     /**
      * @return active property
      */
     public final Boolean getActive() {
         return this.instanceMetadata.getProperty(ACTIVE);
     }
-    
+
     /**
      * @return the configuration (parent node)
      */
     public final Configuration getConfiguration() {
         return this.instanceMetadata.getParent(Configuration.class);
     }
-    
+
     /**
-     * 
-     * {@inheritDoc}
-     */
-    public final InstanceMetadata getInstanceMetadata() {
-        return this.instanceMetadata;
-    }
-    
-    /**
-     * The name, in this case, is a unique identifier (with parent node) to this
-     * node.
-     * 
-     * @return the node name
-     */
-    public String getName() {
-        return (String) this.instanceMetadata.getKeyPropertyValue();
-    }
-    
-    /**
-     * 
      * @param name
      * @return a project by its name
      */
-    public final Group getGroupByName(final String name) {
+    public final Group getGroupByName( final String name ) {
         return this.instanceMetadata.getChildByKeyValue(Group.class, name);
     }
-    
+
     /**
-     * 
      * @return all valid names existing projects inside this repository
      */
     public final Set<String> getGroupNames() {
-        return (Set<String>) this.instanceMetadata
-                .getKeyFromChildrenOfTypes(Group.class);
+        return (Set<String>)this.instanceMetadata.getKeyFromChildrenOfTypes(Group.class);
     }
-    
+
     /**
-     * 
      * @return all projects inside this repository
      */
     public final Collection<Group> getGroups() {
         return this.instanceMetadata.getChildrensOfType(Group.class);
     }
-    
+
     /**
+     * {@inheritDoc}
+     */
+    public final InstanceMetadata getInstanceMetadata() {
+        return this.instanceMetadata;
+    }
+
+    /**
+     * The name, in this case, is a unique identifier (with parent node) to this node.
      * 
+     * @return the node name
+     */
+    public String getName() {
+        return (String)this.instanceMetadata.getKeyPropertyValue();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public final int hashCode() {
         return this.instanceMetadata.hashCode();
     }
-    
+
     /**
      * removes a given project from this repository.
      * 
      * @param project
      */
-    public final void removeGroup(final Group project) {
+    public final void removeGroup( final Group project ) {
         this.instanceMetadata.removeChild(project);
     }
-    
+
     /**
      * Sets the active property.
      * 
      * @param active
      */
-    public final void setActive(final Boolean active) {
+    public final void setActive( final Boolean active ) {
         this.instanceMetadata.setProperty(ACTIVE, active);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     @Override
     public final String toString() {
         return this.instanceMetadata.toString();
     }
-    
+
 }

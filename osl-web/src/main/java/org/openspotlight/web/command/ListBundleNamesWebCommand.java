@@ -11,7 +11,7 @@ import javax.jcr.Session;
 import net.sf.json.JSONArray;
 
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
@@ -33,9 +33,9 @@ public class ListBundleNamesWebCommand implements WebCommand {
             final Session jcrSession = context.getJcrSession();
             final ConfigurationManager manager = new JcrSessionConfigurationManager(jcrSession);
             final Configuration configuration = manager.load(LazyType.LAZY);
-            final Set<Bundle> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, Bundle.class);
+            final Set<ArtifactSource> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
             final Set<String> allBundlesAsString = new HashSet<String>();
-            for (final Bundle b : allBundles) {
+            for (final ArtifactSource b : allBundles) {
                 allBundlesAsString.add(b.getName());
             }
             final JSONArray allBundlesAsJson = JSONArray.fromObject(allBundlesAsString);

@@ -46,61 +46,19 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.federation.data.impl;
-
-import org.openspotlight.federation.data.InstanceMetadata;
-import org.openspotlight.federation.data.StaticMetadata;
+package org.openspotlight.security.idm;
 
 /**
- * Bundle class for java processing purposes
+ * The Common User Interface. This class is used to authenticate users.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * @author porcelli
  */
-@StaticMetadata(propertyNames = { "active", "initialLookup",
-        "virtualMachineVersion" }, propertyTypes = { Boolean.class,
-        String.class, String.class }, keyPropertyName = "name", keyPropertyType = String.class, validParentTypes = { Group.class }, validChildrenTypes = {
-        Group.class, BundleProcessorType.class, StreamArtifact.class,
-        CustomArtifact.class, ArtifactMapping.class })
-public class JavaBundle extends Bundle {
-    
+public interface User {
+
     /**
+     * Gets the id (unique identifier).
      * 
+     * @return the id
      */
-    private static final long serialVersionUID = -5833154085064816324L;
-    
-    private static final String VIRTUAL_MACHINE_VERSION = "virtualMachineVersion"; //$NON-NLS-1$
-    
-    private final InstanceMetadata instanceMetadata;
-    
-    /**
-     * Constructor to create a java bundle inside a project.
-     * 
-     * @param project
-     * @param name
-     */
-    public JavaBundle(final Group project, final String name) {
-        super(project, name);
-        this.instanceMetadata = super.getInstanceMetadata();
-    }
-    
-    /**
-     * 
-     * @return the virtual machine version
-     */
-    public String getVirtualMachineVersion() {
-        return this.instanceMetadata.getProperty(VIRTUAL_MACHINE_VERSION);
-    }
-    
-    /**
-     * Sets the virtual machine version.
-     * 
-     * @param virtualMachineVersion
-     */
-    public void setVirtualMachineVersion(final String virtualMachineVersion) {
-        this.instanceMetadata.setProperty(VIRTUAL_MACHINE_VERSION,
-                virtualMachineVersion);
-    }
-    
+    public String getId();
 }

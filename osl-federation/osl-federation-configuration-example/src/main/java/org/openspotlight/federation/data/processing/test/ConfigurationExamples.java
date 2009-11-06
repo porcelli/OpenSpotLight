@@ -52,16 +52,16 @@ package org.openspotlight.federation.data.processing.test;
 import java.io.File;
 
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbBundle;
-import org.openspotlight.federation.data.impl.DnaFileBundle;
-import org.openspotlight.federation.data.impl.DnaSvnBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
+import org.openspotlight.federation.data.impl.DnaFileArtifactSource;
+import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
 import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.JavaBundle;
+import org.openspotlight.federation.data.impl.JavaArtifactSource;
 import org.openspotlight.federation.data.impl.Repository;
 
 /**
@@ -79,7 +79,7 @@ public class ConfigurationExamples {
         final Group db2Project = new Group(db2Repository, "db2 Group");
         db2Project.setGraphRoot(Boolean.TRUE);
         db2Project.setActive(true);
-        final DbBundle db2Bundle = new DbBundle(db2Project, "db2 Connection");
+        final DbArtifactSource db2Bundle = new DbArtifactSource(db2Project, "db2 Connection");
         db2Bundle.setActive(true);
         db2Bundle.setUser("db2admin");
         db2Bundle.setPassword("db2admin");
@@ -116,7 +116,7 @@ public class ConfigurationExamples {
         final Group h2Project = new Group(h2Repository, "h2 Group");
         h2Project.setActive(true);
         h2Project.setGraphRoot(Boolean.TRUE);
-        final DbBundle h2Bundle = new DbBundle(h2Project, "H2 Connection");
+        final DbArtifactSource h2Bundle = new DbArtifactSource(h2Project, "H2 Connection");
         h2Bundle.setActive(true);
         h2Bundle.setUser("sa");
         h2Bundle.setMaxConnections(1);
@@ -148,7 +148,7 @@ public class ConfigurationExamples {
         final Group mysqlProject = new Group(mysqlRepository, "mysql Group");
         mysqlProject.setActive(true);
         mysqlProject.setGraphRoot(Boolean.TRUE);
-        final DbBundle mysqlBundle = new DbBundle(mysqlProject, "mysql Connection");
+        final DbArtifactSource mysqlBundle = new DbArtifactSource(mysqlProject, "mysql Connection");
         mysqlBundle.setActive(true);
         mysqlBundle.setUser("root");
         mysqlBundle.setMaxConnections(1);
@@ -181,7 +181,7 @@ public class ConfigurationExamples {
         oracleProject.setActive(true);
         oracleProject.setGraphRoot(Boolean.TRUE);
 
-        final DbBundle oracleBundle = new DbBundle(oracleProject, "oracle Connection");
+        final DbArtifactSource oracleBundle = new DbArtifactSource(oracleProject, "oracle Connection");
         oracleBundle.setActive(true);
         oracleBundle.setUser("HR");
         oracleBundle.setPassword("jakadeed");
@@ -230,7 +230,7 @@ public class ConfigurationExamples {
         final Group oslCommonsProject = new Group(oslRootProject, "OSL Commons Library");
         oslCommonsProject.setActive(true);
         oslCommonsProject.setGraphRoot(Boolean.TRUE);
-        final Bundle oslCommonsJavaSourceBundle = new Bundle(oslCommonsProject, "java source for OSL Bundle");
+        final ArtifactSource oslCommonsJavaSourceBundle = new ArtifactSource(oslCommonsProject, "java source for OSL Bundle");
         oslCommonsJavaSourceBundle.setActive(true);
         oslCommonsJavaSourceBundle.setInitialLookup(basePath);
         final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(oslCommonsJavaSourceBundle, "osl-common/");
@@ -245,7 +245,7 @@ public class ConfigurationExamples {
         oslFederationProject.setActive(true);
 
         oslFederationProject.setGraphRoot(Boolean.TRUE);
-        final Bundle oslFederationJavaSourceBundle = new JavaBundle(oslFederationProject, "java source for OSL Bundle");
+        final ArtifactSource oslFederationJavaSourceBundle = new JavaArtifactSource(oslFederationProject, "java source for OSL Bundle");
         oslFederationJavaSourceBundle.setActive(true);
         final BundleProcessorType oslFederationProcessor = new BundleProcessorType(oslFederationJavaSourceBundle,
                                                                                    "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
@@ -262,7 +262,7 @@ public class ConfigurationExamples {
         final Group oslGraphProject = new Group(oslRootProject, "OSL Graph Library");
         oslGraphProject.setActive(true);
         oslGraphProject.setGraphRoot(Boolean.TRUE);
-        final Bundle oslGraphJavaSourceBundle = new JavaBundle(oslGraphProject, "java source for OSL Bundle");
+        final ArtifactSource oslGraphJavaSourceBundle = new JavaArtifactSource(oslGraphProject, "java source for OSL Bundle");
         oslGraphJavaSourceBundle.setActive(true);
         oslGraphJavaSourceBundle.setInitialLookup(basePath);
         final ArtifactMapping oslGraphArtifactMapping = new ArtifactMapping(oslGraphJavaSourceBundle, "osl-graph/");
@@ -287,7 +287,7 @@ public class ConfigurationExamples {
 
         final Group oslCommonsProject = new Group(oslRootProject, "OSL Commons Library");
         oslCommonsProject.setActive(true);
-        final Bundle oslCommonsJavaSourceBundle = new DnaFileBundle(oslCommonsProject, "java source for OSL Bundle");
+        final ArtifactSource oslCommonsJavaSourceBundle = new DnaFileArtifactSource(oslCommonsProject, "java source for OSL Bundle");
         oslCommonsJavaSourceBundle.setActive(true);
         oslCommonsJavaSourceBundle.setInitialLookup(basePath);
         final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(oslCommonsJavaSourceBundle, "osl-common/");
@@ -301,7 +301,7 @@ public class ConfigurationExamples {
 
         final Group oslGraphProject = new Group(oslRootProject, "OSL Graph Library");
         oslGraphProject.setActive(true);
-        final Bundle oslGraphJavaSourceBundle = new JavaBundle(oslGraphProject, "java source for OSL Bundle");
+        final ArtifactSource oslGraphJavaSourceBundle = new JavaArtifactSource(oslGraphProject, "java source for OSL Bundle");
         oslGraphJavaSourceBundle.setActive(true);
         oslGraphJavaSourceBundle.setInitialLookup(basePath);
         final ArtifactMapping oslGraphArtifactMapping = new ArtifactMapping(oslGraphJavaSourceBundle, "osl-graph/");
@@ -325,7 +325,7 @@ public class ConfigurationExamples {
         oslCommonsProject.setGraphRoot(Boolean.TRUE);
 
         oslCommonsProject.setActive(true);
-        final DnaSvnBundle bundle = new DnaSvnBundle(oslCommonsProject, "Svn bundle");
+        final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource(oslCommonsProject, "Svn bundle");
 
         bundle.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
         bundle.setUser("anonymous");
@@ -350,7 +350,7 @@ public class ConfigurationExamples {
         postgresqlProject.setActive(true);
         postgresqlProject.setGraphRoot(Boolean.TRUE);
 
-        final DbBundle postgresqlBundle = new DbBundle(postgresqlProject, "postgresql Connection");
+        final DbArtifactSource postgresqlBundle = new DbArtifactSource(postgresqlProject, "postgresql Connection");
         postgresqlBundle.setActive(true);
         postgresqlBundle.setUser("postgres");
         postgresqlBundle.setPassword("postgres");
@@ -387,7 +387,7 @@ public class ConfigurationExamples {
         final Group sqlserverProject = new Group(sqlserverRepository, "sqlserver Group");
         sqlserverProject.setActive(true);
         sqlserverProject.setGraphRoot(Boolean.TRUE);
-        final DbBundle sqlserverBundle = new DbBundle(sqlserverProject, "sqlserver Connection");
+        final DbArtifactSource sqlserverBundle = new DbArtifactSource(sqlserverProject, "sqlserver Connection");
         sqlserverBundle.setActive(true);
         sqlserverBundle.setUser("sa");
         sqlserverBundle.setMaxConnections(1);

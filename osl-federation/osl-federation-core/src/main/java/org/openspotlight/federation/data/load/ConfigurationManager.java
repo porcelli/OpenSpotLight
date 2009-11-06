@@ -65,6 +65,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.LazyType;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
@@ -252,7 +253,7 @@ public interface ConfigurationManager {
     /**
      * The default OpenSpotlight prefix used on Jcr.
      */
-    public static final String DEFAULT_OSL_PREFIX = "osl"; //$NON-NLS-1$
+    public static final String DEFAULT_OSL_PREFIX = SharedConstants.DEFAULT_JCR_ROOT_NAME; //$NON-NLS-1$
 
     /**
      * Close resources.

@@ -57,7 +57,7 @@ import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 
 /**
  * Artifact loader is the interface witch abstract the Artifact loading stuff, such as reading a Artifact from its source and
@@ -196,6 +196,6 @@ public interface ArtifactLoader {
      * @return the loading count
      * @throws ConfigurationException the configuration exception
      */
-    public ArtifactProcessingCount loadArtifactsFromMappings( Bundle bundle ) throws ConfigurationException;
+    public ArtifactProcessingCount loadArtifactsFromMappings( ArtifactSource bundle ) throws ConfigurationException;
 
 }

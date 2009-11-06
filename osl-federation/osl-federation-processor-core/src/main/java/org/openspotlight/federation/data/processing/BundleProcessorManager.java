@@ -76,9 +76,11 @@ import org.openspotlight.common.MutableType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
+import org.openspotlight.federation.data.impl.BundleProcessorType;
 import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.impl.CustomArtifact;
+import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.ConfigurationManager;
@@ -89,13 +91,15 @@ import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingAc
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingStartAction;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
+import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.idm.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BundleProcessorManager} is the class reposable to get an {@link Configuration} and to process all {@link Artifact
- * artifacts} on this {@link Configuration}. The {@link BundleProcessorManager} should get the {@link Bundle bundle's}
+ * artifacts} on this {@link Configuration}. The {@link BundleProcessorManager} should get the {@link ArtifactSource bundle's}
  * {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each {@link BundleProcessorType type}
  * . After all {@link BundleProcessor processors} was found, the {@link BundleProcessorManager} should distribute the processing
  * job in some threads obeying the {@link Configuration#getNumberOfParallelThreads() number of threads} configured for this
@@ -426,7 +430,7 @@ public final class BundleProcessorManager {
      * @param excludedArtifacts the excluded artifacts
      * @param modifiedArtifacts the modified artifacts
      */
-    private static <T extends Artifact> void findArtifactsByChangeType( final Bundle bundle,
+    private static <T extends Artifact> void findArtifactsByChangeType( final ArtifactSource bundle,
                                                                         final Set<T> allValidArtifacts,
                                                                         final Set<T> addedArtifacts,
                                                                         final Set<T> excludedArtifacts,
@@ -457,7 +461,7 @@ public final class BundleProcessorManager {
     }
 
     /**
-     * This method looks for a {@link BundleProcessor} inside the {@link Bundle} configuration.
+     * This method looks for a {@link BundleProcessor} inside the {@link ArtifactSource} configuration.
      * 
      * @param bundle the bundle
      * @return a set of {@link BundleProcessor}
@@ -465,7 +469,7 @@ public final class BundleProcessorManager {
      * @throws IllegalAccessException the illegal access exception
      * @throws ClassNotFoundException the class not found exception
      */
-    private static Set<BundleProcessor<?>> findConfiguredBundleProcessors( final Bundle bundle )
+    private static Set<BundleProcessor<?>> findConfiguredBundleProcessors( final ArtifactSource bundle )
         throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         final Set<String> typeNames = bundle.getAllProcessorTypeNames();
         final Set<BundleProcessor<?>> processors = new HashSet<BundleProcessor<?>>();
@@ -488,6 +492,8 @@ public final class BundleProcessorManager {
     /** The logger. */
     private final Logger                       logger = LoggerFactory.getLogger(this.getClass());
 
+    private final AuthenticatedUser            authenticatedUser;
+
     /**
      * Constructor to initialize jcr connection provider.
      * 
@@ -495,10 +501,13 @@ public final class BundleProcessorManager {
      * @param configurationManagerProvider the configuration manager provider
      */
     public BundleProcessorManager(
-                                   final JcrConnectionProvider provider,
+                                   final AuthenticatedUser authenticatedUser, final JcrConnectionProvider provider,
                                    final ConfigurationManagerProvider configurationManagerProvider ) {
+        checkNotNull("authenticatedUser", authenticatedUser); //$NON-NLS-1$
         checkNotNull("provider", provider); //$NON-NLS-1$
         checkNotNull("configurationManagerProvider", configurationManagerProvider); //$NON-NLS-1$
+        this.authenticatedUser = authenticatedUser;
+
         this.provider = provider;
         this.configurationManagerProvider = configurationManagerProvider;
         try {
@@ -528,7 +537,7 @@ public final class BundleProcessorManager {
      * @throws BundleProcessingFatalException the bundle processing fatal exception
      */
     @SuppressWarnings( "unchecked" )
-    private <T extends Artifact> CreateProcessorActionsResult<T> createProcessorActions( final Bundle bundle,
+    private <T extends Artifact> CreateProcessorActionsResult<T> createProcessorActions( final ArtifactSource bundle,
                                                                                          final Set<T> allValidArtifacts,
                                                                                          final Set<T> addedArtifacts,
                                                                                          final Set<T> excludedArtifacts,
@@ -568,8 +577,8 @@ public final class BundleProcessorManager {
                                                                                          copyOfnotProcessedArtifacts,
                                                                                          copyOfalreadyProcessedArtifacts,
                                                                                          MutableType.IMMUTABLE);
-            startingGraphContext = new BundleProcessingContext(this.graph.openSession(), this.provider.openSession(),
-                                                               bundle.getRootGroup(),
+            startingGraphContext = new BundleProcessingContext(this.graph.openSession(this.authenticatedUser),
+                                                               this.provider.openSession(), bundle.getRootGroup(),
                                                                this.configurationManagerProvider.getNewInstance());
             startingGraphContext.processStarted();
             final ProcessingStartAction start = processor.globalProcessingStarted(mutableGroup, startingGraphContext);
@@ -602,7 +611,7 @@ public final class BundleProcessorManager {
                                                                                                               copyOfnotProcessedArtifacts.size());
             for (final T targetArtifact : copyOfnotProcessedArtifacts) {
                 final BundleProcessingContext graphContext = new BundleProcessingContext(
-                                                                                         this.graph.openSession(),
+                                                                                         this.graph.openSession(this.authenticatedUser),
                                                                                          this.provider.openSession(),
                                                                                          bundle.getRootGroup(),
                                                                                          this.configurationManagerProvider.getNewInstance());
@@ -639,7 +648,7 @@ public final class BundleProcessorManager {
     private <T extends Artifact> void groupProcessingActionsByArtifactType( final MappedProcessor<T> mappedProcessor,
                                                                             final List<Callable<ProcessingAction>> allProcessActions,
                                                                             final List<FinalizationContext<? extends Artifact>> finalizationContexts,
-                                                                            final Bundle bundle,
+                                                                            final ArtifactSource bundle,
                                                                             final Set<BundleProcessor<?>> processors )
         throws BundleProcessingFatalException {
 
@@ -676,14 +685,14 @@ public final class BundleProcessorManager {
     }
 
     /**
-     * Start to process this {@link Bundle} and to distribute all the processing jobs for its {@link BundleProcessor configured
-     * processors}.
+     * Start to process this {@link ArtifactSource} and to distribute all the processing jobs for its {@link BundleProcessor
+     * configured processors}.
      * 
      * @param bundles the bundles
      * @throws BundleProcessingFatalException if a fatal error occurs.
      */
     @SuppressWarnings( "boxing" )
-    public synchronized void processBundles( final Collection<Bundle> bundles ) throws BundleProcessingFatalException {
+    public synchronized void processBundles( final Collection<ArtifactSource> bundles ) throws BundleProcessingFatalException {
         checkNotNull("bundles", bundles); //$NON-NLS-1$
         checkNotNull("graph", this.graph); //$NON-NLS-1$
         final ConfigurationManager configurationManager = this.configurationManagerProvider.getNewInstance();
@@ -692,16 +701,16 @@ public final class BundleProcessorManager {
             final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
             final List<FinalizationContext<? extends Artifact>> finalizationContexts = new ArrayList<FinalizationContext<? extends Artifact>>(
                                                                                                                                               bundles.size());
-            for (final Bundle targetBundle : bundles) {
+            for (final ArtifactSource targetBundle : bundles) {
                 if (!targetBundle.getActive()) {
                     continue;
                 }
                 final Configuration configuration = configurationManager.load(LazyType.LAZY);
-                final Bundle bundle = configurationManager.findNodeByUuidAndVersion(
-                                                                                    configuration,
-                                                                                    Bundle.class,
-                                                                                    targetBundle.getInstanceMetadata().getSavedUniqueId(),
-                                                                                    null);//FIXME set version
+                final ArtifactSource bundle = configurationManager.findNodeByUuidAndVersion(
+                                                                                            configuration,
+                                                                                            ArtifactSource.class,
+                                                                                            targetBundle.getInstanceMetadata().getSavedUniqueId(),
+                                                                                            null);//FIXME set version
                 final Set<BundleProcessor<?>> processors = BundleProcessorManager.findConfiguredBundleProcessors(bundle);
                 for (final MappedProcessor<? extends Artifact> mappedProcessor : processorRegistry) {
                     this.groupProcessingActionsByArtifactType(mappedProcessor, allProcessActions, finalizationContexts, bundle,

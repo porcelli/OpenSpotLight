@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbBundle;
+import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.load.db.ScriptType;
 
 @SuppressWarnings("all")
@@ -18,12 +18,12 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DbBundle createValidConfigurationWithMappings() {
+	protected DbArtifactSource createValidConfigurationWithMappings() {
 		final Configuration configuration = createSqlServerDbConfiguration();
-		return (DbBundle) configuration.getRepositoryByName(
+		return (DbArtifactSource) configuration.getRepositoryByName(
 				"sqlserver Repository") //$NON-NLS-1$
 				.getGroupByName("sqlserver Group") //$NON-NLS-1$
-				.getBundleByName("sqlserver Connection"); //$NON-NLS-1$
+				.getArtifactSourceByName("sqlserver Connection"); //$NON-NLS-1$
 	}
 
 	@Override

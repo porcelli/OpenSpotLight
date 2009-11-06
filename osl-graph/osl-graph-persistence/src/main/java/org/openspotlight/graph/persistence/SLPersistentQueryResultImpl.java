@@ -56,75 +56,75 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 
+import org.openspotlight.common.SharedConstants;
+
 /**
  * The Class SLPersistentQueryResultImpl.
  * 
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentQueryResultImpl implements SLPersistentQueryResult {
-	
-	/** The tree session. */
-	private SLPersistentTreeSession treeSession;
-	
-	/** The query result. */
-	private QueryResult queryResult;
-	
-	/**
-	 * Instantiates a new sL persistent query result impl.
-	 * 
-	 * @param treeSession the tree session
-	 * @param queryResult the query result
-	 */
-	public SLPersistentQueryResultImpl(SLPersistentTreeSession treeSession, QueryResult queryResult) {
-		this.treeSession = treeSession;
-		this.queryResult = queryResult;
-	}
-	
-	/** The persistent nodes. */
-	private Collection<SLPersistentNode> persistentNodes;
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentQueryResult#getNodes()
-	 */
-	public Collection<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
-		if (persistentNodes == null) {
-			try {
-				persistentNodes = new ArrayList<SLPersistentNode>();
-				NodeIterator iter = queryResult.getNodes();
-				persistentNodes = new ArrayList<SLPersistentNode>();
-				while (iter.hasNext()) {
-					Node node = iter.nextNode();
-					String[] names = node.getPath().split("/");
-					SLPersistentNode persistentNode = null;
-					for (int i = 0; i < names.length; i++) {
-						if (names[i].trim().equals("")) continue;
-						if (persistentNode == null && names[i].equals("osl")) {
-							persistentNode = treeSession.getRootNode();
-						}
-						else {
-							persistentNode = persistentNode.getNode(names[i]);
-						}
-					}
-					persistentNodes.add(persistentNode);
-				}
-			}
-			catch (Exception e) {
-				throw new SLPersistentTreeSessionException("Error on attempt to retrieve nodes from persistent query result.", e);
-			}
-		}
-		return persistentNodes;
-	}
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentQueryResult#getRowCount()
-	 */
-	public int getRowCount() throws SLPersistentTreeSessionException {
-		try {
-			return (int) queryResult.getNodes().getSize();
-		}
-		catch (RepositoryException e) {
-			throw new SLPersistentTreeSessionException("Error on attempt to retrieve query result size.", e);
-		}
-	}
+    /** The tree session. */
+    private SLPersistentTreeSession treeSession;
+
+    /** The query result. */
+    private QueryResult             queryResult;
+
+    /**
+     * Instantiates a new sL persistent query result impl.
+     * 
+     * @param treeSession the tree session
+     * @param queryResult the query result
+     */
+    public SLPersistentQueryResultImpl(
+                                        SLPersistentTreeSession treeSession, QueryResult queryResult ) {
+        this.treeSession = treeSession;
+        this.queryResult = queryResult;
+    }
+
+    /** The persistent nodes. */
+    private Collection<SLPersistentNode> persistentNodes;
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentQueryResult#getNodes()
+     */
+    public Collection<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
+        if (persistentNodes == null) {
+            try {
+                persistentNodes = new ArrayList<SLPersistentNode>();
+                NodeIterator iter = queryResult.getNodes();
+                persistentNodes = new ArrayList<SLPersistentNode>();
+                while (iter.hasNext()) {
+                    Node node = iter.nextNode();
+                    String[] names = node.getPath().split("/");
+                    SLPersistentNode persistentNode = null;
+                    for (int i = 2; i < names.length; i++) {
+                        if (names[i].trim().equals("")) continue;
+                        if (persistentNode == null) {
+                            persistentNode = treeSession.getRootNode();
+                        } else {
+                            persistentNode = persistentNode.getNode(names[i]);
+                        }
+                    }
+                    persistentNodes.add(persistentNode);
+                }
+            } catch (Exception e) {
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve nodes from persistent query result.", e);
+            }
+        }
+        return persistentNodes;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentQueryResult#getRowCount()
+     */
+    public int getRowCount() throws SLPersistentTreeSessionException {
+        try {
+            return (int)queryResult.getNodes().getSize();
+        } catch (RepositoryException e) {
+            throw new SLPersistentTreeSessionException("Error on attempt to retrieve query result size.", e);
+        }
+    }
 }

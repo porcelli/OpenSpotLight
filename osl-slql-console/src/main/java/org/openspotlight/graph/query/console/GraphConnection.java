@@ -89,7 +89,7 @@ public class GraphConnection {
 
         this.factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionDataImpl(realServerName, userName, passw,
                                                                                               port));
-        return this.factory.createRemoteGraphSession();
+        return this.factory.createRemoteGraphSession(userName, passw);
 
     }
 

@@ -93,6 +93,10 @@ import org.openspotlight.graph.test.domain.NamePredicate;
 import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 /**
  * The Class SLGraphTest.
@@ -103,13 +107,15 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 public class SLGraphTest {
 
     /** The Constant LOGGER. */
-    static final Logger           LOGGER = Logger.getLogger(SLGraphTest.class);
+    static final Logger              LOGGER = Logger.getLogger(SLGraphTest.class);
 
     /** The graph. */
-    private static SLGraph        graph;
+    private static SLGraph           graph;
 
     /** The session. */
-    private static SLGraphSession session;
+    private static SLGraphSession    session;
+
+    private static AuthenticatedUser user;
 
     /**
      * Finish.
@@ -126,9 +132,13 @@ public class SLGraphTest {
      * @throws AbstractFactoryException the abstract factory exception
      */
     @BeforeClass
-    public static void init() throws AbstractFactoryException {
+    public static void init() throws AbstractFactoryException, SLInvalidCredentialException, IdentityException {
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
     }
 
     /** The java class node. */
@@ -147,7 +157,7 @@ public class SLGraphTest {
     private SLLink         linkBoth;
 
     /**
-     *  Adds the add multiple link empty case.
+     * Adds the add multiple link empty case.
      */
     @Test
     public void addAddMultipleLinkEmptyCase() {
@@ -157,7 +167,7 @@ public class SLGraphTest {
             // empty --> add AB --> add AB
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -165,7 +175,7 @@ public class SLGraphTest {
             // empty --> add BA --> add BA
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -173,12 +183,15 @@ public class SLGraphTest {
             // empty --> add BOTH --> add BOTH
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -196,7 +209,7 @@ public class SLGraphTest {
             // existent AB --> add AB --> add NEW AB
             this.setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -205,7 +218,7 @@ public class SLGraphTest {
             // existent AB --> add BA --> add BA
             this.setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -214,13 +227,16 @@ public class SLGraphTest {
             // existent AB --> add BOTH --> add BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkAB);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -238,7 +254,7 @@ public class SLGraphTest {
             // existent BA --> add BA --> add NEW BA
             this.setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -247,7 +263,7 @@ public class SLGraphTest {
             // existent BA --> add AB --> add AB
             this.setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -256,13 +272,16 @@ public class SLGraphTest {
             // existent BA --> add BOTH --> add BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -280,7 +299,7 @@ public class SLGraphTest {
             // existent BOTH --> add AB --> add AB
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -289,7 +308,7 @@ public class SLGraphTest {
             // existent BOTH --> add BA --> add BA
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodMultipleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -298,13 +317,16 @@ public class SLGraphTest {
             // existent BOTH --> add BOTH --> add NEW BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodMultipleLink.class);
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodMultipleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -416,9 +438,9 @@ public class SLGraphTest {
      * @throws SLGraphException the SL graph exception
      */
     @Before
-    public void beforeTest() throws SLGraphException {
+    public void beforeTest() throws SLGraphException, SLInvalidCredentialException {
         if (session == null) {
-            session = graph.openSession();
+            session = graph.openSession(user);
         }
     }
 
@@ -457,11 +479,14 @@ public class SLGraphTest {
      */
     private void setUpEmptyLinkScenario() {
         try {
-            session.clear();
-            final SLNode root = session.createContext("1L").getRootNode();
+            this.session.clear();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
             this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -473,14 +498,15 @@ public class SLGraphTest {
      * @param linkClass the new up existent ab link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentABLinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
-        session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+    private void setUpExistentABLinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
+        this.session.clear();
+        final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
         this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 
         // empty --> add AB --> add AB
-        this.linkAB = session.addLink(linkClass, this.javaClassNode, this.javaMethodNode, false);
+        this.linkAB = this.session.addLink(linkClass, this.javaClassNode, this.javaMethodNode, false);
     }
 
     /**
@@ -489,14 +515,15 @@ public class SLGraphTest {
      * @param linkClass the new up existent ba link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentBALinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
-        session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+    private void setUpExistentBALinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
+        this.session.clear();
+        final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
         this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 
         // empty --> add BA --> add BA
-        this.linkBA = session.addLink(linkClass, this.javaMethodNode, this.javaClassNode, false);
+        this.linkBA = this.session.addLink(linkClass, this.javaMethodNode, this.javaClassNode, false);
     }
 
     /**
@@ -505,14 +532,15 @@ public class SLGraphTest {
      * @param linkClass the new up existent both link scenario
      * @throws SLGraphSessionException the SL graph session exception
      */
-    private void setUpExistentBothLinkScenario( final Class<? extends SLLink> linkClass ) throws SLGraphSessionException {
-        session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+    private void setUpExistentBothLinkScenario( final Class<? extends SLLink> linkClass )
+        throws SLGraphSessionException, SLInvalidCredentialException {
+        this.session.clear();
+        final SLNode root = this.session.createContext("1L").getRootNode();
         this.javaClassNode = root.addNode(JavaClassNode.class, "javaClassNode");
         this.javaMethodNode = root.addNode(JavaMethodNode.class, "javaMethodNode");
 
         // empty --> add BOTH --> add BOTH
-        this.linkBoth = session.addLink(linkClass, this.javaClassNode, this.javaMethodNode, true);
+        this.linkBoth = this.session.addLink(linkClass, this.javaClassNode, this.javaMethodNode, true);
     }
 
     /**
@@ -522,7 +550,7 @@ public class SLGraphTest {
     // ( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
     public void testAddAndGetNodeWithStrangeCharsOnName() {
         try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
             Assert.assertNotNull(javaClassNode1);
             final JavaClassNode javaClassNode2 = root1.getNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
@@ -530,6 +558,9 @@ public class SLGraphTest {
             Assert.assertEquals(javaClassNode1, javaClassNode2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -543,7 +574,7 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
 
             // add sub type, then add super type; sub type is supposed to be
             // kept ...
@@ -568,6 +599,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -583,7 +617,7 @@ public class SLGraphTest {
             // empty --> add AB --> add AB
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -591,7 +625,7 @@ public class SLGraphTest {
             // empty --> add BA --> add BA
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -599,11 +633,14 @@ public class SLGraphTest {
             // empty --> add BOTH --> add BOTH
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -621,7 +658,7 @@ public class SLGraphTest {
             // empty --> add AB --> add AB
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
@@ -629,7 +666,7 @@ public class SLGraphTest {
             // empty --> add BA --> add BA
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
@@ -637,12 +674,15 @@ public class SLGraphTest {
             // empty --> add BOTH --> add BOTH
             this.setUpEmptyLinkScenario();
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
                                   true);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -660,7 +700,7 @@ public class SLGraphTest {
             // existent AB --> add AB --> remains AB
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -669,7 +709,7 @@ public class SLGraphTest {
             // existent AB --> add BA --> add BA
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -678,12 +718,15 @@ public class SLGraphTest {
             // existent AB --> add BOTH --> add BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkAB);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -701,7 +744,7 @@ public class SLGraphTest {
             // existent AB --> add AB --> remains AB
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, false);
@@ -710,7 +753,7 @@ public class SLGraphTest {
             // existent AB --> add BA --> changes to BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, true);
@@ -719,13 +762,16 @@ public class SLGraphTest {
             // existent AB --> add BOTH --> changes to BOTH
             this.setUpExistentABLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
                                   true);
             Assert.assertEquals(linkBoth, this.linkAB);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -743,7 +789,7 @@ public class SLGraphTest {
             // existent BA --> add AB --> add AB
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -752,7 +798,7 @@ public class SLGraphTest {
             // existent BA --> add BA --> remains BA
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -760,13 +806,16 @@ public class SLGraphTest {
 
             // existent BA --> add BOTH --> add BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLink.class);
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
 
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertNotSame(linkBoth, this.linkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -783,7 +832,7 @@ public class SLGraphTest {
 
             // existent BA --> add AB --> changes to BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
@@ -791,7 +840,7 @@ public class SLGraphTest {
 
             // existent BA --> add BA --> remains BA
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, false);
             Assert.assertEquals(linkBA, this.linkBA);
@@ -799,7 +848,7 @@ public class SLGraphTest {
             // existent BA --> add BOTH --> changes to BOTH
             this.setUpExistentBALinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
                                   true);
@@ -807,6 +856,9 @@ public class SLGraphTest {
             Assert.assertEquals(linkBoth, this.linkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -824,7 +876,7 @@ public class SLGraphTest {
             // existent BOTH --> add AB --> add AB
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
 
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, false);
@@ -833,7 +885,7 @@ public class SLGraphTest {
             // existent BOTH --> add BA --> add BA
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLink.class);
 
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
 
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLink.class, this.javaMethodNode, this.javaClassNode, false);
@@ -841,12 +893,15 @@ public class SLGraphTest {
 
             // existent BOTH --> add BOTH --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLink.class);
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLink.class, this.javaClassNode, this.javaMethodNode, true);
 
             Assert.assertEquals(linkBoth, this.linkBoth);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -864,27 +919,30 @@ public class SLGraphTest {
             // existent BOTH --> add AB --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
 
-            final SLLink linkAB = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkAB = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                        this.javaMethodNode, false);
             this.assertSimpleLink(linkAB, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode, true);
             Assert.assertEquals(linkAB, this.linkBoth);
 
             // existent BOTH --> add BA --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkBA = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
+            final SLLink linkBA = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode,
                                                        this.javaClassNode, false);
             this.assertSimpleLink(linkBA, JavaClassJavaMethodSimpleLinkACTB.class, this.javaMethodNode, this.javaClassNode, true);
             Assert.assertEquals(linkBA, this.linkBoth);
 
             // existent BOTH --> add BOTH --> remains BOTH
             this.setUpExistentBothLinkScenario(JavaClassJavaMethodSimpleLinkACTB.class);
-            final SLLink linkBoth = session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
+            final SLLink linkBoth = this.session.addLink(JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode,
                                                          this.javaMethodNode, true);
             this.assertSimpleLink(linkBoth, JavaClassJavaMethodSimpleLinkACTB.class, this.javaClassNode, this.javaMethodNode,
                                   true);
             Assert.assertEquals(linkBoth, this.linkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -901,7 +959,7 @@ public class SLGraphTest {
             final Date now = new Date();
 
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Date> prop1 = root.setProperty(Date.class, "prop", now);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -929,6 +987,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -941,7 +1002,7 @@ public class SLGraphTest {
 
         try {
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Boolean> prop1 = root.setProperty(Boolean.class, "prop", true);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -969,6 +1030,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -979,7 +1043,7 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testBooleanProperty" )
     public void testChiLdNodesRetrieval() {
         try {
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNode node1 = root.addNode("node1");
             final SLNode node2 = root.addNode("node2");
             final Set<SLNode> ch1LdNodes = root.getNodes();
@@ -993,6 +1057,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1003,10 +1070,10 @@ public class SLGraphTest {
      */
     @Test
     // ( dependsOnMethods = "testChiLdNodesRetrieval" )
-    public void testContextOperations() throws SLGraphSessionException {
-        final SLContext context1 = session.createContext("1L");
+    public void testContextOperations() throws SLGraphSessionException, SLInvalidCredentialException {
+        final SLContext context1 = this.session.createContext("1L");
         Assert.assertNotNull("context1 should not be null.", context1);
-        final SLContext context2 = session.getContext("1L");
+        final SLContext context2 = this.session.getContext("1L");
         Assert.assertNotNull("context2 should not be null.", context2);
         final String id1 = context1.getID();
         final String id2 = context2.getID();
@@ -1025,7 +1092,7 @@ public class SLGraphTest {
 
         try {
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Double> prop1 = root.setProperty(Double.class, "prop", 8.0);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -1065,6 +1132,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1077,7 +1147,7 @@ public class SLGraphTest {
 
         try {
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Float> prop1 = root.setProperty(Float.class, "prop", 8.0F);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -1117,6 +1187,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1129,30 +1202,33 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                javaMethodNode1, true);
-            final SLLink multipleLinkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            final SLLink multipleLinkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                  javaMethodNode1, true);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
             Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
 
-            simpleLinks = session.getBidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1);
+            simpleLinks = this.session.getBidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            multipleLinks = session.getBidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            multipleLinks = this.session.getBidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkBoth);
 
-            links = session.getBidirectionalLinks(javaClassNode1, javaMethodNode1);
+            links = this.session.getBidirectionalLinks(javaClassNode1, javaMethodNode1);
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1167,35 +1243,38 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                javaMethodNode1, true);
-            final SLLink multipleLinkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            final SLLink multipleLinkBoth = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                  javaMethodNode1, true);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
             Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
 
-            simpleLinks = session.getBidirectionalLinksBySide(JavaClassJavaMethodSimpleLink.class, javaClassNode1);
+            simpleLinks = this.session.getBidirectionalLinksBySide(JavaClassJavaMethodSimpleLink.class, javaClassNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
-            simpleLinks = session.getBidirectionalLinksBySide(JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
+            simpleLinks = this.session.getBidirectionalLinksBySide(JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            multipleLinks = session.getBidirectionalLinksBySide(JavaClassJavaMethodMultipleLink.class, javaClassNode1);
+            multipleLinks = this.session.getBidirectionalLinksBySide(JavaClassJavaMethodMultipleLink.class, javaClassNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkBoth);
-            multipleLinks = session.getBidirectionalLinksBySide(JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
+            multipleLinks = this.session.getBidirectionalLinksBySide(JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkBoth);
 
-            links = session.getBidirectionalLinksBySide(javaClassNode1);
+            links = this.session.getBidirectionalLinksBySide(javaClassNode1);
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
-            links = session.getBidirectionalLinksBySide(javaMethodNode1);
+            links = this.session.getBidirectionalLinksBySide(javaMethodNode1);
             this.assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1210,15 +1289,15 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                              javaMethodNode1, false);
-            final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
                                                              javaClassNode1, false);
-            final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkBoth = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                javaMethodNode1, true);
 
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
@@ -1236,144 +1315,147 @@ public class SLGraphTest {
 
             // test getLinks between javaClassNode1 and javaMethodNode1
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
                                                 DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
                                                 DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
                                                 DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
                                                 DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
                                                 DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
                                                 DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
                                                 DIRECTION_UNI | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
                                                 DIRECTION_UNI | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
                                                 DIRECTION_UNI_REVERSAL | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
                                                 DIRECTION_UNI_REVERSAL | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
                                                 DIRECTION_ANY);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
                                                 DIRECTION_ANY);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
 
             // test getLinks between javaClassNode1 and *
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI_REVERSAL);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI
                                                                                                            | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI
                                                                                                            | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL
                                                                                                            | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI_REVERSAL
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI_REVERSAL
                                                                                                            | DIRECTION_BI);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_ANY);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_ANY);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_ANY);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_ANY);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
 
             // test getLinks between javaMethodNode1 and *
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1,
                                                 DIRECTION_UNI_REVERSAL);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null,
                                                 DIRECTION_UNI_REVERSAL);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI
                                                                                                             | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI
                                                                                                             | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1,
                                                 DIRECTION_UNI_REVERSAL | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null,
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null,
                                                 DIRECTION_UNI_REVERSAL | DIRECTION_BI);
 
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_ANY);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_ANY);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_ANY);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_ANY);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
 
             // test getLinks between * and *
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null, DIRECTION_UNI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null, DIRECTION_UNI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null, DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null, DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-            simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null, DIRECTION_UNI | DIRECTION_BI);
+            simpleLinks = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null, DIRECTION_UNI | DIRECTION_BI);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA, simpleLinkBoth);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1388,15 +1470,15 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            final SLLink link = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
             link.setProperty(String.class, "author", "Zé Café");
             link.setProperty(Integer.class, "age", 270);
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaLinkType metaLinkType = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLink.class);
             final SLMetaLink metaLink = metaLinkType.getMetalinks().iterator().next();
 
@@ -1413,6 +1495,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1425,15 +1510,15 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            final SLLink link = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
             link.setProperty(String.class, "author", "Zé Café");
             link.setProperty(Integer.class, "age", 270);
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaLinkType metaLinkType = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLink.class);
             final SLMetaLink metaLink = metaLinkType.getMetalinks().iterator().next();
 
@@ -1453,6 +1538,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1465,13 +1553,13 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             root1.addNode(JavaPackageNode.class, "javaPackageNode2");
             root1.addNode(JavaClassNode.class, "javaClassNode1");
             root1.addNode(JavaClassNode.class, "javaClassNode2");
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
 
             final SLMetaNodeType metaNode1 = metadata.findMetaNodeType(JavaPackageNode.class);
             Assert.assertNotNull(metaNode1);
@@ -1483,6 +1571,9 @@ public class SLGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1496,13 +1587,13 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             javaClassNode1.setClassName("HelloWorld");
             javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
             javaClassNode1.setCreationTime(new Date());
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
             final Collection<SLMetaNodeProperty> metaProperties = metaNode.getMetaProperties();
             Assert.assertEquals(metaProperties.size(), 3);
@@ -1522,6 +1613,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1532,13 +1626,13 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
             javaClassNode.setClassName("HelloWorld");
             javaClassNode.setModifier(JavaClassNode.MODIFIER_PUBLIC);
             javaClassNode.setCreationTime(new Date());
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
 
             final SLMetaNodeProperty classNameMetaProperty = metaNode.getMetaProperty("className");
@@ -1559,6 +1653,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1570,17 +1667,20 @@ public class SLGraphTest {
     public void testGetMetaNodes() {
 
         try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             root1.addNode(JavaPackageNode.class, "javaPackageNode2");
             root1.addNode(JavaClassNode.class, "javaClassNode1");
             root1.addNode(JavaClassNode.class, "javaClassNode2");
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final Collection<SLMetaNodeType> metaNodes = metadata.getMetaNodesTypes(RECURSIVE);
             this.assertMetaNodes(metaNodes, JavaElementNode.class, JavaPackageNode.class, JavaClassNode.class);
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1594,9 +1694,9 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             root1.addNode(JavaClassNode.class, "javaClassNode1");
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
 
             final SLMetaRenderHint formatRenderHint = metaNode.getMetaRenderHint("format");
@@ -1612,6 +1712,9 @@ public class SLGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1623,9 +1726,9 @@ public class SLGraphTest {
     public void testGetMetaRenderHints() {
 
         try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             root1.addNode(JavaClassNode.class, "javaClassNode1");
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
             final Collection<SLMetaRenderHint> renderHints = metaNode.getMetaRenderHints();
             Assert.assertEquals(renderHints.size(), 2);
@@ -1641,6 +1744,9 @@ public class SLGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -1653,45 +1759,48 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaClassNode javaClassNode2 = root1.addNode(JavaClassNode.class, "javaClassNode2");
             final JavaInnerClassNode javaInnerClassNode1 = root1.addNode(JavaInnerClassNode.class, "javaInnerClassNode1");
             final JavaInnerClassNode javaInnerClassNode2 = root1.addNode(JavaInnerClassNode.class, "javaInnerClassNode2");
 
-            session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode1, false);
-            session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode2, true);
-            session.addLink(JavaPackageJavaClass.class, javaClassNode1, javaPackageNode1, false);
-            session.addLink(JavaPackageJavaClass.class, javaClassNode2, javaPackageNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode2, true);
+            this.session.addLink(JavaPackageJavaClass.class, javaClassNode1, javaPackageNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaClassNode2, javaPackageNode1, false);
 
-            session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaInnerClassNode1, false);
-            session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaInnerClassNode2, true);
-            session.addLink(JavaPackageJavaClass.class, javaInnerClassNode1, javaPackageNode1, false);
-            session.addLink(JavaPackageJavaClass.class, javaInnerClassNode2, javaPackageNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaInnerClassNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaInnerClassNode2, true);
+            this.session.addLink(JavaPackageJavaClass.class, javaInnerClassNode1, javaPackageNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaInnerClassNode2, javaPackageNode1, false);
 
             Collection<? extends SLNode> nodes = null;
 
-            nodes = session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1);
+            nodes = this.session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1);
             this.assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaClassNode.class, false);
+            nodes = this.session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaClassNode.class, false);
             this.assertNodes(nodes, javaClassNode1, javaClassNode2);
 
-            nodes = session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaInnerClassNode.class, false);
+            nodes = this.session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaInnerClassNode.class, false);
             this.assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaClassNode.class, true);
+            nodes = this.session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaClassNode.class, true);
             this.assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaInnerClassNode.class, true);
+            nodes = this.session.getNodesByLink(JavaPackageJavaClass.class, javaPackageNode1, JavaInnerClassNode.class, true);
             this.assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(JavaPackageJavaClass.class);
+            nodes = this.session.getNodesByLink(JavaPackageJavaClass.class);
             this.assertNodes(nodes, javaPackageNode1, javaClassNode1, javaClassNode2, javaInnerClassNode1, javaInnerClassNode2);
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1705,38 +1814,41 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaClassNode javaClassNode2 = root1.addNode(JavaClassNode.class, "javaClassNode2");
             final JavaInnerClassNode javaInnerClassNode1 = root1.addNode(JavaInnerClassNode.class, "javaInnerClassNode1");
             final JavaInnerClassNode javaInnerClassNode2 = root1.addNode(JavaInnerClassNode.class, "javaInnerClassNode2");
 
-            session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode1, false);
-            session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaInnerClassNode1, true);
+            this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode1, false);
+            this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaInnerClassNode1, true);
 
-            session.addLink(JavaPackagePublicElement.class, javaPackageNode1, javaClassNode2, false);
-            session.addLink(JavaPackagePublicElement.class, javaPackageNode1, javaInnerClassNode2, true);
+            this.session.addLink(JavaPackagePublicElement.class, javaPackageNode1, javaClassNode2, false);
+            this.session.addLink(JavaPackagePublicElement.class, javaPackageNode1, javaInnerClassNode2, true);
 
             Collection<? extends SLNode> nodes = null;
 
-            nodes = session.getNodesByLink(javaPackageNode1);
+            nodes = this.session.getNodesByLink(javaPackageNode1);
             this.assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(javaPackageNode1, JavaClassNode.class, false);
+            nodes = this.session.getNodesByLink(javaPackageNode1, JavaClassNode.class, false);
             this.assertNodes(nodes, javaClassNode1, javaClassNode2);
 
-            nodes = session.getNodesByLink(javaPackageNode1, JavaInnerClassNode.class, false);
+            nodes = this.session.getNodesByLink(javaPackageNode1, JavaInnerClassNode.class, false);
             this.assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(javaPackageNode1, JavaClassNode.class, true);
+            nodes = this.session.getNodesByLink(javaPackageNode1, JavaClassNode.class, true);
             this.assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1, javaInnerClassNode2);
 
-            nodes = session.getNodesByLink(javaPackageNode1, JavaInnerClassNode.class, true);
+            nodes = this.session.getNodesByLink(javaPackageNode1, JavaInnerClassNode.class, true);
             this.assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1750,7 +1862,7 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             final JavaClassNode javaClassNode1 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaClassNode javaClassNode2 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode2");
@@ -1762,17 +1874,20 @@ public class SLGraphTest {
             final JavaMethodNode javaMethodNode2B = javaClassNode2.addNode(JavaMethodNode.class, "javaMethodNode2B");
 
             Collection<SLNode> nodes = null;
-            nodes = session.getNodesByPredicate(new NamePredicate("javaPackage"));
+            nodes = this.session.getNodesByPredicate(new NamePredicate("javaPackage"));
             this.assertNodes(nodes, javaPackageNode1);
 
-            nodes = session.getNodesByPredicate(new NamePredicate("javaClass"));
+            nodes = this.session.getNodesByPredicate(new NamePredicate("javaClass"));
             this.assertNodes(nodes, javaClassNode1, javaClassNode2);
 
-            nodes = session.getNodesByPredicate(new NamePredicate("javaMethod"));
+            nodes = this.session.getNodesByPredicate(new NamePredicate("javaMethod"));
             this.assertNodes(nodes, javaMethodNode1A, javaMethodNode1B, javaMethodNode2A, javaMethodNode2B);
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1784,7 +1899,7 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testGetNodesByPredicate" )
     public void testGetPropertyAsString() {
         try {
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNode node = root.addNode("node");
             final SLNodeProperty<Integer> property = node.setProperty(Integer.class, "number", new Integer(8));
             String value = node.getPropertyValueAsString("number");
@@ -1795,6 +1910,9 @@ public class SLGraphTest {
             Assert.assertEquals(value, "8");
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1808,12 +1926,12 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             javaClassNode1.addNode(JavaInnerClassNode.class, "javaInnerClassNode1");
             javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType elementType = metadata.findMetaNodeType(JavaElementNode.class);
             final SLMetaNodeType javaClassType = elementType.getSubMetaNodeType(JavaClassNode.class);
             final SLMetaNodeType javaMethodType = elementType.getSubMetaNodeType(JavaMethodNode.class);
@@ -1825,6 +1943,9 @@ public class SLGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1838,12 +1959,12 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             javaClassNode1.addNode(JavaInnerClassNode.class, "javaInnerClassNode1");
             javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType elementType = metadata.findMetaNodeType(JavaElementNode.class);
 
             final Collection<SLMetaNodeType> elementSubTypes = elementType.getSubMetaNodeTypes();
@@ -1855,6 +1976,9 @@ public class SLGraphTest {
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -1868,44 +1992,47 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                              javaMethodNode1, false);
-            final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
                                                              javaClassNode1, false);
-            final SLLink multipleLinkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                javaMethodNode1, false);
-            final SLLink multipleLinkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
                                                                javaClassNode1, false);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
             Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
 
-            simpleLinks = session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            simpleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                               javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
-            simpleLinks = session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+            simpleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
                                                               javaClassNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            multipleLinks = session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            multipleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                 javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkAB);
-            multipleLinks = session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+            multipleLinks = this.session.getUnidirectionalLinks(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
                                                                 javaClassNode1);
 
             this.assertLinksInOrder(multipleLinks, multipleLinkBA);
 
-            links = session.getUnidirectionalLinks(javaClassNode1, javaMethodNode1);
+            links = this.session.getUnidirectionalLinks(javaClassNode1, javaMethodNode1);
             this.assertLinks(links, simpleLinkAB, multipleLinkAB);
-            links = session.getUnidirectionalLinks(javaMethodNode1, javaClassNode1);
+            links = this.session.getUnidirectionalLinks(javaMethodNode1, javaClassNode1);
             this.assertLinks(links, simpleLinkBA, multipleLinkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1920,39 +2047,42 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                              javaMethodNode1, false);
-            final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
                                                              javaClassNode1, false);
-            final SLLink multipleLinkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                javaMethodNode1, false);
-            final SLLink multipleLinkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
                                                                javaClassNode1, false);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
             Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
 
-            simpleLinks = session.getUnidirectionalLinksBySource(JavaClassJavaMethodSimpleLink.class, javaClassNode1);
+            simpleLinks = this.session.getUnidirectionalLinksBySource(JavaClassJavaMethodSimpleLink.class, javaClassNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
-            simpleLinks = session.getUnidirectionalLinksBySource(JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
+            simpleLinks = this.session.getUnidirectionalLinksBySource(JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            multipleLinks = session.getUnidirectionalLinksBySource(JavaClassJavaMethodMultipleLink.class, javaClassNode1);
+            multipleLinks = this.session.getUnidirectionalLinksBySource(JavaClassJavaMethodMultipleLink.class, javaClassNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkAB);
-            multipleLinks = session.getUnidirectionalLinksBySource(JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
+            multipleLinks = this.session.getUnidirectionalLinksBySource(JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkBA);
 
-            links = session.getUnidirectionalLinksBySource(javaClassNode1);
+            links = this.session.getUnidirectionalLinksBySource(javaClassNode1);
             this.assertLinks(links, simpleLinkAB, multipleLinkAB);
-            links = session.getUnidirectionalLinksBySource(javaMethodNode1);
+            links = this.session.getUnidirectionalLinksBySource(javaMethodNode1);
             this.assertLinks(links, simpleLinkBA, multipleLinkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -1967,39 +2097,42 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final SLLink simpleLinkAB = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                              javaMethodNode1, false);
-            final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
+            final SLLink simpleLinkBA = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
                                                              javaClassNode1, false);
-            final SLLink multipleLinkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
+            final SLLink multipleLinkAB = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
                                                                javaMethodNode1, false);
-            final SLLink multipleLinkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
+            final SLLink multipleLinkBA = this.session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
                                                                javaClassNode1, false);
 
             Collection<SLLink> links = null;
             Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
             Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
 
-            simpleLinks = session.getUnidirectionalLinksByTarget(JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
+            simpleLinks = this.session.getUnidirectionalLinksByTarget(JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkAB);
-            simpleLinks = session.getUnidirectionalLinksByTarget(JavaClassJavaMethodSimpleLink.class, javaClassNode1);
+            simpleLinks = this.session.getUnidirectionalLinksByTarget(JavaClassJavaMethodSimpleLink.class, javaClassNode1);
             this.assertLinksInOrder(simpleLinks, simpleLinkBA);
 
-            multipleLinks = session.getUnidirectionalLinksByTarget(JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
+            multipleLinks = this.session.getUnidirectionalLinksByTarget(JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkAB);
-            multipleLinks = session.getUnidirectionalLinksByTarget(JavaClassJavaMethodMultipleLink.class, javaClassNode1);
+            multipleLinks = this.session.getUnidirectionalLinksByTarget(JavaClassJavaMethodMultipleLink.class, javaClassNode1);
             this.assertLinksInOrder(multipleLinks, multipleLinkBA);
 
-            links = session.getUnidirectionalLinksByTarget(javaMethodNode1);
+            links = this.session.getUnidirectionalLinksByTarget(javaMethodNode1);
             this.assertLinks(links, simpleLinkAB, multipleLinkAB);
-            links = session.getUnidirectionalLinksByTarget(javaClassNode1);
+            links = this.session.getUnidirectionalLinksByTarget(javaClassNode1);
             this.assertLinks(links, simpleLinkBA, multipleLinkBA);
 
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2015,7 +2148,7 @@ public class SLGraphTest {
         try {
 
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, "prop", 8);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -2055,6 +2188,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2063,8 +2199,9 @@ public class SLGraphTest {
      */
     @Test
     // ( dependsOnMethods = "testIntegerProperty" )
-    public void testLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+    public void testLineReference()
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+        final SLNode root1 = this.session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
         final SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
@@ -2104,7 +2241,7 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
@@ -2114,7 +2251,7 @@ public class SLGraphTest {
             SLLinkProperty<Integer> property;
 
             // test set property ...
-            link = session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode1, false);
+            link = this.session.addLink(JavaPackageJavaClass.class, javaPackageNode1, javaClassNode1, false);
             property = link.setProperty(Integer.class, "integerProperty", 8);
             Assert.assertNotNull(property);
             name = property.getName();
@@ -2135,6 +2272,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2146,11 +2286,11 @@ public class SLGraphTest {
     public void testLinkPropertyWithAnnotations() {
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final JavaClassJavaMethodSimpleLink link = this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                             javaMethodNode1, false);
 
             final Date creationTime = new Date();
@@ -2162,6 +2302,9 @@ public class SLGraphTest {
             Assert.assertNotNull(link.getCreationTime());
             Assert.assertEquals(link.getCreationTime(), creationTime);
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2176,7 +2319,7 @@ public class SLGraphTest {
 
         try {
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaPackageNode javaPackageNode1 = root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             final JavaClassNode javaClassNode1 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaClassNode javaClassNode2 = javaPackageNode1.addNode(JavaClassNode.class, "javaClassNode2");
@@ -2187,26 +2330,29 @@ public class SLGraphTest {
             final JavaMethodNode javaMethodNode2A = javaClassNode2.addNode(JavaMethodNode.class, "javaMethodNode2A");
             final JavaMethodNode javaMethodNode2B = javaClassNode2.addNode(JavaMethodNode.class, "javaMethodNode2B");
 
-            session.addLink(JavaLink.class, javaPackageNode1, javaClassNode1, false);
-            session.addLink(JavaLink.class, javaPackageNode1, javaClassNode2, false);
-            session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode1A, false);
-            session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode1B, false);
-            session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode2A, false);
-            session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode2B, false);
+            this.session.addLink(JavaLink.class, javaPackageNode1, javaClassNode1, false);
+            this.session.addLink(JavaLink.class, javaPackageNode1, javaClassNode2, false);
+            this.session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode1A, false);
+            this.session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode1B, false);
+            this.session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode2A, false);
+            this.session.addLink(JavaLink.class, javaPackageNode1, javaMethodNode2B, false);
 
-            session.addLink(JavaLink.class, javaClassNode1, javaMethodNode1A, false);
-            session.addLink(JavaLink.class, javaClassNode1, javaMethodNode1B, false);
-            session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2A, false);
-            session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2B, false);
+            this.session.addLink(JavaLink.class, javaClassNode1, javaMethodNode1A, false);
+            this.session.addLink(JavaLink.class, javaClassNode1, javaMethodNode1B, false);
+            this.session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2A, false);
+            this.session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2B, false);
 
-            Collection<JavaLink> links = session.getLinks(JavaLink.class, null, null, SLLink.DIRECTION_ANY);
+            Collection<JavaLink> links = this.session.getLinks(JavaLink.class, null, null, SLLink.DIRECTION_ANY);
             Assert.assertEquals(links.size(), 10);
 
             javaPackageNode1.remove();
-            links = session.getLinks(JavaLink.class, null, null, SLLink.DIRECTION_ANY);
+            links = this.session.getLinks(JavaLink.class, null, null, SLLink.DIRECTION_ANY);
             Assert.assertTrue(links.isEmpty());
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2220,32 +2366,35 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
             final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
 
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
 
             final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
             linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
             root1.addNode(JavaMethodNode.class, "javaMethodNode2", linkTypesForLinkDeletion, null);
 
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
 
-            session.save();
-            session.close();
-            session = graph.openSession();
+            this.session.save();
+            this.session.close();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
 
-            final Collection<? extends SLLink> links = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null);
+            final Collection<? extends SLLink> links = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null);
             Assert.assertEquals(links.size(), 2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2259,25 +2408,25 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
             final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
 
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
 
             final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
             linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
             root1.addNode(JavaMethodNode.class, "javaMethodNode2", linkTypesForLinkDeletion, null);
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
-            final Collection<? extends SLLink> links = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null);
+            final Collection<? extends SLLink> links = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, null, null);
             Assert.assertEquals(links.size(), 1);
 
             final SLLink link = links.iterator().next();
@@ -2285,6 +2434,9 @@ public class SLGraphTest {
             Assert.assertEquals(link.getTarget(), javaMethodNode1);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2298,13 +2450,13 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
             final JavaMethodNode javaMethodNode2 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode2");
 
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
 
             final Collection<Class<? extends SLLink>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends SLLink>>();
             linkTypesForLinkedNodesDeletion.add(JavaClassJavaMethodSimpleLink.class);
@@ -2312,10 +2464,10 @@ public class SLGraphTest {
 
             javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             final Collection<SLNode> nodes = javaClassNode1.getNodes();
             Assert.assertEquals(nodes.size(), 1);
@@ -2323,6 +2475,9 @@ public class SLGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2336,27 +2491,30 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
             final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
 
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false);
 
             final Collection<Class<? extends SLLink>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends SLLink>>();
             linkTypesForLinkedNodesDeletion.add(JavaClassJavaMethodSimpleLink.class);
             root1.addNode(JavaClassNode.class, "javaClassNode1", null, linkTypesForLinkedNodesDeletion);
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             final Collection<SLNode> nodes = javaClassNode1.getNodes();
             Assert.assertTrue(nodes.isEmpty());
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2370,7 +2528,7 @@ public class SLGraphTest {
 
         try {
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Long> prop1 = root.setProperty(Long.class, "prop", 8L);
 
             Assert.assertNotNull(prop1);
@@ -2411,6 +2569,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2421,18 +2582,21 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testLongProperty" )
     public void testMetaLinkGetDescription() {
         try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
             final JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaLink metaLink = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLink.class).getMetalinks().iterator().next();
             final String description = metaLink.getDescription();
             Assert.assertNotNull(description);
             Assert.assertEquals(description, "Java Class to Java Method Link");
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2444,16 +2608,19 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testMetaLinkGetDescription" )
     public void testMetaNodeGetDescription() {
         try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
+            final SLNode root1 = this.session.createContext("1L").getRootNode();
             root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-            final SLMetadata metadata = session.getMetadata();
+            final SLMetadata metadata = this.session.getMetadata();
             final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
             final String description = metaNode.getDescription();
             Assert.assertNotNull(description);
             Assert.assertEquals(description, "Java Class");
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2466,7 +2633,7 @@ public class SLGraphTest {
     public void testNodeOperations() {
         try {
             // add new node ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNode node1 = root.addNode("node");
             Assert.assertNotNull(node1);
             Assert.assertEquals(node1.getName(), "node");
@@ -2489,6 +2656,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2499,7 +2669,7 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testNodeOperations" )
     public void testPropertiesRetrieval() {
         try {
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             root.setProperty(Integer.class, "integerProp", 8);
             root.setProperty(String.class, "stringProp", "Hello World!");
             final Set<SLNodeProperty<Serializable>> properties = root.getProperties();
@@ -2513,6 +2683,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2523,7 +2696,7 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testPropertiesRetrieval" )
     public void testPropertyRemoval() {
         try {
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, "property", 8);
             prop1.remove();
             try {
@@ -2533,6 +2706,9 @@ public class SLGraphTest {
                 Assert.assertTrue(true);
             }
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2545,13 +2721,16 @@ public class SLGraphTest {
     // ( dependsOnMethods = "testPropertyRemoval" )
     public void testPropertyValueOverwriting() {
         try {
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, "prop", 8);
             final SLNodeProperty<Integer> prop2 = root.getProperty(Integer.class, "prop");
             prop2.setValue(71);
             Assert.assertEquals(prop2.getValue(), new Integer(71));
             Assert.assertEquals(prop1.getValue(), prop2.getValue());
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }
@@ -2566,7 +2745,7 @@ public class SLGraphTest {
 
         try {
             // set new property ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final SLNodeProperty<String> prop1 = root.setProperty(String.class, "prop", "Hello");
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -2594,6 +2773,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2606,26 +2788,29 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
             final JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
 
-            session.addLink(TransientLink.class, javaClassNode1, javaMethodNode1, false);
-            session.addLink(TransientLink.class, javaClassNode1, javaMethodNode2, false);
+            this.session.addLink(TransientLink.class, javaClassNode1, javaMethodNode1, false);
+            this.session.addLink(TransientLink.class, javaClassNode1, javaMethodNode2, false);
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
-            final Collection<? extends SLLink> links = session.getUnidirectionalLinks(TransientLink.class, javaClassNode1,
+            final Collection<? extends SLLink> links = this.session.getUnidirectionalLinks(TransientLink.class, javaClassNode1,
                                                                                            javaMethodNode1);
             Assert.assertEquals(links.size(), 0);
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2639,31 +2824,34 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
             JavaMethodNode javaMethodNode2 = root1.addNode(JavaMethodNode.class, "javaMethodNode2");
 
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false, TRANSIENT);
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, TRANSIENT);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false, TRANSIENT);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, TRANSIENT);
 
             // make previous transient link persistent now ...
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, NORMAL);
+            this.session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode2, false, NORMAL);
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             javaMethodNode1 = root1.getNode(JavaMethodNode.class, "javaMethodNode1");
             javaMethodNode2 = root1.getNode(JavaMethodNode.class, "javaMethodNode2");
-            final Collection<? extends SLLink> links = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+            final Collection<? extends SLLink> links = this.session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                              null);
             Assert.assertEquals(links.size(), 1);
             final SLLink link = links.iterator().next();
             Assert.assertEquals(link.getTarget(), javaMethodNode2);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2677,17 +2865,17 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
             javaClassNode1.addNode(TransientNode.class, "transNode1");
             javaMethodNode1.addNode(TransientNode.class, "transNode2");
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             Assert.assertNotNull(javaClassNode1);
             javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class, "javaMethodNode1");
@@ -2698,6 +2886,9 @@ public class SLGraphTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
             Assert.fail();
         }
     }
@@ -2711,7 +2902,7 @@ public class SLGraphTest {
 
         try {
 
-            SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode root1 = this.session.createContext("1L").getRootNode();
             JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1", NORMAL);
             JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1", NORMAL);
 
@@ -2721,10 +2912,10 @@ public class SLGraphTest {
             // add transNode1 as NORMAL (not PERSISTENT anymore) ...
             javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
 
-            session.save();
-            session = graph.openSession();
+            this.session.save();
+            this.session = this.graph.openSession(user);
 
-            root1 = session.getContext("1L").getRootNode();
+            root1 = this.session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class, "javaClassNode1");
             Assert.assertNotNull(javaClassNode1);
             javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class, "javaMethodNode1");
@@ -2734,13 +2925,17 @@ public class SLGraphTest {
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
     @Test
     // ( dependsOnMethods = "testLineReference" )
-    public void testTreeLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+    public void testTreeLineReference()
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+        final SLNode root1 = this.session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
         javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
@@ -2787,7 +2982,7 @@ public class SLGraphTest {
         try {
 
             // add new node ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root.addNode(JavaClassNode.class, "javaClassNode");
             Assert.assertNotNull(javaClassNode1);
             Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
@@ -2812,6 +3007,9 @@ public class SLGraphTest {
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
+        } catch (SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
         }
     }
 
@@ -2824,19 +3022,22 @@ public class SLGraphTest {
         try {
 
             // add new node ...
-            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNode root = this.session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root.addNode(JavaClassNode.class, "javaClassNode");
             Assert.assertNotNull(javaClassNode1);
             Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
 
             // add new node ...
-            final SLNode root2 = session.createContext("2L").getRootNode();
+            final SLNode root2 = this.session.createContext("2L").getRootNode();
             final JavaClassNode javaClassNode2 = root2.addNode(JavaClassNode.class, "javaClassNode");
             Assert.assertNotNull(javaClassNode2);
             Assert.assertEquals(javaClassNode2.getName(), "javaClassNode");
 
             Assert.assertFalse(javaClassNode1.getID().equals(javaClassNode2.getID()));
         } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (SLInvalidCredentialException e) {
             LOGGER.error(e);
             Assert.fail();
         }

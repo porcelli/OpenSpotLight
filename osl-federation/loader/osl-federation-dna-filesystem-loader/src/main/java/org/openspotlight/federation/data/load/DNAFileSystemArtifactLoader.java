@@ -52,7 +52,7 @@ package org.openspotlight.federation.data.load;
 import org.jboss.dna.connector.filesystem.FileSystemSource;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.Bundle;
+import org.openspotlight.federation.data.impl.ArtifactSource;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System
@@ -68,7 +68,7 @@ public class DNAFileSystemArtifactLoader extends DnaArtifactLoader {
 		@Override
 		protected void configureWithBundle(
 				final RepositorySourceDefinition<?> sourceDefinition,
-				final Bundle bundle, final ArtifactMapping relative) {
+				final ArtifactSource bundle, final ArtifactMapping relative) {
 			sourceDefinition
 					.usingClass(FileSystemSource.class)
 					.setProperty("workspaceRootPath", bundle.getInitialLookup()).setProperty( //$NON-NLS-1$ 

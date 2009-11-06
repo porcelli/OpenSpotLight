@@ -63,11 +63,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLCommonSupport;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeException;
@@ -81,6 +83,9 @@ import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 public class SLGraphQueryCacheTest {
 
@@ -96,6 +101,8 @@ public class SLGraphQueryCacheTest {
     private static SLPersistentTreeSession treeSession;
 
     private static SLQueryCacheImpl        queryCache;
+
+    private static AuthenticatedUser user;
 
     /**
      * Finish.
@@ -127,9 +134,13 @@ public class SLGraphQueryCacheTest {
     @BeforeClass
     public static void quickGraphPopulation() {
         try {
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            session = graph.openSession();
+            session = graph.openSession(user);
             final SLContext context = session.createContext("cacheTest");
             final SLNode root = context.getRootNode();
             final Set<Class<?>> types = getIFaceTypeSet();
@@ -153,11 +164,11 @@ public class SLGraphQueryCacheTest {
             }
             session.save();
             session.close();
-            session = graph.openSession();
+            session = graph.openSession(user);
 
             final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
             final SLPersistentTree tree = pFactory.createPersistentTree(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            treeSession = tree.openSession();
+            treeSession = tree.openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
 
             queryCache = new SLQueryCacheImpl(treeSession, session);
 
@@ -168,21 +179,21 @@ public class SLGraphQueryCacheTest {
 
     @Test
     //( dependsOnMethods = "selectTypes" )
-    public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException {
+    public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialException {
         String queryId = null;
-        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
 
-        final SLQueryApi query = session.createQueryApi();
+        final SLQueryApi query = this.session.createQueryApi();
 
         query.select().type(JavaTypeMethod.class.getName()).selectEnd();
 
         final SLQueryResult result = query.execute();
         queryId = result.getQueryId();
 
-        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
-        assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
+        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(true));
+        assertThat(this.queryCache.getCache(result.getQueryId()), is(notNullValue()));
 
-        final SLQueryApi query2 = session.createQueryApi();
+        final SLQueryApi query2 = this.session.createQueryApi();
 
         query2.select().type(JavaTypeMethod.class.getName()).selectEnd();
 
@@ -190,24 +201,25 @@ public class SLGraphQueryCacheTest {
 
         assertThat(result2.getQueryId(), is(queryId));
 
-        graph.gc();
-        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+        this.graph.gc(user);
+        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
     }
 
     @Test
-    public void selectTypes() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException {
+    public void selectTypes()
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialException {
         String queryId = null;
-        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
 
-        final SLQueryApi query = session.createQueryApi();
+        final SLQueryApi query = this.session.createQueryApi();
 
         query.select().type(JavaType.class.getName()).subTypes().selectEnd();
 
         final SLQueryResult result = query.execute(SortMode.SORTED, false);
         queryId = result.getQueryId();
 
-        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
-        assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
+        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(true));
+        assertThat(this.queryCache.getCache(result.getQueryId()), is(notNullValue()));
 
         QueryUtil.printResult(result.getNodes());
 
@@ -215,7 +227,7 @@ public class SLGraphQueryCacheTest {
         assertThat(wrappers.length, is(5));
         assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
                                    "java.util.Collection"), is(wrappers[0]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
+        assertThat(new NodeWrapper(JavaInterface.class.getName(), "cacheTest",
                                    "java.util.List"), is(wrappers[1]));
         assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
                                    "java.util.Map"), is(wrappers[2]));
@@ -224,7 +236,7 @@ public class SLGraphQueryCacheTest {
         assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
                                    "java.util.SortedSet"), is(wrappers[4]));
 
-        final SLQueryApi query2 = session.createQueryApi();
+        final SLQueryApi query2 = this.session.createQueryApi();
 
         query2.select().type(JavaType.class.getName()).subTypes().selectEnd();
 
@@ -245,8 +257,8 @@ public class SLGraphQueryCacheTest {
         assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
                                    "java.util.SortedSet"), is(wrappers2[4]));
 
-        graph.gc();
-        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+        this.graph.gc(user);
+        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
     }
 
     /**

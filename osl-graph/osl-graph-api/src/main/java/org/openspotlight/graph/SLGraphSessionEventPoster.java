@@ -54,65 +54,50 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSessionEventPoster {
-    
+
     /**
      * Post.
      * 
-     * @param event
-     *            the event
-     * 
-     * @throws SLGraphSessionException
-     *             the SL graph session exception
+     * @param event the event
+     * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
-    public void post(SLGraphSessionEvent event) throws SLGraphSessionException;
-    
+    public void post( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException;
+
     /**
      * Post.
      * 
-     * @param event
-     *            the event
-     * 
-     * @throws SLGraphSessionException
-     *             the SL graph session exception
+     * @param event the event
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void post(SLLinkEvent event) throws SLGraphSessionException;
-    
+    public void post( SLLinkEvent event ) throws SLGraphSessionException;
+
     /**
      * Post.
      * 
-     * @param event
-     *            the event
-     * 
-     * @throws SLGraphSessionException
-     *             the SL graph session exception
+     * @param event the event
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void post(SLLinkPropertyEvent event) throws SLGraphSessionException;
-    
+    public void post( SLLinkPropertyEvent event ) throws SLGraphSessionException;
+
     /**
      * Post.
      * 
-     * @param event
-     *            the event
-     * 
-     * @throws SLGraphSessionException
-     *             the SL graph session exception
+     * @param event the event
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void post(SLNodeEvent event) throws SLGraphSessionException;
-    
+    public void post( SLNodeEvent event ) throws SLGraphSessionException;
+
     /**
      * Post.
      * 
-     * @param event
-     *            the event
-     * 
-     * @throws SLGraphSessionException
-     *             the SL graph session exception
+     * @param event the event
+     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void post(SLNodePropertyEvent event) throws SLGraphSessionException;
-    
+    public void post( SLNodePropertyEvent event ) throws SLGraphSessionException;
+
     /**
-     * This method should notify its listeners about a
-     * {@link SLGraphSession#clear()} operation.
+     * This method should notify its listeners about a {@link SLGraphSession#clear()} operation.
      */
     public void sessionCleaned();
 }
