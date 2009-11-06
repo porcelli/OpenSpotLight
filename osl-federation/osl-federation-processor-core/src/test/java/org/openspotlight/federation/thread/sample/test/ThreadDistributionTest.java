@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.processing.test;
+package org.openspotlight.federation.thread.sample.test;
 
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;

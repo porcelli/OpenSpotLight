@@ -21,7 +21,10 @@ import org.openspotlight.federation.domain.StreamArtifact;
 public class FileSystemStreamArtifactFinder implements ArtifactFinder<StreamArtifact> {
 
     public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
-        return true;
+        if (new File(artifactSource.getInitialLookup()).exists()) {
+            return true;
+        }
+        return false;
     }
 
     public StreamArtifact findByPath( final ArtifactSource artifactSource,
@@ -30,11 +33,11 @@ public class FileSystemStreamArtifactFinder implements ArtifactFinder<StreamArti
         Assertions.checkNotEmpty("rawPath", rawPath);
         try {
 
-            final String location = MessageFormat.format("./{0}/{2}", artifactSource.getInitialLookup(), rawPath);
+            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), rawPath);
 
             final File file = new File(location);
             if (!file.exists()) {
-                continue;
+                return null;
             }
 
             final FileInputStream resource = new FileInputStream(file);
@@ -68,11 +71,27 @@ public class FileSystemStreamArtifactFinder implements ArtifactFinder<StreamArti
     public Set<StreamArtifact> listByPath( final ArtifactSource artifactSource,
                                            final String rawPath ) {
         Assertions.checkNotNull("artifactSource", artifactSource);
-        Assertions.checkNotEmpty("rawPath", rawPath);
         try {
             final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
+            final Set<String> allFilePaths = this.retrieveAllArtifactNames(artifactSource, rawPath);
+            for (final String path : allFilePaths) {
+                final StreamArtifact sa = this.findByPath(artifactSource, path);
+                result.add(sa);
+            }
+            return result;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
-            final String location = MessageFormat.format("./{0}/{2}", artifactSource.getInitialLookup(), rawPath);
+    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
+                                                 final String initialPath ) {
+        Assertions.checkNotNull("artifactSource", artifactSource);
+        final String rawPath = initialPath == null ? "." : initialPath;
+        try {
+            final Set<String> result = new HashSet<String>();
+
+            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), rawPath);
 
             final File initialDir = new File(location);
             final String pathToRemove = initialDir.getCanonicalPath().substring(
@@ -83,22 +102,9 @@ public class FileSystemStreamArtifactFinder implements ArtifactFinder<StreamArti
 
             for (final String p : pathList) {
                 final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
-                final StreamArtifact sa = this.findByPath(artifactSource, correctRelativePath);
-                if (sa != null) {
-                    result.add(sa);
-                }
+                result.add(correctRelativePath);
             }
             return result;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
-
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource ) {
-        try {
-            final Set<String> pathList = Files.listFileNamesFrom(artifactSource.getInitialLookup());
-
-            return pathList;
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
