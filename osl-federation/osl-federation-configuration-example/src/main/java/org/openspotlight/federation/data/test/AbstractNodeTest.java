@@ -61,10 +61,7 @@ import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
 import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
 import org.openspotlight.federation.data.InstanceMetadata.ItemEventListener;
 import org.openspotlight.federation.data.InstanceMetadata.PropertyValue;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.domain.ArtifactSource;
 
 /**
  * Test for class {@link AbstractConfigurationNode} and {@link ConfigurationNodeMetadata}

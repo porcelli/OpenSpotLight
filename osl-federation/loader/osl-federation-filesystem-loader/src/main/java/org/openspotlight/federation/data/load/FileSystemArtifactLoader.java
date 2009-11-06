@@ -66,8 +66,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

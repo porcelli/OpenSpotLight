@@ -60,13 +60,12 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.JavaArtifactSource;
 import org.openspotlight.federation.data.load.AbstractArtifactLoader;
 import org.openspotlight.federation.data.load.ArtifactLoader;
 import org.openspotlight.federation.data.test.NodeTest;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.JavaArtifactSource;
 
 /**
  * Test for class {@link AbstractArtifactLoader}

@@ -49,24 +49,7 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Collections.setOf;
-
-import java.util.Collections;
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.JavaArtifactSource;
 import org.openspotlight.federation.data.load.AbstractArtifactLoader;
-import org.openspotlight.federation.data.load.ArtifactLoader;
-import org.openspotlight.federation.data.test.NodeTest;
 
 /**
  * Test for class {@link AbstractArtifactLoader}

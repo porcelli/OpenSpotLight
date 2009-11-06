@@ -56,8 +56,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 
-import org.openspotlight.common.SharedConstants;
-
 /**
  * The Class SLPersistentQueryResultImpl.
  * 

@@ -49,13 +49,13 @@
 
 package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
 import org.openspotlight.federation.data.impl.Column;
-import org.openspotlight.federation.data.impl.CustomArtifact;
 import org.openspotlight.federation.data.impl.TableArtifact;
 import org.openspotlight.federation.data.processing.BundleProcessingFatalException;
 import org.openspotlight.federation.data.processing.BundleProcessingNonFatalException;
 import org.openspotlight.federation.data.processing.CustomArtifactBundleProcessor;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.CustomArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class LogTableCustomArtifactProcessor implements
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     public void globalProcessingFinalized(
-            final BundleProcessingGroup<? extends ArtifactAboutToChange> bundleProcessingGroup,
+            final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
             final BundleProcessingContext graphContext) {
         // nothing to do
         

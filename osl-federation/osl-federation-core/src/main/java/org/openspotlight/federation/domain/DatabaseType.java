@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.impl;
+package org.openspotlight.federation.domain;
 
 /**
  * All the database valid types should have an entry on file

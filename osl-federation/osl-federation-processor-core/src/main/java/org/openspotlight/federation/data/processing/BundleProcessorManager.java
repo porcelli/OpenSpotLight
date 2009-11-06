@@ -58,7 +58,6 @@ import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,20 +74,17 @@ import org.openspotlight.common.LazyType;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.BundleProcessorType;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.CustomArtifact;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingGroup;
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingAction;
 import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingStartAction;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.BundleProcessorType;
+import org.openspotlight.federation.domain.CustomArtifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
@@ -98,7 +94,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BundleProcessorManager} is the class reposable to get an {@link Configuration} and to process all {@link ArtifactAboutToChange
+ * The {@link BundleProcessorManager} is the class reposable to get an {@link Configuration} and to process all {@link Artifact
  * artifacts} on this {@link Configuration}. The {@link BundleProcessorManager} should get the {@link ArtifactSource bundle's}
  * {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each {@link BundleProcessorType type}
  * . After all {@link BundleProcessor processors} was found, the {@link BundleProcessorManager} should distribute the processing
@@ -116,7 +112,7 @@ public final class BundleProcessorManager {
      * @param <T> *
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
-    private static class BundleProcessorCallable<T extends ArtifactAboutToChange> implements Callable<ProcessingAction> {
+    private static class BundleProcessorCallable<T extends Artifact> implements Callable<ProcessingAction> {
 
         /** The bundle processor. */
         private final BundleProcessor<T>             bundleProcessor;
@@ -168,7 +164,7 @@ public final class BundleProcessorManager {
         }
 
         /**
-         * Starts the {@link BundleProcessor#processArtifact(ArtifactAboutToChange, BundleProcessingGroup, BundleProcessingContext)} method.
+         * Starts the {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext)} method.
          * After its processing, depending on return type this method will do the necessary manipulation on
          * {@link BundleProcessingGroup} object.
          * 
@@ -220,7 +216,7 @@ public final class BundleProcessorManager {
      * @param <T> *
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
-    private static class CreateProcessorActionsResult<T extends ArtifactAboutToChange> {
+    private static class CreateProcessorActionsResult<T extends Artifact> {
 
         /** The finalization context. */
         FinalizationContext<T>                         finalizationContext;
@@ -268,7 +264,7 @@ public final class BundleProcessorManager {
      * @param <T> Artifact type
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
-    private static class FinalizationContext<T extends ArtifactAboutToChange> {
+    private static class FinalizationContext<T extends Artifact> {
 
         /** The bundle processing group. */
         private final BundleProcessingGroup<T> bundleProcessingGroup;
@@ -332,7 +328,7 @@ public final class BundleProcessorManager {
      * @param <T> target artifact type
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
-    private static class MappedProcessor<T extends ArtifactAboutToChange> {
+    private static class MappedProcessor<T extends Artifact> {
 
         /** The artifact type. */
         private final Class<T>                            artifactType;
@@ -404,20 +400,20 @@ public final class BundleProcessorManager {
     }
 
     /** The Constant emptyResult. */
-    private static final CreateProcessorActionsResult<ArtifactAboutToChange>   emptyResult = new CreateProcessorActionsResult<ArtifactAboutToChange>(
-                                                                                                                           new ArrayList<BundleProcessorCallable<ArtifactAboutToChange>>(
+    private static final CreateProcessorActionsResult<Artifact>   emptyResult = new CreateProcessorActionsResult<Artifact>(
+                                                                                                                           new ArrayList<BundleProcessorCallable<Artifact>>(
                                                                                                                                                                             0),
                                                                                                                            null);
 
     /** The Constant processorRegistry. */
-    private static final Set<MappedProcessor<? extends ArtifactAboutToChange>> processorRegistry;
+    private static final Set<MappedProcessor<? extends Artifact>> processorRegistry;
 
     /**
      * Here all maped processors are added to the processor regristry static attribute.
      */
     static {
-        processorRegistry = new HashSet<MappedProcessor<? extends ArtifactAboutToChange>>();
-        processorRegistry.add(new MappedProcessor<StreamArtifactAboutToChange>(StreamArtifactAboutToChange.class, StreamArtifactBundleProcessor.class));
+        processorRegistry = new HashSet<MappedProcessor<? extends Artifact>>();
+        processorRegistry.add(new MappedProcessor<StreamArtifact>(StreamArtifact.class, StreamArtifactBundleProcessor.class));
         processorRegistry.add(new MappedProcessor<CustomArtifact>(CustomArtifact.class, CustomArtifactBundleProcessor.class));
     }
 
@@ -430,7 +426,7 @@ public final class BundleProcessorManager {
      * @param excludedArtifacts the excluded artifacts
      * @param modifiedArtifacts the modified artifacts
      */
-    private static <T extends ArtifactAboutToChange> void findArtifactsByChangeType( final ArtifactSource bundle,
+    private static <T extends Artifact> void findArtifactsByChangeType( final ArtifactSource bundle,
                                                                         final Set<T> allValidArtifacts,
                                                                         final Set<T> addedArtifacts,
                                                                         final Set<T> excludedArtifacts,
@@ -519,7 +515,7 @@ public final class BundleProcessorManager {
 
     /**
      * This method creates each {@link Callable} to call
-     * {@link BundleProcessor#processArtifact(ArtifactAboutToChange, BundleProcessingGroup, BundleProcessingContext)} . It make a few copies
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext)} . It make a few copies
      * because the decision to mark some artifact as ignored or processed should be done by each {@link BundleProcessor},
      * independent of the other {@link BundleProcessor} involved.
      * 
@@ -537,7 +533,7 @@ public final class BundleProcessorManager {
      * @throws BundleProcessingFatalException the bundle processing fatal exception
      */
     @SuppressWarnings( "unchecked" )
-    private <T extends ArtifactAboutToChange> CreateProcessorActionsResult<T> createProcessorActions( final ArtifactSource bundle,
+    private <T extends Artifact> CreateProcessorActionsResult<T> createProcessorActions( final ArtifactSource bundle,
                                                                                          final Set<T> allValidArtifacts,
                                                                                          final Set<T> addedArtifacts,
                                                                                          final Set<T> excludedArtifacts,
@@ -645,9 +641,9 @@ public final class BundleProcessorManager {
      * @throws BundleProcessingFatalException the bundle processing fatal exception
      */
     @SuppressWarnings( "unchecked" )
-    private <T extends ArtifactAboutToChange> void groupProcessingActionsByArtifactType( final MappedProcessor<T> mappedProcessor,
+    private <T extends Artifact> void groupProcessingActionsByArtifactType( final MappedProcessor<T> mappedProcessor,
                                                                             final List<Callable<ProcessingAction>> allProcessActions,
-                                                                            final List<FinalizationContext<? extends ArtifactAboutToChange>> finalizationContexts,
+                                                                            final List<FinalizationContext<? extends Artifact>> finalizationContexts,
                                                                             final ArtifactSource bundle,
                                                                             final Set<BundleProcessor<?>> processors )
         throws BundleProcessingFatalException {
@@ -699,7 +695,7 @@ public final class BundleProcessorManager {
         try {
 
             final List<Callable<ProcessingAction>> allProcessActions = new ArrayList<Callable<ProcessingAction>>();
-            final List<FinalizationContext<? extends ArtifactAboutToChange>> finalizationContexts = new ArrayList<FinalizationContext<? extends ArtifactAboutToChange>>(
+            final List<FinalizationContext<? extends Artifact>> finalizationContexts = new ArrayList<FinalizationContext<? extends Artifact>>(
                                                                                                                                               bundles.size());
             for (final ArtifactSource targetBundle : bundles) {
                 if (!targetBundle.getActive()) {
@@ -712,7 +708,7 @@ public final class BundleProcessorManager {
                                                                                             targetBundle.getInstanceMetadata().getSavedUniqueId(),
                                                                                             null);//FIXME set version
                 final Set<BundleProcessor<?>> processors = BundleProcessorManager.findConfiguredBundleProcessors(bundle);
-                for (final MappedProcessor<? extends ArtifactAboutToChange> mappedProcessor : processorRegistry) {
+                for (final MappedProcessor<? extends Artifact> mappedProcessor : processorRegistry) {
                     this.groupProcessingActionsByArtifactType(mappedProcessor, allProcessActions, finalizationContexts, bundle,
                                                               processors);
                 }
@@ -727,7 +723,7 @@ public final class BundleProcessorManager {
                     this.wait();
                 }
 
-                for (final FinalizationContext<? extends ArtifactAboutToChange> context : finalizationContexts) {
+                for (final FinalizationContext<? extends Artifact> context : finalizationContexts) {
                     if (context != null) {
 
                         context.getProcessor().globalProcessingFinalized(context.getBundleProcessingGroup(),

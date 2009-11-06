@@ -59,9 +59,8 @@ import java.util.StringTokenizer;
 
 import net.jcip.annotations.ThreadSafe;
 
-import org.openspotlight.federation.data.InstanceMetadata;
-import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.CustomArtifact;
 
 /**
  * {@link CustomArtifact} associated with table metadata.

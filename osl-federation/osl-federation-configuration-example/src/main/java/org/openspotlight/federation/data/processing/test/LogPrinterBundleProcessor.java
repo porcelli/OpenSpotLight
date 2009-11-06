@@ -51,9 +51,9 @@ package org.openspotlight.federation.data.processing.test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
 	 * {@inheritDoc}
 	 */
 	public void globalProcessingFinalized(
-			final BundleProcessingGroup<? extends ArtifactAboutToChange> bundleProcessingGroup,
+			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
 			final BundleProcessingContext graphContext) {
 		// nothing to do here
 	}
@@ -87,7 +87,7 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
 	 * {@inheritDoc}
 	 */
 	public final ProcessingStartAction globalProcessingStarted(
-			final BundleProcessingGroup<StreamArtifactAboutToChange> bundleProcessingGroup,
+			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
 			final BundleProcessingContext graphContext) {
 		return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
 	}
@@ -97,8 +97,8 @@ public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor 
 	 * {@inheritDoc}
 	 */
 	public ProcessingAction processArtifact(
-			final StreamArtifactAboutToChange targetArtifact,
-			final BundleProcessingGroup<StreamArtifactAboutToChange> bundleProcessingGroup,
+			final StreamArtifact targetArtifact,
+			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
 			final BundleProcessingContext graphContext) {
 		this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
 		count.incrementAndGet();

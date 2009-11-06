@@ -5,9 +5,8 @@ import static org.openspotlight.federation.data.processing.test.ConfigurationExa
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.domain.DbArtifactSource;
 
 @SuppressWarnings("all")
 public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements
