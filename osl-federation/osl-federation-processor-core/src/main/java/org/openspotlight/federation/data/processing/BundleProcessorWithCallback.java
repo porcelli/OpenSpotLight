@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.processing;
 
-import org.openspotlight.federation.data.impl.Artifact;
+import org.openspotlight.federation.domain.Artifact;
 
 /**
  * This interface create some callback methods to be called durring bundle processor phase.

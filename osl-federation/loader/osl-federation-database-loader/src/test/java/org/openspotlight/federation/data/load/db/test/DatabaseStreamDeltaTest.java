@@ -62,14 +62,9 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test for class {@link DatabaseArtifactLoader}

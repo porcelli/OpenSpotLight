@@ -74,6 +74,7 @@
 		<module>osl-common</module>
 		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
+		<module>osl-simple-persist</module>
 		<module>osl-security</module>
 		<module>osl-graph</module>
 		<module>osl-slql-console</module>
@@ -126,6 +127,11 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-jcr</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-simple-persist</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -625,6 +631,11 @@
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
 				<version>2.2</version>
+			</dependency>
+			<dependency>
+  				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.8.0</version>
 			</dependency>
 <dependency>
   <groupId>com.ibm.icu</groupId>

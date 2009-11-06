@@ -51,9 +51,9 @@ package org.openspotlight.federation.data.processing.test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

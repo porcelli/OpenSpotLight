@@ -54,7 +54,6 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
-import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.ByteArrayInputStream;
@@ -76,13 +75,10 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.CustomArtifact;
-import org.openspotlight.federation.data.impl.Excluded;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.StreamArtifact;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.CustomArtifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * The AbstractArtifactLoader class is itself a {@link ArtifactLoader} that do the common stuff such as filtering artifacts before
@@ -315,7 +311,7 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
     private final class Worker implements Callable<Void> {
 
         /** The bundle. */
-        final ArtifactSource                 bundle;
+        final ArtifactSource         bundle;
 
         /** The error counter. */
         final AtomicInteger          errorCounter;
@@ -445,16 +441,16 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
         try {
             globalContext.globalExecutionAboutToStart(bundle);
             final List<Callable<Void>> workers = new ArrayList<Callable<Void>>();
-            for (final ArtifactMapping mapping : bundle.getArtifactMappings()) {
+            for (final ArtifactMapping mapping : bundle.getMappings()) {
                 final String starting = mapping.getRelative();
                 final Set<String> includedPatterns = new HashSet<String>();
                 final Set<String> excludedPatterns = new HashSet<String>();
-                for (final Included included : mapping.getIncludeds()) {
-                    final String newMapping = this.fixMapping(included.getName(), bundle, mapping);
+                for (final String included : mapping.getIncludeds()) {
+                    final String newMapping = this.fixMapping(included, bundle, mapping);
                     includedPatterns.add(newMapping);
                 }
-                for (final Excluded excluded : mapping.getExcludeds()) {
-                    final String newMapping = this.fixMapping(excluded.getName(), bundle, mapping);
+                for (final String excluded : mapping.getExcludeds()) {
+                    final String newMapping = this.fixMapping(excluded, bundle, mapping);
                     excludedPatterns.add(newMapping);
                 }
                 final Set<String> namesToFilter = globalContext.getAllArtifactNames(bundle, mapping);
@@ -542,7 +538,6 @@ public abstract class AbstractArtifactLoader implements ArtifactLoader {
                     if (content == null) {
                         continue;
                     }
-                    final String sha1 = getSha1SignatureEncodedAsBase64(content);
                     final InputStream is = new ByteArrayInputStream(content);
                     final StreamArtifact artifact = bundle.addStreamArtifact(artifactName);
                     artifact.setData(is);

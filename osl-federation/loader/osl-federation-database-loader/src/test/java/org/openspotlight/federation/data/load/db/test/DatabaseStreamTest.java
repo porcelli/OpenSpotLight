@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,11 +20,11 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifact;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

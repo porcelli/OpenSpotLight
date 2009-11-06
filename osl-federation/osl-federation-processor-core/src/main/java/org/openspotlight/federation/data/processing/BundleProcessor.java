@@ -61,12 +61,10 @@ import javax.jcr.Session;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.MutableType;
-import org.openspotlight.federation.data.ArtifactFinder;
-import org.openspotlight.federation.data.impl.Artifact;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.log.DetailedLogger;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;

@@ -31,7 +31,6 @@ import org.openspotlight.graph.query.console.test.domain.PackageContainsType;
 import org.openspotlight.graph.query.console.test.domain.TypeContainsMethod;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;

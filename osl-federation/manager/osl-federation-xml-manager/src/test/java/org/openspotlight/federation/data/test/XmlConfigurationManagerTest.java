@@ -55,7 +55,6 @@ import static org.openspotlight.federation.data.processing.test.ConfigurationExa
 
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.XmlConfigurationManager;
 

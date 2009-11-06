@@ -69,9 +69,9 @@ import org.jboss.dna.jcr.JcrEngine;
 import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
 import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System
@@ -213,7 +213,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 
 			try {
 				for (final ArtifactMapping relative : bundle
-						.getArtifactMappings()) {
+						.getMappings()) {
 
 					final JcrConfiguration configuration = new JcrConfiguration();
 					this.configureWithBundle(configuration

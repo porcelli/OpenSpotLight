@@ -20,8 +20,13 @@
 			<artifactId>osl-common</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-simple-persist</artifactId>
+			<scope>compile</scope>
+		</dependency>
 		<!-- External dependencies -->
-        <dependency>
+		<dependency>
 			<groupId>net.jcip</groupId>
 			<artifactId>jcip-annotations</artifactId>
 			<scope>compile</scope>

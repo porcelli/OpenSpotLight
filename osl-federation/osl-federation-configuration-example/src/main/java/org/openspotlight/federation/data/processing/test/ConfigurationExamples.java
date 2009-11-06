@@ -51,18 +51,13 @@ package org.openspotlight.federation.data.processing.test;
 
 import java.io.File;
 
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.BundleProcessorType;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.DnaFileArtifactSource;
-import org.openspotlight.federation.data.impl.DnaSvnArtifactSource;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.JavaArtifactSource;
-import org.openspotlight.federation.data.impl.Repository;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.BundleProcessorType;
+import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.DnaSvnArtifactSource;
+import org.openspotlight.federation.domain.JavaArtifactSource;
 
 /**
  * Class with some example valid configurations

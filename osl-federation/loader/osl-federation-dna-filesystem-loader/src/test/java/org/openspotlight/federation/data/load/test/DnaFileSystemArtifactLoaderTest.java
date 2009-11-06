@@ -57,19 +57,10 @@ import java.io.FileOutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifact;
-import org.openspotlight.federation.data.impl.Artifact.Status;
 import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test for class {@link DnaFileSystemArtifactLoader}
