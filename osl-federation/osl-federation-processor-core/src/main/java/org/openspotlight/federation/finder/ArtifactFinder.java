@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data;
+package org.openspotlight.federation.finder;
 
 import java.util.Set;
 
@@ -57,6 +57,7 @@ public interface ArtifactFinder<A extends Artifact> {
      * @param artifactSource the artifact source
      * @return the set< string>
      */
-    public Set<String> retrieveAllArtifactNames( ArtifactSource artifactSource );
+    public Set<String> retrieveAllArtifactNames( ArtifactSource artifactSource,
+                                                 String initialPath );
 
 }
