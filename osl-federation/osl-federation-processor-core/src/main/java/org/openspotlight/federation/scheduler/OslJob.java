@@ -5,11 +5,10 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import java.util.Arrays;
 
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.ConfigurationManagerProvider;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
+import org.openspotlight.federation.domain.ArtifactSource;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

@@ -63,7 +63,6 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -88,10 +87,6 @@ import org.dom4j.io.XMLWriter;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.GeneratedNode;
-import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.impl.Configuration;
 
 /**
  * This configuration manager class loads and stores the configuration on a simple and easily readable xml file, since the xml

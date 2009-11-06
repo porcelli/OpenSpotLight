@@ -62,11 +62,9 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.data.ArtifactFinder;
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
 import org.openspotlight.federation.data.load.ConfigurationManager;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLogger;
 import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
@@ -84,7 +82,7 @@ import org.openspotlight.graph.SLNode;
  * @param <T> Artifact type for this bundle processor
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public interface BundleProcessor<T extends ArtifactAboutToChange> {
+public interface BundleProcessor<T extends Artifact> {
 
     /**
      * Graph context to be possible to add or change Graph utility objects without changing the bundle processing interface.
@@ -394,9 +392,9 @@ public interface BundleProcessor<T extends ArtifactAboutToChange> {
 
     /**
      * This enum is the return of
-     * {@link BundleProcessor#processArtifact(ArtifactAboutToChange, BundleProcessingGroup, BundleProcessingContext)} method. The return types
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext)} method. The return types
      * are used for statistical information. The normal return value for
-     * {@link BundleProcessor#processArtifact(ArtifactAboutToChange, BundleProcessingGroup, BundleProcessingContext)} must be
+     * {@link BundleProcessor#processArtifact(Artifact, BundleProcessingGroup, BundleProcessingContext)} must be
      * {@link ProcessingAction#ARTIFACT_PROCESSED}.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -471,7 +469,7 @@ public interface BundleProcessor<T extends ArtifactAboutToChange> {
      * @param bundleProcessingGroup the bundle processing group
      * @param graphContext the graph context
      */
-    public void globalProcessingFinalized( BundleProcessingGroup<? extends ArtifactAboutToChange> bundleProcessingGroup,
+    public void globalProcessingFinalized( BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
                                            BundleProcessingContext graphContext );
 
     /**

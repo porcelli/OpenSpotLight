@@ -66,7 +66,6 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 import static org.openspotlight.common.util.Serialization.readFromBase64;
 import static org.openspotlight.common.util.Serialization.serializeToBase64;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -99,15 +98,8 @@ import javax.jcr.version.Version;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.ConfigurationNode;
 import org.openspotlight.federation.data.NoConfigurationYetException;
-import org.openspotlight.federation.data.StaticMetadata;
-import org.openspotlight.federation.data.InstanceMetadata.DataLoader;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeEvent;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.util.ParentNumberComparator;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.jcr.provider.CommonJcrSupport;
 
 /**
@@ -684,8 +676,8 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                                                   staticMetadataForChild.keyPropertyType());
         final String childNodeClassName = jcrChild.getName();
         final ConfigurationNode newNode = classHelper.createInstance(keyValue, parentNode, childNodeClassName);
-        if (ArtifactAboutToChange.class.isAssignableFrom(childNodeClass)) {
-            newNode.getInstanceMetadata().setPropertyIgnoringListener(ArtifactAboutToChange.KeyProperties.UUID.toString(), jcrChild.getUUID());
+        if (Artifact.class.isAssignableFrom(childNodeClass)) {
+            newNode.getInstanceMetadata().setPropertyIgnoringListener(Artifact.KeyProperties.UUID.toString(), jcrChild.getUUID());
         }
         newNode.getInstanceMetadata().setSavedUniqueId(jcrChild.getUUID());
         return newNode;
@@ -1039,9 +1031,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
                 final Node newJcrNode = this.createIfDontExists(parentJcrNode, node, nodePath, metadata.keyPropertyName(),
                                                                 node.getInstanceMetadata().getKeyPropertyValue(),
                                                                 metadata.keyPropertyType());
-                if (node instanceof ArtifactAboutToChange) {
-                    final ArtifactAboutToChange a = (ArtifactAboutToChange)node;
-                    a.getInstanceMetadata().setPropertyIgnoringListener(ArtifactAboutToChange.KeyProperties.UUID.name(), newJcrNode.getUUID());
+                if (node instanceof Artifact) {
+                    final Artifact a = (Artifact)node;
+                    a.getInstanceMetadata().setPropertyIgnoringListener(Artifact.KeyProperties.UUID.name(), newJcrNode.getUUID());
                 }
                 node.getInstanceMetadata().setSavedUniqueId(newJcrNode.getUUID());
                 alreadySaved.put(node, newJcrNode);
@@ -1064,9 +1056,9 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
             final Version version = configurationJcrNode.checkin();
             configurationJcrNode.checkout();
             final String versionName = version.getName();
-            final Set<ArtifactAboutToChange> artifacts = findAllNodesOfType(configuration, ArtifactAboutToChange.class);
-            for (final ArtifactAboutToChange a : artifacts) {
-                a.getInstanceMetadata().setPropertyIgnoringListener(ArtifactAboutToChange.KeyProperties.version.toString(), versionName);
+            final Set<Artifact> artifacts = findAllNodesOfType(configuration, Artifact.class);
+            for (final Artifact a : artifacts) {
+                a.getInstanceMetadata().setPropertyIgnoringListener(Artifact.KeyProperties.version.toString(), versionName);
             }
             configuration.getInstanceMetadata().getSharedData().markAsSaved();
         } catch (final Exception e) {
@@ -1149,10 +1141,10 @@ public class JcrSessionConfigurationManager implements ConfigurationManager {
      */
     private void setUuidData( final Node rootJcrNode,
                               final Configuration rootNode ) throws RepositoryException, UnsupportedRepositoryOperationException {
-        final Set<ArtifactAboutToChange> artifacts = findAllNodesOfType(rootNode, ArtifactAboutToChange.class);
+        final Set<Artifact> artifacts = findAllNodesOfType(rootNode, Artifact.class);
         final String versionName = rootJcrNode.getBaseVersion().getName();
-        for (final ArtifactAboutToChange a : artifacts) {
-            a.getInstanceMetadata().setPropertyIgnoringListener(ArtifactAboutToChange.KeyProperties.version.toString(), versionName);
+        for (final Artifact a : artifacts) {
+            a.getInstanceMetadata().setPropertyIgnoringListener(Artifact.KeyProperties.version.toString(), versionName);
         }
     }
 }

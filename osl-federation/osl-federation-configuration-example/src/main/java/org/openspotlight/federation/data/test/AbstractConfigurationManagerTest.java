@@ -59,9 +59,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.federation.data.GeneratedNode;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Repository;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 
 /**

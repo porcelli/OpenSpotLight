@@ -57,15 +57,13 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayInputStream;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.ArtifactMapping;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.Excluded;
-import org.openspotlight.federation.data.impl.Group;
-import org.openspotlight.federation.data.impl.Included;
-import org.openspotlight.federation.data.impl.JavaArtifactSource;
-import org.openspotlight.federation.data.impl.Repository;
-import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
+import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.JavaArtifactSource;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test class to be used on configuration node tests.
@@ -116,7 +114,7 @@ public class NodeTest {
         assertThat(bundle.getActive(), is(true));
         assertThat(bundle.getInitialLookup(), is("initialLookup"));
         assertThat(bundle.getProject(), is(project));
-        assertThat(bundle.getArtifactMappings().size(), is(not(0)));
+        assertThat(bundle.getMappings().size(), is(not(0)));
         assertThat(bundle.getArtifactMappingNames().size(), is(not(0)));
         if (verifyArtifacts) {
             assertThat(bundle.getStreamArtifacts().size(), is(not(0)));
@@ -128,7 +126,7 @@ public class NodeTest {
         assertThat(artifactMapping.getIncludeds().iterator().next().getName(), is("*"));
 
         if (verifyArtifacts) {
-            final StreamArtifactAboutToChange artifact = bundle.getStreamArtifactByName("r-1,1,1,1");
+            final StreamArtifact artifact = bundle.getStreamArtifactByName("r-1,1,1,1");
             // THIS IS TRANSIENT : Artifact.getData()
             assertThat(artifact.getDataSha1(), is(notNullValue()));
         }
@@ -166,7 +164,7 @@ public class NodeTest {
                         new Excluded(artifactMapping, "**/*.excluded");
                     }
                     for (final int m : numbers) {
-                        final StreamArtifactAboutToChange Artifact = new StreamArtifactAboutToChange(bundle, "r-" + i + "," + j + "," + k + "," + m);
+                        final StreamArtifact Artifact = new StreamArtifact(bundle, "r-" + i + "," + j + "," + k + "," + m);
                         Artifact.setData(new ByteArrayInputStream("new example".getBytes()));
                         Artifact.setDataSha1("sha1");
                     }

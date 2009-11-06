@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
-import static org.openspotlight.federation.data.util.ConfigurationNodes.findAllNodesOfType;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,11 +20,11 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.DatabaseType;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.ScriptType;
+import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,11 +124,11 @@ public abstract class DatabaseStreamTest {
 			conn.close();
 		}
 
-		final Set<StreamArtifactAboutToChange> loadedArtifacts = findAllNodesOfType(bundle,
-				StreamArtifactAboutToChange.class);
+		final Set<StreamArtifact> loadedArtifacts = findAllNodesOfType(bundle,
+				StreamArtifact.class);
 		final Set<String> failMessages = new HashSet<String>();
 		lookingTypes: for (final ScriptType typeToAssert : this.typesToAssert()) {
-			for (final StreamArtifactAboutToChange streamArtifact : loadedArtifacts) {
+			for (final StreamArtifact streamArtifact : loadedArtifacts) {
 				final String relativeName = streamArtifact.getRelativeName();
 				if (relativeName.contains(typeToAssert.name())) {
 					assertThat(streamArtifact.getDataSha1(), is(notNullValue()));
@@ -146,7 +145,7 @@ public abstract class DatabaseStreamTest {
 		if (!failMessages.isEmpty()) {
 			fail(failMessages.toString());
 		}
-		for (final StreamArtifactAboutToChange loaded : loadedArtifacts) {
+		for (final StreamArtifact loaded : loadedArtifacts) {
 			final String name = "./target/test-data/"
 					+ this.getClass().getSimpleName() + "/"
 					+ loaded.getRelativeName().replaceAll(" ", "");// DB2 has

@@ -62,14 +62,9 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata.ItemChangeType;
-import org.openspotlight.federation.data.InstanceMetadata.SharedData;
-import org.openspotlight.federation.data.impl.Configuration;
-import org.openspotlight.federation.data.impl.DbArtifactSource;
-import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange.Status;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test for class {@link DatabaseArtifactLoader}
@@ -167,7 +162,7 @@ public class DatabaseStreamDeltaTest {
         assertThat(sharedData.getDirtyNodes().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
         assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
-        final StreamArtifactAboutToChange changed = (StreamArtifactAboutToChange)sharedData.getDirtyNodes().iterator().next();
+        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
         assertThat(changed.getStatus(), is(Status.EXCLUDED));
 
     }

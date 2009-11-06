@@ -6,11 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.impl.ArtifactSource;
-import org.openspotlight.federation.data.impl.Configuration;
 import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
-import org.openspotlight.federation.data.util.ConfigurationNodes;
+import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;

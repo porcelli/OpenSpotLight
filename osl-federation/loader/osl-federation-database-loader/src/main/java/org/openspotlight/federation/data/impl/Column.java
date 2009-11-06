@@ -49,14 +49,7 @@
 package org.openspotlight.federation.data.impl;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.federation.data.InstanceMetadata.Factory.createWithKeyProperty;
-
-
 import net.jcip.annotations.ThreadSafe;
-
-import org.openspotlight.federation.data.ConfigurationNode;
-import org.openspotlight.federation.data.InstanceMetadata;
-import org.openspotlight.federation.data.StaticMetadata;
 
 /**
  * Metadata for database columns.

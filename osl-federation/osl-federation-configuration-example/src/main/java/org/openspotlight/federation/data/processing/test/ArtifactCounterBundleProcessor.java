@@ -52,9 +52,9 @@ package org.openspotlight.federation.data.processing.test;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.openspotlight.federation.data.impl.ArtifactAboutToChange;
-import org.openspotlight.federation.data.impl.StreamArtifactAboutToChange;
 import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Example class for bundle processor.
@@ -65,9 +65,9 @@ public class ArtifactCounterBundleProcessor implements StreamArtifactBundleProce
 
     private static ProcessingStartAction                 DEFAULT_START_ACTION;
 
-    private static BundleProcessingGroup<StreamArtifactAboutToChange> LAST_GROUP;
+    private static BundleProcessingGroup<StreamArtifact> LAST_GROUP;
 
-    private static final List<StreamArtifactAboutToChange>            PROCESSED_ARTIFACTS = new CopyOnWriteArrayList<StreamArtifactAboutToChange>();
+    private static final List<StreamArtifact>            PROCESSED_ARTIFACTS = new CopyOnWriteArrayList<StreamArtifact>();
 
     /**
      * Sets the default start action
@@ -81,14 +81,14 @@ public class ArtifactCounterBundleProcessor implements StreamArtifactBundleProce
     /**
      * @return last group processed
      */
-    public static BundleProcessingGroup<StreamArtifactAboutToChange> getLastGroup() {
+    public static BundleProcessingGroup<StreamArtifact> getLastGroup() {
         return LAST_GROUP;
     }
 
     /**
      * @return last processed artifact
      */
-    public static List<StreamArtifactAboutToChange> getProcessedArtifacts() {
+    public static List<StreamArtifact> getProcessedArtifacts() {
         return PROCESSED_ARTIFACTS;
     }
 
@@ -104,24 +104,24 @@ public class ArtifactCounterBundleProcessor implements StreamArtifactBundleProce
     /**
      * @return last group processed
      */
-    public static void setLastGroup( final BundleProcessingGroup<StreamArtifactAboutToChange> group ) {
+    public static void setLastGroup( final BundleProcessingGroup<StreamArtifact> group ) {
         LAST_GROUP = group;
     }
 
-    public void globalProcessingFinalized( final BundleProcessingGroup<? extends ArtifactAboutToChange> bundleProcessingGroup,
+    public void globalProcessingFinalized( final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
                                            final BundleProcessingContext graphContext ) {
         //
     }
 
-    public ProcessingStartAction globalProcessingStarted( final BundleProcessingGroup<StreamArtifactAboutToChange> bundleProcessingGroup,
+    public ProcessingStartAction globalProcessingStarted( final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
                                                           final BundleProcessingContext graphContext ) {
         LAST_GROUP = bundleProcessingGroup;
         PROCESSED_ARTIFACTS.clear();
         return DEFAULT_START_ACTION;
     }
 
-    public ProcessingAction processArtifact( final StreamArtifactAboutToChange targetArtifact,
-                                             final BundleProcessingGroup<StreamArtifactAboutToChange> bundleProcessingGroup,
+    public ProcessingAction processArtifact( final StreamArtifact targetArtifact,
+                                             final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
                                              final BundleProcessingContext graphContext ) {
         PROCESSED_ARTIFACTS.add(targetArtifact);
         return ProcessingAction.ARTIFACT_PROCESSED;
