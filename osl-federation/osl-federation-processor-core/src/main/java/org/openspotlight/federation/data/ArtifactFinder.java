@@ -3,28 +3,30 @@ package org.openspotlight.federation.data;
 import java.util.Set;
 
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface StreamArtifactFinder.
  */
 public interface ArtifactFinder<A extends Artifact> {
 
     /**
-     * Find by path.
+     * Can accept artifact source.
      * 
-     * @param path the path
-     * @return the set< stream artifact>
+     * @param artifactSource the artifact source
+     * @return true, if successful
      */
-    public A findByPath( String path );
+    public boolean canAcceptArtifactSource( ArtifactSource artifactSource );
 
     /**
      * Find by path.
      * 
-     * @param artifactSourceReference the A source reference
      * @param path the path
+     * @param artifactSource the artifact source
      * @return the stream artifact
      */
-    public A findByPath( String artifactSourceReference,
+    public A findByPath( ArtifactSource artifactSource,
                          String path );
 
     /**
@@ -32,27 +34,29 @@ public interface ArtifactFinder<A extends Artifact> {
      * 
      * @param relativeTo the relative to
      * @param path the path
+     * @param artifactSource the artifact source
      * @return the stream artifact
      */
-    public A findByRelativePath( A relativeTo,
+    public A findByRelativePath( ArtifactSource artifactSource,
+                                 A relativeTo,
                                  String path );
 
     /**
      * List by path.
      * 
      * @param path the path
+     * @param artifactSource the artifact source
      * @return the set< stream artifact>
      */
-    public Set<A> listByPath( String path );
+    public Set<A> listByPath( ArtifactSource artifactSource,
+                              String path );
 
     /**
-     * List by path.
+     * Retrieve all artifact names.
      * 
-     * @param path the path
-     * @param artifactSourceReference the Artifact source reference
-     * @return the set< stream artifact>
+     * @param artifactSource the artifact source
+     * @return the set< string>
      */
-    public Set<A> listByPath( String artifactSourceReference,
-                              String path );
+    public Set<String> retrieveAllArtifactNames( ArtifactSource artifactSource );
 
 }
