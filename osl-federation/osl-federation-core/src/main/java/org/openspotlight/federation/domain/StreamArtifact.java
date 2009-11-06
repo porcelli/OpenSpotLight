@@ -2,6 +2,7 @@ package org.openspotlight.federation.domain;
 
 import java.util.Set;
 
+import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 
 // TODO: Auto-generated Javadoc
@@ -71,6 +72,15 @@ public class StreamArtifact extends Artifact {
      */
     public void clearSyntaxInformationSet() {
         this.syntaxInformationSet.clear();
+    }
+
+    @Override
+    public boolean contentEquals( final Artifact other ) {
+        if (other instanceof StreamArtifact) {
+            final StreamArtifact that = (StreamArtifact)other;
+            return Equals.eachEquality(this.content, that.content);
+        }
+        return false;
     }
 
     /**

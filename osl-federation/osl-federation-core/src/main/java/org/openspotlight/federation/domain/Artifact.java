@@ -35,6 +35,14 @@ public abstract class Artifact implements SimpleNodeType, Serializable {
     /** The hashcode. */
     private volatile int    hashcode;
 
+    /**
+     * Content equals.
+     * 
+     * @param other the other
+     * @return true, if successful
+     */
+    public abstract boolean contentEquals( Artifact other );
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
