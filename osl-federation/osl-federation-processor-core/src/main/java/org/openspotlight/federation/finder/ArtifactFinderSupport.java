@@ -25,7 +25,6 @@ public class ArtifactFinderSupport {
         for (final T existent : existents) {
             final T newOne = findTheEquivalent(existent, newOnes);
             delta.remove(newOne);
-
             if (newOne != null) {
                 final ChangeType defaultChangeType = newOne.contentEquals(existent) ? ChangeType.NOT_CHANGED : ChangeType.CHANGED;
                 switch (existent.getChangeType()) {
@@ -33,7 +32,9 @@ public class ArtifactFinderSupport {
                         newOne.setChangeType(ChangeType.INCLUDED);
                         break;
                     case EXCLUDED:
-                        newOne.setChangeType(ChangeType.CHANGED);
+                        if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
+                            newOne.setChangeType(ChangeType.CHANGED);
+                        }
                         break;
                     default:
                         newOne.setChangeType(defaultChangeType);
