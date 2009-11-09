@@ -274,4 +274,89 @@ public class SimplePersistSupportTest {
 
     }
 
+    @Test
+    public void shouldFindJcrNodeByItsProperties() throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj obj1 = new LevelOneObj();
+        final LevelTwoObj obj2 = new LevelTwoObj();
+        final LevelThreeObj obj3 = new LevelThreeObj();
+        final ListItemObj li1 = new ListItemObj();
+        li1.setName("1");
+        final ListItemObj li2 = new ListItemObj();
+        li2.setName("2");
+        final ListItemObj li3 = new ListItemObj();
+        li3.setName("3");
+        obj3.getObjList().add(li1);
+        obj3.getObjList().add(li2);
+        obj3.getObjList().add(li3);
+        final MapValueObj mapVal1 = new MapValueObj();
+        mapVal1.setName("1");
+        final MapValueObj mapVal2 = new MapValueObj();
+        mapVal2.setName("2");
+        final MapValueObj mapVal3 = new MapValueObj();
+        mapVal3.setName("3");
+        obj3.getObjMap().put(1, mapVal1);
+        obj3.getObjMap().put(2, mapVal2);
+        obj3.getObjMap().put(3, mapVal3);
+        obj1.setRootObj(root);
+        obj2.setLevelOneObj(obj1);
+        obj3.setLevelTwoObj(obj2);
+        obj3.setBooleanList(new ArrayList<Boolean>());
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.FALSE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.getBooleanList().add(Boolean.TRUE);
+        obj3.setNumberMap(new HashMap<Double, Integer>());
+        obj3.getNumberMap().put(1.0, 3);
+        obj3.getNumberMap().put(2.0, 2);
+        obj3.getNumberMap().put(3.0, 1);
+
+        obj2.setProperty("propVal");
+        final PropertyObj propertyObj = new PropertyObj();
+        propertyObj.setName("name");
+        propertyObj.setValue(2);
+        obj2.setPropertyObj(propertyObj);
+        obj2.setKey("1");
+
+        final LevelTwoObj obj2_1 = new LevelTwoObj();
+        obj2_1.setKey("2");
+        final LevelTwoObj obj2_2 = new LevelTwoObj();
+        obj2_2.setKey("3");
+
+        SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele", this.session, obj2);
+        SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele", this.session, obj2_1);
+        SimplePersistSupport.convertBeanToJcr(SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele", this.session, obj2_2);
+
+        this.session.save();//necessary for the xpath to work
+        final Set<LevelTwoObj> result1 = SimplePersistSupport.findNodesByProperties(
+                                                                                    this.session,
+                                                                                    LevelTwoObj.class,
+                                                                                    LazyType.LAZY,
+                                                                                    org.openspotlight.common.util.Arrays.of("key"),
+                                                                                    org.openspotlight.common.util.Arrays.of("1"));
+        final Set<LevelTwoObj> result2 = SimplePersistSupport.findNodesByProperties(
+                                                                                    this.session,
+                                                                                    LevelTwoObj.class,
+                                                                                    LazyType.LAZY,
+                                                                                    org.openspotlight.common.util.Arrays.of("key"),
+                                                                                    org.openspotlight.common.util.Arrays.of("2"));
+        final Set<LevelTwoObj> result3 = SimplePersistSupport.findNodesByProperties(
+                                                                                    this.session,
+                                                                                    LevelTwoObj.class,
+                                                                                    LazyType.LAZY,
+                                                                                    org.openspotlight.common.util.Arrays.of("key"),
+                                                                                    org.openspotlight.common.util.Arrays.of("3"));
+
+        Assert.assertThat(result1.size(), Is.is(1));
+        Assert.assertThat(result3.size(), Is.is(1));
+        Assert.assertThat(result2.size(), Is.is(1));
+        Assert.assertThat(result1.iterator().next().getKey(), Is.is("1"));
+        Assert.assertThat(result2.iterator().next().getKey(), Is.is("2"));
+        Assert.assertThat(result3.iterator().next().getKey(), Is.is("3"));
+        Assert.assertThat(result1.iterator().next().getLevelOneObj().getRootObj(), IsNull.notNullValue());
+        Assert.assertThat(result2.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
+        Assert.assertThat(result3.iterator().next().getLevelOneObj(), Is.is(IsNull.nullValue()));
+
+    }
+
 }
