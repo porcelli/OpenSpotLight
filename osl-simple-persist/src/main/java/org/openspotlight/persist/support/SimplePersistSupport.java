@@ -284,6 +284,14 @@ public class SimplePersistSupport {
         return result;
     }
 
+    /**
+     * Convert beans to jcrs.
+     * 
+     * @param parentJcrNode the parent jcr node
+     * @param session the session
+     * @param beans the beans
+     * @return the iterable< node>
+     */
     public static <T> Iterable<Node> convertBeansToJcrs( final Node parentJcrNode,
                                                          final Session session,
                                                          final Iterable<T> beans ) {
@@ -295,6 +303,14 @@ public class SimplePersistSupport {
         return result;
     }
 
+    /**
+     * Convert beans to jcrs.
+     * 
+     * @param startNodePath the start node path
+     * @param session the session
+     * @param beans the beans
+     * @return the iterable< node>
+     */
     public static <T> Iterable<Node> convertBeansToJcrs( final String startNodePath,
                                                          final Session session,
                                                          final Iterable<T> beans ) {
@@ -311,7 +327,7 @@ public class SimplePersistSupport {
      * 
      * @param session the session
      * @param bean the bean
-     * @param startNodePath the start node path
+     * @param parentJcrNode the parent jcr node
      * @return the node
      */
     public static <T> Node convertBeanToJcr( final Node parentJcrNode,
@@ -342,6 +358,14 @@ public class SimplePersistSupport {
         }
     }
 
+    /**
+     * Convert bean to jcr.
+     * 
+     * @param startNodePath the start node path
+     * @param session the session
+     * @param bean the bean
+     * @return the node
+     */
     public static <T> Node convertBeanToJcr( final String startNodePath,
                                              final Session session,
                                              final T bean ) {
@@ -366,6 +390,15 @@ public class SimplePersistSupport {
         }
     }
 
+    /**
+     * Convert jcrs to beans.
+     * 
+     * @param session the session
+     * @param jcrNodes the jcr nodes
+     * @param multipleLoadingStrategy the multiple loading strategy
+     * @return the iterable< t>
+     * @throws Exception the exception
+     */
     public static <T> Iterable<T> convertJcrsToBeans( final Session session,
                                                       final Iterable<Node> jcrNodes,
                                                       final LazyType multipleLoadingStrategy ) throws Exception {
@@ -378,6 +411,15 @@ public class SimplePersistSupport {
         return result;
     }
 
+    /**
+     * Convert jcrs to beans.
+     * 
+     * @param session the session
+     * @param jcrNodes the jcr nodes
+     * @param multipleLoadingStrategy the multiple loading strategy
+     * @return the iterable< t>
+     * @throws Exception the exception
+     */
     public static <T> Iterable<T> convertJcrsToBeans( final Session session,
                                                       final NodeIterator jcrNodes,
                                                       final LazyType multipleLoadingStrategy ) throws Exception {
@@ -713,6 +755,62 @@ public class SimplePersistSupport {
             }
             return resultNodes;
 
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    /**
+     * Find children.
+     * 
+     * @param session the session
+     * @param nodeType the node type
+     * @param multipleLoadingStrategy the multiple loading strategy
+     * @param propertyNames the property names
+     * @param propertyValues the property values
+     * @return the set< c>
+     */
+    public static <T> Set<T> findNodesByProperties( final Session session,
+                                                    final Class<T> nodeType,
+                                                    final LazyType multipleLoadingStrategy,
+                                                    final String[] propertyNames,
+                                                    final Object[] propertyValues ) {
+        try {
+
+            Assertions.checkNotNull("session", session);
+            Assertions.checkNotNull("nodeType", nodeType);
+            Assertions.checkNotNull("propertyNames", propertyNames);
+            Assertions.checkNotNull("propertyValues", propertyValues);
+            Assertions.checkCondition("sameSize", propertyNames.length == propertyValues.length);
+            final BeanDescriptor fakeBeanDescriptor = new BeanDescriptor();
+            fakeBeanDescriptor.nodeName = getNodeName(nodeType);
+            final String jcrNodeName = getNodeName(JcrNodeType.NODE, fakeBeanDescriptor, null);
+
+            final StringBuilder propertyWhereXpath = new StringBuilder();
+            for (int i = 0, size = propertyNames.length; i < size; i++) {
+                final String keyString = MessageFormat.format(PROPERTY_NAME, propertyNames[i]);
+                final String propertyValye = Conversion.convert(propertyValues[i], String.class);
+                propertyWhereXpath.append('@');
+                propertyWhereXpath.append(keyString);
+                propertyWhereXpath.append('=');
+                propertyWhereXpath.append("''");
+                propertyWhereXpath.append(propertyValye);
+                propertyWhereXpath.append("''");
+                if (i != size - 1) {
+                    propertyWhereXpath.append(" and ");
+                }
+            }
+            final String xpath = MessageFormat.format("//*/{0}[{1}]", jcrNodeName, propertyWhereXpath.toString());
+            final Query query = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
+            final QueryResult result = query.execute();
+            final NodeIterator nodes = result.getNodes();
+            final Set<T> resultNodes = new HashSet<T>();
+            while (nodes.hasNext()) {
+                final Node jcrNode = nodes.nextNode();
+                final T bean = convertJcrToBean(session, jcrNode, multipleLoadingStrategy);
+                resultNodes.add(bean);
+            }
+            return resultNodes;
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
