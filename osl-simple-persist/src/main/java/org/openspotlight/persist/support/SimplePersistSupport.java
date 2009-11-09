@@ -575,11 +575,6 @@ public class SimplePersistSupport {
                 continue;
             }
 
-            if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
-                setPropertyFromBeanToDescriptor(bean, descriptor, desc, KEY_TYPE, KEY_VALUE);
-                attributesToHash.add(MessageFormat.format(KEY_VALUE, desc.getName()));
-                continue;
-            }
             if (SimpleNodeType.class.isAssignableFrom(desc.getPropertyType())) {
                 final Object propertyVal = desc.getReadMethod().invoke(bean);
                 if (propertyVal != null) {
@@ -605,6 +600,10 @@ public class SimplePersistSupport {
                     handlePropertyOfSimpleMap(bean, descriptor, desc, metadata);
                 }
                 continue;
+            }
+            if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
+                setPropertyFromBeanToDescriptor(bean, descriptor, desc, KEY_TYPE, KEY_VALUE);
+                attributesToHash.add(MessageFormat.format(KEY_VALUE, desc.getName()));
             }
             setPropertyFromBeanToDescriptor(bean, descriptor, desc, PROPERTY_TYPE, PROPERTY_VALUE);
         }
@@ -788,14 +787,14 @@ public class SimplePersistSupport {
 
             final StringBuilder propertyWhereXpath = new StringBuilder();
             for (int i = 0, size = propertyNames.length; i < size; i++) {
-                final String keyString = MessageFormat.format(PROPERTY_NAME, propertyNames[i]);
+                final String keyString = MessageFormat.format(PROPERTY_VALUE, propertyNames[i]);
                 final String propertyValye = Conversion.convert(propertyValues[i], String.class);
                 propertyWhereXpath.append('@');
                 propertyWhereXpath.append(keyString);
                 propertyWhereXpath.append('=');
-                propertyWhereXpath.append("''");
+                propertyWhereXpath.append("'");
                 propertyWhereXpath.append(propertyValye);
-                propertyWhereXpath.append("''");
+                propertyWhereXpath.append("'");
                 if (i != size - 1) {
                     propertyWhereXpath.append(" and ");
                 }
