@@ -1,6 +1,7 @@
 package org.openspotlight.federation.finder.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.HashSet;
@@ -15,6 +16,18 @@ import org.openspotlight.federation.finder.ArtifactFinderSupport;
 public class ArtifactFinderSupportTest {
 
     private ArtifactSource artifactSource;
+
+    @Test
+    public void shouldCleanAllArtifactsMarkedWithExcluded() {
+        final Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final StreamArtifact existent1 = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.EXCLUDED, "abc");
+        final StreamArtifact existent2 = StreamArtifact.createNewStreamArtifact("a/b/d", ChangeType.CHANGED, "def");
+        existents.add(existent1);
+        existents.add(existent2);
+        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getContent(), is(not("abc")));
+    }
 
     @Test
     public void shouldFindChangedArtifactsWhenTheExistentExcluded() {
@@ -155,6 +168,20 @@ public class ArtifactFinderSupportTest {
         assertThat(existents.size(), is(1));
         assertThat(existents.iterator().next().getChangeType(), is(ChangeType.NOT_CHANGED));
         assertThat(existents.iterator().next(), is(newOne));
+    }
+
+    @Test
+    public void shouldMarkAllArtifactsWithNotChanged() {
+        final Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final StreamArtifact existent1 = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.EXCLUDED, "abc");
+        final StreamArtifact existent2 = StreamArtifact.createNewStreamArtifact("a/b/d", ChangeType.CHANGED, "def");
+        existents.add(existent1);
+        existents.add(existent2);
+        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getContent(), is("def"));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.NOT_CHANGED));
+
     }
 
 }
