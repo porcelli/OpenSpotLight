@@ -1,32 +1,134 @@
 package org.openspotlight.federation.finder.test;
 
-import java.io.File;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ChangeType;
+import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.ArtifactFinderSupport;
 
 public class ArtifactFinderSupportTest {
 
     private ArtifactSource artifactSource;
 
-    /**
-     * Prepare artifact source.
-     * 
-     * @throws Exception the exception
-     */
-    @Before
-    public void prepareArtifactSource() throws Exception {
-        final File dir = new File("./target/test-data/ArtifactFinderSupportTest");
-        if (dir.exists()) {
-            dir.delete();
-        }
-        dir.mkdirs();
-        this.artifactSource = new ArtifactSource();
-        this.artifactSource.setName("target");
-        this.artifactSource.setInitialLookup("./target/test-data/ArtifactFinderSupportTest/");
+    @Test
+    public void shouldFindChangedArtifactsWhenTheExistentExcluded() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.EXCLUDED, "def");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
+        assertThat(existents.iterator().next(), is(newOne));
+        assertThat(existents.iterator().next().getContent(), is("abc"));
     }
 
+    @Test
+    public void shouldFindChangedArtifactsWhenTheExistentIsChanged() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.CHANGED, "def");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
+        assertThat(existents.iterator().next(), is(newOne));
+        assertThat(existents.iterator().next().getContent(), is("abc"));
+    }
+
+    @Test
+    public void shouldFindChangedArtifactsWhenTheExistentIsNotChanged() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.NOT_CHANGED, "def");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
+        assertThat(existents.iterator().next(), is(newOne));
+        assertThat(existents.iterator().next().getContent(), is("abc"));
+    }
+
+    @Test
     public void shouldFindIncludedArtifacts() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        newOnes.add(newOne);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.INCLUDED));
+        assertThat(existents.iterator().next(), is(newOne));
+    }
+
+    @Test
+    public void shouldFindIncludedArtifactsWhenTheExistentIsIncluded() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "def");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.INCLUDED));
+        assertThat(existents.iterator().next(), is(newOne));
+        assertThat(existents.iterator().next().getContent(), is("abc"));
 
     }
+
+    @Test
+    public void shouldFindNotChangedArtifactsWhenTheExistentIsExcluded() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.EXCLUDED, "abc");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.CHANGED));
+        assertThat(existents.iterator().next(), is(newOne));
+    }
+
+    @Test
+    public void shouldFindNotChangedArtifactsWhenTheExistentIsIncluded() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.INCLUDED));
+        assertThat(existents.iterator().next(), is(newOne));
+    }
+
+    @Test
+    public void shouldFindNotChangedArtifactsWhenTheExistentIsNotChanged() {
+        Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
+        final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
+        final StreamArtifact newOne = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.INCLUDED, "abc");
+        final StreamArtifact existent = StreamArtifact.createNewStreamArtifact("a/b/c", ChangeType.NOT_CHANGED, "abc");
+        newOnes.add(newOne);
+        existents.add(existent);
+        existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents, newOnes);
+        assertThat(existents.size(), is(1));
+        assertThat(existents.iterator().next().getChangeType(), is(ChangeType.NOT_CHANGED));
+        assertThat(existents.iterator().next(), is(newOne));
+    }
+
 }
