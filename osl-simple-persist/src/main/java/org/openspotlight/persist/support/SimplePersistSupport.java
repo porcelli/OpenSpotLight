@@ -284,6 +284,28 @@ public class SimplePersistSupport {
         return result;
     }
 
+    public static <T> Iterable<Node> convertBeansToJcrs( final Node parentJcrNode,
+                                                         final Session session,
+                                                         final Iterable<T> beans ) {
+        final Set<Node> result = new HashSet<Node>();
+        for (final T bean : beans) {
+            final Node newNode = convertBeanToJcr(parentJcrNode, session, bean);
+            result.add(newNode);
+        }
+        return result;
+    }
+
+    public static <T> Iterable<Node> convertBeansToJcrs( final String startNodePath,
+                                                         final Session session,
+                                                         final Iterable<T> beans ) {
+        final Set<Node> result = new HashSet<Node>();
+        for (final T bean : beans) {
+            final Node newNode = convertBeanToJcr(startNodePath, session, bean);
+            result.add(newNode);
+        }
+        return result;
+    }
+
     /**
      * Convert bean to jcr.
      * 
@@ -342,6 +364,31 @@ public class SimplePersistSupport {
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
+    }
+
+    public static <T> Iterable<T> convertJcrsToBeans( final Session session,
+                                                      final Iterable<Node> jcrNodes,
+                                                      final LazyType multipleLoadingStrategy ) throws Exception {
+
+        final Set<T> result = new HashSet<T>();
+        for (final Node node : jcrNodes) {
+            final T bean = convertJcrToBean(session, node, multipleLoadingStrategy);
+            result.add(bean);
+        }
+        return result;
+    }
+
+    public static <T> Iterable<T> convertJcrsToBeans( final Session session,
+                                                      final NodeIterator jcrNodes,
+                                                      final LazyType multipleLoadingStrategy ) throws Exception {
+
+        final Set<T> result = new HashSet<T>();
+        while (jcrNodes.hasNext()) {
+            final Node node = jcrNodes.nextNode();
+            final T bean = convertJcrToBean(session, node, multipleLoadingStrategy);
+            result.add(bean);
+        }
+        return result;
     }
 
     /**
