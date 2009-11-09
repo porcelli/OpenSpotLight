@@ -23,16 +23,22 @@ public class ArtifactFinderSupport {
         final Set<T> result = new HashSet<T>();
         final Set<T> delta = new HashSet<T>(newOnes);
         for (final T existent : existents) {
-            delta.remove(existent);
-            final T equivalent = findTheEquivalent(existent, newOnes);
-            if (equivalent != null) {
-                if (equivalent.contentEquals(existent)) {
-                    existent.setChangeType(ChangeType.NOT_CHANGED);
-                    result.add(existent);
-                } else {
-                    equivalent.setChangeType(ChangeType.CHANGED);
-                    result.add(equivalent);
+            final T newOne = findTheEquivalent(existent, newOnes);
+            delta.remove(newOne);
+
+            if (newOne != null) {
+                final ChangeType defaultChangeType = newOne.contentEquals(existent) ? ChangeType.NOT_CHANGED : ChangeType.CHANGED;
+                switch (existent.getChangeType()) {
+                    case INCLUDED:
+                        newOne.setChangeType(ChangeType.INCLUDED);
+                        break;
+                    case EXCLUDED:
+                        newOne.setChangeType(ChangeType.CHANGED);
+                        break;
+                    default:
+                        newOne.setChangeType(defaultChangeType);
                 }
+                result.add(newOne);
             } else {
                 existent.setChangeType(ChangeType.EXCLUDED);
                 result.add(existent);
@@ -56,11 +62,9 @@ public class ArtifactFinderSupport {
      */
     public static <T extends Artifact> T findTheEquivalent( final T artifact,
                                                             final Set<T> setWithEquivalent ) {
-        if (setWithEquivalent.contains(artifact)) {
-            for (final T equivalent : setWithEquivalent) {
-                if (equivalent.equals(artifact)) {
-                    return equivalent;
-                }
+        for (final T equivalent : setWithEquivalent) {
+            if (equivalent.getArtifactCompleteName().equals(artifact.getArtifactCompleteName())) {
+                return equivalent;
             }
         }
         return null;

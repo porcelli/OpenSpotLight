@@ -148,7 +148,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return "StreamArtifact: " + this.getArtifactCompleteName();
+        return "StreamArtifact: " + this.getArtifactCompleteName() + " " + this.getChangeType();
     }
 
 }
