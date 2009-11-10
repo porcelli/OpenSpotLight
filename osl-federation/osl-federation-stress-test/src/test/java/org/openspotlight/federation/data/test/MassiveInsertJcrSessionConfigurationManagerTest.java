@@ -72,7 +72,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.ConfigurationManager;
-import org.openspotlight.federation.data.load.JcrSessionConfigurationManager;
+import org.openspotlight.federation.manager.JcrSessionConfigurationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

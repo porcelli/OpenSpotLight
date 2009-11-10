@@ -1,5 +1,5 @@
 package org.openspotlight.federation.domain;
 
-public class CustomArtifact extends Artifact {
+public abstract class CustomArtifact extends Artifact {
 
 }

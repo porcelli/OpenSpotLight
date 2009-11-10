@@ -56,22 +56,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-filesystem-loader</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-xml-manager</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-jcr-manager</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-processor-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-graph-core</artifactId>
 		</dependency>
 		<dependency>
