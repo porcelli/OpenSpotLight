@@ -90,7 +90,6 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType, Ser
      * 
      * @return the complete path
      */
-    @TransientProperty
     public String getCompletePath() {
         if (this.isRootElement()) {
             return this.getName();
