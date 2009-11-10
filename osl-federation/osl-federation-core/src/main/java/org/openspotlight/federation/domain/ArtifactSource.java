@@ -39,6 +39,8 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
     /** The bundle processor types. */
     private Set<BundleProcessorType> bundleProcessorTypes;
 
+    private volatile String          uniqueReference = null;
+
     /**
      * Gets the bundle processor types.
      * 
@@ -106,7 +108,12 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
     }
 
     public String getUniqueReference() {
-        return this.getName() + ":" + this.getInitialLookup();
+        String result = this.uniqueReference;
+        if (result == null) {
+            result = PathElement.createFromPathString(this.getName() + "/" + this.getInitialLookup()).getCompletePath();
+            this.uniqueReference = result;
+        }
+        return result;
     }
 
     /**

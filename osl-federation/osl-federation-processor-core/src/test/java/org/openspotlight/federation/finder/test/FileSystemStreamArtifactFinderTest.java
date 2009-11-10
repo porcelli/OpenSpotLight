@@ -29,7 +29,7 @@ public class FileSystemStreamArtifactFinderTest {
     @Before
     public void prepareArtifactSource() throws Exception {
         this.artifactSource = new ArtifactSource();
-        this.artifactSource.setName("classpath:");
+        this.artifactSource.setName("classpath");
         this.artifactSource.setInitialLookup("./src/test/resources/artifacts/not_changed");
     }
 

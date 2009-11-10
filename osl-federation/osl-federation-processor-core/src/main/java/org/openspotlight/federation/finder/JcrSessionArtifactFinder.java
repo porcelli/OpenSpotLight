@@ -49,7 +49,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         Assertions.checkNotEmpty("rawPath", rawPath);
         try {
             final String path = artifactSource.getUniqueReference() + "/" + rawPath;
-            final Set<A> found = SimplePersistSupport.findNodesByProperties(this.session, this.artifactType,
+            final Set<A> found = SimplePersistSupport.findNodesByProperties(ARTIFACTS_ROOT_PATH, this.session, this.artifactType,
                                                                             LazyType.DO_NOT_LOAD,
                                                                             new String[] {"artifactCompleteName"},
                                                                             new Object[] {path});
@@ -65,22 +65,15 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         }
     }
 
-    @Override
-    public Set<A> listByPath( final ArtifactSource artifactSource,
-                              final String rawPath ) {
-        //FIXME stress test this and see if it needs some tuning
-        return super.listByPath(artifactSource, rawPath);
-    }
-
     public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
                                                  final String initialPath ) {
         try {
             final String propertyName = MessageFormat.format(SimplePersistSupport.PROPERTY_VALUE, "artifactCompleteName");
             final String nodeName = SimplePersistSupport.getJcrNodeName(this.artifactType);
-            final String nodeInitialPath = artifactSource.getUniqueReference() + "/" + initialPath;
+            final String nodeInitialPath = initialPath != null ? artifactSource.getUniqueReference() + "/" + initialPath : artifactSource.getUniqueReference();
             //FIXME test this
-            final String xpath = MessageFormat.format("//*/{0}[jcr:starts-with(@{1},''{2}'')]", nodeName, propertyName,
-                                                      nodeInitialPath);
+            final String xpath = MessageFormat.format("{0}//{1}[jcr:contains(@{2},''{3}'')]", ARTIFACTS_ROOT_PATH, nodeName,
+                                                      propertyName, nodeInitialPath);
             final Query query = this.session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
             final QueryResult result = query.execute();
             final NodeIterator nodes = result.getNodes();

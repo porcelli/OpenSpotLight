@@ -24,7 +24,8 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements Arti
                                  final A relativeTo,
                                  final String path ) {
         String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
-        newPath = Strings.removeBegginingFrom(artifactSource.getUniqueReference() + "/", newPath);
+        final String start = artifactSource.getUniqueReference();
+        newPath = Strings.removeBegginingFrom(start, newPath);
 
         return this.findByPath(artifactSource, newPath);
     }
