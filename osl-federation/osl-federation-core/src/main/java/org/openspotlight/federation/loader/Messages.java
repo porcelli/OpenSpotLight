@@ -47,55 +47,36 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load;
+package org.openspotlight.federation.loader;
 
-import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.ArtifactSource;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
- * The {@link ArtifactLoaderGroup} class is itself a {@link ArtifactLoader} that groups all the valid Artifact loaders and execute
- * all of that in order.
+ * A simple i18n class.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
  */
-public class ArtifactLoaderGroup implements ArtifactLoader {
-
-    /** The artifact loaders. */
-    private final ArtifactLoader[] artifactLoaders;
-
+public class Messages {
+    private static final String BUNDLE_NAME = "org.openspotlight.federation.data.load.messages"; //$NON-NLS-1$
+    
+    private static final ResourceBundle Resource_BUNDLE = ResourceBundle
+            .getBundle(BUNDLE_NAME);
+    
     /**
-     * Constructor with varargs for mandatory Artifact loaders.
-     * 
-     * @param artifactLoaders
+     * @param key
+     * @return the string for this key
      */
-    public ArtifactLoaderGroup(
-                                final ArtifactLoader... artifactLoaders ) {
-        checkEachParameterNotNull("artifactLoaders", artifactLoaders); //$NON-NLS-1$
-        this.artifactLoaders = artifactLoaders;
-    }
-
-    /**
-     * Executes each Artifact loader in order on the passed bundle.
-     * 
-     * @param bundle
-     * @return a count for the artifact loading
-     * @throws ConfigurationException
-     */
-    public ArtifactProcessingCount loadArtifactsFromMappings( final ArtifactSource bundle ) throws ConfigurationException {
-        checkNotNull("bundle", bundle); //$NON-NLS-1$
-        long loadCount = 0;
-        long ignoreCount = 0;
-        long errorCount = 0;
-        for (final ArtifactLoader ArtifactLoader : this.artifactLoaders) {
-            final ArtifactProcessingCount result = ArtifactLoader.loadArtifactsFromMappings(bundle);
-            checkNotNull("result", result); //$NON-NLS-1$
-            loadCount += result.getLoadCount();
-            ignoreCount += result.getIgnoreCount();
-            errorCount += result.getErrorCount();
+    public static String getString(final String key) {
+        try {
+            return Resource_BUNDLE.getString(key);
+        } catch (final MissingResourceException e) {
+            return '!' + key + '!';
         }
-        return new ArtifactProcessingCount(loadCount, ignoreCount, errorCount);
+    }
+    
+    private Messages() {
+        //
     }
 }

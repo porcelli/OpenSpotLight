@@ -71,7 +71,6 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
             final String propertyName = MessageFormat.format(SimplePersistSupport.PROPERTY_VALUE, "artifactCompleteName");
             final String nodeName = SimplePersistSupport.getJcrNodeName(this.artifactType);
             final String nodeInitialPath = initialPath != null ? artifactSource.getUniqueReference() + "/" + initialPath : artifactSource.getUniqueReference();
-            //FIXME test this
             final String xpath = MessageFormat.format("{0}//{1}[jcr:contains(@{2},''{3}'')]", ARTIFACTS_ROOT_PATH, nodeName,
                                                       propertyName, nodeInitialPath);
             final Query query = this.session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);

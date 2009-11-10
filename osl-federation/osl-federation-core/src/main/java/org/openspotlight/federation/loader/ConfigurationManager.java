@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load;
+package org.openspotlight.federation.loader;
 
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
