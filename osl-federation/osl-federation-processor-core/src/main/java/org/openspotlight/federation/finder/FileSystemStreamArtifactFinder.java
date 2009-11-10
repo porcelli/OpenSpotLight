@@ -15,10 +15,9 @@ import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.PathElement;
 import org.openspotlight.federation.domain.StreamArtifact;
 
-public class FileSystemStreamArtifactFinder implements ArtifactFinder<StreamArtifact> {
+public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<StreamArtifact> {
 
     public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
         if (new File(artifactSource.getInitialLookup()).exists()) {
@@ -57,31 +56,6 @@ public class FileSystemStreamArtifactFinder implements ArtifactFinder<StreamArti
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
 
-    }
-
-    public StreamArtifact findByRelativePath( final ArtifactSource artifactSource,
-                                              final StreamArtifact relativeTo,
-                                              final String path ) {
-        String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
-        newPath = Strings.removeBegginingFrom(artifactSource.getUniqueReference() + "/", newPath);
-
-        return this.findByPath(artifactSource, newPath);
-    }
-
-    public Set<StreamArtifact> listByPath( final ArtifactSource artifactSource,
-                                           final String rawPath ) {
-        Assertions.checkNotNull("artifactSource", artifactSource);
-        try {
-            final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
-            final Set<String> allFilePaths = this.retrieveAllArtifactNames(artifactSource, rawPath);
-            for (final String path : allFilePaths) {
-                final StreamArtifact sa = this.findByPath(artifactSource, path);
-                result.add(sa);
-            }
-            return result;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
     }
 
     public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,

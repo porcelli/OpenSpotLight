@@ -57,6 +57,8 @@ import org.openspotlight.persist.annotation.TransientProperty;
  */
 public class SimplePersistSupport {
 
+    //FIXME implement Lazy and DoNotLoad
+
     /**
      * The Class BeanDescriptor.
      */
@@ -146,49 +148,49 @@ public class SimplePersistSupport {
     private static final String DEFAULT_NODE_PREFIX              = "node.";
 
     /** The Constant defaultPrefix. */
-    private static final String DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple.property.";
+    public static final String  DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple.property.";
 
     /** The Constant typeName. */
-    private static final String TYPE_NAME                        = "node.typeName";
+    public static final String  TYPE_NAME                        = "node.typeName";
 
     /** The Constant MULTIPLE_PROPERTY_KEYS. */
-    private static final String MULTIPLE_PROPERTY_KEYS           = "multiple.property.{0}.keys";
+    public static final String  MULTIPLE_PROPERTY_KEYS           = "multiple.property.{0}.keys";
 
     /** The Constant MULTIPLE_PROPERTY_VALUES. */
-    private static final String MULTIPLE_PROPERTY_VALUES         = "multiple.property.{0}.values";
+    public static final String  MULTIPLE_PROPERTY_VALUES         = "multiple.property.{0}.values";
 
     /** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE. */
-    private static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE  = "multiple.property.{0}.multiple.type";
+    public static final String  MULTIPLE_PROPERTY_MULTIPLE_TYPE  = "multiple.property.{0}.multiple.type";
 
     /** The Constant MULTIPLE_PROPERTY_VALUE_TYPE. */
-    private static final String MULTIPLE_PROPERTY_VALUE_TYPE     = "multiple.property.{0}.value.type";
+    public static final String  MULTIPLE_PROPERTY_VALUE_TYPE     = "multiple.property.{0}.value.type";
 
     /** The Constant MULTIPLE_PROPERTY_KEY_TYPE. */
-    private static final String MULTIPLE_PROPERTY_KEY_TYPE       = "multiple.property.{0}.key.type";
+    public static final String  MULTIPLE_PROPERTY_KEY_TYPE       = "multiple.property.{0}.key.type";
 
     /** The Constant MULTIPLE_PROPERTY_KEY_VALUE. */
-    private static final String MULTIPLE_PROPERTY_KEY_VALUE      = "multiple.property.{0}.key.value";
+    public static final String  MULTIPLE_PROPERTY_KEY_VALUE      = "multiple.property.{0}.key.value";
 
     /** The Constant nodePropertyName. */
-    private static final String PROPERTY_NAME                    = "property.name";
+    public static final String  PROPERTY_NAME                    = "property.name";
 
     /** The Constant hashValue. */
-    private static final String HASH_VALUE                       = "node.hashValue";
+    public static final String  HASH_VALUE                       = "node.hashValue";
 
     /** The Constant hashValue. */
-    private static final String LOCAL_HASH_VALUE                 = "node.pkonly.hashValue";
+    public static final String  LOCAL_HASH_VALUE                 = "node.pkonly.hashValue";
 
     /** The Constant propertyValue. */
-    private static final String PROPERTY_VALUE                   = "node.property.{0}.value";
+    public static final String  PROPERTY_VALUE                   = "node.property.{0}.value";
 
     /** The Constant propertyType. */
-    private static final String PROPERTY_TYPE                    = "node.property.{0}.type";
+    public static final String  PROPERTY_TYPE                    = "node.property.{0}.type";
 
     /** The Constant keyValue. */
-    private static final String KEY_VALUE                        = "node.key.{0}.value";
+    public static final String  KEY_VALUE                        = "node.key.{0}.value";
 
     /** The Constant keyType. */
-    private static final String KEY_TYPE                         = "node.key.{0}.type";
+    public static final String  KEY_TYPE                         = "node.key.{0}.type";
 
     /**
      * Adds the or create jcr node.
@@ -494,6 +496,9 @@ public class SimplePersistSupport {
             if (desc.getName().equals("class")) {
                 continue;
             }
+            if (desc.getWriteMethod() == null) {
+                continue;
+            }
             if (desc.getReadMethod().isAnnotationPresent(TransientProperty.class)) {
                 continue;
             }
@@ -720,7 +725,8 @@ public class SimplePersistSupport {
      * @param keyElementValues the key element values
      * @return the set< c>
      */
-    public static <T> Set<T> findNodesByPrimaryKeyElements( final Session session,
+    public static <T> Set<T> findNodesByPrimaryKeyElements( final String rootPath,
+                                                            final Session session,
                                                             final Class<T> nodeType,
                                                             final LazyType multipleLoadingStrategy,
                                                             final String[] keyElementNames,
@@ -742,7 +748,7 @@ public class SimplePersistSupport {
             }
             final String hash = createHashUsingOnlyPrimaryKey(nodeType, fakeBeanDescriptor, attributesToHash);
             final String jcrNodeName = getNodeName(JcrNodeType.NODE, fakeBeanDescriptor, null);
-            final String xpath = MessageFormat.format("//*/{0}[@{1}=''{2}'']", jcrNodeName, LOCAL_HASH_VALUE, hash);
+            final String xpath = MessageFormat.format("{0}//{1}[@{2}=''{3}'']", rootPath, jcrNodeName, LOCAL_HASH_VALUE, hash);
             final Query query = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
             final QueryResult result = query.execute();
             final NodeIterator nodes = result.getNodes();
@@ -769,7 +775,8 @@ public class SimplePersistSupport {
      * @param propertyValues the property values
      * @return the set< c>
      */
-    public static <T> Set<T> findNodesByProperties( final Session session,
+    public static <T> Set<T> findNodesByProperties( final String rootPath,
+                                                    final Session session,
                                                     final Class<T> nodeType,
                                                     final LazyType multipleLoadingStrategy,
                                                     final String[] propertyNames,
@@ -799,7 +806,7 @@ public class SimplePersistSupport {
                     propertyWhereXpath.append(" and ");
                 }
             }
-            final String xpath = MessageFormat.format("//*/{0}[{1}]", jcrNodeName, propertyWhereXpath.toString());
+            final String xpath = MessageFormat.format("{0}//{1}[{2}]", rootPath, jcrNodeName, propertyWhereXpath.toString());
             final Query query = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
             final QueryResult result = query.execute();
             final NodeIterator nodes = result.getNodes();
@@ -813,6 +820,16 @@ public class SimplePersistSupport {
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
+    }
+
+    /**
+     * Gets the node name.
+     * 
+     * @param class1 the class1
+     * @return the node name
+     */
+    public static String getJcrNodeName( final Class<? extends Object> class1 ) {
+        return JcrNodeType.NODE.toString() + "_" + getNodeName(class1);
     }
 
     /**

@@ -8,7 +8,6 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -63,7 +62,6 @@ public abstract class Artifact implements SimpleNodeType, Serializable {
      * 
      * @return the artifact complete name
      */
-    @TransientProperty
     public String getArtifactCompleteName() {
         String result = this.artifactCompleteName;
         if (result == null) {

@@ -53,7 +53,6 @@ package org.openspotlight.common;
  * Enum for describing lazy behavior.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public enum LazyType {
     /**
@@ -63,6 +62,11 @@ public enum LazyType {
     /**
      * Should not behave in a lazy way.
      */
-    EAGER
-    
+    EAGER,
+
+    /**
+     * Should not load ever
+     */
+    DO_NOT_LOAD
+
 }
