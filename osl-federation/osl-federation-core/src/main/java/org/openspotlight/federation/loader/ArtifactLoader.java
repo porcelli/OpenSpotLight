@@ -49,6 +49,8 @@
 
 package org.openspotlight.federation.loader;
 
+import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
+
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Set;
@@ -59,7 +61,9 @@ import java.util.concurrent.Executors;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.Triple;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Configuration;
 import org.openspotlight.federation.finder.ArtifactFinder;
@@ -121,11 +125,19 @@ public interface ArtifactLoader {
                     this.executor.execute(new Runnable() {
 
                         public void run() {
-                            final Set<String> names = pair.getK1().retrieveAllArtifactNames(pair.getK2(), null);
-                            for (final String name : names) {
-                                sourcesToProcess.add(new Triple<ArtifactFinder<?>, ArtifactSource, String>(pair.getK1(),
-                                                                                                           pair.getK2(), name));
-                                sourcesToLoad.remove(pair);
+
+                            for (final ArtifactMapping mapping : pair.getK2().getMappings()) {
+                                final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(pair.getK2(),
+                                                                                                   mapping.getRelative());
+                                final FilterResult newNames = filterNamesByPattern(rawNames, mapping.getIncludeds(),
+                                                                                   mapping.getExcludeds(), false);
+
+                                for (final String name : newNames.getIncludedNames()) {
+
+                                    sourcesToProcess.add(new Triple<ArtifactFinder<?>, ArtifactSource, String>(pair.getK1(),
+                                                                                                               pair.getK2(), name));
+                                    sourcesToLoad.remove(pair);
+                                }
                             }
                         }
                     });
