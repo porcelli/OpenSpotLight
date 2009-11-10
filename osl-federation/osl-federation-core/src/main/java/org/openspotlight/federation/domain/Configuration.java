@@ -12,11 +12,17 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "configuration" )
 public class Configuration implements SimpleNodeType, Serializable {
 
+    private long defaultSleepingIntervalInMilliseconds;
+
     /** The number of parallel threads. */
-    private int numberOfParallelThreads;
-    
+    private int  numberOfParallelThreads;
+
     /** The max result list size. */
-    private int maxResultListSize;
+    private int  maxResultListSize;
+
+    public long getDefaultSleepingIntervalInMilliseconds() {
+        return this.defaultSleepingIntervalInMilliseconds;
+    }
 
     /**
      * Gets the max result list size.
@@ -34,6 +40,10 @@ public class Configuration implements SimpleNodeType, Serializable {
      */
     public int getNumberOfParallelThreads() {
         return this.numberOfParallelThreads;
+    }
+
+    public void setDefaultSleepingIntervalInMilliseconds( final long defaultSleepingIntervalInMilliseconds ) {
+        this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
     }
 
     /**

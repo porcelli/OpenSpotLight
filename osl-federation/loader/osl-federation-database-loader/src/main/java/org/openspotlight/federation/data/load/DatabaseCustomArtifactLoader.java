@@ -87,6 +87,7 @@ import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.loader.ArtifactLoader;
 
 /**
  * Artifact loader responsible to load information from database using jdbc metadata. It can load information from tables, views

@@ -47,36 +47,63 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load;
-
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+package org.openspotlight.common;
 
 /**
- * A simple i18n class.
+ * This is a simple class to store three objects.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
+ * @param <K1>
+ * @param <K2>
+ * @param <K3>
  */
-public class Messages {
-    private static final String BUNDLE_NAME = "org.openspotlight.federation.data.load.messages"; //$NON-NLS-1$
-    
-    private static final ResourceBundle Resource_BUNDLE = ResourceBundle
-            .getBundle(BUNDLE_NAME);
-    
+public class Triple<K1, K2, K3> {
     /**
-     * @param key
-     * @return the string for this key
+     * First item.
      */
-    public static String getString(final String key) {
-        try {
-            return Resource_BUNDLE.getString(key);
-        } catch (final MissingResourceException e) {
-            return '!' + key + '!';
-        }
+    private final K1 k1;
+    /**
+     * Second item.
+     */
+    private final K2 k2;
+    /**
+     * third item.
+     */
+    private final K3 k3;
+
+    /**
+     * Creates a new pair using the two keys provided.
+     * 
+     * @param k1
+     * @param k2
+     * @param k3
+     */
+    public Triple(
+                   final K1 k1, final K2 k2, final K3 k3 ) {
+        this.k1 = k1;
+        this.k2 = k2;
+        this.k3 = k3;
     }
-    
-    private Messages() {
-        //
+
+    /**
+     * @return the first key
+     */
+    public K1 getK1() {
+        return this.k1;
     }
+
+    /**
+     * @return the second key
+     */
+    public K2 getK2() {
+        return this.k2;
+    }
+
+    /**
+     * @return the third key
+     */
+    public K3 getK3() {
+        return this.k3;
+    }
+
 }

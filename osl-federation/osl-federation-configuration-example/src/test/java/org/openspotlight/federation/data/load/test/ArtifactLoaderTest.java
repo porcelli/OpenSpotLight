@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import org.openspotlight.federation.data.load.AbstractArtifactLoader;
+import org.openspotlight.federation.loader.AbstractArtifactLoader;
 
 /**
  * Test for class {@link AbstractArtifactLoader}

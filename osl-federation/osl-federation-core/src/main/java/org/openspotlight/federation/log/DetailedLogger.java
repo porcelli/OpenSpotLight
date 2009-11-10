@@ -29,8 +29,6 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Dates;
 import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNode;
 
 // TODO: Auto-generated Javadoc
 /**

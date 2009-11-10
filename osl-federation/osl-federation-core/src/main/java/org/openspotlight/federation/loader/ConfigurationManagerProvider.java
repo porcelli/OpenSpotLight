@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.load;
+package org.openspotlight.federation.loader;
 
 /**
  * This interface describes a {@link ConfigurationManager} factory. It should create a new {@link ConfigurationManager} each time

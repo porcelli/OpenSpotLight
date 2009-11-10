@@ -67,174 +67,168 @@ import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.data.util.JcrNodeVisitor;
-import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
+import org.openspotlight.jcr.util.JcrNodeVisitor;
+import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
 /**
  * Test class to be used on configuration node tests.
  * 
  * @author Luiz Fernando Teston (Feu Teston)
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class JcrNodeVisitorTest {
 
-	public static final String TESTDATA_PATH = "./src/test/resources/configuration/";
-	public static final String JACKRABBIT_DATA_PATH = "./target/test-data/JcrNodeVisitorTest/";
-	public static final String REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH
-			+ "repository";
-	public static final String REPOSITORY_CONFIG_PATH = TESTDATA_PATH
-			+ "JcrNodeVisitorTest/jackrabbit.xml";
-	public static final String DERBY_SYSTEM_HOME = JACKRABBIT_DATA_PATH
-			+ "derby";
+    public static final String  TESTDATA_PATH             = "./src/test/resources/configuration/";
+    public static final String  JACKRABBIT_DATA_PATH      = "./target/test-data/JcrNodeVisitorTest/";
+    public static final String  REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH + "repository";
+    public static final String  REPOSITORY_CONFIG_PATH    = TESTDATA_PATH + "JcrNodeVisitorTest/jackrabbit.xml";
+    public static final String  DERBY_SYSTEM_HOME         = JACKRABBIT_DATA_PATH + "derby";
 
-	private Session session;
+    private Session             session;
 
-	private TransientRepository repository;
+    private TransientRepository repository;
 
-	@Before
-	public void initializeSomeConfiguration() throws Exception {
-		delete(JACKRABBIT_DATA_PATH);
+    @Before
+    public void initializeSomeConfiguration() throws Exception {
+        delete(JACKRABBIT_DATA_PATH);
 
-		System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
-		this.repository = new TransientRepository(REPOSITORY_CONFIG_PATH,
-				REPOSITORY_DIRECTORY_PATH);
-		final SimpleCredentials creds = new SimpleCredentials("jsmith",
-				"password".toCharArray());
-		this.session = this.repository.login(creds);
-		assertThat(this.session, is(notNullValue()));
-	}
+        System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
+        this.repository = new TransientRepository(REPOSITORY_CONFIG_PATH, REPOSITORY_DIRECTORY_PATH);
+        final SimpleCredentials creds = new SimpleCredentials("jsmith", "password".toCharArray());
+        this.session = this.repository.login(creds);
+        assertThat(this.session, is(notNullValue()));
+    }
 
-	@Test
-	public void shouldVisitNodesInACorrectWay() throws Exception {
+    @Test
+    public void shouldVisitNodesInACorrectWay() throws Exception {
 
-		Node first1 = this.session.getRootNode().addNode("first1");
-		Node first2 = this.session.getRootNode().addNode("first2");
-		Node first3 = this.session.getRootNode().addNode("first3");
-		Node first4 = this.session.getRootNode().addNode("first4");
-		Node first5 = this.session.getRootNode().addNode("first5");
+        final Node first1 = this.session.getRootNode().addNode("first1");
+        final Node first2 = this.session.getRootNode().addNode("first2");
+        final Node first3 = this.session.getRootNode().addNode("first3");
+        final Node first4 = this.session.getRootNode().addNode("first4");
+        final Node first5 = this.session.getRootNode().addNode("first5");
 
-		Node second1_1 = first1.addNode("second1_1");
-		Node second1_2 = first1.addNode("second1_2");
-		Node second1_3 = first1.addNode("second1_3");
+        final Node second1_1 = first1.addNode("second1_1");
+        final Node second1_2 = first1.addNode("second1_2");
+        final Node second1_3 = first1.addNode("second1_3");
 
-		Node second2_1 = first2.addNode("second2_1");
-		Node second2_2 = first2.addNode("second2_2");
-		Node second2_3 = first2.addNode("second2_3");
+        final Node second2_1 = first2.addNode("second2_1");
+        final Node second2_2 = first2.addNode("second2_2");
+        final Node second2_3 = first2.addNode("second2_3");
 
-		Node third1_1_1 = second1_1.addNode("third1_1_1");
-		Node third1_1_2 = second1_1.addNode("third1_1_2");
-		Node third1_1_3 = second1_1.addNode("third1_1_3");
+        final Node third1_1_1 = second1_1.addNode("third1_1_1");
+        final Node third1_1_2 = second1_1.addNode("third1_1_2");
+        final Node third1_1_3 = second1_1.addNode("third1_1_3");
 
-		Node third2_2_1 = second2_2.addNode("third2_2_1");
-		Node third2_2_2 = second2_2.addNode("third2_2_2");
-		Node third2_2_3 = second2_2.addNode("third2_2_3");
+        final Node third2_2_1 = second2_2.addNode("third2_2_1");
+        final Node third2_2_2 = second2_2.addNode("third2_2_2");
+        final Node third2_2_3 = second2_2.addNode("third2_2_3");
 
-		final List<String> visitedNodes = new ArrayList<String>();
+        final List<String> visitedNodes = new ArrayList<String>();
 
-		NodeVisitor visitor = new NodeVisitor() {
+        final NodeVisitor visitor = new NodeVisitor() {
 
-			public void visiting(Node n) throws RepositoryException {
-				visitedNodes.add(n.getName());
-			}
+            public void visiting( final Node n ) throws RepositoryException {
+                visitedNodes.add(n.getName());
+            }
 
-		};
+        };
 
-		ItemVisitor jcrVisitor = JcrNodeVisitor.withVisitor(visitor);
-		session.getRootNode().accept(jcrVisitor);
-		
-		assertThat(visitedNodes.contains("first1"), is(true));
-		assertThat(visitedNodes.contains("first2"), is(true));
-		assertThat(visitedNodes.contains("first3"), is(true));
-		assertThat(visitedNodes.contains("first4"), is(true));
-		assertThat(visitedNodes.contains("first5"), is(true));
+        final ItemVisitor jcrVisitor = JcrNodeVisitor.withVisitor(visitor);
+        this.session.getRootNode().accept(jcrVisitor);
 
-		assertThat(visitedNodes.contains("second1_1"), is(true));
-		assertThat(visitedNodes.contains("second1_2"), is(true));
-		assertThat(visitedNodes.contains("second1_3"), is(true));
+        assertThat(visitedNodes.contains("first1"), is(true));
+        assertThat(visitedNodes.contains("first2"), is(true));
+        assertThat(visitedNodes.contains("first3"), is(true));
+        assertThat(visitedNodes.contains("first4"), is(true));
+        assertThat(visitedNodes.contains("first5"), is(true));
 
-		assertThat(visitedNodes.contains("second2_1"), is(true));
-		assertThat(visitedNodes.contains("second2_2"), is(true));
-		assertThat(visitedNodes.contains("second2_3"), is(true));
+        assertThat(visitedNodes.contains("second1_1"), is(true));
+        assertThat(visitedNodes.contains("second1_2"), is(true));
+        assertThat(visitedNodes.contains("second1_3"), is(true));
 
-		assertThat(visitedNodes.contains("third1_1_1"), is(true));
-		assertThat(visitedNodes.contains("third1_1_2"), is(true));
-		assertThat(visitedNodes.contains("third1_1_3"), is(true));
+        assertThat(visitedNodes.contains("second2_1"), is(true));
+        assertThat(visitedNodes.contains("second2_2"), is(true));
+        assertThat(visitedNodes.contains("second2_3"), is(true));
 
-		assertThat(visitedNodes.contains("third2_2_1"), is(true));
-		assertThat(visitedNodes.contains("third2_2_2"), is(true));
-		assertThat(visitedNodes.contains("third2_2_3"), is(true));
-	}
+        assertThat(visitedNodes.contains("third1_1_1"), is(true));
+        assertThat(visitedNodes.contains("third1_1_2"), is(true));
+        assertThat(visitedNodes.contains("third1_1_3"), is(true));
 
+        assertThat(visitedNodes.contains("third2_2_1"), is(true));
+        assertThat(visitedNodes.contains("third2_2_2"), is(true));
+        assertThat(visitedNodes.contains("third2_2_3"), is(true));
+    }
 
-	@Test
-	public void shouldVisitNodesUsingLevelLimmit() throws Exception {
+    @Test
+    public void shouldVisitNodesUsingLevelLimmit() throws Exception {
 
-		Node first1 = this.session.getRootNode().addNode("first1");
-		Node first2 = this.session.getRootNode().addNode("first2");
-		Node first3 = this.session.getRootNode().addNode("first3");
-		Node first4 = this.session.getRootNode().addNode("first4");
-		Node first5 = this.session.getRootNode().addNode("first5");
+        final Node first1 = this.session.getRootNode().addNode("first1");
+        final Node first2 = this.session.getRootNode().addNode("first2");
+        final Node first3 = this.session.getRootNode().addNode("first3");
+        final Node first4 = this.session.getRootNode().addNode("first4");
+        final Node first5 = this.session.getRootNode().addNode("first5");
 
-		Node second1_1 = first1.addNode("second1_1");
-		Node second1_2 = first1.addNode("second1_2");
-		Node second1_3 = first1.addNode("second1_3");
+        final Node second1_1 = first1.addNode("second1_1");
+        final Node second1_2 = first1.addNode("second1_2");
+        final Node second1_3 = first1.addNode("second1_3");
 
-		Node second2_1 = first2.addNode("second2_1");
-		Node second2_2 = first2.addNode("second2_2");
-		Node second2_3 = first2.addNode("second2_3");
+        final Node second2_1 = first2.addNode("second2_1");
+        final Node second2_2 = first2.addNode("second2_2");
+        final Node second2_3 = first2.addNode("second2_3");
 
-		Node third1_1_1 = second1_1.addNode("third1_1_1");
-		Node third1_1_2 = second1_1.addNode("third1_1_2");
-		Node third1_1_3 = second1_1.addNode("third1_1_3");
+        final Node third1_1_1 = second1_1.addNode("third1_1_1");
+        final Node third1_1_2 = second1_1.addNode("third1_1_2");
+        final Node third1_1_3 = second1_1.addNode("third1_1_3");
 
-		Node third2_2_1 = second2_2.addNode("third2_2_1");
-		Node third2_2_2 = second2_2.addNode("third2_2_2");
-		Node third2_2_3 = second2_2.addNode("third2_2_3");
+        final Node third2_2_1 = second2_2.addNode("third2_2_1");
+        final Node third2_2_2 = second2_2.addNode("third2_2_2");
+        final Node third2_2_3 = second2_2.addNode("third2_2_3");
 
-		final List<String> visitedNodes = new ArrayList<String>();
+        final List<String> visitedNodes = new ArrayList<String>();
 
-		NodeVisitor visitor = new NodeVisitor() {
+        final NodeVisitor visitor = new NodeVisitor() {
 
-			public void visiting(Node n) throws RepositoryException {
-				visitedNodes.add(n.getName());
-			}
+            public void visiting( final Node n ) throws RepositoryException {
+                visitedNodes.add(n.getName());
+            }
 
-		};
+        };
 
-		ItemVisitor jcrVisitor = JcrNodeVisitor.withVisitorAndLevelLimmit(visitor,2);
-		session.getRootNode().accept(jcrVisitor);
-		
-		assertThat(visitedNodes.contains("first1"), is(true));
-		assertThat(visitedNodes.contains("first2"), is(true));
-		assertThat(visitedNodes.contains("first3"), is(true));
-		assertThat(visitedNodes.contains("first4"), is(true));
-		assertThat(visitedNodes.contains("first5"), is(true));
+        final ItemVisitor jcrVisitor = JcrNodeVisitor.withVisitorAndLevelLimmit(visitor, 2);
+        this.session.getRootNode().accept(jcrVisitor);
 
-		assertThat(visitedNodes.contains("second1_1"), is(true));
-		assertThat(visitedNodes.contains("second1_2"), is(true));
-		assertThat(visitedNodes.contains("second1_3"), is(true));
+        assertThat(visitedNodes.contains("first1"), is(true));
+        assertThat(visitedNodes.contains("first2"), is(true));
+        assertThat(visitedNodes.contains("first3"), is(true));
+        assertThat(visitedNodes.contains("first4"), is(true));
+        assertThat(visitedNodes.contains("first5"), is(true));
 
-		assertThat(visitedNodes.contains("second2_1"), is(true));
-		assertThat(visitedNodes.contains("second2_2"), is(true));
-		assertThat(visitedNodes.contains("second2_3"), is(true));
+        assertThat(visitedNodes.contains("second1_1"), is(true));
+        assertThat(visitedNodes.contains("second1_2"), is(true));
+        assertThat(visitedNodes.contains("second1_3"), is(true));
 
-		assertThat(visitedNodes.contains("third1_1_1"), is(false));
-		assertThat(visitedNodes.contains("third1_1_2"), is(false));
-		assertThat(visitedNodes.contains("third1_1_3"), is(false));
+        assertThat(visitedNodes.contains("second2_1"), is(true));
+        assertThat(visitedNodes.contains("second2_2"), is(true));
+        assertThat(visitedNodes.contains("second2_3"), is(true));
 
-		assertThat(visitedNodes.contains("third2_2_1"), is(false));
-		assertThat(visitedNodes.contains("third2_2_2"), is(false));
-		assertThat(visitedNodes.contains("third2_2_3"), is(false));
-	}
+        assertThat(visitedNodes.contains("third1_1_1"), is(false));
+        assertThat(visitedNodes.contains("third1_1_2"), is(false));
+        assertThat(visitedNodes.contains("third1_1_3"), is(false));
 
-	@After
-	public void shutdown() throws Exception {
-		if (this.session != null) {
-			this.session.logout();
-		}
-		if (this.repository != null) {
-			this.repository.shutdown();
-		}
-	}
+        assertThat(visitedNodes.contains("third2_2_1"), is(false));
+        assertThat(visitedNodes.contains("third2_2_2"), is(false));
+        assertThat(visitedNodes.contains("third2_2_3"), is(false));
+    }
+
+    @After
+    public void shutdown() throws Exception {
+        if (this.session != null) {
+            this.session.logout();
+        }
+        if (this.repository != null) {
+            this.repository.shutdown();
+        }
+    }
 
 }

@@ -11,12 +11,12 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.data.load.ArtifactLoaderGroup;
 import org.openspotlight.federation.data.load.DatabaseCustomArtifactLoader;
 import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.DatabaseSupport;
 import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.loader.ArtifactLoaderGroup;
 
 /**
  * During a column changing, its table needs to be marked as changed also. This

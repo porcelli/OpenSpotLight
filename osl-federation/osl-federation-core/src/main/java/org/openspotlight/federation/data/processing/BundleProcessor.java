@@ -61,15 +61,11 @@ import javax.jcr.Session;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.MutableType;
-import org.openspotlight.federation.data.load.ConfigurationManager;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLogger;
-import org.openspotlight.graph.SLGraphException;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNode;
 
 /**
  * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
