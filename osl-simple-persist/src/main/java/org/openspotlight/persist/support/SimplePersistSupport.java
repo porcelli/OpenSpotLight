@@ -318,8 +318,10 @@ public class SimplePersistSupport {
                                                          final Iterable<T> beans ) {
         final Set<Node> result = new HashSet<Node>();
         for (final T bean : beans) {
-            final Node newNode = convertBeanToJcr(startNodePath, session, bean);
-            result.add(newNode);
+            if (bean != null) {
+                final Node newNode = convertBeanToJcr(startNodePath, session, bean);
+                result.add(newNode);
+            }
         }
         return result;
     }
@@ -335,7 +337,8 @@ public class SimplePersistSupport {
     public static <T> Node convertBeanToJcr( final Node parentJcrNode,
                                              final Session session,
                                              final T bean ) {
-        Assertions.checkCondition("correctInstance", bean instanceof SimpleNodeType);
+        Assertions.checkNotNull("bean", bean);
+        Assertions.checkCondition("correctInstance:" + bean.getClass().getName(), bean instanceof SimpleNodeType);
         Assertions.checkNotNull("session", session);
         Assertions.checkNotNull("parentJcrNode", parentJcrNode);
         try {

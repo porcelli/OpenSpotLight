@@ -30,9 +30,10 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
                                       final String rawPath ) {
         Assertions.checkNotNull("artifactSource", artifactSource);
         Assertions.checkNotEmpty("rawPath", rawPath);
+        final String path = rawPath.startsWith("/") ? Strings.removeBegginingFrom("/", rawPath) : rawPath;
         try {
 
-            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), rawPath);
+            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), path);
 
             final File file = new File(location);
             if (!file.exists()) {
@@ -49,7 +50,7 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
             }
             final String content = buffer.toString();
             final StreamArtifact streamArtifact = StreamArtifact.createNewStreamArtifact(artifactSource.getUniqueReference()
-                                                                                         + "/" + rawPath, ChangeType.INCLUDED,
+                                                                                         + "/" + path, ChangeType.INCLUDED,
                                                                                          content);
             return streamArtifact;
         } catch (final Exception e) {
@@ -67,11 +68,7 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
 
             final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), rawPath);
 
-            final File initialDir = new File(location);
-            final String pathToRemove = initialDir.getCanonicalPath().substring(
-                                                                                0,
-                                                                                initialDir.getCanonicalPath().length()
-                                                                                - rawPath.length() - 1);
+            final String pathToRemove = new File(artifactSource.getInitialLookup()).getCanonicalPath() + "/";
             final Set<String> pathList = Files.listFileNamesFrom(location);
 
             for (final String p : pathList) {
