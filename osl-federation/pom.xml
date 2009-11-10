@@ -15,15 +15,11 @@
 
 	<modules>
 		<module>osl-federation-core</module>
-		<module>osl-federation-processor-core</module>
 		<module>osl-federation-configuration-example</module>
-		<module>manager/osl-federation-xml-manager</module>
-		<module>manager/osl-federation-jcr-manager</module>
 		<module>loader/osl-federation-database-loader</module>
 		<module>loader/osl-federation-dna-core-loader</module>
 		<module>loader/osl-federation-dna-filesystem-loader</module>
 		<module>loader/osl-federation-dna-svn-loader</module>
-		<module>loader/osl-federation-filesystem-loader</module>
 		<module>osl-federation-stress-test</module>
 	</modules>
 </project>
