@@ -58,6 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.Triple;
 import org.openspotlight.common.util.Exceptions;
@@ -68,7 +69,7 @@ import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Configuration;
 import org.openspotlight.federation.finder.ArtifactFinder;
 
-public interface ArtifactLoader {
+public interface ArtifactLoader extends Disposable {
 
     public static enum ArtifactLoaderBehavior {
         ONE_LOADER_PER_SOURCE,

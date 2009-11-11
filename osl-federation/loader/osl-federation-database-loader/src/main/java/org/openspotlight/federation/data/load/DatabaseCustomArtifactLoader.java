@@ -71,22 +71,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.impl.Column;
-import org.openspotlight.federation.data.impl.ColumnType;
-import org.openspotlight.federation.data.impl.NullableSqlType;
-import org.openspotlight.federation.data.impl.RoutineArtifact;
-import org.openspotlight.federation.data.impl.RoutineParameter;
-import org.openspotlight.federation.data.impl.TableArtifact;
-import org.openspotlight.federation.data.impl.ViewArtifact;
-import org.openspotlight.federation.data.impl.RoutineArtifact.RoutineType;
-import org.openspotlight.federation.data.impl.RoutineParameter.RoutineParameterType;
 import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.domain.ArtifactMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ColumnType;
 import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.NullableSqlType;
+import org.openspotlight.federation.domain.RoutineArtifact;
+import org.openspotlight.federation.domain.RoutineParameter;
+import org.openspotlight.federation.domain.RoutineType;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.TableArtifact;
+import org.openspotlight.federation.domain.ViewArtifact;
 import org.openspotlight.federation.loader.ArtifactLoader;
 
 /**

@@ -2,6 +2,7 @@ package org.openspotlight.federation.finder;
 
 import java.util.Set;
 
+import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 
@@ -9,7 +10,7 @@ import org.openspotlight.federation.domain.ArtifactSource;
 /**
  * The Interface StreamArtifactFinder.
  */
-public interface ArtifactFinder<A extends Artifact> {
+public interface ArtifactFinder<A extends Artifact> extends Disposable {
 
     /**
      * Can accept artifact source.

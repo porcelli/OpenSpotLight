@@ -12,13 +12,13 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.data.impl.RoutineArtifact;
-import org.openspotlight.federation.data.impl.TableArtifact;
-import org.openspotlight.federation.data.impl.ViewArtifact;
-import org.openspotlight.federation.data.impl.RoutineArtifact.RoutineType;
 import org.openspotlight.federation.data.load.DatabaseCustomArtifactLoader;
 import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.RoutineArtifact;
+import org.openspotlight.federation.domain.RoutineType;
+import org.openspotlight.federation.domain.TableArtifact;
+import org.openspotlight.federation.domain.ViewArtifact;
 
 @SuppressWarnings("all")
 public class DatabaseCustomTest {

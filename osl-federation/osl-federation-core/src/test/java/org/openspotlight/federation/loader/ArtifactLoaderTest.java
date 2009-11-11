@@ -1,5 +1,9 @@
 package org.openspotlight.federation.loader;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.util.HashSet;
 
@@ -18,9 +22,6 @@ public class ArtifactLoaderTest {
         final Configuration configuration = new Configuration();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
-        final ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
-                                                                             ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
-                                                                             new FileSystemStreamArtifactFinder());
         final String initialRawPath = new File("../..").getCanonicalPath();
         final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
         final String finalStr = initialRawPath.substring(initial.length());
@@ -35,7 +36,15 @@ public class ArtifactLoaderTest {
         source.getMappings().add(mapping);
         source.setActive(true);
         source.setInitialLookup(initial);
+
+        final ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
+                                                                             ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
+                                                                             new FileSystemStreamArtifactFinder());
+
         final Iterable<Artifact> artifacts = loader.loadArtifactsFromSource(source);
+        for (final Artifact a : artifacts) {
+            assertThat(a, is(notNullValue()));
+        }
         loader.closeResources();
     }
 

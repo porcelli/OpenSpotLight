@@ -16,7 +16,6 @@ import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.DatabaseSupport;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.loader.ArtifactLoaderGroup;
 
 /**
  * This test class is to assert the fire changing action on view stream artifact
