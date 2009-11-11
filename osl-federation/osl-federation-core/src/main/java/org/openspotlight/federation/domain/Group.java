@@ -1,6 +1,7 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
@@ -34,13 +35,13 @@ public class Group implements SimpleNodeType, Serializable {
     private Group                group;
 
     /** The mappings. */
-    private Set<ArtifactMapping> mappings;
+    private Set<ArtifactMapping> mappings        = new HashSet<ArtifactMapping>();
 
     /** The artifact sources. */
-    private Set<ArtifactSource>  artifactSources;
+    private Set<ArtifactSource>  artifactSources = new HashSet<ArtifactSource>();
 
     /** The schedule data. */
-    private Set<ScheduleData>    scheduleData;
+    private Set<ScheduleData>    scheduleData    = new HashSet<ScheduleData>();
 
     private volatile int         hashCode;
 
