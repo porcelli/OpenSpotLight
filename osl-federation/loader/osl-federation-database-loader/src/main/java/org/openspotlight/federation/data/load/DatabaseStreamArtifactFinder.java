@@ -392,10 +392,6 @@ public class DatabaseStreamArtifactFinder extends AbstractArtifactFinder<StreamA
                     return loadedNames;
                 } catch (final Exception e) {
                     logAndReturnNew(e, ConfigurationException.class);
-                } finally {
-                    if (conn != null && !conn.isClosed()) {
-                        conn.close();
-                    }
                 }
 
             }

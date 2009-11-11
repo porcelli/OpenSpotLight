@@ -52,6 +52,7 @@ package org.openspotlight.federation.loader;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -135,6 +136,9 @@ public interface ArtifactLoader extends Disposable {
                                                                          + source));
                     }
                 }
+                if (sourcesToLoad.size() == 0) {
+                    return Collections.emptySet();
+                }
                 for (final Pair<ArtifactFinder<?>, ArtifactSource> pair : new ArrayList<Pair<ArtifactFinder<?>, ArtifactSource>>(
                                                                                                                                  sourcesToLoad)) {
                     this.executor.execute(new Runnable() {
@@ -163,6 +167,9 @@ public interface ArtifactLoader extends Disposable {
                     } catch (final InterruptedException e) {
 
                     }
+                }
+                if (sourcesToProcess.size() == 0) {
+                    return Collections.emptySet();
                 }
                 for (final Triple<ArtifactFinder<?>, ArtifactSource, String> triple : new ArrayList<Triple<ArtifactFinder<?>, ArtifactSource, String>>(
                                                                                                                                                        sourcesToProcess)) {

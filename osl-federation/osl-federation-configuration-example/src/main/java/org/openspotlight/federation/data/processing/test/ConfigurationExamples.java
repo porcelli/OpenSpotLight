@@ -93,7 +93,8 @@ public class ConfigurationExamples {
         artifactSource.setDriverClass(driver);
 
         final ArtifactMapping mapping = new ArtifactMapping();
-        mapping.setGroup(group);
+        mapping.setSource(artifactSource);
+        artifactSource.getMappings().add(mapping);
         mapping.setRelative("*/");
         group.getMappings().add(mapping);
         mapping.getIncludeds().add("*");
