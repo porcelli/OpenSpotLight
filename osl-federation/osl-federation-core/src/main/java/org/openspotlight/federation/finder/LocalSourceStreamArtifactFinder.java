@@ -29,6 +29,11 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
         return false;
     }
 
+    public void closeResources() {
+        // TODO Auto-generated method stub
+
+    }
+
     public StreamArtifact findByPath( final ArtifactSource artifactSource,
                                       final String rawPath ) {
         Assertions.checkNotNull("artifactSource", artifactSource);

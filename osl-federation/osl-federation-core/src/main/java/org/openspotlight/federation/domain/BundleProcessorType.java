@@ -2,6 +2,9 @@ package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -23,6 +26,18 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
     /** The artifact source. */
     private ArtifactSource artifactSource;
 
+    private volatile int   hashCode;
+
+    public boolean equals( final Object o ) {
+        if (!(o instanceof BundleProcessorType)) {
+            return false;
+        }
+        final BundleProcessorType that = (BundleProcessorType)o;
+        final boolean result = Equals.eachEquality(Arrays.of(this.artifactSource, this.type), Arrays.andOf(that.artifactSource,
+                                                                                                           that.type));
+        return result;
+    }
+
     /**
      * Gets the artifact source.
      * 
@@ -41,6 +56,15 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
     @KeyProperty
     public Class<?> getType() {
         return this.type;
+    }
+
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.artifactSource, this.type);
+            this.hashCode = result;
+        }
+        return result;
     }
 
     /**

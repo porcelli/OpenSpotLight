@@ -1,13 +1,17 @@
 package org.openspotlight.federation.domain;
 
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -15,8 +19,6 @@ import org.openspotlight.persist.annotation.TransientProperty;
  */
 @Name( "repository" )
 public class Repository implements SimpleNodeType, Serializable {
-
-    private Configuration            configuration;
 
     /** The name. */
     private String                   name;
@@ -27,9 +29,14 @@ public class Repository implements SimpleNodeType, Serializable {
     /** The active. */
     private boolean                  active;
 
-    @TransientProperty
-    public Configuration getConfiguration() {
-        return this.configuration;
+    private volatile int             hashCode;
+
+    public boolean equals( final Object o ) {
+        if (!(o instanceof Repository)) {
+            return false;
+        }
+        final Repository that = (Repository)o;
+        return Equals.eachEquality(of(this.name), andOf(that.name));
     }
 
     /**
@@ -51,6 +58,15 @@ public class Repository implements SimpleNodeType, Serializable {
         return this.name;
     }
 
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.name);
+            this.hashCode = result;
+        }
+        return result;
+    }
+
     /**
      * Checks if is active.
      * 
@@ -67,10 +83,6 @@ public class Repository implements SimpleNodeType, Serializable {
      */
     public void setActive( final boolean active ) {
         this.active = active;
-    }
-
-    public void setConfiguration( final Configuration configuration ) {
-        this.configuration = configuration;
     }
 
     /**
