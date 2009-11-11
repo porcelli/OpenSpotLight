@@ -61,48 +61,41 @@ import org.slf4j.LoggerFactory;
  * Example class for bundle processor.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor {
 
-	/**
-	 * counter to use on test
-	 */
-	public static AtomicInteger count = new AtomicInteger(0);
+    /**
+     * counter to use on test
+     */
+    public static AtomicInteger count  = new AtomicInteger(0);
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger        logger = LoggerFactory.getLogger(this.getClass());
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	public void globalProcessingFinalized(
-			final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-			final BundleProcessingContext graphContext) {
-		// nothing to do here
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void globalProcessingFinalized( final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
+                                           final BundleProcessingContext graphContext ) {
+        // nothing to do here
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	public final ProcessingStartAction globalProcessingStarted(
-			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final BundleProcessingContext graphContext) {
-		return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public final ProcessingStartAction globalProcessingStarted( final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+                                                                final BundleProcessingContext graphContext ) {
+        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
+    }
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	public ProcessingAction processArtifact(
-			final StreamArtifact targetArtifact,
-			final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-			final BundleProcessingContext graphContext) {
-		this.logger.warn("processing: " + targetArtifact.getRelativeName()); //$NON-NLS-1$
-		count.incrementAndGet();
-		return ProcessingAction.ARTIFACT_PROCESSED;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public ProcessingAction processArtifact( final StreamArtifact targetArtifact,
+                                             final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
+                                             final BundleProcessingContext graphContext ) {
+        this.logger.warn("processing: " + targetArtifact.getArtifactCompleteName()); //$NON-NLS-1$
+        count.incrementAndGet();
+        return ProcessingAction.ARTIFACT_PROCESSED;
+    }
 
 }
