@@ -97,7 +97,18 @@ public interface ArtifactLoader extends Disposable {
             }
 
             public void closeResources() {
-                this.executor.shutdown();
+                try {
+                    this.executor.shutdown();
+                } catch (final Exception e) {
+                    Exceptions.catchAndLog(e);
+                }
+                for (final ArtifactFinder<?> finder : this.artifactFinders) {
+                    try {
+                        finder.closeResources();
+                    } catch (final Exception e) {
+                        Exceptions.catchAndLog(e);
+                    }
+                }
             }
 
             public Iterable<Artifact> loadArtifactsFromSource( final ArtifactSource... sources ) {
