@@ -1,7 +1,12 @@
 package org.openspotlight.federation.domain;
 
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+
 import java.io.Serializable;
 
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -16,18 +21,30 @@ public class ScheduleData implements SimpleNodeType, Serializable {
 
     /** The description. */
     private String         description;
-    
+
     /** The cron information. */
     private String         cronInformation;
-    
+
     /** The active. */
     private boolean        active;
-    
+
     /** The group. */
     private Group          group;
-    
+
     /** The artifact source. */
     private ArtifactSource artifactSource;
+
+    private volatile int   hashCode;
+
+    public boolean equals( final Object o ) {
+        if (!(o instanceof ScheduleData)) {
+            return false;
+        }
+        final ScheduleData that = (ScheduleData)o;
+        return Equals.eachEquality(of(this.artifactSource, this.cronInformation, this.description), andOf(that.artifactSource,
+                                                                                                          that.cronInformation,
+                                                                                                          that.description));
+    }
 
     /**
      * Gets the artifact source.
@@ -66,6 +83,15 @@ public class ScheduleData implements SimpleNodeType, Serializable {
     @ParentProperty
     public Group getGroup() {
         return this.group;
+    }
+
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.artifactSource, this.cronInformation, this.description);
+            this.hashCode = result;
+        }
+        return result;
     }
 
     /**

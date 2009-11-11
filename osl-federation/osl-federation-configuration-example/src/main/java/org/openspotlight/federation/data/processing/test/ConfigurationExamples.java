@@ -54,10 +54,13 @@ import java.io.File;
 import org.openspotlight.federation.domain.ArtifactMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.BundleProcessorType;
+import org.openspotlight.federation.domain.Configuration;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
+import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.JavaArtifactSource;
+import org.openspotlight.federation.domain.Repository;
 
 /**
  * Class with some example valid configurations
@@ -66,9 +69,9 @@ import org.openspotlight.federation.domain.JavaArtifactSource;
  */
 @SuppressWarnings( "all" )
 public class ConfigurationExamples {
-    public static Configuration createDb2Configuration() {
-        final Configuration configuration = new Configuration();
-        final Repository db2Repository = new Repository(configuration, "db2 Repository");
+    public static Repository createDb2Configuration() {
+        final Repository db2Repository = new Repository();
+        db2Repository.setName("db2 Repository");
         configuration.setNumberOfParallelThreads(4);
         db2Repository.setActive(true);
         final Group db2Project = new Group(db2Repository, "db2 Group");
@@ -103,7 +106,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createH2DbConfiguration( final String dirName ) {
+    public static Repository createH2DbConfiguration( final String dirName ) {
         final Configuration configuration = new Configuration();
         final Repository h2Repository = new Repository(configuration, "H2 Repository");
         configuration.setNumberOfParallelThreads(4);
@@ -135,7 +138,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createMySqlDbConfiguration() {
+    public static Repository createMySqlDbConfiguration() {
         final Configuration configuration = new Configuration();
         final Repository mysqlRepository = new Repository(configuration, "mysql Repository");
         configuration.setNumberOfParallelThreads(4);
@@ -167,7 +170,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createOracleOciDbConfiguration() {
+    public static Repository createOracleOciDbConfiguration() {
         final Configuration configuration = new Configuration();
         final Repository oracleRepository = new Repository(configuration, "oracle Repository");
         configuration.setNumberOfParallelThreads(4);
@@ -212,7 +215,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createOslValidConfiguration( final String dirName ) throws Exception {
+    public static Repository createOslValidConfiguration( final String dirName ) throws Exception {
         final String basePath = new File("../../../").getCanonicalPath() + "/";
         final Configuration configuration = new Configuration();
         final Repository oslRepository = new Repository(configuration, "OSL Group");
@@ -240,7 +243,8 @@ public class ConfigurationExamples {
         oslFederationProject.setActive(true);
 
         oslFederationProject.setGraphRoot(Boolean.TRUE);
-        final ArtifactSource oslFederationJavaSourceBundle = new JavaArtifactSource(oslFederationProject, "java source for OSL Bundle");
+        final ArtifactSource oslFederationJavaSourceBundle = new JavaArtifactSource(oslFederationProject,
+                                                                                    "java source for OSL Bundle");
         oslFederationJavaSourceBundle.setActive(true);
         final BundleProcessorType oslFederationProcessor = new BundleProcessorType(oslFederationJavaSourceBundle,
                                                                                    "org.openspotlight.federation.data.processing.test.LogPrinterBundleProcessor");
@@ -270,7 +274,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createOslValidDnaFileConnectorConfiguration( final String dirName ) throws Exception {
+    public static Repository createOslValidDnaFileConnectorConfiguration( final String dirName ) throws Exception {
         final String basePath = new File("../../../").getCanonicalPath() + "/";
         final Configuration configuration = new Configuration();
         final Repository oslRepository = new Repository(configuration, "OSL Group");
@@ -282,7 +286,8 @@ public class ConfigurationExamples {
 
         final Group oslCommonsProject = new Group(oslRootProject, "OSL Commons Library");
         oslCommonsProject.setActive(true);
-        final ArtifactSource oslCommonsJavaSourceBundle = new DnaFileArtifactSource(oslCommonsProject, "java source for OSL Bundle");
+        final ArtifactSource oslCommonsJavaSourceBundle = new DnaFileArtifactSource(oslCommonsProject,
+                                                                                    "java source for OSL Bundle");
         oslCommonsJavaSourceBundle.setActive(true);
         oslCommonsJavaSourceBundle.setInitialLookup(basePath);
         final ArtifactMapping oslCommonsArtifactMapping = new ArtifactMapping(oslCommonsJavaSourceBundle, "osl-common/");
@@ -309,7 +314,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createOslValidDnaSvnConnectorConfiguration( final String dirName ) throws Exception {
+    public static Repository createOslValidDnaSvnConnectorConfiguration( final String dirName ) throws Exception {
         final Configuration configuration = new Configuration();
         final Repository oslRepository = new Repository(configuration, "Hamcrest Repository");
         configuration.setNumberOfParallelThreads(4);
@@ -336,7 +341,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createPostgresqlConfiguration() {
+    public static Repository createPostgresqlConfiguration() {
         final Configuration configuration = new Configuration();
         final Repository postgresqlRepository = new Repository(configuration, "postgresql Repository");
         configuration.setNumberOfParallelThreads(4);
@@ -374,7 +379,7 @@ public class ConfigurationExamples {
         return configuration;
     }
 
-    public static Configuration createSqlServerDbConfiguration() {
+    public static Repository createSqlServerDbConfiguration() {
         final Configuration configuration = new Configuration();
         final Repository sqlserverRepository = new Repository(configuration, "sqlserver Repository");
         configuration.setNumberOfParallelThreads(4);

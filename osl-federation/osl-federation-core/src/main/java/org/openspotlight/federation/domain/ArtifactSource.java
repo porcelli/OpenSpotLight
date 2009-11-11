@@ -1,8 +1,12 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -31,15 +35,27 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
     private Group                    group;
 
     /** The mappings. */
-    private Set<ArtifactMapping>     mappings;
+    private Set<ArtifactMapping>     mappings             = new HashSet<ArtifactMapping>();
 
     /** The schedule datas. */
-    private Set<ScheduleData>        scheduleDatas;
+    private Set<ScheduleData>        scheduleDatas        = new HashSet<ScheduleData>();
 
     /** The bundle processor types. */
-    private Set<BundleProcessorType> bundleProcessorTypes;
+    private Set<BundleProcessorType> bundleProcessorTypes = new HashSet<BundleProcessorType>();
 
-    private volatile String          uniqueReference = null;
+    private volatile String          uniqueReference      = null;
+
+    private volatile int             hashCode;
+
+    public boolean equals( final Object o ) {
+        if (!(o instanceof ArtifactSource)) {
+            return false;
+        }
+        final ArtifactSource that = (ArtifactSource)o;
+        final boolean result = Equals.eachEquality(Arrays.of(this.getClass(), this.name, this.group, this.repository),
+                                                   Arrays.andOf(that.getClass(), that.name, that.group, that.repository));
+        return result;
+    }
 
     /**
      * Gets the bundle processor types.
@@ -112,6 +128,15 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
         if (result == null) {
             result = PathElement.createFromPathString(this.getName() + "/" + this.getInitialLookup()).getCompletePath();
             this.uniqueReference = result;
+        }
+        return result;
+    }
+
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.getClass(), this.name, this.group, this.repository);
+            this.hashCode = result;
         }
         return result;
     }
@@ -196,4 +221,5 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
     public void setScheduleDatas( final Set<ScheduleData> scheduleDatas ) {
         this.scheduleDatas = scheduleDatas;
     }
+
 }

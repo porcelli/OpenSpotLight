@@ -1,8 +1,12 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -17,18 +21,31 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
 
     /** The relative. */
     private String         relative;
-    
+
     /** The group. */
     private Group          group;
-    
+
     /** The source. */
     private ArtifactSource source;
 
     /** The excludeds. */
-    private Set<String>    excludeds;
-    
+    private Set<String>    excludeds = new HashSet<String>();
+
     /** The includeds. */
-    private Set<String>    includeds;
+    private Set<String>    includeds = new HashSet<String>();
+
+    private volatile int   hashCode;
+
+    public boolean equals( final Object o ) {
+        if (!(o instanceof Group)) {
+            return false;
+        }
+        final ArtifactMapping that = (ArtifactMapping)o;
+        final boolean result = Equals.eachEquality(Arrays.of(this.group, this.source, this.relative), Arrays.andOf(that.group,
+                                                                                                                   that.source,
+                                                                                                                   that.relative));
+        return result;
+    }
 
     /**
      * Gets the excludeds.
@@ -76,6 +93,15 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
     @ParentProperty
     public ArtifactSource getSource() {
         return this.source;
+    }
+
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.group, this.source, this.relative);
+            this.hashCode = result;
+        }
+        return result;
     }
 
     /**

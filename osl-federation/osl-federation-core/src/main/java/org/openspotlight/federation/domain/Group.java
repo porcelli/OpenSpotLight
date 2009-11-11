@@ -3,6 +3,9 @@ package org.openspotlight.federation.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -38,6 +41,18 @@ public class Group implements SimpleNodeType, Serializable {
 
     /** The schedule data. */
     private Set<ScheduleData>    scheduleData;
+
+    private volatile int         hashCode;
+
+    public boolean equals( final Object o ) {
+        if (!(o instanceof Group)) {
+            return false;
+        }
+        final Group that = (Group)o;
+        final boolean result = Equals.eachEquality(Arrays.of(this.group, this.repository, this.name),
+                                                   Arrays.andOf(that.group, that.repository, that.name));
+        return result;
+    }
 
     /**
      * Gets the artifact sources.
@@ -103,6 +118,15 @@ public class Group implements SimpleNodeType, Serializable {
      */
     public String getType() {
         return this.type;
+    }
+
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.group, this.repository, this.name);
+            this.hashCode = result;
+        }
+        return result;
     }
 
     /**

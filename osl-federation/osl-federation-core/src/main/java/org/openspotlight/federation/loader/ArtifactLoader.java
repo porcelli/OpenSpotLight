@@ -117,6 +117,9 @@ public interface ArtifactLoader extends Disposable {
                 final Queue<Artifact> loadedArtifacts = new ConcurrentLinkedQueue<Artifact>();
 
                 addingSources: for (final ArtifactSource source : sources) {
+                    if (!source.isActive()) {
+                        continue addingSources;
+                    }
                     boolean hasAnyFinder = false;
                     for (final ArtifactFinder<?> finder : this.artifactFinders) {
                         if (finder.canAcceptArtifactSource(source)) {
