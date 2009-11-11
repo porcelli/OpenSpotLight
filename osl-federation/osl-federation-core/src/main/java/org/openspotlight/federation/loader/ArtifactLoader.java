@@ -144,19 +144,24 @@ public interface ArtifactLoader extends Disposable {
                     this.executor.execute(new Runnable() {
 
                         public void run() {
+                            try {
+                                for (final ArtifactMapping mapping : pair.getK2().getMappings()) {
+                                    final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(pair.getK2(),
+                                                                                                       mapping.getRelative());
+                                    final FilterResult newNames = filterNamesByPattern(rawNames, mapping.getIncludeds(),
+                                                                                       mapping.getExcludeds(), false);
 
-                            for (final ArtifactMapping mapping : pair.getK2().getMappings()) {
-                                final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(pair.getK2(),
-                                                                                                   mapping.getRelative());
-                                final FilterResult newNames = filterNamesByPattern(rawNames, mapping.getIncludeds(),
-                                                                                   mapping.getExcludeds(), false);
+                                    for (final String name : newNames.getIncludedNames()) {
 
-                                for (final String name : newNames.getIncludedNames()) {
-
-                                    sourcesToProcess.add(new Triple<ArtifactFinder<?>, ArtifactSource, String>(pair.getK1(),
-                                                                                                               pair.getK2(), name));
-                                    sourcesToLoad.remove(pair);
+                                        sourcesToProcess.add(new Triple<ArtifactFinder<?>, ArtifactSource, String>(pair.getK1(),
+                                                                                                                   pair.getK2(),
+                                                                                                                   name));
+                                    }
                                 }
+                            } catch (final Exception e) {
+                                Exceptions.catchAndLog(e);
+                            } finally {
+                                sourcesToLoad.remove(pair);
                             }
                         }
                     });
@@ -176,9 +181,17 @@ public interface ArtifactLoader extends Disposable {
                     this.executor.execute(new Runnable() {
 
                         public void run() {
-                            final Artifact loaded = triple.getK1().findByPath(triple.getK2(), triple.getK3());
-                            loadedArtifacts.add(loaded);
-                            sourcesToProcess.remove(triple);
+                            try {
+
+                                final Artifact loaded = triple.getK1().findByPath(triple.getK2(), triple.getK3());
+                                loadedArtifacts.add(loaded);
+
+                            } catch (final Exception e) {
+                                Exceptions.catchAndLog(e);
+                            } finally {
+                                sourcesToProcess.remove(triple);
+                            }
+
                         }
                     });
                 }
