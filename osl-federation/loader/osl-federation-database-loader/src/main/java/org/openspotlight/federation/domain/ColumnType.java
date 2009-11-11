@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.impl;
+package org.openspotlight.federation.domain;
 
 import java.sql.Types;
 import java.util.HashMap;

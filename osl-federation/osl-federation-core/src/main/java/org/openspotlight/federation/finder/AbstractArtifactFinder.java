@@ -20,6 +20,10 @@ import org.openspotlight.federation.domain.PathElement;
  */
 public abstract class AbstractArtifactFinder<A extends Artifact> implements ArtifactFinder<A> {
 
+    public void closeResources() {
+
+    }
+
     public A findByRelativePath( final ArtifactSource artifactSource,
                                  final A relativeTo,
                                  final String path ) {

@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.impl;
+package org.openspotlight.federation.domain;
 
 import java.sql.DatabaseMetaData;
 import java.sql.Types;
