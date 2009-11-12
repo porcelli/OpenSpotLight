@@ -54,6 +54,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jcr.Session;
@@ -63,9 +64,15 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLogger;
+import org.openspotlight.graph.SLGraphException;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLNode;
 
 /**
  * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
@@ -89,19 +96,21 @@ public interface BundleProcessor<T extends Artifact> {
     public static class BundleProcessingContext {
 
         /** The session. */
-        private final SLGraphSession session;
+        private final SLGraphSession        session;
 
-        private ArtifactFinder       artifactFinder;
+        private ArtifactFinder              artifactFinder;
 
-        private String               currentArtifactSourceReference;
+        private ArtifactSource              currentArtifactSource;
+
+        public Map<String, ArtifactSource>  availableArtifactSources;
 
         /** The logger. */
-        private DetailedLogger       logger;
+        private DetailedLogger              logger;
 
         /** The root group. */
-        private List<SLNode>         groupList;
+        private Map<String, ArtifactSource> availableGroupNodes;
 
-        private SLNode               currentGroup;
+        private SLNode                      currentGroup;
 
         /**
          * Instantiates a new bundle processing context.
@@ -219,31 +228,31 @@ public interface BundleProcessor<T extends Artifact> {
     public static class BundleProcessingGroup<T> {
 
         /** The added artifacts. */
-        private final Set<T> addedArtifacts;
+        private final Set<T>         addedArtifacts;
 
         /** The all valid artifacts. */
-        private final Set<T> allValidArtifacts;
+        private final Set<T>         allValidArtifacts;
 
         /** The already processed artifacts. */
-        private final Set<T> alreadyProcessedArtifacts;
+        private final Set<T>         alreadyProcessedArtifacts;
 
         /** The artifacts with error. */
-        private final Set<T> artifactsWithError;
+        private final Set<T>         artifactsWithError;
 
         /** The bundle. */
         private final ArtifactSource bundle;
 
         /** The excluded artifacts. */
-        private final Set<T> excludedArtifacts;
+        private final Set<T>         excludedArtifacts;
 
         /** The ignored artifacts. */
-        private final Set<T> ignoredArtifacts;
+        private final Set<T>         ignoredArtifacts;
 
         /** The modified artifacts. */
-        private final Set<T> modifiedArtifacts;
+        private final Set<T>         modifiedArtifacts;
 
         /** The not processed artifacts. */
-        private final Set<T> notProcessedArtifacts;
+        private final Set<T>         notProcessedArtifacts;
 
         /**
          * Constructor to initialize all mandatory fields.
@@ -470,9 +479,9 @@ public interface BundleProcessor<T extends Artifact> {
 
     /**
      * This method will be called once, before the threads creation to process all the artifacts. This return is very important,
-     * because with this is possible to change the behavior of this {@link BundleProcessor} execution for its {@link ArtifactSource}. Take
-     * a look on the {@link ProcessingStartAction} documentation. The common behavior should be returning
-     * {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
+     * because with this is possible to change the behavior of this {@link BundleProcessor} execution for its
+     * {@link ArtifactSource}. Take a look on the {@link ProcessingStartAction} documentation. The common behavior should be
+     * returning {@link ProcessingStartAction#PROCESS_EACH_ONE_NEW}.
      * 
      * @param bundleProcessingGroup with lists of all processed attributes and so on
      * @param graphContext with all convenient object for graph manipulation

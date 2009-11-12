@@ -81,11 +81,18 @@ import org.openspotlight.federation.data.processing.BundleProcessor.ProcessingSt
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.BundleProcessorType;
+import org.openspotlight.federation.domain.ChangeType;
+import org.openspotlight.federation.domain.Configuration;
 import org.openspotlight.federation.domain.CustomArtifact;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.ConfigurationManagerProvider;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphFactory;
+import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.idm.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -428,13 +435,13 @@ public final class BundleProcessorManager {
                                                                         final Set<T> excludedArtifacts,
                                                                         final Set<T> modifiedArtifacts ) {
         for (final T artifact : allValidArtifacts) {
-            Status status = artifact.getStatus();
+            ChangeType status = artifact.getChangeType();
             if (status == null) {
-                artifact.setStatus(Status.INCLUDED);
-                status = Status.INCLUDED;
+                status = ChangeType.INCLUDED;
+                artifact.setChangeType(status);
             }
             switch (status) {
-                case ALREADY_PROCESSED:
+                case NOT_CHANGED:
                     break;
                 case CHANGED:
                     modifiedArtifacts.add(artifact);
