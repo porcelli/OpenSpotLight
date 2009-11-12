@@ -1,9 +1,14 @@
+/*
+ * 
+ */
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -17,7 +22,34 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public abstract class Artifact implements SimpleNodeType, Serializable {
 
     /** The Constant SEPARATOR. */
-    final static String     SEPARATOR = "/";
+    final static String SEPARATOR = "/";
+
+    /**
+     * Creates the new artifact.
+     * 
+     * @param artifactCompletePath the artifact complete path
+     * @param changeType the change type
+     * @param artifactType the artifact type
+     * @return the stream artifact
+     */
+    public static <A extends Artifact> A createArtifact( final Class<A> artifactType,
+                                                         final String artifactCompletePath,
+                                                         final ChangeType changeType ) {
+
+        try {
+            final String internalArtifactName = artifactCompletePath.substring(artifactCompletePath.lastIndexOf('/') + 1);
+            final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
+            final PathElement pathElement = PathElement.createFromPathString(path);
+            final A artifact = artifactType.newInstance();
+
+            artifact.setArtifactName(internalArtifactName);
+            artifact.setChangeType(changeType);
+            artifact.setParent(pathElement);
+            return artifact;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
     /** The artifact name. */
     private String          artifactName;

@@ -13,6 +13,7 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.Strings;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
@@ -49,9 +50,10 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
                 buffer.append('\n');
             }
             final String content = buffer.toString();
-            final StreamArtifact streamArtifact = StreamArtifact.createNewStreamArtifact(artifactSource.getUniqueReference()
-                                                                                         + "/" + path, ChangeType.INCLUDED,
-                                                                                         content);
+            final StreamArtifact streamArtifact = Artifact.createArtifact(StreamArtifact.class,
+                                                                          artifactSource.getUniqueReference() + "/" + path,
+                                                                          ChangeType.INCLUDED);
+            streamArtifact.setContent(content);
             return streamArtifact;
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

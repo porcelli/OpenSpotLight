@@ -13,6 +13,7 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.Strings;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.PathElement;
@@ -58,8 +59,11 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
                     buffer.append('\n');
                 }
                 final String content = buffer.toString();
-                final StreamArtifact streamArtifact = StreamArtifact.createNewStreamArtifact(artifactSource.getUniqueReference()
-                                                                                             + "/" + rawPath, t, content);
+                final StreamArtifact streamArtifact = Artifact.createArtifact(
+                                                                              StreamArtifact.class,
+                                                                              artifactSource.getUniqueReference() + "/" + rawPath,
+                                                                              t);
+                streamArtifact.setContent(content);
                 return streamArtifact;
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -73,6 +77,9 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
     public StreamArtifact findByRelativePath( final ArtifactSource artifactSource,
                                               final StreamArtifact relativeTo,
                                               final String path ) {
+        Assertions.checkNotNull("artifactSource", artifactSource);
+        Assertions.checkNotNull("relativeTo", relativeTo);
+        Assertions.checkNotEmpty("path", path);
         String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
         newPath = Strings.removeBegginingFrom(artifactSource.getUniqueReference() + "/", newPath);
 
@@ -106,11 +113,7 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
                 final String location = MessageFormat.format("{0}/{1}/{2}", artifactSource.getInitialLookup(),
                                                              t.toString().toLowerCase(), rawPath);
 
-                final File initialDir = new File(location);
-                final String pathToRemove = initialDir.getCanonicalPath().substring(
-                                                                                    0,
-                                                                                    initialDir.getCanonicalPath().length()
-                                                                                    - rawPath.length() - 1);
+                final String pathToRemove = new File(artifactSource.getInitialLookup()).getCanonicalPath() + "/";
                 final Set<String> pathList = Files.listFileNamesFrom(location);
 
                 for (final String p : pathList) {

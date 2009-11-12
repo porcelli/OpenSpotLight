@@ -21,6 +21,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openspotlight.federation.data.load.AbstractDatabaseArtifactFinder;
 import org.openspotlight.federation.data.load.DatabaseStreamArtifactFinder;
 import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.domain.Artifact;
@@ -111,7 +112,7 @@ public abstract class DatabaseStreamTest {
         if (!conn.isClosed()) {
             conn.close();
         }
-        final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder();
+        final AbstractDatabaseArtifactFinder finder = new DatabaseStreamArtifactFinder();
         final Configuration configuration = new Configuration();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
