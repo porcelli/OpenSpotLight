@@ -47,15 +47,15 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.db.handler;
+package org.openspotlight.federation.finder.db.handler;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
 import org.antlr.stringtemplate.StringTemplate;
-import org.openspotlight.federation.data.load.db.ScriptType;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
 /**
  * The Class PostgresRoutineStreamHandler used to fix the routine streams.

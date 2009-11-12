@@ -51,8 +51,8 @@ package org.openspotlight.federation.data.processing.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
 import java.sql.Connection;
 import java.util.Set;
@@ -62,13 +62,11 @@ import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.data.load.DatabaseStreamLoader;
 import org.openspotlight.federation.data.load.db.test.H2Support;
 import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.loader.ArtifactLoaderGroup;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.ConfigurationManagerProvider;
 import org.openspotlight.graph.SLInvalidCredentialException;

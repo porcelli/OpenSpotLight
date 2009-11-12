@@ -51,7 +51,6 @@ package org.openspotlight.federation.loader;
 
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.domain.Configuration;
 
 /**

@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.db;
+package org.openspotlight.federation.finder.db;
 
 import static java.util.Collections.unmodifiableMap;
 

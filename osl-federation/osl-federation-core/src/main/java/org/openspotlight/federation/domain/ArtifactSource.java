@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
@@ -124,9 +125,14 @@ public class ArtifactSource implements SimpleNodeType, Serializable {
     }
 
     public String getUniqueReference() {
+        Assertions.checkNotNull("name", this.getName());
+        Assertions.checkNotNull("initialLookup", this.getInitialLookup());
+
         String result = this.uniqueReference;
         if (result == null) {
-            result = PathElement.createFromPathString(this.getName() + "/" + this.getInitialLookup()).getCompletePath();
+            result = PathElement.createFromPathString(
+                                                      this.getName().replaceAll("[/]", "-") + "/"
+                                                      + this.getInitialLookup().replaceAll("[/]", "-")).getCompletePath();
             this.uniqueReference = result;
         }
         return result;

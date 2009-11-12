@@ -6,9 +6,9 @@ import java.sql.Connection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.finder.db.ScriptType;
 
 @SuppressWarnings( "all" )
 public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements RunWhenDatabaseVendorTestsIsActive {

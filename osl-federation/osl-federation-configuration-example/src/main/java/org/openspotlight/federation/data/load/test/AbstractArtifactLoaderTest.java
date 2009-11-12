@@ -52,7 +52,6 @@ package org.openspotlight.federation.data.load.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Collections.setOf;
 
 import java.util.Collections;
 import java.util.Set;
@@ -60,11 +59,9 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.test.NodeTest;
 import org.openspotlight.federation.domain.ArtifactMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.JavaArtifactSource;
-import org.openspotlight.federation.loader.AbstractArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoader;
 
 /**

@@ -7,7 +7,6 @@ import javax.jcr.Session;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
-import org.openspotlight.federation.data.NoConfigurationYetException;
 import org.openspotlight.federation.loader.ConfigurationManager;
 
 /**

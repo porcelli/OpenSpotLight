@@ -1,10 +1,10 @@
-package org.openspotlight.federation.data.load;
+package org.openspotlight.federation.finder;
 
 import static java.util.Collections.emptySet;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
-import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -23,17 +23,16 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.data.load.db.ColumnsNamesForMetadataSelect;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
-import org.openspotlight.federation.data.load.db.ScriptType;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.finder.AbstractArtifactFinder;
+import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 public abstract class AbstractDatabaseArtifactFinder<A extends Artifact> extends AbstractArtifactFinder<A> {

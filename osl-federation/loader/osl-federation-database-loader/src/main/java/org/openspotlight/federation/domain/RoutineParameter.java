@@ -9,12 +9,13 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "routine_parameter" )
 public class RoutineParameter implements SimpleNodeType, Serializable {
-    private String          name;
-    private ColumnType      type;
-    private NullableSqlType nullable;
-    private int             columnSize;
-    private int             decimalSize;
-    private RoutineArtifact routine;
+    private String               name;
+    private ColumnType           type;
+    private NullableSqlType      nullable;
+    private int                  columnSize;
+    private int                  decimalSize;
+    private RoutineArtifact      routine;
+    private RoutineParameterType parameterType;
 
     public int getColumnSize() {
         return this.columnSize;
@@ -31,6 +32,10 @@ public class RoutineParameter implements SimpleNodeType, Serializable {
 
     public NullableSqlType getNullable() {
         return this.nullable;
+    }
+
+    public RoutineParameterType getParameterType() {
+        return this.parameterType;
     }
 
     @ParentProperty
@@ -56,6 +61,10 @@ public class RoutineParameter implements SimpleNodeType, Serializable {
 
     public void setNullable( final NullableSqlType nullable ) {
         this.nullable = nullable;
+    }
+
+    public void setParameterType( final RoutineParameterType parameterType ) {
+        this.parameterType = parameterType;
     }
 
     public void setRoutine( final RoutineArtifact routine ) {
