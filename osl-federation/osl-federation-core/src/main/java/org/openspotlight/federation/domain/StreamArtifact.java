@@ -13,30 +13,6 @@ import org.openspotlight.persist.annotation.Name;
 @Name( "stream_artifact" )
 public class StreamArtifact extends Artifact {
 
-    /**
-     * Creates the new stream artifact.
-     * 
-     * @param artifactCompletePath the artifact complete path
-     * @param changeType the change type
-     * @param content the content
-     * @return the stream artifact
-     */
-    public static StreamArtifact createNewStreamArtifact( final String artifactCompletePath,
-                                                          final ChangeType changeType,
-                                                          final String content ) {
-
-        final String internalArtifactName = artifactCompletePath.substring(artifactCompletePath.lastIndexOf('/') + 1);
-        final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
-        final PathElement pathElement = PathElement.createFromPathString(path);
-        final StreamArtifact streamArtifact = new StreamArtifact();
-        streamArtifact.setArtifactName(internalArtifactName);
-        streamArtifact.setChangeType(changeType);
-        streamArtifact.setParent(pathElement);
-        streamArtifact.setContent(content);
-        return streamArtifact;
-
-    }
-
     /** The content. */
     private String                 content;
 
