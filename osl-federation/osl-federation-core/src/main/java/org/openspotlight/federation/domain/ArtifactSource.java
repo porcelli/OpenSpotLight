@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
@@ -18,7 +19,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Class ArtifactSource.
  */
 @Name( "artifact_source" )
-public class ArtifactSource implements SimpleNodeType, Serializable {
+public class ArtifactSource implements SimpleNodeType, Serializable, LogableObject {
 
     /** The repository. */
     private Repository               repository;
