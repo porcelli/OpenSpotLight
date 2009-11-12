@@ -47,32 +47,76 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.db.handler;
+package org.openspotlight.federation.finder.db.handler;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 
-import org.openspotlight.federation.data.load.db.ScriptType;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
+import org.antlr.stringtemplate.StringTemplate;
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
 /**
- * The Class SqlServerViewFilterNameHandler is used to filter Table names.
+ * The Class RoutineStreamHandler is used to fix the routine streams.
  */
-public class SqlServerViewFilterNameHandler implements DatabaseArtifactNameHandler {
+public class SqlServerRoutineStreamHandler implements DatabaseStreamHandler {
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean shouldIncludeName(String artifactName, ScriptType type,
-			ResultSet resultSet) throws Exception {
-		if("VIEW".equals(resultSet.getString("TABLE_TYPE"))){
-			return true;
-		}
-		return false;
+	public byte[] afterStreamProcessing(final String schema,
+			final ScriptType type, final String catalog, final String name,
+			final byte[] loadedData, final Connection connection) {
+		return loadedData;
 	}
 
-	public String fixName(String oldName) {
-		return oldName;
+	/**
+	 * {@inheritDoc}
+	 */
+	public void beforeFillTemplate(final String schema, final ScriptType type,
+			final String catalog, final String name,
+			final StringTemplate template, final Connection connection)
+			throws Exception {
+
+		final ResultSet parameterResultSet = connection.getMetaData()
+				.getProcedureColumns(catalog, schema, name, null);
+		try {
+			while (parameterResultSet.next()) {
+				final String column = parameterResultSet
+						.getString("COLUMN_NAME");
+				final String typeName = parameterResultSet
+						.getString("TYPE_NAME");
+				final int columnType = parameterResultSet.getInt("COLUMN_TYPE");
+				String inOutType;
+				String returnTypeString;
+				switch (columnType) {
+				case DatabaseMetaData.procedureColumnIn:
+					inOutType = "IN";
+					break;
+				case DatabaseMetaData.procedureColumnInOut:
+					inOutType = "IN OUT";
+					break;
+				case DatabaseMetaData.procedureColumnOut:
+					inOutType = "OUT";
+					break;
+				case DatabaseMetaData.procedureColumnResult:
+				case DatabaseMetaData.procedureColumnReturn:
+					returnTypeString = " returning " + typeName;
+					template.setAttribute("returnType", returnTypeString);
+					continue;
+				default:
+					inOutType = "' '";
+					break;
+				}
+				template.setAttribute("parameter.{column,type,inOut}", column,
+						typeName, inOutType);
+			}
+		} finally {
+			if (parameterResultSet != null) {
+				parameterResultSet.close();
+			}
+		}
 	}
-	
 
 }

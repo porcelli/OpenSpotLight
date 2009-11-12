@@ -1,7 +1,9 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
@@ -11,29 +13,10 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class RoutineArtifact extends CustomArtifact implements SimpleNodeType, Serializable {
     private String                tableName;
     private String                catalogName;
-
+    private RoutineType           type;
     private String                schemaName;
 
-    //    private Status      status;
-    /* FIXME maybe implement this
-           private void loadProperties() {
-        final StringTokenizer tok = new StringTokenizer(this.getRelativeName(), "/"); //$NON-NLS-1$
-        if (tok.countTokens() == 4) {
-            this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
-            final String type = tok.nextToken();
-            this.instanceMetadata.setProperty(TYPE, RoutineType.valueOf(type));
-            this.instanceMetadata.setProperty(CATALOG_NAME, tok.nextToken());
-            this.instanceMetadata.setProperty(ROUTINE_NAME, tok.nextToken());
-        } else {
-            this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
-            final String type = tok.nextToken();
-            this.instanceMetadata.setProperty(TYPE, RoutineType.valueOf(type));
-            this.instanceMetadata.setProperty(ROUTINE_NAME, tok.nextToken());
-        }
-    }
-
-     */
-    private Set<RoutineParameter> parameters;
+    private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
 
     @Override
     public boolean contentEquals( final Artifact other ) {
@@ -60,6 +43,29 @@ public class RoutineArtifact extends CustomArtifact implements SimpleNodeType, S
         return this.tableName;
     }
 
+    public RoutineType getType() {
+        return this.type;
+    }
+
+    public void loadProperties() {
+        final StringTokenizer tok = new StringTokenizer(this.getArtifactCompleteName(), "/"); //$NON-NLS-1$
+        tok.nextToken();//put the name away
+        tok.nextToken();//put the initial lookup away
+        if (tok.countTokens() == 6) {
+            this.setSchemaName(tok.nextToken());
+            final String type = tok.nextToken();
+            this.setType(RoutineType.valueOf(type));
+            this.setCatalogName(tok.nextToken());
+            this.setTableName(tok.nextToken());
+        } else {
+            this.setSchemaName(tok.nextToken());
+            final String type = tok.nextToken();
+            this.setType(RoutineType.valueOf(type));
+
+            this.setTableName(tok.nextToken());
+        }
+    }
+
     public void setCatalogName( final String catalogName ) {
         this.catalogName = catalogName;
     }
@@ -74,6 +80,10 @@ public class RoutineArtifact extends CustomArtifact implements SimpleNodeType, S
 
     public void setTableName( final String tableName ) {
         this.tableName = tableName;
+    }
+
+    public void setType( final RoutineType type ) {
+        this.type = type;
     }
 
 }

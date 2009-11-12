@@ -8,16 +8,18 @@ import java.util.StringTokenizer;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScriptManager;
-import org.openspotlight.federation.data.load.db.ScriptType;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseStreamHandler;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.AbstractDatabaseArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
 public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder<StreamArtifact>
     implements ArtifactFinder<StreamArtifact> {
@@ -89,7 +91,8 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
                     content = streamHandler.afterStreamProcessing(schema, scriptType, catalog, name, content, conn);
                 }
                 final String contentAsString = new String(content);
-                final StreamArtifact sa = StreamArtifact.createArtifact(path, ChangeType.INCLUDED, contentAsString);
+                final StreamArtifact sa = Artifact.createArtifact(StreamArtifact.class, path, ChangeType.INCLUDED);
+                sa.setContent(contentAsString);
 
                 return sa;
 

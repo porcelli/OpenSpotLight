@@ -64,7 +64,6 @@ import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.data.processing.BundleProcessor.BundleProcessingContext;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.loader.ArtifactLoaderGroup;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.ConfigurationManagerProvider;
 import org.openspotlight.graph.SLInvalidCredentialException;

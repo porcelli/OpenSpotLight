@@ -54,8 +54,7 @@ import org.openspotlight.federation.data.processing.BundleProcessingNonFatalExce
 import org.openspotlight.federation.data.processing.CustomArtifactBundleProcessor;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.CustomArtifact;
-import org.openspotlight.federation.domain.old.Column;
-import org.openspotlight.federation.domain.old.TableArtifact;
+import org.openspotlight.federation.domain.TableArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

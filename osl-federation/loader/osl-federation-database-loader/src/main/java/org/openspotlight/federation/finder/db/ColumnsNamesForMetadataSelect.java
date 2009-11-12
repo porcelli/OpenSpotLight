@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.load.db;
+package org.openspotlight.federation.finder.db;
 
 /**
  * Valid column names to be used on a Metadata select statement. For

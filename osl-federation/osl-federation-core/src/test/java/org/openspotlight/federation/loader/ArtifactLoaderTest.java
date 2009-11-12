@@ -36,6 +36,7 @@ public class ArtifactLoaderTest {
         source.getMappings().add(mapping);
         source.setActive(true);
         source.setInitialLookup(initial);
+        source.setName("sourceName");
 
         final ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
                                                                              ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,

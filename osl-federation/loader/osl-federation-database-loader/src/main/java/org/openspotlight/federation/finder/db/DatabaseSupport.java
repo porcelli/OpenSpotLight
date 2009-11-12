@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.load.db;
+package org.openspotlight.federation.finder.db;
 
 import static java.lang.Class.forName;
 import static java.sql.DriverManager.getConnection;

@@ -47,39 +47,32 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.db.handler;
+package org.openspotlight.federation.finder.db.handler;
 
 import java.sql.ResultSet;
 
-import org.openspotlight.federation.data.load.db.ScriptType;
-import org.openspotlight.federation.data.load.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 
 /**
- * The Class SqlServerFunctionFilterNameHandler is used to filter function
- * names.
+ * The Class SqlServerViewFilterNameHandler is used to filter Table names.
  */
-public class SqlServerFunctionFilterNameHandler implements
-		DatabaseArtifactNameHandler {
-
-	public String fixName(final String oldName) {
-		if (oldName.indexOf(';') == -1) {
-			return oldName;
-		}
-		return oldName.substring(0, oldName.indexOf(';'));
-
-	}
+public class SqlServerViewFilterNameHandler implements DatabaseArtifactNameHandler {
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean shouldIncludeName(final String artifactName,
-			final ScriptType type, final ResultSet resultSet) throws Exception {
-		final boolean isFunction = resultSet.getString("PROCEDURE_NAME")
-				.endsWith(";0");
-		if (isFunction) {
+	public boolean shouldIncludeName(String artifactName, ScriptType type,
+			ResultSet resultSet) throws Exception {
+		if("VIEW".equals(resultSet.getString("TABLE_TYPE"))){
 			return true;
 		}
 		return false;
 	}
+
+	public String fixName(String oldName) {
+		return oldName;
+	}
+	
 
 }

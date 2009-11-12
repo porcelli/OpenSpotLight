@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.load.db;
+package org.openspotlight.federation.finder.db;
 
 /**
  * Script types to be used inside the artifact loader implementation.

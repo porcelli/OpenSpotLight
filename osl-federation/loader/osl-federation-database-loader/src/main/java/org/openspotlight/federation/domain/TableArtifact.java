@@ -1,7 +1,9 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
@@ -12,25 +14,7 @@ public class TableArtifact extends CustomArtifact implements SimpleNodeType, Ser
     private String      tableName;
     private String      catalogName;
     private String      schemaName;
-    //    private Status      status;
-    /* FIXME maybe implement this
-        private void loadProperties() {
-            final StringTokenizer tok = new StringTokenizer(this.getRelativeName(), "/"); //$NON-NLS-1$
-            if (tok.countTokens() == 4) {
-                this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
-                this.instanceMetadata.setProperty(CATALOG_NAME, tok.nextToken());
-                tok.nextToken();// puts away its table type
-                this.instanceMetadata.setProperty(TABLE_NAME, tok.nextToken());
-            } else {
-
-                this.instanceMetadata.setProperty(SCHEMA_NAME, tok.nextToken());
-                tok.nextToken();// puts away its table type
-                this.instanceMetadata.setProperty(TABLE_NAME, tok.nextToken());
-            }
-        }
-
-     */
-    private Set<Column> columns;
+    private Set<Column> columns = new HashSet<Column>();
 
     @Override
     public boolean contentEquals( final Artifact other ) {
@@ -55,6 +39,23 @@ public class TableArtifact extends CustomArtifact implements SimpleNodeType, Ser
 
     public String getTableName() {
         return this.tableName;
+    }
+
+    public void loadProperties() {
+        final StringTokenizer tok = new StringTokenizer(this.getArtifactCompleteName(), "/"); //$NON-NLS-1$
+        tok.nextToken();//put the name away
+        tok.nextToken();//put the initial lookup away
+        if (tok.countTokens() == 6) {
+            this.setSchemaName(tok.nextToken());
+            this.setCatalogName(tok.nextToken());
+            tok.nextToken();// puts away its table type
+            this.setTableName(tok.nextToken());
+        } else {
+
+            this.setSchemaName(tok.nextToken());
+            tok.nextToken();// puts away its table type
+            this.setTableName(tok.nextToken());
+        }
     }
 
     public void setCatalogName( final String catalogName ) {

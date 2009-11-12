@@ -55,7 +55,6 @@ import static org.openspotlight.federation.data.processing.test.ConfigurationExa
 
 import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.finder.test.InstanceMetadata;
 
 /**
  * Just a test to verify if the method {@link InstanceMetadata#getPath()} is working.

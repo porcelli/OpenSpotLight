@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.load.db.DatabaseSupport.createConnection;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -21,14 +21,13 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.federation.data.load.AbstractDatabaseArtifactFinder;
 import org.openspotlight.federation.data.load.DatabaseStreamArtifactFinder;
-import org.openspotlight.federation.data.load.db.ScriptType;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Configuration;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 import org.slf4j.Logger;
@@ -112,7 +111,7 @@ public abstract class DatabaseStreamTest {
         if (!conn.isClosed()) {
             conn.close();
         }
-        final AbstractDatabaseArtifactFinder finder = new DatabaseStreamArtifactFinder();
+        final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder();
         final Configuration configuration = new Configuration();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
