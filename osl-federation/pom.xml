@@ -20,6 +20,5 @@
 		<module>loader/osl-federation-dna-core-loader</module>
 		<module>loader/osl-federation-dna-filesystem-loader</module>
 		<module>loader/osl-federation-dna-svn-loader</module>
-		<module>osl-federation-stress-test</module>
 	</modules>
 </project>
