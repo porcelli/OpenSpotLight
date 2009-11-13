@@ -24,11 +24,11 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-// TODO: Auto-generated Javadoc
 /**
  * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}
  * subtypes or {@link ConfigurationNode} subtypes.
@@ -130,7 +130,7 @@ public interface DetailedLogger {
                              final String message,
                              final String detailedMessage,
                              final LogableObject... anotherNodes ) {
-                // TODO Auto-generated method stub
+                final LogEntry entry = new LogEntry(errorCode, new Date(), type, message, detailedMessage, LoggedObjectInformation.getHierarchyFrom(anotherNodes));
 
             }
 
@@ -176,45 +176,6 @@ public interface DetailedLogger {
         public static class LoggedObjectInformation {
 
             /**
-             * Gets the hierarchy from.
-             * 
-             * @param o the o
-             * @return the hierarchy from
-             */
-            private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
-                final List<LogableObject> result = new LinkedList<LogableObject>();
-                result.add(o);
-                LogableObject parent = getParent(o);
-                while (parent != null) {
-                    result.add(parent);
-                    parent = getParent(parent);
-                }
-                return result;
-            }
-
-            /**
-             * Gets the hierarchy from.
-             * 
-             * @param node the node
-             * @param anotherNodes the another nodes
-             * @return the hierarchy from
-             */
-            public static List<LoggedObjectInformation> getHierarchyFrom( final LogableObject node,
-                                                                          final LogableObject... anotherNodes ) {
-                final List<LogableObject> nodes = new LinkedList<LogableObject>();
-                nodes.addAll(getHierarchyFrom(node));
-                for (final LogableObject o : anotherNodes) {
-                    nodes.addAll(getHierarchyFrom(o));
-                }
-                Collections.reverse(nodes);
-                final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
-                for (int i = 0, size = nodes.size(); i < size; i++) {
-                    result.add(new LoggedObjectInformation(i, nodes.get(i)));
-                }
-                return result;
-            }
-
-            /**
              * Gets the parent.
              * 
              * @param o the o
@@ -232,8 +193,7 @@ public interface DetailedLogger {
                     return null;// other types have the path information. Now the parent nodes isn't necessary
                 }
             }
-
-            /** The order. */
+            nodes.addAll(final List<LogableObject> nodes = new LinkedList<LogableObject>();            /** The order. */
             private final int    order;
 
             /** The unique id. */
@@ -310,6 +270,18 @@ public interface DetailedLogger {
             public String getFriendlyDescription() {
                 return this.friendlyDescription;
             }
+
+            getHierarchyFrom(node));
+            for (final LogableObject o : anotherNodes) {
+                nodes.addAll(getHierarchyFrom(o));
+            }
+            Collections.reverse(nodes);
+            final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
+            for (int i = 0, size = nodes.size(); i < size; i++) {
+                result.add(new LoggedObjectInformation(i, nodes.get(i)));
+            }
+            return result;
+
 
             /**
              * Gets the order.
