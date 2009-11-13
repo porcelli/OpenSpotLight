@@ -1,7 +1,12 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.domain.scheduler.ArtifactSourceSchedulable;
+import org.openspotlight.federation.domain.scheduler.GroupSchedulable;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
@@ -12,13 +17,20 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "configuration" )
 public class GlobalSettings implements SimpleNodeType, Serializable {
 
-    private long defaultSleepingIntervalInMilliseconds;
+    private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
+
+    private long                                                                   defaultSleepingIntervalInMilliseconds;
 
     /** The number of parallel threads. */
-    private int  numberOfParallelThreads;
+    private int                                                                    numberOfParallelThreads;
 
     /** The max result list size. */
-    private int  maxResultListSize;
+    private int                                                                    maxResultListSize;
+
+    public GlobalSettings() {
+        this.schedulableCommandMap.put(Group.class, GroupSchedulable.class);
+        this.schedulableCommandMap.put(ArtifactSource.class, ArtifactSourceSchedulable.class);
+    }
 
     public long getDefaultSleepingIntervalInMilliseconds() {
         return this.defaultSleepingIntervalInMilliseconds;
@@ -42,6 +54,10 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
         return this.numberOfParallelThreads;
     }
 
+    public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
+        return this.schedulableCommandMap;
+    }
+
     public void setDefaultSleepingIntervalInMilliseconds( final long defaultSleepingIntervalInMilliseconds ) {
         this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
     }
@@ -62,6 +78,10 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
      */
     public void setNumberOfParallelThreads( final int numberOfParallelThreads ) {
         this.numberOfParallelThreads = numberOfParallelThreads;
+    }
+
+    public void setSchedulableCommandMap( final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap ) {
+        this.schedulableCommandMap = schedulableCommandMap;
     }
 
 }

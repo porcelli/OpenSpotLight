@@ -10,7 +10,6 @@ import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.scheduler.ArtifactSourceSchedulable;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -23,26 +22,24 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "artifact_source" )
 public class ArtifactSource implements SimpleNodeType, Serializable, LogableObject, Schedulable {
 
-    private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass    = ArtifactSourceSchedulable.class;
-
-    private final List<String>                                               cronInformation = new ArrayList<String>();
+    private final List<String>         cronInformation = new ArrayList<String>();
 
     /** The repository. */
-    private Repository                                                       repository;
+    private Repository                 repository;
 
     /** The active. */
-    private boolean                                                          active;
+    private boolean                    active;
 
     /** The initial lookup. */
-    private String                                                           initialLookup;
+    private String                     initialLookup;
 
     /** The name. */
-    private String                                                           name;
+    private String                     name;
 
     /** The mappings. */
-    private Set<ArtifactSourceMapping>                                       mappings        = new HashSet<ArtifactSourceMapping>();
+    private Set<ArtifactSourceMapping> mappings        = new HashSet<ArtifactSourceMapping>();
 
-    private volatile int                                                     hashCode;
+    private volatile int               hashCode;
 
     public boolean equals( final Object o ) {
         if (!(o instanceof ArtifactSource)) {
@@ -52,10 +49,6 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
         final boolean result = Equals.eachEquality(Arrays.of(this.getClass(), this.name, this.repository),
                                                    Arrays.andOf(that.getClass(), that.name, that.repository));
         return result;
-    }
-
-    public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass() {
-        return this.commandClass;
     }
 
     public List<String> getCronInformation() {
