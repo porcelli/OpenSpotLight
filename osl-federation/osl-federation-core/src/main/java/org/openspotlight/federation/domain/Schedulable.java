@@ -21,13 +21,6 @@ public interface Schedulable {
     }
 
     /**
-     * Gets the command class.
-     * 
-     * @return the command class
-     */
-    public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass();
-
-    /**
      * Gets the cron information.
      * 
      * @return the cron information

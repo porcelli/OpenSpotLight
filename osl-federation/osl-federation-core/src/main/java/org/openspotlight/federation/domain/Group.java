@@ -9,7 +9,6 @@ import java.util.Set;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.scheduler.GroupSchedulable;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -23,27 +22,25 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /** The repository. */
-    private Repository                                                       repository;
+    private Repository               repository;
 
     /** The type. */
-    private String                                                           type;
+    private String                   type;
 
     /** The name. */
-    private String                                                           name;
+    private String                   name;
 
     /** The active. */
-    private boolean                                                          active;
+    private boolean                  active;
 
     /** The group. */
-    private Group                                                            group;
+    private Group                    group;
 
-    private volatile int                                                     hashCode;
+    private volatile int             hashCode;
 
-    private Set<BundleProcessorType>                                         bundleTypes     = new HashSet<BundleProcessorType>();
+    private Set<BundleProcessorType> bundleTypes     = new HashSet<BundleProcessorType>();
 
-    private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass    = GroupSchedulable.class;
-
-    private final List<String>                                               cronInformation = new ArrayList<String>();
+    private final List<String>       cronInformation = new ArrayList<String>();
 
     public boolean equals( final Object o ) {
         if (!(o instanceof Group)) {
@@ -57,10 +54,6 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     public Set<BundleProcessorType> getBundleTypes() {
         return this.bundleTypes;
-    }
-
-    public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass() {
-        return this.commandClass;
     }
 
     public List<String> getCronInformation() {
