@@ -15,7 +15,6 @@ import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistSupport;
@@ -44,11 +43,10 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
     }
 
     public A findByPath( final ArtifactSource artifactSource,
-                         final String rawPath ) {
+                         final String path ) {
         Assertions.checkNotNull("artifactSource", artifactSource);
-        Assertions.checkNotEmpty("rawPath", rawPath);
+        Assertions.checkNotEmpty("path", path);
         try {
-            final String path = artifactSource.getUniqueReference() + "/" + rawPath;
             final Set<A> found = SimplePersistSupport.findNodesByProperties(ARTIFACTS_ROOT_PATH, this.session, this.artifactType,
                                                                             LazyType.DO_NOT_LOAD,
                                                                             new String[] {"artifactCompleteName"},
@@ -70,9 +68,14 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         try {
             final String propertyName = MessageFormat.format(SimplePersistSupport.PROPERTY_VALUE, "artifactCompleteName");
             final String nodeName = SimplePersistSupport.getJcrNodeName(this.artifactType);
-            final String nodeInitialPath = initialPath != null ? artifactSource.getUniqueReference() + "/" + initialPath : artifactSource.getUniqueReference();
-            final String xpath = MessageFormat.format("{0}//{1}[jcr:contains(@{2},''{3}'')]", ARTIFACTS_ROOT_PATH, nodeName,
-                                                      propertyName, nodeInitialPath);
+            final String xpath;
+            if (initialPath != null) {
+                xpath = MessageFormat.format("{0}//{1}[jcr:contains(@{2},''{3}'')]", ARTIFACTS_ROOT_PATH, nodeName, propertyName,
+                                             initialPath);
+            } else {
+                xpath = MessageFormat.format("{0}//{1}", ARTIFACTS_ROOT_PATH, nodeName);
+            }
+
             final Query query = this.session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
             final QueryResult result = query.execute();
             final NodeIterator nodes = result.getNodes();
@@ -81,8 +84,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
                 final Node nextNode = nodes.nextNode();
                 if (nextNode.hasProperty(propertyName)) {
                     final String propVal = nextNode.getProperty(propertyName).getValue().getString();
-                    final String newPropVal = Strings.removeBegginingFrom(artifactSource.getUniqueReference() + "/", propVal);
-                    names.add(newPropVal);
+                    names.add(propVal);
                 }
             }
             return names;

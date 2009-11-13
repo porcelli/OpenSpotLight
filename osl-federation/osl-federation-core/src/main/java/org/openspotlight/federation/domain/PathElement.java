@@ -92,7 +92,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType, Ser
      */
     public String getCompletePath() {
         if (this.isRootElement()) {
-            return this.getName();
+            return "/" + this.getName();
         }
         return this.getParent().getCompletePath() + Artifact.SEPARATOR + this.getName();
     }

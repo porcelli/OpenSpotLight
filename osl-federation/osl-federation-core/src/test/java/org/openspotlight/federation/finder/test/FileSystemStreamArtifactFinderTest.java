@@ -41,12 +41,11 @@ public class FileSystemStreamArtifactFinderTest {
     @Test
     public void shouldFindByRelativePath() throws Exception {
         final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath(this.artifactSource,
-                                                                                    "folder/subfolder/file_not_changed1");
+                                                                                    "/folder/subfolder/file_not_changed1");
         final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByRelativePath(this.artifactSource, streamArtifact1,
                                                                                             "../file_not_changed1");
         assertThat(streamArtifact2, is(notNullValue()));
-        assertThat(streamArtifact2.getArtifactCompleteName(), is(this.artifactSource.getUniqueReference()
-                                                                 + "/folder/file_not_changed1"));
+        assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_not_changed1"));
     }
 
     /**

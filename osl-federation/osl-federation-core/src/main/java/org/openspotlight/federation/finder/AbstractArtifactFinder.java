@@ -6,7 +6,6 @@ import java.util.Set;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.PathElement;
@@ -27,9 +26,7 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements Arti
     public A findByRelativePath( final ArtifactSource artifactSource,
                                  final A relativeTo,
                                  final String path ) {
-        String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
-        final String start = artifactSource.getUniqueReference();
-        newPath = Strings.removeBegginingFrom(start, newPath);
+        final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
 
         return this.findByPath(artifactSource, newPath);
     }

@@ -9,8 +9,8 @@ import java.util.HashSet;
 
 import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
@@ -28,7 +28,7 @@ public class ArtifactLoaderTest {
 
         final ArtifactSource source = new ArtifactSource();
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-        mapping.setRelative(finalStr);
+        mapping.setFrom(finalStr);
         mapping.setIncludeds(new HashSet<String>());
         mapping.setExcludeds(new HashSet<String>());
         mapping.getIncludeds().add("*.java");

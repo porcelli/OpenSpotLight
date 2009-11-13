@@ -65,8 +65,8 @@ import org.openspotlight.common.Triple;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.finder.ArtifactFinder;
 
@@ -80,7 +80,7 @@ public interface ArtifactLoader extends Disposable {
     public static class Factory {
 
         private static class ArtifactLoaderImpl implements ArtifactLoader {
-            private final GlobalSettings          configuration;
+            private final GlobalSettings         configuration;
             private final ArtifactLoaderBehavior behavior;
             private final ArtifactFinder<?>[]    artifactFinders;
 
@@ -147,7 +147,7 @@ public interface ArtifactLoader extends Disposable {
                             try {
                                 for (final ArtifactSourceMapping mapping : pair.getK2().getMappings()) {
                                     final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(pair.getK2(),
-                                                                                                       mapping.getRelative());
+                                                                                                       mapping.getFrom());
                                     final FilterResult newNames = filterNamesByPattern(rawNames, mapping.getIncludeds(),
                                                                                        mapping.getExcludeds(), false);
 

@@ -50,9 +50,7 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
                 buffer.append('\n');
             }
             final String content = buffer.toString();
-            final StreamArtifact streamArtifact = Artifact.createArtifact(StreamArtifact.class,
-                                                                          artifactSource.getUniqueReference() + "/" + path,
-                                                                          ChangeType.INCLUDED);
+            final StreamArtifact streamArtifact = Artifact.createArtifact(StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
             streamArtifact.setContent(content);
             return streamArtifact;
         } catch (final Exception e) {
