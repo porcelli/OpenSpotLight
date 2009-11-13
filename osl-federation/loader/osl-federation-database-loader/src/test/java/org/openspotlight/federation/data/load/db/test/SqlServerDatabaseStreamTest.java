@@ -18,7 +18,7 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements
 	 */
 	@Override
 	protected DbArtifactSource createValidConfigurationWithMappings() {
-		final Configuration configuration = createSqlServerDbConfiguration();
+		final GlobalSettings configuration = createSqlServerDbConfiguration();
 		return (DbArtifactSource) configuration.getRepositoryByName(
 				"sqlserver Repository") //$NON-NLS-1$
 				.getGroupByName("sqlserver Group") //$NON-NLS-1$

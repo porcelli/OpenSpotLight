@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 
@@ -19,7 +19,7 @@ public class ArtifactLoaderTest {
 
     @Test
     public void shouldLoad() throws Exception {
-        final Configuration configuration = new Configuration();
+        final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
         final String initialRawPath = new File("../..").getCanonicalPath();

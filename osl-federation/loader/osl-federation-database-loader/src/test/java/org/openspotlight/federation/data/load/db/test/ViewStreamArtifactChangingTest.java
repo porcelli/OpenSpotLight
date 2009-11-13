@@ -34,7 +34,7 @@ public class ViewStreamArtifactChangingTest {
 	public void shouldFireStreamChangeWhenViewWithSelectStarChange()
 			throws Exception {
 
-		final Configuration configuration = createH2DbConfiguration("ViewStreamArtifactChangingTest"); //$NON-NLS-1$
+		final GlobalSettings configuration = createH2DbConfiguration("ViewStreamArtifactChangingTest"); //$NON-NLS-1$
 		final DbArtifactSource dbBundle = (DbArtifactSource) configuration.getRepositoryByName(
 				"H2 Repository") //$NON-NLS-1$
 				.getGroupByName("h2 Group") //$NON-NLS-1$

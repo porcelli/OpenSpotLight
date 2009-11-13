@@ -64,7 +64,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.openspotlight.common.MutableType;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.loader.ConfigurationManager;
@@ -77,7 +77,7 @@ import org.openspotlight.graph.SLNode;
 /**
  * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
  * this interface implementation should process all artifacts that needs processing. All new types of {@link BundleProcessor} to
- * be used inside an OSL instance should be also inside {@link Configuration} for this instance. The better scenario to implement
+ * be used inside an OSL instance should be also inside {@link GlobalSettings} for this instance. The better scenario to implement
  * this class is with a stateless class with all logic to process just the target artifact inside the
  * {@link BundleProcessingGroup}. Other parameters are passed on the context just for convenience. Please, implement one of the
  * child interfaces that extended this {@link BundleProcessor} interface.

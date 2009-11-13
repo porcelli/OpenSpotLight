@@ -79,7 +79,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
     @Override
     @Before
     public void createConfiguration() throws Exception {
-        this.configuration = new Configuration();
+        this.configuration = new GlobalSettings();
         final Repository repository = new Repository(this.configuration, this.REPOSITORY_NAME);
         this.configuration.setNumberOfParallelThreads(4);
         final Group project = new Group(repository, this.PROJECT_NAME);
@@ -91,7 +91,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
     }
 
     public ArtifactSource createConfigurationForChangeListen() throws Exception {
-        this.configuration = new Configuration();
+        this.configuration = new GlobalSettings();
         final Repository repository = new Repository(this.configuration, "Local target folder");
         this.configuration.setNumberOfParallelThreads(4);
         final Group project = new Group(repository, "Osl Federation");

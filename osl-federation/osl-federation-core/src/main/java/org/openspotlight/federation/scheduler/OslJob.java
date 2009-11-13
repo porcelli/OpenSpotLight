@@ -27,7 +27,7 @@ public class OslJob implements Job {
         final ConfigurationManager manager = provider.getNewInstance();
 
         try {
-            final Configuration configuration = manager.load(LazyType.LAZY);
+            final GlobalSettings configuration = manager.load(LazyType.LAZY);
             final ArtifactSource bundle = manager.findNodeByUuidAndVersion(configuration, ArtifactSource.class, bundleId, versionId);
 
             bundleProcessorManager.processBundles(Arrays.asList(bundle));

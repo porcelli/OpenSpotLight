@@ -168,7 +168,7 @@ public interface Scheduler {
             /**
              * {@inheritDoc}
              */
-            public synchronized void loadConfiguration( final Configuration configuration ) throws ConfigurationException {
+            public synchronized void loadConfiguration( final GlobalSettings configuration ) throws ConfigurationException {
                 try {
 
                     for (final Pair<String, String> entry : jobEntries) {
@@ -254,7 +254,7 @@ public interface Scheduler {
      * @param configuration the configuration
      * @throws ConfigurationException the configuration exception
      */
-    public void loadConfiguration( Configuration configuration ) throws ConfigurationException;
+    public void loadConfiguration( GlobalSettings configuration ) throws ConfigurationException;
 
     /**
      * Sets the bundle processor manager.

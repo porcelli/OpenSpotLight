@@ -82,7 +82,7 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
@@ -97,11 +97,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BundleProcessorManager} is the class reposable to get an {@link Configuration} and to process all {@link Artifact
- * artifacts} on this {@link Configuration}. The {@link BundleProcessorManager} should get the {@link ArtifactSource bundle's}
+ * The {@link BundleProcessorManager} is the class reposable to get an {@link GlobalSettings} and to process all {@link Artifact
+ * artifacts} on this {@link GlobalSettings}. The {@link BundleProcessorManager} should get the {@link ArtifactSource bundle's}
  * {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each {@link BundleProcessorType type}
  * . After all {@link BundleProcessor processors} was found, the {@link BundleProcessorManager} should distribute the processing
- * job in some threads obeying the {@link Configuration#getNumberOfParallelThreads() number of threads} configured for this
+ * job in some threads obeying the {@link GlobalSettings#getNumberOfParallelThreads() number of threads} configured for this
  * {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -704,7 +704,7 @@ public final class BundleProcessorManager {
                 if (!targetBundle.getActive()) {
                     continue;
                 }
-                final Configuration configuration = configurationManager.load(LazyType.LAZY);
+                final GlobalSettings configuration = configurationManager.load(LazyType.LAZY);
                 final ArtifactSource bundle = configurationManager.findNodeByUuidAndVersion(
                                                                                             configuration,
                                                                                             ArtifactSource.class,
