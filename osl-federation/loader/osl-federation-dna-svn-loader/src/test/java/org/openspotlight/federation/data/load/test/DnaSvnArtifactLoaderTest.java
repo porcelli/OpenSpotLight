@@ -52,7 +52,7 @@ package org.openspotlight.federation.data.load.test;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.openspotlight.federation.data.load.DNASvnArtifactLoader;
-import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 
 /**
@@ -85,7 +85,7 @@ public class DnaSvnArtifactLoaderTest extends AbstractArtifactLoaderTest {
 				.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
 		bundle.setUser("anonymous");
 		bundle.setPassword("");
-		final ArtifactMapping artifactMapping = new ArtifactMapping(bundle,
+		final ArtifactSourceMapping artifactMapping = new ArtifactSourceMapping(bundle,
 				"src/");
 		new Included(artifactMapping, "**/*.java");
 	}

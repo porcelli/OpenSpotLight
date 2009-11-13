@@ -1,12 +1,15 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.scheduler.GroupSchedulable;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -17,33 +20,34 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Class Group.
  */
 @Name( "group" )
-public class Group implements SimpleNodeType, Serializable {
+public class Group implements SimpleNodeType, Serializable, Schedulable {
 
     /** The repository. */
-    private Repository           repository;
+    private Repository                                                       repository;
 
     /** The type. */
-    private String               type;
+    private String                                                           type;
 
     /** The name. */
-    private String               name;
+    private String                                                           name;
 
     /** The active. */
-    private boolean              active;
+    private boolean                                                          active;
 
     /** The group. */
-    private Group                group;
+    private Group                                                            group;
 
     /** The mappings. */
-    private Set<ArtifactMapping> mappings        = new HashSet<ArtifactMapping>();
+    private Set<ArtifactSourceMapping>                                       mappings        = new HashSet<ArtifactSourceMapping>();
 
     /** The artifact sources. */
-    private Set<ArtifactSource>  artifactSources = new HashSet<ArtifactSource>();
+    private Set<ArtifactSource>                                              artifactSources = new HashSet<ArtifactSource>();
 
-    /** The schedule data. */
-    private Set<ScheduleData>    scheduleData    = new HashSet<ScheduleData>();
+    private volatile int                                                     hashCode;
 
-    private volatile int         hashCode;
+    private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass    = GroupSchedulable.class;
+
+    private final List<String>                                               cronInformation = new ArrayList<String>();
 
     public boolean equals( final Object o ) {
         if (!(o instanceof Group)) {
@@ -64,6 +68,14 @@ public class Group implements SimpleNodeType, Serializable {
         return this.artifactSources;
     }
 
+    public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass() {
+        return this.commandClass;
+    }
+
+    public List<String> getCronInformation() {
+        return this.cronInformation;
+    }
+
     /**
      * Gets the group.
      * 
@@ -79,7 +91,7 @@ public class Group implements SimpleNodeType, Serializable {
      * 
      * @return the mappings
      */
-    public Set<ArtifactMapping> getMappings() {
+    public Set<ArtifactSourceMapping> getMappings() {
         return this.mappings;
     }
 
@@ -101,15 +113,6 @@ public class Group implements SimpleNodeType, Serializable {
     @ParentProperty
     public Repository getRepository() {
         return this.repository;
-    }
-
-    /**
-     * Gets the schedule data.
-     * 
-     * @return the schedule data
-     */
-    public Set<ScheduleData> getScheduleData() {
-        return this.scheduleData;
     }
 
     /**
@@ -171,7 +174,7 @@ public class Group implements SimpleNodeType, Serializable {
      * 
      * @param mappings the new mappings
      */
-    public void setMappings( final Set<ArtifactMapping> mappings ) {
+    public void setMappings( final Set<ArtifactSourceMapping> mappings ) {
         this.mappings = mappings;
     }
 
@@ -191,15 +194,6 @@ public class Group implements SimpleNodeType, Serializable {
      */
     public void setRepository( final Repository repository ) {
         this.repository = repository;
-    }
-
-    /**
-     * Sets the schedule data.
-     * 
-     * @param scheduleData the new schedule data
-     */
-    public void setScheduleData( final Set<ScheduleData> scheduleData ) {
-        this.scheduleData = scheduleData;
     }
 
     /**

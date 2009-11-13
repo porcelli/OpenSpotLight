@@ -1,7 +1,9 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.jcr.LogableObject;
@@ -9,6 +11,7 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.scheduler.ArtifactSourceSchedulable;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -19,35 +22,36 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Class ArtifactSource.
  */
 @Name( "artifact_source" )
-public class ArtifactSource implements SimpleNodeType, Serializable, LogableObject {
+public class ArtifactSource implements SimpleNodeType, Serializable, LogableObject, Schedulable {
+
+    private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass         = ArtifactSourceSchedulable.class;
+
+    private final List<String>                                               cronInformation      = new ArrayList<String>();
 
     /** The repository. */
-    private Repository               repository;
+    private Repository                                                       repository;
 
     /** The active. */
-    private boolean                  active;
+    private boolean                                                          active;
 
     /** The initial lookup. */
-    private String                   initialLookup;
+    private String                                                           initialLookup;
 
     /** The name. */
-    private String                   name;
+    private String                                                           name;
 
     /** The group. */
-    private Group                    group;
+    private Group                                                            group;
 
     /** The mappings. */
-    private Set<ArtifactMapping>     mappings             = new HashSet<ArtifactMapping>();
-
-    /** The schedule datas. */
-    private Set<ScheduleData>        scheduleDatas        = new HashSet<ScheduleData>();
+    private Set<ArtifactSourceMapping>                                       mappings             = new HashSet<ArtifactSourceMapping>();
 
     /** The bundle processor types. */
-    private Set<BundleProcessorType> bundleProcessorTypes = new HashSet<BundleProcessorType>();
+    private Set<BundleProcessorType>                                         bundleProcessorTypes = new HashSet<BundleProcessorType>();
 
-    private volatile String          uniqueReference      = null;
+    private volatile String                                                  uniqueReference      = null;
 
-    private volatile int             hashCode;
+    private volatile int                                                     hashCode;
 
     public boolean equals( final Object o ) {
         if (!(o instanceof ArtifactSource)) {
@@ -66,6 +70,14 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
      */
     public Set<BundleProcessorType> getBundleProcessorTypes() {
         return this.bundleProcessorTypes;
+    }
+
+    public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass() {
+        return this.commandClass;
+    }
+
+    public List<String> getCronInformation() {
+        return this.cronInformation;
     }
 
     /**
@@ -92,7 +104,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
      * 
      * @return the mappings
      */
-    public Set<ArtifactMapping> getMappings() {
+    public Set<ArtifactSourceMapping> getMappings() {
         return this.mappings;
     }
 
@@ -114,15 +126,6 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
     @ParentProperty
     public Repository getRepository() {
         return this.repository;
-    }
-
-    /**
-     * Gets the schedule datas.
-     * 
-     * @return the schedule datas
-     */
-    public Set<ScheduleData> getScheduleDatas() {
-        return this.scheduleDatas;
     }
 
     public String getUniqueReference() {
@@ -198,7 +201,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
      * 
      * @param mappings the new mappings
      */
-    public void setMappings( final Set<ArtifactMapping> mappings ) {
+    public void setMappings( final Set<ArtifactSourceMapping> mappings ) {
         this.mappings = mappings;
     }
 
@@ -218,15 +221,6 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
      */
     public void setRepository( final Repository repository ) {
         this.repository = repository;
-    }
-
-    /**
-     * Sets the schedule datas.
-     * 
-     * @param scheduleDatas the new schedule datas
-     */
-    public void setScheduleDatas( final Set<ScheduleData> scheduleDatas ) {
-        this.scheduleDatas = scheduleDatas;
     }
 
 }

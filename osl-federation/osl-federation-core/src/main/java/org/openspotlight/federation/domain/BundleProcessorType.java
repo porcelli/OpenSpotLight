@@ -1,16 +1,18 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.data.processing.BundleProcessor;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class BundleProcessorType.
  */
@@ -18,23 +20,29 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
     /** The type. */
-    private Class<?>       type;
+    private Class<? extends BundleProcessor<?>> type;
 
     /** The active. */
-    private boolean        active;
+    private boolean                             active;
 
-    /** The artifact source. */
-    private ArtifactSource artifactSource;
+    /** The group. */
+    private Group                               group;
 
-    private volatile int   hashCode;
+    /** The sources. */
+    private Set<BundleSource>                   sources = new HashSet<BundleSource>();
 
+    /** The hash code. */
+    private volatile int                        hashCode;
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     public boolean equals( final Object o ) {
         if (!(o instanceof BundleProcessorType)) {
             return false;
         }
         final BundleProcessorType that = (BundleProcessorType)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.artifactSource, this.type), Arrays.andOf(that.artifactSource,
-                                                                                                           that.type));
+        final boolean result = Equals.eachEquality(Arrays.of(this.group, this.type), Arrays.andOf(that.group, that.type));
         return result;
     }
 
@@ -44,8 +52,17 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * @return the artifact source
      */
     @ParentProperty
-    public ArtifactSource getArtifactSource() {
-        return this.artifactSource;
+    public Group getGroup() {
+        return this.group;
+    }
+
+    /**
+     * Gets the sources.
+     * 
+     * @return the sources
+     */
+    public Set<BundleSource> getSources() {
+        return this.sources;
     }
 
     /**
@@ -54,14 +71,17 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * @return the type
      */
     @KeyProperty
-    public Class<?> getType() {
+    public Class<? extends BundleProcessor<?>> getType() {
         return this.type;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     public int hashCode() {
         int result = this.hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.artifactSource, this.type);
+            result = HashCodes.hashOf(this.group, this.type);
             this.hashCode = result;
         }
         return result;
@@ -86,12 +106,21 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Sets the artifact source.
+     * Sets the group.
      * 
-     * @param artifactSource the new artifact source
+     * @param group the new group
      */
-    public void setArtifactSource( final ArtifactSource artifactSource ) {
-        this.artifactSource = artifactSource;
+    public void setGroup( final Group group ) {
+        this.group = group;
+    }
+
+    /**
+     * Sets the sources.
+     * 
+     * @param sources the new sources
+     */
+    public void setSources( final Set<BundleSource> sources ) {
+        this.sources = sources;
     }
 
     /**
@@ -99,7 +128,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * 
      * @param type the new type
      */
-    public void setType( final Class<?> type ) {
+    public void setType( final Class<? extends BundleProcessor<?>> type ) {
         this.type = type;
     }
 

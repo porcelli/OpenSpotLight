@@ -65,7 +65,7 @@ import org.openspotlight.common.Triple;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.finder.ArtifactFinder;
@@ -145,7 +145,7 @@ public interface ArtifactLoader extends Disposable {
 
                         public void run() {
                             try {
-                                for (final ArtifactMapping mapping : pair.getK2().getMappings()) {
+                                for (final ArtifactSourceMapping mapping : pair.getK2().getMappings()) {
                                     final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(pair.getK2(),
                                                                                                        mapping.getRelative());
                                     final FilterResult newNames = filterNamesByPattern(rawNames, mapping.getIncludeds(),

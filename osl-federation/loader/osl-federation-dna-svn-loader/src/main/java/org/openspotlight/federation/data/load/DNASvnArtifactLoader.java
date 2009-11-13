@@ -52,7 +52,7 @@ package org.openspotlight.federation.data.load;
 import org.jboss.dna.connector.svn.SVNRepositorySource;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 
@@ -71,7 +71,7 @@ public class DNASvnArtifactLoader extends DnaArtifactLoader {
 		@Override
 		protected void configureWithBundle(
 				RepositorySourceDefinition<?> sourceDefinition, ArtifactSource bundle,
-				ArtifactMapping relative) {
+				ArtifactSourceMapping relative) {
 			if (!(bundle instanceof DnaSvnArtifactSource)) {
 				throw new ConfigurationException(
 						"Invalid bundle type. It's mandatory to use dnaSvnBundle");
