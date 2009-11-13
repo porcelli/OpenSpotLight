@@ -49,9 +49,9 @@
 
 package org.openspotlight.federation.loader;
 
-import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
 
 /**
  * Interface responsible to load and save the configuration data on a persistent layer.
@@ -65,6 +65,8 @@ public interface ConfigurationManager {
      */
     public void closeResources();
 
+    GlobalSettings getGlobalSettings();
+
     /**
      * Loads the current group from configuration, marking the configuration as saved.
      * 
@@ -73,7 +75,9 @@ public interface ConfigurationManager {
      * @throws ConfigurationException
      * @throws NoConfigurationYetException
      */
-    Configuration load( LazyType lazyType ) throws ConfigurationException, NoConfigurationYetException;
+    Repository getRepositoryByName( String name ) throws ConfigurationException;
+
+    void saveGlobalSettings( GlobalSettings globalSettings ) throws ConfigurationException;
 
     /**
      * Saves the group on a persistent layer marking the current configuration as a saved configuration.
@@ -81,6 +85,6 @@ public interface ConfigurationManager {
      * @param configuration
      * @throws ConfigurationException
      */
-    void save( Configuration configuration ) throws ConfigurationException;
+    void saveRepository( Repository configuration ) throws ConfigurationException;
 
 }

@@ -74,7 +74,7 @@ public class DnaSvnArtifactLoaderTest extends AbstractArtifactLoaderTest {
 	@Override
 	@Before
 	public void createConfiguration() throws Exception {
-		this.configuration = new Configuration();
+		this.configuration = new GlobalSettings();
 		final Repository repository = new Repository(this.configuration,
 				this.REPOSITORY_NAME);
 		this.configuration.setNumberOfParallelThreads(4);

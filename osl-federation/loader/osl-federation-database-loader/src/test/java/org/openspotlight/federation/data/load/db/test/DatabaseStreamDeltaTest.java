@@ -79,7 +79,7 @@ public class DatabaseStreamDeltaTest {
     }
 
     private DatabaseStreamLoader artifactLoader;
-    private Configuration        configuration;
+    private GlobalSettings        configuration;
 
     @Before
     public void cleanDatabase() throws Exception {

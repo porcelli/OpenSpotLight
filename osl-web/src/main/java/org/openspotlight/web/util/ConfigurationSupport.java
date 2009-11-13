@@ -46,13 +46,13 @@ public class ConfigurationSupport {
      * @return the configuration
      * @throws SLException the SL exception
      */
-    private static Configuration saveXmlOnJcr( final ConfigurationManager manager ) throws SLException {
-        Configuration configuration;
+    private static GlobalSettings saveXmlOnJcr( final ConfigurationManager manager ) throws SLException {
+        GlobalSettings configuration;
         final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
         final XmlConfigurationManager xmlManager = new XmlConfigurationManager(is);
         configuration = xmlManager.load(LazyType.EAGER);
         configuration.getInstanceMetadata().accept(new MarkAllAsDirtyVisitor());
-        manager.save(configuration);
+        manager.saveRepository(configuration);
         return configuration;
     }
 }

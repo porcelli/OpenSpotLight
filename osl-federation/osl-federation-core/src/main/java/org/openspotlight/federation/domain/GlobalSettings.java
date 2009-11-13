@@ -10,7 +10,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Class Configuration.
  */
 @Name( "configuration" )
-public class Configuration implements SimpleNodeType, Serializable {
+public class GlobalSettings implements SimpleNodeType, Serializable {
 
     private long defaultSleepingIntervalInMilliseconds;
 

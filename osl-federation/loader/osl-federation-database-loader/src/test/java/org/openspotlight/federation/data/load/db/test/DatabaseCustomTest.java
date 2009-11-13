@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.RoutineArtifact;
@@ -40,7 +40,7 @@ public class DatabaseCustomTest {
         delete("./target/test-data"); //$NON-NLS-1$
 
         this.finder = new DatabaseCustomArtifactFinder();
-        final Configuration configuration = new Configuration();
+        final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
 

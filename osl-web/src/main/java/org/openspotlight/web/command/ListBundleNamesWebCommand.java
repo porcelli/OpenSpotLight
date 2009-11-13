@@ -29,7 +29,7 @@ public class ListBundleNamesWebCommand implements WebCommand {
         try {
             final Session jcrSession = context.getJcrSession();
             final ConfigurationManager manager = new JcrSessionConfigurationManager(jcrSession);
-            final Configuration configuration = manager.load(LazyType.LAZY);
+            final GlobalSettings configuration = manager.load(LazyType.LAZY);
             final Set<ArtifactSource> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
             final Set<String> allBundlesAsString = new HashSet<String>();
             for (final ArtifactSource b : allBundles) {

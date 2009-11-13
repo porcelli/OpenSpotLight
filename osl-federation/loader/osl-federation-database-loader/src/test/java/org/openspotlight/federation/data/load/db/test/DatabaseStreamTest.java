@@ -23,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DatabaseStreamArtifactFinder;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
@@ -112,7 +112,7 @@ public abstract class DatabaseStreamTest {
             conn.close();
         }
         final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder();
-        final Configuration configuration = new Configuration();
+        final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
 

@@ -67,7 +67,7 @@ import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.Configuration;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.finder.ArtifactFinder;
 
 public interface ArtifactLoader extends Disposable {
@@ -80,7 +80,7 @@ public interface ArtifactLoader extends Disposable {
     public static class Factory {
 
         private static class ArtifactLoaderImpl implements ArtifactLoader {
-            private final Configuration          configuration;
+            private final GlobalSettings          configuration;
             private final ArtifactLoaderBehavior behavior;
             private final ArtifactFinder<?>[]    artifactFinders;
 
@@ -89,7 +89,7 @@ public interface ArtifactLoader extends Disposable {
             private ExecutorService              executor;
 
             public ArtifactLoaderImpl(
-                                       final Configuration configuration, final ArtifactLoaderBehavior behavior,
+                                       final GlobalSettings configuration, final ArtifactLoaderBehavior behavior,
                                        final ArtifactFinder<?>... artifactFinders ) {
                 this.configuration = configuration;
                 this.behavior = behavior;
@@ -210,7 +210,7 @@ public interface ArtifactLoader extends Disposable {
             }
         }
 
-        public static ArtifactLoader createNewLoader( final Configuration configuration,
+        public static ArtifactLoader createNewLoader( final GlobalSettings configuration,
                                                       final ArtifactLoaderBehavior behavior,
                                                       final ArtifactFinder<?>... artifactFinders ) {
             final ArtifactLoaderImpl loader = new ArtifactLoaderImpl(configuration, behavior, artifactFinders);

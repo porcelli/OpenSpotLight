@@ -25,7 +25,7 @@ public class ImediateBundleProcessingWebCommand implements WebCommand {
         try {
             final Scheduler scheduler = context.getScheduler();
             final ConfigurationManager manager = new JcrSessionConfigurationManager(context.getJcrSession());
-            final Configuration configuration = manager.load(LazyType.LAZY);
+            final GlobalSettings configuration = manager.load(LazyType.LAZY);
             final Set<ArtifactSource> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
 
             scheduler.fireImmediateExecution(allBundles.toArray(new ArtifactSource[] {}));
