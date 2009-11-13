@@ -196,7 +196,7 @@ public class XmlConfigurationManagerFactory {
     private static XStream setupXStream() {
         final XStream xStream = new XStream();
         xStream.aliasPackage("osl", "org.openspotlight.federation.domain");
-        xStream.alias("configuration", XmlConfiguration.class);
+        xStream.alias("Configuration", XmlConfiguration.class);
         return xStream;
     }
 

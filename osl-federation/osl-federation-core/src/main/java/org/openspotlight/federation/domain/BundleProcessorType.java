@@ -20,19 +20,19 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
     /** The type. */
-    private Class<? extends BundleProcessor<?>> type;
+    private Class<? extends BundleProcessor<? extends Artifact>> type;
 
     /** The active. */
-    private boolean                             active;
+    private boolean                                              active;
 
     /** The group. */
-    private Group                               group;
+    private Group                                                group;
 
     /** The sources. */
-    private Set<BundleSource>                   sources = new HashSet<BundleSource>();
+    private Set<BundleSource>                                    sources = new HashSet<BundleSource>();
 
     /** The hash code. */
-    private volatile int                        hashCode;
+    private volatile int                                         hashCode;
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -71,7 +71,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * @return the type
      */
     @KeyProperty
-    public Class<? extends BundleProcessor<?>> getType() {
+    public Class<? extends BundleProcessor<? extends Artifact>> getType() {
         return this.type;
     }
 
@@ -128,7 +128,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * 
      * @param type the new type
      */
-    public void setType( final Class<? extends BundleProcessor<?>> type ) {
+    public void setType( final Class<? extends BundleProcessor<? extends Artifact>> type ) {
         this.type = type;
     }
 

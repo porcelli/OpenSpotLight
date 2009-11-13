@@ -37,13 +37,9 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     /** The group. */
     private Group                                                            group;
 
-    /** The mappings. */
-    private Set<ArtifactSourceMapping>                                       mappings        = new HashSet<ArtifactSourceMapping>();
-
-    /** The artifact sources. */
-    private Set<ArtifactSource>                                              artifactSources = new HashSet<ArtifactSource>();
-
     private volatile int                                                     hashCode;
+
+    private Set<BundleProcessorType>                                         bundleTypes     = new HashSet<BundleProcessorType>();
 
     private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass    = GroupSchedulable.class;
 
@@ -59,13 +55,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         return result;
     }
 
-    /**
-     * Gets the artifact sources.
-     * 
-     * @return the artifact sources
-     */
-    public Set<ArtifactSource> getArtifactSources() {
-        return this.artifactSources;
+    public Set<BundleProcessorType> getBundleTypes() {
+        return this.bundleTypes;
     }
 
     public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass() {
@@ -84,15 +75,6 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     @ParentProperty
     public Group getGroup() {
         return this.group;
-    }
-
-    /**
-     * Gets the mappings.
-     * 
-     * @return the mappings
-     */
-    public Set<ArtifactSourceMapping> getMappings() {
-        return this.mappings;
     }
 
     /**
@@ -151,13 +133,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         this.active = active;
     }
 
-    /**
-     * Sets the artifact sources.
-     * 
-     * @param artifactSources the new artifact sources
-     */
-    public void setArtifactSources( final Set<ArtifactSource> artifactSources ) {
-        this.artifactSources = artifactSources;
+    public void setBundleTypes( final Set<BundleProcessorType> bundleTypes ) {
+        this.bundleTypes = bundleTypes;
     }
 
     /**
@@ -167,15 +144,6 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
      */
     public void setGroup( final Group group ) {
         this.group = group;
-    }
-
-    /**
-     * Sets the mappings.
-     * 
-     * @param mappings the new mappings
-     */
-    public void setMappings( final Set<ArtifactSourceMapping> mappings ) {
-        this.mappings = mappings;
     }
 
     /**
