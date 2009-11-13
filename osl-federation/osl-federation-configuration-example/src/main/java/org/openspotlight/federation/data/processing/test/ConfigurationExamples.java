@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
@@ -92,7 +92,7 @@ public class ConfigurationExamples {
         artifactSource.setInitialLookup(initialLookup);
         artifactSource.setDriverClass(driver);
 
-        final ArtifactMapping mapping = new ArtifactMapping();
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
         mapping.setRelative("*/");

@@ -58,7 +58,7 @@ import java.io.FileOutputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
-import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
 
@@ -86,7 +86,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
         final ArtifactSource bundle = new ArtifactSource(project, this.BUNDLE_NAME);
         final String basePath = new File("../osl-federation-dna-filesystem-loader/").getCanonicalPath() + "/";
         bundle.setInitialLookup(basePath);
-        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle, "src/");
+        final ArtifactSourceMapping artifactMapping = new ArtifactSourceMapping(bundle, "src/");
         new Included(artifactMapping, "main/java/**/*.java");
     }
 
@@ -100,7 +100,7 @@ public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest 
                                          "../osl-federation-dna-filesystem-loader/target/test-data/DnaFileSystemArtifactLoaderTest/").getCanonicalPath()
                                 + "/";
         bundle.setInitialLookup(basePath);
-        final ArtifactMapping artifactMapping = new ArtifactMapping(bundle, "aFolder/");
+        final ArtifactSourceMapping artifactMapping = new ArtifactSourceMapping(bundle, "aFolder/");
         new Included(artifactMapping, "*.txt");
         return bundle;
     }

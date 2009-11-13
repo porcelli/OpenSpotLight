@@ -70,7 +70,7 @@ import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
-import org.openspotlight.federation.domain.ArtifactMapping;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
 
 /**
@@ -147,7 +147,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 */
 		protected abstract void configureWithBundle(
 				RepositorySourceDefinition<?> sourceDefinition, ArtifactSource bundle,
-				ArtifactMapping relative);
+				ArtifactSourceMapping relative);
 
 		/**
 		 * Creates a new {@link Session jcr session}. The client class is
@@ -171,7 +171,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		public Set<String> getAllArtifactNames(final ArtifactSource bundle,
-				final ArtifactMapping mapping) throws ConfigurationException {
+				final ArtifactSourceMapping mapping) throws ConfigurationException {
 
 			final Set<String> names = new HashSet<String>();
 			try {
@@ -212,7 +212,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		public void globalExecutionAboutToStart(final ArtifactSource bundle) {
 
 			try {
-				for (final ArtifactMapping relative : bundle
+				for (final ArtifactSourceMapping relative : bundle
 						.getMappings()) {
 
 					final JcrConfiguration configuration = new JcrConfiguration();
@@ -270,7 +270,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 		 * {@inheritDoc}
 		 */
 		public byte[] loadArtifactOrReturnNullToIgnore(final ArtifactSource bundle,
-				final ArtifactMapping mapping, final String artifactName,
+				final ArtifactSourceMapping mapping, final String artifactName,
 				final GlobalExecutionContext globalContext) throws Exception {
 			try {
 				final Node node = this.getSession().getRootNode().getNode(
@@ -293,7 +293,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 
 		@Override
 		public void threadExecutionAboutToStart(final ArtifactSource bundle,
-				final ArtifactMapping mapping,
+				final ArtifactSourceMapping mapping,
 				final GlobalExecutionContext globalContext) {
 			final GlobalDnaResourceContext context = (GlobalDnaResourceContext) globalContext;
 
@@ -308,7 +308,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
 
 		@Override
 		public void threadExecutionFinished(final ArtifactSource bundle,
-				final ArtifactMapping mapping,
+				final ArtifactSourceMapping mapping,
 				final GlobalExecutionContext globalContext) {
 			this.session.logout();
 		}

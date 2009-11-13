@@ -12,18 +12,17 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ArtifactMapping.
  */
-@Name( "artifact_mapping" )
-public class ArtifactMapping implements SimpleNodeType, Serializable {
+@Name( "artifact_source_mapping" )
+public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
+
+    /** The to. */
+    private String         to;
 
     /** The relative. */
-    private String         relative;
-
-    /** The group. */
-    private Group          group;
+    private String         from;
 
     /** The source. */
     private ArtifactSource source;
@@ -34,16 +33,19 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
     /** The includeds. */
     private Set<String>    includeds = new HashSet<String>();
 
+    /** The hash code. */
     private volatile int   hashCode;
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     public boolean equals( final Object o ) {
-        if (!(o instanceof Group)) {
+        if (!(o instanceof ArtifactSourceMapping)) {
             return false;
         }
-        final ArtifactMapping that = (ArtifactMapping)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.group, this.source, this.relative), Arrays.andOf(that.group,
-                                                                                                                   that.source,
-                                                                                                                   that.relative));
+        final ArtifactSourceMapping that = (ArtifactSourceMapping)o;
+        final boolean result = Equals.eachEquality(Arrays.of(this.to, this.source, this.from), Arrays.andOf(that.to, that.source,
+                                                                                                            that.from));
         return result;
     }
 
@@ -57,13 +59,13 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Gets the group.
+     * Gets the relative.
      * 
-     * @return the group
+     * @return the relative
      */
-    @ParentProperty
-    public Group getGroup() {
-        return this.group;
+    @KeyProperty
+    public String getFrom() {
+        return this.from;
     }
 
     /**
@@ -76,16 +78,6 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Gets the relative.
-     * 
-     * @return the relative
-     */
-    @KeyProperty
-    public String getRelative() {
-        return this.relative;
-    }
-
-    /**
      * Gets the source.
      * 
      * @return the source
@@ -95,10 +87,22 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
         return this.source;
     }
 
+    /**
+     * Gets the to.
+     * 
+     * @return the to
+     */
+    public String getTo() {
+        return this.to;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     public int hashCode() {
         int result = this.hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.group, this.source, this.relative);
+            result = HashCodes.hashOf(this.to, this.source, this.from);
             this.hashCode = result;
         }
         return result;
@@ -114,12 +118,12 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Sets the group.
+     * Sets the relative.
      * 
-     * @param group the new group
+     * @param from the new relative
      */
-    public void setGroup( final Group group ) {
-        this.group = group;
+    public void setFrom( final String from ) {
+        this.from = from;
     }
 
     /**
@@ -132,21 +136,21 @@ public class ArtifactMapping implements SimpleNodeType, Serializable {
     }
 
     /**
-     * Sets the relative.
-     * 
-     * @param relative the new relative
-     */
-    public void setRelative( final String relative ) {
-        this.relative = relative;
-    }
-
-    /**
      * Sets the source.
      * 
      * @param source the new source
      */
     public void setSource( final ArtifactSource source ) {
         this.source = source;
+    }
+
+    /**
+     * Sets the to.
+     * 
+     * @param to the new to
+     */
+    public void setTo( final String to ) {
+        this.to = to;
     }
 
 }
