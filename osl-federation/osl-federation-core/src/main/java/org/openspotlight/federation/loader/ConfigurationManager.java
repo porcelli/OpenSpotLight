@@ -65,25 +65,36 @@ public interface ConfigurationManager {
      */
     public void closeResources();
 
+    /**
+     * Gets the global settings.
+     * 
+     * @return the global settings
+     */
     GlobalSettings getGlobalSettings();
 
     /**
      * Loads the current group from configuration, marking the configuration as saved.
      * 
-     * @param lazyType to determine the loading behavior
+     * @param name the name
      * @return a fresh configuration
-     * @throws ConfigurationException
+     * @throws ConfigurationException the configuration exception
      * @throws NoConfigurationYetException
      */
     Repository getRepositoryByName( String name ) throws ConfigurationException;
 
+    /**
+     * Save global settings.
+     * 
+     * @param globalSettings the global settings
+     * @throws ConfigurationException the configuration exception
+     */
     void saveGlobalSettings( GlobalSettings globalSettings ) throws ConfigurationException;
 
     /**
      * Saves the group on a persistent layer marking the current configuration as a saved configuration.
      * 
-     * @param configuration
-     * @throws ConfigurationException
+     * @param configuration the configuration
+     * @throws ConfigurationException the configuration exception
      */
     void saveRepository( Repository configuration ) throws ConfigurationException;
 
