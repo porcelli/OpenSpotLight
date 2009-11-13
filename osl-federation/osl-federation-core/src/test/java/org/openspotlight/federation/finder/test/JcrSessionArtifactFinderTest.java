@@ -78,7 +78,7 @@ public class JcrSessionArtifactFinderTest {
     @Test
     public void shouldFindArtifacts() throws Exception {
         final StreamArtifact sa = this.streamArtifactFinder.findByPath(artifactSource,
-                                                                       "test/java/org/openspotlight/federation/finder/test/JcrSessionArtifactFinderTest.java");
+                                                                       "/test/java/org/openspotlight/federation/finder/test/JcrSessionArtifactFinderTest.java");
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
 
@@ -98,7 +98,7 @@ public class JcrSessionArtifactFinderTest {
     @Test
     public void shouldListArtifacts() throws Exception {
         final Set<StreamArtifact> artifacts = this.streamArtifactFinder.listByPath(artifactSource,
-                                                                                   "main/java/org/openspotlight/federation");
+                                                                                   "/main/java/org/openspotlight/federation");
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));

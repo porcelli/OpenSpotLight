@@ -59,10 +59,7 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
                     buffer.append('\n');
                 }
                 final String content = buffer.toString();
-                final StreamArtifact streamArtifact = Artifact.createArtifact(
-                                                                              StreamArtifact.class,
-                                                                              artifactSource.getUniqueReference() + "/" + rawPath,
-                                                                              t);
+                final StreamArtifact streamArtifact = Artifact.createArtifact(StreamArtifact.class, rawPath, t);
                 streamArtifact.setContent(content);
                 return streamArtifact;
             } catch (final Exception e) {
@@ -80,8 +77,7 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
         Assertions.checkNotNull("artifactSource", artifactSource);
         Assertions.checkNotNull("relativeTo", relativeTo);
         Assertions.checkNotEmpty("path", path);
-        String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
-        newPath = Strings.removeBegginingFrom(artifactSource.getUniqueReference() + "/", newPath);
+        final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
 
         return this.findByPath(artifactSource, newPath);
     }
