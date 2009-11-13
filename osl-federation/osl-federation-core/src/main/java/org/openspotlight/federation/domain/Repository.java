@@ -5,7 +5,9 @@ import static org.openspotlight.common.util.Arrays.of;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
@@ -20,11 +22,14 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "repository" )
 public class Repository implements SimpleNodeType, Serializable {
 
+    /** The artifact sources. */
+    private Set<ArtifactSource>      artifactSources = new HashSet<ArtifactSource>();
+
     /** The name. */
     private String                   name;
 
     /** The groups. */
-    private final Map<String, Group> groups = new HashMap<String, Group>();
+    private final Map<String, Group> groups          = new HashMap<String, Group>();
 
     /** The active. */
     private boolean                  active;
@@ -37,6 +42,10 @@ public class Repository implements SimpleNodeType, Serializable {
         }
         final Repository that = (Repository)o;
         return Equals.eachEquality(of(this.name), andOf(that.name));
+    }
+
+    public Set<ArtifactSource> getArtifactSources() {
+        return this.artifactSources;
     }
 
     /**
@@ -83,6 +92,10 @@ public class Repository implements SimpleNodeType, Serializable {
      */
     public void setActive( final boolean active ) {
         this.active = active;
+    }
+
+    public void setArtifactSources( final Set<ArtifactSource> artifactSources ) {
+        this.artifactSources = artifactSources;
     }
 
     /**

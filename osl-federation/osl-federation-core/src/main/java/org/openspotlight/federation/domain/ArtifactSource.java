@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.scheduler.ArtifactSourceSchedulable;
@@ -24,9 +23,9 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "artifact_source" )
 public class ArtifactSource implements SimpleNodeType, Serializable, LogableObject, Schedulable {
 
-    private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass         = ArtifactSourceSchedulable.class;
+    private final Class<? extends SchedulableCommand<? extends Schedulable>> commandClass    = ArtifactSourceSchedulable.class;
 
-    private final List<String>                                               cronInformation      = new ArrayList<String>();
+    private final List<String>                                               cronInformation = new ArrayList<String>();
 
     /** The repository. */
     private Repository                                                       repository;
@@ -40,16 +39,8 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
     /** The name. */
     private String                                                           name;
 
-    /** The group. */
-    private Group                                                            group;
-
     /** The mappings. */
-    private Set<ArtifactSourceMapping>                                       mappings             = new HashSet<ArtifactSourceMapping>();
-
-    /** The bundle processor types. */
-    private Set<BundleProcessorType>                                         bundleProcessorTypes = new HashSet<BundleProcessorType>();
-
-    private volatile String                                                  uniqueReference      = null;
+    private Set<ArtifactSourceMapping>                                       mappings        = new HashSet<ArtifactSourceMapping>();
 
     private volatile int                                                     hashCode;
 
@@ -58,18 +49,9 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
             return false;
         }
         final ArtifactSource that = (ArtifactSource)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.getClass(), this.name, this.group, this.repository),
-                                                   Arrays.andOf(that.getClass(), that.name, that.group, that.repository));
+        final boolean result = Equals.eachEquality(Arrays.of(this.getClass(), this.name, this.repository),
+                                                   Arrays.andOf(that.getClass(), that.name, that.repository));
         return result;
-    }
-
-    /**
-     * Gets the bundle processor types.
-     * 
-     * @return the bundle processor types
-     */
-    public Set<BundleProcessorType> getBundleProcessorTypes() {
-        return this.bundleProcessorTypes;
     }
 
     public Class<? extends SchedulableCommand<? extends Schedulable>> getCommandClass() {
@@ -78,16 +60,6 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
 
     public List<String> getCronInformation() {
         return this.cronInformation;
-    }
-
-    /**
-     * Gets the group.
-     * 
-     * @return the group
-     */
-    @ParentProperty
-    public Group getGroup() {
-        return this.group;
     }
 
     /**
@@ -128,24 +100,10 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
         return this.repository;
     }
 
-    public String getUniqueReference() {
-        Assertions.checkNotNull("name", this.getName());
-        Assertions.checkNotNull("initialLookup", this.getInitialLookup());
-
-        String result = this.uniqueReference;
-        if (result == null) {
-            result = PathElement.createFromPathString(
-                                                      this.getName().replaceAll("[/]", "-") + "/"
-                                                      + this.getInitialLookup().replaceAll("[/]", "-")).getCompletePath();
-            this.uniqueReference = result;
-        }
-        return result;
-    }
-
     public int hashCode() {
         int result = this.hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.getClass(), this.name, this.group, this.repository);
+            result = HashCodes.hashOf(this.getClass(), this.name, this.repository);
             this.hashCode = result;
         }
         return result;
@@ -167,24 +125,6 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
      */
     public void setActive( final boolean active ) {
         this.active = active;
-    }
-
-    /**
-     * Sets the bundle processor types.
-     * 
-     * @param bundleProcessorTypes the new bundle processor types
-     */
-    public void setBundleProcessorTypes( final Set<BundleProcessorType> bundleProcessorTypes ) {
-        this.bundleProcessorTypes = bundleProcessorTypes;
-    }
-
-    /**
-     * Sets the group.
-     * 
-     * @param group the new group
-     */
-    public void setGroup( final Group group ) {
-        this.group = group;
     }
 
     /**
