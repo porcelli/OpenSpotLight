@@ -53,8 +53,7 @@ public class LocalSourceStreamArtifactFinderTest {
         final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByRelativePath(this.artifactSource, streamArtifact1,
                                                                                             "../file_included1");
         assertThat(streamArtifact2, is(notNullValue()));
-        assertThat(streamArtifact2.getArtifactCompleteName(), is(this.artifactSource.getUniqueReference()
-                                                                 + "/folder/file_included1"));
+        assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_included1"));
     }
 
     /**
@@ -133,130 +132,97 @@ public class LocalSourceStreamArtifactFinderTest {
      */
     @Test
     public void souldListAllKindsOfFiles() throws Exception {
-        final Set<StreamArtifact> listedFiles = this.streamArtifactFinder.listByPath(this.artifactSource, "folder");
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_included1",
+        final Set<StreamArtifact> listedFiles = this.streamArtifactFinder.listByPath(this.artifactSource, "/folder");
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_included1",
                                                                 ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_included2",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_included2",
                                                                 ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_included3",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_included3",
                                                                 ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_included1",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_included1",
                                                                 ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_included2",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_included2",
                                                                 ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_included3",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_included3",
                                                                 ChangeType.INCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_included1",
-                                                                ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_included2",
-                                                                ChangeType.INCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_included3",
-                                                                ChangeType.INCLUDED)), is(true));
 
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_changed1",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_changed2",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_changed3",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_changed1",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_changed2",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_changed3",
-                                                                ChangeType.CHANGED)), is(true));
+        "/folder/subfolder/anothersubfolder/file_included1", ChangeType.INCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_changed1",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_changed2",
-                                                                ChangeType.CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_changed3",
-                                                                ChangeType.CHANGED)), is(true));
 
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_not_changed1",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_not_changed2",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_not_changed3",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_not_changed1",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_not_changed2",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_not_changed3",
-                                                                ChangeType.NOT_CHANGED)), is(true));
+        "/folder/subfolder/anothersubfolder/file_included2", ChangeType.INCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_not_changed1",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_not_changed2",
-                                                                ChangeType.NOT_CHANGED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_not_changed3",
-                                                                ChangeType.NOT_CHANGED)), is(true));
 
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_excluded1",
+        "/folder/subfolder/anothersubfolder/file_included3", ChangeType.INCLUDED)), is(true));
+
+        assertThat(
+                   listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_changed1", ChangeType.CHANGED)),
+                   is(true));
+        assertThat(
+                   listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_changed2", ChangeType.CHANGED)),
+                   is(true));
+        assertThat(
+                   listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_changed3", ChangeType.CHANGED)),
+                   is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_changed1",
+                                                                ChangeType.CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_changed2",
+                                                                ChangeType.CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_changed3",
+                                                                ChangeType.CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
+
+        "/folder/subfolder/anothersubfolder/file_changed1", ChangeType.CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
+
+        "/folder/subfolder/anothersubfolder/file_changed2", ChangeType.CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
+
+        "/folder/subfolder/anothersubfolder/file_changed3", ChangeType.CHANGED)), is(true));
+
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_not_changed1",
+                                                                ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_not_changed2",
+                                                                ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_not_changed3",
+                                                                ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_not_changed1",
+                                                                ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_not_changed2",
+                                                                ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_not_changed3",
+                                                                ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
+
+        "/folder/subfolder/anothersubfolder/file_not_changed1", ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
+
+        "/folder/subfolder/anothersubfolder/file_not_changed2", ChangeType.NOT_CHANGED)), is(true));
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
+
+        "/folder/subfolder/anothersubfolder/file_not_changed3", ChangeType.NOT_CHANGED)), is(true));
+
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_excluded1",
                                                                 ChangeType.EXCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_excluded2",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_excluded2",
                                                                 ChangeType.EXCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/file_excluded3",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/file_excluded3",
                                                                 ChangeType.EXCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_excluded1",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_excluded1",
                                                                 ChangeType.EXCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_excluded2",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_excluded2",
                                                                 ChangeType.EXCLUDED)), is(true));
-        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, this.artifactSource.getUniqueReference()
-                                                                                      + "/folder/subfolder/file_excluded3",
+        assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class, "/folder/subfolder/file_excluded3",
                                                                 ChangeType.EXCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_excluded1",
-                                                                ChangeType.EXCLUDED)), is(true));
+
+        "/folder/subfolder/anothersubfolder/file_excluded1", ChangeType.EXCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_excluded2",
-                                                                ChangeType.EXCLUDED)), is(true));
+
+        "/folder/subfolder/anothersubfolder/file_excluded2", ChangeType.EXCLUDED)), is(true));
         assertThat(listedFiles.contains(Artifact.createArtifact(StreamArtifact.class,
-                                                                this.artifactSource.getUniqueReference()
-                                                                + "/folder/subfolder/anothersubfolder/file_excluded3",
-                                                                ChangeType.EXCLUDED)), is(true));
+
+        "/folder/subfolder/anothersubfolder/file_excluded3", ChangeType.EXCLUDED)), is(true));
 
     }
 }

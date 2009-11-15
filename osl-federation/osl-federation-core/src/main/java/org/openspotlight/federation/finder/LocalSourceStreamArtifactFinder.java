@@ -109,7 +109,8 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
                 final String location = MessageFormat.format("{0}/{1}/{2}", artifactSource.getInitialLookup(),
                                                              t.toString().toLowerCase(), rawPath);
 
-                final String pathToRemove = new File(artifactSource.getInitialLookup()).getCanonicalPath() + "/";
+                final String pathToRemove = new File(artifactSource.getInitialLookup()).getCanonicalPath() + "/"
+                                            + t.toString().toLowerCase() + "/";
                 final Set<String> pathList = Files.listFileNamesFrom(location);
 
                 for (final String p : pathList) {
@@ -122,5 +123,4 @@ public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArt
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
-
 }
