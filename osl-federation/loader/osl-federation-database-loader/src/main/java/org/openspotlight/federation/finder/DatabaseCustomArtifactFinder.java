@@ -647,8 +647,8 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
     private CustomArtifact createRoutineMetadata( final ArtifactSource bundle,
                                                   final DatabaseItemDescription metadata ) {
         final RoutineDescription routineMetadata = (RoutineDescription)metadata;
-        final RoutineArtifact routine = Artifact.createArtifact(RoutineArtifact.class, bundle.getUniqueReference() + "/"
-                                                                                       + metadata.toString(), ChangeType.INCLUDED);
+        final RoutineArtifact routine = Artifact.createArtifact(RoutineArtifact.class, "/" + metadata.toString(),
+                                                                ChangeType.INCLUDED);
         routine.loadProperties();
         for (final RoutineParameterDescription colDesc : routineMetadata.getRoutineParameters().values()) {
             final RoutineParameter column = new RoutineParameter();
@@ -676,12 +676,10 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
         TableArtifact table;
 
         if (tableMetadata instanceof ViewDescription) {
-            table = Artifact.createArtifact(ViewArtifact.class, bundle.getUniqueReference() + "/" + metadata.toString(),
-                                            ChangeType.INCLUDED);
+            table = Artifact.createArtifact(ViewArtifact.class, "/" + metadata.toString(), ChangeType.INCLUDED);
             metadata.toString();
         } else {
-            table = Artifact.createArtifact(TableArtifact.class, bundle.getUniqueReference() + "/" + metadata.toString(),
-                                            ChangeType.INCLUDED);
+            table = Artifact.createArtifact(TableArtifact.class, "/" + metadata.toString(), ChangeType.INCLUDED);
         }
         table.loadProperties();
         for (final ColumnDescription colDesc : tableMetadata.getColumns().values()) {
