@@ -10,19 +10,19 @@ import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelThreeObj implements SimpleNodeType {
-    private String                          key;
+    private String                    key;
 
-    private String                          property;
+    private String                    property;
 
-    private LevelTwoObj                     parentObj;
+    private LevelTwoObj               parentObj;
 
-    private Map<Double, Integer>            numberMap   = new HashMap<Double, Integer>();
+    private Map<Double, Integer>      numberMap   = new HashMap<Double, Integer>();
 
-    private List<Boolean>                   booleanList = new ArrayList<Boolean>();
+    private List<Boolean>             booleanList = new ArrayList<Boolean>();
 
-    private final List<ListItemObj>         objList     = new ArrayList<ListItemObj>();
+    private List<ListItemObj>         objList     = new ArrayList<ListItemObj>();
 
-    private final Map<Integer, MapValueObj> objMap      = new HashMap<Integer, MapValueObj>();
+    private Map<Integer, MapValueObj> objMap      = new HashMap<Integer, MapValueObj>();
 
     public List<Boolean> getBooleanList() {
         return this.booleanList;
@@ -68,6 +68,14 @@ public class LevelThreeObj implements SimpleNodeType {
 
     public void setNumberMap( final Map<Double, Integer> numberMap ) {
         this.numberMap = numberMap;
+    }
+
+    public void setObjList( final List<ListItemObj> objList ) {
+        this.objList = objList;
+    }
+
+    public void setObjMap( final Map<Integer, MapValueObj> objMap ) {
+        this.objMap = objMap;
     }
 
     public void setProperty( final String property ) {

@@ -1,5 +1,9 @@
 package org.openspotlight.persist.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,16 +29,6 @@ import org.openspotlight.persist.support.SimplePersistSupport;
  * The Class SimplePersistSupportTest.
  */
 public class SimplePersistSupportTest {
-
-    //FIXME testAddNodePropertyOnCollection
-
-    //FIXME testAddSimplePropertyOnMap
-
-    //FIXME testAddNodePropertyOnMap
-
-    //FIXME testRemoveNodePropertyOnCollection
-
-    //FIXME testRemoveNodePropertyOnMap
 
     /** The provider. */
     private static JcrConnectionProvider provider;
@@ -69,6 +63,160 @@ public class SimplePersistSupportTest {
     @Before
     public void setupSession() {
         this.session = provider.openSession();
+    }
+
+    @Test
+    public void shouldAddAndRemoveNodeOnAnotherNode() throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj levelOne = new LevelOneObj();
+        levelOne.setRootObj(root);
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        levelTwo.setLevelOneObj(levelOne);
+        final PropertyObj propertyObj = new PropertyObj();
+        propertyObj.setName("name");
+        propertyObj.setValue(3);
+        levelTwo.setPropertyObj(propertyObj);
+        Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelTwo);
+        LevelTwoObj anotherLevelTwo = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelTwo.getPropertyObj().getName(), is(propertyObj.getName()));
+        assertThat(anotherLevelTwo.getPropertyObj().getValue(), is(propertyObj.getValue()));
+
+        propertyObj.setName("anotherName");
+        propertyObj.setValue(4);
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelTwo);
+        anotherLevelTwo = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelTwo.getPropertyObj().getName(), is(propertyObj.getName()));
+        assertThat(anotherLevelTwo.getPropertyObj().getValue(), is(propertyObj.getValue()));
+        levelTwo.setPropertyObj(null);
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelTwo);
+        anotherLevelTwo = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelTwo.getPropertyObj(), is(nullValue()));
+
+    }
+
+    @Test
+    public void shouldAddAndRemoveNodeOnCollection() throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj levelOne = new LevelOneObj();
+        levelOne.setRootObj(root);
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        levelTwo.setLevelOneObj(levelOne);
+        final LevelThreeObj levelThree = new LevelThreeObj();
+        levelThree.setLevelTwoObj(levelTwo);
+        levelThree.setObjList(new ArrayList<ListItemObj>());
+        final ListItemObj obj1 = new ListItemObj();
+        obj1.setName("obj 1");
+        obj1.setValue(5);
+        levelThree.getObjList().add(obj1);
+        Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        LevelThreeObj anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjList().size(), is(1));
+        assertThat(anotherLevelThree.getObjList().get(0).getValue(), is(obj1.getValue()));
+        assertThat(anotherLevelThree.getObjList().get(0).getName(), is(obj1.getName()));
+
+        obj1.setName("anotherName");
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjList().size(), is(1));
+        assertThat(anotherLevelThree.getObjList().get(0).getValue(), is(obj1.getValue()));
+        assertThat(anotherLevelThree.getObjList().get(0).getName(), is(obj1.getName()));
+
+        levelThree.getObjList().clear();
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjList().size(), is(0));
+    }
+
+    @Test
+    public void shouldAddAndRemoveNodeOnMapProperty() throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj levelOne = new LevelOneObj();
+        levelOne.setRootObj(root);
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        levelTwo.setLevelOneObj(levelOne);
+        final LevelThreeObj levelThree = new LevelThreeObj();
+        levelThree.setLevelTwoObj(levelTwo);
+        levelThree.setObjMap(new HashMap<Integer, MapValueObj>());
+        final MapValueObj obj1 = new MapValueObj();
+        obj1.setName("obj 1");
+        obj1.setValue(5);
+        levelThree.getObjMap().put(2, obj1);
+        Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        LevelThreeObj anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjMap().size(), is(1));
+        assertThat(anotherLevelThree.getObjMap().get(2).getValue(), is(obj1.getValue()));
+        assertThat(anotherLevelThree.getObjMap().get(2).getName(), is(obj1.getName()));
+
+        obj1.setValue(4);
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjMap().size(), is(1));
+        assertThat(anotherLevelThree.getObjMap().get(2).getValue(), is(obj1.getValue()));
+        assertThat(anotherLevelThree.getObjMap().get(2).getName(), is(obj1.getName()));
+
+        levelThree.getObjMap().clear();
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjMap().size(), is(0));
+    }
+
+    @Test
+    public void shouldAddAndRemoveSimpleTypeOnCollection() throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj levelOne = new LevelOneObj();
+        levelOne.setRootObj(root);
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        levelTwo.setLevelOneObj(levelOne);
+        final LevelThreeObj levelThree = new LevelThreeObj();
+        levelThree.setLevelTwoObj(levelTwo);
+        levelThree.setBooleanList(new ArrayList<Boolean>());
+        levelThree.getBooleanList().add(true);
+        Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        LevelThreeObj anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getBooleanList().size(), is(1));
+        assertThat(anotherLevelThree.getBooleanList().get(0), is(true));
+
+        levelThree.getBooleanList().add(false);
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getBooleanList().size(), is(2));
+        assertThat(anotherLevelThree.getBooleanList().get(0), is(true));
+        assertThat(anotherLevelThree.getBooleanList().get(1), is(false));
+
+        levelThree.getBooleanList().clear();
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getObjList().size(), is(0));
+    }
+
+    @Test
+    public void shouldAddAndRemoveSimpleTypeOnMapProperty() throws Exception {
+        final RootObj root = new RootObj();
+        final LevelOneObj levelOne = new LevelOneObj();
+        levelOne.setRootObj(root);
+        final LevelTwoObj levelTwo = new LevelTwoObj();
+        levelTwo.setLevelOneObj(levelOne);
+        final LevelThreeObj levelThree = new LevelThreeObj();
+        levelThree.setLevelTwoObj(levelTwo);
+        levelThree.setNumberMap(new HashMap<Double, Integer>());
+        levelThree.getNumberMap().put(1.0, 1);
+        Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        LevelThreeObj anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getNumberMap().size(), is(1));
+        assertThat(anotherLevelThree.getNumberMap().get(1.0), is(1));
+
+        levelThree.getNumberMap().put(2.0, 2);
+
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getNumberMap().size(), is(2));
+        assertThat(anotherLevelThree.getNumberMap().get(1.0), is(1));
+        assertThat(anotherLevelThree.getNumberMap().get(2.0), is(2));
+
+        levelThree.getNumberMap().clear();
+        asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
+        anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+        assertThat(anotherLevelThree.getNumberMap().size(), is(0));
     }
 
     /**
