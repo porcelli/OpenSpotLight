@@ -1,5 +1,7 @@
 package org.openspotlight.persist.test;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
@@ -12,6 +14,17 @@ public class LevelTwoObj implements SimpleNodeType {
     private LevelOneObj parentObj;
 
     private PropertyObj propertyObj;
+
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LevelTwoObj)) {
+            return false;
+        }
+        final LevelTwoObj that = (LevelTwoObj)o;
+        return Equals.eachEquality(Arrays.of(this.parentObj, this.key), Arrays.andOf(that.parentObj, that.key));
+    }
 
     @KeyProperty
     public String getKey() {
