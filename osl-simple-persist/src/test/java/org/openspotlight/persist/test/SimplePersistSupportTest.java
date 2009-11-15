@@ -324,16 +324,16 @@ public class SimplePersistSupportTest {
                           Is.is(convertedFromJcr.getLevelTwoObj().getPropertyObj().getName()));
         Assert.assertThat(obj3.getLevelTwoObj().getLevelOneObj().getProperty(),
                           Is.is(convertedFromJcr.getLevelTwoObj().getLevelOneObj().getProperty()));
-        Assert.assertThat(obj3.getBooleanList(), Is.is(Arrays.asList(true, false, true, true)));
-        Assert.assertThat(obj3.getNumberMap().get(1.0), Is.is(3));
-        Assert.assertThat(obj3.getNumberMap().get(2.0), Is.is(2));
-        Assert.assertThat(obj3.getNumberMap().get(3.0), Is.is(1));
-        Assert.assertThat(obj3.getObjList().get(0).getName(), Is.is("1"));
-        Assert.assertThat(obj3.getObjList().get(1).getName(), Is.is("2"));
-        Assert.assertThat(obj3.getObjList().get(2).getName(), Is.is("3"));
-        Assert.assertThat(obj3.getObjMap().get(1).getName(), Is.is("1"));
-        Assert.assertThat(obj3.getObjMap().get(2).getName(), Is.is("2"));
-        Assert.assertThat(obj3.getObjMap().get(3).getName(), Is.is("3"));
+        Assert.assertThat(convertedFromJcr.getBooleanList(), Is.is(Arrays.asList(true, false, true, true)));
+        Assert.assertThat(convertedFromJcr.getNumberMap().get(1.0), Is.is(3));
+        Assert.assertThat(convertedFromJcr.getNumberMap().get(2.0), Is.is(2));
+        Assert.assertThat(convertedFromJcr.getNumberMap().get(3.0), Is.is(1));
+        Assert.assertThat(convertedFromJcr.getObjList().get(0).getName(), Is.is("1"));
+        Assert.assertThat(convertedFromJcr.getObjList().get(1).getName(), Is.is("2"));
+        Assert.assertThat(convertedFromJcr.getObjList().get(2).getName(), Is.is("3"));
+        Assert.assertThat(convertedFromJcr.getObjMap().get(1).getName(), Is.is("1"));
+        Assert.assertThat(convertedFromJcr.getObjMap().get(2).getName(), Is.is("2"));
+        Assert.assertThat(convertedFromJcr.getObjMap().get(3).getName(), Is.is("3"));
 
     }
 

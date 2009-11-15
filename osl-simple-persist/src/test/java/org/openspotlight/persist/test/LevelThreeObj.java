@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
@@ -23,6 +25,17 @@ public class LevelThreeObj implements SimpleNodeType {
     private List<ListItemObj>         objList     = new ArrayList<ListItemObj>();
 
     private Map<Integer, MapValueObj> objMap      = new HashMap<Integer, MapValueObj>();
+
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LevelThreeObj)) {
+            return false;
+        }
+        final LevelThreeObj that = (LevelThreeObj)o;
+        return Equals.eachEquality(Arrays.of(this.parentObj, this.key), Arrays.andOf(that.parentObj, that.key));
+    }
 
     public List<Boolean> getBooleanList() {
         return this.booleanList;
@@ -81,4 +94,5 @@ public class LevelThreeObj implements SimpleNodeType {
     public void setProperty( final String property ) {
         this.property = property;
     }
+
 }

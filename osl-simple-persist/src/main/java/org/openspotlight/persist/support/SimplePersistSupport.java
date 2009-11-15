@@ -82,6 +82,10 @@ public class SimplePersistSupport {
         /** The properties. */
         final Map<String, String>                      properties                = new HashMap<String, String>();
 
+        public String toString() {
+            return "BeanDescriptor " + this.nodeName;
+        }
+
     }
 
     /**
@@ -1168,22 +1172,22 @@ public class SimplePersistSupport {
                                                                    final Session session ) throws Exception {
         final String propertyName = Strings.removeBegginingFrom(JcrNodeType.MULTIPLE_NODE_PROPERTY.toString() + "_",
                                                                 property.getName());
-        final String keyValue = MessageFormat.format(MULTIPLE_PROPERTY_KEY_VALUE, propertyName);
-        final String type = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, propertyName);
-        final String valueType = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, propertyName);
-        final String keyType = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, propertyName);
+        final String keyValueDescription = MessageFormat.format(MULTIPLE_PROPERTY_KEY_VALUE, propertyName);
+        final String typeDescription = MessageFormat.format(MULTIPLE_PROPERTY_MULTIPLE_TYPE, propertyName);
+        final String valueTypeDescription = MessageFormat.format(MULTIPLE_PROPERTY_VALUE_TYPE, propertyName);
+        final String keyTypeDescription = MessageFormat.format(MULTIPLE_PROPERTY_KEY_TYPE, propertyName);
         ComplexMultiplePropertyDescriptor desc = descriptor.multipleComplexProperties.get(propertyName);
         if (desc == null) {
             desc = new ComplexMultiplePropertyDescriptor();
-            desc.multipleType = property.getProperty(type).getString();
-            desc.valueType = property.getProperty(valueType).getString();
-            if (property.hasProperty(keyType)) {
-                desc.keyType = property.getProperty(keyType).getString();
+            desc.multipleType = property.getProperty(typeDescription).getString();
+            desc.valueType = property.getProperty(valueTypeDescription).getString();
+            if (property.hasProperty(keyTypeDescription)) {
+                desc.keyType = property.getProperty(keyTypeDescription).getString();
             }
         }
         String keyString = null;
-        if (property.hasProperty(keyValue)) {
-            keyString = property.getProperty(keyValue).getString();
+        if (property.hasProperty(keyValueDescription)) {
+            keyString = property.getProperty(keyValueDescription).getString();
         }
         //FIXME here needs to apply lazy loading!
         final BeanDescriptor beanDescriptor = createDescriptorFromJcr(property, descriptor, multipleLoadingStrategy, session);
