@@ -81,8 +81,8 @@ public class ConfigurationExamples {
         repository.getGroups().put(group.getName(), group);
         group.setActive(true);
         final DbArtifactSource artifactSource = new DbArtifactSource();
-        group.getArtifactSources().add(artifactSource);
-        artifactSource.setGroup(group);
+        repository.getArtifactSources().add(artifactSource);
+        artifactSource.setRepository(repository);
         artifactSource.setName(sourceName);
         artifactSource.setActive(true);
         artifactSource.setUser(user);
@@ -95,18 +95,18 @@ public class ConfigurationExamples {
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        mapping.setRelative("*/");
-        group.getMappings().add(mapping);
+        mapping.setFrom("*/");
+        artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("*");
         final BundleProcessorType commonProcessor = new BundleProcessorType();
         commonProcessor.setActive(true);
-        commonProcessor.setArtifactSource(artifactSource);
+        commonProcessor.setGroup(group);
         commonProcessor.setType(LogPrinterBundleProcessor.class);
-        artifactSource.getBundleProcessorTypes().add(commonProcessor);
+        group.getBundleTypes().add(commonProcessor);
         final BundleProcessorType customProcessor = new BundleProcessorType();
         customProcessor.setActive(true);
-        customProcessor.setArtifactSource(artifactSource);
-        artifactSource.getBundleProcessorTypes().add(customProcessor);
+        customProcessor.setGroup(group);
+        group.getBundleTypes().add(customProcessor);
         return repository;
     }
 
