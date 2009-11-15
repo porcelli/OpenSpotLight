@@ -588,6 +588,8 @@ public class SimplePersistSupport {
                 if (propertyVal != null) {
                     final BeanDescriptor propertyDescriptor = createDescriptorFromBean(propertyVal, descriptor);
                     descriptor.nodeProperties.put(desc.getName(), propertyDescriptor);
+                } else {
+                    descriptor.nodeProperties.put(desc.getName(), null);
                 }
                 continue;
             }
