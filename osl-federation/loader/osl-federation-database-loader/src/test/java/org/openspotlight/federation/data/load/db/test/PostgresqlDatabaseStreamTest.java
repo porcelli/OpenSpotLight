@@ -18,7 +18,7 @@ public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements 
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createPostgresqlConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().get("postgresql Group").getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**

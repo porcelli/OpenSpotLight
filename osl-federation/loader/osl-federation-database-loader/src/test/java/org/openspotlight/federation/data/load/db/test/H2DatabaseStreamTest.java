@@ -26,7 +26,7 @@ public class H2DatabaseStreamTest extends DatabaseStreamTest {
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().get("h2 Group").getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**

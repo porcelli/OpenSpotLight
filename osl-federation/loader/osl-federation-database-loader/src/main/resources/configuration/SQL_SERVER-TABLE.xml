@@ -2,7 +2,7 @@
 	<scriptType>TABLE</scriptType>
 	<database>SQL_SERVER</database>
 	<preferedType>TEMPLATE</preferedType>
-	<nameHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerTableFilterNameHandler</nameHandlerClass>
+	<nameHandlerClass>org.openspotlight.federation.finder.db.handler.SqlServerTableFilterNameHandler</nameHandlerClass>
 	<template><![CDATA[
 	create table $name$ (
 		$detail:{$it.column_name$ $it.type_name$ };separator=", "$

@@ -4,7 +4,7 @@
 	<preferedType>TEMPLATE</preferedType>
 	<template><![CDATA[create function $name$ ( $parameter:{$it.column$  $it.inOut$ $it.type$}; separator=", "$ ) $returnType$ as
 	$routine_definition$ 
-	]]></template>	<streamHandlerClass>org.openspotlight.federation.data.load.db.handler.PostgresRoutineStreamHandler</streamHandlerClass>
+	]]></template>	<streamHandlerClass>org.openspotlight.federation.finder.db.handler.PostgresRoutineStreamHandler</streamHandlerClass>
 	<dataSelect><![CDATA[
 		select 
 		    specific_catalog as catalog_name,

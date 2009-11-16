@@ -19,7 +19,7 @@ public class MYSQLDatabaseStreamTest extends DatabaseStreamTest implements RunWh
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createMySqlDbConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().get("mysql Group").getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     @Override
