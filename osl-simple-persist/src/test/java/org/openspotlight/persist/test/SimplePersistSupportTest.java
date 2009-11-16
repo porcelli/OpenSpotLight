@@ -115,11 +115,17 @@ public class SimplePersistSupportTest {
         assertThat(anotherLevelThree.getObjList().get(0).getName(), is(obj1.getName()));
 
         obj1.setName("anotherName");
+        final ListItemObj obj2 = new ListItemObj();
+        obj2.setName("another name 2");
+        obj2.setValue(33);
+        levelThree.getObjList().add(obj2);
         asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
         anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
-        assertThat(anotherLevelThree.getObjList().size(), is(1));
+        assertThat(anotherLevelThree.getObjList().size(), is(2));
         assertThat(anotherLevelThree.getObjList().get(0).getValue(), is(obj1.getValue()));
         assertThat(anotherLevelThree.getObjList().get(0).getName(), is(obj1.getName()));
+        assertThat(anotherLevelThree.getObjList().get(1).getValue(), is(obj2.getValue()));
+        assertThat(anotherLevelThree.getObjList().get(1).getName(), is(obj2.getName()));
 
         levelThree.getObjList().clear();
         asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
@@ -279,10 +285,13 @@ public class SimplePersistSupportTest {
         final LevelThreeObj obj3 = new LevelThreeObj();
         final ListItemObj li1 = new ListItemObj();
         li1.setName("1");
+        li1.setValue(1);
         final ListItemObj li2 = new ListItemObj();
         li2.setName("2");
+        li2.setValue(2);
         final ListItemObj li3 = new ListItemObj();
         li3.setName("3");
+        li3.setValue(3);
         obj3.getObjList().add(li1);
         obj3.getObjList().add(li2);
         obj3.getObjList().add(li3);
@@ -328,12 +337,15 @@ public class SimplePersistSupportTest {
         Assert.assertThat(convertedFromJcr.getNumberMap().get(1.0), Is.is(3));
         Assert.assertThat(convertedFromJcr.getNumberMap().get(2.0), Is.is(2));
         Assert.assertThat(convertedFromJcr.getNumberMap().get(3.0), Is.is(1));
-        Assert.assertThat(convertedFromJcr.getObjList().get(0).getName(), Is.is("1"));
-        Assert.assertThat(convertedFromJcr.getObjList().get(1).getName(), Is.is("2"));
-        Assert.assertThat(convertedFromJcr.getObjList().get(2).getName(), Is.is("3"));
         Assert.assertThat(convertedFromJcr.getObjMap().get(1).getName(), Is.is("1"));
         Assert.assertThat(convertedFromJcr.getObjMap().get(2).getName(), Is.is("2"));
         Assert.assertThat(convertedFromJcr.getObjMap().get(3).getName(), Is.is("3"));
+
+        Assert.assertThat(convertedFromJcr.getObjList().size(), Is.is(3));
+
+        Assert.assertThat(convertedFromJcr.getObjList().get(0).getName(), Is.is("1"));
+        Assert.assertThat(convertedFromJcr.getObjList().get(1).getName(), Is.is("2"));
+        Assert.assertThat(convertedFromJcr.getObjList().get(2).getName(), Is.is("3"));
 
     }
 

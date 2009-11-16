@@ -668,10 +668,12 @@ public class SimplePersistSupport {
             final Node property = propertyNodes.nextNode();
             setJcrNodePropertyOnDescriptor(descriptor, property, multipleLoadingStrategy, session);
         }
-        final NodeIterator multiplePropertyNodes = jcrNode.getNodes(JcrNodeType.MULTIPLE_NODE_PROPERTY.toString() + "_*");
+        final NodeIterator multiplePropertyNodes = jcrNode.getNodes();
         while (multiplePropertyNodes.hasNext()) {
             final Node property = multiplePropertyNodes.nextNode();
-            setJcrComplexMultiplePropertyOnDescriptor(descriptor, property, multipleLoadingStrategy, session);
+            if (property.getName().startsWith(JcrNodeType.MULTIPLE_NODE_PROPERTY.toString())) {
+                setJcrComplexMultiplePropertyOnDescriptor(descriptor, property, multipleLoadingStrategy, session);
+            }
         }
         return descriptor;
 
@@ -1060,10 +1062,12 @@ public class SimplePersistSupport {
             final ComplexMultiplePropertyDescriptor desc = entry.getValue();
             final String nodeName = getNodeName(JcrNodeType.MULTIPLE_NODE_PROPERTY, null, entry.getKey());
             final NodeIterator existentNodesIterator = parent.getNodes(nodeName);
-            final Set<Node> existentNodes = new HashSet<Node>();
+            final HashMap<String, Node> existentNodes = new HashMap<String, Node>();
             while (existentNodesIterator.hasNext()) {
                 final Node existentNode = existentNodesIterator.nextNode();
-                existentNodes.add(existentNode);
+                if (!existentNode.isNew()) {
+                    existentNodes.put(existentNode.getUUID(), existentNode);
+                }
             }
             for (final Pair<String, BeanDescriptor> propertyEntry : desc.valuesAsBeanDescriptors) {
                 final Node propertyNode = addUpdateOrRemoveJcrNode(JcrNodeType.MULTIPLE_NODE_PROPERTY, session, parent,
@@ -1074,10 +1078,12 @@ public class SimplePersistSupport {
                     propertyNode.setProperty(keyType, desc.keyType);
                     propertyNode.setProperty(keyValue, propertyEntry.getK1());
                 }
-                existentNodes.remove(propertyNode);
+                if (!propertyNode.isNew()) {
+                    existentNodes.remove(propertyNode.getUUID());
+                }
             }
-            for (final Node toBeRemoved : existentNodes) {
-                toBeRemoved.remove();
+            for (final Map.Entry<String, Node> toBeRemoved : existentNodes.entrySet()) {
+                toBeRemoved.getValue().remove();
             }
         }
     }
