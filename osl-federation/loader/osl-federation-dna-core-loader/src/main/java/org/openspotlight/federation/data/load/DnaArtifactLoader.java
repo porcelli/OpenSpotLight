@@ -70,258 +70,160 @@ import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ChangeType;
+import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.AbstractArtifactFinder;
 
 /**
- * Artifact loader that loads Artifact for file system using DNA File System
- * Connector.
+ * Artifact loader that loads Artifact for file system using DNA File System Connector.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-public abstract class DnaArtifactLoader extends AbstractArtifactLoader {
+public abstract class DnaArtifactLoader extends AbstractArtifactFinder<StreamArtifact> {
 
-	/**
-	 * JCR visitor to fill all valid artifact names
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
-	 */
-	protected static final class FillNamesVisitor implements NodeVisitor {
-		final Set<String> names;
+    /**
+     * JCR visitor to fill all valid artifact names
+     * 
+     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+     */
+    protected static final class FillNamesVisitor implements NodeVisitor {
+        final Set<String> names;
 
-		/**
-		 * Constructor to initialize final fields
-		 * 
-		 * @param names
-		 */
-		FillNamesVisitor(final Set<String> names) {
-			this.names = names;
-		}
+        /**
+         * Constructor to initialize final fields
+         * 
+         * @param names
+         */
+        FillNamesVisitor(
+                          final Set<String> names ) {
+            this.names = names;
+        }
 
-		/**
-		 * 
-		 * {@inheritDoc}
-		 */
-		public void visiting(final Node n) throws RepositoryException {
-			String path = n.getPath();
-			if (path.startsWith("/")) { //$NON-NLS-1$
-				path = path.substring(1);
-			}
-			if (!path.equals("")) { //$NON-NLS-1$
-				this.names.add(path);
-			}
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public void visiting( final Node n ) throws RepositoryException {
+            String path = n.getPath();
+            if (path.startsWith("/")) { //$NON-NLS-1$
+                path = path.substring(1);
+            }
+            if (!path.equals("")) { //$NON-NLS-1$
+                this.names.add(path);
+            }
+        }
 
-	}
+    }
 
-	/**
-	 * This {@link GlobalDnaResourceContext} will store all JCR data needed
-	 * during the processing, and after the processing it will shutdown all
-	 * necessary resources.
-	 * 
-	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-	 * 
-	 *         FIXME starts only one configuration to improve performance
-	 * 
-	 */
-	protected abstract static class GlobalDnaResourceContext extends
-			DefaultGlobalExecutionContext {
+    private static final String                  repositoryName   = "repository";                                      //$NON-NLS-1$
 
-		private static final String repositoryName = "repository"; //$NON-NLS-1$
-		private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
+    private static final String                  repositorySource = "repositorySource";                                //$NON-NLS-1$
 
-		private final Map<String, JcrEngine> mappingEngines = new ConcurrentHashMap<String, JcrEngine>();
+    private final Map<ArtifactSource, JcrEngine> mappingEngines   = new ConcurrentHashMap<ArtifactSource, JcrEngine>();
 
-		private final Map<String, Session> mappingSessions = new ConcurrentHashMap<String, Session>();
+    private final Map<ArtifactSource, Session>   mappingSessions  = new ConcurrentHashMap<ArtifactSource, Session>();
 
-		/**
-		 * Abstract method to setup the DNA Repository Source
-		 * 
-		 * @param sourceDefinition
-		 * 
-		 * @param configuration
-		 * @param bundle
-		 * @param relative
-		 */
-		protected abstract void configureWithBundle(
-				RepositorySourceDefinition<?> sourceDefinition, ArtifactSource bundle,
-				ArtifactSourceMapping relative);
+    @Override
+    public synchronized final void closeResources() {
+        for (final Map.Entry<ArtifactSource, JcrEngine> entry : this.mappingEngines.entrySet()) {
+            entry.getValue().shutdown();
+        }
+        for (final Map.Entry<ArtifactSource, Session> entry : this.mappingSessions.entrySet()) {
+            entry.getValue().logout();
+        }
+    }
 
-		/**
-		 * Creates a new {@link Session jcr session}. The client class is
-		 * responsible to close this session when it finish its work.
-		 * 
-		 * @param name
-		 * @return a new and fresh {@link Session}
-		 * @throws Exception
-		 */
-		public Session createSessionForMapping(final String name)
-				throws Exception {
-			final JcrEngine engine = this.mappingEngines.get(name);
-			final Session session = engine.getRepository(repositoryName).login(
-					new SecurityContextCredentials(
-							DefaultSecurityContext.READ_ONLY));
-			return session;
-		}
+    protected abstract void configureWithBundle( RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+                                                 ArtifactSource source );
 
-		/**
-		 * 
-		 * {@inheritDoc}
-		 */
-		public Set<String> getAllArtifactNames(final ArtifactSource bundle,
-				final ArtifactSourceMapping mapping) throws ConfigurationException {
+    /**
+     * Creates a new {@link Session jcr session}. The client class is responsible to close this session when it finish its work.
+     * 
+     * @param name
+     * @return a new and fresh {@link Session}
+     * @throws Exception
+     */
+    public synchronized Session createSessionForMapping( final ArtifactSource source ) throws Exception {
+        JcrEngine engine = this.mappingEngines.get(source);
+        if (engine == null) {
+            this.setupSource(source);
+            engine = this.mappingEngines.get(source);
+        }
 
-			final Set<String> names = new HashSet<String>();
-			try {
+        final Session session = engine.getRepository(repositoryName).login(
+                                                                           new SecurityContextCredentials(
+                                                                                                          DefaultSecurityContext.READ_ONLY));
+        return session;
+    }
 
-				final Session session = this.getSessionForMapping(mapping
-						.getRelative());
-				session.getRootNode().accept(
-						withVisitor(new FillNamesVisitor(names)));
-				return names;
-			} catch (final Exception e) {
-				throw logAndReturnNew(e, ConfigurationException.class);
-			}
-		}
+    public StreamArtifact findByPath( final ArtifactSource artifactSource,
+                                      final String path ) {
+        try {
+            final Node node = this.getSessionForSource(artifactSource).getRootNode().getNode(path);
 
-		/**
-		 * 
-		 * @param name
-		 * @return the jcr session
-		 * @throws Exception
-		 */
-		public Session getSessionForMapping(final String name) throws Exception {
-			Session session = this.mappingSessions.get(name);
-			if (session == null) {
-				final JcrEngine engine = this.mappingEngines.get(name);
-				session = engine.getRepository(repositoryName).login(
-						new SecurityContextCredentials(
-								DefaultSecurityContext.READ_ONLY));
-				this.mappingSessions.put(name, session);
-			}
-			return session;
-		}
+            final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
+            final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
+            final InputStream is = value.getStream();
 
-		/**
-		 * 
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void globalExecutionAboutToStart(final ArtifactSource bundle) {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int available;
+            while ((available = is.read()) != -1) {
+                baos.write(available);
+            }
+            final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, path, ChangeType.INCLUDED);
+            artifact.setContent(new String(baos.toByteArray()));
+            return artifact;
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
 
-			try {
-				for (final ArtifactSourceMapping relative : bundle
-						.getMappings()) {
+    }
 
-					final JcrConfiguration configuration = new JcrConfiguration();
-					this.configureWithBundle(configuration
-							.repositorySource(repositorySource), bundle,
-							relative);
-					configuration.repository(repositoryName).setSource(
-							repositorySource);
-					configuration.save();
-					final JcrEngine engine = configuration.build();
-					engine.start();
-					this.mappingEngines.put(relative.getRelative(), engine);
+    /**
+     * @param name
+     * @return the jcr session
+     * @throws Exception
+     */
+    public synchronized Session getSessionForSource( final ArtifactSource source ) throws Exception {
+        Session session = this.mappingSessions.get(source);
+        if (session == null) {
+            final JcrEngine engine = this.mappingEngines.get(source);
+            session = engine.getRepository(repositoryName).login(new SecurityContextCredentials(DefaultSecurityContext.READ_ONLY));
+            this.mappingSessions.put(source, session);
+        }
+        return session;
+    }
 
-				}
-			} catch (final Exception e) {
-				throw logAndReturnNew(e, ConfigurationException.class);
-			}
-		}
+    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
+                                                 final String initialPath ) {
+        try {
+            final Set<String> result = new HashSet<String>();
 
-		/**
-		 * 
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void globalExecutionFinished(final ArtifactSource bundle) {
-			this.shutdown();
-		}
+            this.getSessionForSource(artifactSource).getRootNode().getNode(initialPath).accept(
+                                                                                               withVisitor(new FillNamesVisitor(
+                                                                                                                                result)));
 
-		/**
-		 * Finalizes all necessary resources
-		 */
-		public void shutdown() {
-			for (final Map.Entry<String, JcrEngine> entry : this.mappingEngines
-					.entrySet()) {
-				entry.getValue().shutdown();
-			}
-			for (final Map.Entry<String, Session> entry : this.mappingSessions
-					.entrySet()) {
-				entry.getValue().logout();
-			}
-		}
-	}
+            return result;
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
+    }
 
-	protected static final class SingleThreadDnaResourceContext extends
-			DefaultThreadExecutionContext {
+    public synchronized void setupSource( final ArtifactSource source ) {
+        try {
 
-		private Session session;
+            final JcrConfiguration configuration = new JcrConfiguration();
+            this.configureWithBundle(configuration.repositorySource(repositorySource), source);
+            configuration.repository(repositoryName).setSource(repositorySource);
+            configuration.save();
+            final JcrEngine engine = configuration.build();
+            engine.start();
+            this.mappingEngines.put(source, engine);
+        } catch (final Exception e) {
+            throw logAndReturnNew(e, ConfigurationException.class);
+        }
 
-		public Session getSession() {
-			return this.session;
-		}
-
-		/**
-		 * 
-		 * {@inheritDoc}
-		 */
-		public byte[] loadArtifactOrReturnNullToIgnore(final ArtifactSource bundle,
-				final ArtifactSourceMapping mapping, final String artifactName,
-				final GlobalExecutionContext globalContext) throws Exception {
-			try {
-				final Node node = this.getSession().getRootNode().getNode(
-						artifactName);
-
-				final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
-				final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
-				final InputStream is = value.getStream();
-
-				final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				int available;
-				while ((available = is.read()) != -1) {
-					baos.write(available);
-				}
-				return baos.toByteArray();
-			} catch (final Exception e) {
-				throw logAndReturnNew(e, ConfigurationException.class);
-			}
-		}
-
-		@Override
-		public void threadExecutionAboutToStart(final ArtifactSource bundle,
-				final ArtifactSourceMapping mapping,
-				final GlobalExecutionContext globalContext) {
-			final GlobalDnaResourceContext context = (GlobalDnaResourceContext) globalContext;
-
-			try {
-				this.session = context.getSessionForMapping(mapping
-						.getRelative());
-			} catch (final Exception e) {
-				throw logAndReturnNew(e, ConfigurationException.class);
-			}
-
-		}
-
-		@Override
-		public void threadExecutionFinished(final ArtifactSource bundle,
-				final ArtifactSourceMapping mapping,
-				final GlobalExecutionContext globalContext) {
-			this.session.logout();
-		}
-
-	}
-
-	/**
-	 * 
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ThreadExecutionContext createThreadExecutionContext() {
-		return new SingleThreadDnaResourceContext();
-	}
+    }
 
 }
