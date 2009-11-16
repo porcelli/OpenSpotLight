@@ -13,9 +13,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.CustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.RoutineArtifact;
 import org.openspotlight.federation.domain.RoutineType;
 import org.openspotlight.federation.domain.TableArtifact;
@@ -50,8 +50,7 @@ public class DatabaseCustomTest {
 
     @Test
     public void shouldLoadProceduresAndFunctions() throws Exception {
-        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().get(
-                                                                                                                                "h2 Group").getArtifactSources().iterator().next();
+        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
 
@@ -83,8 +82,7 @@ public class DatabaseCustomTest {
 
     @Test
     public void shouldLoadTablesAndViews() throws Exception {
-        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getGroups().get(
-                                                                                                                                "h2 Group").getArtifactSources().iterator().next();
+        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         final Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
                                                     "sa", "");
