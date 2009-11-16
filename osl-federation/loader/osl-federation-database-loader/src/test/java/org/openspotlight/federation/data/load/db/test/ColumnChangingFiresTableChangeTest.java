@@ -1,73 +1,84 @@
 package org.openspotlight.federation.data.load.db.test;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 import java.sql.Connection;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.domain.CustomArtifact;
+import org.openspotlight.federation.data.load.DatabaseStreamArtifactFinder;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
+import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 
 /**
- * During a column changing, its table needs to be marked as changed also. This
- * test is to assert this behavior.
+ * During a column changing, its table needs to be marked as changed also. This test is to assert this behavior.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class ColumnChangingFiresTableChangeTest {
 
-	@Before
-	public void cleanDatabaseFiles() throws Exception {
-		delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-	}
+    @Before
+    public void cleanDatabaseFiles() throws Exception {
+        delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+    }
 
-	@Test
-	public void columnChangeShouldFireTableChange() throws Exception {
+    @Test
+    public void columnChangeShouldFireTableChange() throws Exception {
 
-		final GlobalSettings configuration = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-		final DbArtifactSource dbBundle = (DbArtifactSource) configuration.getRepositoryByName(
-				"H2 Repository") //$NON-NLS-1$
-				.getGroupByName("h2 Group") //$NON-NLS-1$
-				.getArtifactSourceByName("H2 Connection"); //$NON-NLS-1$
-		Connection conn = DatabaseSupport.createConnection(dbBundle);
+        final Repository repository = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
+        final DbArtifactSource dbBundle = (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
+        Connection conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn
-				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
-				.execute();
-		conn.close();
-		final ArtifactLoaderGroup loader = new ArtifactLoaderGroup(
-				new DatabaseStreamLoader(), new DatabaseCustomArtifactLoader());
+        conn.prepareStatement(
+                              "create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+        .execute();
+        conn.close();
+        final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder();
+        final GlobalSettings configuration = new GlobalSettings();
+        configuration.setDefaultSleepingIntervalInMilliseconds(500);
+        configuration.setNumberOfParallelThreads(4);
 
-		loader.loadArtifactsFromMappings(dbBundle);
+        ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
+                                                                       ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
 
-		dbBundle.getInstanceMetadata().getSharedData().markAsSaved();
+        final Iterable<Artifact> firstLoadedItems = loader.loadArtifactsFromSource(dbBundle);
+        loader.closeResources();
+        conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn = DatabaseSupport.createConnection(dbBundle);
+        conn.prepareStatement("drop table exampleTable") //$NON-NLS-1$
+        .execute();
 
-		conn.prepareStatement("drop table exampleTable") //$NON-NLS-1$
-				.execute();
+        conn.prepareStatement("create table exampleTable(changed_columns int not null)") //$NON-NLS-1$
+        .execute();
+        conn.close();
 
-		conn.prepareStatement(
-				"create table exampleTable(changed_columns int not null)") //$NON-NLS-1$
-				.execute();
-		conn.close();
-		loader.loadArtifactsFromMappings(dbBundle);
-		final CustomArtifact table = dbBundle
-				.getCustomArtifactByName("PUBLIC/TABLE/DB/EXAMPLETABLE");
-		assertThat(table, is(notNullValue()));
-		final Set<ConfigurationNode> dirtyNodes = dbBundle
-				.getInstanceMetadata().getSharedData().getDirtyNodes();
-		assertThat(dirtyNodes.contains(table), is(true));
-	}
+        loader = ArtifactLoader.Factory.createNewLoader(configuration, ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
+
+        final Iterable<Artifact> lastLoadedItems = loader.loadArtifactsFromSource(dbBundle);
+        loader.closeResources();
+        boolean found = false;
+        all: for (final Artifact first : firstLoadedItems) {
+            if (first.getArtifactName().equals("EXAMPLETABLE")) {
+                for (final Artifact last : lastLoadedItems) {
+                    if (last.getArtifactName().equals("EXAMPLETABLE")) {
+                        assertThat(last.equals(first), is(true));
+                        assertThat(last.contentEquals(first), is(false));
+                        found = true;
+                        break all;
+                    }
+                }
+            }
+        }
+        assertThat(found, is(true));
+    }
 
 }
