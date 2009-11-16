@@ -34,7 +34,7 @@ public class ColumnChangingFiresTableChangeTest {
     @Test
     public void columnChangeShouldFireTableChange() throws Exception {
 
-        final Repository repository = createH2DbConfiguration("H2DatabaseStreamTest"); //$NON-NLS-1$
+        final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
         final DbArtifactSource dbBundle = (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
         Connection conn = DatabaseSupport.createConnection(dbBundle);
 
@@ -68,6 +68,8 @@ public class ColumnChangingFiresTableChangeTest {
         boolean found = false;
         all: for (final Artifact first : firstLoadedItems) {
             if (first.getArtifactName().equals("EXAMPLETABLE")) {
+                assertThat(first.equals(first), is(true));
+                assertThat(first.contentEquals(first), is(true));
                 for (final Artifact last : lastLoadedItems) {
                     if (last.getArtifactName().equals("EXAMPLETABLE")) {
                         assertThat(last.equals(first), is(true));
