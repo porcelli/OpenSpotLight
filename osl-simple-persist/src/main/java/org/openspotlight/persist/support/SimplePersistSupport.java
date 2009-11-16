@@ -1065,9 +1065,9 @@ public class SimplePersistSupport {
             final HashMap<String, Node> existentNodes = new HashMap<String, Node>();
             while (existentNodesIterator.hasNext()) {
                 final Node existentNode = existentNodesIterator.nextNode();
-                if (!existentNode.isNew()) {
-                    existentNodes.put(existentNode.getUUID(), existentNode);
-                }
+                final String hash = existentNode.getProperty(HASH_VALUE).getString();
+                existentNodes.put(hash, existentNode);
+
             }
             for (final Pair<String, BeanDescriptor> propertyEntry : desc.valuesAsBeanDescriptors) {
                 final Node propertyNode = addUpdateOrRemoveJcrNode(JcrNodeType.MULTIPLE_NODE_PROPERTY, session, parent,
@@ -1078,9 +1078,9 @@ public class SimplePersistSupport {
                     propertyNode.setProperty(keyType, desc.keyType);
                     propertyNode.setProperty(keyValue, propertyEntry.getK1());
                 }
-                if (!propertyNode.isNew()) {
-                    existentNodes.remove(propertyNode.getUUID());
-                }
+                final String hash = propertyNode.getProperty(HASH_VALUE).getString();
+                existentNodes.remove(hash);
+
             }
             for (final Map.Entry<String, Node> toBeRemoved : existentNodes.entrySet()) {
                 toBeRemoved.getValue().remove();
