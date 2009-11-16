@@ -49,6 +49,10 @@
 
 package org.openspotlight.common;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
+
 /**
  * This is a simple class to store three objects.
  * 
@@ -61,15 +65,17 @@ public class Triple<K1, K2, K3> {
     /**
      * First item.
      */
-    private final K1 k1;
+    private final K1     k1;
     /**
      * Second item.
      */
-    private final K2 k2;
+    private final K2     k2;
     /**
      * third item.
      */
-    private final K3 k3;
+    private final K3     k3;
+
+    private volatile int hashCode;
 
     /**
      * Creates a new pair using the two keys provided.
@@ -83,6 +89,17 @@ public class Triple<K1, K2, K3> {
         this.k1 = k1;
         this.k2 = k2;
         this.k3 = k3;
+    }
+
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Triple)) {
+            return false;
+        }
+        final Triple that = (Triple)o;
+        return Equals.eachEquality(Arrays.of(this.k1, this.k2, this.k3), Arrays.andOf(that.k1, that.k2, that.k3));
     }
 
     /**
@@ -104,6 +121,16 @@ public class Triple<K1, K2, K3> {
      */
     public K3 getK3() {
         return this.k3;
+    }
+
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.k1, this.k2, this.k3);
+            this.hashCode = result;
+        }
+        return result;
+
     }
 
 }

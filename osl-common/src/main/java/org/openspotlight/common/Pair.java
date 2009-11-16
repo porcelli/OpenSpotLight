@@ -49,6 +49,10 @@
 
 package org.openspotlight.common;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
+
 /**
  * This is a simple class to store a pair of objects.
  * 
@@ -60,11 +64,13 @@ public class Pair<K1, K2> {
     /**
      * First item.
      */
-    private final K1 k1;
+    private final K1     k1;
     /**
      * Second item.
      */
-    private final K2 k2;
+    private final K2     k2;
+
+    private volatile int hashCode;
 
     /**
      * Creates a new pair using the two keys provided.
@@ -76,6 +82,17 @@ public class Pair<K1, K2> {
                  final K1 k1, final K2 k2 ) {
         this.k1 = k1;
         this.k2 = k2;
+    }
+
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Pair)) {
+            return false;
+        }
+        final Pair that = (Pair)o;
+        return Equals.eachEquality(Arrays.of(this.k1, this.k2), Arrays.andOf(that.k1, that.k2));
     }
 
     /**
@@ -92,4 +109,13 @@ public class Pair<K1, K2> {
         return this.k2;
     }
 
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(this.k1, this.k2);
+            this.hashCode = result;
+        }
+        return result;
+
+    }
 }
