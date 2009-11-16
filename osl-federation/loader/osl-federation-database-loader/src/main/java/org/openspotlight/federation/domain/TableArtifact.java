@@ -43,9 +43,7 @@ public class TableArtifact extends CustomArtifact implements SimpleNodeType, Ser
 
     public void loadProperties() {
         final StringTokenizer tok = new StringTokenizer(this.getArtifactCompleteName(), "/"); //$NON-NLS-1$
-        tok.nextToken();//put the name away
-        tok.nextToken();//put the initial lookup away
-        if (tok.countTokens() == 6) {
+        if (tok.countTokens() == 4) {
             this.setSchemaName(tok.nextToken());
             this.setCatalogName(tok.nextToken());
             tok.nextToken();// puts away its table type

@@ -18,7 +18,7 @@ public class Db2DatabaseStreamTest extends DatabaseStreamTest implements RunWhen
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createDb2Configuration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().get("db2 Group").getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**
