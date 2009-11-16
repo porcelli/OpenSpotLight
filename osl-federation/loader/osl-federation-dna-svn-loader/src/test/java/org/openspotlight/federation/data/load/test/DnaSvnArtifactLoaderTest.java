@@ -51,6 +51,7 @@ package org.openspotlight.federation.data.load.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;
@@ -58,6 +59,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
  * Test for class {@link DNASvnArtifactFinder}
@@ -68,21 +70,42 @@ import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 public class DnaSvnArtifactLoaderTest {
 
     @Test
+    public void shouldLoadAFile() throws Exception {
+        final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
+        bundle.setActive(true);
+        bundle.setName("DNA SVN");
+        bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
+        bundle.setUserName("feuteston");
+        bundle.setPassword("jakadeed");
+
+        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
+        final StreamArtifact sa = finder.findByPath(bundle, "source/osl/pom.xml");
+
+        assertThat(sa, is(notNullValue()));
+        assertThat(sa.getContent(), is(notNullValue()));
+
+        finder.closeResources();
+    }
+
+    @Test
     public void shouldRetrieveArtifactNames() throws Exception {
 
         final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
         bundle.setActive(true);
         bundle.setName("DNA SVN");
-        bundle.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
-        bundle.setUserName("anonymous");
-        bundle.setPassword("");
+        bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
+        bundle.setUserName("feuteston");
+        bundle.setPassword("jakadeed");
 
         final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final Set<String> allNames = finder.retrieveAllArtifactNames(bundle, null);
+        final Set<String> allNames = finder.retrieveAllArtifactNames(bundle,
+                                                                     "source/osl/osl-common/src/main/java/org/openspotlight/common/");
         assertThat(allNames.size(), is(not(0)));
 
         finder.closeResources();
-
+        for (final String n : allNames) {
+            System.out.println(n);
+        }
     }
 
 }
