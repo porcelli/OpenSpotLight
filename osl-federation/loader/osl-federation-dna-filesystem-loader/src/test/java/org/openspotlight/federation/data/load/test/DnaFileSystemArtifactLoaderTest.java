@@ -50,16 +50,15 @@
 package org.openspotlight.federation.data.load.test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.data.load.DNAFileSystemArtifactLoader;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.data.load.DnaFileSystemArtifactFinder;
+import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
@@ -68,115 +67,35 @@ import org.openspotlight.federation.domain.StreamArtifact;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings( "all" )
-public class DnaFileSystemArtifactLoaderTest extends AbstractArtifactLoaderTest {
+public class DnaFileSystemArtifactLoaderTest {
 
-    @Override
-    @Before
-    public void createArtifactLoader() {
-        this.artifactLoader = new DNAFileSystemArtifactLoader();
-    }
+    @Test
+    public void shouldLoadAFile() throws Exception {
+        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setInitialLookup("../");
+        artifactSource.setName("Dna FileSystem");
 
-    @Override
-    @Before
-    public void createConfiguration() throws Exception {
-        this.configuration = new GlobalSettings();
-        final Repository repository = new Repository(this.configuration, this.REPOSITORY_NAME);
-        this.configuration.setNumberOfParallelThreads(4);
-        final Group project = new Group(repository, this.PROJECT_NAME);
-        final ArtifactSource bundle = new ArtifactSource(project, this.BUNDLE_NAME);
-        final String basePath = new File("../osl-federation-dna-filesystem-loader/").getCanonicalPath() + "/";
-        bundle.setInitialLookup(basePath);
-        final ArtifactSourceMapping artifactMapping = new ArtifactSourceMapping(bundle, "src/");
-        new Included(artifactMapping, "main/java/**/*.java");
-    }
+        final StreamArtifact sa = finder.findByPath(artifactSource,
+                                                    "osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
 
-    public ArtifactSource createConfigurationForChangeListen() throws Exception {
-        this.configuration = new GlobalSettings();
-        final Repository repository = new Repository(this.configuration, "Local target folder");
-        this.configuration.setNumberOfParallelThreads(4);
-        final Group project = new Group(repository, "Osl Federation");
-        final ArtifactSource bundle = new ArtifactSource(project, "Target folder");
-        final String basePath = new File(
-                                         "../osl-federation-dna-filesystem-loader/target/test-data/DnaFileSystemArtifactLoaderTest/").getCanonicalPath()
-                                + "/";
-        bundle.setInitialLookup(basePath);
-        final ArtifactSourceMapping artifactMapping = new ArtifactSourceMapping(bundle, "aFolder/");
-        new Included(artifactMapping, "*.txt");
-        return bundle;
+        assertThat(sa, is(notNullValue()));
+        assertThat(sa.getContent(), is(notNullValue()));
+
+        finder.closeResources();
     }
 
     @Test
-    public void shouldListenChanges() throws Exception {
-        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/").mkdirs();
-        final File textFile = new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeChanged.txt");
-        FileOutputStream fos = new FileOutputStream(textFile);
-        fos.write("new text content".getBytes());
-        fos.flush();
-        fos.close();
+    public void shouldRetrieveFileNames() throws Exception {
+        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setInitialLookup("../");
+        artifactSource.setName("Dna FileSystem");
 
-        final ArtifactSource bundle = this.createConfigurationForChangeListen();
-        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
-        this.artifactLoader.loadArtifactsFromMappings(bundle);
-        sharedData.markAsSaved();
-
-        fos = new FileOutputStream(textFile);
-        fos.write("changed text content".getBytes());
-        fos.flush();
-        fos.close();
-        this.artifactLoader.loadArtifactsFromMappings(bundle);
-
-        assertThat(sharedData.getDirtyNodes().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
-        textFile.delete();
+        final Set<String> names = finder.retrieveAllArtifactNames(artifactSource, "osl-federation-dna-filesystem-loader");
+        assertThat(names.size(), is(not(0)));
+        finder.closeResources();
     }
-
-    @Test
-    public void shouldListenExclusions() throws Exception {
-        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/").mkdirs();
-        final File textFile = new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/willBeExcluded.txt");
-        final FileOutputStream fos = new FileOutputStream(textFile);
-        fos.write("new text content".getBytes());
-        fos.flush();
-        fos.close();
-
-        final ArtifactSource bundle = this.createConfigurationForChangeListen();
-        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
-        this.artifactLoader.loadArtifactsFromMappings(bundle);
-        sharedData.markAsSaved();
-
-        assertThat(textFile.delete(), is(true));
-        this.artifactLoader.loadArtifactsFromMappings(bundle);
-
-        assertThat(sharedData.getDirtyNodes().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.CHANGED));
-        final StreamArtifact changed = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
-        assertThat(changed.getStatus(), is(Status.EXCLUDED));
-    }
-
-    @Test
-    public void shouldListenInclusions() throws Exception {
-        new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/").mkdirs();
-        final File textFile = new File("target/test-data/DnaFileSystemArtifactLoaderTest/aFolder/newTextFile.txt");
-        final FileOutputStream fos = new FileOutputStream(textFile);
-        fos.write("new text content".getBytes());
-        fos.flush();
-        fos.close();
-
-        final ArtifactSource bundle = this.createConfigurationForChangeListen();
-        final SharedData sharedData = bundle.getInstanceMetadata().getSharedData();
-        sharedData.markAsSaved();
-        this.artifactLoader.loadArtifactsFromMappings(bundle);
-        final StreamArtifact sa = (StreamArtifact)sharedData.getDirtyNodes().iterator().next();
-
-        for (final ItemChangeEvent<ConfigurationNode> change : sharedData.getNodeChangesSinceLastSave()) {
-            System.out.println(change.getType() + " " + change.getNewItem());
-        }
-        assertThat(sharedData.getNodeChangesSinceLastSave().get(0).getType(), is(ItemChangeType.ADDED));
-        assertThat(sharedData.getDirtyNodes().size(), is(1));
-        assertThat(sharedData.getNodeChangesSinceLastSave().size(), is(1));
-
-    }
-
 }

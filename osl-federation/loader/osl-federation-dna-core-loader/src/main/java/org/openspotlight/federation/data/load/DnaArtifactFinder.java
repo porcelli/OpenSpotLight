@@ -81,7 +81,7 @@ import org.openspotlight.federation.finder.AbstractArtifactFinder;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public abstract class DnaArtifactLoader extends AbstractArtifactFinder<StreamArtifact> {
+public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArtifact> {
 
     /**
      * JCR visitor to fill all valid artifact names
@@ -105,10 +105,7 @@ public abstract class DnaArtifactLoader extends AbstractArtifactFinder<StreamArt
          * {@inheritDoc}
          */
         public void visiting( final Node n ) throws RepositoryException {
-            String path = n.getPath();
-            if (path.startsWith("/")) { //$NON-NLS-1$
-                path = path.substring(1);
-            }
+            final String path = n.getPath();
             if (!path.equals("")) { //$NON-NLS-1$
                 this.names.add(path);
             }
@@ -137,29 +134,16 @@ public abstract class DnaArtifactLoader extends AbstractArtifactFinder<StreamArt
     protected abstract void configureWithBundle( RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                                  ArtifactSource source );
 
-    /**
-     * Creates a new {@link Session jcr session}. The client class is responsible to close this session when it finish its work.
-     * 
-     * @param name
-     * @return a new and fresh {@link Session}
-     * @throws Exception
-     */
-    public synchronized Session createSessionForMapping( final ArtifactSource source ) throws Exception {
-        JcrEngine engine = this.mappingEngines.get(source);
-        if (engine == null) {
-            this.setupSource(source);
-            engine = this.mappingEngines.get(source);
-        }
-
-        final Session session = engine.getRepository(repositoryName).login(
-                                                                           new SecurityContextCredentials(
-                                                                                                          DefaultSecurityContext.READ_ONLY));
-        return session;
-    }
-
     public StreamArtifact findByPath( final ArtifactSource artifactSource,
-                                      final String path ) {
+                                      final String rawPath ) {
         try {
+            String path;
+            if (rawPath.startsWith("/")) {
+                path = rawPath.substring(1);
+            } else {
+                path = rawPath;
+            }
+
             final Node node = this.getSessionForSource(artifactSource).getRootNode().getNode(path);
 
             final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
@@ -188,7 +172,11 @@ public abstract class DnaArtifactLoader extends AbstractArtifactFinder<StreamArt
     public synchronized Session getSessionForSource( final ArtifactSource source ) throws Exception {
         Session session = this.mappingSessions.get(source);
         if (session == null) {
-            final JcrEngine engine = this.mappingEngines.get(source);
+            JcrEngine engine = this.mappingEngines.get(source);
+            if (engine == null) {
+                this.setupSource(source);
+                engine = this.mappingEngines.get(source);
+            }
             session = engine.getRepository(repositoryName).login(new SecurityContextCredentials(DefaultSecurityContext.READ_ONLY));
             this.mappingSessions.put(source, session);
         }

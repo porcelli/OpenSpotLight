@@ -50,37 +50,32 @@
 package org.openspotlight.federation.data.load;
 
 import org.jboss.dna.connector.filesystem.FileSystemSource;
+import org.jboss.dna.jcr.JcrConfiguration;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 
 /**
- * Artifact loader that loads Artifact for file system using DNA File System
- * Connector.
+ * Artifact loader that loads Artifact for file system using DNA File System Connector.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-public class DNAFileSystemArtifactLoader extends DnaArtifactLoader {
-	protected static final class DnaFileExecutionContext extends
-			GlobalDnaResourceContext {
+public class DnaFileSystemArtifactFinder extends DnaArtifactFinder {
 
-		@Override
-		protected void configureWithBundle(
-				final RepositorySourceDefinition<?> sourceDefinition,
-				final ArtifactSource bundle, final ArtifactSourceMapping relative) {
-			sourceDefinition
-					.usingClass(FileSystemSource.class)
-					.setProperty("workspaceRootPath", bundle.getInitialLookup()).setProperty( //$NON-NLS-1$ 
-							"creatingWorkspacesAllowed", true).setProperty( //$NON-NLS-1$
-							"defaultWorkspaceName", relative.getRelative()); //$NON-NLS-1$			
-		}
+    public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
+        return artifactSource instanceof DnaFileSystemArtifactSource;
+    }
 
-	}
+    @Override
+    protected void configureWithBundle( final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+                                        final ArtifactSource source ) {
+        repositorySource2.usingClass(FileSystemSource.class).setProperty("workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$ 
+                                                                                                                                     "creatingWorkspacesAllowed",
+                                                                                                                                     true).setProperty(
+                                                                                                                                                       //$NON-NLS-1$
+                                                                                                                                                       "defaultWorkspaceName",
+                                                                                                                                                       "."); //$NON-NLS-1$          
 
-	@Override
-	protected GlobalExecutionContext createGlobalExecutionContext() {
-		return new DnaFileExecutionContext();
-	}
+    }
 
 }

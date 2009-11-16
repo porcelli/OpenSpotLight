@@ -63,7 +63,7 @@ import org.openspotlight.federation.domain.DnaSvnArtifactSource;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
-public class DNASvnArtifactLoader extends DnaArtifactLoader {
+public class DNASvnArtifactLoader extends DnaArtifactFinder {
 
 	protected static final class DnaFileExecutionContext extends
 			GlobalDnaResourceContext {
