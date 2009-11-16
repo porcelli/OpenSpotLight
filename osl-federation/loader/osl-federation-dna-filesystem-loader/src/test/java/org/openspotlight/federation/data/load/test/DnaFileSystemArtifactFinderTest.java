@@ -47,51 +47,55 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load;
+package org.openspotlight.federation.data.load.test;
 
-import org.jboss.dna.connector.svn.SVNRepositorySource;
-import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.DnaSvnArtifactSource;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.Set;
+
+import org.junit.Test;
+import org.openspotlight.federation.data.load.DnaFileSystemArtifactFinder;
+import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
+import org.openspotlight.federation.domain.StreamArtifact;
 
 /**
- * Artifact loader that loads Artifact for file system using DNA File System
- * Connector.
+ * Test for class {@link DnaFileSystemArtifactLoader}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-public class DNASvnArtifactLoader extends DnaArtifactFinder {
+@SuppressWarnings( "all" )
+public class DnaFileSystemArtifactFinderTest {
 
-	protected static final class DnaFileExecutionContext extends
-			GlobalDnaResourceContext {
+    @Test
+    public void shouldLoadAFile() throws Exception {
+        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setInitialLookup("../");
+        artifactSource.setName("Dna FileSystem");
 
-		@Override
-		protected void configureWithBundle(
-				RepositorySourceDefinition<?> sourceDefinition, ArtifactSource bundle,
-				ArtifactSourceMapping relative) {
-			if (!(bundle instanceof DnaSvnArtifactSource)) {
-				throw new ConfigurationException(
-						"Invalid bundle type. It's mandatory to use dnaSvnBundle");
-			}
-			DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource) bundle;
-			sourceDefinition
-					.usingClass(SVNRepositorySource.class)
-					.setProperty("password", svnBundle.getPassword())
-					.setProperty("username", svnBundle.getUser())
-					.setProperty(
-							"repositoryRootURL", svnBundle.getInitialLookup()).setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-							"creatingWorkspacesAllowed", true);
+        final StreamArtifact sa = finder.findByPath(artifactSource,
+                                                    "osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
 
-		}
+        assertThat(sa, is(notNullValue()));
+        assertThat(sa.getContent(), is(notNullValue()));
 
-	}
+        finder.closeResources();
+    }
 
-	@Override
-	protected GlobalExecutionContext createGlobalExecutionContext() {
-		return new DnaFileExecutionContext();
-	}
+    @Test
+    public void shouldRetrieveFileNames() throws Exception {
+        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setInitialLookup("../");
+        artifactSource.setName("Dna FileSystem");
 
+        final Set<String> names = finder.retrieveAllArtifactNames(artifactSource, "osl-federation-dna-filesystem-loader");
+        assertThat(names.size(), is(not(0)));
+        finder.closeResources();
+    }
 }
