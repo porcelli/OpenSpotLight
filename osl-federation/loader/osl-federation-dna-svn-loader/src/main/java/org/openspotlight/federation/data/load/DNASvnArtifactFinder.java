@@ -1,5 +1,5 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
+\ * OpenSpotLight - Open Source IT Governance Platform
  *  
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
  * or third-party contributors as indicated by the @author tags or express 
@@ -47,55 +47,36 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.load.test;
+package org.openspotlight.federation.data.load;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Set;
-
-import org.junit.Test;
-import org.openspotlight.federation.data.load.DnaFileSystemArtifactFinder;
-import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.jboss.dna.connector.svn.SVNRepositorySource;
+import org.jboss.dna.jcr.JcrConfiguration;
+import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 
 /**
- * Test for class {@link DnaFileSystemArtifactLoader}
+ * Artifact loader that loads Artifact for file system using DNA File System Connector.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
-public class DnaFileSystemArtifactLoaderTest {
+public class DNASvnArtifactFinder extends DnaArtifactFinder {
 
-    @Test
-    public void shouldLoadAFile() throws Exception {
-        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
-        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
-        artifactSource.setActive(true);
-        artifactSource.setInitialLookup("../");
-        artifactSource.setName("Dna FileSystem");
-
-        final StreamArtifact sa = finder.findByPath(artifactSource,
-                                                    "osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
-
-        assertThat(sa, is(notNullValue()));
-        assertThat(sa.getContent(), is(notNullValue()));
-
-        finder.closeResources();
+    public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
+        return artifactSource instanceof DnaSvnArtifactSource;
     }
 
-    @Test
-    public void shouldRetrieveFileNames() throws Exception {
-        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
-        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
-        artifactSource.setActive(true);
-        artifactSource.setInitialLookup("../");
-        artifactSource.setName("Dna FileSystem");
+    @Override
+    protected void configureWithBundle( final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+                                        final ArtifactSource source ) {
+        final DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource)source;
+        repositorySource2.usingClass(SVNRepositorySource.class).setProperty("password", svnBundle.getPassword()).setProperty(
+                                                                                                                             "username",
+                                                                                                                             svnBundle.getUserName()).setProperty(
+                                                                                                                                                                  "repositoryRootURL", svnBundle.getInitialLookup()).setProperty( //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                                                                                                                                                 "creatingWorkspacesAllowed",
+                                                                                                                                                                                                                                 true);
 
-        final Set<String> names = finder.retrieveAllArtifactNames(artifactSource, "osl-federation-dna-filesystem-loader");
-        assertThat(names.size(), is(not(0)));
-        finder.closeResources();
     }
+
 }

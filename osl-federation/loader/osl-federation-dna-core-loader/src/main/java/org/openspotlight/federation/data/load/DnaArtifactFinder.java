@@ -187,10 +187,9 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
                                                  final String initialPath ) {
         try {
             final Set<String> result = new HashSet<String>();
-
-            this.getSessionForSource(artifactSource).getRootNode().getNode(initialPath).accept(
-                                                                                               withVisitor(new FillNamesVisitor(
-                                                                                                                                result)));
+            final Node rootNode = this.getSessionForSource(artifactSource).getRootNode();
+            final Node initial = initialPath == null ? rootNode : rootNode.getNode(initialPath);
+            initial.accept(withVisitor(new FillNamesVisitor(result)));
 
             return result;
         } catch (final Exception e) {

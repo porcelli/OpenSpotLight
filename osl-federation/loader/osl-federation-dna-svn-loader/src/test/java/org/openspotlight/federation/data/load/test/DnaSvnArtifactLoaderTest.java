@@ -49,45 +49,40 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.openspotlight.federation.data.load.DNASvnArtifactLoader;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
+
+import java.util.Set;
+
+import org.junit.Test;
+import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 
 /**
- * Test for class {@link DNASvnArtifactLoader}
+ * Test for class {@link DNASvnArtifactFinder}
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
-@Ignore
-public class DnaSvnArtifactLoaderTest extends AbstractArtifactLoaderTest {
+@SuppressWarnings( "all" )
+public class DnaSvnArtifactLoaderTest {
 
-	@Override
-	@Before
-	public void createArtifactLoader() {
-		this.artifactLoader = new DNASvnArtifactLoader();
-	}
+    @Test
+    public void shouldRetrieveArtifactNames() throws Exception {
 
-	@Override
-	@Before
-	public void createConfiguration() throws Exception {
-		this.configuration = new GlobalSettings();
-		final Repository repository = new Repository(this.configuration,
-				this.REPOSITORY_NAME);
-		this.configuration.setNumberOfParallelThreads(4);
-		final Group project = new Group(repository, this.PROJECT_NAME);
-		final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource(project, this.BUNDLE_NAME);
+        final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
+        bundle.setActive(true);
+        bundle.setName("DNA SVN");
+        bundle.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
+        bundle.setUserName("anonymous");
+        bundle.setPassword("");
 
-		bundle
-				.setInitialLookup("http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/");
-		bundle.setUser("anonymous");
-		bundle.setPassword("");
-		final ArtifactSourceMapping artifactMapping = new ArtifactSourceMapping(bundle,
-				"src/");
-		new Included(artifactMapping, "**/*.java");
-	}
+        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
+        final Set<String> allNames = finder.retrieveAllArtifactNames(bundle, null);
+        assertThat(allNames.size(), is(not(0)));
+
+        finder.closeResources();
+
+    }
 
 }
