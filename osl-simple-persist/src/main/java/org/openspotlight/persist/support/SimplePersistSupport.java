@@ -232,17 +232,22 @@ public class SimplePersistSupport {
             } catch (final PathNotFoundException e) {
                 //ok, nothing to do here
             }
-            if (result == null) {
+            if (result == null && descriptor != null) {
                 final Node newNode = parentNode.addNode(nodeName);
                 result = newNode;
             }
         }
         if (result != null) {
+            if (descriptor == null) {
+                result.remove();
+                return null;
+            }
             for (final Map.Entry<String, String> entry : descriptor.properties.entrySet()) {
                 result.setProperty(entry.getKey(), entry.getValue());
             }
             saveSimplePropertiesOnJcr(descriptor, result);
             saveComplexMultiplePropertiesOnJcr(session, descriptor, result);
+
         }
         return result;
     }
@@ -1184,6 +1189,7 @@ public class SimplePersistSupport {
             if (property.hasProperty(keyTypeDescription)) {
                 desc.keyType = property.getProperty(keyTypeDescription).getString();
             }
+            descriptor.multipleComplexProperties.put(propertyName, desc);
         }
         String keyString = null;
         if (property.hasProperty(keyValueDescription)) {
