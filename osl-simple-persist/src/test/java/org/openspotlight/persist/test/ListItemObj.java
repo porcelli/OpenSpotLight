@@ -25,6 +25,7 @@ public class ListItemObj implements SimpleNodeType {
         return this.name;
     }
 
+    @KeyProperty
     public int getValue() {
         return this.value;
     }
@@ -33,7 +34,6 @@ public class ListItemObj implements SimpleNodeType {
         this.name = name;
     }
 
-    @KeyProperty
     public void setValue( final int value ) {
         this.value = value;
     }

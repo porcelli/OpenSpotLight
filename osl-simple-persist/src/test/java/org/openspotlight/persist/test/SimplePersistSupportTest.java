@@ -120,7 +120,6 @@ public class SimplePersistSupportTest {
         obj2.setValue(33);
         levelThree.getObjList().add(obj2);
         asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, levelThree);
-
         anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
         assertThat(anotherLevelThree.getObjList().size(), is(2));
         assertThat(anotherLevelThree.getObjList().get(0).getValue(), is(obj1.getValue()));

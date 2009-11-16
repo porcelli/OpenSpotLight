@@ -927,6 +927,7 @@ public class SimplePersistSupport {
                                                                final PropertyDescriptor desc,
                                                                final UnwrappedCollectionTypeFromMethodReturn<Object> metadata )
         throws Exception {
+
         final ComplexMultiplePropertyDescriptor multiplePropertyDescriptor = new ComplexMultiplePropertyDescriptor();
         multiplePropertyDescriptor.multipleType = metadata.getCollectionType().getName();
         multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
