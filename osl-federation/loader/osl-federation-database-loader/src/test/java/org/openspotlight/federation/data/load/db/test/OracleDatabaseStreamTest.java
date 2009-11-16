@@ -18,7 +18,7 @@ public class OracleDatabaseStreamTest extends DatabaseStreamTest implements RunW
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
         final Repository repository = createOracleOciDbConfiguration(); //$NON-NLS-1$
-        return (DbArtifactSource)repository.getGroups().get("oracle Group").getArtifactSources().iterator().next(); //$NON-NLS-1$
+        return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
     /**

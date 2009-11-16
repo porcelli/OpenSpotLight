@@ -2,7 +2,7 @@
 	<scriptType>VIEW</scriptType>
 	<database>SQL_SERVER</database>
 	<preferedType>SQL</preferedType>
-	<nameHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerViewFilterNameHandler</nameHandlerClass>
+	<nameHandlerClass>org.openspotlight.federation.finder.db.handler.SqlServerViewFilterNameHandler</nameHandlerClass>
 	<template><![CDATA[
 	create view $name$ with columns (
 		$detail:{$it.column_name$ $it.type_name$ };separator=", "$

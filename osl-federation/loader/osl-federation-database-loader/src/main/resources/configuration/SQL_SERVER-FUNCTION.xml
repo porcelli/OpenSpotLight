@@ -2,8 +2,8 @@
 	<scriptType>FUNCTION</scriptType>
 	<database>SQL_SERVER</database>
 	<preferedType>SQL</preferedType>
-	<nameHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerFunctionFilterNameHandler</nameHandlerClass>
-	<streamHandlerClass>org.openspotlight.federation.data.load.db.handler.SqlServerRoutineStreamHandler</streamHandlerClass>
+	<nameHandlerClass>org.openspotlight.federation.finder.db.handler.SqlServerFunctionFilterNameHandler</nameHandlerClass>
+	<streamHandlerClass>org.openspotlight.federation.finder.db.handler.SqlServerRoutineStreamHandler</streamHandlerClass>
 	<template><![CDATA[create function $name$ ( $parameter:{$it.column$  $it.inOut$ $it.type$}; separator=", "$ ) $returnType$ /* no source available */ 
 	]]></template>
 	<tryAgainIfNoResult>true</tryAgainIfNoResult>
