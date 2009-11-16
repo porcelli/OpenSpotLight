@@ -1,6 +1,6 @@
 package org.openspotlight.federation.data.load.db.test;
 
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createPostgresqlConfiguration;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createSqlServerDbConfiguration;
 
 import java.sql.Connection;
 import java.util.EnumSet;
@@ -18,7 +18,7 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements R
      */
     @Override
     protected DbArtifactSource createValidConfigurationWithMappings() {
-        final Repository repository = createPostgresqlConfiguration(); //$NON-NLS-1$
+        final Repository repository = createSqlServerDbConfiguration(); //$NON-NLS-1$
         return (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
     }
 
