@@ -16,17 +16,18 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.log.DetailedLogger;
-import org.openspotlight.federation.log.DetailedLogger.ErrorCode;
-import org.openspotlight.federation.log.DetailedLogger.LogEntry;
-import org.openspotlight.federation.log.DetailedLogger.LogEventType;
-import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
+import org.openspotlight.federation.log.DetailedLoggerFactory;
+import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry;
+import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.log.DetailedLogger.ErrorCode;
+import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -87,7 +88,7 @@ public class DetailedLoggerTest {
     public void setupAttributes() throws Exception {
         this.session = provider.openSession();
         this.graphSession = graph.openSession(user, "tempRepo");
-        this.logger = DetailedLogger.Factory.createJcrDetailedLogger(this.session);
+        this.logger = DetailedLoggerFactory.createJcrDetailedLogger(this.session);
     }
 
     @Test

@@ -49,8 +49,12 @@
 
 package org.openspotlight.federation.data.processing;
 
+import java.util.Set;
+
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLNode;
 
 /**
  * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
@@ -64,6 +68,27 @@ import org.openspotlight.federation.domain.GlobalSettings;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public interface BundleProcessor<T extends Artifact> {
+
+    public static interface ArtifactChanges<T> {
+        public Set<T> getChangedArtifacts();
+
+        public Set<T> getExcludedArtifacts();
+
+        public Set<T> getIncludedArtifacts();
+
+        public Set<T> getNotChangedArtifacts();
+    }
+
+    public static interface BundleProcessorContext {
+        public SLNode getCurrentGroup();
+
+        public SLGraphSession getGraphSession();
+
+    }
+
+    public Set<T> returnArtifactsToBeProcessed( ArtifactChanges<T> changes, BundleProcessorContext context );
+    
+    
 
     //    /**
     //     * Graph context to be possible to add or change Graph utility objects without changing the bundle processing interface.

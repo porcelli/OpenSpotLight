@@ -19,6 +19,11 @@
 			<artifactId>osl-graph-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-logger-api</artifactId>
+		</dependency>
+
 		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>

@@ -6,11 +6,11 @@ package org.openspotlight.federation.domain;
 import java.io.Serializable;
 
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;

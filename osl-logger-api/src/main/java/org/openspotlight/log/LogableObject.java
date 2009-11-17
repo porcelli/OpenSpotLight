@@ -1,4 +1,4 @@
-package org.openspotlight.common.jcr;
+package org.openspotlight.log;
 
 /**
  * Marker interface for objects persisted on Jcr.
