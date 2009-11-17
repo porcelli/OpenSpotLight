@@ -6,6 +6,7 @@ package org.openspotlight.federation.domain;
 import java.io.Serializable;
 
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
@@ -19,7 +20,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * This is the {@link Artifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
  * {@link Artifact} based on another one.
  */
-public abstract class Artifact implements SimpleNodeType, Serializable {
+public abstract class Artifact implements SimpleNodeType, Serializable, LogableObject {
 
     /** The Constant SEPARATOR. */
     final static String SEPARATOR = "/";

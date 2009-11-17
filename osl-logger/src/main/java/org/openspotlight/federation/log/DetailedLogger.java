@@ -29,6 +29,8 @@ import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
@@ -43,7 +45,7 @@ public interface DetailedLogger {
     /**
      * The ErrorCode describes some special kind of errors.
      */
-    public static interface ErrorCode {
+    public static interface ErrorCode extends SimpleNodeType, Serializable {
 
         /**
          * Gets the description.
@@ -182,12 +184,14 @@ public interface DetailedLogger {
     /**
      * The Class LogEntry is used to represent a new log entry.
      */
+    @Name( "log_entry" )
     public static class LogEntry implements SimpleNodeType, Serializable {
 
         /**
          * The Class LoggedObjectInformation is used to represent objects related to a given log.
          */
-        public static class LoggedObjectInformation {
+        @Name( "logged_object_information" )
+        public static class LoggedObjectInformation implements SimpleNodeType, Serializable {
 
             private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
                 final List<LogableObject> result = new LinkedList<LogableObject>();
@@ -239,16 +243,19 @@ public interface DetailedLogger {
                 }
             }
 
-            private final int    order;
+            private int    order;
 
             /** The unique id. */
-            private final String uniqueId;
+            private String uniqueId;
 
             /** The friendly description. */
-            private final String friendlyDescription;
+            private String friendlyDescription;
 
             /** The class name. */
-            private final String className;
+            private String className;
+
+            public LoggedObjectInformation() {
+            }
 
             /**
              * Instantiates a new logged object information.
@@ -281,7 +288,6 @@ public interface DetailedLogger {
                 } else {
                     throw logAndReturn(new IllegalArgumentException());
                 }
-                checkNotEmpty("uniqueId", this.uniqueId);
                 checkNotEmpty("friendlyDescription", this.friendlyDescription);
                 checkNotEmpty("className", this.className);
             }
@@ -307,11 +313,16 @@ public interface DetailedLogger {
 
             }
 
+            public String getClassName() {
+                return className;
+            }
+
             /**
              * Gets the friendly description.
              * 
              * @return the friendly description
              */
+            @KeyProperty
             public String getFriendlyDescription() {
                 return this.friendlyDescription;
             }
@@ -321,6 +332,7 @@ public interface DetailedLogger {
              * 
              * @return the order
              */
+            @KeyProperty
             public int getOrder() {
                 return this.order;
             }
@@ -330,6 +342,7 @@ public interface DetailedLogger {
              * 
              * @return the type name
              */
+            @KeyProperty
             public String getTypeName() {
                 return this.className;
             }
@@ -339,32 +352,52 @@ public interface DetailedLogger {
              * 
              * @return the unique id
              */
+            @KeyProperty
             public String getUniqueId() {
                 return this.uniqueId;
+            }
+
+            public void setClassName( final String className ) {
+                this.className = className;
+            }
+
+            public void setFriendlyDescription( final String friendlyDescription ) {
+                this.friendlyDescription = friendlyDescription;
+            }
+
+            public void setOrder( final int order ) {
+                this.order = order;
+            }
+
+            public void setUniqueId( final String uniqueId ) {
+                this.uniqueId = uniqueId;
             }
 
         }
 
         /** The error code. */
-        private final ErrorCode                     errorCode;
+        private ErrorCode                     errorCode;
 
         /** The type. */
-        private final LogEventType                  type;
+        private LogEventType                  type;
 
         /** The message. */
-        private final String                        message;
+        private String                        message;
 
         /** The detailed message. */
-        private final String                        detailedMessage;
+        private String                        detailedMessage;
 
         /** The nodes. */
-        private final List<LoggedObjectInformation> nodes;
+        private List<LoggedObjectInformation> nodes;
 
         /** The date. */
-        private final Date                          date;
+        private Date                          date;
 
         /** The hash code. */
-        private final int                           hashCode;
+        private int                           hashCode;
+
+        public LogEntry() {
+        }
 
         /**
          * Instantiates a new log entry.
@@ -409,6 +442,7 @@ public interface DetailedLogger {
          * 
          * @return the date
          */
+        @KeyProperty
         public Date getDate() {
             return this.date;
         }
@@ -418,6 +452,7 @@ public interface DetailedLogger {
          * 
          * @return the detailed message
          */
+        @KeyProperty
         public String getDetailedMessage() {
             return this.detailedMessage;
         }
@@ -427,6 +462,7 @@ public interface DetailedLogger {
          * 
          * @return the error code
          */
+        @KeyProperty
         public ErrorCode getErrorCode() {
             return this.errorCode;
         }
@@ -436,6 +472,7 @@ public interface DetailedLogger {
          * 
          * @return the message
          */
+        @KeyProperty
         public String getMessage() {
             return this.message;
         }
@@ -454,6 +491,7 @@ public interface DetailedLogger {
          * 
          * @return the type
          */
+        @KeyProperty
         public LogEventType getType() {
             return this.type;
         }
@@ -464,6 +502,30 @@ public interface DetailedLogger {
         @Override
         public int hashCode() {
             return this.hashCode;
+        }
+
+        public void setDate( final Date date ) {
+            this.date = date;
+        }
+
+        public void setDetailedMessage( final String detailedMessage ) {
+            this.detailedMessage = detailedMessage;
+        }
+
+        public void setErrorCode( final ErrorCode errorCode ) {
+            this.errorCode = errorCode;
+        }
+
+        public void setMessage( final String message ) {
+            this.message = message;
+        }
+
+        public void setNodes( final List<LoggedObjectInformation> nodes ) {
+            this.nodes = nodes;
+        }
+
+        public void setType( final LogEventType type ) {
+            this.type = type;
         }
 
     }

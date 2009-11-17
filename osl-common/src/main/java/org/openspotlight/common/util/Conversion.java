@@ -102,7 +102,10 @@ public class Conversion {
     private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
 
     static {
-        CONVERTERS.put(Date.class, new DateConverter());
+        final DateConverter dateConverter = new DateConverter();
+        dateConverter.setPattern("EEE MMM dd HH:mm:ss zzz yyyy");
+
+        CONVERTERS.put(Date.class, dateConverter);
         CONVERTERS.put(Integer.class, new IntegerConverter());
         CONVERTERS.put(Double.class, new DoubleConverter());
         CONVERTERS.put(Short.class, new ShortConverter());

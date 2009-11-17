@@ -28,6 +28,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-federation-api</artifactId>
 		</dependency>
 		<dependency>
