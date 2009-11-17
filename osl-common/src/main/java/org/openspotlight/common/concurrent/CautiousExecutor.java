@@ -7,7 +7,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CautiousExecutor.
  */
