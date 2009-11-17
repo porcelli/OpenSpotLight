@@ -75,6 +75,7 @@
 		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
 		<module>osl-simple-persist</module>
+		<module>osl-logger</module>
 		<module>osl-security</module>
 		<module>osl-graph</module>
 		<module>osl-slql-console</module>
@@ -117,6 +118,11 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-security-api</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-logger</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -212,6 +218,11 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-federation-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-federation-api</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>

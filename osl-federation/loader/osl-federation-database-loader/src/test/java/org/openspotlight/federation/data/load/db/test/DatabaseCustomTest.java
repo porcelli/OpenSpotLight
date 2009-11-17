@@ -22,6 +22,7 @@ import org.openspotlight.federation.domain.TableArtifact;
 import org.openspotlight.federation.domain.ViewArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
 import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 
 @SuppressWarnings( "all" )
@@ -44,8 +45,8 @@ public class DatabaseCustomTest {
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
 
-        this.artifactLoader = ArtifactLoader.Factory.createNewLoader(configuration, ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
-                                                                     this.finder);
+        this.artifactLoader = ArtifactLoaderFactory.createNewLoader(configuration, ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
+                                                                    this.finder);
     }
 
     @Test

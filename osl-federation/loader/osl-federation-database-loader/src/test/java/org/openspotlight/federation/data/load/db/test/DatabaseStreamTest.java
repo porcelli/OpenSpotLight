@@ -23,12 +23,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DatabaseStreamArtifactFinder;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,8 +117,8 @@ public abstract class DatabaseStreamTest {
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
 
-        final ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
-                                                                             ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
+        final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(configuration,
+                                                                            ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
 
         conn = createConnection(bundle);
         this.resetDatabase(conn);
