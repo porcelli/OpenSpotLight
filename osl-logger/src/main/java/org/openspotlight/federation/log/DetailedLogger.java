@@ -457,14 +457,8 @@ public interface DetailedLogger {
             return this.detailedMessage;
         }
 
-        /**
-         * Gets the error code.
-         * 
-         * @return the error code
-         */
-        @KeyProperty
         public ErrorCode getErrorCode() {
-            return this.errorCode;
+            return errorCode;
         }
 
         /**

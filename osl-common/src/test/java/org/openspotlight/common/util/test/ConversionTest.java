@@ -67,6 +67,12 @@ import org.openspotlight.common.util.Conversion;
 @SuppressWarnings( "all" )
 public class ConversionTest {
 
+    public static enum SomeEnum {
+        A,
+        B,
+        C
+    }
+
     @Test
     public void shouldConvertValidValues() throws Exception {
         final Long l = 3l;
@@ -84,5 +90,13 @@ public class ConversionTest {
         final String asString = convert(d, String.class);
         final Date asDate = convert(asString, Date.class);
         assertThat(d.toString(), is(asDate.toString()));
+    }
+
+    @Test
+    public void shouldWorkWithEnums() throws Exception {
+        final SomeEnum a = SomeEnum.A;
+        final String asString = convert(a, String.class);
+        final SomeEnum asEnum = convert(asString, SomeEnum.class);
+        assertThat(a, is(asEnum));
     }
 }
