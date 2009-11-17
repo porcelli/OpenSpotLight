@@ -1351,6 +1351,9 @@ public class SimplePersistSupport {
         final String propertyValueAsString = beanDescriptor.properties.get(MessageFormat.format(value, propertyName));
         Class<?> propertyType = Conversion.getPrimitiveClass(propertyTypeString);
         if (propertyType == null) {
+            if (propertyTypeString == null) {
+                return;//no property at all
+            }
             propertyType = Class.forName(propertyTypeString);
         }
         final Object newPropertyValue = Conversion.convert(propertyValueAsString, propertyType);

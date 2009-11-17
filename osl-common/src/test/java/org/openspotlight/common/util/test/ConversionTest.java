@@ -54,6 +54,7 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Conversion.convert;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.junit.Test;
 import org.openspotlight.common.util.Conversion;
@@ -62,11 +63,10 @@ import org.openspotlight.common.util.Conversion;
  * Test class for {@link Conversion}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class ConversionTest {
-    
+
     @Test
     public void shouldConvertValidValues() throws Exception {
         final Long l = 3l;
@@ -76,5 +76,13 @@ public class ConversionTest {
         assertThat(asString, is("3"));
         assertThat(asInt, is(3));
         assertThat(asBd, is(new BigDecimal("3")));
+    }
+
+    @Test
+    public void shouldWorkWithDates() throws Exception {
+        final Date d = new Date();
+        final String asString = convert(d, String.class);
+        final Date asDate = convert(asString, Date.class);
+        assertThat(d.toString(), is(asDate.toString()));
     }
 }
