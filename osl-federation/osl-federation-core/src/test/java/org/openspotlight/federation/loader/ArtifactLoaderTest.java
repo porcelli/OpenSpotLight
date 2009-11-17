@@ -29,6 +29,7 @@ public class ArtifactLoaderTest {
         final ArtifactSource source = new ArtifactSource();
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setFrom(finalStr);
+        mapping.setTo("/sources/java/myProject");
         mapping.setIncludeds(new HashSet<String>());
         mapping.setExcludeds(new HashSet<String>());
         mapping.getIncludeds().add("*.java");
@@ -43,9 +44,14 @@ public class ArtifactLoaderTest {
                                                                              new FileSystemStreamArtifactFinder());
 
         final Iterable<Artifact> artifacts = loader.loadArtifactsFromSource(source);
+        boolean hasAny = false;
         for (final Artifact a : artifacts) {
             assertThat(a, is(notNullValue()));
+            assertThat(a.getArtifactCompleteName().startsWith(mapping.getTo()), is(true));
+            assertThat(a.getArtifactCompleteName().contains(mapping.getFrom()), is(false));
+            hasAny = true;
         }
+        assertThat(hasAny, is(true));
         loader.closeResources();
     }
 
