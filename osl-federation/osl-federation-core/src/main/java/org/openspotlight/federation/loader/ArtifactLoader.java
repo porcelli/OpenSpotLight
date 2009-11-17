@@ -61,13 +61,14 @@ import java.util.concurrent.Executors;
 
 import org.openspotlight.common.Disposable;
 import org.openspotlight.common.Pair;
-import org.openspotlight.common.Triple;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.PathElement;
 import org.openspotlight.federation.finder.ArtifactFinder;
 
 public interface ArtifactLoader extends Disposable {
@@ -80,6 +81,24 @@ public interface ArtifactLoader extends Disposable {
     public static class Factory {
 
         private static class ArtifactLoaderImpl implements ArtifactLoader {
+
+            private static class SourcesToProcessItems {
+                final ArtifactFinder<?>     artifactFinder;
+                final ArtifactSource        artifactSource;
+                final String                artifactName;
+                final ArtifactSourceMapping mapping;
+
+                public SourcesToProcessItems(
+                                              final ArtifactFinder<?> artifactFinder, final ArtifactSource artifactSource,
+                                              final String artifactName, final ArtifactSourceMapping mapping ) {
+                    this.artifactFinder = artifactFinder;
+                    this.artifactSource = artifactSource;
+                    this.artifactName = artifactName;
+                    this.mapping = mapping;
+                }
+
+            }
+
             private final GlobalSettings         configuration;
             private final ArtifactLoaderBehavior behavior;
             private final ArtifactFinder<?>[]    artifactFinders;
@@ -114,7 +133,7 @@ public interface ArtifactLoader extends Disposable {
 
             public Iterable<Artifact> loadArtifactsFromSource( final ArtifactSource... sources ) {
                 final Queue<Pair<ArtifactFinder<?>, ArtifactSource>> sourcesToLoad = new ConcurrentLinkedQueue<Pair<ArtifactFinder<?>, ArtifactSource>>();
-                final Queue<Triple<ArtifactFinder<?>, ArtifactSource, String>> sourcesToProcess = new ConcurrentLinkedQueue<Triple<ArtifactFinder<?>, ArtifactSource, String>>();
+                final Queue<SourcesToProcessItems> sourcesToProcess = new ConcurrentLinkedQueue<SourcesToProcessItems>();
                 final Queue<Artifact> loadedArtifacts = new ConcurrentLinkedQueue<Artifact>();
 
                 addingSources: for (final ArtifactSource source : sources) {
@@ -153,9 +172,7 @@ public interface ArtifactLoader extends Disposable {
 
                                     for (final String name : newNames.getIncludedNames()) {
 
-                                        sourcesToProcess.add(new Triple<ArtifactFinder<?>, ArtifactSource, String>(pair.getK1(),
-                                                                                                                   pair.getK2(),
-                                                                                                                   name));
+                                        sourcesToProcess.add(new SourcesToProcessItems(pair.getK1(), pair.getK2(), name, mapping));
                                     }
                                 }
                             } catch (final Exception e) {
@@ -176,20 +193,32 @@ public interface ArtifactLoader extends Disposable {
                 if (sourcesToProcess.size() == 0) {
                     return Collections.emptySet();
                 }
-                for (final Triple<ArtifactFinder<?>, ArtifactSource, String> triple : new ArrayList<Triple<ArtifactFinder<?>, ArtifactSource, String>>(
-                                                                                                                                                       sourcesToProcess)) {
+                for (final SourcesToProcessItems sourceToProcess : new ArrayList<SourcesToProcessItems>(sourcesToProcess)) {
                     this.executor.execute(new Runnable() {
 
                         public void run() {
                             try {
 
-                                final Artifact loaded = triple.getK1().findByPath(triple.getK2(), triple.getK3());
+                                final Artifact loaded = sourceToProcess.artifactFinder.findByPath(sourceToProcess.artifactSource,
+                                                                                                  sourceToProcess.artifactName);
+                                String currentPathString = loaded.getParent().getCompletePath();
+                                if (!currentPathString.startsWith("/")) {
+                                    currentPathString = "/" + currentPathString;
+                                }
+                                String toRemove = sourceToProcess.mapping.getFrom();
+                                if (!toRemove.startsWith("/")) {
+                                    toRemove = "/" + toRemove;
+                                }
+                                final String newPathString = sourceToProcess.mapping.getTo()
+                                                             + Strings.removeBegginingFrom(toRemove, currentPathString);
+                                final PathElement newPath = PathElement.createFromPathString(newPathString);
+                                loaded.setParent(newPath);
                                 loadedArtifacts.add(loaded);
 
                             } catch (final Exception e) {
                                 Exceptions.catchAndLog(e);
                             } finally {
-                                sourcesToProcess.remove(triple);
+                                sourcesToProcess.remove(sourceToProcess);
                             }
 
                         }
