@@ -4,6 +4,7 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
@@ -22,8 +23,12 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 public abstract class Artifact implements SimpleNodeType, Serializable, LogableObject {
 
+    private LastProcessStatus lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
+
+    private Date              lastProcessedDate;
+
     /** The Constant SEPARATOR. */
-    final static String SEPARATOR = "/";
+    final static String       SEPARATOR         = "/";
 
     /**
      * Creates the new artifact.
@@ -125,6 +130,14 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
         return this.changeType;
     }
 
+    public Date getLastProcessedDate() {
+        return this.lastProcessedDate;
+    }
+
+    public LastProcessStatus getLastProcessStatus() {
+        return this.lastProcessStatus;
+    }
+
     /**
      * Gets the parent.
      * 
@@ -164,6 +177,14 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      */
     public void setChangeType( final ChangeType changeType ) {
         this.changeType = changeType;
+    }
+
+    public void setLastProcessedDate( final Date lastProcessedDate ) {
+        this.lastProcessedDate = lastProcessedDate;
+    }
+
+    public void setLastProcessStatus( final LastProcessStatus lastProcessStatus ) {
+        this.lastProcessStatus = lastProcessStatus;
     }
 
     /**
