@@ -101,7 +101,6 @@ public class ConfigurationExamples {
         final BundleProcessorType commonProcessor = new BundleProcessorType();
         commonProcessor.setActive(true);
         commonProcessor.setGroup(group);
-        commonProcessor.setType(LogPrinterBundleProcessor.class);
         group.getBundleTypes().add(commonProcessor);
         final BundleProcessorType customProcessor = new BundleProcessorType();
         customProcessor.setActive(true);
