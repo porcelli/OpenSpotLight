@@ -56,6 +56,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
@@ -66,6 +67,7 @@ import org.openspotlight.federation.domain.StreamArtifact;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
+
 @SuppressWarnings( "all" )
 public class DnaSvnArtifactLoaderTest {
 
@@ -87,6 +89,8 @@ public class DnaSvnArtifactLoaderTest {
         finder.closeResources();
     }
 
+    @Ignore
+    // this test is working, but it takes a long time
     @Test
     public void shouldRetrieveArtifactNames() throws Exception {
 

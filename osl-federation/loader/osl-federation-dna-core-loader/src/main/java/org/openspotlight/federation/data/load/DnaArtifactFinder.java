@@ -106,7 +106,7 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
          */
         public void visiting( final Node n ) throws RepositoryException {
             final String path = n.getPath();
-            if (!path.equals("")) { //$NON-NLS-1$
+            if (!path.equals("") && !path.endsWith("/jcr:content")) { //$NON-NLS-1$
                 this.names.add(path);
             }
         }
