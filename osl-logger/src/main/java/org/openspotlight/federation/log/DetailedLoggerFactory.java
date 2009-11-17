@@ -1,6 +1,3 @@
-/*
- * 
- */
 package org.openspotlight.federation.log;
 
 import static org.openspotlight.common.util.Arrays.andOf;
@@ -22,163 +19,126 @@ import javax.jcr.Session;
 
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.jcr.LogableObject;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
+import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.log.LogableObject;
+import org.openspotlight.log.DetailedLogger.ErrorCode;
+import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
- * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}
- * subtypes or {@link ConfigurationNode} subtypes.
- * 
- * @author feu
+ * The Factory used to create {@link DetailedLogger}.
  */
-public interface DetailedLogger {
+public final class DetailedLoggerFactory {
 
     /**
-     * The ErrorCode describes some special kind of errors.
+     * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on Jcr. This kind of logger was implemented 'by
+     * hand' instead of using {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be possible to log the
+     * log. If it's necessary this implementation could be changed on the future.
      */
-    public static interface ErrorCode extends SimpleNodeType, Serializable {
+    private static final class JcrDetailedLogger implements DetailedLogger {
 
-        /**
-         * Gets the description.
-         * 
-         * @return the description
-         */
-        public String getDescription();
+        /** The session. */
+        private final Session session;
 
-        /**
-         * Gets the error code.
-         * 
-         * @return the error code
-         */
-        public String getErrorCode();
+        public JcrDetailedLogger(
+                                  final Session session ) {
+            this.session = session;
+        }
 
-    }
+        public void log( final String user,
+                         final LogEventType type,
+                         final ErrorCode errorCode,
+                         final String detailedMessage,
+                         final LogableObject... anotherNodes ) {
 
-    /**
-     * The Factory used to create {@link DetailedLogger}.
-     */
-    public static final class Factory {
+        }
 
-        /**
-         * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on Jcr. This kind of logger was implemented
-         * 'by hand' instead of using {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be possible to
-         * log the log. If it's necessary this implementation could be changed on the future.
-         */
-        private static final class JcrDetailedLogger implements DetailedLogger {
+        public void log( final String user,
+                         final LogEventType type,
+                         final ErrorCode errorCode,
+                         final String message,
+                         final String detailedMessage,
+                         final LogableObject... anotherNodes ) {
+            this.log(user, null, type, errorCode, message, detailedMessage, anotherNodes);
 
-            /** The session. */
-            private final Session session;
+        }
 
-            public JcrDetailedLogger(
-                                      final Session session ) {
-                this.session = session;
-            }
+        public void log( final String user,
+                         final LogEventType type,
+                         final String message,
+                         final LogableObject... anotherNodes ) {
+            this.log(user, null, type, null, message, null, anotherNodes);
 
-            public void log( final String user,
-                             final LogEventType type,
-                             final ErrorCode errorCode,
-                             final String detailedMessage,
-                             final LogableObject... anotherNodes ) {
+        }
 
-            }
+        public void log( final String user,
+                         final LogEventType type,
+                         final String message,
+                         final String detailedMessage,
+                         final LogableObject... anotherNodes ) {
+            this.log(user, null, type, null, message, detailedMessage, anotherNodes);
 
-            public void log( final String user,
-                             final LogEventType type,
-                             final ErrorCode errorCode,
-                             final String message,
-                             final String detailedMessage,
-                             final LogableObject... anotherNodes ) {
-                log(user, null, type, errorCode, message, detailedMessage, anotherNodes);
+        }
 
-            }
+        public void log( final String user,
+                         final String repository,
+                         final LogEventType type,
+                         final ErrorCode errorCode,
+                         final String detailedMessage,
+                         final LogableObject... anotherNodes ) {
+            this.log(user, repository, type, errorCode, null, detailedMessage, anotherNodes);
 
-            public void log( final String user,
-                             final LogEventType type,
-                             final String message,
-                             final LogableObject... anotherNodes ) {
-                log(user, null, type, null, message, null, anotherNodes);
+        }
 
-            }
+        public void log( final String user,
+                         final String repository,
+                         final LogEventType type,
+                         final ErrorCode errorCode,
+                         final String message,
+                         final String detailedMessage,
+                         final LogableObject... anotherNodes ) {
+            final LogEntry entry = new LogEntry(errorCode, new Date(), type, message, detailedMessage,
+                                                LoggedObjectInformation.getHierarchyFrom(anotherNodes));
 
-            public void log( final String user,
-                             final LogEventType type,
-                             final String message,
-                             final String detailedMessage,
-                             final LogableObject... anotherNodes ) {
-                log(user, null, type, null, message, detailedMessage, anotherNodes);
-
-            }
-
-            public void log( final String user,
-                             final String repository,
-                             final LogEventType type,
-                             final ErrorCode errorCode,
-                             final String detailedMessage,
-                             final LogableObject... anotherNodes ) {
-                log(user, repository, type, errorCode, null, detailedMessage, anotherNodes);
-
-            }
-
-            public void log( final String user,
-                             final String repository,
-                             final LogEventType type,
-                             final ErrorCode errorCode,
-                             final String message,
-                             final String detailedMessage,
-                             final LogableObject... anotherNodes ) {
-                final LogEntry entry = new LogEntry(errorCode, new Date(), type, message, detailedMessage,
-                                                    LoggedObjectInformation.getHierarchyFrom(anotherNodes));
-
-                final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
-                                           + (repository != null ? repository : "noRepository") + "/"
-                                           + (user != null ? user : "noUser") + "/log";
-                SimplePersistSupport.convertBeanToJcr(initialPath, this.session, entry);
-                try {
-                    this.session.save();
-                } catch (final Exception e) {
-                    throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-                }
-
-            }
-
-            public void log( final String user,
-                             final String repository,
-                             final LogEventType type,
-                             final String message,
-                             final LogableObject... anotherNodes ) {
-                log(user, repository, type, null, message, null, anotherNodes);
-
-            }
-
-            public void log( final String user,
-                             final String repository,
-                             final LogEventType type,
-                             final String message,
-                             final String detailedMessage,
-                             final LogableObject... anotherNodes ) {
-                log(user, repository, type, null, message, detailedMessage, anotherNodes);
+            final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
+                                       + (repository != null ? repository : "noRepository") + "/"
+                                       + (user != null ? user : "noUser") + "/log";
+            SimplePersistSupport.convertBeanToJcr(initialPath, this.session, entry);
+            try {
+                this.session.save();
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
 
         }
 
-        /**
-         * Creates the jcr detailed logger.
-         * 
-         * @param session the session
-         * @return the detailed logger
-         */
-        public static DetailedLogger createJcrDetailedLogger( final Session session ) {
-            return new JcrDetailedLogger(session);
+        public void log( final String user,
+                         final String repository,
+                         final LogEventType type,
+                         final String message,
+                         final LogableObject... anotherNodes ) {
+            this.log(user, repository, type, null, message, null, anotherNodes);
+
         }
+
+        public void log( final String user,
+                         final String repository,
+                         final LogEventType type,
+                         final String message,
+                         final String detailedMessage,
+                         final LogableObject... anotherNodes ) {
+            this.log(user, repository, type, null, message, detailedMessage, anotherNodes);
+        }
+
     }
 
     /**
@@ -314,7 +274,7 @@ public interface DetailedLogger {
             }
 
             public String getClassName() {
-                return className;
+                return this.className;
             }
 
             /**
@@ -458,7 +418,7 @@ public interface DetailedLogger {
         }
 
         public ErrorCode getErrorCode() {
-            return errorCode;
+            return this.errorCode;
         }
 
         /**
@@ -525,155 +485,12 @@ public interface DetailedLogger {
     }
 
     /**
-     * The EventType.
+     * Creates the jcr detailed logger.
+     * 
+     * @param session the session
+     * @return the detailed logger
      */
-    public static enum LogEventType {
-
-        /** The TRACE. */
-        TRACE,
-
-        /** The DEBUG. */
-        DEBUG,
-
-        /** The INFO. */
-        INFO,
-
-        /** The WARN. */
-        WARN,
-
-        /** The ERROR. */
-        ERROR,
-
-        /** The FATAL. */
-        FATAL
+    public static DetailedLogger createJcrDetailedLogger( final Session session ) {
+        return new JcrDetailedLogger(session);
     }
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param errorCode the error code
-     * @param detailedMessage the detailed message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     */
-    public void log( String user,
-                     LogEventType type,
-                     ErrorCode errorCode,
-                     String detailedMessage,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param errorCode the error code
-     * @param message the message
-     * @param detailedMessage the detailed message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     */
-    public void log( String user,
-                     LogEventType type,
-                     ErrorCode errorCode,
-                     String message,
-                     String detailedMessage,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param message the message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     */
-    public void log( String user,
-                     LogEventType type,
-                     String message,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param message the message
-     * @param detailedMessage the detailed message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     */
-    public void log( String user,
-                     LogEventType type,
-                     String message,
-                     String detailedMessage,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param errorCode the error code
-     * @param detailedMessage the detailed message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     * @param repository the repository
-     */
-    public void log( String user,
-                     String repository,
-                     LogEventType type,
-                     ErrorCode errorCode,
-                     String detailedMessage,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param errorCode the error code
-     * @param message the message
-     * @param detailedMessage the detailed message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     * @param repository the repository
-     */
-    public void log( String user,
-                     String repository,
-                     LogEventType type,
-                     ErrorCode errorCode,
-                     String message,
-                     String detailedMessage,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param message the message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     * @param repository the repository
-     */
-    public void log( String user,
-                     String repository,
-                     LogEventType type,
-                     String message,
-                     LogableObject... anotherNodes );
-
-    /**
-     * Log.
-     * 
-     * @param type the type
-     * @param message the message
-     * @param detailedMessage the detailed message
-     * @param anotherNodes the another nodes
-     * @param user the user
-     * @param repository the repository
-     */
-    public void log( String user,
-                     String repository,
-                     LogEventType type,
-                     String message,
-                     String detailedMessage,
-                     LogableObject... anotherNodes );
-
 }

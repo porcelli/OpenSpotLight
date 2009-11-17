@@ -76,6 +76,7 @@
 		<module>osl-jcr</module>
 		<module>osl-simple-persist</module>
 		<module>osl-logger</module>
+		<module>osl-logger-api</module>
 		<module>osl-security</module>
 		<module>osl-graph</module>
 		<module>osl-slql-console</module>
@@ -123,6 +124,11 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-logger</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-logger-api</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>

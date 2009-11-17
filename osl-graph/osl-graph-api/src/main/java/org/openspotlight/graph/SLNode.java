@@ -53,7 +53,7 @@ import java.text.Collator;
 import java.util.Collection;
 import java.util.Set;
 
-import org.openspotlight.common.jcr.LogableObject;
+import org.openspotlight.log.LogableObject;
 import org.openspotlight.remote.annotation.DisposeMethod;
 
 /**
