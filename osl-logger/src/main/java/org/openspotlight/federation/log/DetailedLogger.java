@@ -20,14 +20,17 @@ import java.util.List;
 
 import javax.jcr.Session;
 
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.jcr.LogableObject;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLogger.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
  * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}
@@ -130,7 +133,18 @@ public interface DetailedLogger {
                              final String message,
                              final String detailedMessage,
                              final LogableObject... anotherNodes ) {
-                final LogEntry entry = new LogEntry(errorCode, new Date(), type, message, detailedMessage, LoggedObjectInformation.getHierarchyFrom(anotherNodes));
+                final LogEntry entry = new LogEntry(errorCode, new Date(), type, message, detailedMessage,
+                                                    LoggedObjectInformation.getHierarchyFrom(anotherNodes));
+
+                final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
+                                           + (repository != null ? repository : "noRepository") + "/"
+                                           + (user != null ? user : "noUser") + "/log";
+                SimplePersistSupport.convertBeanToJcr(initialPath, this.session, entry);
+                try {
+                    this.session.save();
+                } catch (final Exception e) {
+                    throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+                }
 
             }
 
@@ -175,6 +189,37 @@ public interface DetailedLogger {
          */
         public static class LoggedObjectInformation {
 
+            private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
+                final List<LogableObject> result = new LinkedList<LogableObject>();
+                result.add(o);
+                LogableObject parent = getParent(o);
+                while (parent != null) {
+                    result.add(parent);
+                    parent = getParent(parent);
+                }
+                return result;
+            }
+
+            /**
+             * Gets the hierarchy from.
+             * 
+             * @param node the node
+             * @param anotherNodes the another nodes
+             * @return the hierarchy from
+             */
+            public static List<LoggedObjectInformation> getHierarchyFrom( final LogableObject... anotherNodes ) {
+                final List<LogableObject> nodes = new LinkedList<LogableObject>();
+                for (final LogableObject o : anotherNodes) {
+                    nodes.addAll(getHierarchyFrom(o));
+                }
+                Collections.reverse(nodes);
+                final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
+                for (int i = 0, size = nodes.size(); i < size; i++) {
+                    result.add(new LoggedObjectInformation(i, nodes.get(i)));
+                }
+                return result;
+            }
+
             /**
              * Gets the parent.
              * 
@@ -193,7 +238,7 @@ public interface DetailedLogger {
                     return null;// other types have the path information. Now the parent nodes isn't necessary
                 }
             }
-            nodes.addAll(final List<LogableObject> nodes = new LinkedList<LogableObject>();            /** The order. */
+
             private final int    order;
 
             /** The unique id. */
@@ -225,7 +270,7 @@ public interface DetailedLogger {
                     this.className = node.getClass().getInterfaces()[0].getName();
                 } else if (object instanceof ArtifactSource) {
                     final ArtifactSource node = (ArtifactSource)object;
-                    this.friendlyDescription = node.getUniqueReference();
+                    this.friendlyDescription = node.getName();
                     this.className = node.getClass().getName();
                     this.uniqueId = null;
                 } else if (object instanceof Artifact) {
@@ -270,18 +315,6 @@ public interface DetailedLogger {
             public String getFriendlyDescription() {
                 return this.friendlyDescription;
             }
-
-            getHierarchyFrom(node));
-            for (final LogableObject o : anotherNodes) {
-                nodes.addAll(getHierarchyFrom(o));
-            }
-            Collections.reverse(nodes);
-            final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
-            for (int i = 0, size = nodes.size(); i < size; i++) {
-                result.add(new LoggedObjectInformation(i, nodes.get(i)));
-            }
-            return result;
-
 
             /**
              * Gets the order.
@@ -343,9 +376,9 @@ public interface DetailedLogger {
          * @param detailedMessage the detailed message
          * @param nodes the nodes
          */
-        private LogEntry(
-                          final ErrorCode errorCode, final Date date, final LogEventType type, final String message,
-                          final String detailedMessage, final List<LoggedObjectInformation> nodes ) {
+        LogEntry(
+                  final ErrorCode errorCode, final Date date, final LogEventType type, final String message,
+                  final String detailedMessage, final List<LoggedObjectInformation> nodes ) {
             this.errorCode = errorCode;
             this.type = type;
             this.message = message;
