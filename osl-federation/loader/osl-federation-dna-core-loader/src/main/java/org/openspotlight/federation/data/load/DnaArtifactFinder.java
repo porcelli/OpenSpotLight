@@ -50,7 +50,7 @@
 package org.openspotlight.federation.data.load;
 
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.federation.data.util.JcrNodeVisitor.withVisitor;
+import static org.openspotlight.jcr.util.JcrNodeVisitor.withVisitor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -69,12 +69,12 @@ import org.jboss.dna.jcr.JcrEngine;
 import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.util.JcrNodeVisitor.NodeVisitor;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.AbstractArtifactFinder;
+import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System Connector.

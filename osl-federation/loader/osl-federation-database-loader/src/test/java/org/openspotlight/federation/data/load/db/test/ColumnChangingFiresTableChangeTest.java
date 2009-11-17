@@ -16,6 +16,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 
 /**
@@ -47,8 +48,8 @@ public class ColumnChangingFiresTableChangeTest {
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
 
-        ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
-                                                                       ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
+        ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(configuration,
+                                                                      ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
 
         final Iterable<Artifact> firstLoadedItems = loader.loadArtifactsFromSource(dbBundle);
         loader.closeResources();
@@ -61,7 +62,7 @@ public class ColumnChangingFiresTableChangeTest {
         .execute();
         conn.close();
 
-        loader = ArtifactLoader.Factory.createNewLoader(configuration, ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
+        loader = ArtifactLoaderFactory.createNewLoader(configuration, ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE, finder);
 
         final Iterable<Artifact> lastLoadedItems = loader.loadArtifactsFromSource(dbBundle);
         loader.closeResources();

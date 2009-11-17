@@ -39,9 +39,9 @@ public class ArtifactLoaderTest {
         source.setInitialLookup(initial);
         source.setName("sourceName");
 
-        final ArtifactLoader loader = ArtifactLoader.Factory.createNewLoader(configuration,
-                                                                             ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
-                                                                             new FileSystemStreamArtifactFinder());
+        final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(configuration,
+                                                                            ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
+                                                                            new FileSystemStreamArtifactFinder());
 
         final Iterable<Artifact> artifacts = loader.loadArtifactsFromSource(source);
         boolean hasAny = false;

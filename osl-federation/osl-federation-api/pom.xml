@@ -9,19 +9,14 @@
 		<version>0.0.4-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>osl-federation-core</artifactId>
+	<artifactId>osl-federation-api</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenSpotLight Federation Core</name>
+	<name>OpenSpotLight Federation Api</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-core</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-api</artifactId>
+			<artifactId>osl-graph-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<!-- Internal dependencies -->
@@ -70,10 +65,6 @@
 		<dependency>
 			<groupId>javax.jcr</groupId>
 			<artifactId>jcr</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
 		</dependency>
 	</dependencies>
 </project>

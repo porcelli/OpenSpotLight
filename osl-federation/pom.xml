@@ -15,6 +15,7 @@
 
 	<modules>
 		<module>osl-federation-core</module>
+		<module>osl-federation-api</module>
 		<module>loader/osl-federation-database-loader</module>
 		<module>loader/osl-federation-dna-core-loader</module>
 		<module>loader/osl-federation-dna-filesystem-loader</module>
