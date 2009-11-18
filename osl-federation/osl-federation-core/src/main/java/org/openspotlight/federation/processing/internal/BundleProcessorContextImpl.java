@@ -3,7 +3,6 @@ package org.openspotlight.federation.processing.internal;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.finder.ArtifactFinderProvider;
 import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
@@ -15,32 +14,29 @@ import org.openspotlight.log.DetailedLogger;
  */
 public class BundleProcessorContextImpl<A extends Artifact> implements BundleProcessorContext {
 
-    /** The artifact finder provider. */
-    private ArtifactFinderProvider artifactFinderProvider;
-
     /** The current group. */
-    private Group                  currentGroup;
+    private Group             currentGroup;
 
     /** The current node group. */
-    private SLNode                 currentNodeGroup;
+    private SLNode            currentNodeGroup;
 
     /** The default artifact finder. */
-    private ArtifactFinder<A>      defaultArtifactFinder;
+    private ArtifactFinder<A> artifactFinder;
 
     /** The graph session. */
-    private SLGraphSession         graphSession;
+    private SLGraphSession    graphSession;
 
     /** The logger. */
-    private DetailedLogger         logger;
+    private DetailedLogger    logger;
 
     /** The group context. */
-    private SLContext              groupContext;
+    private SLContext         groupContext;
 
     /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext#getArtifactFinderProvider()
+     * @see org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext#getartifactFinder()
      */
-    public ArtifactFinderProvider getArtifactFinderProvider() {
-        return this.artifactFinderProvider;
+    public ArtifactFinder<A> getArtifactFinder() {
+        return this.artifactFinder;
     }
 
     /* (non-Javadoc)
@@ -55,13 +51,6 @@ public class BundleProcessorContextImpl<A extends Artifact> implements BundlePro
      */
     public SLNode getCurrentNodeGroup() {
         return this.currentNodeGroup;
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext#getDefaultArtifactFinder()
-     */
-    public ArtifactFinder<A> getDefaultArtifactFinder() {
-        return this.defaultArtifactFinder;
     }
 
     /* (non-Javadoc)
@@ -86,12 +75,12 @@ public class BundleProcessorContextImpl<A extends Artifact> implements BundlePro
     }
 
     /**
-     * Sets the artifact finder provider.
+     * Sets the default artifact finder.
      * 
-     * @param artifactFinderProvider the new artifact finder provider
+     * @param artifactFinder the new default artifact finder
      */
-    public void setArtifactFinderProvider( final ArtifactFinderProvider artifactFinderProvider ) {
-        this.artifactFinderProvider = artifactFinderProvider;
+    public void setArtifactFinder( final ArtifactFinder<A> artifactFinder ) {
+        this.artifactFinder = artifactFinder;
     }
 
     /**
@@ -110,15 +99,6 @@ public class BundleProcessorContextImpl<A extends Artifact> implements BundlePro
      */
     public void setCurrentNodeGroup( final SLNode currentNodeGroup ) {
         this.currentNodeGroup = currentNodeGroup;
-    }
-
-    /**
-     * Sets the default artifact finder.
-     * 
-     * @param defaultArtifactFinder the new default artifact finder
-     */
-    public void setDefaultArtifactFinder( final ArtifactFinder<A> defaultArtifactFinder ) {
-        this.defaultArtifactFinder = defaultArtifactFinder;
     }
 
     /**

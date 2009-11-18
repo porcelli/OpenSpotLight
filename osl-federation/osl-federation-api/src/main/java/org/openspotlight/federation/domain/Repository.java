@@ -4,9 +4,7 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.util.Equals;
@@ -22,19 +20,29 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "repository" )
 public class Repository implements SimpleNodeType, Serializable {
 
+    public static interface GroupVisitor {
+        public void visitGroup( Group group );
+    }
+
     /** The artifact sources. */
-    private Set<ArtifactSource>      artifactSources = new HashSet<ArtifactSource>();
+    private Set<ArtifactSource> artifactSources = new HashSet<ArtifactSource>();
 
     /** The name. */
-    private String                   name;
+    private String              name;
 
     /** The groups. */
-    private final Map<String, Group> groups          = new HashMap<String, Group>();
+    private Set<Group>          groups          = new HashSet<Group>();
 
     /** The active. */
-    private boolean                  active;
+    private boolean             active;
 
-    private volatile int             hashCode;
+    private volatile int        hashCode;
+
+    public void acceptGroupVisitor( final GroupVisitor visitor ) {
+        for (final Group entry : this.getGroups()) {
+            entry.acceptVisitor(visitor);
+        }
+    }
 
     public boolean equals( final Object o ) {
         if (!(o instanceof Repository)) {
@@ -53,7 +61,7 @@ public class Repository implements SimpleNodeType, Serializable {
      * 
      * @return the groups
      */
-    public Map<String, Group> getGroups() {
+    public Set<Group> getGroups() {
         return this.groups;
     }
 
@@ -96,6 +104,10 @@ public class Repository implements SimpleNodeType, Serializable {
 
     public void setArtifactSources( final Set<ArtifactSource> artifactSources ) {
         this.artifactSources = artifactSources;
+    }
+
+    public void setGroups( final Set<Group> groups ) {
+        this.groups = groups;
     }
 
     /**
