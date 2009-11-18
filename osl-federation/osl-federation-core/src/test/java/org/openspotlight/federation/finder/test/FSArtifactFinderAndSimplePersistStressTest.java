@@ -62,8 +62,8 @@ public class FSArtifactFinderAndSimplePersistStressTest {
 
     @Test
     public void shouldFindSourceAndStoreItOnJcr() throws Exception {
-        final FileSystemStreamArtifactFinder finder = new FileSystemStreamArtifactFinder();
-        final Set<StreamArtifact> lotsOfSource = finder.listByPath(this.artifactSource, null);
+        final FileSystemStreamArtifactFinder finder = new FileSystemStreamArtifactFinder(this.artifactSource);
+        final Set<StreamArtifact> lotsOfSource = finder.listByPath(null);
 
     }
 

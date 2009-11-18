@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.CustomArtifact;
+import org.openspotlight.federation.domain.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.RoutineArtifact;
@@ -21,9 +21,9 @@ import org.openspotlight.federation.domain.RoutineType;
 import org.openspotlight.federation.domain.TableArtifact;
 import org.openspotlight.federation.domain.ViewArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinderBySourceProvider;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
-import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
 
 @SuppressWarnings( "all" )
 public class DatabaseCustomTest {
@@ -35,24 +35,25 @@ public class DatabaseCustomTest {
 
     private ArtifactLoader               artifactLoader;
     private DatabaseCustomArtifactFinder finder;
+    private DbArtifactSource             bundle;
 
     @Before
     public void setup() throws Exception {
         delete("./target/test-data"); //$NON-NLS-1$
 
-        this.finder = new DatabaseCustomArtifactFinder();
         final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         configuration.setNumberOfParallelThreads(4);
 
-        this.artifactLoader = ArtifactLoaderFactory.createNewLoader(configuration, ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
-                                                                    this.finder);
+        this.artifactLoader = ArtifactLoaderFactory.createNewLoader(configuration,
+                                                                    new DatabaseCustomArtifactFinderBySourceProvider());
+        this.bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
+        this.bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+        this.finder = new DatabaseCustomArtifactFinder(this.bundle);
     }
 
     @Test
     public void shouldLoadProceduresAndFunctions() throws Exception {
-        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
-        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
 
         connection.prepareStatement(
@@ -62,14 +63,12 @@ public class DatabaseCustomTest {
         connection.commit();
         connection.close();
 
-        final Iterable<Artifact> loadedArtifacts = this.artifactLoader.loadArtifactsFromSource(bundle);
+        final Iterable<Artifact> loadedArtifacts = this.artifactLoader.loadArtifactsFromSource(this.bundle);
         assertThat(loadedArtifacts, is(notNullValue()));
         assertThat(loadedArtifacts.iterator().hasNext(), is(true));
 
-        final RoutineArtifact exampleProcedure = (RoutineArtifact)this.finder.findByPath(bundle,
-                                                                                         "PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
-        final RoutineArtifact exampleFunction = (RoutineArtifact)this.finder.findByPath(bundle,
-                                                                                        "PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
+        final RoutineArtifact exampleProcedure = (RoutineArtifact)this.finder.findByPath("PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
+        final RoutineArtifact exampleFunction = (RoutineArtifact)this.finder.findByPath("PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
         assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
         assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
         connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
@@ -99,8 +98,8 @@ public class DatabaseCustomTest {
         assertThat(loadedArtifacts, is(notNullValue()));
         assertThat(loadedArtifacts.iterator().hasNext(), is(true));
 
-        final CustomArtifact exampleTable = this.finder.findByPath(bundle, "PUBLIC/TABLE/DB/EXAMPLETABLE");
-        final CustomArtifact exampleView = this.finder.findByPath(bundle, "PUBLIC/VIEW/DB/EXAMPLEVIEW");
+        final DatabaseCustomArtifact exampleTable = this.finder.findByPath("PUBLIC/TABLE/DB/EXAMPLETABLE");
+        final DatabaseCustomArtifact exampleView = this.finder.findByPath("PUBLIC/VIEW/DB/EXAMPLEVIEW");
         assertThat(exampleTable, is(TableArtifact.class));
         assertThat(exampleView, is(ViewArtifact.class));
     }

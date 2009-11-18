@@ -62,8 +62,9 @@ import org.openspotlight.federation.domain.DnaSvnArtifactSource;
  */
 public class DNASvnArtifactFinder extends DnaArtifactFinder {
 
-    public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
-        return artifactSource instanceof DnaSvnArtifactSource;
+    public DNASvnArtifactFinder(
+                                 final ArtifactSource source ) {
+        super(source);
     }
 
     @Override
