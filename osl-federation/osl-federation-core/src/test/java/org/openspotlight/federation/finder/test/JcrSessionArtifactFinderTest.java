@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
@@ -29,6 +30,8 @@ public class JcrSessionArtifactFinderTest {
 
     private static ArtifactSource        artifactSource;
 
+    private static Repository            repository;
+
     /**
      * Setup.
      * 
@@ -41,10 +44,12 @@ public class JcrSessionArtifactFinderTest {
         artifactSource = new ArtifactSource();
         artifactSource.setName("classpath");
         artifactSource.setInitialLookup("./src");
+        repository = new Repository();
+        repository.setName("name");
 
         final FileSystemStreamArtifactFinder fileSystemFinder = new FileSystemStreamArtifactFinder();
         final Set<StreamArtifact> artifacts = fileSystemFinder.listByPath(artifactSource, null);
-        SimplePersistSupport.convertBeansToJcrs(JcrSessionArtifactFinder.ARTIFACTS_ROOT_PATH, session, artifacts);
+        SimplePersistSupport.convertBeansToJcrs(JcrSessionArtifactFinder.getArtifactRootPathFor(repository), session, artifacts);
         session.save();
         session.logout();
     }
@@ -72,7 +77,7 @@ public class JcrSessionArtifactFinderTest {
     @Before
     public void setupSession() {
         this.session = provider.openSession();
-        this.streamArtifactFinder = JcrSessionArtifactFinder.createArtifactFinder(StreamArtifact.class, this.session);
+        this.streamArtifactFinder = JcrSessionArtifactFinder.createArtifactFinder(StreamArtifact.class, repository, this.session);
     }
 
     @Test

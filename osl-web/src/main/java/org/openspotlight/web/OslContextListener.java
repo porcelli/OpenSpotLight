@@ -8,7 +8,7 @@ import javax.servlet.ServletContextListener;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.data.processing.BundleProcessorManager;
+import org.openspotlight.federation.processing.BundleProcessorManager;
 import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;

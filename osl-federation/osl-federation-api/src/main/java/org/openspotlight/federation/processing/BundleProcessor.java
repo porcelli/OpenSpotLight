@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.processing;
+package org.openspotlight.federation.processing;
 
 import java.util.Set;
 
@@ -56,6 +56,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.ArtifactFinderProvider;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
@@ -177,12 +178,11 @@ public interface BundleProcessor<T extends Artifact> {
     public static interface BundleProcessorContext<A extends Artifact> {
 
         /**
-         * Gets the artifact finder for type.
+         * Gets the artifact finder provider.
          * 
-         * @param type the type
-         * @return the artifact finder for type
+         * @return the artifact finder provider
          */
-        public <T extends Artifact> ArtifactFinder<T> getArtifactFinderForType( Class<T> type );
+        public ArtifactFinderProvider getArtifactFinderProvider();
 
         /**
          * Gets the current group.
@@ -279,8 +279,8 @@ public interface BundleProcessor<T extends Artifact> {
      * @param toBeReturned the to be returned
      * @return the artifacts to be processed< t>
      */
-    public ArtifactsToBeProcessed<T> returnArtifactsToBeProcessed( ArtifactChanges<T> changes,
-                                                                   BundleProcessorContext<T> context,
-                                                                   ArtifactsToBeProcessed<T> toBeReturned );
+    public void selectArtifactsToBeProcessed( ArtifactChanges<T> changes,
+                                              BundleProcessorContext<T> context,
+                                              ArtifactsToBeProcessed<T> toBeReturned );
 
 }

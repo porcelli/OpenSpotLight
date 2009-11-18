@@ -59,11 +59,11 @@ import java.util.Set;
 
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.data.processing.BundleProcessor;
-import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ScheduleData;
 import org.openspotlight.federation.loader.ConfigurationManagerProvider;
+import org.openspotlight.federation.processing.BundleProcessor;
+import org.openspotlight.federation.processing.BundleProcessorManager;
 
 /**
  * This interface is to be used on Scheduler implementations to execute the {@link BundleProcessor} on specified interfals. Inside

@@ -17,25 +17,34 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
 public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifactFinder<A> {
 
-    public static String ARTIFACTS_ROOT_PATH = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/artifacts";
+    private static String ROOT_PATH = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/{0}/artifacts";
 
     public static <X extends Artifact> ArtifactFinder<X> createArtifactFinder( final Class<X> artifactType,
+                                                                               final Repository repository,
                                                                                final Session session ) {
-        return new JcrSessionArtifactFinder<X>(artifactType, session);
+        return new JcrSessionArtifactFinder<X>(artifactType, session, repository);
     }
+
+    public static String getArtifactRootPathFor( final Repository repository ) {
+        return MessageFormat.format(ROOT_PATH, repository.getName());
+    }
+
+    public final String    rootPath;
 
     private final Class<A> artifactType;
 
     private final Session  session;
 
     private JcrSessionArtifactFinder(
-                                      final Class<A> artifactType, final Session session ) {
+                                      final Class<A> artifactType, final Session session, final Repository repository ) {
         this.session = session;
         this.artifactType = artifactType;
+        this.rootPath = getArtifactRootPathFor(repository);
     }
 
     public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
@@ -47,7 +56,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         Assertions.checkNotNull("artifactSource", artifactSource);
         Assertions.checkNotEmpty("path", path);
         try {
-            final Set<A> found = SimplePersistSupport.findNodesByProperties(ARTIFACTS_ROOT_PATH, this.session, this.artifactType,
+            final Set<A> found = SimplePersistSupport.findNodesByProperties(this.rootPath, this.session, this.artifactType,
                                                                             LazyType.DO_NOT_LOAD,
                                                                             new String[] {"artifactCompleteName"},
                                                                             new Object[] {path});
@@ -70,10 +79,10 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
             final String nodeName = SimplePersistSupport.getJcrNodeName(this.artifactType);
             final String xpath;
             if (initialPath != null) {
-                xpath = MessageFormat.format("{0}//{1}[jcr:contains(@{2},''{3}'')]", ARTIFACTS_ROOT_PATH, nodeName, propertyName,
+                xpath = MessageFormat.format("{0}//{1}[jcr:contains(@{2},''{3}'')]", this.rootPath, nodeName, propertyName,
                                              initialPath);
             } else {
-                xpath = MessageFormat.format("{0}//{1}", ARTIFACTS_ROOT_PATH, nodeName);
+                xpath = MessageFormat.format("{0}//{1}", this.rootPath, nodeName);
             }
 
             final Query query = this.session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH);
