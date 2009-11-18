@@ -56,7 +56,6 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.finder.ArtifactFinderProvider;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
@@ -178,11 +177,11 @@ public interface BundleProcessor<T extends Artifact> {
     public static interface BundleProcessorContext<A extends Artifact> {
 
         /**
-         * Gets the artifact finder provider.
+         * Gets the default artifact finder.
          * 
-         * @return the artifact finder provider
+         * @return the default artifact finder
          */
-        public ArtifactFinderProvider getArtifactFinderProvider();
+        public ArtifactFinder<A> getArtifactFinder();
 
         /**
          * Gets the current group.
@@ -197,13 +196,6 @@ public interface BundleProcessor<T extends Artifact> {
          * @return the current node group
          */
         public SLNode getCurrentNodeGroup();
-
-        /**
-         * Gets the default artifact finder.
-         * 
-         * @return the default artifact finder
-         */
-        public ArtifactFinder<A> getDefaultArtifactFinder();
 
         /**
          * Gets the graph session.

@@ -64,7 +64,7 @@ public abstract class AbstractConfigurationManagerTest {
         group.setName("group name");
         group.setRepository(repository);
         group.setType("group type");
-        repository.getGroups().put(group.getName(), group);
+        repository.getGroups().add(group);
 
         group.getCronInformation().add("* * 16 * - ! #");
         group.getCronInformation().add("* 1 * - ! #");

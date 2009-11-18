@@ -45,9 +45,6 @@ public class ArtifactLoaderFactory {
             /** The artifact finder. */
             final ArtifactFinder<?>     artifactFinder;
 
-            /** The artifact source. */
-            final ArtifactSource        artifactSource;
-
             /** The artifact name. */
             final String                artifactName;
 
@@ -63,10 +60,9 @@ public class ArtifactLoaderFactory {
              * @param mapping the mapping
              */
             public SourcesToProcessItems(
-                                          final ArtifactFinder<?> artifactFinder, final ArtifactSource artifactSource,
-                                          final String artifactName, final ArtifactSourceMapping mapping ) {
+                                          final ArtifactFinder<?> artifactFinder, final String artifactName,
+                                          final ArtifactSourceMapping mapping ) {
                 this.artifactFinder = artifactFinder;
-                this.artifactSource = artifactSource;
                 this.artifactName = artifactName;
                 this.mapping = mapping;
             }
@@ -150,7 +146,7 @@ public class ArtifactLoaderFactory {
 
                                 for (final String name : newNames.getIncludedNames()) {
 
-                                    sourcesToProcess.add(new SourcesToProcessItems(pair.getK1(), pair.getK2(), name, mapping));
+                                    sourcesToProcess.add(new SourcesToProcessItems(pair.getK1(), name, mapping));
                                 }
                             }
                         } catch (final Exception e) {

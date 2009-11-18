@@ -78,7 +78,7 @@ public class ConfigurationExamples {
         final Group group = new Group();
         group.setName(groupName);
         group.setRepository(repository);
-        repository.getGroups().put(group.getName(), group);
+        repository.getGroups().add(group);
         group.setActive(true);
         final DbArtifactSource artifactSource = new DbArtifactSource();
         repository.getArtifactSources().add(artifactSource);

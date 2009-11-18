@@ -9,6 +9,7 @@ import java.util.Set;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -20,6 +21,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 @Name( "group" )
 public class Group implements SimpleNodeType, Serializable, Schedulable {
+
+    private Set<Group>               groups          = new HashSet<Group>();
 
     /** The repository. */
     private Repository               repository;
@@ -41,6 +44,13 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     private Set<BundleProcessorType> bundleTypes     = new HashSet<BundleProcessorType>();
 
     private final List<String>       cronInformation = new ArrayList<String>();
+
+    public void acceptVisitor( final GroupVisitor visitor ) {
+        visitor.visitGroup(this);
+        for (final Group g : this.getGroups()) {
+            g.acceptVisitor(visitor);
+        }
+    }
 
     public boolean equals( final Object o ) {
         if (!(o instanceof Group)) {
@@ -68,6 +78,10 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     @ParentProperty
     public Group getGroup() {
         return this.group;
+    }
+
+    public Set<Group> getGroups() {
+        return this.groups;
     }
 
     /**
@@ -139,6 +153,10 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
         this.group = group;
     }
 
+    public void setGroups( final Set<Group> groups ) {
+        this.groups = groups;
+    }
+
     /**
      * Sets the name.
      * 
@@ -165,5 +183,4 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     public void setType( final String type ) {
         this.type = type;
     }
-
 }
