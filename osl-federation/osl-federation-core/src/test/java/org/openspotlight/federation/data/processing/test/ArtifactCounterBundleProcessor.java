@@ -52,9 +52,9 @@ package org.openspotlight.federation.data.processing.test;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.openspotlight.federation.data.processing.StreamArtifactBundleProcessor;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.processing.StreamArtifactBundleProcessor;
 
 /**
  * Example class for bundle processor.

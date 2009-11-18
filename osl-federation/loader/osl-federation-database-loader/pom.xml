@@ -21,11 +21,6 @@
 			<artifactId>osl-federation-core</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-configuration-example</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -56,11 +51,6 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-configuration-example</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<profiles>

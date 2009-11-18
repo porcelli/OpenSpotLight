@@ -21,11 +21,6 @@
 			<artifactId>osl-federation-dna-core-loader</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-configuration-example</artifactId>
-			<scope>test</scope>
-		</dependency>
 		<!-- External dependencies -->
         <dependency>
             <groupId>org.jboss.dna</groupId>

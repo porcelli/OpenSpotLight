@@ -47,55 +47,44 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.federation.data.processing.test;
-
-import java.util.concurrent.atomic.AtomicInteger;
+package org.openspotlight.federation.processing;
 
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.processing.StreamArtifactBundleProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.BundleProcessorType;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
+// TODO: Auto-generated Javadoc
 /**
- * Example class for bundle processor.
+ * The {@link BundleProcessorManager} is the class reposable to get an {@link GlobalSettings} and to process all {@link Artifact
+ * artifacts} on this {@link GlobalSettings}. The {@link BundleProcessorManager} should get the {@link ArtifactSource bundle's}
+ * {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each {@link BundleProcessorType type}
+ * . After all {@link BundleProcessor processors} was found, the {@link BundleProcessorManager} should distribute the processing
+ * job in some threads obeying the {@link GlobalSettings#getNumberOfParallelThreads() number of threads} configured for this
+ * {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public class LogPrinterBundleProcessor implements StreamArtifactBundleProcessor {
+public enum BundleProcessorManager {
 
-    /**
-     * counter to use on test
-     */
-    public static AtomicInteger count  = new AtomicInteger(0);
+    INSTANCE;
 
-    private final Logger        logger = LoggerFactory.getLogger(this.getClass());
-
-    /**
-     * {@inheritDoc}
-     */
-    public void globalProcessingFinalized( final BundleProcessingGroup<? extends Artifact> bundleProcessingGroup,
-                                           final BundleProcessingContext graphContext ) {
-        // nothing to do here
+    public void executeBundles( final JcrConnectionDescriptor descriptor,
+                                final GlobalSettings settings,
+                                final Repository... repositories ) {
+        new BundleProcessorExecution(descriptor, settings, repositories).execute();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public final ProcessingStartAction globalProcessingStarted( final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-                                                                final BundleProcessingContext graphContext ) {
-        return ProcessingStartAction.PROCESS_EACH_ONE_NEW;
+    public void executeBundlesInBackground( final JcrConnectionDescriptor descriptor,
+                                            final GlobalSettings settings,
+                                            final Repository... repositories ) {
+        new Thread(new Runnable() {
+            public void run() {
+                new BundleProcessorExecution(descriptor, settings, repositories).execute();
+            }
+        }).start();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ProcessingAction processArtifact( final StreamArtifact targetArtifact,
-                                             final BundleProcessingGroup<StreamArtifact> bundleProcessingGroup,
-                                             final BundleProcessingContext graphContext ) {
-        this.logger.warn("processing: " + targetArtifact.getArtifactCompleteName()); //$NON-NLS-1$
-        count.incrementAndGet();
-        return ProcessingAction.ARTIFACT_PROCESSED;
-    }
-
 }

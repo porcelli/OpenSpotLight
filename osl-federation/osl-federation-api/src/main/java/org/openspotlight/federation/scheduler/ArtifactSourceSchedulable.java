@@ -1,4 +1,4 @@
-package org.openspotlight.federation.domain.scheduler;
+package org.openspotlight.federation.scheduler;
 
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;

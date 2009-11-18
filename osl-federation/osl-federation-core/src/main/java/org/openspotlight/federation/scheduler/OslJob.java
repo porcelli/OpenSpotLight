@@ -5,10 +5,10 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import java.util.Arrays;
 
 import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.data.processing.BundleProcessorManager;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.ConfigurationManagerProvider;
+import org.openspotlight.federation.processing.BundleProcessorManager;
 
 /**
  * The Class OslJob.
