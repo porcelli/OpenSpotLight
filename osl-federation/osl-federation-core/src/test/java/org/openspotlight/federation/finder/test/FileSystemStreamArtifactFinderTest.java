@@ -16,10 +16,10 @@ import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 public class FileSystemStreamArtifactFinderTest {
 
     /** The stream artifact finder. */
-    private final FileSystemStreamArtifactFinder streamArtifactFinder = new FileSystemStreamArtifactFinder();
+    private FileSystemStreamArtifactFinder streamArtifactFinder;
 
     /** The artifact source. */
-    private ArtifactSource                       artifactSource;
+    private ArtifactSource                 artifactSource;
 
     /**
      * Prepare artifact source.
@@ -31,6 +31,7 @@ public class FileSystemStreamArtifactFinderTest {
         this.artifactSource = new ArtifactSource();
         this.artifactSource.setName("classpath");
         this.artifactSource.setInitialLookup("./src/test/resources/artifacts/not_changed");
+        this.streamArtifactFinder = new FileSystemStreamArtifactFinder(this.artifactSource);
     }
 
     /**
@@ -40,9 +41,8 @@ public class FileSystemStreamArtifactFinderTest {
      */
     @Test
     public void shouldFindByRelativePath() throws Exception {
-        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath(this.artifactSource,
-                                                                                    "/folder/subfolder/file_not_changed1");
-        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByRelativePath(this.artifactSource, streamArtifact1,
+        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath("/folder/subfolder/file_not_changed1");
+        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByRelativePath(streamArtifact1,
                                                                                             "../file_not_changed1");
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_not_changed1"));
@@ -55,12 +55,9 @@ public class FileSystemStreamArtifactFinderTest {
      */
     @Test
     public void shouldLoadNotChangedArtifact() throws Exception {
-        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath(this.artifactSource,
-                                                                                    "folder/file_not_changed1");
-        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByPath(this.artifactSource,
-                                                                                    "folder/subfolder/file_not_changed1");
-        final StreamArtifact streamArtifact3 = this.streamArtifactFinder.findByPath(this.artifactSource,
-                                                                                    "folder/subfolder/anothersubfolder/file_not_changed1");
+        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath("folder/file_not_changed1");
+        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByPath("folder/subfolder/file_not_changed1");
+        final StreamArtifact streamArtifact3 = this.streamArtifactFinder.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));

@@ -80,8 +80,8 @@ public class DnaSvnArtifactLoaderTest {
         bundle.setUserName("feuteston");
         bundle.setPassword("jakadeed");
 
-        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final StreamArtifact sa = finder.findByPath(bundle, "source/osl/pom.xml");
+        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
+        final StreamArtifact sa = finder.findByPath("source/osl/pom.xml");
 
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
@@ -101,9 +101,8 @@ public class DnaSvnArtifactLoaderTest {
         bundle.setUserName("feuteston");
         bundle.setPassword("jakadeed");
 
-        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final Set<String> allNames = finder.retrieveAllArtifactNames(bundle,
-                                                                     "source/osl/osl-common/src/main/java/org/openspotlight/common/");
+        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
+        final Set<String> allNames = finder.retrieveAllArtifactNames("source/osl/osl-common/src/main/java/org/openspotlight/common/");
         assertThat(allNames.size(), is(not(0)));
 
         finder.closeResources();

@@ -96,6 +96,7 @@ public class ConfigurationExamples {
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
         mapping.setFrom("*/");
+        mapping.setTo("/databaseArtifacts");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("*");
         final BundleProcessorType commonProcessor = new BundleProcessorType();

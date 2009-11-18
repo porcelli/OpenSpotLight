@@ -40,9 +40,11 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
     }
 
     public void run() {
-        final ArtifactFinder<T> finder = this.artifactFinderProvider.getFinderForType(this.repository, this.artifactType);
-
-        this.thisEntry.getK2().selectArtifactsToBeProcessed(this.changes, this.context, this.toBeReturned);
+        if (this.thisEntry.getK2().acceptKindOfArtifact(this.artifactType)) {
+            final ArtifactFinder<T> finder = this.artifactFinderProvider.getFinderForType(this.repository, this.artifactType);
+            finder.listByPath(artifactSource, null);
+            this.thisEntry.getK2().selectArtifactsToBeProcessed(this.changes, this.context, this.toBeReturned);
+        }
         this.startingQueue.remove(this.thisEntry);
     }
 

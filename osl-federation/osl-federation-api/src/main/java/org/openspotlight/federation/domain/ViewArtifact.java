@@ -3,7 +3,7 @@ package org.openspotlight.federation.domain;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 
-@Name( "view" )
+@Name( "database" )
 public class ViewArtifact extends TableArtifact {
 
     @Override

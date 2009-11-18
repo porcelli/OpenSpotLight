@@ -24,7 +24,6 @@ import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
@@ -200,14 +199,13 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact> extends
         }
     }
 
+    protected final DbArtifactSource                artifactSource;
+
     private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
 
-    public AbstractDatabaseArtifactFinder() {
-        super();
-    }
-
-    public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
-        return artifactSource instanceof DbArtifactSource;
+    protected AbstractDatabaseArtifactFinder(
+                                              final DbArtifactSource artifactSource ) {
+        this.artifactSource = artifactSource;
     }
 
     @Override
@@ -270,12 +268,9 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact> extends
 
     }
 
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
-                                                 final String initialPath ) {
-        if (!(artifactSource instanceof DbArtifactSource)) {
-            return emptySet();
-        }
-        final DbArtifactSource dbBundle = (DbArtifactSource)artifactSource;
+    public Set<String> retrieveAllArtifactNames( final String initialPath ) {
+
+        final DbArtifactSource dbBundle = (DbArtifactSource)this.artifactSource;
         try {
             final Connection conn = this.getConnectionFromSource(dbBundle);
             synchronized (conn) {

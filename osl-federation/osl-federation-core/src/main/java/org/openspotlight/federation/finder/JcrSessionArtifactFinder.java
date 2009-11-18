@@ -51,9 +51,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         return true;
     }
 
-    public A findByPath( final ArtifactSource artifactSource,
-                         final String path ) {
-        Assertions.checkNotNull("artifactSource", artifactSource);
+    public A findByPath( final String path ) {
         Assertions.checkNotEmpty("path", path);
         try {
             final Set<A> found = SimplePersistSupport.findNodesByProperties(this.rootPath, this.session, this.artifactType,
@@ -72,8 +70,15 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         }
     }
 
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
-                                                 final String initialPath ) {
+    public Class<A> getArtifactType() {
+        return this.artifactType;
+    }
+
+    public Class<? extends ArtifactSource> getSourceType() {
+        return null;
+    }
+
+    public Set<String> retrieveAllArtifactNames( final String initialPath ) {
         try {
             final String propertyName = MessageFormat.format(SimplePersistSupport.PROPERTY_VALUE, "artifactCompleteName");
             final String nodeName = SimplePersistSupport.getJcrNodeName(this.artifactType);

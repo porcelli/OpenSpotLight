@@ -23,18 +23,45 @@ import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.PathElement;
 import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
+import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
+import org.openspotlight.federation.finder.ArtifactTypeRegistry;
 
+// TODO: Auto-generated Javadoc
+/**
+ * A factory for creating ArtifactLoader objects.
+ */
 public class ArtifactLoaderFactory {
 
+    /**
+     * The Class ArtifactLoaderImpl.
+     */
     private static class ArtifactLoaderImpl implements ArtifactLoader {
 
+        /**
+         * The Class SourcesToProcessItems.
+         */
         private static class SourcesToProcessItems {
+
+            /** The artifact finder. */
             final ArtifactFinder<?>     artifactFinder;
+
+            /** The artifact source. */
             final ArtifactSource        artifactSource;
+
+            /** The artifact name. */
             final String                artifactName;
+
+            /** The mapping. */
             final ArtifactSourceMapping mapping;
 
+            /**
+             * Instantiates a new sources to process items.
+             * 
+             * @param artifactFinder the artifact finder
+             * @param artifactSource the artifact source
+             * @param artifactName the artifact name
+             * @param mapping the mapping
+             */
             public SourcesToProcessItems(
                                           final ArtifactFinder<?> artifactFinder, final ArtifactSource artifactSource,
                                           final String artifactName, final ArtifactSourceMapping mapping ) {
@@ -46,38 +73,48 @@ public class ArtifactLoaderFactory {
 
         }
 
-        private final GlobalSettings         configuration;
-        private final ArtifactLoaderBehavior behavior;
-        private final ArtifactFinder<?>[]    artifactFinders;
+        /** The configuration. */
+        private final GlobalSettings                   configuration;
 
-        private final long                   sleepTime;
+        /** The artifact providers. */
+        private final ArtifactFinderBySourceProvider[] artifactProviders;
 
-        private ExecutorService              executor;
+        /** The artifact types. */
+        private Set<Class<? extends Artifact>>         artifactTypes;
 
+        /** The sleep time. */
+        private final long                             sleepTime;
+
+        /** The executor. */
+        private ExecutorService                        executor;
+
+        /**
+         * Instantiates a new artifact loader impl.
+         * 
+         * @param configuration the configuration
+         * @param artifactProviders the artifact providers
+         */
         public ArtifactLoaderImpl(
-                                   final GlobalSettings configuration, final ArtifactLoaderBehavior behavior,
-                                   final ArtifactFinder<?>... artifactFinders ) {
+                                   final GlobalSettings configuration, final ArtifactFinderBySourceProvider... artifactProviders ) {
             this.configuration = configuration;
-            this.behavior = behavior;
-            this.artifactFinders = artifactFinders;
+            this.artifactProviders = artifactProviders;
             this.sleepTime = configuration.getDefaultSleepingIntervalInMilliseconds();
         }
 
+        /* (non-Javadoc)
+         * @see org.openspotlight.federation.loader.ArtifactLoader#closeResources()
+         */
         public void closeResources() {
             try {
                 this.executor.shutdown();
             } catch (final Exception e) {
                 Exceptions.catchAndLog(e);
             }
-            for (final ArtifactFinder<?> finder : this.artifactFinders) {
-                try {
-                    finder.closeResources();
-                } catch (final Exception e) {
-                    Exceptions.catchAndLog(e);
-                }
-            }
         }
 
+        /* (non-Javadoc)
+         * @see org.openspotlight.federation.loader.ArtifactLoader#loadArtifactsFromSource(org.openspotlight.federation.domain.ArtifactSource[])
+         */
         public Iterable<Artifact> loadArtifactsFromSource( final ArtifactSource... sources ) {
             final Queue<Pair<ArtifactFinder<?>, ArtifactSource>> sourcesToLoad = new ConcurrentLinkedQueue<Pair<ArtifactFinder<?>, ArtifactSource>>();
             final Queue<ArtifactLoaderImpl.SourcesToProcessItems> sourcesToProcess = new ConcurrentLinkedQueue<ArtifactLoaderImpl.SourcesToProcessItems>();
@@ -87,18 +124,14 @@ public class ArtifactLoaderFactory {
                 if (!source.isActive()) {
                     continue addingSources;
                 }
-                boolean hasAnyFinder = false;
-                for (final ArtifactFinder<?> finder : this.artifactFinders) {
-                    if (finder.canAcceptArtifactSource(source)) {
-                        sourcesToLoad.add(new Pair<ArtifactFinder<?>, ArtifactSource>(finder, source));
-                        hasAnyFinder = true;
-                        if (ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE.equals(this.behavior)) {
-                            continue addingSources;
+                for (final ArtifactFinderBySourceProvider provider : this.artifactProviders) {
+                    for (final Class<? extends Artifact> type : this.artifactTypes) {
+                        final Set<ArtifactFinder<? extends Artifact>> artifactFinders = provider.getForType(type, source);
+                        for (final ArtifactFinder<?> finder : artifactFinders) {
+                            sourcesToLoad.add(new Pair<ArtifactFinder<?>, ArtifactSource>(finder, source));
+
                         }
                     }
-                }
-                if (hasAnyFinder) {
-                    Exceptions.logAndThrow(new IllegalStateException("No configured artifact finder to process source " + source));
                 }
             }
             if (sourcesToLoad.size() == 0) {
@@ -111,8 +144,7 @@ public class ArtifactLoaderFactory {
                     public void run() {
                         try {
                             for (final ArtifactSourceMapping mapping : pair.getK2().getMappings()) {
-                                final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(pair.getK2(),
-                                                                                                   mapping.getFrom());
+                                final Set<String> rawNames = pair.getK1().retrieveAllArtifactNames(mapping.getFrom());
                                 final FilterResult newNames = filterNamesByPattern(rawNames, mapping.getIncludeds(),
                                                                                    mapping.getExcludeds(), false);
 
@@ -146,8 +178,7 @@ public class ArtifactLoaderFactory {
                     public void run() {
                         try {
 
-                            final Artifact loaded = sourceToProcess.artifactFinder.findByPath(sourceToProcess.artifactSource,
-                                                                                              sourceToProcess.artifactName);
+                            final Artifact loaded = sourceToProcess.artifactFinder.findByPath(sourceToProcess.artifactName);
                             String currentPathString = loaded.getParent().getCompletePath();
                             if (!currentPathString.startsWith("/")) {
                                 currentPathString = "/" + currentPathString;
@@ -156,8 +187,10 @@ public class ArtifactLoaderFactory {
                             if (!toRemove.startsWith("/")) {
                                 toRemove = "/" + toRemove;
                             }
-                            final String newPathString = sourceToProcess.mapping.getTo()
-                                                         + Strings.removeBegginingFrom(toRemove, currentPathString);
+                            if (currentPathString.startsWith(toRemove)) {
+                                currentPathString = Strings.removeBegginingFrom(toRemove, currentPathString);
+                            }
+                            final String newPathString = sourceToProcess.mapping.getTo() + currentPathString;
                             final PathElement newPath = PathElement.createFromPathString(newPathString);
                             loaded.setParent(newPath);
                             loadedArtifacts.add(loaded);
@@ -181,19 +214,32 @@ public class ArtifactLoaderFactory {
             return new ArrayList<Artifact>(loadedArtifacts);
         }
 
+        /**
+         * Setup.
+         */
         public synchronized void setup() {
             this.executor = Executors.newFixedThreadPool(this.configuration.getNumberOfParallelThreads());
+            this.artifactTypes = ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes();
         }
     }
 
+    /**
+     * Creates a new ArtifactLoader object.
+     * 
+     * @param configuration the configuration
+     * @param artifactSourceProviders the artifact source providers
+     * @return the artifact loader
+     */
     public static ArtifactLoader createNewLoader( final GlobalSettings configuration,
-                                                  final ArtifactLoaderBehavior behavior,
-                                                  final ArtifactFinder<?>... artifactFinders ) {
-        final ArtifactLoaderFactory.ArtifactLoaderImpl loader = new ArtifactLoaderImpl(configuration, behavior, artifactFinders);
+                                                  final ArtifactFinderBySourceProvider... artifactSourceProviders ) {
+        final ArtifactLoaderFactory.ArtifactLoaderImpl loader = new ArtifactLoaderImpl(configuration, artifactSourceProviders);
         loader.setup();
         return loader;
     }
 
+    /**
+     * Instantiates a new artifact loader factory.
+     */
     private ArtifactLoaderFactory() {
     }
 

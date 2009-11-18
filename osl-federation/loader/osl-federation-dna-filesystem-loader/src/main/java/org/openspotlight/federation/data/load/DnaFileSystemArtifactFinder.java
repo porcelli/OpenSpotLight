@@ -53,7 +53,6 @@ import org.jboss.dna.connector.filesystem.FileSystemSource;
 import org.jboss.dna.jcr.JcrConfiguration;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System Connector.
@@ -62,8 +61,9 @@ import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
  */
 public class DnaFileSystemArtifactFinder extends DnaArtifactFinder {
 
-    public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
-        return artifactSource instanceof DnaFileSystemArtifactSource;
+    public DnaFileSystemArtifactFinder(
+                                        final ArtifactSource source ) {
+        super(source);
     }
 
     @Override

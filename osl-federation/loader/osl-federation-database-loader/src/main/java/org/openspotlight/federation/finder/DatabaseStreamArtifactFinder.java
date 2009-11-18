@@ -1,4 +1,4 @@
-package org.openspotlight.federation.data.load;
+package org.openspotlight.federation.finder;
 
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
@@ -9,12 +9,10 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.finder.AbstractDatabaseArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
@@ -24,12 +22,15 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStr
 public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder<StreamArtifact>
     implements ArtifactFinder<StreamArtifact> {
 
-    public StreamArtifact findByPath( final ArtifactSource artifactSource,
-                                      final String path ) {
-        try {
-            final DbArtifactSource dbBundle = (DbArtifactSource)artifactSource;
+    public DatabaseStreamArtifactFinder(
+                                         final DbArtifactSource artifactSource ) {
+        super(artifactSource);
+    }
 
-            final Connection conn = this.getConnectionFromSource(dbBundle);
+    public StreamArtifact findByPath( final String path ) {
+        try {
+
+            final Connection conn = this.getConnectionFromSource(this.artifactSource);
             synchronized (conn) {
                 final StringTokenizer tok = new StringTokenizer(path, "/"); //$NON-NLS-1$
                 final int numberOfTokens = tok.countTokens();
@@ -43,7 +44,7 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
                 }
                 final String name = tok.nextToken();
                 final ScriptType scriptType = ScriptType.valueOf(typeAsString);
-                final DatabaseType databaseType = dbBundle.getType();
+                final DatabaseType databaseType = this.artifactSource.getType();
                 final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE.getScript(databaseType,
                                                                                                                   scriptType);
                 if (scriptDescription == null) {

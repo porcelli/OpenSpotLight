@@ -49,18 +49,11 @@
 
 package org.openspotlight.federation.loader;
 
-
-
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 
 public interface ArtifactLoader extends Disposable {
-
-    public static enum ArtifactLoaderBehavior {
-        ONE_LOADER_PER_SOURCE,
-        MULTIPLE_LOADERS_PER_SOURCE
-    }
 
     public void closeResources();
 

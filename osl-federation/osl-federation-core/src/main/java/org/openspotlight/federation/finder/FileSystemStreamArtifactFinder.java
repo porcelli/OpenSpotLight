@@ -20,21 +20,21 @@ import org.openspotlight.federation.domain.StreamArtifact;
 
 public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<StreamArtifact> {
 
-    public boolean canAcceptArtifactSource( final ArtifactSource artifactSource ) {
-        if (new File(artifactSource.getInitialLookup()).exists()) {
-            return true;
-        }
-        return false;
+    private final ArtifactSource artifactSource;
+
+    public FileSystemStreamArtifactFinder(
+                                           final ArtifactSource artifactSource ) {
+        Assertions.checkNotNull("artifactSource", artifactSource);
+        Assertions.checkCondition("sourceExists", new File(artifactSource.getInitialLookup()).exists());
+        this.artifactSource = artifactSource;
     }
 
-    public StreamArtifact findByPath( final ArtifactSource artifactSource,
-                                      final String rawPath ) {
-        Assertions.checkNotNull("artifactSource", artifactSource);
+    public StreamArtifact findByPath( final String rawPath ) {
         Assertions.checkNotEmpty("rawPath", rawPath);
         final String path = rawPath.startsWith("/") ? Strings.removeBegginingFrom("/", rawPath) : rawPath;
         try {
 
-            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), path);
+            final String location = MessageFormat.format("{0}/{1}", this.artifactSource.getInitialLookup(), path);
 
             final File file = new File(location);
             if (!file.exists()) {
@@ -59,16 +59,22 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
 
     }
 
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
-                                                 final String initialPath ) {
-        Assertions.checkNotNull("artifactSource", artifactSource);
+    public Class<StreamArtifact> getArtifactType() {
+        return StreamArtifact.class;
+    }
+
+    public Class<? extends ArtifactSource> getSourceType() {
+        return ArtifactSource.class;
+    }
+
+    public Set<String> retrieveAllArtifactNames( final String initialPath ) {
         final String rawPath = initialPath == null ? "." : initialPath;
         try {
             final Set<String> result = new HashSet<String>();
 
-            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), rawPath);
+            final String location = MessageFormat.format("{0}/{1}", this.artifactSource.getInitialLookup(), rawPath);
 
-            final String pathToRemove = new File(artifactSource.getInitialLookup()).getCanonicalPath() + "/";
+            final String pathToRemove = new File(this.artifactSource.getInitialLookup()).getCanonicalPath() + "/";
             final Set<String> pathList = Files.listFileNamesFrom(location);
 
             for (final String p : pathList) {

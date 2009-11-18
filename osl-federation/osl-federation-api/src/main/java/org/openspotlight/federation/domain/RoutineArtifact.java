@@ -9,8 +9,8 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "routine" )
-public class RoutineArtifact extends CustomArtifact implements SimpleNodeType, Serializable {
+@Name( "database" )
+public class RoutineArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
     private String                tableName;
     private String                catalogName;
     private RoutineType           type;

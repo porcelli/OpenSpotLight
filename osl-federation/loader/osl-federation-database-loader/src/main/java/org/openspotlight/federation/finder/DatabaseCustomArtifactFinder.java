@@ -24,7 +24,7 @@ import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.Column;
 import org.openspotlight.federation.domain.ColumnType;
-import org.openspotlight.federation.domain.CustomArtifact;
+import org.openspotlight.federation.domain.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.NullableSqlType;
 import org.openspotlight.federation.domain.RoutineArtifact;
@@ -35,7 +35,7 @@ import org.openspotlight.federation.domain.TableArtifact;
 import org.openspotlight.federation.domain.ViewArtifact;
 import org.openspotlight.federation.finder.db.ScriptType;
 
-public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder<CustomArtifact> {
+public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
 
     /**
      * {@link ColumnDescription} to be used to create new {@link Column column metadata}.
@@ -632,6 +632,11 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
 
     private final ConcurrentHashMap<ArtifactSource, Map<String, org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.DatabaseItemDescription>> resultCache = new ConcurrentHashMap<ArtifactSource, Map<String, DatabaseItemDescription>>();
 
+    public DatabaseCustomArtifactFinder(
+                                         final DbArtifactSource artifactSource ) {
+        super(artifactSource);
+    }
+
     @Override
     public synchronized void closeResources() {
         super.closeResources();
@@ -644,8 +649,8 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
      * @param bundle
      * @param metadata
      */
-    private CustomArtifact createRoutineMetadata( final ArtifactSource bundle,
-                                                  final DatabaseItemDescription metadata ) {
+    private DatabaseCustomArtifact createRoutineMetadata( final ArtifactSource bundle,
+                                                          final DatabaseItemDescription metadata ) {
         final RoutineDescription routineMetadata = (RoutineDescription)metadata;
         final RoutineArtifact routine = Artifact.createArtifact(RoutineArtifact.class, "/" + metadata.toString(),
                                                                 ChangeType.INCLUDED);
@@ -670,8 +675,8 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
      * @param bundle
      * @param metadata
      */
-    private CustomArtifact createTableMetadata( final ArtifactSource bundle,
-                                                final DatabaseItemDescription metadata ) {
+    private DatabaseCustomArtifact createTableMetadata( final ArtifactSource bundle,
+                                                        final DatabaseItemDescription metadata ) {
         final TableDescription tableMetadata = (TableDescription)metadata;
         TableArtifact table;
 
@@ -695,18 +700,17 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
         return table;
     }
 
-    public CustomArtifact findByPath( final ArtifactSource artifactSource,
-                                      final String path ) {
+    public DatabaseCustomArtifact findByPath( final String path ) {
         try {
 
-            final DbArtifactSource dbBundle = (DbArtifactSource)artifactSource;
+            final DbArtifactSource dbBundle = (DbArtifactSource)this.artifactSource;
             final Map<String, DatabaseItemDescription> resultMap = this.getResultFrom(dbBundle);
             final DatabaseItemDescription metadata = resultMap.get(path);
-            CustomArtifact result;
+            DatabaseCustomArtifact result;
             if (metadata instanceof TableDescription) {
-                result = this.createTableMetadata(artifactSource, metadata);
+                result = this.createTableMetadata(this.artifactSource, metadata);
             } else {//Its a routine description
-                result = this.createRoutineMetadata(artifactSource, metadata);
+                result = this.createRoutineMetadata(this.artifactSource, metadata);
             }
             return result;
         } catch (final Exception e) {
@@ -730,12 +734,11 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
     }
 
     @Override
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
-                                                 final String initialPath ) {
+    public Set<String> retrieveAllArtifactNames( final String initialPath ) {
         try {
             final String pathToMatch = initialPath.endsWith("/") ? initialPath + "*" : initialPath + "/*";
             final Set<String> artifactNames = new HashSet<String>();
-            final DbArtifactSource dbBundle = (DbArtifactSource)artifactSource;
+            final DbArtifactSource dbBundle = (DbArtifactSource)this.artifactSource;
             final Map<String, DatabaseItemDescription> result = this.getResultFrom(dbBundle);
             for (final Map.Entry<String, org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.DatabaseItemDescription> entry : result.entrySet()) {
                 if (isMatchingWithoutCaseSentitiveness(entry.getKey(), pathToMatch)) {

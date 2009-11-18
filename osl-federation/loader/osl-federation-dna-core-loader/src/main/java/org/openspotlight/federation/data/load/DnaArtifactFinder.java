@@ -113,6 +113,8 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
 
     }
 
+    private final ArtifactSource                 artifactSource;
+
     private static final String                  repositoryName   = "repository";                                      //$NON-NLS-1$
 
     private static final String                  repositorySource = "repositorySource";                                //$NON-NLS-1$
@@ -120,6 +122,11 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
     private final Map<ArtifactSource, JcrEngine> mappingEngines   = new ConcurrentHashMap<ArtifactSource, JcrEngine>();
 
     private final Map<ArtifactSource, Session>   mappingSessions  = new ConcurrentHashMap<ArtifactSource, Session>();
+
+    public DnaArtifactFinder(
+                              final ArtifactSource source ) {
+        this.artifactSource = source;
+    }
 
     @Override
     public synchronized final void closeResources() {
@@ -134,8 +141,7 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
     protected abstract void configureWithBundle( RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                                  ArtifactSource source );
 
-    public StreamArtifact findByPath( final ArtifactSource artifactSource,
-                                      final String rawPath ) {
+    public StreamArtifact findByPath( final String rawPath ) {
         try {
             String path;
             if (rawPath.startsWith("/")) {
@@ -144,7 +150,7 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
                 path = rawPath;
             }
 
-            final Node node = this.getSessionForSource(artifactSource).getRootNode().getNode(path);
+            final Node node = this.getSessionForSource(this.artifactSource).getRootNode().getNode(path);
 
             final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
             final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
@@ -183,11 +189,10 @@ public abstract class DnaArtifactFinder extends AbstractArtifactFinder<StreamArt
         return session;
     }
 
-    public Set<String> retrieveAllArtifactNames( final ArtifactSource artifactSource,
-                                                 final String initialPath ) {
+    public Set<String> retrieveAllArtifactNames( final String initialPath ) {
         try {
             final Set<String> result = new HashSet<String>();
-            final Node rootNode = this.getSessionForSource(artifactSource).getRootNode();
+            final Node rootNode = this.getSessionForSource(this.artifactSource).getRootNode();
             final Node initial = initialPath == null ? rootNode : rootNode.getNode(initialPath);
             initial.accept(withVisitor(new FillNamesVisitor(result)));
 

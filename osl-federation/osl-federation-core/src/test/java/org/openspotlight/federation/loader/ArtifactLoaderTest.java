@@ -12,8 +12,7 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
-import org.openspotlight.federation.loader.ArtifactLoader.ArtifactLoaderBehavior;
+import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 
 public class ArtifactLoaderTest {
 
@@ -40,8 +39,7 @@ public class ArtifactLoaderTest {
         source.setName("sourceName");
 
         final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(configuration,
-                                                                            ArtifactLoaderBehavior.ONE_LOADER_PER_SOURCE,
-                                                                            new FileSystemStreamArtifactFinder());
+                                                                            new FileSystemArtifactBySourceProvider());
 
         final Iterable<Artifact> artifacts = loader.loadArtifactsFromSource(source);
         boolean hasAny = false;
