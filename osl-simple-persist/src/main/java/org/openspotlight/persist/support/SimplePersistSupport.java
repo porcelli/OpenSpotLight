@@ -419,7 +419,7 @@ public class SimplePersistSupport {
 
         final Set<T> result = new HashSet<T>();
         for (final Node node : jcrNodes) {
-            final T bean = convertJcrToBean(session, node, multipleLoadingStrategy);
+            final T bean = SimplePersistSupport.<T>convertJcrToBean(session, node, multipleLoadingStrategy);
             result.add(bean);
         }
         return result;
@@ -441,7 +441,7 @@ public class SimplePersistSupport {
         final Set<T> result = new HashSet<T>();
         while (jcrNodes.hasNext()) {
             final Node node = jcrNodes.nextNode();
-            final T bean = convertJcrToBean(session, node, multipleLoadingStrategy);
+            final T bean = SimplePersistSupport.<T>convertJcrToBean(session, node, multipleLoadingStrategy);
             result.add(bean);
         }
         return result;
@@ -771,7 +771,7 @@ public class SimplePersistSupport {
             final Set<T> resultNodes = new HashSet<T>();
             while (nodes.hasNext()) {
                 final Node jcrNode = nodes.nextNode();
-                final T bean = convertJcrToBean(session, jcrNode, multipleLoadingStrategy);
+                final T bean = SimplePersistSupport.<T>convertJcrToBean(session, jcrNode, multipleLoadingStrategy);
                 resultNodes.add(bean);
             }
             return resultNodes;
@@ -829,7 +829,7 @@ public class SimplePersistSupport {
             final Set<T> resultNodes = new HashSet<T>();
             while (nodes.hasNext()) {
                 final Node jcrNode = nodes.nextNode();
-                final T bean = convertJcrToBean(session, jcrNode, multipleLoadingStrategy);
+                final T bean = SimplePersistSupport.<T>convertJcrToBean(session, jcrNode, multipleLoadingStrategy);
                 resultNodes.add(bean);
             }
             return resultNodes;

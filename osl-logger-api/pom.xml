@@ -14,13 +14,17 @@
 	<name>OpenSpotLight Logger Api</name>
 
 	<dependencies>
-	<dependency>
-		<groupId>org.openspotlight</groupId>
-		<artifactId>osl-common</artifactId>
-	</dependency>
-	<dependency>
-		<groupId>org.openspotlight</groupId>
-		<artifactId>osl-simple-persist</artifactId>
-	</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-security-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-simple-persist</artifactId>
+		</dependency>
 	</dependencies>
 </project>

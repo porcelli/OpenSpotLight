@@ -6,6 +6,7 @@ package org.openspotlight.log;
 import java.io.Serializable;
 
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
  * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}
@@ -69,7 +70,7 @@ public interface DetailedLogger {
      * @param anotherNodes the another nodes
      * @param user the user
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      LogEventType type,
                      ErrorCode errorCode,
                      String detailedMessage,
@@ -85,7 +86,7 @@ public interface DetailedLogger {
      * @param anotherNodes the another nodes
      * @param user the user
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      LogEventType type,
                      ErrorCode errorCode,
                      String message,
@@ -100,7 +101,7 @@ public interface DetailedLogger {
      * @param anotherNodes the another nodes
      * @param user the user
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      LogEventType type,
                      String message,
                      LogableObject... anotherNodes );
@@ -114,7 +115,7 @@ public interface DetailedLogger {
      * @param anotherNodes the another nodes
      * @param user the user
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      LogEventType type,
                      String message,
                      String detailedMessage,
@@ -130,7 +131,7 @@ public interface DetailedLogger {
      * @param user the user
      * @param repository the repository
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      String repository,
                      LogEventType type,
                      ErrorCode errorCode,
@@ -148,7 +149,7 @@ public interface DetailedLogger {
      * @param user the user
      * @param repository the repository
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      String repository,
                      LogEventType type,
                      ErrorCode errorCode,
@@ -165,7 +166,7 @@ public interface DetailedLogger {
      * @param user the user
      * @param repository the repository
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      String repository,
                      LogEventType type,
                      String message,
@@ -181,7 +182,7 @@ public interface DetailedLogger {
      * @param user the user
      * @param repository the repository
      */
-    public void log( String user,
+    public void log( AuthenticatedUser user,
                      String repository,
                      LogEventType type,
                      String message,

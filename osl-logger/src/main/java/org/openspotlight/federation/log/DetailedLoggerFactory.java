@@ -22,7 +22,6 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
@@ -33,6 +32,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
  * The Factory used to create {@link DetailedLogger}.
@@ -54,7 +54,7 @@ public final class DetailedLoggerFactory {
             this.session = session;
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final LogEventType type,
                          final ErrorCode errorCode,
                          final String detailedMessage,
@@ -62,7 +62,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final LogEventType type,
                          final ErrorCode errorCode,
                          final String message,
@@ -72,7 +72,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final LogEventType type,
                          final String message,
                          final LogableObject... anotherNodes ) {
@@ -80,7 +80,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final LogEventType type,
                          final String message,
                          final String detailedMessage,
@@ -89,7 +89,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final String repository,
                          final LogEventType type,
                          final ErrorCode errorCode,
@@ -99,7 +99,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final String repository,
                          final LogEventType type,
                          final ErrorCode errorCode,
@@ -111,7 +111,7 @@ public final class DetailedLoggerFactory {
 
             final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
                                        + (repository != null ? repository : "noRepository") + "/"
-                                       + (user != null ? user : "noUser") + "/log";
+                                       + (user != null ? user.getId() : "noUser") + "/log";
             SimplePersistSupport.convertBeanToJcr(initialPath, this.session, entry);
             try {
                 this.session.save();
@@ -121,7 +121,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final String repository,
                          final LogEventType type,
                          final String message,
@@ -130,7 +130,7 @@ public final class DetailedLoggerFactory {
 
         }
 
-        public void log( final String user,
+        public void log( final AuthenticatedUser user,
                          final String repository,
                          final LogEventType type,
                          final String message,
@@ -146,194 +146,6 @@ public final class DetailedLoggerFactory {
      */
     @Name( "log_entry" )
     public static class LogEntry implements SimpleNodeType, Serializable {
-
-        /**
-         * The Class LoggedObjectInformation is used to represent objects related to a given log.
-         */
-        @Name( "logged_object_information" )
-        public static class LoggedObjectInformation implements SimpleNodeType, Serializable {
-
-            private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
-                final List<LogableObject> result = new LinkedList<LogableObject>();
-                result.add(o);
-                LogableObject parent = getParent(o);
-                while (parent != null) {
-                    result.add(parent);
-                    parent = getParent(parent);
-                }
-                return result;
-            }
-
-            /**
-             * Gets the hierarchy from.
-             * 
-             * @param node the node
-             * @param anotherNodes the another nodes
-             * @return the hierarchy from
-             */
-            public static List<LoggedObjectInformation> getHierarchyFrom( final LogableObject... anotherNodes ) {
-                final List<LogableObject> nodes = new LinkedList<LogableObject>();
-                for (final LogableObject o : anotherNodes) {
-                    nodes.addAll(getHierarchyFrom(o));
-                }
-                Collections.reverse(nodes);
-                final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
-                for (int i = 0, size = nodes.size(); i < size; i++) {
-                    result.add(new LoggedObjectInformation(i, nodes.get(i)));
-                }
-                return result;
-            }
-
-            /**
-             * Gets the parent.
-             * 
-             * @param o the o
-             * @return the parent
-             */
-            private static LogableObject getParent( final LogableObject o ) {
-                if (o instanceof SLNode) {
-                    final SLNode node = (SLNode)o;
-                    try {
-                        return node.getParent();
-                    } catch (final SLGraphSessionException e) {
-                        throw logAndReturnNew(e, SLRuntimeException.class);
-                    }
-                } else {
-                    return null;// other types have the path information. Now the parent nodes isn't necessary
-                }
-            }
-
-            private int    order;
-
-            /** The unique id. */
-            private String uniqueId;
-
-            /** The friendly description. */
-            private String friendlyDescription;
-
-            /** The class name. */
-            private String className;
-
-            public LoggedObjectInformation() {
-            }
-
-            /**
-             * Instantiates a new logged object information.
-             * 
-             * @param order the order
-             * @param object the object
-             */
-            LoggedObjectInformation(
-                                     final int order, final LogableObject object ) {
-                this.order = order;
-                if (object instanceof SLNode) {
-                    final SLNode node = (SLNode)object;
-                    try {
-                        this.uniqueId = node.getID();
-                    } catch (final SLGraphSessionException e) {
-                        throw logAndReturnNew(e, SLRuntimeException.class);
-                    }
-                    this.friendlyDescription = node.toString();
-                    this.className = node.getClass().getInterfaces()[0].getName();
-                } else if (object instanceof ArtifactSource) {
-                    final ArtifactSource node = (ArtifactSource)object;
-                    this.friendlyDescription = node.getName();
-                    this.className = node.getClass().getName();
-                    this.uniqueId = null;
-                } else if (object instanceof Artifact) {
-                    final Artifact node = (Artifact)object;
-                    this.friendlyDescription = node.getArtifactCompleteName();
-                    this.className = node.getClass().getName();
-                    this.uniqueId = null;
-                } else {
-                    throw logAndReturn(new IllegalArgumentException());
-                }
-                checkNotEmpty("friendlyDescription", this.friendlyDescription);
-                checkNotEmpty("className", this.className);
-            }
-
-            /**
-             * Instantiates a new logged object information.
-             * 
-             * @param order the order
-             * @param uniqueId the unique id
-             * @param className the class name
-             * @param friendlyDescription the friendly description
-             */
-            LoggedObjectInformation(
-                                     final int order, final String uniqueId, final String className,
-                                     final String friendlyDescription ) {
-                checkNotEmpty("uniqueId", uniqueId);
-                checkNotEmpty("friendlyDescription", friendlyDescription);
-                checkNotEmpty("className", className);
-                this.order = order;
-                this.uniqueId = uniqueId;
-                this.friendlyDescription = friendlyDescription;
-                this.className = className;
-
-            }
-
-            public String getClassName() {
-                return this.className;
-            }
-
-            /**
-             * Gets the friendly description.
-             * 
-             * @return the friendly description
-             */
-            @KeyProperty
-            public String getFriendlyDescription() {
-                return this.friendlyDescription;
-            }
-
-            /**
-             * Gets the order.
-             * 
-             * @return the order
-             */
-            @KeyProperty
-            public int getOrder() {
-                return this.order;
-            }
-
-            /**
-             * Gets the type name.
-             * 
-             * @return the type name
-             */
-            @KeyProperty
-            public String getTypeName() {
-                return this.className;
-            }
-
-            /**
-             * Gets the unique id.
-             * 
-             * @return the unique id
-             */
-            @KeyProperty
-            public String getUniqueId() {
-                return this.uniqueId;
-            }
-
-            public void setClassName( final String className ) {
-                this.className = className;
-            }
-
-            public void setFriendlyDescription( final String friendlyDescription ) {
-                this.friendlyDescription = friendlyDescription;
-            }
-
-            public void setOrder( final int order ) {
-                this.order = order;
-            }
-
-            public void setUniqueId( final String uniqueId ) {
-                this.uniqueId = uniqueId;
-            }
-
-        }
 
         /** The error code. */
         private ErrorCode                     errorCode;
@@ -480,6 +292,193 @@ public final class DetailedLoggerFactory {
 
         public void setType( final LogEventType type ) {
             this.type = type;
+        }
+
+    }
+
+    /**
+     * The Class LoggedObjectInformation is used to represent objects related to a given log.
+     */
+    @Name( "logged_object_information" )
+    public static class LoggedObjectInformation implements SimpleNodeType, Serializable {
+
+        private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
+            final List<LogableObject> result = new LinkedList<LogableObject>();
+            result.add(o);
+            LogableObject parent = getParent(o);
+            while (parent != null) {
+                result.add(parent);
+                parent = getParent(parent);
+            }
+            return result;
+        }
+
+        /**
+         * Gets the hierarchy from.
+         * 
+         * @param node the node
+         * @param anotherNodes the another nodes
+         * @return the hierarchy from
+         */
+        public static List<LoggedObjectInformation> getHierarchyFrom( final LogableObject... anotherNodes ) {
+            final List<LogableObject> nodes = new LinkedList<LogableObject>();
+            for (final LogableObject o : anotherNodes) {
+                nodes.addAll(getHierarchyFrom(o));
+            }
+            Collections.reverse(nodes);
+            final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
+            for (int i = 0, size = nodes.size(); i < size; i++) {
+                result.add(new LoggedObjectInformation(i, nodes.get(i)));
+            }
+            return result;
+        }
+
+        /**
+         * Gets the parent.
+         * 
+         * @param o the o
+         * @return the parent
+         */
+        private static LogableObject getParent( final LogableObject o ) {
+            if (o instanceof SLNode) {
+                final SLNode node = (SLNode)o;
+                try {
+                    return node.getParent();
+                } catch (final SLGraphSessionException e) {
+                    throw logAndReturnNew(e, SLRuntimeException.class);
+                }
+            } else {
+                return null;// other types have the path information. Now the parent nodes isn't necessary
+            }
+        }
+
+        private int    order;
+
+        /** The unique id. */
+        private String uniqueId;
+
+        /** The friendly description. */
+        private String friendlyDescription;
+
+        /** The class name. */
+        private String className;
+
+        public LoggedObjectInformation() {
+        }
+
+        /**
+         * Instantiates a new logged object information.
+         * 
+         * @param order the order
+         * @param object the object
+         */
+        LoggedObjectInformation(
+                                 final int order, final LogableObject object ) {
+            this.order = order;
+            if (object instanceof SLNode) {
+                final SLNode node = (SLNode)object;
+                try {
+                    this.uniqueId = node.getID();
+                } catch (final SLGraphSessionException e) {
+                    throw logAndReturnNew(e, SLRuntimeException.class);
+                }
+                this.friendlyDescription = node.toString();
+                this.className = node.getClass().getInterfaces()[0].getName();
+            } else if (object instanceof ArtifactSource) {
+                final ArtifactSource node = (ArtifactSource)object;
+                this.friendlyDescription = node.getName();
+                this.className = node.getClass().getName();
+                this.uniqueId = null;
+            } else if (object instanceof Artifact) {
+                final Artifact node = (Artifact)object;
+                this.friendlyDescription = node.getArtifactCompleteName();
+                this.className = node.getClass().getName();
+                this.uniqueId = null;
+            } else {
+                throw logAndReturn(new IllegalArgumentException());
+            }
+            checkNotEmpty("friendlyDescription", this.friendlyDescription);
+            checkNotEmpty("className", this.className);
+        }
+
+        /**
+         * Instantiates a new logged object information.
+         * 
+         * @param order the order
+         * @param uniqueId the unique id
+         * @param className the class name
+         * @param friendlyDescription the friendly description
+         */
+        LoggedObjectInformation(
+                                 final int order, final String uniqueId, final String className, final String friendlyDescription ) {
+            checkNotEmpty("uniqueId", uniqueId);
+            checkNotEmpty("friendlyDescription", friendlyDescription);
+            checkNotEmpty("className", className);
+            this.order = order;
+            this.uniqueId = uniqueId;
+            this.friendlyDescription = friendlyDescription;
+            this.className = className;
+
+        }
+
+        public String getClassName() {
+            return this.className;
+        }
+
+        /**
+         * Gets the friendly description.
+         * 
+         * @return the friendly description
+         */
+        @KeyProperty
+        public String getFriendlyDescription() {
+            return this.friendlyDescription;
+        }
+
+        /**
+         * Gets the order.
+         * 
+         * @return the order
+         */
+        @KeyProperty
+        public int getOrder() {
+            return this.order;
+        }
+
+        /**
+         * Gets the type name.
+         * 
+         * @return the type name
+         */
+        @KeyProperty
+        public String getTypeName() {
+            return this.className;
+        }
+
+        /**
+         * Gets the unique id.
+         * 
+         * @return the unique id
+         */
+        @KeyProperty
+        public String getUniqueId() {
+            return this.uniqueId;
+        }
+
+        public void setClassName( final String className ) {
+            this.className = className;
+        }
+
+        public void setFriendlyDescription( final String friendlyDescription ) {
+            this.friendlyDescription = friendlyDescription;
+        }
+
+        public void setOrder( final int order ) {
+            this.order = order;
+        }
+
+        public void setUniqueId( final String uniqueId ) {
+            this.uniqueId = uniqueId;
         }
 
     }
