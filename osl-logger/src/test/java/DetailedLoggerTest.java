@@ -47,20 +47,23 @@ public class DetailedLoggerTest {
 
     }
 
-    private Session                      session;
+    private static DetailedJcrLoggerFactory factory;
 
-    private SLGraphSession               graphSession;
+    private Session                         session;
 
-    private static JcrConnectionProvider provider;
+    private SLGraphSession                  graphSession;
 
-    private static SLGraph               graph;
+    private static JcrConnectionProvider    provider;
 
-    private static AuthenticatedUser     user;
+    private static SLGraph                  graph;
+
+    private static AuthenticatedUser        user;
 
     @BeforeClass
     public static void setupJcr() throws Exception {
         provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        factory = new DetailedJcrLoggerFactory(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
@@ -71,6 +74,7 @@ public class DetailedLoggerTest {
 
     @After
     public void releaseAttributes() throws Exception {
+        this.factory.closeResources();
         if (this.session != null) {
             if (this.session.isLive()) {
                 this.session.logout();
@@ -88,7 +92,7 @@ public class DetailedLoggerTest {
     public void setupAttributes() throws Exception {
         this.session = provider.openSession();
         this.graphSession = graph.openSession(user, "tempRepo");
-        this.logger = DetailedJcrLoggerFactory.createNewLogger(this.session);
+        this.logger = factory.createNewLogger();
     }
 
     @Test

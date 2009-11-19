@@ -6,6 +6,7 @@ import org.openspotlight.common.concurrent.CautiousExecutor.TaskListener;
 import org.openspotlight.common.concurrent.CautiousExecutor.ThreadListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.SLContext;
 
 public class BundleContextThreadInjector implements ThreadListener, TaskListener {
 
@@ -31,11 +32,21 @@ public class BundleContextThreadInjector implements ThreadListener, TaskListener
         //thats ok. lets see gc do its job ;-)
     }
 
+    /* (non-Javadoc)
+     * @see org.openspotlight.common.concurrent.CautiousExecutor.TaskListener#beforeExecutingTask(java.lang.Thread, java.lang.Runnable)
+     */
     public void beforeExecutingTask( final Thread t,
                                      final Runnable r ) {
         if (r instanceof RunnableWithBundleContext) {
-            final RunnableWithBundleContext rwbc = (RunnableWithBundleContext)r;
-            ((RunnableWithBundleContext)r).setBundleContext(this.contextsPerThread.get(t));
+            try {
+                final RunnableWithBundleContext rwbc = (RunnableWithBundleContext)r;
+                final BundleProcessorContextImpl ctx = this.contextsPerThread.get(t);
+                final SLContext groupContext = ctx.getGraphSession().getContext("groupContext");
+                rwbc.getCurrentContext().setGroupContext(groupContext);
+                rwbc.setBundleContext(ctx);
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+            }
         }
 
     }
