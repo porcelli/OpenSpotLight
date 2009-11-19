@@ -69,6 +69,7 @@ public class BundleProcessorExecution {
         final Queue<Pair<BundleProcessorType, Class<? extends Artifact>>> startingQueue = new ConcurrentLinkedQueue<Pair<BundleProcessorType, Class<? extends Artifact>>>();
         final Queue<ArtifactProcessingRunnable<? extends Artifact>> artifactQueue = new ConcurrentLinkedQueue<ArtifactProcessingRunnable<? extends Artifact>>();
         final AuthenticatedUser user = this.contextFactory.getUser();
+        final Queue<Pair<Repository, Artifact>> artifacts = new ConcurrentLinkedQueue<Pair<Repository, Artifact>>();
         for (final Class<? extends Artifact> artifactType : this.artifactTypes) {
             for (final Group group : groupsWithBundles) {
                 for (final BundleProcessorType processor : group.getBundleTypes()) {
@@ -87,6 +88,8 @@ public class BundleProcessorExecution {
         this.waitUntilDone(startingQueue);
         for (final ArtifactProcessingRunnable<? extends Artifact> r : new ArrayList<ArtifactProcessingRunnable<? extends Artifact>>(
                                                                                                                                     artifactQueue)) {
+            artifacts.add(new Pair<Repository, Artifact>(r.getCurrentContext().getCurrentGroup().getRootRepository(),
+                                                         r.getArtifact()));
             this.executor.execute(r);
         }
         this.waitUntilDone(artifactQueue);
