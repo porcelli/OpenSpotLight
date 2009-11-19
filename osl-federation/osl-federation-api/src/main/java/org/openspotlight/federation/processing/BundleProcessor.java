@@ -55,6 +55,7 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
@@ -175,14 +176,15 @@ public interface BundleProcessor<T extends Artifact> {
     /**
      * The Interface BundleProcessorContext.
      */
-    public static interface BundleProcessorContext<A extends Artifact> {
+    public static interface BundleProcessorContext {
 
         /**
          * Gets the default artifact finder.
          * 
          * @return the default artifact finder
          */
-        public ArtifactFinder<A> getArtifactFinder();
+        public <A extends Artifact> ArtifactFinder<A> getArtifactFinder( Class<A> artifactType,
+                                                                         Repository repository );
 
         /**
          * Gets the authenticated user.
@@ -190,6 +192,24 @@ public interface BundleProcessor<T extends Artifact> {
          * @return the authenticated user
          */
         public AuthenticatedUser getAuthenticatedUser();
+
+        /**
+         * Gets the graph session.
+         * 
+         * @return the graph session
+         */
+        public SLGraphSession getGraphSession();
+
+        /**
+         * Gets the logger.
+         * 
+         * @return the logger
+         */
+        public DetailedLogger getLogger();
+
+    }
+
+    public static interface CurrentProcessorContext {
 
         /**
          * Gets the current group.
@@ -205,19 +225,7 @@ public interface BundleProcessor<T extends Artifact> {
          */
         public SLNode getCurrentNodeGroup();
 
-        /**
-         * Gets the graph session.
-         * 
-         * @return the graph session
-         */
-        public SLGraphSession getGraphSession();
-
-        /**
-         * Gets the logger.
-         * 
-         * @return the logger
-         */
-        public DetailedLogger getLogger();
+        public Repository getCurrentRepository();
 
         /**
          * Gets the node for group.
@@ -254,6 +262,13 @@ public interface BundleProcessor<T extends Artifact> {
     public void beforeProcessArtifact( T artifact );
 
     /**
+     * Gets the artifact type.
+     * 
+     * @return the artifact type
+     */
+    public Class<T> getArtifactType();
+
+    /**
      * Global processing done.
      * 
      * @param results the results
@@ -265,11 +280,13 @@ public interface BundleProcessor<T extends Artifact> {
      * 
      * @param artifact the artifact
      * @param context the context
+     * @param currentContext the current context
      * @return the last process status
      * @throws Exception the exception
      */
     public LastProcessStatus processArtifact( T artifact,
-                                              BundleProcessorContext<T> context ) throws Exception;
+                                              CurrentProcessorContext currentContext,
+                                              BundleProcessorContext context ) throws Exception;
 
     /**
      * Return artifacts to be processed.
@@ -279,8 +296,10 @@ public interface BundleProcessor<T extends Artifact> {
      * @param toBeReturned the to be returned
      * @return the artifacts to be processed< t>
      */
-    public void selectArtifactsToBeProcessed( ArtifactChanges<T> changes,
-                                              BundleProcessorContext<T> context,
+    public void selectArtifactsToBeProcessed( CurrentProcessorContext currentContext,
+                                              BundleProcessorContext context,
+                                              ArtifactChanges<T> changes,
+
                                               ArtifactsToBeProcessed<T> toBeReturned );
 
 }

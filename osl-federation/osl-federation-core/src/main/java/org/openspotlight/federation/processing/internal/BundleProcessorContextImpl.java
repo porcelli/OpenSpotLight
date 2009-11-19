@@ -1,8 +1,13 @@
 package org.openspotlight.federation.processing.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.JcrSessionArtifactBySourceProvider;
 import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
@@ -14,34 +19,31 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 /**
  * The Class BundleProcessorContextImpl.
  */
-public class BundleProcessorContextImpl<A extends Artifact> implements BundleProcessorContext {
+public class BundleProcessorContextImpl implements BundleProcessorContext {
+
+    private final Map<Repository, JcrSessionArtifactBySourceProvider> providerMap = new HashMap<Repository, JcrSessionArtifactBySourceProvider>();
 
     /** The authenticated user. */
-    private AuthenticatedUser authenticatedUser;
+    private AuthenticatedUser                                         authenticatedUser;
 
     /** The current group. */
-    private Group             currentGroup;
+    private Group                                                     currentGroup;
 
     /** The current node group. */
-    private SLNode            currentNodeGroup;
-
-    /** The default artifact finder. */
-    private ArtifactFinder<A> artifactFinder;
+    private SLNode                                                    currentNodeGroup;
 
     /** The graph session. */
-    private SLGraphSession    graphSession;
+    private SLGraphSession                                            graphSession;
 
     /** The logger. */
-    private DetailedLogger    logger;
+    private DetailedLogger                                            logger;
 
     /** The group context. */
-    private SLContext         groupContext;
+    private SLContext                                                 groupContext;
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext#getartifactFinder()
-     */
-    public ArtifactFinder<A> getArtifactFinder() {
-        return this.artifactFinder;
+    public <A extends Artifact> ArtifactFinder<A> getArtifactFinder( final Class<A> artifactType ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /* (non-Javadoc)
@@ -84,15 +86,6 @@ public class BundleProcessorContextImpl<A extends Artifact> implements BundlePro
      */
     public SLNode getNodeForGroup( final Group group ) {
         return BundleProcessorSupport.getOrCreateGroupNodeFor(this.groupContext, group);
-    }
-
-    /**
-     * Sets the default artifact finder.
-     * 
-     * @param artifactFinder the new default artifact finder
-     */
-    public void setArtifactFinder( final ArtifactFinder<A> artifactFinder ) {
-        this.artifactFinder = artifactFinder;
     }
 
     /**
