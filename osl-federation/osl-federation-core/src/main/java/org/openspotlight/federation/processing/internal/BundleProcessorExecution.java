@@ -33,12 +33,11 @@ public class BundleProcessorExecution {
     private Set<Class<? extends Artifact>> artifactTypes;
 
     public BundleProcessorExecution(
-                                     final JcrConnectionDescriptor descriptor, final GlobalSettings settings,
-                                     final Repository[] repositories, final AuthenticatedUser user ) {
-        this.descriptor = descriptor;
-        this.settings = settings;
+                                     final BundleProcessorContextFactory contextFactory, final Repository[] repositories ) {
+        this.descriptor = this.descriptor;
+        this.settings = this.settings;
         this.repositories = repositories;
-        this.user = user;
+        this.user = this.user;
     }
 
     public void execute() throws BundleExecutionException {

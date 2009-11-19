@@ -26,7 +26,7 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 /**
  * The Class BundleProcessorSupport.
  */
-public class BundleProcessorSupport implements Disposable {
+public class BundleProcessorContextFactory implements Disposable {
 
     /** The graph. */
     private final SLGraph                                   graph;
@@ -55,7 +55,7 @@ public class BundleProcessorSupport implements Disposable {
      * @param loggerFactory the logger factory
      * @throws Exception the exception
      */
-    public BundleProcessorSupport(
+    public BundleProcessorContextFactory(
                                    final AuthenticatedUser user, final JcrConnectionDescriptor descriptor,
                                    final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
                                    final DetailedLoggerFactory loggerFactory ) throws Exception {
