@@ -42,7 +42,14 @@ public class BundleProcessorExecution {
     }
 
     public void execute() throws BundleExecutionException {
-
+        //TODO - SETUP CONTEXT
+        //TODO - START CALLABLE
+        //TODO - SETUP LISTENERS TO INSTALL THE CORRECT CONTEXT 
+        //TODO - START THE SINGLE THREAD QUEUE
+        //TODO - SAVE ALL ARTIFACTS 
+        //TODO - TEST ALL THIS USING JCR (LIKE THE FUTURE ENVIRONMENT)
+        //TODO - TEST ALL THIS USING MOCK STUFF (LIKE THE ONE USED DURING PARSER DEVELOPMENT)
+        final compiler error to final tell me where do i final start working tomorrow ;-)
     }
 
     public void setup() throws Exception {
