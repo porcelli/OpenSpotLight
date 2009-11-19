@@ -18,7 +18,7 @@ import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.log.DetailedLoggerFactory;
 import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry;
-import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry.LoggedObjectInformation;
+import org.openspotlight.federation.log.DetailedLoggerFactory.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
@@ -97,11 +97,11 @@ public class DetailedLoggerTest {
         final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
         final SLNode node = this.graphSession.createContext("ctx").getRootNode().addNode("node1");
         final SLNode node2 = node.addNode("node2");
-        final SLNode node3 = node.addNode("node3");
+        final SLNode node3 = node2.addNode("node3");
+        this.logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "firstEntry", node3, artifact);
 
-        this.logger.log(user.getId(), "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "firstEntry", node3, artifact);
-        this.logger.log(user.getId(), "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);
-        this.logger.log(user.getId(), "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "thirdEntry", node3);
+        this.logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);
+        this.logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "thirdEntry", node3);
 
         final Query query = this.session.getWorkspace().getQueryManager().createQuery(
                                                                                       SharedConstants.DEFAULT_JCR_ROOT_NAME

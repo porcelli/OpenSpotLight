@@ -59,6 +59,7 @@ import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -182,6 +183,13 @@ public interface BundleProcessor<T extends Artifact> {
          * @return the default artifact finder
          */
         public ArtifactFinder<A> getArtifactFinder();
+
+        /**
+         * Gets the authenticated user.
+         * 
+         * @return the authenticated user
+         */
+        public AuthenticatedUser getAuthenticatedUser();
 
         /**
          * Gets the current group.

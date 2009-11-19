@@ -22,12 +22,16 @@ import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderProvider;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
+import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class StartingRunnable.
  */
 public class StartingRunnable<T extends Artifact> implements Runnable {
+
+    private final AuthenticatedUser                                     user;
 
     /** The starting queue. */
     private final Queue<Pair<BundleProcessorType, Class<T>>>            startingQueue;
@@ -74,7 +78,7 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
                              final Queue<ArtifactProcessingRunnable<? extends Artifact>> artifactQueue,
                              final Pair<BundleProcessorType, Class<T>> thisEntry,
                              final ArtifactFinderProvider artifactFinderProvider, final BundleProcessorContext<T> context,
-                             final Repository repository ) {
+                             final Repository repository, final AuthenticatedUser user ) {
         this.startingQueue = startingQueue;
         this.artifactQueue = artifactQueue;
         this.thisEntry = thisEntry;
@@ -85,6 +89,7 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
         this.bundleProcessorType = thisEntry.getK1();
         this.toBeReturned = new ArtifactsToBeProcessedImpl<T>();
         this.changes = new ArtifactChangesImpl<T>();
+        this.user = user;
     }
 
     /* (non-Javadoc)
@@ -143,16 +148,25 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
                 for (final T artifactAlreadyProcessed : this.toBeReturned.getArtifactsAlreadyProcessed()) {
                     artifactAlreadyProcessed.setLastProcessedDate(lastProcessedDate);
                     artifactAlreadyProcessed.setLastProcessStatus(LastProcessStatus.PROCESSED);
-                    //FIXME log
+                    this.context.getLogger().log(
+                                                 this.user,
+                                                 LogEventType.TRACE,
+                                                 "Artifact processed on starting for bundle Processor "
+                                                 + bundleProcessor.getClass().getName(), artifactAlreadyProcessed);
                 }
                 for (final T artifactToProcess : this.toBeReturned.getArtifactsToBeProcessed()) {
-                    this.artifactQueue.add(new ArtifactProcessingRunnable<T>(artifactToProcess, bundleProcessor));
+                    this.artifactQueue.add(new ArtifactProcessingRunnable<T>(this.artifactQueue, artifactToProcess,
+                                                                             bundleProcessor, this.artifactType));
                 }
             } catch (final Exception e) {
                 for (final T artifactWithError : this.toBeReturned.getArtifactsToBeProcessed()) {
                     artifactWithError.setLastProcessedDate(lastProcessedDate);
                     artifactWithError.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
-                    //FIXME log
+                    this.context.getLogger().log(
+                                                 this.user,
+                                                 LogEventType.ERROR,
+                                                 "Error on trying to process artifact on starting for bundle Processor "
+                                                 + bundleProcessor.getClass().getName(), artifactWithError);
                 }
                 throw e;
             }
