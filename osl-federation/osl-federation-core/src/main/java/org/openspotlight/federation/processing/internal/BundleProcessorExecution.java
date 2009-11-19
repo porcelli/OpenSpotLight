@@ -42,7 +42,6 @@ public class BundleProcessorExecution {
     }
 
     public void execute() throws BundleExecutionException {
-        //TODO - SETUP CONTEXT
         //TODO - START CALLABLE
         //TODO - SETUP LISTENERS TO INSTALL THE CORRECT CONTEXT 
         //TODO - START THE SINGLE THREAD QUEUE
