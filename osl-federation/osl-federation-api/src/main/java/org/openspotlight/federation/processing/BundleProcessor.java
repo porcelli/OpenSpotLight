@@ -58,7 +58,10 @@ import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
@@ -222,8 +225,12 @@ public interface BundleProcessor<T extends Artifact> {
          * Gets the current node group.
          * 
          * @return the current node group
+         * @throws SLInvalidCredentialException
+         * @throws SLGraphSessionException
+         * @throws SLNodeTypeNotInExistentHierarchy
          */
-        public SLNode getCurrentNodeGroup();
+        public SLNode getCurrentNodeGroup()
+            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
         public Repository getCurrentRepository();
 
@@ -232,8 +239,12 @@ public interface BundleProcessor<T extends Artifact> {
          * 
          * @param group the group
          * @return the node for group
+         * @throws SLInvalidCredentialException
+         * @throws SLGraphSessionException
+         * @throws SLNodeTypeNotInExistentHierarchy
          */
-        public SLNode getNodeForGroup( Group group );
+        public SLNode getNodeForGroup( Group group )
+            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     }
 

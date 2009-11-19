@@ -23,21 +23,35 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 
     }
 
+    public Class<StreamArtifact> getArtifactType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public org.openspotlight.federation.processing.BundleProcessor.SaveBehavior getSaveBehavior() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     public void globalProcessingDone( final org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults<StreamArtifact> results ) {
         // TODO Auto-generated method stub
 
     }
 
     public LastProcessStatus processArtifact( final StreamArtifact artifact,
-                                              final org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext<StreamArtifact> context )
+                                              final org.openspotlight.federation.processing.BundleProcessor.CurrentProcessorContext currentContext,
+                                              final org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext context )
         throws Exception {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public void selectArtifactsToBeProcessed( final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<StreamArtifact> changes,
-                                              final org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext<StreamArtifact> context,
+    public void selectArtifactsToBeProcessed( final org.openspotlight.federation.processing.BundleProcessor.CurrentProcessorContext currentContext,
+                                              final org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext context,
+                                              final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<StreamArtifact> changes,
                                               final org.openspotlight.federation.processing.BundleProcessor.ArtifactsToBeProcessed<StreamArtifact> toBeReturned ) {
+        // TODO Auto-generated method stub
+
     }
 
 }

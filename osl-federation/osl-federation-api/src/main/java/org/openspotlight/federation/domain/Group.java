@@ -22,28 +22,30 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "group" )
 public class Group implements SimpleNodeType, Serializable, Schedulable {
 
-    private Set<Group>               groups          = new HashSet<Group>();
+    private Set<Group>                groups          = new HashSet<Group>();
 
     /** The repository. */
-    private Repository               repository;
+    private Repository                repository;
 
     /** The type. */
-    private String                   type;
+    private String                    type;
 
     /** The name. */
-    private String                   name;
+    private String                    name;
 
     /** The active. */
-    private boolean                  active;
+    private boolean                   active;
 
     /** The group. */
-    private Group                    group;
+    private Group                     group;
 
-    private volatile int             hashCode;
+    private volatile int              hashCode;
 
-    private Set<BundleProcessorType> bundleTypes     = new HashSet<BundleProcessorType>();
+    private Set<BundleProcessorType>  bundleTypes     = new HashSet<BundleProcessorType>();
 
-    private final List<String>       cronInformation = new ArrayList<String>();
+    private final List<String>        cronInformation = new ArrayList<String>();
+
+    private volatile transient String uniqueName;
 
     public void acceptVisitor( final GroupVisitor visitor ) {
         visitor.visitGroup(this);
@@ -111,6 +113,15 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
      */
     public String getType() {
         return this.type;
+    }
+
+    public String getUniqueName() {
+        String result = this.uniqueName;
+        if (result == null) {
+            result = (this.group != null ? this.group.getUniqueName() : this.repository.getName()) + "/" + this.getName();
+            this.uniqueName = result;
+        }
+        return result;
     }
 
     public int hashCode() {

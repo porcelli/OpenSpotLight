@@ -29,7 +29,7 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 /**
  * The Class StartingRunnable.
  */
-public class StartingRunnable<T extends Artifact> implements Runnable {
+public class StartingRunnable<T extends Artifact> implements RunnableWithBundleContext {
 
     private final AuthenticatedUser                                     user;
 
@@ -55,10 +55,12 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
     private final ArtifactChangesImpl<T>                                changes;
 
     /** The context. */
-    private final BundleProcessorContext<T>                             context;
+    private BundleProcessorContext                                      context;
 
     /** The to be returned. */
     private final ArtifactsToBeProcessedImpl<T>                         toBeReturned;
+
+    private CurrentProcessorContextImpl                                 currentContext;
 
     /** The bundle processor type. */
     private final BundleProcessorType                                   bundleProcessorType;
@@ -77,19 +79,22 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
                              final Queue<Pair<BundleProcessorType, Class<T>>> startingQueue,
                              final Queue<ArtifactProcessingRunnable<? extends Artifact>> artifactQueue,
                              final Pair<BundleProcessorType, Class<T>> thisEntry,
-                             final ArtifactFinderProvider artifactFinderProvider, final BundleProcessorContext<T> context,
-                             final Repository repository, final AuthenticatedUser user ) {
+                             final ArtifactFinderProvider artifactFinderProvider, final Repository repository,
+                             final AuthenticatedUser user ) {
         this.startingQueue = startingQueue;
         this.artifactQueue = artifactQueue;
         this.thisEntry = thisEntry;
         this.artifactFinderProvider = artifactFinderProvider;
         this.artifactType = thisEntry.getK2();
-        this.context = context;
         this.repository = repository;
         this.bundleProcessorType = thisEntry.getK1();
         this.toBeReturned = new ArtifactsToBeProcessedImpl<T>();
         this.changes = new ArtifactChangesImpl<T>();
         this.user = user;
+    }
+
+    public CurrentProcessorContextImpl getCurrentContext() {
+        return this.currentContext;
     }
 
     /* (non-Javadoc)
@@ -144,7 +149,7 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
             this.toBeReturned.setArtifactsToBeProcessed(artifactsToBeProcessed);
             final Date lastProcessedDate = new Date();
             try {
-                bundleProcessor.selectArtifactsToBeProcessed(this.changes, this.context, this.toBeReturned);
+                bundleProcessor.selectArtifactsToBeProcessed(this.currentContext, this.context, this.changes, this.toBeReturned);
                 for (final T artifactAlreadyProcessed : this.toBeReturned.getArtifactsAlreadyProcessed()) {
                     artifactAlreadyProcessed.setLastProcessedDate(lastProcessedDate);
                     artifactAlreadyProcessed.setLastProcessStatus(LastProcessStatus.PROCESSED);
@@ -155,7 +160,10 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
                                                  + bundleProcessor.getClass().getName(), artifactAlreadyProcessed);
                 }
                 for (final T artifactToProcess : this.toBeReturned.getArtifactsToBeProcessed()) {
-                    this.artifactQueue.add(new ArtifactProcessingRunnable<T>(this.artifactQueue, artifactToProcess,
+                    final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
+                    taskCtx.setCurrentGroup(this.currentContext.getCurrentGroup());
+                    taskCtx.setCurrentRepository(this.currentContext.getCurrentRepository());
+                    this.artifactQueue.add(new ArtifactProcessingRunnable<T>(taskCtx, this.artifactQueue, artifactToProcess,
                                                                              bundleProcessor, this.artifactType));
                 }
             } catch (final Exception e) {
@@ -176,5 +184,10 @@ public class StartingRunnable<T extends Artifact> implements Runnable {
         } finally {
             this.startingQueue.remove(this.thisEntry);
         }
+    }
+
+    public void setBundleContext( final BundleProcessorContextImpl context ) {
+        this.context = context;
+
     }
 }
