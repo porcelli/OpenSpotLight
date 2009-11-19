@@ -8,11 +8,16 @@ import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class BundleProcessorContextImpl.
  */
 public class BundleProcessorContextImpl<A extends Artifact> implements BundleProcessorContext {
+
+    /** The authenticated user. */
+    private AuthenticatedUser authenticatedUser;
 
     /** The current group. */
     private Group             currentGroup;
@@ -37,6 +42,13 @@ public class BundleProcessorContextImpl<A extends Artifact> implements BundlePro
      */
     public ArtifactFinder<A> getArtifactFinder() {
         return this.artifactFinder;
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext#getAuthenticatedUser()
+     */
+    public AuthenticatedUser getAuthenticatedUser() {
+        return this.authenticatedUser;
     }
 
     /* (non-Javadoc)
@@ -81,6 +93,15 @@ public class BundleProcessorContextImpl<A extends Artifact> implements BundlePro
      */
     public void setArtifactFinder( final ArtifactFinder<A> artifactFinder ) {
         this.artifactFinder = artifactFinder;
+    }
+
+    /**
+     * Sets the authenticated user.
+     * 
+     * @param authenticatedUser the new authenticated user
+     */
+    public void setAuthenticatedUser( final AuthenticatedUser authenticatedUser ) {
+        this.authenticatedUser = authenticatedUser;
     }
 
     /**

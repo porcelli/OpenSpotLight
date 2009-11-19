@@ -56,6 +56,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,18 +73,20 @@ public enum BundleProcessorManager {
 
     INSTANCE;
 
-    public void executeBundles( final JcrConnectionDescriptor descriptor,
+    public void executeBundles( final AuthenticatedUser user,
+                                final JcrConnectionDescriptor descriptor,
                                 final GlobalSettings settings,
                                 final Repository... repositories ) {
-        new BundleProcessorExecution(descriptor, settings, repositories).execute();
+        new BundleProcessorExecution(descriptor, settings, repositories, user).execute();
     }
 
-    public void executeBundlesInBackground( final JcrConnectionDescriptor descriptor,
+    public void executeBundlesInBackground( final AuthenticatedUser user,
+                                            final JcrConnectionDescriptor descriptor,
                                             final GlobalSettings settings,
                                             final Repository... repositories ) {
         new Thread(new Runnable() {
             public void run() {
-                new BundleProcessorExecution(descriptor, settings, repositories).execute();
+                new BundleProcessorExecution(descriptor, settings, repositories, user).execute();
             }
         }).start();
     }

@@ -16,8 +16,10 @@ import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 public class BundleProcessorExecution {
+    private final AuthenticatedUser        user;
     private final JcrConnectionDescriptor  descriptor;
     private final GlobalSettings           settings;
     private final Repository[]             repositories;
@@ -32,10 +34,11 @@ public class BundleProcessorExecution {
 
     public BundleProcessorExecution(
                                      final JcrConnectionDescriptor descriptor, final GlobalSettings settings,
-                                     final Repository[] repositories ) {
+                                     final Repository[] repositories, final AuthenticatedUser user ) {
         this.descriptor = descriptor;
         this.settings = settings;
         this.repositories = repositories;
+        this.user = user;
     }
 
     public void execute() throws BundleExecutionException {
