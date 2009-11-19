@@ -52,7 +52,6 @@ package org.openspotlight.jcr.provider.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Files.delete;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +60,13 @@ import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 
 import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.util.JcrNodeVisitor;
 import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
@@ -78,24 +78,20 @@ import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 @SuppressWarnings( "all" )
 public class JcrNodeVisitorTest {
 
-    public static final String  TESTDATA_PATH             = "./src/test/resources/configuration/";
-    public static final String  JACKRABBIT_DATA_PATH      = "./target/test-data/JcrNodeVisitorTest/";
-    public static final String  REPOSITORY_DIRECTORY_PATH = JACKRABBIT_DATA_PATH + "repository";
-    public static final String  REPOSITORY_CONFIG_PATH    = TESTDATA_PATH + "JcrNodeVisitorTest/jackrabbit.xml";
-    public static final String  DERBY_SYSTEM_HOME         = JACKRABBIT_DATA_PATH + "derby";
-
     private Session             session;
 
     private TransientRepository repository;
 
+    @After
+    public void closeSession() throws Exception {
+        this.session.logout();
+    }
+
     @Before
     public void initializeSomeConfiguration() throws Exception {
-        delete(JACKRABBIT_DATA_PATH);
+        final JcrConnectionProvider provicer = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        this.session = provicer.openSession();
 
-        System.setProperty("derby.system.home", DERBY_SYSTEM_HOME);
-        this.repository = new TransientRepository(REPOSITORY_CONFIG_PATH, REPOSITORY_DIRECTORY_PATH);
-        final SimpleCredentials creds = new SimpleCredentials("jsmith", "password".toCharArray());
-        this.session = this.repository.login(creds);
         assertThat(this.session, is(notNullValue()));
     }
 
