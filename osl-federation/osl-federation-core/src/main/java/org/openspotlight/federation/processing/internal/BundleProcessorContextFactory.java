@@ -56,9 +56,9 @@ public class BundleProcessorContextFactory implements Disposable {
      * @throws Exception the exception
      */
     public BundleProcessorContextFactory(
-                                   final AuthenticatedUser user, final JcrConnectionDescriptor descriptor,
-                                   final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
-                                   final DetailedLoggerFactory loggerFactory ) throws Exception {
+                                          final AuthenticatedUser user, final JcrConnectionDescriptor descriptor,
+                                          final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
+                                          final DetailedLoggerFactory loggerFactory ) throws Exception {
         super();
         this.user = user;
         this.descriptor = descriptor;
@@ -109,6 +109,22 @@ public class BundleProcessorContextFactory implements Disposable {
         return ctx;
     }
 
+    public ArtifactFinderByRepositoryProviderFactory getArtifactFinderFactory() {
+        return this.artifactFinderFactory;
+    }
+
+    public JcrConnectionDescriptor getDescriptor() {
+        return this.descriptor;
+    }
+
+    public SLGraph getGraph() {
+        return this.graph;
+    }
+
+    public DetailedLoggerFactory getLoggerFactory() {
+        return this.loggerFactory;
+    }
+
     /**
      * Gets the or create group node for.
      * 
@@ -119,5 +135,9 @@ public class BundleProcessorContextFactory implements Disposable {
     public SLNode getOrCreateGroupNodeFor( final SLContext context,
                                            final Group group ) {
         throw new UnsupportedOperationException();//FIXME implement
+    }
+
+    public AuthenticatedUser getUser() {
+        return this.user;
     }
 }

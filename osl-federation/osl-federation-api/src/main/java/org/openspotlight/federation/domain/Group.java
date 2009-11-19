@@ -14,6 +14,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -104,6 +105,11 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     @ParentProperty
     public Repository getRepository() {
         return this.repository;
+    }
+
+    @TransientProperty
+    public Repository getRootRepository() {
+        return this.repository != null ? this.repository : this.getGroup().getRootRepository();
     }
 
     /**
