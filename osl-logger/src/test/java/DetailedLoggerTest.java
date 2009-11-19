@@ -16,9 +16,9 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.log.DetailedLoggerFactory;
-import org.openspotlight.federation.log.DetailedLoggerFactory.LogEntry;
-import org.openspotlight.federation.log.DetailedLoggerFactory.LoggedObjectInformation;
+import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
+import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LogEntry;
+import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
@@ -88,7 +88,7 @@ public class DetailedLoggerTest {
     public void setupAttributes() throws Exception {
         this.session = provider.openSession();
         this.graphSession = graph.openSession(user, "tempRepo");
-        this.logger = DetailedLoggerFactory.createJcrDetailedLogger(this.session);
+        this.logger = DetailedJcrLoggerFactory.createNewLogger(this.session);
     }
 
     @Test

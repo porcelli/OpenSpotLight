@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
@@ -24,7 +25,10 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.log.DetailedLoggerFactory;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.log.DetailedLogger.ErrorCode;
 import org.openspotlight.log.DetailedLogger.LogEventType;
@@ -37,8 +41,7 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 /**
  * The Factory used to create {@link DetailedLogger}.
  */
-public final class DetailedLoggerFactory {
-
+public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
     /**
      * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on Jcr. This kind of logger was implemented 'by
      * hand' instead of using {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be possible to log the
@@ -483,13 +486,32 @@ public final class DetailedLoggerFactory {
 
     }
 
+    final JcrConnectionProvider                 provider;
+
+    private final CopyOnWriteArrayList<Session> oppenedSessions = new CopyOnWriteArrayList<Session>();
+
+    public DetailedJcrLoggerFactory(
+                                     final JcrConnectionDescriptor descriptor ) {
+        this.provider = JcrConnectionProvider.createFromData(descriptor);
+    }
+
+    public void closeResources() {
+        for (final Session session : this.oppenedSessions) {
+            session.logout();
+        }
+
+    }
+
     /**
      * Creates the jcr detailed logger.
      * 
      * @param session the session
      * @return the detailed logger
      */
-    public static DetailedLogger createJcrDetailedLogger( final Session session ) {
+    public DetailedLogger createNewLogger() {
+        final Session session = this.provider.openSession();
+        this.oppenedSessions.add(session);
         return new JcrDetailedLogger(session);
     }
+
 }

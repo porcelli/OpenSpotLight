@@ -15,31 +15,39 @@ import org.openspotlight.security.idm.AuthenticatedUser;
  */
 public class BundleProcessorContextImpl implements BundleProcessorContext {
 
-    private final ArtifactFinderByRepositoryProvider artifactBySourceProviderFactory;
+    private final ArtifactFinderByRepositoryProvider artifactBySourceProvider;
 
     private final AuthenticatedUser                  authenticatedUser;
-    private final SLGraphSession                     graphSession;
 
+    private final SLGraphSession                     graphSession;
     private final DetailedLogger                     logger;
+
+    public BundleProcessorContextImpl(
+                                       final ArtifactFinderByRepositoryProvider artifactBySourceProvider,
+                                       final AuthenticatedUser authenticatedUser, final SLGraphSession graphSession,
+                                       final DetailedLogger logger ) {
+        super();
+        this.artifactBySourceProvider = artifactBySourceProvider;
+        this.authenticatedUser = authenticatedUser;
+        this.graphSession = graphSession;
+        this.logger = logger;
+    }
 
     public <A extends Artifact> ArtifactFinder<A> getArtifactFinder( final Class<A> artifactType,
                                                                      final Repository repository ) {
-        return this.artifactBySourceProviderFactory.getByRepository(repository).getForType(artifactType, source);
+        return this.artifactBySourceProvider.getByRepository(artifactType, repository);
     }
 
     public AuthenticatedUser getAuthenticatedUser() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.authenticatedUser;
     }
 
     public SLGraphSession getGraphSession() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.graphSession;
     }
 
     public DetailedLogger getLogger() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.logger;
     }
 
 }
