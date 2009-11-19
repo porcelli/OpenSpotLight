@@ -237,6 +237,11 @@ public interface BundleProcessor<T extends Artifact> {
 
     }
 
+    public static enum SaveBehavior {
+        PER_ARTIFACT,
+        PER_PROCESSING
+    }
+
     /**
      * Accept kind of artifact.
      * 
@@ -267,6 +272,8 @@ public interface BundleProcessor<T extends Artifact> {
      * @return the artifact type
      */
     public Class<T> getArtifactType();
+
+    public SaveBehavior getSaveBehavior();
 
     /**
      * Global processing done.
