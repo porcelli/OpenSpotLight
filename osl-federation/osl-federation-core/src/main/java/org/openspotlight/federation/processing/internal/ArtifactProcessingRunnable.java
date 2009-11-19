@@ -55,6 +55,10 @@ public class ArtifactProcessingRunnable<T extends Artifact> implements RunnableW
         this.currentContextImpl = currentCtx;
     }
 
+    public T getArtifact() {
+        return this.artifact;
+    }
+
     /**
      * Gets the bundle processor context.
      * 
@@ -68,6 +72,10 @@ public class ArtifactProcessingRunnable<T extends Artifact> implements RunnableW
      * @see org.openspotlight.federation.processing.internal.RunnableWithBundleContext#getCurrentContext()
      */
     public CurrentProcessorContextImpl getCurrentContext() {
+        return this.currentContextImpl;
+    }
+
+    public CurrentProcessorContextImpl getCurrentContextImpl() {
         return this.currentContextImpl;
     }
 

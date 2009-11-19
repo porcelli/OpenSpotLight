@@ -20,7 +20,8 @@ import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
-public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifactFinder<A> {
+public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifactFinder<A>
+    implements ArtifactFinderWithSaveCapabilitie<A> {
 
     private static String ROOT_PATH = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/{0}/artifacts";
 
@@ -105,5 +106,10 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends AbstractArtifa
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
+    }
+
+    public void save( final A artifactToSave ) {
+
+        SimplePersistSupport.convertBeanToJcr(this.rootPath, this.session, artifactToSave);
     }
 }
