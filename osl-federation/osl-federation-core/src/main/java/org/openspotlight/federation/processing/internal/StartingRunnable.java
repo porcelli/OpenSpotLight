@@ -19,7 +19,6 @@ import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.finder.ArtifactFinderProvider;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
 import org.openspotlight.log.DetailedLogger.LogEventType;
@@ -31,39 +30,36 @@ import org.openspotlight.security.idm.AuthenticatedUser;
  */
 public class StartingRunnable<T extends Artifact> implements RunnableWithBundleContext {
 
-    private final AuthenticatedUser                                     user;
+    private final AuthenticatedUser                                           user;
 
     /** The starting queue. */
-    private final Queue<Pair<BundleProcessorType, Class<T>>>            startingQueue;
+    private final Queue<Pair<BundleProcessorType, Class<? extends Artifact>>> startingQueue;
 
     /** The artifact queue. */
-    private final Queue<ArtifactProcessingRunnable<? extends Artifact>> artifactQueue;
+    private final Queue<ArtifactProcessingRunnable<? extends Artifact>>       artifactQueue;
 
     /** The repository. */
-    private final Repository                                            repository;
+    private final Repository                                                  repository;
 
     /** The this entry. */
-    private final Pair<BundleProcessorType, Class<T>>                   thisEntry;
-
-    /** The artifact finder provider. */
-    private final ArtifactFinderProvider                                artifactFinderProvider;
+    private final Pair<BundleProcessorType, Class<? extends Artifact>>        thisEntry;
 
     /** The artifact type. */
-    private final Class<T>                                              artifactType;
+    private final Class<T>                                                    artifactType;
 
     /** The changes. */
-    private final ArtifactChangesImpl<T>                                changes;
+    private final ArtifactChangesImpl<T>                                      changes;
 
     /** The context. */
-    private BundleProcessorContext                                      context;
+    private BundleProcessorContext                                            context;
 
     /** The to be returned. */
-    private final ArtifactsToBeProcessedImpl<T>                         toBeReturned;
+    private final ArtifactsToBeProcessedImpl<T>                               toBeReturned;
 
-    private CurrentProcessorContextImpl                                 currentContext;
+    private CurrentProcessorContextImpl                                       currentContext;
 
     /** The bundle processor type. */
-    private final BundleProcessorType                                   bundleProcessorType;
+    private final BundleProcessorType                                         bundleProcessorType;
 
     /**
      * Instantiates a new starting runnable.
@@ -76,16 +72,14 @@ public class StartingRunnable<T extends Artifact> implements RunnableWithBundleC
      * @param artifactQueue the artifact queue
      */
     public StartingRunnable(
-                             final Queue<Pair<BundleProcessorType, Class<T>>> startingQueue,
+                             final Queue<Pair<BundleProcessorType, Class<? extends Artifact>>> startingQueue,
                              final Queue<ArtifactProcessingRunnable<? extends Artifact>> artifactQueue,
-                             final Pair<BundleProcessorType, Class<T>> thisEntry,
-                             final ArtifactFinderProvider artifactFinderProvider, final Repository repository,
+                             final Pair<BundleProcessorType, Class<? extends Artifact>> thisEntry, final Repository repository,
                              final AuthenticatedUser user ) {
         this.startingQueue = startingQueue;
         this.artifactQueue = artifactQueue;
         this.thisEntry = thisEntry;
-        this.artifactFinderProvider = artifactFinderProvider;
-        this.artifactType = thisEntry.getK2();
+        this.artifactType = (Class<T>)thisEntry.getK2();
         this.repository = repository;
         this.bundleProcessorType = thisEntry.getK1();
         this.toBeReturned = new ArtifactsToBeProcessedImpl<T>();
@@ -111,7 +105,8 @@ public class StartingRunnable<T extends Artifact> implements RunnableWithBundleC
             final Set<T> includedArtifacts = new HashSet<T>();
             final Set<T> notChangedArtifacts = new HashSet<T>();
             final BundleProcessor<T> bundleProcessor = (BundleProcessor<T>)rawBundleProcessor;
-            final ArtifactFinder<T> finder = this.artifactFinderProvider.getFinderForType(this.repository, this.artifactType);
+
+            final ArtifactFinder<T> finder = this.context.getArtifactFinder(this.artifactType, this.repository);
             for (final BundleSource src : this.bundleProcessorType.getSources()) {
 
                 final Set<String> rawNames = finder.retrieveAllArtifactNames(src.getRelative());
