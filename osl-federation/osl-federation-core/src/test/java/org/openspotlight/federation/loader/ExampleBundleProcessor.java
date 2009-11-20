@@ -12,13 +12,18 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
         return false;
     }
 
-    public void afterProcessArtifact( final StreamArtifact artifact,
+    public void didFinishToProcessArtifact( final StreamArtifact artifact,
                                       final LastProcessStatus status ) {
         // TODO Auto-generated method stub
 
     }
 
     public void beforeProcessArtifact( final StreamArtifact artifact ) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void didFinishiProcessing( final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<StreamArtifact> changes ) {
         // TODO Auto-generated method stub
 
     }
@@ -33,7 +38,7 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
         return null;
     }
 
-    public void globalProcessingDone( final org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults<StreamArtifact> results ) {
+    public void didiFinishGlobalProcessing( final org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults<StreamArtifact> results ) {
         // TODO Auto-generated method stub
 
     }

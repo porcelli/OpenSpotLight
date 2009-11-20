@@ -1,4 +1,4 @@
-package org.openspotlight.federation.processing.internal;
+package org.openspotlight.federation.processing.internal.domain;
 
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Repository;

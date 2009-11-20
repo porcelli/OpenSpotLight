@@ -1,16 +1,12 @@
-/**
- * 
- */
-package org.openspotlight.federation.processing.internal;
+package org.openspotlight.federation.processing.internal.task;
 
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
 
-import org.openspotlight.common.Pair;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.Artifact;
@@ -21,45 +17,38 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
+import org.openspotlight.federation.processing.BundleProcessor.SaveBehavior;
+import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
+import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
+import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
+import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class StartingRunnable.
- */
-public class StartingRunnable<T extends Artifact> implements RunnableWithBundleContext {
-
-    private final AuthenticatedUser                                           user;
-
-    /** The starting queue. */
-    private final Queue<Pair<BundleProcessorType, Class<? extends Artifact>>> startingQueue;
-
-    /** The artifact queue. */
-    private final Queue<ArtifactProcessingRunnable<? extends Artifact>>       artifactQueue;
+public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements ArtifactTask {
+    private final AuthenticatedUser             user;
 
     /** The repository. */
-    private final Repository                                                  repository;
-
-    /** The this entry. */
-    private final Pair<BundleProcessorType, Class<? extends Artifact>>        thisEntry;
+    private final Repository                    repository;
 
     /** The artifact type. */
-    private final Class<T>                                                    artifactType;
+    private final Class<T>                      artifactType;
 
     /** The changes. */
-    private final ArtifactChangesImpl<T>                                      changes;
+    private final ArtifactChangesImpl<T>        changes;
 
     /** The context. */
-    private BundleProcessorContext                                            context;
+    private BundleProcessorContext              context;
 
     /** The to be returned. */
-    private final ArtifactsToBeProcessedImpl<T>                               toBeReturned;
+    private final ArtifactsToBeProcessedImpl<T> toBeReturned;
 
-    private CurrentProcessorContextImpl                                       currentContext;
+    private CurrentProcessorContextImpl         currentContext;
 
     /** The bundle processor type. */
-    private final BundleProcessorType                                         bundleProcessorType;
+    private final BundleProcessorType           bundleProcessorType;
+
+    private PriorityBlockingQueue<ArtifactTask> queue;
 
     /**
      * Instantiates a new starting runnable.
@@ -71,30 +60,23 @@ public class StartingRunnable<T extends Artifact> implements RunnableWithBundleC
      * @param repository the repository
      * @param artifactQueue the artifact queue
      */
-    public StartingRunnable(
-                             final Queue<Pair<BundleProcessorType, Class<? extends Artifact>>> startingQueue,
-                             final Queue<ArtifactProcessingRunnable<? extends Artifact>> artifactQueue,
-                             final Pair<BundleProcessorType, Class<? extends Artifact>> thisEntry, final Repository repository,
-                             final AuthenticatedUser user ) {
-        this.startingQueue = startingQueue;
-        this.artifactQueue = artifactQueue;
-        this.thisEntry = thisEntry;
-        this.artifactType = (Class<T>)thisEntry.getK2();
+    public _1_StartingToSearchArtifactsTask(
+
+                                             final Repository repository, final AuthenticatedUser user,
+                                             final Class<? extends Artifact> artifactType,
+                                             final BundleProcessorType bundleProcessorType ) {
+        this.artifactType = (Class<T>)artifactType;
         this.repository = repository;
-        this.bundleProcessorType = thisEntry.getK1();
+        this.bundleProcessorType = bundleProcessorType;
         this.toBeReturned = new ArtifactsToBeProcessedImpl<T>();
         this.changes = new ArtifactChangesImpl<T>();
         this.user = user;
     }
 
-    public CurrentProcessorContextImpl getCurrentContext() {
-        return this.currentContext;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
-    public void run() {
+    public void doTask() {
         try {
             final BundleProcessor<?> rawBundleProcessor = this.bundleProcessorType.getType().newInstance();
             if (!rawBundleProcessor.acceptKindOfArtifact(this.artifactType)) {
@@ -158,8 +140,10 @@ public class StartingRunnable<T extends Artifact> implements RunnableWithBundleC
                     final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
                     taskCtx.setCurrentGroup(this.currentContext.getCurrentGroup());
                     taskCtx.setCurrentRepository(this.currentContext.getCurrentRepository());
-                    this.artifactQueue.add(new ArtifactProcessingRunnable<T>(taskCtx, this.artifactQueue, artifactToProcess,
-                                                                             bundleProcessor, this.artifactType));
+                    this.queue.add(new _2_EachArtifactTask<T>(taskCtx, artifactToProcess, bundleProcessor, this.artifactType));
+                    if (bundleProcessor.getSaveBehavior().equals(SaveBehavior.PER_PROCESSING)) {
+
+                    }
                 }
             } catch (final Exception e) {
                 for (final T artifactWithError : this.toBeReturned.getArtifactsToBeProcessed()) {
@@ -176,13 +160,20 @@ public class StartingRunnable<T extends Artifact> implements RunnableWithBundleC
 
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);
-        } finally {
-            this.startingQueue.remove(this.thisEntry);
         }
     }
 
+    public CurrentProcessorContextImpl getCurrentContext() {
+        return this.currentContext;
+    }
+
     public void setBundleContext( final BundleProcessorContextImpl context ) {
-        this.context = context;
+        this.context = this.context;
+
+    }
+
+    public void setQueue( final PriorityBlockingQueue<ArtifactTask> queue ) {
+        this.queue = queue;
 
     }
 }

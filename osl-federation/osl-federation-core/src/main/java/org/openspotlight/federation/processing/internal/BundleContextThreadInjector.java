@@ -6,7 +6,7 @@ import org.openspotlight.common.concurrent.CautiousExecutor.TaskListener;
 import org.openspotlight.common.concurrent.CautiousExecutor.ThreadListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLContext;
+import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
 
 public class BundleContextThreadInjector implements ThreadListener, TaskListener {
 
@@ -41,8 +41,6 @@ public class BundleContextThreadInjector implements ThreadListener, TaskListener
             try {
                 final RunnableWithBundleContext rwbc = (RunnableWithBundleContext)r;
                 final BundleProcessorContextImpl ctx = this.contextsPerThread.get(t);
-                final SLContext groupContext = ctx.getGraphSession().getContext("groupContext");
-                rwbc.getCurrentContext().setGroupContext(groupContext);
                 rwbc.setBundleContext(ctx);
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

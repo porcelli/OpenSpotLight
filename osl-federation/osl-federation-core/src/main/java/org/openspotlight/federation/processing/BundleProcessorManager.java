@@ -49,13 +49,18 @@
 
 package org.openspotlight.federation.processing;
 
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.finder.ArtifactFinderByRepositoryProviderFactory;
+import org.openspotlight.federation.finder.ArtifactTypeRegistry;
+import org.openspotlight.federation.processing.internal.BundleProcessorContextFactory;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.log.DetailedLoggerFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
@@ -76,17 +81,34 @@ public enum BundleProcessorManager {
     public void executeBundles( final AuthenticatedUser user,
                                 final JcrConnectionDescriptor descriptor,
                                 final GlobalSettings settings,
-                                final Repository... repositories ) {
-        new BundleProcessorExecution(descriptor, settings, repositories, user).execute();
+                                final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
+                                final DetailedLoggerFactory loggerFactory,
+                                final Repository... repositories ) throws Exception {
+
+        final BundleProcessorContextFactory factory = new BundleProcessorContextFactory(user, descriptor, artifactFinderFactory,
+                                                                                        loggerFactory);
+        new BundleProcessorExecution(factory, settings, repositories, ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes());
     }
 
     public void executeBundlesInBackground( final AuthenticatedUser user,
                                             final JcrConnectionDescriptor descriptor,
                                             final GlobalSettings settings,
+                                            final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
+                                            final DetailedLoggerFactory loggerFactory,
                                             final Repository... repositories ) {
         new Thread(new Runnable() {
             public void run() {
-                new BundleProcessorExecution(descriptor, settings, repositories, user).execute();
+                try {
+                    final BundleProcessorContextFactory factory = new BundleProcessorContextFactory(user, descriptor,
+                                                                                                    artifactFinderFactory,
+                                                                                                    loggerFactory);
+                    new BundleProcessorExecution(factory, settings, repositories,
+                                                 ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes());
+
+                } catch (final Exception e) {
+                    Exceptions.catchAndLog(e);
+                }
+
             }
         }).start();
     }

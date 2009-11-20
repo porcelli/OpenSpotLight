@@ -184,6 +184,8 @@ public interface BundleProcessor<T extends Artifact> {
         /**
          * Gets the default artifact finder.
          * 
+         * @param artifactType the artifact type
+         * @param repository the repository
          * @return the default artifact finder
          */
         public <A extends Artifact> ArtifactFinder<A> getArtifactFinder( Class<A> artifactType,
@@ -212,6 +214,9 @@ public interface BundleProcessor<T extends Artifact> {
 
     }
 
+    /**
+     * The Interface CurrentProcessorContext.
+     */
     public static interface CurrentProcessorContext {
 
         /**
@@ -225,13 +230,18 @@ public interface BundleProcessor<T extends Artifact> {
          * Gets the current node group.
          * 
          * @return the current node group
-         * @throws SLInvalidCredentialException
-         * @throws SLGraphSessionException
-         * @throws SLNodeTypeNotInExistentHierarchy
+         * @throws SLInvalidCredentialException the SL invalid credential exception
+         * @throws SLGraphSessionException the SL graph session exception
+         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
          */
         public SLNode getCurrentNodeGroup()
             throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
+        /**
+         * Gets the current repository.
+         * 
+         * @return the current repository
+         */
         public Repository getCurrentRepository();
 
         /**
@@ -239,17 +249,24 @@ public interface BundleProcessor<T extends Artifact> {
          * 
          * @param group the group
          * @return the node for group
-         * @throws SLInvalidCredentialException
-         * @throws SLGraphSessionException
-         * @throws SLNodeTypeNotInExistentHierarchy
+         * @throws SLInvalidCredentialException the SL invalid credential exception
+         * @throws SLGraphSessionException the SL graph session exception
+         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
          */
         public SLNode getNodeForGroup( Group group )
             throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
 
     }
 
+    /**
+     * The Enum SaveBehavior.
+     */
     public static enum SaveBehavior {
+
+        /** The PE r_ artifact. */
         PER_ARTIFACT,
+
+        /** The PE r_ processing. */
         PER_PROCESSING
     }
 
@@ -267,7 +284,7 @@ public interface BundleProcessor<T extends Artifact> {
      * @param artifact the artifact
      * @param status the status
      */
-    public void afterProcessArtifact( T artifact,
+    public void didFinishToProcessArtifact( T artifact,
                                       LastProcessStatus status );
 
     /**
@@ -278,12 +295,24 @@ public interface BundleProcessor<T extends Artifact> {
     public void beforeProcessArtifact( T artifact );
 
     /**
+     * Did finishi processing.
+     * 
+     * @param changes the changes
+     */
+    public void didFinishiProcessing( ArtifactChanges<T> changes );
+
+    /**
      * Gets the artifact type.
      * 
      * @return the artifact type
      */
     public Class<T> getArtifactType();
 
+    /**
+     * Gets the save behavior.
+     * 
+     * @return the save behavior
+     */
     public SaveBehavior getSaveBehavior();
 
     /**
@@ -291,7 +320,7 @@ public interface BundleProcessor<T extends Artifact> {
      * 
      * @param results the results
      */
-    public void globalProcessingDone( ArtifactProcessingResults<T> results );
+    public void didiFinishGlobalProcessing( ArtifactProcessingResults<T> results );
 
     /**
      * Process artifact.
@@ -312,6 +341,7 @@ public interface BundleProcessor<T extends Artifact> {
      * @param changes the changes
      * @param context the context
      * @param toBeReturned the to be returned
+     * @param currentContext the current context
      * @return the artifacts to be processed< t>
      */
     public void selectArtifactsToBeProcessed( CurrentProcessorContext currentContext,

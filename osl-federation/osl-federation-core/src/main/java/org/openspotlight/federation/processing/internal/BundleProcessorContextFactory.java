@@ -12,6 +12,7 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.finder.ArtifactFinderByRepositoryProvider;
 import org.openspotlight.federation.finder.ArtifactFinderByRepositoryProviderFactory;
+import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
