@@ -24,6 +24,11 @@
 			<artifactId>osl-federation-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-logger</artifactId>
+			<scope>compile</scope>
+		</dependency>
 		<!-- Internal dependencies -->
 		<dependency>
 			<groupId>org.openspotlight</groupId>

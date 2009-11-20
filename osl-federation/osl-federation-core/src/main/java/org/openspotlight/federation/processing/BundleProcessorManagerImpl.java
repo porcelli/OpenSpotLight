@@ -65,16 +65,16 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
 /**
- * The {@link BundleProcessorManager} is the class reposable to get an {@link GlobalSettings} and to process all {@link Artifact
- * artifacts} on this {@link GlobalSettings}. The {@link BundleProcessorManager} should get the {@link ArtifactSource bundle's}
- * {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each {@link BundleProcessorType type}
- * . After all {@link BundleProcessor processors} was found, the {@link BundleProcessorManager} should distribute the processing
- * job in some threads obeying the {@link GlobalSettings#getNumberOfParallelThreads() number of threads} configured for this
- * {@link Repository}.
+ * The {@link BundleProcessorManagerImpl} is the class reposable to get an {@link GlobalSettings} and to process all
+ * {@link Artifact artifacts} on this {@link GlobalSettings}. The {@link BundleProcessorManagerImpl} should get the
+ * {@link ArtifactSource bundle's} {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each
+ * {@link BundleProcessorType type} . After all {@link BundleProcessor processors} was found, the
+ * {@link BundleProcessorManagerImpl} should distribute the processing job in some threads obeying the
+ * {@link GlobalSettings#getNumberOfParallelThreads() number of threads} configured for this {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public enum BundleProcessorManager {
+public enum BundleProcessorManagerImpl implements BundleProcessorManager {
 
     INSTANCE;
 
@@ -87,7 +87,7 @@ public enum BundleProcessorManager {
 
         final BundleProcessorContextFactory factory = new BundleProcessorContextFactory(user, descriptor, artifactFinderFactory,
                                                                                         loggerFactory);
-        new BundleProcessorExecution(factory, settings, repositories, ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes());
+        new BundleProcessorExecution(factory, settings, repositories, ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes()).execute();
     }
 
     public void executeBundlesInBackground( final AuthenticatedUser user,
@@ -103,7 +103,7 @@ public enum BundleProcessorManager {
                                                                                                     artifactFinderFactory,
                                                                                                     loggerFactory);
                     new BundleProcessorExecution(factory, settings, repositories,
-                                                 ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes());
+                                                 ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes()).execute();
 
                 } catch (final Exception e) {
                     Exceptions.catchAndLog(e);

@@ -172,8 +172,11 @@ public class Files {
         if (file.isFile()) {
             setOfFiles.add(getNormalizedFileName(file));
         } else if (file.isDirectory()) {
-            for (final File f : file.listFiles()) {
-                listFileNamesFrom(setOfFiles, basePath, f);
+            final File[] files = file.listFiles();
+            if (files != null) {
+                for (final File f : files) {
+                    listFileNamesFrom(setOfFiles, basePath, f);
+                }
             }
         }
     }

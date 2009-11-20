@@ -14,6 +14,7 @@ import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
@@ -98,7 +99,7 @@ public class DetailedLoggerTest {
     @Test
     public void shouldLogSomeStuff() throws Exception {
 
-        final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
+        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(StreamArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
         final SLNode node = this.graphSession.createContext("ctx").getRootNode().addNode("node1");
         final SLNode node2 = node.addNode("node2");
         final SLNode node3 = node2.addNode("node3");

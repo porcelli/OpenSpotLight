@@ -43,7 +43,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
     /** The to be returned. */
     private final ArtifactsToBeProcessedImpl<T> toBeReturned;
 
-    private CurrentProcessorContextImpl         currentContext;
+    private final CurrentProcessorContextImpl   currentContext;
 
     /** The bundle processor type. */
     private final BundleProcessorType           bundleProcessorType;
@@ -61,10 +61,12 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
      * @param artifactQueue the artifact queue
      */
     public _1_StartingToSearchArtifactsTask(
+                                             final CurrentProcessorContextImpl currentContext,
 
                                              final Repository repository, final AuthenticatedUser user,
                                              final Class<? extends Artifact> artifactType,
                                              final BundleProcessorType bundleProcessorType ) {
+        this.currentContext = currentContext;
         this.artifactType = (Class<T>)artifactType;
         this.repository = repository;
         this.bundleProcessorType = bundleProcessorType;
@@ -92,6 +94,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
             for (final BundleSource src : this.bundleProcessorType.getSources()) {
 
                 final Set<String> rawNames = finder.retrieveAllArtifactNames(src.getRelative());
+                System.err.println("loaded " + rawNames);//FIXME REMOVE THIS!
                 final FilterResult newNames = filterNamesByPattern(rawNames, src.getIncludeds(), src.getExcludeds(), false);
                 for (final String name : newNames.getIncludedNames()) {
                     final T savedArtifact = finder.findByPath(name);
@@ -172,7 +175,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
     }
 
     public void setBundleContext( final BundleProcessorContextImpl context ) {
-        this.context = this.context;
+        this.context = context;
 
     }
 

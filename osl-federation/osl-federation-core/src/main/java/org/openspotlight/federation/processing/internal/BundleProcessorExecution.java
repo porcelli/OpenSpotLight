@@ -6,12 +6,9 @@ package org.openspotlight.federation.processing.internal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import org.openspotlight.common.Pair;
 import org.openspotlight.common.concurrent.CautiousExecutor;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
@@ -21,6 +18,7 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
+import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
@@ -89,40 +87,58 @@ public class BundleProcessorExecution {
      * @throws BundleExecutionException the bundle execution exception
      */
     public void execute() throws BundleExecutionException {
-        final Set<Group> groupsWithBundles = new HashSet<Group>();
-        final GroupVisitor visitor = new GroupVisitor() {
-            public void visitGroup( final Group group ) {
-                if (group.getBundleTypes() != null && group.getBundleTypes().size() > 0) {
-                    groupsWithBundles.add(group);
-                }
-            }
-        };
-        for (final Repository repository : this.repositories) {
-            repository.acceptGroupVisitor(visitor);
-        }
+        final Set<Group> groupsWithBundles = this.findGroupsWithBundles();
 
+        this.fillTaskQueue(groupsWithBundles);
+
+        final List<ArtifactWorker> workers = this.setupWorkers();
+
+        this.monitorThreadActivity(workers);
+        this.contextFactory.closeResources();
+    }
+
+    private void fillTaskQueue( final Set<Group> groupsWithBundles ) {
         final AuthenticatedUser user = this.contextFactory.getUser();
-        final Queue<Pair<Repository, Artifact>> artifacts = new ConcurrentLinkedQueue<Pair<Repository, Artifact>>();
         for (final Class<? extends Artifact> artifactType : this.artifactTypes) {
             for (final Group group : groupsWithBundles) {
                 for (final BundleProcessorType processor : group.getBundleTypes()) {
                     final Repository repository = group.getRootRepository();
-
-                    final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(repository, user, artifactType,
-                                                                                             processor);
+                    final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
+                    currentContextImpl.setCurrentGroup(group);
+                    currentContextImpl.setCurrentRepository(repository);
+                    final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(currentContextImpl, repository,
+                                                                                             user, artifactType, processor);
                     this.queue.add(task);
                 }
             }
         }
+    }
 
-        final List<ArtifactWorker> workers = new ArrayList<ArtifactWorker>(this.threads);
-
-        for (int i = 0; i < this.threads; i++) {
-            final ArtifactWorker worker = new ArtifactWorker(this.defaultSleepIntervalInMillis, this.queue);
-            workers.add(worker);
-            this.executor.execute(worker);
+    private Set<Group> findGroupsWithBundles() {
+        final Set<Group> groupsWithBundles = new HashSet<Group>();
+        final GroupVisitor visitor = new GroupVisitor() {
+            public void visitGroup( final Group group ) {
+                if (group.isActive()) {
+                    if (group.getBundleTypes() != null && group.getBundleTypes().size() > 0) {
+                        for (final BundleProcessorType type : group.getBundleTypes()) {
+                            if (type.isActive()) {
+                                groupsWithBundles.add(group);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        for (final Repository repository : this.repositories) {
+            if (repository.isActive()) {
+                repository.acceptGroupVisitor(visitor);
+            }
         }
+        return groupsWithBundles;
+    }
 
+    private void monitorThreadActivity( final List<ArtifactWorker> workers ) {
         monitor: while (true) {
             try {
                 Thread.sleep(this.defaultSleepIntervalInMillis);
@@ -130,31 +146,31 @@ public class BundleProcessorExecution {
                 Exceptions.catchAndLog(e);
             }
             if (this.queue.isEmpty()) {
-                for (final ArtifactWorker worker : workers) {
+                boolean hasAnyWorker = false;
+                findingWorkers: for (final ArtifactWorker worker : workers) {
                     if (!worker.isWorking()) {
                         worker.stop();
-                        continue monitor;
+                        continue findingWorkers;
+                    } else {
+                        hasAnyWorker = true;
                     }
                 }
-                //anybore is working
-                break monitor;
+                if (!hasAnyWorker) {
+                    break monitor;
+                }
             }
         }
-        this.contextFactory.closeResources();
     }
 
-    /**
-     * Wait until done.
-     * 
-     * @param startingQueue the starting queue
-     */
-    private void waitUntilDone( final Queue<?> startingQueue ) {
-        while (startingQueue.size() > 0) {
-            try {
-                Thread.sleep(this.defaultSleepIntervalInMillis);
-            } catch (final InterruptedException e) {
-                Exceptions.catchAndLog(e);
-            }
+    private List<ArtifactWorker> setupWorkers() {
+        final List<ArtifactWorker> workers = new ArrayList<ArtifactWorker>(this.threads);
+
+        for (int i = 0; i < this.threads; i++) {
+            final ArtifactWorker worker = new ArtifactWorker(this.defaultSleepIntervalInMillis, this.queue);
+            workers.add(worker);
+            this.executor.execute(worker);
         }
+        return workers;
     }
+
 }

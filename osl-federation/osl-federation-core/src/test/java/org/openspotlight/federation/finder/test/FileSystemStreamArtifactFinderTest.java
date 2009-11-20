@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 
@@ -55,9 +56,9 @@ public class FileSystemStreamArtifactFinderTest {
      */
     @Test
     public void shouldLoadNotChangedArtifact() throws Exception {
-        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath("folder/file_not_changed1");
-        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByPath("folder/subfolder/file_not_changed1");
-        final StreamArtifact streamArtifact3 = this.streamArtifactFinder.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
+        final ArtifactWithSyntaxInformation streamArtifact1 = this.streamArtifactFinder.findByPath("folder/file_not_changed1");
+        final ArtifactWithSyntaxInformation streamArtifact2 = this.streamArtifactFinder.findByPath("folder/subfolder/file_not_changed1");
+        final ArtifactWithSyntaxInformation streamArtifact3 = this.streamArtifactFinder.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
         assertThat(streamArtifact1, is(notNullValue()));
         assertThat(streamArtifact2, is(notNullValue()));
         assertThat(streamArtifact3, is(notNullValue()));
