@@ -86,6 +86,10 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
         return this.currentContextImpl;
     }
 
+    public int getPriority() {
+        return 2;
+    }
+
     public void setBundleContext( final BundleProcessorContextImpl context ) {
         this.bundleProcessorContext = context;
 
