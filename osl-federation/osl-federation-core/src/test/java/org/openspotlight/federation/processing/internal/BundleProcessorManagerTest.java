@@ -39,14 +39,14 @@ public class BundleProcessorManagerTest {
 
         source = new ArtifactSource();
         source.setName("classpath");
-        source.setInitialLookup("./src");
+        source.setInitialLookup("../../../OpenSpotLight");
 
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         user = securityFactory.createIdentityManager(descriptor).authenticate(simpleUser, "password");
         settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(1000);
-        settings.setNumberOfParallelThreads(4);
+        settings.setNumberOfParallelThreads(8);
         loggerFactory = new DetailedJcrLoggerFactory(descriptor);
         artifactFinderFactory = new LocalSourceArtifactFinderByRepositoryProviderFactory(source, false);
     }
@@ -69,7 +69,7 @@ public class BundleProcessorManagerTest {
         final BundleSource bundleSource = new BundleSource();
         bundleType.getSources().add(bundleSource);
         bundleSource.setBundleProcessorType(bundleType);
-        bundleSource.setRelative(source.getInitialLookup());
+        bundleSource.setRelative("/osl-federation");
         bundleSource.getIncludeds().add("**/*.java");
 
         bundleProcessor.executeBundles(user, descriptor, settings, artifactFinderFactory, loggerFactory, repository);

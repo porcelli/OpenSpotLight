@@ -71,10 +71,18 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
         final String rawPath = initialPath == null ? "." : initialPath;
         try {
             final Set<String> result = new HashSet<String>();
+            String initialLookup = this.artifactSource.getInitialLookup();
+            if (initialLookup.endsWith("/")) {
+                initialLookup = initialLookup.substring(0, initialLookup.length() - 1);
+            }
+            String newPath = rawPath;
+            if (newPath.startsWith("/")) {
+                newPath = newPath.substring(1);
+            }
+            final String location = MessageFormat.format("{0}/{1}", this.artifactSource.getInitialLookup(), newPath);
 
-            final String location = MessageFormat.format("{0}/{1}", this.artifactSource.getInitialLookup(), rawPath);
+            final String pathToRemove = new File(this.artifactSource.getInitialLookup()).getCanonicalPath();
 
-            final String pathToRemove = new File(this.artifactSource.getInitialLookup()).getCanonicalPath() + "/";
             final Set<String> pathList = Files.listFileNamesFrom(location);
 
             for (final String p : pathList) {

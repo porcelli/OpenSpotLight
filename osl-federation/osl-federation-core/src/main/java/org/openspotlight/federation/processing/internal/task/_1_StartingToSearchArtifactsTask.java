@@ -17,7 +17,6 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
-import org.openspotlight.federation.processing.BundleProcessor.SaveBehavior;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
 import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
@@ -94,7 +93,6 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
             for (final BundleSource src : this.bundleProcessorType.getSources()) {
 
                 final Set<String> rawNames = finder.retrieveAllArtifactNames(src.getRelative());
-                System.err.println("loaded " + rawNames);//FIXME REMOVE THIS!
                 final FilterResult newNames = filterNamesByPattern(rawNames, src.getIncludeds(), src.getExcludeds(), false);
                 for (final String name : newNames.getIncludedNames()) {
                     final T savedArtifact = finder.findByPath(name);
@@ -124,8 +122,8 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
             final Set<T> artifactsAlreadyProcessed = new HashSet<T>();
             this.toBeReturned.setArtifactsAlreadyProcessed(artifactsAlreadyProcessed);
             final Set<T> artifactsToBeProcessed = new HashSet<T>();
-            artifactsAlreadyProcessed.addAll(changedArtifacts);
-            artifactsAlreadyProcessed.addAll(includedArtifacts);
+            artifactsToBeProcessed.addAll(changedArtifacts);
+            artifactsToBeProcessed.addAll(includedArtifacts);
             this.toBeReturned.setArtifactsToBeProcessed(artifactsToBeProcessed);
             final Date lastProcessedDate = new Date();
             try {
@@ -144,10 +142,9 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
                     taskCtx.setCurrentGroup(this.currentContext.getCurrentGroup());
                     taskCtx.setCurrentRepository(this.currentContext.getCurrentRepository());
                     this.queue.add(new _2_EachArtifactTask<T>(taskCtx, artifactToProcess, bundleProcessor, this.artifactType));
-                    if (bundleProcessor.getSaveBehavior().equals(SaveBehavior.PER_PROCESSING)) {
-
-                    }
                 }
+                this.queue.add(new _4_EndingToProcessArtifactsTask<T>(this.changes, bundleProcessor));
+
             } catch (final Exception e) {
                 for (final T artifactWithError : this.toBeReturned.getArtifactsToBeProcessed()) {
                     artifactWithError.setLastProcessedDate(lastProcessedDate);
