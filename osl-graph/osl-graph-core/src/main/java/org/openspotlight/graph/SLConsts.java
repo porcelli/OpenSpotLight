@@ -57,6 +57,8 @@ import org.openspotlight.common.SharedConstants;
  */
 public class SLConsts implements SharedConstants {
 
+    public static final String DEFAULT_GROUP_CONTEXT                       = "groupContext";
+
     /** The Constant DEFAULT_REPOSITORY_NAME. */
     public static final String DEFAULT_REPOSITORY_NAME                     = "default";
 
