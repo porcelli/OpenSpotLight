@@ -299,7 +299,7 @@ public interface BundleProcessor<T extends Artifact> {
      * 
      * @param changes the changes
      */
-    public void didFinishiProcessing( ArtifactChanges<T> changes );
+    public void didFinishProcessing( ArtifactChanges<T> changes );
 
     /**
      * Gets the artifact type.

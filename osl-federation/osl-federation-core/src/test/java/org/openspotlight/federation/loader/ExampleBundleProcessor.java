@@ -23,7 +23,7 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 
     }
 
-    public void didFinishiProcessing( final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<StreamArtifact> changes ) {
+    public void didFinishProcessing( final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<StreamArtifact> changes ) {
         // TODO Auto-generated method stub
 
     }
