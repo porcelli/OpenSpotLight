@@ -37,7 +37,7 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements Arti
      * @see org.openspotlight.federation.processing.internal.task.ArtifactTask#doTask()
      */
     public void doTask() {
-        this.processor.didFinishiProcessing(this.changes);
+        this.processor.didFinishProcessing(this.changes);
     }
 
     /* (non-Javadoc)
