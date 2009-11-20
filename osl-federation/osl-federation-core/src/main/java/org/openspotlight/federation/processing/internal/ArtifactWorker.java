@@ -15,16 +15,16 @@ public class ArtifactWorker implements RunnableWithBundleContext {
     private final AtomicBoolean                       working = new AtomicBoolean(false);
     private final AtomicBoolean                       stopped = new AtomicBoolean(false);
 
-    private final int                                 timeoutInSeconds;
+    private final long                                timeoutInMilli;
 
     private final PriorityBlockingQueue<ArtifactTask> queue;
 
     private BundleProcessorContextImpl                context;
 
     public ArtifactWorker(
-                           final int timeoutInSeconds, final PriorityBlockingQueue<ArtifactTask> queue ) {
+                           final long timeoutInMilli, final PriorityBlockingQueue<ArtifactTask> queue ) {
         this.queue = queue;
-        this.timeoutInSeconds = timeoutInSeconds;
+        this.timeoutInMilli = timeoutInMilli;
     }
 
     public boolean isWorking() {
@@ -34,7 +34,7 @@ public class ArtifactWorker implements RunnableWithBundleContext {
     public void run() {
         infiniteLoop: while (true) {
             try {
-                final ArtifactTask task = this.queue.poll(this.timeoutInSeconds, TimeUnit.SECONDS);
+                final ArtifactTask task = this.queue.poll(this.timeoutInMilli, TimeUnit.MILLISECONDS);
                 if (task == null) {
                     if (!this.stopped.get()) {
                         continue infiniteLoop;
