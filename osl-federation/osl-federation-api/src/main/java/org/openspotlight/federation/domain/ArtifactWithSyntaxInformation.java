@@ -1,11 +1,12 @@
 package org.openspotlight.federation.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
     /** The syntax information set. */
-    private Set<SyntaxInformation> syntaxInformationSet;
+    private Set<SyntaxInformation> syntaxInformationSet = new HashSet<SyntaxInformation>();
 
     public ArtifactWithSyntaxInformation() {
         super();
@@ -21,19 +22,19 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
      * @param type the type
      */
     public void addSyntaxInformation( final int lineStart,
-                                         final int lineEnd,
-                                         final int columnStart,
-                                         final int columnEnd,
-                                         final SyntaxInformationType type ) {
-                                            final SyntaxInformation syntaxInformation = new SyntaxInformation();
-                                            syntaxInformation.setColumnEnd(columnEnd);
-                                            syntaxInformation.setColumnStart(columnStart);
-                                            syntaxInformation.setLineEnd(lineEnd);
-                                            syntaxInformation.setLineStart(lineStart);
-                                            syntaxInformation.setStreamArtifact(this);
-                                            syntaxInformation.setType(type);
-                                            this.syntaxInformationSet.add(syntaxInformation);
-                                        }
+                                      final int lineEnd,
+                                      final int columnStart,
+                                      final int columnEnd,
+                                      final SyntaxInformationType type ) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation();
+        syntaxInformation.setColumnEnd(columnEnd);
+        syntaxInformation.setColumnStart(columnStart);
+        syntaxInformation.setLineEnd(lineEnd);
+        syntaxInformation.setLineStart(lineStart);
+        syntaxInformation.setStreamArtifact(this);
+        syntaxInformation.setType(type);
+        this.syntaxInformationSet.add(syntaxInformation);
+    }
 
     /**
      * Clear syntax information set.
@@ -61,19 +62,19 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
      * @param type the type
      */
     public void removeSyntaxInformation( final int lineStart,
-                                            final int lineEnd,
-                                            final int columnStart,
-                                            final int columnEnd,
-                                            final SyntaxInformationType type ) {
-                                                final SyntaxInformation syntaxInformation = new SyntaxInformation();
-                                                syntaxInformation.setColumnEnd(columnEnd);
-                                                syntaxInformation.setColumnStart(columnStart);
-                                                syntaxInformation.setLineEnd(lineEnd);
-                                                syntaxInformation.setLineStart(lineStart);
-                                                syntaxInformation.setStreamArtifact(this);
-                                                syntaxInformation.setType(type);
-                                                this.syntaxInformationSet.remove(syntaxInformation);
-                                            }
+                                         final int lineEnd,
+                                         final int columnStart,
+                                         final int columnEnd,
+                                         final SyntaxInformationType type ) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation();
+        syntaxInformation.setColumnEnd(columnEnd);
+        syntaxInformation.setColumnStart(columnStart);
+        syntaxInformation.setLineEnd(lineEnd);
+        syntaxInformation.setLineStart(lineStart);
+        syntaxInformation.setStreamArtifact(this);
+        syntaxInformation.setType(type);
+        this.syntaxInformationSet.remove(syntaxInformation);
+    }
 
     /**
      * Removes the syntax information.
