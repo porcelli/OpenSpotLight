@@ -8,7 +8,7 @@ import javax.servlet.ServletContextListener;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.processing.BundleProcessorManager;
+import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
 import org.openspotlight.federation.scheduler.Scheduler;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -62,7 +62,7 @@ public class OslContextListener implements ServletContextListener, ServletContex
             ConfigurationSupport.initializeConfiguration(false, jcrSession);
             jcrSession.logout();
             final JcrConfigurationManagerProvider configurationManagerProvider = new JcrConfigurationManagerProvider(provider);
-            scheduler.setBundleProcessorManager(new BundleProcessorManager(user, provider, configurationManagerProvider));
+            scheduler.setBundleProcessorManager(new BundleProcessorManagerImpl(user, provider, configurationManagerProvider));
             scheduler.setConfigurationManagerProvider(configurationManagerProvider);
             scheduler.start();
             arg0.getServletContext().setAttribute(SCHEDULER, scheduler);

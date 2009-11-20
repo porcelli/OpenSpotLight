@@ -5,6 +5,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
@@ -57,6 +58,10 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
         this.bundleProcessor.beforeProcessArtifact(this.artifact);
         LastProcessStatus result;
         try {
+            if (this.artifact instanceof ArtifactWithSyntaxInformation) {
+                final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation)this.artifact;
+                artifactWithInfo.clearSyntaxInformationSet();
+            }
             result = this.bundleProcessor.processArtifact(this.artifact, this.currentContextImpl, this.bundleProcessorContext);
             if (SaveBehavior.PER_ARTIFACT.equals(this.bundleProcessor.getSaveBehavior())) {
                 this.bundleProcessorContext.getGraphSession().save();

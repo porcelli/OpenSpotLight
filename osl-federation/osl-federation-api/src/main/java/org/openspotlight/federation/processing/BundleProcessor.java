@@ -279,15 +279,6 @@ public interface BundleProcessor<T extends Artifact> {
     public <A extends Artifact> boolean acceptKindOfArtifact( Class<A> kindOfArtifact );
 
     /**
-     * After process artifact.
-     * 
-     * @param artifact the artifact
-     * @param status the status
-     */
-    public void didFinishToProcessArtifact( T artifact,
-                                      LastProcessStatus status );
-
-    /**
      * Before process artifact.
      * 
      * @param artifact the artifact
@@ -302,6 +293,15 @@ public interface BundleProcessor<T extends Artifact> {
     public void didFinishProcessing( ArtifactChanges<T> changes );
 
     /**
+     * After process artifact.
+     * 
+     * @param artifact the artifact
+     * @param status the status
+     */
+    public void didFinishToProcessArtifact( T artifact,
+                                            LastProcessStatus status );
+
+    /**
      * Gets the artifact type.
      * 
      * @return the artifact type
@@ -314,13 +314,6 @@ public interface BundleProcessor<T extends Artifact> {
      * @return the save behavior
      */
     public SaveBehavior getSaveBehavior();
-
-    /**
-     * Global processing done.
-     * 
-     * @param results the results
-     */
-    public void didiFinishGlobalProcessing( ArtifactProcessingResults<T> results );
 
     /**
      * Process artifact.
