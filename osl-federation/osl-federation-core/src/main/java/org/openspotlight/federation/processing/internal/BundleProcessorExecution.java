@@ -118,14 +118,14 @@ public class BundleProcessorExecution {
         final List<ArtifactWorker> workers = new ArrayList<ArtifactWorker>(this.threads);
 
         for (int i = 0; i < this.threads; i++) {
-            final ArtifactWorker worker = new ArtifactWorker(1, this.queue);
+            final ArtifactWorker worker = new ArtifactWorker(this.defaultSleepIntervalInMillis, this.queue);
             workers.add(worker);
             this.executor.execute(worker);
         }
 
         monitor: while (true) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(this.defaultSleepIntervalInMillis);
             } catch (final InterruptedException e) {
                 Exceptions.catchAndLog(e);
             }
@@ -140,9 +140,7 @@ public class BundleProcessorExecution {
                 break monitor;
             }
         }
-
-        //TODO - TEST ALL THIS USING JCR (LIKE THE FUTURE ENVIRONMENT)
-        //TODO - TEST ALL THIS USING MOCK STUFF (LIKE THE ONE USED DURING PARSER DEVELOPMENT)
+        this.contextFactory.closeResources();
     }
 
     /**
