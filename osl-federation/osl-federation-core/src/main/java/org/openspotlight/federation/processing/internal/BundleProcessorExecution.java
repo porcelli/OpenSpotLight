@@ -22,6 +22,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
+import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
@@ -50,7 +51,9 @@ public class BundleProcessorExecution {
     private final int                                 threads;
 
     /** The queue. */
-    private final PriorityBlockingQueue<ArtifactTask> queue = new PriorityBlockingQueue<ArtifactTask>();
+    private final PriorityBlockingQueue<ArtifactTask> queue = new PriorityBlockingQueue<ArtifactTask>(
+                                                                                                      1000,
+                                                                                                      new ArtifactTaskPriorityComparator());
 
     /**
      * Instantiates a new bundle processor execution.

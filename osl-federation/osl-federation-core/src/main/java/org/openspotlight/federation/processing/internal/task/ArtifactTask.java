@@ -11,6 +11,8 @@ public interface ArtifactTask {
 
     public CurrentProcessorContextImpl getCurrentContext();
 
+    public int getPriority();
+
     public void setBundleContext( BundleProcessorContextImpl context );
 
     public void setQueue( PriorityBlockingQueue<ArtifactTask> queue );

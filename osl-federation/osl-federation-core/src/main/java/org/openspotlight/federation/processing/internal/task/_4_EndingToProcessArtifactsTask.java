@@ -47,6 +47,10 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements Arti
         return null;
     }
 
+    public int getPriority() {
+        return 4;
+    }
+
     /* (non-Javadoc)
      * @see org.openspotlight.federation.processing.internal.task.ArtifactTask#setBundleContext(org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl)
      */

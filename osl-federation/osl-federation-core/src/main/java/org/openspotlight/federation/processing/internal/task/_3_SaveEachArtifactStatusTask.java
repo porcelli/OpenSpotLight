@@ -31,6 +31,10 @@ public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements Artifa
         return null;
     }
 
+    public int getPriority() {
+        return 3;
+    }
+
     public void setBundleContext( final BundleProcessorContextImpl context ) {
 
     }

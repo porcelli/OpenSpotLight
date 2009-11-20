@@ -167,6 +167,10 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements Art
         return this.currentContext;
     }
 
+    public int getPriority() {
+        return 1;
+    }
+
     public void setBundleContext( final BundleProcessorContextImpl context ) {
         this.context = this.context;
 
