@@ -23,6 +23,8 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	private final Set<SimpleNodeType> dirtyNodesToRemove = new HashSet<SimpleNodeType>();
 	// FIXME remove "deleted nodes" on tx commit
 	private final Session session;
+	private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(
+			this);
 
 	private final String rootNode;
 
@@ -72,7 +74,7 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	}
 
 	public Object getSessionContext() throws IdentityException {
-		return this.dirtyNodesToSave;
+		return this.context;
 	}
 
 	public boolean isOpen() {
