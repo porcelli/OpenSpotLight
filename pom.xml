@@ -34,11 +34,11 @@
 		<url>http://www.caravelatech.com/</url>
 	</organization>
 	<repositories>
-        <repository>
-            <id>jline</id>
-            <name>JLine Project Repository</name>
-            <url>http://jline.sourceforge.net/m2repo</url>
-        </repository>
+		<repository>
+			<id>jline</id>
+			<name>JLine Project Repository</name>
+			<url>http://jline.sourceforge.net/m2repo</url>
+		</repository>
 		<repository>
 			<id>snapshots.jboss.org</id>
 			<url>http://snapshots.jboss.org/maven2</url>
@@ -241,7 +241,17 @@
 				<artifactId>osl-federation-dna-filesystem-loader</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-core</artifactId>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-core</artifactId>
+				<classifier>tests</classifier>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
 			<!-- parsing and code generation dependencies -->
 			<dependency>
 				<groupId>jboss</groupId>
@@ -298,17 +308,17 @@
 				<version>1.1.115</version>
 			</dependency>
 			<!-- Console Lib-->
-	        <dependency>
-	            <groupId>jline</groupId>
-	            <artifactId>jline</artifactId>
-	            <version>0.9.94</version>
-	        </dependency>
+			<dependency>
+				<groupId>jline</groupId>
+				<artifactId>jline</artifactId>
+				<version>0.9.94</version>
+			</dependency>
 			<!-- Classpath Manipulation Utils-->
-	        <dependency>
-	            <groupId>org.clapper</groupId>
-	            <artifactId>ocutil</artifactId>
-	            <version>2.4.4b</version>
-	        </dependency>
+			<dependency>
+				<groupId>org.clapper</groupId>
+				<artifactId>ocutil</artifactId>
+				<version>2.4.4b</version>
+			</dependency>
 			<!-- Cryptography utilities-->
 			<dependency>
 				<groupId>org.jasypt</groupId>
@@ -317,9 +327,9 @@
 			</dependency>
 			<!-- Commons Lang util -->
 			<dependency>
-			  <groupId>commons-lang</groupId>
-			  <artifactId>commons-lang</artifactId>
-			  <version>2.4</version>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.4</version>
 			</dependency>
 			<!-- Bean utils -->
 			<dependency>
@@ -593,6 +603,12 @@
 				<artifactId>asm-commons</artifactId>
 				<version>3.2</version>
 			</dependency>
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-testsuite</artifactId>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+
 			<!--
 				not in central repo yet: download it from
 				http://cloud.github.com/downloads/FeuTeston/dynamo-effective-tools/dynamo-file-gen-1.0.jar
@@ -630,15 +646,15 @@
 				<version>2.2</version>
 			</dependency>
 			<dependency>
-  				<groupId>commons-beanutils</groupId>
+				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-<dependency>
-  <groupId>com.ibm.icu</groupId>
-  <artifactId>icu4j</artifactId>
-  <version>4.0.1</version>
-</dependency>
+			<dependency>
+				<groupId>com.ibm.icu</groupId>
+				<artifactId>icu4j</artifactId>
+				<version>4.0.1</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
