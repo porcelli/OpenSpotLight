@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-identity xmlns="urn:jboss:identity:idm:config:v1_0_beta"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:jboss:identity:idm:config:v1_0_beta identity-config.xsd">
+	<realms>
+		<realm>
+			<id>realm://Dymmy</id>
+			<repository-id-ref>X</repository-id-ref>
+			<identity-type-mappings>
+				<user-mapping>USER</user-mapping>
+			</identity-type-mappings>
+		</realm>
+	</realms>
+	<repositories>
+		<repository>
+			<id>X</id>
+			<class>X</class>
+			<external-config />
+			<default-identity-store-id>SLStore</default-identity-store-id>
+			<default-attribute-store-id>SLStore</default-attribute-store-id>
+		</repository>
+	</repositories>
+	<stores>
+		<attribute-stores />
+		<identity-stores>
+			<identity-store>
+				<id>SLStore</id>
+				<class>org.openspotlight.security.idm.store.SLIdentityStoreImpl</class>
+				<external-config />
+				<supported-relationship-types>
+					<relationship-type>JBOSS_IDENTITY_MEMBERSHIP</relationship-type>
+				</supported-relationship-types>
+				<supported-identity-object-types>
+					<identity-object-type>
+						<name>USER</name>
+						<relationships />
+						<credentials>
+							<credential-type>PASSWORD</credential-type>
+						</credentials>
+						<attributes>
+							<attribute>
+								<name>phone</name>
+								<mapping>telephoneNumber</mapping>
+								<type>text</type>
+								<isMultivalued>true</isMultivalued>
+							</attribute>
+						</attributes>
+						<options>
+							<option>
+								<name>idAttributeName</name>
+								<value>uid</value>
+							</option>
+						</options>
+					</identity-object-type>
+					<identity-object-type>
+						<name>GROUP</name>
+						<relationships>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>USER</identity-object-type-ref>
+							</relationship>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>ROLE</identity-object-type-ref>
+							</relationship>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>GROUP</identity-object-type-ref>
+							</relationship>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>ORGANIZATION</identity-object-type-ref>
+							</relationship>
+						</relationships>
+						<credentials />
+						<attributes />
+						
+						<options/>
+					</identity-object-type>
+					<identity-object-type>
+						<name>ORGANIZATION</name>
+						<relationships>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>USER</identity-object-type-ref>
+							</relationship>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>ROLE</identity-object-type-ref>
+							</relationship>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>GROUP</identity-object-type-ref>
+							</relationship>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>ORGANIZATION</identity-object-type-ref>
+							</relationship>
+						</relationships>
+						<credentials />
+						<attributes />
+						<options/>
+					</identity-object-type>
+					<identity-object-type>
+						<name>ROLE</name>
+						<relationships>
+							<relationship>
+								<relationship-type-ref>JBOSS_IDENTITY_MEMBERSHIP</relationship-type-ref>
+								<identity-object-type-ref>USER</identity-object-type-ref>
+							</relationship>
+						</relationships>
+						<credentials />
+						<attributes />
+						<options/>
+					</identity-object-type>
+				</supported-identity-object-types>
+				<options>
+					<option>
+						<name>jcrProviderName</name>
+						<value>TEMP_DESCRIPTOR</value>
+					</option>
+					<option>
+						<name>repositoryName</name>
+						<value>testRepository</value>
+					</option>
+				</options>
+			</identity-store>
+		</identity-stores>
+	</stores>
+</jboss-identity>
