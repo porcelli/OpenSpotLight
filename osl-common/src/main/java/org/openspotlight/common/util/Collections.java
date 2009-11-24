@@ -139,8 +139,10 @@ public class Collections {
      */
     public static <T> Set<T> setOf( final T... elements ) {
         final HashSet<T> set = new HashSet<T>();
-        for (final T e : elements) {
-            set.add(e);
+        if(elements!=null){
+	        for (final T e : elements) {
+	            set.add(e);
+	        }
         }
         return set;
     }
