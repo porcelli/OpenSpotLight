@@ -1,39 +1,85 @@
 package org.openspotlight.security.idm.store.test;
 
+import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
+import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
+import org.jboss.identity.idm.impl.configuration.jaxb2.JAXB2IdentityConfiguration;
 import org.jboss.identity.idm.impl.store.CommonIdentityStoreTest;
 import org.jboss.identity.idm.impl.store.IdentityStoreTestContext;
+import org.jboss.identity.idm.spi.configuration.IdentityConfigurationContextRegistry;
+import org.jboss.identity.idm.spi.configuration.IdentityStoreConfigurationContext;
+import org.jboss.identity.idm.spi.configuration.metadata.IdentityConfigurationMetaData;
+import org.jboss.identity.idm.spi.configuration.metadata.IdentityStoreConfigurationMetaData;
 import org.jboss.identity.idm.spi.store.IdentityStore;
 import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
+import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.junit.Test;
+import org.openspotlight.security.idm.store.SLIdentityStoreImpl;
+import org.openspotlight.security.idm.store.SLIdentityStoreSessionImpl;
 
 public class SLIdentityStoreImplTest {
 
 	private static class SLIdStoreTestContext implements
 			IdentityStoreTestContext {
 
-		public void begin() throws Exception {
-			// TODO Auto-generated method stub
+		private SLIdentityStoreImpl store;
 
+		private SLIdentityStoreSessionImpl session;
+
+		public void begin() throws Exception {
+			final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration
+					.createConfigurationMetaData("slstore.xml");
+
+			final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry) new IdentityConfigurationImpl()
+					.configure(configurationMD);
+
+			IdentityStoreConfigurationMetaData storeMD = null;
+
+			for (final IdentityStoreConfigurationMetaData metaData : configurationMD
+					.getIdentityStores()) {
+				if (metaData.getId().equals("SLStore")) {
+					storeMD = metaData;
+					break;
+				}
+			}
+
+			final IdentityStoreConfigurationContext context = new IdentityStoreConfigurationContextImpl(
+					configurationMD, registry, storeMD);
+
+			this.store = new SLIdentityStoreImpl();
+			this.store.bootstrap(context);
+			this.session = (SLIdentityStoreSessionImpl) this.store
+					.createIdentityStoreSession();
 		}
 
 		public void commit() throws Exception {
-			// TODO Auto-generated method stub
+			this.session.commitTransaction();
 
 		}
 
 		public void flush() throws Exception {
-			// TODO Auto-generated method stub
+			this.session.save();
 
 		}
 
 		public IdentityStoreInvocationContext getCtx() {
-			// TODO Auto-generated method stub
-			return null;
+			return new IdentityStoreInvocationContext() {
+
+				public IdentityStoreSession getIdentityStoreSession() {
+					return SLIdStoreTestContext.this.session;
+				}
+
+				public String getRealmId() {
+					return "abc";
+				}
+
+				public String getSessionId() {
+					return "abc";
+				}
+			};
 		}
 
 		public IdentityStore getStore() {
-			// TODO Auto-generated method stub
-			return null;
+			return this.store;
 		}
 
 	}
