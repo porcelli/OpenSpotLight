@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.jcr.Session;
 
 import org.jboss.identity.idm.common.exception.IdentityException;
+import org.jboss.identity.idm.impl.store.FeaturesMetaDataImpl;
 import org.jboss.identity.idm.spi.configuration.IdentityStoreConfigurationContext;
 import org.jboss.identity.idm.spi.configuration.metadata.IdentityObjectAttributeMetaData;
 import org.jboss.identity.idm.spi.configuration.metadata.IdentityStoreConfigurationMetaData;
@@ -24,10 +25,12 @@ import org.jboss.identity.idm.spi.model.IdentityObjectRelationshipType;
 import org.jboss.identity.idm.spi.model.IdentityObjectType;
 import org.jboss.identity.idm.spi.search.IdentityObjectSearchCriteria;
 import org.jboss.identity.idm.spi.store.FeaturesMetaData;
+import org.jboss.identity.idm.spi.store.IdentityObjectSearchCriteriaType;
 import org.jboss.identity.idm.spi.store.IdentityStore;
 import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.openspotlight.common.LazyType;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -39,6 +42,7 @@ import org.openspotlight.security.domain.SLIdentityObject;
 import org.openspotlight.security.domain.SLIdentityObjectRelationship;
 import org.openspotlight.security.domain.SLIdentityObjectRelationshipType;
 import org.openspotlight.security.domain.SLIdentityObjectType;
+import org.openspotlight.security.domain.SLPasswordEntry;
 import org.openspotlight.security.domain.SLTransientIdentityObjectAttribute;
 
 public class SLIdentityStoreImpl implements IdentityStore, Serializable {
@@ -56,6 +60,8 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 	private String repositoryName;
 
 	private DefaultJcrDescriptor providerDescriptor;
+
+	private FeaturesMetaData supportedFeatures;
 
 	@SuppressWarnings("unchecked")
 	public void addAttributes(
@@ -110,6 +116,10 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			this.provider = JcrConnectionProvider
 					.createFromData(this.providerDescriptor);
 			this.id = this.configurationMetaData.getId();
+			this.supportedFeatures = new FeaturesMetaDataImpl(
+					this.configurationMetaData, java.util.Collections
+							.<IdentityObjectSearchCriteriaType> emptySet(),
+					true, true, java.util.Collections.<String> emptySet());
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, IdentityException.class);
 		}
@@ -175,10 +185,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			newType.setParent(relationship);
 			relationship.setType(newType);
 			relationship.setName(relationshipName);
-			this.createRelationshipName(invocationCxt, relationshipName);
 			this.addNodeToSave(invocationCxt, relationship);
-			this.addNodeToSave(invocationCxt, newType);
-
 			return relationship;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, IdentityException.class);
@@ -413,8 +420,55 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 	}
 
 	public FeaturesMetaData getSupportedFeatures() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.supportedFeatures;
+	}
+
+	private Set<IdentityObjectRelationship> internalResolveRelationships(
+			final IdentityStoreInvocationContext invocationCxt,
+			final IdentityObject fromIdentity, final IdentityObject toIdentity,
+			final IdentityObjectRelationshipType relationshipType,
+			final String name) throws IdentityException {
+		final SLIdentityStoreSessionContext sessionContext = this
+				.getContext(invocationCxt);
+
+		final Set<String> parameterNames = new HashSet<String>();
+		final Set<Object> parameterValues = new HashSet<Object>();
+		if (name != null) {
+			parameterNames.add("name");
+			parameterValues.add(name);
+		}
+		if (relationshipType != null) {
+			parameterNames.add("typeAsString");
+			parameterValues.add(relationshipType.getName());
+		}
+		if (fromIdentity != null) {
+			parameterNames.add("fromIdentityObjectId");
+			parameterValues.add(fromIdentity.getId());
+		}
+		if (toIdentity != null) {
+			parameterNames.add("toIdentityObjectId");
+			parameterValues.add(toIdentity.getId());
+		}
+
+		final Set<SLIdentityObjectRelationship> foundNodes = SimplePersistSupport
+				.findNodesByProperties(sessionContext.getSession()
+						.getRootNode(), sessionContext.getSession()
+						.getSession(), SLIdentityObjectRelationship.class,
+						LazyType.EAGER, parameterNames.toArray(new String[0]),
+						parameterValues.toArray());
+
+		final Set<IdentityObjectRelationship> result = new HashSet<IdentityObjectRelationship>();
+
+		for (final SLIdentityObjectRelationship relationship : foundNodes) {
+			final IdentityObject newFrom = this.findIdentityObject(
+					invocationCxt, relationship.getFromIdentityObjectId());
+			relationship.setFromIdentityObject(newFrom);
+			final IdentityObject newTo = this.findIdentityObject(invocationCxt,
+					relationship.getToIdentityObjectId());
+			relationship.setToIdentityObject(newTo);
+		}
+		result.addAll(foundNodes);
+		return result;
 	}
 
 	public void removeAttributes(
@@ -458,8 +512,19 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityObject fromIdentity, final IdentityObject toIdentity,
 			final IdentityObjectRelationshipType relationshipType,
 			final String relationshipName) throws IdentityException {
-		// TODO Auto-generated method stub
-
+		try {
+			final Set<IdentityObjectRelationship> result = this
+					.internalResolveRelationships(invocationCxt, fromIdentity,
+							toIdentity, relationshipType, relationshipName);
+			final SLIdentityStoreSessionContext sessionContext = this
+					.getContext(invocationCxt);
+			for (final IdentityObjectRelationship relationShip : result) {
+				sessionContext.getSession().remove(
+						(SLIdentityObjectRelationship) relationShip);
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
 	}
 
 	public String removeRelationshipName(
@@ -492,7 +557,19 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityStoreInvocationContext invocationCtx,
 			final IdentityObject identity1, final IdentityObject identity2,
 			final boolean named) throws IdentityException {
-		// TODO Auto-generated method stub
+		try {
+			final Set<IdentityObjectRelationship> result = this
+					.internalResolveRelationships(invocationCtx, identity1,
+							identity2, null, null);
+			final SLIdentityStoreSessionContext sessionContext = this
+					.getContext(invocationCtx);
+			for (final IdentityObjectRelationship relationShip : result) {
+				sessionContext.getSession().remove(
+						(SLIdentityObjectRelationship) relationShip);
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
 
 	}
 
@@ -501,8 +578,9 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityObject fromIdentity, final IdentityObject toIdentity,
 			final IdentityObjectRelationshipType relationshipType)
 			throws IdentityException {
-		// TODO Auto-generated method stub
-		return null;
+
+		return this.internalResolveRelationships(invocationCxt, fromIdentity,
+				toIdentity, relationshipType, null);
 	}
 
 	public Set<IdentityObjectRelationship> resolveRelationships(
@@ -511,8 +589,10 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityObjectRelationshipType relationshipType,
 			final boolean parent, final boolean named, final String name)
 			throws IdentityException {
-		// TODO Auto-generated method stub
-		return null;
+		final IdentityObject from = parent ? identity : null;
+		final IdentityObject to = parent ? null : identity;
+		return this.internalResolveRelationships(invocationCxt, from, to,
+				relationshipType, name);
 	}
 
 	public void setRelationshipNameProperties(
@@ -558,15 +638,43 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 	public void updateCredential(final IdentityStoreInvocationContext ctx,
 			final IdentityObject identityObject,
 			final IdentityObjectCredential credential) throws IdentityException {
-		// TODO Auto-generated method stub
-
+		try {
+			final SLPasswordEntry entry = SLPasswordEntry.create(
+					identityObject, credential);
+			this.addNodeToSave(ctx, entry);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
 	}
 
 	public boolean validateCredential(final IdentityStoreInvocationContext ctx,
 			final IdentityObject identityObject,
 			final IdentityObjectCredential credential) throws IdentityException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+
+			final SLIdentityStoreSessionContext sessionContext = this
+					.getContext(ctx);
+
+			final Set<SLPasswordEntry> foundNodes = SimplePersistSupport
+					.findNodesByPrimaryKeyElements(sessionContext.getSession()
+							.getRootNode(), sessionContext.getSession()
+							.getSession(), SLPasswordEntry.class,
+							LazyType.EAGER, new String[] { "userId" },
+							new Object[] { identityObject.getId() });
+			if (foundNodes.size() == 0) {
+				return false;
+			}
+			if (foundNodes.size() > 1) {
+				Exceptions.logAndReturn(new SLRuntimeException(
+						"duplicated password entry for the same user"));
+			}
+			final SLPasswordEntry entry = foundNodes.iterator().next();
+			return entry.isValid(identityObject, credential);
+
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
+
 	}
 
 }
