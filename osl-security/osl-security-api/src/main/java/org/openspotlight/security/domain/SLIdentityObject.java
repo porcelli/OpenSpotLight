@@ -42,7 +42,7 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 
 	private String id;
 
-	private IdentityObjectType identityType;
+	private SLIdentityObjectType typedIdentityType;
 
 	private String name;
 
@@ -64,8 +64,9 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 		return this.id;
 	}
 
+	@TransientProperty
 	public IdentityObjectType getIdentityType() {
-		return this.identityType;
+		return this.typedIdentityType;
 	}
 
 	@KeyProperty
@@ -77,6 +78,10 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 		return this.typeAsString;
 	}
 
+	public SLIdentityObjectType getTypedIdentityType() {
+		return this.typedIdentityType;
+	}
+
 	public void setAttributes(final Set<SLAttributeEntry> attributes) {
 		this.attributes = attributes;
 	}
@@ -86,7 +91,7 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 	}
 
 	public void setIdentityType(final IdentityObjectType identityType) {
-		this.identityType = identityType;
+		this.typedIdentityType = (SLIdentityObjectType) identityType;
 		this.typeAsString = identityType == null ? null : identityType
 				.getName();
 	}
@@ -97,6 +102,11 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 
 	public void setTypeAsString(final String typeAsString) {
 		this.typeAsString = typeAsString;
+	}
+
+	public void setTypedIdentityType(
+			final SLIdentityObjectType typedIdentityType) {
+		this.typedIdentityType = typedIdentityType;
 	}
 
 	public void validatePolicy() throws PolicyValidationException {
