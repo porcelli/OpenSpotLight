@@ -207,7 +207,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final boolean parent, final IdentityObjectSearchCriteria criteria)
 			throws IdentityException {
 		final String property = parent ? "fromIdentityObjectId"
-				: "fromIdentityObjectIdfromIdentityObjectId";
+				: "toIdentityObjectId";
 
 		final SLIdentityStoreSessionContext sessionContext = this
 				.getContext(invocationCxt);
@@ -559,9 +559,23 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityObject identity1, final IdentityObject identity2,
 			final boolean named) throws IdentityException {
 		try {
-			final Set<IdentityObjectRelationship> result = this
+			final Set<IdentityObjectRelationship> result1 = this
 					.internalResolveRelationships(invocationCtx, identity1,
 							identity2, null, null);
+			final Set<IdentityObjectRelationship> result2 = this
+					.internalResolveRelationships(invocationCtx, identity2,
+							identity1, null, null);
+			final Set<IdentityObjectRelationship> result = new HashSet<IdentityObjectRelationship>();
+			result.addAll(result1);
+			result.addAll(result2);
+			if (!named) {
+				for (final IdentityObjectRelationship r : new ArrayList<IdentityObjectRelationship>(
+						result)) {
+					if (r.getName() != null) {
+						result.remove(r);
+					}
+				}
+			}
 			final SLIdentityStoreSessionContext sessionContext = this
 					.getContext(invocationCtx);
 			for (final IdentityObjectRelationship relationShip : result) {

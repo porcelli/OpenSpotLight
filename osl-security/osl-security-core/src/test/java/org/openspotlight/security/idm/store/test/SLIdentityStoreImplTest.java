@@ -130,7 +130,8 @@ public class SLIdentityStoreImplTest {
 
 	@Test
 	@Ignore
-	// actually isn't possible to persist binary values on simple persist.
+	// actually isn't possible to persist "large" binary values on simple
+	// persist, since it needs array support and also input stream support.
 	public void testBinaryCredential() throws Exception {
 		this.test.testBinaryCredential();
 	}

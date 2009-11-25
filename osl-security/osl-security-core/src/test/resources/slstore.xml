@@ -36,7 +36,7 @@
 						<relationships />
 						<credentials>
 							<credential-type>PASSWORD</credential-type>
-							<credential-type>BINARY</credential-type>
+							<!-- almost done <credential-type>BINARY</credential-type> -->
 						</credentials>
 						<attributes>
 							<attribute>
