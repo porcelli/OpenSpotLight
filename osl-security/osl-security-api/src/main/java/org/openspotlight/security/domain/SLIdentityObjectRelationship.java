@@ -24,7 +24,7 @@ public class SLIdentityObjectRelationship implements SimpleNodeType,
 
 	private String name;
 
-	private IdentityObjectRelationshipType type;
+	private SLIdentityObjectRelationshipType typedRelationshipType;
 
 	@TransientProperty
 	public IdentityObject getFromIdentityObject() {
@@ -51,12 +51,18 @@ public class SLIdentityObjectRelationship implements SimpleNodeType,
 		return this.toIdentityObjectId;
 	}
 
+	@TransientProperty
 	public IdentityObjectRelationshipType getType() {
-		return this.type;
+		return this.typedRelationshipType;
 	}
 
+	@KeyProperty
 	public String getTypeAsString() {
 		return this.typeAsString;
+	}
+
+	public SLIdentityObjectRelationshipType getTypedRelationshipType() {
+		return this.typedRelationshipType;
 	}
 
 	public void setFromIdentityObject(final IdentityObject fromIdentityObject) {
@@ -86,12 +92,19 @@ public class SLIdentityObjectRelationship implements SimpleNodeType,
 	}
 
 	public void setType(final IdentityObjectRelationshipType type) {
-		this.type = type;
+		this.typedRelationshipType = (SLIdentityObjectRelationshipType) type;
 		this.typeAsString = type == null ? null : type.getName();
 	}
 
 	public void setTypeAsString(final String typeAsString) {
 		this.typeAsString = typeAsString;
+	}
+
+	public void setTypedRelationshipType(
+			final SLIdentityObjectRelationshipType typedRelationshipType) {
+		this.typedRelationshipType = typedRelationshipType;
+		this.typeAsString = typedRelationshipType == null ? null
+				: typedRelationshipType.getName();
 	}
 
 }

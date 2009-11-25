@@ -21,7 +21,6 @@ import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.common.util.Files;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.idm.store.SLIdentityStoreImpl;
@@ -100,8 +99,6 @@ public class SLIdentityStoreImplTest {
 
 	@BeforeClass
 	public static void setup() throws Exception {
-		Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR
-				.getConfigurationDirectory());
 		SLIdentityStoreImplTest.provider = JcrConnectionProvider
 				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
