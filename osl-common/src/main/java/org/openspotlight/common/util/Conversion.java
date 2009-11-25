@@ -49,11 +49,6 @@
 
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -78,107 +73,112 @@ import org.apache.commons.beanutils.converters.StringConverter;
 import org.openspotlight.common.exception.SLException;
 
 /**
- * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer project http://dozer.sourceforge.net/
+ * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer
+ * project http://dozer.sourceforge.net/
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Conversion {
 
-    private static final Map<String, Class<?>>    PRIMITIVE_TYPES = new HashMap<String, Class<?>>();
-    static {
-        PRIMITIVE_TYPES.put("int", int.class);
-        PRIMITIVE_TYPES.put("double", double.class);
-        PRIMITIVE_TYPES.put("short", short.class);
-        PRIMITIVE_TYPES.put("char", char.class);
-        PRIMITIVE_TYPES.put("long", long.class);
-        PRIMITIVE_TYPES.put("boolean", boolean.class);
-        PRIMITIVE_TYPES.put("byte", byte.class);
-        PRIMITIVE_TYPES.put("float", float.class);
-    }
+	private static final Map<String, Class<?>> PRIMITIVE_TYPES = new HashMap<String, Class<?>>();
+	static {
+		Conversion.PRIMITIVE_TYPES.put("int", int.class);
+		Conversion.PRIMITIVE_TYPES.put("double", double.class);
+		Conversion.PRIMITIVE_TYPES.put("short", short.class);
+		Conversion.PRIMITIVE_TYPES.put("char", char.class);
+		Conversion.PRIMITIVE_TYPES.put("long", long.class);
+		Conversion.PRIMITIVE_TYPES.put("boolean", boolean.class);
+		Conversion.PRIMITIVE_TYPES.put("byte", byte.class);
+		Conversion.PRIMITIVE_TYPES.put("float", float.class);
+	}
 
-    /**
-     * Internal map of types and converters.
-     */
-    private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
+	/**
+	 * Internal map of types and converters.
+	 */
+	private static final Map<Class<?>, Converter> CONVERTERS = new HashMap<Class<?>, Converter>();
 
-    static {
-        final DateConverter dateConverter = new DateConverter();
-        dateConverter.setPattern("EEE MMM dd HH:mm:ss zzz yyyy");
+	static {
+		final DateConverter dateConverter = new DateConverter();
+		dateConverter.setPattern("EEE MMM dd HH:mm:ss zzz yyyy");
 
-        CONVERTERS.put(Date.class, dateConverter);
-        CONVERTERS.put(Integer.class, new IntegerConverter());
-        CONVERTERS.put(Double.class, new DoubleConverter());
-        CONVERTERS.put(Short.class, new ShortConverter());
-        CONVERTERS.put(Character.class, new CharacterConverter());
-        CONVERTERS.put(Long.class, new LongConverter());
-        CONVERTERS.put(Boolean.class, new BooleanConverter());
-        CONVERTERS.put(Byte.class, new ByteConverter());
-        CONVERTERS.put(String.class, new StringConverter());
-        CONVERTERS.put(Float.class, new FloatConverter());
+		Conversion.CONVERTERS.put(Date.class, dateConverter);
+		Conversion.CONVERTERS.put(Integer.class, new IntegerConverter());
+		Conversion.CONVERTERS.put(Double.class, new DoubleConverter());
+		Conversion.CONVERTERS.put(Short.class, new ShortConverter());
+		Conversion.CONVERTERS.put(Character.class, new CharacterConverter());
+		Conversion.CONVERTERS.put(Long.class, new LongConverter());
+		Conversion.CONVERTERS.put(Boolean.class, new BooleanConverter());
+		Conversion.CONVERTERS.put(Byte.class, new ByteConverter());
+		Conversion.CONVERTERS.put(String.class, new StringConverter());
+		Conversion.CONVERTERS.put(Float.class, new FloatConverter());
 
-        CONVERTERS.put(int.class, new IntegerConverter());
-        CONVERTERS.put(double.class, new DoubleConverter());
-        CONVERTERS.put(short.class, new ShortConverter());
-        CONVERTERS.put(char.class, new CharacterConverter());
-        CONVERTERS.put(long.class, new LongConverter());
-        CONVERTERS.put(boolean.class, new BooleanConverter());
-        CONVERTERS.put(byte.class, new ByteConverter());
-        CONVERTERS.put(float.class, new FloatConverter());
+		Conversion.CONVERTERS.put(int.class, new IntegerConverter());
+		Conversion.CONVERTERS.put(double.class, new DoubleConverter());
+		Conversion.CONVERTERS.put(short.class, new ShortConverter());
+		Conversion.CONVERTERS.put(char.class, new CharacterConverter());
+		Conversion.CONVERTERS.put(long.class, new LongConverter());
+		Conversion.CONVERTERS.put(boolean.class, new BooleanConverter());
+		Conversion.CONVERTERS.put(byte.class, new ByteConverter());
+		Conversion.CONVERTERS.put(float.class, new FloatConverter());
 
-        CONVERTERS.put(BigDecimal.class, new BigDecimalConverter());
-        CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
-    }
+		Conversion.CONVERTERS.put(BigDecimal.class, new BigDecimalConverter());
+		Conversion.CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
+	}
 
-    /**
-     * Returns a new converted type based on target type parameter.
-     * 
-     * @param <E>
-     * @param rawValue
-     * @param targetType
-     * @return a new value from a converted type
-     * @throws SLException
-     */
-    @SuppressWarnings( "unchecked" )
-    public static <E> E convert( final Object rawValue,
-                                 final Class<E> targetType ) throws SLException {
-        checkNotNull("targetType", targetType); //$NON-NLS-1$
-        checkCondition("validTargetType", CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
-        if (rawValue == null) {
-            return null;
-        }
+	/**
+	 * Returns a new converted type based on target type parameter.
+	 * 
+	 * @param <E>
+	 * @param rawValue
+	 * @param targetType
+	 * @return a new value from a converted type
+	 * @throws SLException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <E> E convert(final Object rawValue, final Class<E> targetType)
+			throws SLException {
+		Assertions.checkNotNull("targetType", targetType); //$NON-NLS-1$
+		Assertions
+				.checkCondition(
+						"validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
+		if (rawValue == null) {
+			return null;
+		}
 
-        try {
-            if (targetType.isEnum()) {
-                final String rawValueAsString = rawValue.toString();
-                final Field[] flds = targetType.getDeclaredFields();
-                for (final Field f : flds) {
-                    if (f.isEnumConstant()) {
-                        if (f.getName().equals(rawValueAsString)) {
-                            final Object value = f.get(null);
-                            return (E)value;
+		try {
+			if (targetType.isEnum()) {
+				final String rawValueAsString = rawValue.toString();
+				final Field[] flds = targetType.getDeclaredFields();
+				for (final Field f : flds) {
+					if (f.isEnumConstant()) {
+						if (f.getName().equals(rawValueAsString)) {
+							final Object value = f.get(null);
+							return (E) value;
 
-                        }
-                    }
-                }
-                throw new IllegalStateException(MessageFormat.format("Invalid enum constant:{0} for type {1}", rawValueAsString,
-                                                                     targetType));
-            }
-            final Converter converter = CONVERTERS.get(targetType);
-            final E converted = (E)converter.convert(targetType, rawValue);
-            return converted;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+						}
+					}
+				}
+				throw new IllegalStateException(MessageFormat.format(
+						"Invalid enum constant:{0} for type {1}",
+						rawValueAsString, targetType));
+			}
+			final Converter converter = Conversion.CONVERTERS.get(targetType);
+			final E converted = (E) converter.convert(targetType, rawValue);
+			return converted;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLException.class);
+		}
+	}
 
-    public static Class<?> getPrimitiveClass( final String name ) {
-        return PRIMITIVE_TYPES.get(name);
-    }
+	public static Class<?> getPrimitiveClass(final String name) {
+		return Conversion.PRIMITIVE_TYPES.get(name);
+	}
 
-    /**
-     * Should not be instantiated
-     */
-    private Conversion() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
-    }
+	/**
+	 * Should not be instantiated
+	 */
+	private Conversion() {
+		Exceptions.logAndThrow(new IllegalStateException(Messages
+				.getString("invalidConstructor"))); //$NON-NLS-1$
+	}
 }

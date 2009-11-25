@@ -1,5 +1,11 @@
 package org.openspotlight.security.idm.store.test;
 
+import java.text.MessageFormat;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
+
 import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
 import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
 import org.jboss.identity.idm.impl.configuration.jaxb2.JAXB2IdentityConfiguration;
@@ -12,7 +18,12 @@ import org.jboss.identity.idm.spi.configuration.metadata.IdentityStoreConfigurat
 import org.jboss.identity.idm.spi.store.IdentityStore;
 import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.idm.store.SLIdentityStoreImpl;
 import org.openspotlight.security.idm.store.SLIdentityStoreSessionImpl;
 
@@ -26,6 +37,7 @@ public class SLIdentityStoreImplTest {
 		private SLIdentityStoreSessionImpl session;
 
 		public void begin() throws Exception {
+
 			final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration
 					.createConfigurationMetaData("slstore.xml");
 
@@ -84,8 +96,34 @@ public class SLIdentityStoreImplTest {
 
 	}
 
+	private static JcrConnectionProvider provider;
+
+	@BeforeClass
+	public static void setup() throws Exception {
+		Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR
+				.getConfigurationDirectory());
+		SLIdentityStoreImplTest.provider = JcrConnectionProvider
+				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+	}
+
 	private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(
 			new SLIdStoreTestContext());
+
+	@Before
+	public void clearAllData() throws Exception {
+		final String nodeName = MessageFormat.format(
+				SLIdentityStoreSessionImpl.SECURITY_NODE, "testRepository");
+		final Session session = SLIdentityStoreImplTest.provider.openSession();
+		try {
+			final Node foundNode = session.getRootNode().getNode(nodeName);
+			foundNode.remove();
+			session.save();
+		} catch (final PathNotFoundException e) {
+
+		}
+		session.logout();
+	}
 
 	@Test
 	public void testAttributes() throws Exception {
