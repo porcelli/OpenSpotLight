@@ -1,10 +1,8 @@
 package org.openspotlight.security.idm.store;
 
 import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.jcr.RepositoryException;
+import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.jboss.identity.idm.common.exception.IdentityException;
@@ -19,9 +17,6 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	public static final String SECURITY_NODE = SharedConstants.DEFAULT_JCR_ROOT_NAME
 			+ "/{0}/securityStore";
 
-	private final Set<SimpleNodeType> dirtyNodesToSave = new HashSet<SimpleNodeType>();
-	private final Set<SimpleNodeType> dirtyNodesToRemove = new HashSet<SimpleNodeType>();
-	// FIXME remove "deleted nodes" on tx commit
 	private final Session session;
 	private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(
 			this);
@@ -35,16 +30,12 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 				SLIdentityStoreSessionImpl.SECURITY_NODE, repositoryName);
 	}
 
-	public void addDirtyNodeToRemove(final SimpleNodeType node) {
-		this.dirtyNodesToRemove.add(node);
-	}
-
-	public void addDirtyNodeToSave(final SimpleNodeType node) {
-		this.dirtyNodesToSave.add(node);
+	public void addNode(final SimpleNodeType node) throws Exception {
+		SimplePersistSupport
+				.convertBeanToJcr(this.rootNode, this.session, node);
 	}
 
 	public void clear() throws IdentityException {
-		this.dirtyNodesToSave.clear();
 	}
 
 	public void close() throws IdentityException {
@@ -57,12 +48,6 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	}
 
 	public void commitTransaction() {
-		try {
-			this.session.save();
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-
 	}
 
 	public String getRootNode() {
@@ -82,30 +67,27 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	}
 
 	public boolean isTransactionActive() {
-		return this.dirtyNodesToSave.size() > 0;
+		return false;
 	}
 
 	public boolean isTransactionSupported() {
-		return true;
+		return false;
+	}
+
+	public void remove(final SimpleNodeType node) throws Exception {
+		final Node jcrNode = SimplePersistSupport.convertBeanToJcr(
+				this.rootNode, this.session, node);
+		jcrNode.remove();
+
 	}
 
 	public void rollbackTransaction() {
-		try {
-			this.dirtyNodesToSave.clear();
-			if (this.session.hasPendingChanges()) {
-				this.session.logout();
-			}
-		} catch (final RepositoryException e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-
 	}
 
 	public void save() throws IdentityException {
 		try {
 
-			SimplePersistSupport.convertBeansToJcrs(this.rootNode,
-					this.session, this.dirtyNodesToSave);
+			this.session.save();
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
