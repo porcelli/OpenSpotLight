@@ -57,28 +57,42 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
 	private DefaultJcrDescriptor providerDescriptor;
 
+	@SuppressWarnings("unchecked")
 	public void addAttributes(
 			final IdentityStoreInvocationContext invocationCtx,
 			final IdentityObject identity,
 			final IdentityObjectAttribute[] attributes)
 			throws IdentityException {
-		final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
-		for (final IdentityObjectAttribute entry : attributes) {
-			final SLAttributeEntry attribute = new SLAttributeEntry();
-			attribute.setName(entry.getName());
-			attribute.setParent(identityAsSlId);
-			final Collection<String> entries = entry.getValues();
-			attribute.setEntries(new HashSet<String>(entries));
-			identityAsSlId.getAttributes().add(attribute);
+		try {
+			final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
+			onEachAttribute: for (final IdentityObjectAttribute entry : attributes) {
+				for (final SLAttributeEntry savedAttribute : identityAsSlId
+						.getAttributes()) {
+					if (savedAttribute.getName().equals(entry.getName())) {
+						final Collection<String> newEntriesAsCollection = entry
+								.getValues();
+						savedAttribute.getEntries().addAll(
+								newEntriesAsCollection);
+						continue onEachAttribute;
+					}
+				}
+				final SLAttributeEntry attribute = new SLAttributeEntry();
+				attribute.setName(entry.getName());
+				attribute.setParent(identityAsSlId);
+				final Collection<String> entries = entry.getValues();
+				attribute.setEntries(new HashSet<String>(entries));
+				identityAsSlId.getAttributes().add(attribute);
+			}
+			this.addNodeToSave(invocationCtx, identityAsSlId);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
 		}
-		this.addNodeToSaveLater(invocationCtx, identityAsSlId);
-
 	}
 
-	public void addNodeToSaveLater(
+	public void addNodeToSave(
 			final IdentityStoreInvocationContext invocationCtx,
-			final SimpleNodeType node) throws IdentityException {
-		this.getContext(invocationCtx).getSession().addDirtyNodeToSave(node);
+			final SimpleNodeType node) throws Exception {
+		this.getContext(invocationCtx).getSession().addNode(node);
 	}
 
 	public void bootstrap(
@@ -114,26 +128,30 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityStoreInvocationContext invocationCtx,
 			final String name, final IdentityObjectType identityObjectType,
 			final Map<String, String[]> attributes) throws IdentityException {
-		final String newId = UUID.randomUUID().toString();
-		final SLIdentityObject id = new SLIdentityObject();
-		id.setId(newId);
-		id.setName(name);
-		final SLIdentityObjectType type = new SLIdentityObjectType();
-		type.setParent(id);
-		type.setName(identityObjectType.getName());
-		id.setIdentityType(type);
-		if (attributes != null) {
-			for (final Map.Entry<String, String[]> entry : attributes
-					.entrySet()) {
-				final SLAttributeEntry attribute = new SLAttributeEntry();
-				attribute.setName(entry.getKey());
-				attribute.setParent(id);
-				attribute.setEntries(Collections.setOf(entry.getValue()));
-				id.getAttributes().add(attribute);
+		try {
+			final String newId = UUID.randomUUID().toString();
+			final SLIdentityObject id = new SLIdentityObject();
+			id.setId(newId);
+			id.setName(name);
+			final SLIdentityObjectType type = new SLIdentityObjectType();
+			type.setParent(id);
+			type.setName(identityObjectType.getName());
+			id.setIdentityType(type);
+			if (attributes != null) {
+				for (final Map.Entry<String, String[]> entry : attributes
+						.entrySet()) {
+					final SLAttributeEntry attribute = new SLAttributeEntry();
+					attribute.setName(entry.getKey());
+					attribute.setParent(id);
+					attribute.setEntries(Collections.setOf(entry.getValue()));
+					id.getAttributes().add(attribute);
+				}
 			}
+			this.addNodeToSave(invocationCtx, id);
+			return id;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
 		}
-		this.addNodeToSaveLater(invocationCtx, id);
-		return id;
 	}
 
 	public IdentityStoreSession createIdentityStoreSession()
@@ -148,19 +166,23 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityObjectRelationshipType relationshipType,
 			final String relationshipName, final boolean createNames)
 			throws IdentityException {
-		final SLIdentityObjectRelationship relationship = new SLIdentityObjectRelationship();
-		relationship.setFromIdentityObject(fromIdentity);
-		relationship.setToIdentityObject(toIdentity);
-		final SLIdentityObjectRelationshipType newType = new SLIdentityObjectRelationshipType();
-		newType.setName(relationshipType.getName());
-		newType.setParent(relationship);
-		relationship.setType(newType);
-		relationship.setName(relationshipName);
-		this.createRelationshipName(invocationCxt, relationshipName);
-		this.addNodeToSaveLater(invocationCxt, relationship);
-		this.addNodeToSaveLater(invocationCxt, newType);
+		try {
+			final SLIdentityObjectRelationship relationship = new SLIdentityObjectRelationship();
+			relationship.setFromIdentityObject(fromIdentity);
+			relationship.setToIdentityObject(toIdentity);
+			final SLIdentityObjectRelationshipType newType = new SLIdentityObjectRelationshipType();
+			newType.setName(relationshipType.getName());
+			newType.setParent(relationship);
+			relationship.setType(newType);
+			relationship.setName(relationshipName);
+			this.createRelationshipName(invocationCxt, relationshipName);
+			this.addNodeToSave(invocationCxt, relationship);
+			this.addNodeToSave(invocationCxt, newType);
 
-		return relationship;
+			return relationship;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
 	}
 
 	public String createRelationshipName(
@@ -398,28 +420,36 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityStoreInvocationContext invocationCtx,
 			final IdentityObject identity, final String[] attributeNames)
 			throws IdentityException {
-		final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
-		final Set<String> allAttributesToRemove = Collections
-				.setOf(attributeNames);
-		for (final SLAttributeEntry attribute : new ArrayList<SLAttributeEntry>(
-				typedIdObj.getAttributes())) {
-			if (allAttributesToRemove.contains(attribute.getName())) {
-				typedIdObj.getAttributes().remove(attribute);
+		try {
+			final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
+			final Set<String> allAttributesToRemove = Collections
+					.setOf(attributeNames);
+			for (final SLAttributeEntry attribute : new ArrayList<SLAttributeEntry>(
+					typedIdObj.getAttributes())) {
+				if (allAttributesToRemove.contains(attribute.getName())) {
+					typedIdObj.getAttributes().remove(attribute);
+				}
 			}
+			final SLIdentityStoreSessionContext sessionContext = this
+					.getContext(invocationCtx);
+			sessionContext.getSession().addNode(typedIdObj);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
 		}
-		final SLIdentityStoreSessionContext sessionContext = this
-				.getContext(invocationCtx);
-		sessionContext.getSession().addDirtyNodeToSave(typedIdObj);
 	}
 
 	public void removeIdentityObject(
 			final IdentityStoreInvocationContext invocationCtx,
 			final IdentityObject identity) throws IdentityException {
-		final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
-		final SLIdentityStoreSessionContext sessionContext = this
-				.getContext(invocationCtx);
-		sessionContext.getSession().addDirtyNodeToRemove(typedIdObj);
+		try {
+			final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
+			final SLIdentityStoreSessionContext sessionContext = this
+					.getContext(invocationCtx);
 
+			sessionContext.getSession().remove(typedIdObj);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
 	}
 
 	public void removeRelationship(
@@ -508,8 +538,20 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			final IdentityObject identity,
 			final IdentityObjectAttribute[] attributes)
 			throws IdentityException {
-		// TODO Auto-generated method stub
-
+		try {
+			final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
+			for (final IdentityObjectAttribute entry : attributes) {
+				final SLAttributeEntry attribute = new SLAttributeEntry();
+				attribute.setName(entry.getName());
+				attribute.setParent(identityAsSlId);
+				final Collection<String> entries = entry.getValues();
+				attribute.setEntries(new HashSet<String>(entries));
+				identityAsSlId.getAttributes().add(attribute);
+			}
+			this.addNodeToSave(invocationCtx, identityAsSlId);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, IdentityException.class);
+		}
 	}
 
 	public void updateCredential(final IdentityStoreInvocationContext ctx,
