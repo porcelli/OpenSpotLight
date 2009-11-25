@@ -1,7 +1,9 @@
 package org.openspotlight.security.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.jboss.identity.idm.api.Credential;
 import org.jboss.identity.idm.api.CredentialType;
@@ -36,7 +38,14 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 			entry.setPasswordValue(passwordCredential.getValue());
 		} else if (credential instanceof BinaryCredential) {
 			final BinaryCredential binaryCredential = (BinaryCredential) credential;
-			entry.setBinaryValue(binaryCredential.getValue());
+			final byte[] rawValue = binaryCredential.getValue() != null ? binaryCredential
+					.getValue()
+					: new byte[0];
+			final List<Byte> autoboxed = new ArrayList<Byte>();
+			for (final byte b : rawValue) {
+				autoboxed.add(b);
+			}
+			entry.setAutoboxedBinaryValue(autoboxed);
 		} else {
 			throw Exceptions.logAndReturn(new IllegalArgumentException(
 					"invalid credential type"));
@@ -54,7 +63,7 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 
 	private String userName;
 
-	private byte[] binaryValue;
+	private List<Byte> autoboxedBinaryValue = new ArrayList<Byte>();
 
 	private String passwordValue;
 
@@ -64,8 +73,15 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 					this.passwordValue);
 			return credential;
 		} else if (BinaryCredential.class.equals(this.credentialClass)) {
-			final BinaryCredential credential = new BinaryCredential(
-					this.binaryValue);
+
+			final List<Byte> autoboxed = this.getAutoboxedBinaryValue();
+			final byte[] raw = new byte[autoboxed == null ? 0 : autoboxed
+					.size()];
+			for (int i = 0, size = raw.length; i < size; i++) {
+				raw[i] = autoboxed.get(i);
+			}
+
+			final BinaryCredential credential = new BinaryCredential(raw);
 			return credential;
 		} else {
 			throw Exceptions.logAndReturn(new IllegalArgumentException(
@@ -73,8 +89,8 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 		}
 	}
 
-	public byte[] getBinaryValue() {
-		return this.binaryValue;
+	public List<Byte> getAutoboxedBinaryValue() {
+		return this.autoboxedBinaryValue;
 	}
 
 	public Class<? extends Credential> getCredentialClass() {
@@ -105,7 +121,7 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 	@TransientProperty
 	public boolean isValid(final IdentityObject identityObject,
 			final IdentityObjectCredential credential) {
-		if (credential.getClass().equals(this.credentialTypeClass)) {
+		if (this.credentialClass.isInstance(credential)) {
 			if (identityObject.getId().equals(this.userId)) {
 
 				if (PasswordCredential.class.equals(this.credentialClass)) {
@@ -128,8 +144,8 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 
 	}
 
-	public void setBinaryValue(final byte[] binaryValue) {
-		this.binaryValue = binaryValue;
+	public void setAutoboxedBinaryValue(final List<Byte> autoboxedBinaryValue) {
+		this.autoboxedBinaryValue = autoboxedBinaryValue;
 	}
 
 	public void setCredentialClass(

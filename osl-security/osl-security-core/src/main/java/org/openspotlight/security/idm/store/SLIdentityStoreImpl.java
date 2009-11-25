@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -431,8 +432,8 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 		final SLIdentityStoreSessionContext sessionContext = this
 				.getContext(invocationCxt);
 
-		final Set<String> parameterNames = new HashSet<String>();
-		final Set<Object> parameterValues = new HashSet<Object>();
+		final List<String> parameterNames = new ArrayList<String>();
+		final List<Object> parameterValues = new ArrayList<Object>();
 		if (name != null) {
 			parameterNames.add("name");
 			parameterValues.add(name);
