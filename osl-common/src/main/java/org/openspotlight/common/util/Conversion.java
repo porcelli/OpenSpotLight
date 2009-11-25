@@ -123,6 +123,25 @@ public class Conversion {
 
 		Conversion.CONVERTERS.put(BigDecimal.class, new BigDecimalConverter());
 		Conversion.CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
+		Conversion.CONVERTERS.put(Class.class, new Converter() {
+
+			public Object convert(final Class type, final Object value) {
+				try {
+					if (type.equals(Class.class) && value instanceof String) {
+						String newValue = (String) value;
+						if (newValue.startsWith("class ")) {
+							newValue = Strings.removeBegginingFrom("class ",
+									newValue);
+						}
+						return Class.forName(newValue);
+					}
+				} catch (final Exception e) {
+					throw Exceptions.logAndReturn(new IllegalStateException(e));
+				}
+				throw Exceptions.logAndReturn(new IllegalArgumentException());
+
+			}
+		});
 	}
 
 	/**

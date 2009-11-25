@@ -33,6 +33,7 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	public void addNode(final SimpleNodeType node) throws Exception {
 		SimplePersistSupport
 				.convertBeanToJcr(this.rootNode, this.session, node);
+		this.session.save();
 	}
 
 	public void clear() throws IdentityException {

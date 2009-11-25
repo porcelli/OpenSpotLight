@@ -49,13 +49,11 @@
 
 package org.openspotlight.common.util.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Conversion.convert;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.util.Conversion;
 
@@ -64,39 +62,45 @@ import org.openspotlight.common.util.Conversion;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class ConversionTest {
 
-    public static enum SomeEnum {
-        A,
-        B,
-        C
-    }
+	public static enum SomeEnum {
+		A, B, C
+	}
 
-    @Test
-    public void shouldConvertValidValues() throws Exception {
-        final Long l = 3l;
-        final String asString = convert(l, String.class);
-        final Integer asInt = convert(asString, Integer.class);
-        final BigDecimal asBd = convert(l, BigDecimal.class);
-        assertThat(asString, is("3"));
-        assertThat(asInt, is(3));
-        assertThat(asBd, is(new BigDecimal("3")));
-    }
+	@Test
+	public void shouldConvertValidValues() throws Exception {
+		final Long l = 3l;
+		final String asString = Conversion.convert(l, String.class);
+		final Integer asInt = Conversion.convert(asString, Integer.class);
+		final BigDecimal asBd = Conversion.convert(l, BigDecimal.class);
+		Assert.assertThat(asString, Is.is("3"));
+		Assert.assertThat(asInt, Is.is(3));
+		Assert.assertThat(asBd, Is.is(new BigDecimal("3")));
+	}
 
-    @Test
-    public void shouldWorkWithDates() throws Exception {
-        final Date d = new Date();
-        final String asString = convert(d, String.class);
-        final Date asDate = convert(asString, Date.class);
-        assertThat(d.toString(), is(asDate.toString()));
-    }
+	@Test
+	public void shouldWorkWithClass() throws Exception {
+		final Class clazz = String.class;
+		final String asString = Conversion.convert(clazz, String.class);
+		final Class asClass = Conversion.convert(asString, Class.class);
+		Assert.assertThat(asClass == clazz, Is.is(true));
+	}
 
-    @Test
-    public void shouldWorkWithEnums() throws Exception {
-        final SomeEnum a = SomeEnum.A;
-        final String asString = convert(a, String.class);
-        final SomeEnum asEnum = convert(asString, SomeEnum.class);
-        assertThat(a, is(asEnum));
-    }
+	@Test
+	public void shouldWorkWithDates() throws Exception {
+		final Date d = new Date();
+		final String asString = Conversion.convert(d, String.class);
+		final Date asDate = Conversion.convert(asString, Date.class);
+		Assert.assertThat(d.toString(), Is.is(asDate.toString()));
+	}
+
+	@Test
+	public void shouldWorkWithEnums() throws Exception {
+		final SomeEnum a = SomeEnum.A;
+		final String asString = Conversion.convert(a, String.class);
+		final SomeEnum asEnum = Conversion.convert(asString, SomeEnum.class);
+		Assert.assertThat(a, Is.is(asEnum));
+	}
 }
