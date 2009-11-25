@@ -350,8 +350,9 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 	public int getIdentityObjectsCount(
 			final IdentityStoreInvocationContext invocationCtx,
 			final IdentityObjectType identityType) throws IdentityException {
-		// TODO Auto-generated method stub
-		return 0;
+		final Collection<IdentityObject> foundIds = this.findIdentityObject(
+				invocationCtx, identityType, null);
+		return foundIds.size();
 	}
 
 	public Map<String, String> getRelationshipNameProperties(
