@@ -206,24 +206,24 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
                 if (this.rootNode == null) {
                     this.createRepositoryRootNode(oslRootNode);
                     this.jcrSession.save();
-                } else {
-                    final SortedSet<Double> versionNumbers = new TreeSet<Double>();
-                    final VersionIterator iter = this.rootNode.getVersionHistory().getAllVersions();
-                    while (iter.hasNext()) {
-                        final Version version = iter.nextVersion();
-                        if (!version.getName().equals("jcr:rootVersion")) {
-                            versionNumbers.add(new Double(version.getName()));
-                        }
-                    }
-                    if (versionNumbers.isEmpty()) {
-                        this.rootNode.remove();
-                        this.createRepositoryRootNode(oslRootNode);
-                        this.jcrSession.save();
-                    } else {
-                        //rootNode.restore(versionNumbers.last().toString(), true);
-                    }
-                }
-                this.rootNode.checkout();
+                } //else {
+//                    final SortedSet<Double> versionNumbers = new TreeSet<Double>();
+//                    final VersionIterator iter = this.rootNode.getVersionHistory().getAllVersions();
+//                    while (iter.hasNext()) {
+//                        final Version version = iter.nextVersion();
+//                        if (!version.getName().equals("jcr:rootVersion")) {
+//                            versionNumbers.add(new Double(version.getName()));
+//                        }
+//                    }
+//                    if (versionNumbers.isEmpty()) {
+//                        this.rootNode.remove();
+//                        this.createRepositoryRootNode(oslRootNode);
+//                        this.jcrSession.save();
+//                    } else {
+//                        //rootNode.restore(versionNumbers.last().toString(), true);
+//                    }
+//                }
+//                this.rootNode.checkout();
             } catch (final RepositoryException e) {
                 throw new SLPersistentTreeSessionException("Couldn't create persistent root node.", e);
             }
@@ -245,7 +245,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
     public void save() throws SLPersistentTreeSessionException {
         try {
             //            this.rootNode.save();
-            this.rootNode.checkin();
+//            this.rootNode.checkin();
             this.jcrSession.save();
             //			jcrSession.logout();
         } catch (final RepositoryException e) {
