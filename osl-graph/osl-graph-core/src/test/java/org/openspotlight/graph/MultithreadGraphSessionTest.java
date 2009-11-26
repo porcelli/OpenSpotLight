@@ -11,6 +11,7 @@ import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -90,6 +91,7 @@ public class MultithreadGraphSessionTest {
 	}
 
 	@Test
+	@Ignore
 	public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
 		// final SLGraphSession session = MultithreadGraphSessionTest.graph
 		// .openSession(MultithreadGraphSessionTest.user);
