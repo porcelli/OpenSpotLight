@@ -218,12 +218,12 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 						.getSession(), SLIdentityObjectRelationship.class,
 						LazyType.EAGER, new String[] { property },
 						new Object[] { identity.getId() });
-		final Set<String> ids = new HashSet<String>();
+		final List<String> ids = new ArrayList<String>();
 		for (final SLIdentityObjectRelationship relation : foundRelationShips) {
 			ids.add(parent ? relation.getFromIdentityObjectId() : relation
 					.getToIdentityObjectId());
 		}
-		final Set<IdentityObject> foundIdentities = new HashSet<IdentityObject>();
+		final List<IdentityObject> foundIdentities = new ArrayList<IdentityObject>();
 		for (final String id : ids) {
 			foundIdentities.add(this.findIdentityObject(invocationCxt, id));
 		}
