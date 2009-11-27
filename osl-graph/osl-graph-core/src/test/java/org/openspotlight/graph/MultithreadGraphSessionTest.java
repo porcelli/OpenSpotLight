@@ -11,7 +11,6 @@ import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -38,10 +37,10 @@ public class MultithreadGraphSessionTest {
 				final SLNode rootNode = session.createContext("new context")
 						.getRootNode();
 				final SLNode newNode = rootNode.addNode("abc");
-				for (int i = 0; i < 100; i++) {
+				for (int i = 0; i < 500; i++) {
 					newNode.addNode("node " + i);
+					session.save();
 				}
-				session.save();
 				session.close();
 				this.state = State.DONE;
 			} catch (final Exception e) {
@@ -91,7 +90,6 @@ public class MultithreadGraphSessionTest {
 	}
 
 	@Test
-	@Ignore
 	public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
 		// final SLGraphSession session = MultithreadGraphSessionTest.graph
 		// .openSession(MultithreadGraphSessionTest.user);
@@ -107,6 +105,10 @@ public class MultithreadGraphSessionTest {
 			workers.add(new Worker());
 		}
 		final List<Future<State>> allStatus = executor.invokeAll(workers);
+
+		for (final Future<State> status : allStatus) {
+			System.out.println(status.get());
+		}
 
 		for (final Future<State> status : allStatus) {
 			Assert.assertThat(status.get(), Is.is(State.DONE));
