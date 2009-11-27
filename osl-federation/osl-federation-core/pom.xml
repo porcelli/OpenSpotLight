@@ -71,6 +71,12 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>quartz</artifactId>
+		</dependency>
+
 		<!-- Java Content Repository API -->
 		<dependency>
 			<groupId>javax.jcr</groupId>
