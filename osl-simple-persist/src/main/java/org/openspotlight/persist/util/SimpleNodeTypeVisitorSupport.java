@@ -4,9 +4,11 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -61,19 +63,26 @@ public class SimpleNodeTypeVisitorSupport {
 	public static <S extends SimpleNodeType> List<S> fillItems(
 			final Class<S> targetType, final SimpleNodeType rootNode)
 			throws Exception {
-		final List<SimpleNodeType> allItemsToVisit = new LinkedList<SimpleNodeType>();
-		final List<SimpleNodeType> currentItemsToVisit = SimpleNodeTypeVisitorSupport
+		final Set<SimpleNodeType> allItemsToVisit = new LinkedHashSet<SimpleNodeType>();
+		final Set<SimpleNodeType> currentItemsToVisit = SimpleNodeTypeVisitorSupport
 				.fillItems(rootNode);
+		int lastSize = 0;
 		while (currentItemsToVisit.size() != 0) {
 			allItemsToVisit.addAll(currentItemsToVisit);
+			if (allItemsToVisit.size() == lastSize) {
+				break;
+				// just added the same items
+			}
+
 			final List<SimpleNodeType> copy = new ArrayList<SimpleNodeType>(
 					currentItemsToVisit);
 			currentItemsToVisit.clear();
 			for (final SimpleNodeType node : copy) {
-				final List<SimpleNodeType> newNodes = SimpleNodeTypeVisitorSupport
+				final Set<SimpleNodeType> newNodes = SimpleNodeTypeVisitorSupport
 						.fillItems(node);
 				currentItemsToVisit.addAll(newNodes);
 			}
+			lastSize = allItemsToVisit.size();
 		}
 		final List<S> allNodesOfGivenType = new LinkedList<S>();
 		for (final SimpleNodeType t : allItemsToVisit) {
@@ -86,13 +95,13 @@ public class SimpleNodeTypeVisitorSupport {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<SimpleNodeType> fillItems(final SimpleNodeType rootNode)
+	public static Set<SimpleNodeType> fillItems(final SimpleNodeType rootNode)
 			throws Exception {
 
 		if (rootNode == null) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
-		final List<SimpleNodeType> itemsToVisit = new LinkedList<SimpleNodeType>();
+		final Set<SimpleNodeType> itemsToVisit = new LinkedHashSet<SimpleNodeType>();
 
 		final PropertyDescriptor[] allDescriptors = PropertyUtils
 				.getPropertyDescriptors(rootNode);
@@ -113,8 +122,10 @@ public class SimpleNodeTypeVisitorSupport {
 						.getItemType())) {
 					final Iterable<SimpleNodeType> collection = (Iterable<SimpleNodeType>) readMethod
 							.invoke(rootNode);
-					for (final SimpleNodeType t : collection) {
-						itemsToVisit.add(t);
+					if (collection != null) {
+						for (final SimpleNodeType t : collection) {
+							itemsToVisit.add(t);
+						}
 					}
 				}
 			} else if (Map.class.isAssignableFrom(currentType)) {
@@ -124,9 +135,11 @@ public class SimpleNodeTypeVisitorSupport {
 						.getItemType().getK2())) {
 					final Map<Object, SimpleNodeType> map = (Map<Object, SimpleNodeType>) readMethod
 							.invoke(rootNode);
-					for (final Entry<Object, SimpleNodeType> entry : map
-							.entrySet()) {
-						itemsToVisit.add(entry.getValue());
+					if (map != null) {
+						for (final Entry<Object, SimpleNodeType> entry : map
+								.entrySet()) {
+							itemsToVisit.add(entry.getValue());
+						}
 					}
 				}
 			}
