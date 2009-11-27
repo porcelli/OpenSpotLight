@@ -1,5 +1,8 @@
 package org.openspotlight.federation.loader;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.StreamArtifact;
@@ -12,51 +15,61 @@ import org.slf4j.LoggerFactory;
 
 public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
 
-    public <A extends Artifact> boolean acceptKindOfArtifact( final Class<A> kindOfArtifact ) {
-        return StreamArtifact.class.equals(kindOfArtifact);
-    }
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public void beforeProcessArtifact( final StreamArtifact artifact ) {
-        this.logger.info("starting to process " + artifact);
-    }
+	public <A extends Artifact> boolean acceptKindOfArtifact(
+			final Class<A> kindOfArtifact) {
+		return StreamArtifact.class.equals(kindOfArtifact);
+	}
 
-    public void didFinishProcessing( final ArtifactChanges<StreamArtifact> changes ) {
+	public void beforeProcessArtifact(final StreamArtifact artifact) {
+		this.logger.info("starting to process " + artifact);
+	}
 
-    }
+	public void didFinishProcessing(
+			final ArtifactChanges<StreamArtifact> changes) {
 
-    public void didFinishToProcessArtifact( final StreamArtifact artifact,
-                                            final LastProcessStatus status ) {
-        this.logger.info("processed " + artifact);
-    }
+	}
 
-    public Class<StreamArtifact> getArtifactType() {
-        return StreamArtifact.class;
-    }
+	public void didFinishToProcessArtifact(final StreamArtifact artifact,
+			final LastProcessStatus status) {
+		ExampleBundleProcessor.allStatus.add(status);
 
-    public SaveBehavior getSaveBehavior() {
-        return SaveBehavior.PER_PROCESSING;
-    }
+		this.logger.info("processed " + artifact);
+	}
 
-    public LastProcessStatus processArtifact( final StreamArtifact artifact,
-                                              final CurrentProcessorContext currentContext,
-                                              final BundleProcessorContext context ) throws Exception {
-        context.getLogger().log(context.getAuthenticatedUser(), LogEventType.DEBUG, "another test", artifact);
-        for (int i = 0; i < 100; i++) {
-            final SLNode node = currentContext.getCurrentNodeGroup().addNode(artifact.getArtifactCompleteName() + "i");
-            node.addNode(artifact.getArtifactName() + "i");
-        }
-        artifact.addSyntaxInformation(2, 4, 5, 6, SyntaxInformationType.COMMENT);
+	public Class<StreamArtifact> getArtifactType() {
+		return StreamArtifact.class;
+	}
 
-        return LastProcessStatus.PROCESSED;
-    }
+	public SaveBehavior getSaveBehavior() {
+		return SaveBehavior.PER_PROCESSING;
+	}
 
-    public void selectArtifactsToBeProcessed( final CurrentProcessorContext currentContext,
-                                              final BundleProcessorContext context,
-                                              final ArtifactChanges<StreamArtifact> changes,
-                                              final ArtifactsToBeProcessed<StreamArtifact> toBeReturned ) {
+	public LastProcessStatus processArtifact(final StreamArtifact artifact,
+			final CurrentProcessorContext currentContext,
+			final BundleProcessorContext context) throws Exception {
+		context.getLogger().log(context.getAuthenticatedUser(),
+				LogEventType.DEBUG, "another test", artifact);
+		for (int i = 0; i < 100; i++) {
+			final SLNode node = currentContext.getCurrentNodeGroup().addNode(
+					artifact.getArtifactCompleteName() + "i");
+			node.addNode(artifact.getArtifactName() + "i");
+		}
+		artifact
+				.addSyntaxInformation(2, 4, 5, 6, SyntaxInformationType.COMMENT);
 
-    }
+		return LastProcessStatus.PROCESSED;
+	}
+
+	public void selectArtifactsToBeProcessed(
+			final CurrentProcessorContext currentContext,
+			final BundleProcessorContext context,
+			final ArtifactChanges<StreamArtifact> changes,
+			final ArtifactsToBeProcessed<StreamArtifact> toBeReturned) {
+
+	}
 
 }
