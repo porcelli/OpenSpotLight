@@ -1,14 +1,8 @@
 package org.openspotlight.web.command;
 
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-
 import java.util.Map;
-import java.util.Set;
 
-import org.openspotlight.common.LazyType;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.loader.ConfigurationManager;
-import org.openspotlight.federation.scheduler.Scheduler;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;
 
@@ -17,24 +11,34 @@ import org.openspotlight.web.WebException;
  */
 public class ImediateBundleProcessingWebCommand implements WebCommand {
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.web.command.WebCommand#execute(org.openspotlight.web.command.WebCommand.WebCommandContext, java.util.Map)
-     */
-    public String execute( final WebCommandContext context,
-                           final Map<String, String> parameters ) throws WebException {
-        try {
-            final Scheduler scheduler = context.getScheduler();
-            final ConfigurationManager manager = new JcrSessionConfigurationManager(context.getJcrSession());
-            final GlobalSettings configuration = manager.load(LazyType.LAZY);
-            final Set<ArtifactSource> allBundles = ConfigurationNodes.findAllNodesOfType(configuration, ArtifactSource.class);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.web.command.WebCommand#execute(org.openspotlight.web
+	 * .command.WebCommand.WebCommandContext, java.util.Map)
+	 */
+	public String execute(final WebCommandContext context,
+			final Map<String, String> parameters) throws WebException {
+		try {
+			// final Scheduler scheduler = context.getScheduler();
+			// final ConfigurationManager manager = new
+			// JcrSessionConfigurationManager(context.getJcrSession());
+			// final GlobalSettings configuration = manager.load(LazyType.LAZY);
+			// final Set<ArtifactSource> allBundles =
+			// ConfigurationNodes.findAllNodesOfType(configuration,
+			// ArtifactSource.class);
+			//
+			// scheduler.fireImmediateExecution(allBundles.toArray(new
+			// ArtifactSource[] {}));
+			return "fired";
+		} catch (final Exception e) {
+			Exceptions.catchAndLog(e);
+			throw new MessageWebException(
+					"There's something wrong during the initial data import: "
+							+ e.getMessage());
+		}
 
-            scheduler.fireImmediateExecution(allBundles.toArray(new ArtifactSource[] {}));
-            return "fired";
-        } catch (final Exception e) {
-            catchAndLog(e);
-            throw new MessageWebException("There's something wrong during the initial data import: " + e.getMessage());
-        }
-
-    }
+	}
 
 }
