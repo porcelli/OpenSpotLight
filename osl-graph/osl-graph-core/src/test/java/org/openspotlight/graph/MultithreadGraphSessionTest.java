@@ -32,16 +32,11 @@ public class MultithreadGraphSessionTest {
 
 		public State call() throws Exception {
 			try {
-				final SLGraphSession session = MultithreadGraphSessionTest.graph
-						.openSession(MultithreadGraphSessionTest.user);
-				final SLNode rootNode = session.createContext("new context")
-						.getRootNode();
-				final SLNode newNode = rootNode.addNode("abc");
 				for (int i = 0; i < 500; i++) {
-					newNode.addNode("node " + i);
-					session.save();
+					MultithreadGraphSessionTest.newNode.addNode("node " + i);
+					MultithreadGraphSessionTest.session.save();
 				}
-				session.close();
+				MultithreadGraphSessionTest.session.close();
 				this.state = State.DONE;
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -58,6 +53,10 @@ public class MultithreadGraphSessionTest {
 	private static SLGraphSession session;
 
 	private static AuthenticatedUser user;
+
+	private static SLNode rootNode;
+
+	private static SLNode newNode;
 
 	/**
 	 * Finish.
@@ -91,12 +90,13 @@ public class MultithreadGraphSessionTest {
 
 	@Test
 	public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
-		// final SLGraphSession session = MultithreadGraphSessionTest.graph
-		// .openSession(MultithreadGraphSessionTest.user);
-		// final SLNode rootNode = session.createContext("new context")
-		// .getRootNode();
-		// final SLNode newNode = rootNode.addNode("abc");
-		// session.save();
+		MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph
+				.openSession(MultithreadGraphSessionTest.user);
+		MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session
+				.createContext("new context").getRootNode();
+		MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode
+				.addNode("abc");
+		MultithreadGraphSessionTest.session.save();
 		// session.close();
 
 		final ExecutorService executor = Executors.newFixedThreadPool(4);
