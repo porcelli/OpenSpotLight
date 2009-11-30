@@ -101,7 +101,7 @@ public class MultithreadGraphSessionTest {
 
 		final ExecutorService executor = Executors.newFixedThreadPool(4);
 		final List<Worker> workers = new ArrayList<Worker>();
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 1; i++) {
 			workers.add(new Worker());
 		}
 		final List<Future<State>> allStatus = executor.invokeAll(workers);
