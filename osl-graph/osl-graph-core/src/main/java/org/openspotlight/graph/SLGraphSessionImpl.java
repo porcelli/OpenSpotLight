@@ -97,6 +97,8 @@ import org.openspotlight.security.idm.User;
  */
 public class SLGraphSessionImpl implements SLGraphSession {
 
+	private final Object lock;
+
 	/** The tree session. */
 	private final SLPersistentTreeSession treeSession;
 
@@ -140,6 +142,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 		Assertions.checkNotNull("user", user);
 
 		this.treeSession = treeSession;
+		this.lock = treeSession.getLockObject();
 		this.user = user;
 		this.policyEnforcement = policyEnforcement;
 		final Collection<SLGraphSessionEventListener> listeners = new ArrayList<SLGraphSessionEventListener>();
@@ -167,8 +170,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> L addLink(final Class<L> linkClass,
 			final SLNode source, final SLNode target, final boolean bidirecional)
 			throws SLGraphSessionException, SLInvalidCredentialException {
-		return this.addLink(linkClass, source, target, bidirecional,
-				SLPersistenceMode.NORMAL);
+		synchronized (this.lock) {
+			return this.addLink(linkClass, source, target, bidirecional,
+					SLPersistenceMode.NORMAL);
+		}
 	}
 
 	// @Override
@@ -185,78 +190,84 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final SLNode source, final SLNode target,
 			final boolean bidirecional, final SLPersistenceMode persistenceMode)
 			throws SLGraphSessionException, SLInvalidCredentialException {
+		synchronized (this.lock) {
 
-		try {
+			try {
 
-			if (!this.hasPrivileges(GraphElement.LINK, Action.WRITE)) {
-				throw new SLInvalidCredentialException(
-						"User does not have privilegies to add links.");
-			}
+				if (!this.hasPrivileges(GraphElement.LINK, Action.WRITE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to add links.");
+				}
 
-			SLPersistentNode linkNode = null;
+				SLPersistentNode linkNode = null;
 
-			boolean changedToBidirectional = false;
-			final boolean allowsMultiple = this.allowsMultiple(linkClass);
-			final boolean allowsChangeToBidirecional = this
-					.allowsChangeToBidirecional(linkClass);
+				boolean changedToBidirectional = false;
+				final boolean allowsMultiple = this.allowsMultiple(linkClass);
+				final boolean allowsChangeToBidirecional = this
+						.allowsChangeToBidirecional(linkClass);
 
-			if (allowsMultiple && allowsChangeToBidirecional) {
-				throw new SLGraphSessionException(
-						"ALLOWS_CHANGE_TO_BIDIRECTIONAL and ALLOWS_MULTIPLE attributes are not supported at once.");
-			}
+				if (allowsMultiple && allowsChangeToBidirecional) {
+					throw new SLGraphSessionException(
+							"ALLOWS_CHANGE_TO_BIDIRECTIONAL and ALLOWS_MULTIPLE attributes are not supported at once.");
+				}
 
-			final SLPersistentNode pairKeyNode = this.getPairKeyNode(linkClass,
-					source, target);
-			final int direction = this.getDirection(source, target,
-					bidirecional);
+				final SLPersistentNode pairKeyNode = this.getPairKeyNode(
+						linkClass, source, target);
+				final int direction = this.getDirection(source, target,
+						bidirecional);
 
-			boolean newLink = false;
+				boolean newLink = false;
 
-			if (allowsMultiple) {
-				newLink = true;
-			} else {
+				if (allowsMultiple) {
+					newLink = true;
+				} else {
 
-				linkNode = this.getLinkNodeByDirection(pairKeyNode, direction);
+					linkNode = this.getLinkNodeByDirection(pairKeyNode,
+							direction);
 
-				if (linkNode == null) {
-					if (allowsChangeToBidirecional) {
-						linkNode = this.findUniqueLinkNode(pairKeyNode);
-						if (linkNode == null) {
-							newLink = true;
-						} else {
-							final SLPersistentProperty<Integer> directionProp = linkNode
-									.getProperty(Integer.class,
-											SLConsts.PROPERTY_NAME_DIRECTION);
-							if (directionProp.getValue() != SLConsts.DIRECTION_BOTH) {
-								directionProp.setValue(SLConsts.DIRECTION_BOTH);
-								changedToBidirectional = true;
+					if (linkNode == null) {
+						if (allowsChangeToBidirecional) {
+							linkNode = this.findUniqueLinkNode(pairKeyNode);
+							if (linkNode == null) {
+								newLink = true;
+							} else {
+								final SLPersistentProperty<Integer> directionProp = linkNode
+										.getProperty(
+												Integer.class,
+												SLConsts.PROPERTY_NAME_DIRECTION);
+								if (directionProp.getValue() != SLConsts.DIRECTION_BOTH) {
+									directionProp
+											.setValue(SLConsts.DIRECTION_BOTH);
+									changedToBidirectional = true;
+								}
 							}
+						} else {
+							newLink = true;
 						}
-					} else {
-						newLink = true;
 					}
 				}
-			}
 
-			if (newLink) {
-				linkNode = this.addLinkNode(pairKeyNode, linkClass, source,
-						target, direction);
-			}
+				if (newLink) {
+					linkNode = this.addLinkNode(pairKeyNode, linkClass, source,
+							target, direction);
+				}
 
-			final SLLink link = new SLLinkImpl(this, linkNode, this.eventPoster);
-			final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
-			final SLLinkEvent event = new SLLinkEvent(
-					SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode,
-					persistenceMode);
-			event.setSource(source);
-			event.setTarget(target);
-			event.setNewLink(newLink);
-			event.setChangedToBidirectional(changedToBidirectional);
-			this.eventPoster.post(event);
-			return linkProxy;
-		} catch (final SLException e) {
-			throw new SLGraphSessionException("Error on attempt to add link.",
-					e);
+				final SLLink link = new SLLinkImpl(this, linkNode,
+						this.eventPoster);
+				final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
+				final SLLinkEvent event = new SLLinkEvent(
+						SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode,
+						persistenceMode);
+				event.setSource(source);
+				event.setTarget(target);
+				event.setNewLink(newLink);
+				event.setChangedToBidirectional(changedToBidirectional);
+				this.eventPoster.post(event);
+				return linkProxy;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to add link.", e);
+			}
 		}
 	}
 
@@ -352,12 +363,14 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * {@inheritDoc}
 	 */
 	public void clear() throws SLGraphSessionException {
-		try {
-			this.eventPoster.sessionCleaned();
-			this.treeSession.clear();
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to clear OSL repository.", e);
+		synchronized (this.lock) {
+			try {
+				this.eventPoster.sessionCleaned();
+				this.treeSession.clear();
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to clear OSL repository.", e);
+			}
 		}
 	}
 
@@ -386,28 +399,29 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public SLContext createContext(final String id)
 			throws SLContextAlreadyExistsException, SLGraphSessionException,
 			SLInvalidCredentialException {
-		try {
-			if (!this.hasPrivileges(GraphElement.CONTEXT, Action.WRITE)) {
-				throw new SLInvalidCredentialException(
-						"User does not have privilegies to create contexts.");
-			}
+		synchronized (this.lock) {
+			try {
+				if (!this.hasPrivileges(GraphElement.CONTEXT, Action.WRITE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to create contexts.");
+				}
 
-			final SLPersistentNode contextsPersistentNode = SLCommonSupport
-					.getContextsPersistentNode(this.treeSession);
-			if (contextsPersistentNode.getNode(id) == null) {
-				final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
-						.addNode("" + id);
-				return new SLContextImpl(this, contextRootPersistentNode,
-						this.eventPoster);
-			}
-			return this.getContext(id);
+				final SLPersistentNode contextsPersistentNode = SLCommonSupport
+						.getContextsPersistentNode(this.treeSession);
+				if (contextsPersistentNode.getNode(id) == null) {
+					final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
+							.addNode("" + id);
+					return new SLContextImpl(this, contextRootPersistentNode,
+							this.eventPoster);
+				}
+				return this.getContext(id);
 
-		} catch (final SLPersistentTreeSessionException e) {
-			Exceptions.catchAndLog(e);
-			throw new SLGraphSessionException(
-					"Error on attempt to create context node.", e);
+			} catch (final SLPersistentTreeSessionException e) {
+				Exceptions.catchAndLog(e);
+				throw new SLGraphSessionException(
+						"Error on attempt to create context node.", e);
+			}
 		}
-
 	}
 
 	/*
@@ -419,7 +433,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * {@inheritDoc}
 	 */
 	public SLQueryApi createQueryApi() throws SLGraphSessionException {
-		return new SLQueryApiImpl(this, this.treeSession, this.queryCache);
+		synchronized (this.lock) {
+			return new SLQueryApiImpl(this, this.treeSession, this.queryCache);
+		}
 	}
 
 	/*
@@ -433,7 +449,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public SLQueryText createQueryText(final String slqlInput)
 			throws SLGraphSessionException, SLInvalidQuerySyntaxException {
 		final SLQueryTextInternal query = this.queryBuilder.build(slqlInput);
-		return new SLQueryTextImpl(this, this.treeSession, query);
+		synchronized (this.lock) {
+			return new SLQueryTextImpl(this, this.treeSession, query);
+		}
 	}
 
 	/**
@@ -522,7 +540,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getBidirectionalLinks(
 			final Class<L> linkClass, final SLNode side1, final SLNode side2)
 			throws SLGraphSessionException {
-		return this.getLinks(linkClass, side1, side2, SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getLinks(linkClass, side1, side2, SLLink.DIRECTION_BI);
+		}
 	}
 
 	// @Override
@@ -537,7 +557,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLLink> getBidirectionalLinks(final SLNode side1,
 			final SLNode side2) throws SLGraphSessionException {
-		return this.getLinks(side1, side2, SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getLinks(side1, side2, SLLink.DIRECTION_BI);
+		}
 	}
 
 	// @Override
@@ -554,7 +576,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getBidirectionalLinksBySide(
 			final Class<L> linkClass, final SLNode side)
 			throws SLGraphSessionException {
-		return this.getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
+		}
 	}
 
 	// @Override
@@ -570,7 +594,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLLink> getBidirectionalLinksBySide(final SLNode side)
 			throws SLGraphSessionException {
-		return this.getLinks(side, null, SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getLinks(side, null, SLLink.DIRECTION_BI);
+		}
 	}
 
 	/**
@@ -599,20 +625,22 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * {@inheritDoc}
 	 */
 	public SLContext getContext(final String id) throws SLGraphSessionException {
-		try {
-			SLContext context = null;
-			final SLPersistentNode contextsPersistentNode = SLCommonSupport
-					.getContextsPersistentNode(this.treeSession);
-			final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
-					.getNode(id);
-			if (contextRootPersistentNode != null) {
-				context = new SLContextImpl(this, contextRootPersistentNode,
-						this.eventPoster);
+		synchronized (this.lock) {
+			try {
+				SLContext context = null;
+				final SLPersistentNode contextsPersistentNode = SLCommonSupport
+						.getContextsPersistentNode(this.treeSession);
+				final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
+						.getNode(id);
+				if (contextRootPersistentNode != null) {
+					context = new SLContextImpl(this,
+							contextRootPersistentNode, this.eventPoster);
+				}
+				return context;
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt retrieve context node.", e);
 			}
-			return context;
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt retrieve context node.", e);
 		}
 	}
 
@@ -731,7 +759,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getLinks(final Class<L> linkClass,
 			final SLNode source, final SLNode target)
 			throws SLGraphSessionException {
-		return this.getLinks(linkClass, source, target, SLLink.DIRECTION_ANY);
+		synchronized (this.lock) {
+			return this.getLinks(linkClass, source, target,
+					SLLink.DIRECTION_ANY);
+		}
 	}
 
 	// @Override
@@ -747,148 +778,157 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getLinks(final Class<L> linkClass,
 			final SLNode source, final SLNode target, final int direction)
 			throws SLGraphSessionException {
+		synchronized (this.lock) {
 
-		try {
+			try {
 
-			final Collection<L> links = new TreeSet<L>();
+				final Collection<L> links = new TreeSet<L>();
 
-			// query format:
-			// //osl/links/JavaClassToJavaMethod/*[(@a=sourceID or @b=sourceID)
-			// and (@a=targetID or @b=targetID)]/*[@direction=AB or @direcionBA]
-			// order by @linkCount ascending
+				// query format:
+				// //osl/links/JavaClassToJavaMethod/*[(@a=sourceID or
+				// @b=sourceID)
+				// and (@a=targetID or @b=targetID)]/*[@direction=AB or
+				// @direcionBA]
+				// order by @linkCount ascending
 
-			final StringBuilder statement = new StringBuilder();
-			statement.append(this.treeSession.getXPathRootPath() + "/links/")
-					.append(linkClass.getName()).append("/*");
+				final StringBuilder statement = new StringBuilder();
+				statement.append(
+						this.treeSession.getXPathRootPath() + "/links/")
+						.append(linkClass.getName()).append("/*");
 
-			if (source != null || target != null) {
+				if (source != null || target != null) {
 
-				statement.append('[');
+					statement.append('[');
 
-				// filter source ...
-				if (source != null) {
-					statement.append('(').append('@').append(
-							SLConsts.PROPERTY_NAME_A_NODE_ID).append("='")
-							.append(source.getID()).append("'").append(" or ")
-							.append('@').append(
-									SLConsts.PROPERTY_NAME_B_NODE_ID).append(
-									"='").append(source.getID()).append("'")
-							.append(')');
-				}
-
-				if (source != null && target != null) {
-					statement.append(" and ");
-				}
-
-				// filter target ...
-				if (target != null) {
-					statement.append('(').append('@').append(
-							SLConsts.PROPERTY_NAME_A_NODE_ID).append("='")
-							.append(target.getID()).append("'").append(" or ")
-							.append('@').append(
-									SLConsts.PROPERTY_NAME_B_NODE_ID).append(
-									"='").append(target.getID()).append("'")
-							.append(')');
-				}
-
-				statement.append(']');
-			}
-
-			statement.append("/*");
-
-			final StringBuilder directionFilter = new StringBuilder();
-			if (direction == (direction | SLLink.DIRECTION_UNI)
-					|| direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)) {
-				directionFilter.append('@').append(
-						SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(
-						SLConsts.DIRECTION_AB).append(" or @").append(
-						SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(
-						SLConsts.DIRECTION_BA);
-			}
-			if (direction == (direction | SLLink.DIRECTION_BI)) {
-				if (directionFilter.length() > 0) {
-					directionFilter.append(" or ");
-				}
-				directionFilter.append('@').append(
-						SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(
-						SLConsts.DIRECTION_BOTH);
-			}
-
-			// add direction filter ...
-			statement.append('[').append(directionFilter).append(']');
-
-			// order by link count (the order the links are added by the user)
-			// ...
-			statement.append(" order by @").append(
-					SLConsts.PROPERTY_NAME_LINK_COUNT).append(" ascending");
-
-			// execute query ...
-			final SLPersistentQuery query = this.treeSession.createQuery(
-					statement.toString(), SLPersistentQuery.TYPE_XPATH);
-			final SLPersistentQueryResult result = query.execute();
-			final Collection<SLPersistentNode> linkNodes = result.getNodes();
-
-			for (final SLPersistentNode linkNode : linkNodes) {
-
-				final SLPersistentNode pairKeyNode = linkNode.getParent();
-
-				final SLPersistentProperty<String> aNodeIDProp = pairKeyNode
-						.getProperty(String.class,
-								SLConsts.PROPERTY_NAME_A_NODE_ID);
-				final SLPersistentProperty<String> bNodeIDProp = pairKeyNode
-						.getProperty(String.class,
-								SLConsts.PROPERTY_NAME_B_NODE_ID);
-				final SLPersistentProperty<Integer> directionProp = linkNode
-						.getProperty(Integer.class,
-								SLConsts.PROPERTY_NAME_DIRECTION);
-
-				final SLNode aNode = this.getNodeByID(aNodeIDProp.getValue());
-				final SLNode bNode = this.getNodeByID(bNodeIDProp.getValue());
-
-				boolean status = false;
-
-				if (source == null && target == null) {
-					if (directionProp.getValue() == SLConsts.DIRECTION_AB
-							|| directionProp.getValue() == SLConsts.DIRECTION_BA) {
-						status = direction == (direction | SLLink.DIRECTION_UNI);
-					} else {
-						status = direction == (direction | SLLink.DIRECTION_BI);
+					// filter source ...
+					if (source != null) {
+						statement.append('(').append('@').append(
+								SLConsts.PROPERTY_NAME_A_NODE_ID).append("='")
+								.append(source.getID()).append("'").append(
+										" or ").append('@').append(
+										SLConsts.PROPERTY_NAME_B_NODE_ID)
+								.append("='").append(source.getID())
+								.append("'").append(')');
 					}
-				} else {
 
-					if (directionProp.getValue() == SLConsts.DIRECTION_BOTH) {
-						status = direction == (direction | SLLink.DIRECTION_BI);
-					} else {
+					if (source != null && target != null) {
+						statement.append(" and ");
+					}
 
-						SLNode s = null;
-						SLNode t = null;
+					// filter target ...
+					if (target != null) {
+						statement.append('(').append('@').append(
+								SLConsts.PROPERTY_NAME_A_NODE_ID).append("='")
+								.append(target.getID()).append("'").append(
+										" or ").append('@').append(
+										SLConsts.PROPERTY_NAME_B_NODE_ID)
+								.append("='").append(target.getID())
+								.append("'").append(')');
+					}
 
-						if (directionProp.getValue() == SLConsts.DIRECTION_AB) {
-							s = aNode;
-							t = bNode;
-						} else if (directionProp.getValue() == SLConsts.DIRECTION_BA) {
-							s = bNode;
-							t = aNode;
+					statement.append(']');
+				}
+
+				statement.append("/*");
+
+				final StringBuilder directionFilter = new StringBuilder();
+				if (direction == (direction | SLLink.DIRECTION_UNI)
+						|| direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)) {
+					directionFilter.append('@').append(
+							SLConsts.PROPERTY_NAME_DIRECTION).append('=')
+							.append(SLConsts.DIRECTION_AB).append(" or @")
+							.append(SLConsts.PROPERTY_NAME_DIRECTION).append(
+									'=').append(SLConsts.DIRECTION_BA);
+				}
+				if (direction == (direction | SLLink.DIRECTION_BI)) {
+					if (directionFilter.length() > 0) {
+						directionFilter.append(" or ");
+					}
+					directionFilter.append('@').append(
+							SLConsts.PROPERTY_NAME_DIRECTION).append('=')
+							.append(SLConsts.DIRECTION_BOTH);
+				}
+
+				// add direction filter ...
+				statement.append('[').append(directionFilter).append(']');
+
+				// order by link count (the order the links are added by the
+				// user)
+				// ...
+				statement.append(" order by @").append(
+						SLConsts.PROPERTY_NAME_LINK_COUNT).append(" ascending");
+
+				// execute query ...
+				final SLPersistentQuery query = this.treeSession.createQuery(
+						statement.toString(), SLPersistentQuery.TYPE_XPATH);
+				final SLPersistentQueryResult result = query.execute();
+				final Collection<SLPersistentNode> linkNodes = result
+						.getNodes();
+
+				for (final SLPersistentNode linkNode : linkNodes) {
+
+					final SLPersistentNode pairKeyNode = linkNode.getParent();
+
+					final SLPersistentProperty<String> aNodeIDProp = pairKeyNode
+							.getProperty(String.class,
+									SLConsts.PROPERTY_NAME_A_NODE_ID);
+					final SLPersistentProperty<String> bNodeIDProp = pairKeyNode
+							.getProperty(String.class,
+									SLConsts.PROPERTY_NAME_B_NODE_ID);
+					final SLPersistentProperty<Integer> directionProp = linkNode
+							.getProperty(Integer.class,
+									SLConsts.PROPERTY_NAME_DIRECTION);
+
+					final SLNode aNode = this.getNodeByID(aNodeIDProp
+							.getValue());
+					final SLNode bNode = this.getNodeByID(bNodeIDProp
+							.getValue());
+
+					boolean status = false;
+
+					if (source == null && target == null) {
+						if (directionProp.getValue() == SLConsts.DIRECTION_AB
+								|| directionProp.getValue() == SLConsts.DIRECTION_BA) {
+							status = direction == (direction | SLLink.DIRECTION_UNI);
+						} else {
+							status = direction == (direction | SLLink.DIRECTION_BI);
 						}
+					} else {
 
-						status = direction == (direction | SLLink.DIRECTION_UNI)
-								&& (s.equals(source) || t.equals(target))
-								|| direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)
-								&& (s.equals(target) || t.equals(source));
+						if (directionProp.getValue() == SLConsts.DIRECTION_BOTH) {
+							status = direction == (direction | SLLink.DIRECTION_BI);
+						} else {
+
+							SLNode s = null;
+							SLNode t = null;
+
+							if (directionProp.getValue() == SLConsts.DIRECTION_AB) {
+								s = aNode;
+								t = bNode;
+							} else if (directionProp.getValue() == SLConsts.DIRECTION_BA) {
+								s = bNode;
+								t = aNode;
+							}
+
+							status = direction == (direction | SLLink.DIRECTION_UNI)
+									&& (s.equals(source) || t.equals(target))
+									|| direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)
+									&& (s.equals(target) || t.equals(source));
+						}
+					}
+
+					if (status) {
+						final SLLink link = new SLLinkImpl(this, linkNode,
+								this.eventPoster);
+						links.add(ProxyUtil.createLinkProxy(linkClass, link));
 					}
 				}
 
-				if (status) {
-					final SLLink link = new SLLinkImpl(this, linkNode,
-							this.eventPoster);
-					links.add(ProxyUtil.createLinkProxy(linkClass, link));
-				}
+				return links;
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve links.", e);
 			}
-
-			return links;
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve links.", e);
 		}
 	}
 
@@ -905,7 +945,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLLink> getLinks(final SLNode source, final SLNode target)
 			throws SLGraphSessionException {
-		return this.getLinks(source, target, SLLink.DIRECTION_ANY);
+		synchronized (this.lock) {
+			return this.getLinks(source, target, SLLink.DIRECTION_ANY);
+		}
 	}
 
 	// @Override
@@ -922,14 +964,20 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public Collection<SLLink> getLinks(final SLNode source,
 			final SLNode target, final int directionType)
 			throws SLGraphSessionException {
-		final Collection<SLLink> links = new ArrayList<SLLink>();
-		final Collection<Class<? extends SLLink>> linkClasses = this
-				.getLinkClasses();
-		for (final Class<? extends SLLink> linkClass : linkClasses) {
-			links.addAll(this
-					.getLinks(linkClass, source, target, directionType));
+		synchronized (this.lock) {
+			final Collection<SLLink> links = new ArrayList<SLLink>();
+			final Collection<Class<? extends SLLink>> linkClasses = this
+					.getLinkClasses();
+			for (final Class<? extends SLLink> linkClass : linkClasses) {
+				links.addAll(this.getLinks(linkClass, source, target,
+						directionType));
+			}
+			return links;
 		}
-		return links;
+	}
+
+	public Object getLockObject() {
+		return this.lock;
 	}
 
 	// @Override
@@ -942,7 +990,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 * {@inheritDoc}
 	 */
 	public SLMetadata getMetadata() {
-		return new SLMetadataImpl(this.treeSession);
+		synchronized (this.lock) {
+			return new SLMetadataImpl(this.treeSession);
+		}
 	}
 
 	// @Override
@@ -956,36 +1006,39 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public SLNode getNodeByID(final String id) throws SLNodeNotFoundException,
 			SLGraphSessionException {
-		final int INDEX_CONTEXT_ID = 3;
-		try {
-			SLNode node = null;
-			final SLPersistentNode pNode = this.treeSession.getNodeByID(id);
-			final String[] names = pNode.getPath().substring(1).split("/");
-			final String contextID = names[INDEX_CONTEXT_ID];
-			final SLContext context = this.getContext(contextID);
-			final SLEncoder fakeEncoder = this.getEncoderFactory()
-					.getFakeEncoder();
-			for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
-				if (node == null) {
-					final SLNode rootNode = context.getRootNode();
-					node = context.getRootNode().getNode(SLNode.class,
-							names[i], fakeEncoder);
-					final Class<? extends SLNode> nodeType = this
-							.getNodeType(rootNode);
-					node = ProxyUtil.createNodeProxy(nodeType, node);
-				} else {
-					node = node.getNode(SLNode.class, names[i], fakeEncoder);
-					final Class<? extends SLNode> nodeType = this
-							.getNodeType(node);
-					node = ProxyUtil.createNodeProxy(nodeType, node);
+		synchronized (this.lock) {
+			final int INDEX_CONTEXT_ID = 3;
+			try {
+				SLNode node = null;
+				final SLPersistentNode pNode = this.treeSession.getNodeByID(id);
+				final String[] names = pNode.getPath().substring(1).split("/");
+				final String contextID = names[INDEX_CONTEXT_ID];
+				final SLContext context = this.getContext(contextID);
+				final SLEncoder fakeEncoder = this.getEncoderFactory()
+						.getFakeEncoder();
+				for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
+					if (node == null) {
+						final SLNode rootNode = context.getRootNode();
+						node = context.getRootNode().getNode(SLNode.class,
+								names[i], fakeEncoder);
+						final Class<? extends SLNode> nodeType = this
+								.getNodeType(rootNode);
+						node = ProxyUtil.createNodeProxy(nodeType, node);
+					} else {
+						node = node
+								.getNode(SLNode.class, names[i], fakeEncoder);
+						final Class<? extends SLNode> nodeType = this
+								.getNodeType(node);
+						node = ProxyUtil.createNodeProxy(nodeType, node);
+					}
 				}
+				return node;
+			} catch (final SLPersistentNodeNotFoundException e) {
+				throw new SLNodeNotFoundException(id, e);
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node by id.", e);
 			}
-			return node;
-		} catch (final SLPersistentNodeNotFoundException e) {
-			throw new SLNodeNotFoundException(id, e);
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve node by id.", e);
 		}
 	}
 
@@ -1002,7 +1055,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public Collection<SLNode> getNodesByLink(
 			final Class<? extends SLLink> linkClass)
 			throws SLGraphSessionException {
-		return this.getNodesByLink(linkClass, null);
+		synchronized (this.lock) {
+			return this.getNodesByLink(linkClass, null);
+		}
 	}
 
 	// @Override
@@ -1019,8 +1074,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public Collection<SLNode> getNodesByLink(
 			final Class<? extends SLLink> linkClass, final SLNode node)
 			throws SLGraphSessionException {
-		return this.getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI
-				| SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI
+					| SLLink.DIRECTION_BI);
+		}
 	}
 
 	/*
@@ -1037,8 +1094,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final Class<? extends SLLink> linkClass, final SLNode node,
 			final Class<N> nodeClass, final boolean returnSubTypes)
 			throws SLGraphSessionException {
-		return this.getNodesByLink(linkClass, node, nodeClass, returnSubTypes,
-				SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getNodesByLink(linkClass, node, nodeClass,
+					returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
+		}
 	}
 
 	// @Override
@@ -1056,14 +1115,16 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final Class<? extends SLLink> linkClass, final SLNode node,
 			final Class<N> nodeClass, final boolean returnSubTypes,
 			final int direction) throws SLGraphSessionException {
-		try {
-			final Collection<? extends SLLink> links = this.getLinks(linkClass,
-					node, null, direction);
-			return this.filterNodesFromLinks(links, node, nodeClass,
-					returnSubTypes);
-		} catch (final SLGraphSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve nodes by link.", e);
+		synchronized (this.lock) {
+			try {
+				final Collection<? extends SLLink> links = this.getLinks(
+						linkClass, node, null, direction);
+				return this.filterNodesFromLinks(links, node, nodeClass,
+						returnSubTypes);
+			} catch (final SLGraphSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve nodes by link.", e);
+			}
 		}
 	}
 
@@ -1081,8 +1142,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public Collection<SLNode> getNodesByLink(
 			final Class<? extends SLLink> linkClass, final SLNode node,
 			final int direction) throws SLGraphSessionException {
-		return this.getNodesByLink(linkClass, node, SLNode.class, true,
-				direction);
+		synchronized (this.lock) {
+			return this.getNodesByLink(linkClass, node, SLNode.class, true,
+					direction);
+		}
 	}
 
 	// @Override
@@ -1098,8 +1161,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLNode> getNodesByLink(final SLNode node)
 			throws SLGraphSessionException {
-		return this.getNodesByLink(node, SLLink.DIRECTION_UNI
-				| SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getNodesByLink(node, SLLink.DIRECTION_UNI
+					| SLLink.DIRECTION_BI);
+		}
 	}
 
 	/*
@@ -1115,8 +1180,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <N extends SLNode> Collection<N> getNodesByLink(final SLNode node,
 			final Class<N> nodeClass, final boolean returnSubTypes)
 			throws SLGraphSessionException {
-		return this.getNodesByLink(node, nodeClass, returnSubTypes,
-				SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
+		synchronized (this.lock) {
+			return this.getNodesByLink(node, nodeClass, returnSubTypes,
+					SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
+		}
 	}
 
 	// @Override
@@ -1133,14 +1200,16 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <N extends SLNode> Collection<N> getNodesByLink(final SLNode node,
 			final Class<N> nodeClass, final boolean returnSubTypes,
 			final int direction) throws SLGraphSessionException {
-		try {
-			final Collection<? extends SLLink> links = this.getLinks(node,
-					null, direction);
-			return this.filterNodesFromLinks(links, node, nodeClass,
-					returnSubTypes);
-		} catch (final SLGraphSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve nodes by link.", e);
+		synchronized (this.lock) {
+			try {
+				final Collection<? extends SLLink> links = this.getLinks(node,
+						null, direction);
+				return this.filterNodesFromLinks(links, node, nodeClass,
+						returnSubTypes);
+			} catch (final SLGraphSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve nodes by link.", e);
+			}
 		}
 	}
 
@@ -1157,7 +1226,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLNode> getNodesByLink(final SLNode node,
 			final int direction) throws SLGraphSessionException {
-		return this.getNodesByLink(node, SLNode.class, true, direction);
+		synchronized (this.lock) {
+			return this.getNodesByLink(node, SLNode.class, true, direction);
+		}
 	}
 
 	// @Override
@@ -1173,24 +1244,26 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLNode> getNodesByPredicate(
 			final SLNodePredicate predicate) throws SLGraphSessionException {
-		try {
-			final Collection<SLNode> nodes = new ArrayList<SLNode>();
-			final SLPersistentQuery query = this.treeSession.createQuery(
-					this.treeSession.getXPathRootPath()
-							+ "/contexts/*//descendant::node()",
-					SLPersistentQuery.TYPE_XPATH);
-			final SLPersistentQueryResult result = query.execute();
-			final Collection<SLPersistentNode> pNodes = result.getNodes();
-			for (final SLPersistentNode pNode : pNodes) {
-				final SLNode node = this.getNodeByID(pNode.getID());
-				if (node != null && predicate.evaluate(node)) {
-					nodes.add(node);
+		synchronized (this.lock) {
+			try {
+				final Collection<SLNode> nodes = new ArrayList<SLNode>();
+				final SLPersistentQuery query = this.treeSession.createQuery(
+						this.treeSession.getXPathRootPath()
+								+ "/contexts/*//descendant::node()",
+						SLPersistentQuery.TYPE_XPATH);
+				final SLPersistentQueryResult result = query.execute();
+				final Collection<SLPersistentNode> pNodes = result.getNodes();
+				for (final SLPersistentNode pNode : pNodes) {
+					final SLNode node = this.getNodeByID(pNode.getID());
+					if (node != null && predicate.evaluate(node)) {
+						nodes.add(node);
+					}
 				}
+				return nodes;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve nodes by predicate.", e);
 			}
-			return nodes;
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve nodes by predicate.", e);
 		}
 	}
 
@@ -1293,7 +1366,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getUnidirectionalLinks(
 			final Class<L> linkClass, final SLNode source, final SLNode target)
 			throws SLGraphSessionException {
-		return this.getLinks(linkClass, source, target, SLLink.DIRECTION_UNI);
+		synchronized (this.lock) {
+			return this.getLinks(linkClass, source, target,
+					SLLink.DIRECTION_UNI);
+		}
 	}
 
 	// @Override
@@ -1308,7 +1384,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLLink> getUnidirectionalLinks(final SLNode source,
 			final SLNode target) throws SLGraphSessionException {
-		return this.getLinks(source, target, SLLink.DIRECTION_UNI);
+		synchronized (this.lock) {
+			return this.getLinks(source, target, SLLink.DIRECTION_UNI);
+		}
 	}
 
 	// @Override
@@ -1325,7 +1403,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource(
 			final Class<L> linkClass, final SLNode source)
 			throws SLGraphSessionException {
-		return this.getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
+		synchronized (this.lock) {
+			return this.getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
+		}
 	}
 
 	// @Override
@@ -1341,7 +1421,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLLink> getUnidirectionalLinksBySource(final SLNode source)
 			throws SLGraphSessionException {
-		return this.getLinks(source, null, SLLink.DIRECTION_UNI);
+		synchronized (this.lock) {
+			return this.getLinks(source, null, SLLink.DIRECTION_UNI);
+		}
 	}
 
 	// @Override
@@ -1358,7 +1440,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget(
 			final Class<L> linkClass, final SLNode target)
 			throws SLGraphSessionException {
-		return this.getLinks(linkClass, null, target, SLLink.DIRECTION_UNI);
+		synchronized (this.lock) {
+			return this.getLinks(linkClass, null, target, SLLink.DIRECTION_UNI);
+		}
 	}
 
 	// @Override
@@ -1374,7 +1458,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public Collection<SLLink> getUnidirectionalLinksByTarget(final SLNode target)
 			throws SLGraphSessionException {
-		return this.getLinks(null, target, SLLink.DIRECTION_UNI);
+		synchronized (this.lock) {
+			return this.getLinks(null, target, SLLink.DIRECTION_UNI);
+		}
 	}
 
 	/**
@@ -1464,19 +1550,21 @@ public class SLGraphSessionImpl implements SLGraphSession {
 	 */
 	public void save() throws SLGraphSessionException,
 			SLInvalidCredentialException {
-		try {
-			if (!this.hasPrivileges(GraphElement.SESSION, Action.OPERATE)) {
-				throw new SLInvalidCredentialException(
-						"User does not have privilegies to save session.");
-			}
+		synchronized (this.lock) {
+			try {
+				if (!this.hasPrivileges(GraphElement.SESSION, Action.OPERATE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to save session.");
+				}
 
-			this.eventPoster.post(new SLGraphSessionEvent(
-					SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));
-			this.treeSession.save();
-		} catch (final SLException e) {
-			Exceptions.catchAndLog(e);
-			throw new SLGraphSessionException(
-					"Error on attempt to save the session.", e);
+				this.eventPoster.post(new SLGraphSessionEvent(
+						SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));
+				this.treeSession.save();
+			} catch (final SLException e) {
+				Exceptions.catchAndLog(e);
+				throw new SLGraphSessionException(
+						"Error on attempt to save the session.", e);
+			}
 		}
 	}
 

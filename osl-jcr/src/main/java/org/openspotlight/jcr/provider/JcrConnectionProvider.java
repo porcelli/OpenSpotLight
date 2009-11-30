@@ -142,7 +142,7 @@ public abstract class JcrConnectionProvider {
 		 * org.openspotlight.jcr.provider.JcrConnectionProvider#openSession()
 		 */
 		@Override
-		public Session openSession() {
+		public SessionWithLock openSession() {
 			try {
 				this.openRepository();
 				final Session newSession = this.repository.login(this.getData()
@@ -258,6 +258,6 @@ public abstract class JcrConnectionProvider {
 	 * 
 	 * @return the session
 	 */
-	public abstract Session openSession();
+	public abstract SessionWithLock openSession();
 
 }

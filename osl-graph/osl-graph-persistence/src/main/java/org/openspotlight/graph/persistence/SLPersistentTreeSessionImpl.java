@@ -55,7 +55,6 @@ import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionIterator;
 
@@ -63,6 +62,7 @@ import org.apache.log4j.Logger;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.JCRUtil;
+import org.openspotlight.jcr.provider.SessionWithLock;
 
 /**
  * The Class SLPersistentTreeSessionImpl.
@@ -76,7 +76,9 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 			.getLogger(SLPersistentTreeSessionImpl.class);
 
 	/** The jcr session. */
-	private final Session jcrSession;
+	private final SessionWithLock jcrSession;
+
+	private final Object lock;
 
 	/** The event poster. */
 	private final SLPersistentEventPoster eventPoster;
@@ -95,9 +97,10 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 * @param session
 	 *            the session
 	 */
-	public SLPersistentTreeSessionImpl(final Session session,
+	public SLPersistentTreeSessionImpl(final SessionWithLock session,
 			final String repositoryName) {
 		this.jcrSession = session;
+		this.lock = session.getLockObject();
 		final SLPersistentEventListener listener = new SLPersistentEventListenerImpl();
 		this.eventPoster = new SLPersistentEventPosterImpl(listener);
 		this.repositoryName = repositoryName;
@@ -112,19 +115,20 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#clear()
 	 */
 	public void clear() throws SLPersistentTreeSessionException {
-		if (this.rootNode != null) {
-			try {
-				synchronized (this.jcrSession) {
+		synchronized (this.lock) {
+			if (this.rootNode != null) {
+				try {
 					final NodeIterator iter = this.rootNode.getNodes();
 					while (iter.hasNext()) {
 						final Node node = iter.nextNode();
 						node.remove();
 					}
+
+				} catch (final RepositoryException e) {
+					throw new SLPersistentTreeSessionException(
+							"Error on attempt to clear the persistent tree session.",
+							e);
 				}
-			} catch (final RepositoryException e) {
-				throw new SLPersistentTreeSessionException(
-						"Error on attempt to clear the persistent tree session.",
-						e);
 			}
 		}
 	}
@@ -146,10 +150,9 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 *             the repository exception
 	 */
 	private Node createProductRootNode() throws RepositoryException {
-		synchronized (this.jcrSession) {
-			return this.jcrSession.getRootNode().addNode(
-					SharedConstants.DEFAULT_JCR_ROOT_NAME);
-		}
+
+		return this.jcrSession.getRootNode().addNode(
+				SharedConstants.DEFAULT_JCR_ROOT_NAME);
 	}
 
 	// @Override
@@ -162,7 +165,10 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	public SLPersistentQuery createQuery(final String statement, final int type)
 			throws SLPersistentTreeSessionException {
-		return new SLPersistentQueryImpl(this, this.jcrSession, statement, type);
+		synchronized (this.lock) {
+			return new SLPersistentQueryImpl(this, this.jcrSession, statement,
+					type);
+		}
 	}
 
 	/**
@@ -173,11 +179,15 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	private void createRepositoryRootNode(final Node repositoryRootNode)
 			throws RepositoryException {
-		synchronized (this.jcrSession) {
-			this.rootNode = repositoryRootNode.addNode(this.repositoryName);
-			JCRUtil.makeVersionable(this.rootNode);
-			JCRUtil.makeReferenceable(this.rootNode);
-		}
+
+		this.rootNode = repositoryRootNode.addNode(this.repositoryName);
+		JCRUtil.makeVersionable(this.rootNode);
+		JCRUtil.makeReferenceable(this.rootNode);
+
+	}
+
+	public Object getLockObject() {
+		return this.lock;
 	}
 
 	// @Override
@@ -191,9 +201,10 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	public SLPersistentNode getNodeByID(final String id)
 			throws SLPersistentNodeNotFoundException,
 			SLPersistentTreeSessionException {
-		try {
-			SLPersistentNode persistentNode = null;
-			synchronized (this.jcrSession) {
+		synchronized (this.lock) {
+			try {
+				SLPersistentNode persistentNode = null;
+
 				final Node jcrNode = this.jcrSession.getNodeByUUID(id);
 				final String[] names = jcrNode.getPath().substring(5)
 						.split("/");
@@ -204,13 +215,15 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 						persistentNode = persistentNode.getNode(name);
 					}
 				}
+
+				return persistentNode;
+			} catch (final ItemNotFoundException e) {
+				throw new SLPersistentNodeNotFoundException(id, e);
+			} catch (final RepositoryException e) {
+				throw new SLPersistentTreeSessionException(
+						"Error on attempt to retrieve persistent node by id.",
+						e);
 			}
-			return persistentNode;
-		} catch (final ItemNotFoundException e) {
-			throw new SLPersistentNodeNotFoundException(id, e);
-		} catch (final RepositoryException e) {
-			throw new SLPersistentTreeSessionException(
-					"Error on attempt to retrieve persistent node by id.", e);
 		}
 	}
 
@@ -224,7 +237,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	public SLPersistentNode getNodeByPath(final String path)
 			throws SLPersistentTreeSessionException {
-		synchronized (this.jcrSession) {
+
+		synchronized (this.lock) {
 			final SLPersistentQuery query = this.createQuery(path,
 					SLPersistentQuery.TYPE_XPATH);
 			final SLPersistentQueryResult result = query.execute();
@@ -242,7 +256,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	public SLPersistentNode getRootNode()
 			throws SLPersistentTreeSessionException {
-		synchronized (this.jcrSession) {
+		synchronized (this.lock) {
+
 			if (this.rootNode == null) {
 				try {
 					Node oslRootNode = JCRUtil.getChildNode(this.jcrSession
@@ -301,16 +316,17 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#save()
 	 */
 	public void save() throws SLPersistentTreeSessionException {
-		try {
-			// this.rootNode.save();
-			synchronized (this.jcrSession) {
+		synchronized (this.lock) {
+			try {
+				// this.rootNode.save();
 				this.rootNode.checkin();
 				this.jcrSession.save();
-			} // jcrSession.logout();
-		} catch (final RepositoryException e) {
-			Exceptions.catchAndLog(e);
-			throw new SLPersistentTreeSessionException(
-					"Error on attempt to save persistent session.", e);
+				// jcrSession.logout();
+			} catch (final RepositoryException e) {
+				Exceptions.catchAndLog(e);
+				throw new SLPersistentTreeSessionException(
+						"Error on attempt to save persistent session.", e);
+			}
 		}
 	}
 }

@@ -63,217 +63,276 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
  */
 public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
 
-    /** The Constant LOGGER. */
-    static final Logger         LOGGER = Logger.getLogger(SLQueryTextImpl.class);
+	/** The Constant LOGGER. */
+	static final Logger LOGGER = Logger.getLogger(SLQueryTextImpl.class);
 
-    /** The internal query. */
-    private SLQueryTextInternal query;
+	private final Object lock;
 
-    /**
-     * Instantiates a new SLQueryTextImpl.
-     * 
-     * @param session the session
-     * @param treeSession the tree session
-     * @param textQuery the text query
-     */
-    public SLQueryTextImpl(
-                            SLGraphSession session, SLPersistentTreeSession treeSession, SLQueryTextInternal textQuery ) {
-        super(session, treeSession);
-        this.query = textQuery;
-    }
+	/** The internal query. */
+	private final SLQueryTextInternal query;
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getOutputModelName() {
-        return query.getOutputModelName();
-    }
+	/**
+	 * Instantiates a new SLQueryTextImpl.
+	 * 
+	 * @param session
+	 *            the session
+	 * @param treeSession
+	 *            the tree session
+	 * @param textQuery
+	 *            the text query
+	 */
+	public SLQueryTextImpl(final SLGraphSession session,
+			final SLPersistentTreeSession treeSession,
+			final SLQueryTextInternal textQuery) {
+		super(session, treeSession);
+		this.lock = session.getLockObject();
+		this.query = textQuery;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Collection<SLQLVariable> getVariables() {
-        return query.getVariables();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Collection<SLNode> inputNodes,
+			final Map<String, ?> variableValues)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
+					variableValues, SortMode.NOT_SORTED, false, null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean hasOutputModel() {
-        return query.hasOutputModel();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Collection<SLNode> inputNodes,
+			final Map<String, ?> variableValues, final Integer limit,
+			final Integer offset) throws SLInvalidQueryElementException,
+			SLQueryException, SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
+					variableValues, SortMode.NOT_SORTED, false, limit, offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean hasTarget() {
-        return query.hasTarget();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Collection<SLNode> inputNodes,
+			final Map<String, ?> variableValues, final SortMode sortMode,
+			final boolean showSLQL) throws SLInvalidQueryElementException,
+			SLQueryException, SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
+					variableValues, SortMode.NOT_SORTED, false, null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean hasVariables() {
-        return query.hasVariables();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Collection<SLNode> inputNodes,
+			final Map<String, ?> variableValues, final SortMode sortMode,
+			final boolean showSLQL, final Integer limit, final Integer offset)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
+					variableValues, SortMode.NOT_SORTED, false, limit, offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SLQueryResult execute( String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(inputNodesIDs, null, sortMode, showSLQL, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Map<String, ?> variableValues)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute((String[]) null, variableValues,
+					SortMode.NOT_SORTED, false, null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Map<String, ?> variableValues )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute((String[])null, variableValues, SortMode.NOT_SORTED, false, null, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Map<String, ?> variableValues,
+			final Integer limit, final Integer offset)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute((String[]) null, variableValues,
+					SortMode.NOT_SORTED, false, limit, offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Map<String, ?> variableValues,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute((String[])null, variableValues, SortMode.NOT_SORTED, false, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Map<String, ?> variableValues,
+			final SortMode sortMode, final boolean showSLQL)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute((String[]) null, variableValues, sortMode,
+					showSLQL, null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
-                                  Map<String, ?> variableValues )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, null, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final Map<String, ?> variableValues,
+			final SortMode sortMode, final boolean showSLQL,
+			final Integer limit, final Integer offset)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute((String[]) null, variableValues, sortMode,
+					showSLQL, limit, offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
-                                  Map<String, ?> variableValues,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final String[] inputNodesIDs,
+			final Map<String, ?> variableValues)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(inputNodesIDs, variableValues,
+					SortMode.NOT_SORTED, false, null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( String[] inputNodesIDs,
-                                  Map<String, ?> variableValues )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(inputNodesIDs, variableValues, SortMode.NOT_SORTED, false, null, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final String[] inputNodesIDs,
+			final Map<String, ?> variableValues, final Integer limit,
+			final Integer offset) throws SLInvalidQueryElementException,
+			SLQueryException, SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(inputNodesIDs, variableValues,
+					SortMode.NOT_SORTED, false, limit, offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( String[] inputNodesIDs,
-                                  Map<String, ?> variableValues,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(inputNodesIDs, variableValues, SortMode.NOT_SORTED, false, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final String[] inputNodesIDs,
+			final Map<String, ?> variableValues, final SortMode sortMode,
+			final boolean showSLQL) throws SLInvalidQueryElementException,
+			SLInvalidQuerySyntaxException, SLQueryException {
+		synchronized (this.lock) {
+			return this.execute(inputNodesIDs, variableValues, sortMode,
+					showSLQL, null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute((String[])null, variableValues, sortMode, showSLQL, null, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult execute(final String[] inputNodesIDs,
+			final Map<String, ?> variableValues, final SortMode sortMode,
+			final boolean showSLQL, final Integer limit, final Integer offset)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.query.execute(this.session, variableValues,
+					inputNodesIDs, sortMode, showSLQL, limit, offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute((String[])null, variableValues, sortMode, showSLQL, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public SLQueryResult execute(final String[] inputNodesIDs,
+			final SortMode sortMode, final boolean showSLQL,
+			final Integer limit, final Integer offset)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException {
+		synchronized (this.lock) {
+			return this.execute(inputNodesIDs, null, sortMode, showSLQL, limit,
+					offset);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
-                                  Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, null, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult executeTarget() throws SLInvalidQueryElementException,
+			SLInvalidQuerySyntaxException, SLQueryException {
+		synchronized (this.lock) {
+			return this.executeTarget(SortMode.NOT_SORTED, false);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
-                                  Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return execute(SLQuerySupport.getNodeIDs(inputNodes), variableValues, SortMode.NOT_SORTED, false, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResult executeTarget(final SortMode sortMode,
+			final boolean showSLQL) throws SLInvalidQueryElementException,
+			SLInvalidQuerySyntaxException, SLQueryException {
+		synchronized (this.lock) {
+			if (this.query.getTarget() != null) {
+				return this.query.getTarget().execute(this.session, null, null,
+						sortMode, showSLQL, null, null);
+			}
+			return new SLQueryResultImpl((SLNode[]) null, null);
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( String[] inputNodesIDs,
-                                  Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {
-        return execute(inputNodesIDs, variableValues, sortMode, showSLQL, null, null);
-    }
+	public Object getLockObject() {
+		return this.lock;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult execute( String[] inputNodesIDs,
-                                  Map<String, ?> variableValues,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
-        return query.execute(session, variableValues, inputNodesIDs, sortMode, showSLQL, limit, offset);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getOutputModelName() {
+		synchronized (this.lock) {
+			return this.query.getOutputModelName();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult executeTarget() throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {
-        return executeTarget(SortMode.NOT_SORTED, false);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public Collection<SLQLVariable> getVariables() {
+		synchronized (this.lock) {
+			return this.query.getVariables();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResult executeTarget( SortMode sortMode,
-                                        boolean showSLQL )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException {
-        if (query.getTarget() != null) {
-            return query.getTarget().execute(session, null, null, sortMode, showSLQL, null, null);
-        }
-        return new SLQueryResultImpl((SLNode[])null, null);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean hasOutputModel() {
+		synchronized (this.lock) {
+			return this.query.hasOutputModel();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean hasTarget() {
+		synchronized (this.lock) {
+			return this.query.hasTarget();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean hasVariables() {
+		synchronized (this.lock) {
+			return this.query.hasVariables();
+		}
+	}
 }
