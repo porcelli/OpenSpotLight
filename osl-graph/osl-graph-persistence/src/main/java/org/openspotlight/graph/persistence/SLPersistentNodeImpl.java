@@ -63,6 +63,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.JCRUtil;
 
 /**
@@ -74,6 +76,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 
 	/** The session. */
 	private final SLPersistentTreeSession session;
+
+	private final Session jcrSession;
 
 	/** The jcr node. */
 	private final Node jcrNode;
@@ -95,6 +99,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 *            the jcr node
 	 * @param eventPoster
 	 *            the event poster
+	 * @throws RepositoryException
 	 */
 	public SLPersistentNodeImpl(final SLPersistentTreeSession session,
 			final SLPersistentNode parent, final Node jcrNode,
@@ -103,6 +108,11 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		this.parent = parent;
 		this.jcrNode = jcrNode;
 		this.eventPoster = eventPoster;
+		try {
+			this.jcrSession = jcrNode.getSession();
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	// @Override
@@ -117,13 +127,18 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			throws SLPersistentTreeSessionException {
 		SLPersistentNode persistentNode = null;
 		try {
-			final Node jcrChildNode = this.jcrNode.addNode(name);
-			jcrChildNode.addMixin("mix:referenceable");
-			persistentNode = new SLPersistentNodeImpl(this.session, this,
-					jcrChildNode, this.eventPoster);
-			this.eventPoster.post(new SLPersistentNodeEvent(
-					SLPersistentNodeEvent.TYPE_NODE_ADDED, persistentNode));
+			final Node jcrChildNode;
+			synchronized (this.jcrSession) {
+				jcrChildNode = this.jcrNode.addNode(name);
+				jcrChildNode.addMixin("mix:referenceable");
+				persistentNode = new SLPersistentNodeImpl(this.session, this,
+						jcrChildNode, this.eventPoster);
+				this.eventPoster.post(new SLPersistentNodeEvent(
+						SLPersistentNodeEvent.TYPE_NODE_ADDED, persistentNode));
+			}
+
 		} catch (final RepositoryException e) {
+			Exceptions.catchAndLog(e);
 			throw new SLPersistentTreeSessionException(
 					"Couldn't add persistent node " + name, e);
 		}
@@ -138,7 +153,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public String getID() throws SLPersistentTreeSessionException {
 		try {
-			return this.jcrNode.getUUID();
+			synchronized (this.jcrSession) {
+				return this.jcrNode.getUUID();
+			}
 		} catch (final RepositoryException e) {
 			throw new SLPersistentTreeSessionException(
 					"Error on attempt to retrieve the persistent node ID.", e);
@@ -153,7 +170,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public String getName() throws SLPersistentTreeSessionException {
 		try {
-			return this.jcrNode.getName();
+			synchronized (this.jcrSession) {
+				return this.jcrNode.getName();
+			}
 		} catch (final RepositoryException e) {
 			throw new SLPersistentTreeSessionException(
 					"Error on attempt to retrieve the persistent node name.", e);
@@ -172,7 +191,10 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			throws SLPersistentTreeSessionException {
 		SLPersistentNode childPersistentNode = null;
 		try {
-			final Node jcrChildNode = this.jcrNode.getNode(name);
+			final Node jcrChildNode;
+			synchronized (this.jcrSession) {
+				jcrChildNode = this.jcrNode.getNode(name);
+			}
 			childPersistentNode = new SLPersistentNodeImpl(this.session, this,
 					jcrChildNode, this.eventPoster);
 		} catch (final PathNotFoundException e) {
@@ -193,12 +215,14 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			throws SLPersistentTreeSessionException {
 		try {
 			final Set<SLPersistentNode> persistentNodes = new HashSet<SLPersistentNode>();
-			final NodeIterator iter = this.jcrNode.getNodes();
-			while (iter.hasNext()) {
-				final Node childNode = iter.nextNode();
-				final SLPersistentNode childPersistentNode = new SLPersistentNodeImpl(
-						this.session, this, childNode, this.eventPoster);
-				persistentNodes.add(childPersistentNode);
+			synchronized (this.jcrSession) {
+				final NodeIterator iter = this.jcrNode.getNodes();
+				while (iter.hasNext()) {
+					final Node childNode = iter.nextNode();
+					final SLPersistentNode childPersistentNode = new SLPersistentNodeImpl(
+							this.session, this, childNode, this.eventPoster);
+					persistentNodes.add(childPersistentNode);
+				}
 			}
 			return persistentNodes;
 		} catch (final RepositoryException e) {
@@ -219,12 +243,14 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			throws SLPersistentTreeSessionException {
 		final Collection<SLPersistentNode> pNodes = new ArrayList<SLPersistentNode>();
 		try {
-			final NodeIterator nodeIter = this.jcrNode.getNodes(name);
-			while (nodeIter.hasNext()) {
-				final Node childNode = nodeIter.nextNode();
-				final SLPersistentNode pNode = new SLPersistentNodeImpl(
-						this.session, this, childNode, this.eventPoster);
-				pNodes.add(pNode);
+			synchronized (this.jcrSession) {
+				final NodeIterator nodeIter = this.jcrNode.getNodes(name);
+				while (nodeIter.hasNext()) {
+					final Node childNode = nodeIter.nextNode();
+					final SLPersistentNode pNode = new SLPersistentNodeImpl(
+							this.session, this, childNode, this.eventPoster);
+					pNodes.add(pNode);
+				}
 			}
 		} catch (final RepositoryException e) {
 			throw new SLPersistentTreeSessionException(
@@ -251,7 +277,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public String getPath() throws SLPersistentTreeSessionException {
 		try {
-			return this.jcrNode.getPath();
+			synchronized (this.jcrSession) {
+				return this.jcrNode.getPath();
+			}
 		} catch (final RepositoryException e) {
 			throw new SLPersistentTreeSessionException(
 					"Error on attempt to retrieve persistent node path.", e);
@@ -270,13 +298,16 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			final String pattern) throws SLPersistentTreeSessionException {
 		try {
 			final Set<SLPersistentProperty<Serializable>> persistentProperties = new HashSet<SLPersistentProperty<Serializable>>();
-			final PropertyIterator iter = this.jcrNode.getProperties(pattern);
-			while (iter.hasNext()) {
-				final Property jcrProperty = iter.nextProperty();
-				final SLPersistentProperty<Serializable> persistentProperty = new SLPersistentPropertyImpl<Serializable>(
-						this, Serializable.class, jcrProperty, true,
-						this.eventPoster);
-				persistentProperties.add(persistentProperty);
+			synchronized (this.jcrSession) {
+				final PropertyIterator iter = this.jcrNode
+						.getProperties(pattern);
+				while (iter.hasNext()) {
+					final Property jcrProperty = iter.nextProperty();
+					final SLPersistentProperty<Serializable> persistentProperty = new SLPersistentPropertyImpl<Serializable>(
+							this, Serializable.class, jcrProperty, true,
+							this.eventPoster);
+					persistentProperties.add(persistentProperty);
+				}
 			}
 			return persistentProperties;
 		} catch (final Exception e) {
@@ -300,9 +331,11 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			SLPersistentTreeSessionException {
 		SLPersistentProperty<V> persistentProperty = null;
 		try {
-			final Property jcrProperty = this.jcrNode.getProperty(name);
-			persistentProperty = new SLPersistentPropertyImpl<V>(this, clazz,
-					jcrProperty, true, this.eventPoster);
+			synchronized (this.jcrSession) {
+				final Property jcrProperty = this.jcrNode.getProperty(name);
+				persistentProperty = new SLPersistentPropertyImpl<V>(this,
+						clazz, jcrProperty, true, this.eventPoster);
+			}
 		} catch (final PathNotFoundException e) {
 			throw new SLPersistentPropertyNotFoundException(name);
 		} catch (final RepositoryException e) {
@@ -331,9 +364,11 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public void remove() throws SLPersistentTreeSessionException {
 		try {
-			this.jcrNode.remove();
-			this.eventPoster.post(new SLPersistentNodeEvent(
-					SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));
+			synchronized (this.jcrSession) {
+				this.jcrNode.remove();
+				this.eventPoster.post(new SLPersistentNodeEvent(
+						SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));
+			}
 		} catch (final RepositoryException e) {
 			throw new SLPersistentTreeSessionException(
 					"Error on attempt to remove persistent node.", e);
@@ -348,7 +383,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public void save() throws SLPersistentTreeSessionException {
 		try {
-			// this.session.save();
+			this.session.save();
 		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new SLPersistentTreeSessionException(
@@ -369,20 +404,25 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			throws SLPersistentTreeSessionException {
 		SLPersistentProperty<V> persistentProperty = null;
 		try {
-			Property jcrProperty;
-			final Session session = this.jcrNode.getSession();
-			if (value.getClass().isArray()) {
-				final Value[] jcrValues = JCRUtil.createValues(session, value);
-				jcrProperty = this.jcrNode.setProperty(name, jcrValues);
-			} else {
-				final Value jcrValue = JCRUtil.createValue(session, value);
-				jcrProperty = this.jcrNode.setProperty(name, jcrValue);
+			synchronized (this.jcrSession) {
+
+				Property jcrProperty;
+				final Session session = this.jcrNode.getSession();
+				if (value.getClass().isArray()) {
+					final Value[] jcrValues = JCRUtil.createValues(session,
+							value);
+					jcrProperty = this.jcrNode.setProperty(name, jcrValues);
+				} else {
+					final Value jcrValue = JCRUtil.createValue(session, value);
+					jcrProperty = this.jcrNode.setProperty(name, jcrValue);
+				}
+
+				persistentProperty = new SLPersistentPropertyImpl<V>(this,
+						clazz, jcrProperty, false, this.eventPoster);
+				this.eventPoster.post(new SLPersistentPropertyEvent(
+						SLPersistentPropertyEvent.TYPE_PROPERTY_SET,
+						persistentProperty));
 			}
-			persistentProperty = new SLPersistentPropertyImpl<V>(this, clazz,
-					jcrProperty, false, this.eventPoster);
-			this.eventPoster.post(new SLPersistentPropertyEvent(
-					SLPersistentPropertyEvent.TYPE_PROPERTY_SET,
-					persistentProperty));
 		} catch (final Exception e) {
 			e.printStackTrace();// FIXME REMOVE THIS
 			throw new SLPersistentTreeSessionException(

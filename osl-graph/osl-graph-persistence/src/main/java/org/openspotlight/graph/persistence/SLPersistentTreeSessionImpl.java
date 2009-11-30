@@ -48,14 +48,20 @@
  */
 package org.openspotlight.graph.persistence;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionIterator;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.JCRUtil;
 
 /**
@@ -108,10 +114,12 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	public void clear() throws SLPersistentTreeSessionException {
 		if (this.rootNode != null) {
 			try {
-				final NodeIterator iter = this.rootNode.getNodes();
-				while (iter.hasNext()) {
-					final Node node = iter.nextNode();
-					node.remove();
+				synchronized (this.jcrSession) {
+					final NodeIterator iter = this.rootNode.getNodes();
+					while (iter.hasNext()) {
+						final Node node = iter.nextNode();
+						node.remove();
+					}
 				}
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
@@ -138,8 +146,10 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 *             the repository exception
 	 */
 	private Node createProductRootNode() throws RepositoryException {
-		return this.jcrSession.getRootNode().addNode(
-				SharedConstants.DEFAULT_JCR_ROOT_NAME);
+		synchronized (this.jcrSession) {
+			return this.jcrSession.getRootNode().addNode(
+					SharedConstants.DEFAULT_JCR_ROOT_NAME);
+		}
 	}
 
 	// @Override
@@ -163,9 +173,11 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	private void createRepositoryRootNode(final Node repositoryRootNode)
 			throws RepositoryException {
-		this.rootNode = repositoryRootNode.addNode(this.repositoryName);
-		JCRUtil.makeVersionable(this.rootNode);
-		JCRUtil.makeReferenceable(this.rootNode);
+		synchronized (this.jcrSession) {
+			this.rootNode = repositoryRootNode.addNode(this.repositoryName);
+			JCRUtil.makeVersionable(this.rootNode);
+			JCRUtil.makeReferenceable(this.rootNode);
+		}
 	}
 
 	// @Override
@@ -181,13 +193,16 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 			SLPersistentTreeSessionException {
 		try {
 			SLPersistentNode persistentNode = null;
-			final Node jcrNode = this.jcrSession.getNodeByUUID(id);
-			final String[] names = jcrNode.getPath().substring(5).split("/");
-			for (final String name : names) {
-				if (persistentNode == null) {
-					persistentNode = this.getRootNode();
-				} else {
-					persistentNode = persistentNode.getNode(name);
+			synchronized (this.jcrSession) {
+				final Node jcrNode = this.jcrSession.getNodeByUUID(id);
+				final String[] names = jcrNode.getPath().substring(5)
+						.split("/");
+				for (final String name : names) {
+					if (persistentNode == null) {
+						persistentNode = this.getRootNode();
+					} else {
+						persistentNode = persistentNode.getNode(name);
+					}
 				}
 			}
 			return persistentNode;
@@ -209,11 +224,13 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	public SLPersistentNode getNodeByPath(final String path)
 			throws SLPersistentTreeSessionException {
-		final SLPersistentQuery query = this.createQuery(path,
-				SLPersistentQuery.TYPE_XPATH);
-		final SLPersistentQueryResult result = query.execute();
-		return result.getRowCount() == 1 ? result.getNodes().iterator().next()
-				: null;
+		synchronized (this.jcrSession) {
+			final SLPersistentQuery query = this.createQuery(path,
+					SLPersistentQuery.TYPE_XPATH);
+			final SLPersistentQueryResult result = query.execute();
+			return result.getRowCount() == 1 ? result.getNodes().iterator()
+					.next() : null;
+		}
 	}
 
 	// @Override
@@ -225,45 +242,49 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	public SLPersistentNode getRootNode()
 			throws SLPersistentTreeSessionException {
-		if (this.rootNode == null) {
-			try {
-				Node oslRootNode = JCRUtil.getChildNode(this.jcrSession
-						.getRootNode(), SharedConstants.DEFAULT_JCR_ROOT_NAME);
-				if (oslRootNode == null) {
-					oslRootNode = this.createProductRootNode();
+		synchronized (this.jcrSession) {
+			if (this.rootNode == null) {
+				try {
+					Node oslRootNode = JCRUtil.getChildNode(this.jcrSession
+							.getRootNode(),
+							SharedConstants.DEFAULT_JCR_ROOT_NAME);
+					if (oslRootNode == null) {
+						oslRootNode = this.createProductRootNode();
+					}
+					this.rootNode = JCRUtil.getChildNode(oslRootNode,
+							this.repositoryName);
+					if (this.rootNode == null) {
+						this.createRepositoryRootNode(oslRootNode);
+						this.jcrSession.save();
+					} else {
+						final SortedSet<Double> versionNumbers = new TreeSet<Double>();
+						final VersionIterator iter = this.rootNode
+								.getVersionHistory().getAllVersions();
+						while (iter.hasNext()) {
+							final Version version = iter.nextVersion();
+							if (!version.getName().equals("jcr:rootVersion")) {
+								versionNumbers
+										.add(new Double(version.getName()));
+							}
+						}
+						if (versionNumbers.isEmpty()) {
+							this.rootNode.remove();
+							this.createRepositoryRootNode(oslRootNode);
+							this.jcrSession.save();
+						} else {
+							// rootNode.restore(versionNumbers.last().toString(),
+							// true);
+						}
+					}
+					this.rootNode.checkout();
+				} catch (final RepositoryException e) {
+					throw new SLPersistentTreeSessionException(
+							"Couldn't create persistent root node.", e);
 				}
-				this.rootNode = JCRUtil.getChildNode(oslRootNode,
-						this.repositoryName);
-				if (this.rootNode == null) {
-					this.createRepositoryRootNode(oslRootNode);
-					this.jcrSession.save();
-				} // else {
-				// final SortedSet<Double> versionNumbers = new
-				// TreeSet<Double>();
-				// final VersionIterator iter =
-				// this.rootNode.getVersionHistory().getAllVersions();
-				// while (iter.hasNext()) {
-				// final Version version = iter.nextVersion();
-				// if (!version.getName().equals("jcr:rootVersion")) {
-				// versionNumbers.add(new Double(version.getName()));
-				// }
-				// }
-				// if (versionNumbers.isEmpty()) {
-				// this.rootNode.remove();
-				// this.createRepositoryRootNode(oslRootNode);
-				// this.jcrSession.save();
-				// } else {
-				// //rootNode.restore(versionNumbers.last().toString(), true);
-				// }
-				// }
-				// this.rootNode.checkout();
-			} catch (final RepositoryException e) {
-				throw new SLPersistentTreeSessionException(
-						"Couldn't create persistent root node.", e);
 			}
+			return new SLPersistentNodeImpl(this, null, this.rootNode,
+					this.eventPoster);
 		}
-		return new SLPersistentNodeImpl(this, null, this.rootNode,
-				this.eventPoster);
 	}
 
 	/**
@@ -282,11 +303,12 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	public void save() throws SLPersistentTreeSessionException {
 		try {
 			// this.rootNode.save();
-			// this.rootNode.checkin();
-			this.jcrSession.save();
-			// jcrSession.logout();
-		} catch (final Exception e) {
-			e.printStackTrace();
+			synchronized (this.jcrSession) {
+				this.rootNode.checkin();
+				this.jcrSession.save();
+			} // jcrSession.logout();
+		} catch (final RepositoryException e) {
+			Exceptions.catchAndLog(e);
 			throw new SLPersistentTreeSessionException(
 					"Error on attempt to save persistent session.", e);
 		}

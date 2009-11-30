@@ -1,8 +1,8 @@
 package org.openspotlight.jcr.provider.test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -33,32 +33,48 @@ public class MultithreadSessionsWorkingOnSameNodesTest {
 
 		public State call() throws Exception {
 			try {
-				final Session session = MultithreadSessionsWorkingOnSameNodesTest.provider
-						.openSession();
 
-				final Node rootNode = session.getRootNode();
-				final Node newNode = rootNode.getNode("abc");
-				for (int i = 0; i < 1000; i++) {
+				for (int i = 0; i < MultithreadSessionsWorkingOnSameNodesTest.ITEMS; i++) { // tava
 					Node node;
 					try {
-						node = newNode.getNode("node " + i);
+						synchronized (MultithreadSessionsWorkingOnSameNodesTest.session) {
+							node = MultithreadSessionsWorkingOnSameNodesTest.newNode
+									.getNode("NODE " + i);
+						}
 					} catch (final PathNotFoundException e) {
-						node = newNode.addNode("node " + i);
+						synchronized (MultithreadSessionsWorkingOnSameNodesTest.session) {
+							node = MultithreadSessionsWorkingOnSameNodesTest.newNode
+									.addNode("NODE " + i);
+						}
 					}
-					node.setProperty("test", "ok");
+					synchronized (MultithreadSessionsWorkingOnSameNodesTest.session) {
+						node.setProperty("test", "ok");
+					}
 				}
-				session.save();
-				session.logout();
+				MultithreadSessionsWorkingOnSameNodesTest.session.save();
+				// }
 				this.state = State.DONE;
 			} catch (final Exception e) {
 				e.printStackTrace();
 				this.state = State.ERROR;
 			}
+			System.err.println("Done");
 			return this.state;
 		}
 	}
 
+	public static int ITEMS = 1000;
+
+	public static int THREADS = 4;
+
 	private static JcrConnectionProvider provider;
+
+	private static Session session;
+
+	private static Node rootNode;
+	private static Node newNode;
+
+	private static int WORKERS = 10;
 
 	@BeforeClass
 	public static void setup() throws Exception {
@@ -69,41 +85,63 @@ public class MultithreadSessionsWorkingOnSameNodesTest {
 
 	@Test
 	public void shouldOpenAndSaveSeveralSessions() throws Exception {
-		final Session session = MultithreadSessionsWorkingOnSameNodesTest.provider
+		MultithreadSessionsWorkingOnSameNodesTest.session = MultithreadSessionsWorkingOnSameNodesTest.provider
 				.openSession();
 
-		final Node rootNode = session.getRootNode();
-		final Node newNode = rootNode.addNode("abc");
-		JCRUtil.makeVersionable(newNode);
-		newNode.checkout();
-		session.save();
-		session.logout();
-		final ExecutorService executor = Executors.newFixedThreadPool(4);
-		final List<Worker> workers = new ArrayList<Worker>();
-		for (int i = 0; i < 10; i++) {
+		MultithreadSessionsWorkingOnSameNodesTest.rootNode = MultithreadSessionsWorkingOnSameNodesTest.session
+				.getRootNode();
+		MultithreadSessionsWorkingOnSameNodesTest.newNode = MultithreadSessionsWorkingOnSameNodesTest.rootNode
+				.addNode("abc");
+		JCRUtil
+				.makeVersionable(MultithreadSessionsWorkingOnSameNodesTest.newNode);
+		MultithreadSessionsWorkingOnSameNodesTest.newNode.checkout();
+		MultithreadSessionsWorkingOnSameNodesTest.session.save();
+		// MultithreadSessionsWorkingOnSameNodesTest.session.logout();
+		final ExecutorService executor = Executors
+				.newFixedThreadPool(MultithreadSessionsWorkingOnSameNodesTest.THREADS);
+		final List<Worker> workers = new CopyOnWriteArrayList<Worker>();
+		for (int i = 0; i < MultithreadSessionsWorkingOnSameNodesTest.WORKERS; i++) {
 			workers.add(new Worker());
 		}
 		final List<Future<State>> allStatus = executor.invokeAll(workers);
+		System.err.println("got the executor running");
 
 		for (final Future<State> status : allStatus) {
+			System.err.println("got the status");
 			Assert.assertThat(status.get(), Is.is(State.DONE));
 		}
+		System.err.println("all done");
 
 		executor.shutdown();
+		System.err.println("shutdown ok");
 
-		final Session session1 = MultithreadSessionsWorkingOnSameNodesTest.provider
-				.openSession();
-
-		final Node rootNode1 = session1.getRootNode();
-		final Node newNode1 = rootNode1.getNode("abc");
-		newNode1.checkin();
-		final NodeIterator nodes = newNode1.getNodes("node*");
+		final Node rootNode1 = MultithreadSessionsWorkingOnSameNodesTest.session
+				.getRootNode();
+		System.err.println("got the root node");
 		int result = 0;
-		while (nodes.hasNext()) {
-			result++;
+		synchronized (MultithreadSessionsWorkingOnSameNodesTest.session) {
+			final Node newNode1 = rootNode1.getNode("abc");
+			newNode1.checkin();
+			System.err.println("got new node 1");
+
+			final NodeIterator nodes = newNode1.getNodes("NODE*");
+			System.err.println("got all nodes");
+
+			while (nodes.hasNext()) {
+				nodes.nextNode();// oops! n‹o tinha isto!
+				result++;
+				System.err.println(result);
+
+			}
+			System.err.println("loop done");
+
 		}
 
-		Assert.assertThat(result, Is.is(1000));
+		MultithreadSessionsWorkingOnSameNodesTest.session.logout();
+		System.err.println("logout");
+
+		Assert.assertThat(result, Is
+				.is(MultithreadSessionsWorkingOnSameNodesTest.ITEMS));
 	}
 
 }
