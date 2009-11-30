@@ -70,10 +70,10 @@ import org.openspotlight.common.util.SerializationUtil;
 public class SLPersistentPropertyImpl<V extends Serializable> implements
 		SLPersistentProperty<V> {
 
+	private final Object lock;
+
 	/** The persistent node. */
 	private final SLPersistentNode persistentNode;
-
-	private final Session session;
 
 	/** The jcr property. */
 	private final Property jcrProperty;
@@ -113,7 +113,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 		this.clazz = clazz;
 		this.jcrProperty = jcrProperty;
 		this.eventPoster = eventPoster;
-		this.session = jcrProperty.getSession();
+		this.lock = persistentNode.getLockObject();
 		if (loadValue) {
 			this.getValue();
 		}
@@ -128,18 +128,22 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 	@SuppressWarnings("unchecked")
 	// @Override
 	public boolean equals(final Object obj) {
-		try {
-			if (obj == null) {
-				return false;
+		synchronized (this.lock) {
+
+			try {
+				if (obj == null) {
+					return false;
+				}
+				final SLPersistentProperty persistentProperty = (SLPersistentProperty) obj;
+				final String name1 = persistentProperty.getNode().getID() + ":"
+						+ this.getName();
+				final String name2 = this.getNode().getID() + ":"
+						+ this.getName();
+				return name1.equals(name2);
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLRuntimeException(
+						"Error on attempt to execute persistent property equals method.");
 			}
-			final SLPersistentProperty persistentProperty = (SLPersistentProperty) obj;
-			final String name1 = persistentProperty.getNode().getID() + ":"
-					+ this.getName();
-			final String name2 = this.getNode().getID() + ":" + this.getName();
-			return name1.equals(name2);
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLRuntimeException(
-					"Error on attempt to execute persistent property equals method.");
 		}
 	}
 
@@ -159,82 +163,78 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 			throws SLInvalidPersistentPropertyTypeException, SLException,
 			RepositoryException {
 		V value = null;
-		synchronized (this.session) {
 
-			final Value[] jcrValues = this.jcrProperty.getValues();
-			if (this.jcrProperty.getType() == PropertyType.LONG) {
-				if (this.clazz.equals(Integer[].class)) {
-					final Integer[] intValues = new Integer[jcrValues.length];
-					for (int i = 0; i < intValues.length; i++) {
-						intValues[i] = (int) jcrValues[i].getLong();
-					}
-					value = this.clazz.cast(intValues);
-				} else if (this.clazz.isAssignableFrom(Long[].class)) {
-					final Long[] longValues = new Long[jcrValues.length];
-					for (int i = 0; i < longValues.length; i++) {
-						longValues[i] = jcrValues[i].getLong();
-					}
-					value = this.clazz.cast(longValues);
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, Integer[].class,
-							Long[].class);
+		final Value[] jcrValues = this.jcrProperty.getValues();
+		if (this.jcrProperty.getType() == PropertyType.LONG) {
+			if (this.clazz.equals(Integer[].class)) {
+				final Integer[] intValues = new Integer[jcrValues.length];
+				for (int i = 0; i < intValues.length; i++) {
+					intValues[i] = (int) jcrValues[i].getLong();
 				}
-			} else if (this.jcrProperty.getType() == PropertyType.DOUBLE) {
-				if (this.clazz.equals(Float[].class)) {
-					final Float[] floatValues = new Float[jcrValues.length];
-					for (int i = 0; i < floatValues.length; i++) {
-						floatValues[i] = (float) jcrValues[i].getDouble();
-					}
-					value = this.clazz.cast(floatValues);
-				} else if (this.clazz.isAssignableFrom(Double[].class)) {
-					final Double[] doubleValues = new Double[jcrValues.length];
-					for (int i = 0; i < doubleValues.length; i++) {
-						doubleValues[i] = jcrValues[i].getDouble();
-					}
-					value = this.clazz.cast(doubleValues);
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, Float[].class,
-							Double[].class);
+				value = this.clazz.cast(intValues);
+			} else if (this.clazz.isAssignableFrom(Long[].class)) {
+				final Long[] longValues = new Long[jcrValues.length];
+				for (int i = 0; i < longValues.length; i++) {
+					longValues[i] = jcrValues[i].getLong();
 				}
-			} else if (this.jcrProperty.getType() == PropertyType.BOOLEAN) {
-				if (this.clazz.isAssignableFrom(Boolean.class)) {
-					final Boolean[] booleanValues = new Boolean[jcrValues.length];
-					for (int i = 0; i < booleanValues.length; i++) {
-						booleanValues[i] = jcrValues[i].getBoolean();
-					}
-					value = this.clazz.cast(booleanValues);
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, Boolean[].class);
-				}
-			} else if (this.jcrProperty.getType() == PropertyType.STRING) {
-				if (this.clazz.isAssignableFrom(String.class)) {
-					final String[] stringValues = new String[jcrValues.length];
-					for (int i = 0; i < stringValues.length; i++) {
-						stringValues[i] = jcrValues[i].getString();
-					}
-					value = this.clazz.cast(stringValues);
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, String[].class);
-				}
+				value = this.clazz.cast(longValues);
 			} else {
-				value = this.clazz.cast(Array.newInstance(this.clazz
-						.getComponentType(), jcrValues.length));
-				for (int i = 0; i < jcrValues.length; i++) {
-					final Object object = SerializationUtil
-							.deserialize(jcrValues[i].getStream());
-					if (this.clazz.getComponentType().isAssignableFrom(
-							object.getClass())) {
-						Array.set(value, i, object);
-					} else {
-						throw new SLInvalidPersistentPropertyTypeException(
-								"Error on attempt to set array position. Cannot cast "
-										+ object.getClass() + " to "
-										+ this.clazz.getComponentType());
-					}
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, Integer[].class, Long[].class);
+			}
+		} else if (this.jcrProperty.getType() == PropertyType.DOUBLE) {
+			if (this.clazz.equals(Float[].class)) {
+				final Float[] floatValues = new Float[jcrValues.length];
+				for (int i = 0; i < floatValues.length; i++) {
+					floatValues[i] = (float) jcrValues[i].getDouble();
+				}
+				value = this.clazz.cast(floatValues);
+			} else if (this.clazz.isAssignableFrom(Double[].class)) {
+				final Double[] doubleValues = new Double[jcrValues.length];
+				for (int i = 0; i < doubleValues.length; i++) {
+					doubleValues[i] = jcrValues[i].getDouble();
+				}
+				value = this.clazz.cast(doubleValues);
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, Float[].class, Double[].class);
+			}
+		} else if (this.jcrProperty.getType() == PropertyType.BOOLEAN) {
+			if (this.clazz.isAssignableFrom(Boolean.class)) {
+				final Boolean[] booleanValues = new Boolean[jcrValues.length];
+				for (int i = 0; i < booleanValues.length; i++) {
+					booleanValues[i] = jcrValues[i].getBoolean();
+				}
+				value = this.clazz.cast(booleanValues);
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, Boolean[].class);
+			}
+		} else if (this.jcrProperty.getType() == PropertyType.STRING) {
+			if (this.clazz.isAssignableFrom(String.class)) {
+				final String[] stringValues = new String[jcrValues.length];
+				for (int i = 0; i < stringValues.length; i++) {
+					stringValues[i] = jcrValues[i].getString();
+				}
+				value = this.clazz.cast(stringValues);
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, String[].class);
+			}
+		} else {
+			value = this.clazz.cast(Array.newInstance(this.clazz
+					.getComponentType(), jcrValues.length));
+			for (int i = 0; i < jcrValues.length; i++) {
+				final Object object = SerializationUtil
+						.deserialize(jcrValues[i].getStream());
+				if (this.clazz.getComponentType().isAssignableFrom(
+						object.getClass())) {
+					Array.set(value, i, object);
+				} else {
+					throw new SLInvalidPersistentPropertyTypeException(
+							"Error on attempt to set array position. Cannot cast "
+									+ object.getClass() + " to "
+									+ this.clazz.getComponentType());
 				}
 			}
 		}
@@ -257,60 +257,62 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 			throws SLInvalidPersistentPropertyTypeException, SLException,
 			RepositoryException {
 		V value = null;
-		synchronized (this.session) {
 
-			if (this.jcrProperty.getType() == PropertyType.LONG) {
-				if (this.clazz.equals(Integer.class)) {
-					final Integer intValue = (int) this.jcrProperty.getValue()
-							.getLong();
-					value = this.clazz.cast(intValue);
-				} else if (this.clazz.isAssignableFrom(Long.class)) {
-					value = this.clazz.cast(new Long(this.jcrProperty
-							.getValue().getLong()));
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, Integer.class, Long.class);
-				}
-			} else if (this.jcrProperty.getType() == PropertyType.DOUBLE) {
-				if (this.clazz.equals(Float.class)) {
-					final Float floatValue = (float) this.jcrProperty
-							.getValue().getDouble();
-					value = this.clazz.cast(floatValue);
-				} else if (this.clazz.isAssignableFrom(Double.class)) {
-					value = this.clazz.cast(new Double(this.jcrProperty
-							.getValue().getDouble()));
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, Float.class, Double.class);
-				}
-			} else if (this.jcrProperty.getType() == PropertyType.BOOLEAN) {
-				if (this.clazz.isAssignableFrom(Boolean.class)) {
-					value = this.clazz.cast(new Boolean(this.jcrProperty
-							.getBoolean()));
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, Boolean.class);
-				}
-			} else if (this.jcrProperty.getType() == PropertyType.STRING) {
-				if (this.clazz.isAssignableFrom(String.class)) {
-					value = this.clazz.cast(new String(this.jcrProperty
-							.getString()));
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, String.class);
-				}
+		if (this.jcrProperty.getType() == PropertyType.LONG) {
+			if (this.clazz.equals(Integer.class)) {
+				final Integer intValue = (int) this.jcrProperty.getValue()
+						.getLong();
+				value = this.clazz.cast(intValue);
+			} else if (this.clazz.isAssignableFrom(Long.class)) {
+				value = this.clazz.cast(new Long(this.jcrProperty.getValue()
+						.getLong()));
 			} else {
-				final Object object = SerializationUtil
-						.deserialize(this.jcrProperty.getStream());
-				if (this.clazz.isAssignableFrom(object.getClass())) {
-					value = this.clazz.cast(object);
-				} else {
-					throw new SLInvalidPersistentPropertyTypeException(this
-							.getName(), this.clazz, object.getClass());
-				}
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, Integer.class, Long.class);
+			}
+		} else if (this.jcrProperty.getType() == PropertyType.DOUBLE) {
+			if (this.clazz.equals(Float.class)) {
+				final Float floatValue = (float) this.jcrProperty.getValue()
+						.getDouble();
+				value = this.clazz.cast(floatValue);
+			} else if (this.clazz.isAssignableFrom(Double.class)) {
+				value = this.clazz.cast(new Double(this.jcrProperty.getValue()
+						.getDouble()));
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, Float.class, Double.class);
+			}
+		} else if (this.jcrProperty.getType() == PropertyType.BOOLEAN) {
+			if (this.clazz.isAssignableFrom(Boolean.class)) {
+				value = this.clazz.cast(new Boolean(this.jcrProperty
+						.getBoolean()));
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, Boolean.class);
+			}
+		} else if (this.jcrProperty.getType() == PropertyType.STRING) {
+			if (this.clazz.isAssignableFrom(String.class)) {
+				value = this.clazz
+						.cast(new String(this.jcrProperty.getString()));
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, String.class);
+			}
+		} else {
+			final Object object = SerializationUtil
+					.deserialize(this.jcrProperty.getStream());
+			if (this.clazz.isAssignableFrom(object.getClass())) {
+				value = this.clazz.cast(object);
+			} else {
+				throw new SLInvalidPersistentPropertyTypeException(this
+						.getName(), this.clazz, object.getClass());
 			}
 		}
 		return value;
+	}
+
+	public Object getLockObject() {
+		return this.lock;
 	}
 
 	// @Override
@@ -320,14 +322,16 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#getName()
 	 */
 	public String getName() throws SLPersistentTreeSessionException {
-		try {
-			synchronized (this.session) {
+		synchronized (this.lock) {
+			try {
 
 				return this.jcrProperty.getName();
+
+			} catch (final RepositoryException e) {
+				throw new SLPersistentTreeSessionException(
+						"Error on attempt to retrieve persistent property name.",
+						e);
 			}
-		} catch (final RepositoryException e) {
-			throw new SLPersistentTreeSessionException(
-					"Error on attempt to retrieve persistent property name.", e);
 		}
 	}
 
@@ -349,8 +353,8 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 	 */
 	public V getValue() throws SLInvalidPersistentPropertyTypeException,
 			SLPersistentTreeSessionException {
-		try {
-			synchronized (this.session) {
+		synchronized (this.lock) {
+			try {
 
 				V value = null;
 				// if the property value is an array ...
@@ -370,12 +374,12 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 					value = this.getJCRPropertyValue();
 				}
 				return value;
+			} catch (final SLInvalidPersistentPropertyTypeException e) {
+				throw e;
+			} catch (final Exception e) {
+				throw new SLPersistentTreeSessionException(
+						"Error on attempt to retrieve property value.", e);
 			}
-		} catch (final SLInvalidPersistentPropertyTypeException e) {
-			throw e;
-		} catch (final Exception e) {
-			throw new SLPersistentTreeSessionException(
-					"Error on attempt to retrieve property value.", e);
 		}
 	}
 
@@ -387,15 +391,16 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 	 */
 	@Override
 	public int hashCode() {
-		try {
-			synchronized (this.session) {
+		synchronized (this.lock) {
+			try {
 
 				return (this.getNode().getID() + ":" + this.getName())
 						.hashCode();
+
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLRuntimeException(
+						"Error on attempt to calculate persistent property hash code.");
 			}
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLRuntimeException(
-					"Error on attempt to calculate persistent property hash code.");
 		}
 	}
 
@@ -406,16 +411,17 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 	 * @see org.openspotlight.graph.persistence.SLPersistentProperty#remove()
 	 */
 	public void remove() throws SLPersistentTreeSessionException {
-		try {
-			synchronized (this.session) {
+		synchronized (this.lock) {
+			try {
 
 				this.jcrProperty.remove();
 				this.eventPoster.post(new SLPersistentPropertyEvent(
 						SLPersistentPropertyEvent.TYPE_PROPERTY_REMOVED, this));
+
+			} catch (final RepositoryException e) {
+				throw new SLPersistentTreeSessionException(
+						"Error on attempt to remove persistent property.", e);
 			}
-		} catch (final RepositoryException e) {
-			throw new SLPersistentTreeSessionException(
-					"Error on attempt to remove persistent property.", e);
 		}
 	}
 
@@ -428,9 +434,8 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 	 * .io.Serializable)
 	 */
 	public void setValue(final V value) throws SLPersistentTreeSessionException {
-		try {
-			synchronized (this.session) {
-
+		synchronized (this.lock) {
+			try {
 				final Session session = this.jcrProperty.getSession();
 				if (value.getClass().isArray()) {
 					final Value[] jcrValues = JCRUtil.createValues(session,
@@ -442,10 +447,10 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 				}
 				this.eventPoster.post(new SLPersistentPropertyEvent(
 						SLPersistentPropertyEvent.TYPE_PROPERTY_SET, this));
+			} catch (final Exception e) {
+				throw new SLPersistentTreeSessionException(
+						"Error on attempt to set persistent property.", e);
 			}
-		} catch (final Exception e) {
-			throw new SLPersistentTreeSessionException(
-					"Error on attempt to set persistent property.", e);
 		}
 	}
 }

@@ -80,7 +80,7 @@ import org.openspotlight.security.authz.graph.GraphElement;
  * @author Vitor Hugo Chagas
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
-
+	private final Object lock;
 	/** The context. */
 	private final SLContext context;
 
@@ -112,6 +112,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 		this.parent = parent;
 		this.pNode = persistentNode;
 		this.eventPoster = eventPoster;
+		this.lock = persistentNode.getLockObject();
 	}
 
 	/**
@@ -212,43 +213,46 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final String statement, final String artifactId,
 			final String artifactVersion) throws SLGraphSessionException,
 			SLInvalidCredentialException {
+		synchronized (this.lock) {
 
-		try {
+			try {
 
-			if (!this.hasPrivileges(GraphElement.LINE_REFERENCE, Action.WRITE)) {
-				throw new SLInvalidCredentialException(
-						"User does not have privilegies to line references.");
+				if (!this.hasPrivileges(GraphElement.LINE_REFERENCE,
+						Action.WRITE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to line references.");
+				}
+
+				final StringBuilder lineReferenceKey = new StringBuilder()
+						.append(startLine).append('.').append(endLine).append(
+								'.').append(startColumn).append('.').append(
+								endColumn).append('.').append(statement)
+						.append(artifactId).append('.').append(artifactVersion);
+
+				final SLEncoderFactory factory = this.getSession()
+						.getEncoderFactory();
+				final SLEncoder fakeEncoder = factory.getFakeEncoder();
+				final SLEncoder uuidEncoder = factory.getUUIDEncoder();
+
+				final String propName = "lineRef."
+						+ uuidEncoder.encode(lineReferenceKey.toString());
+				final SLLineReference lineRef = this.addChildNode(
+						SLLineReference.class, propName, fakeEncoder,
+						SLPersistenceMode.NORMAL, null, null);
+
+				lineRef.setStartLine(startLine);
+				lineRef.setEndLine(endLine);
+				lineRef.setStartColumn(startColumn);
+				lineRef.setEndColumn(endColumn);
+				lineRef.setStatement(statement);
+				lineRef.setArtifactId(artifactId);
+				lineRef.setArtifactVersion(artifactVersion);
+
+				return lineRef;
+			} catch (final SLGraphSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to add line reference.", e);
 			}
-
-			final StringBuilder lineReferenceKey = new StringBuilder().append(
-					startLine).append('.').append(endLine).append('.').append(
-					startColumn).append('.').append(endColumn).append('.')
-					.append(statement).append(artifactId).append('.').append(
-							artifactVersion);
-
-			final SLEncoderFactory factory = this.getSession()
-					.getEncoderFactory();
-			final SLEncoder fakeEncoder = factory.getFakeEncoder();
-			final SLEncoder uuidEncoder = factory.getUUIDEncoder();
-
-			final String propName = "lineRef."
-					+ uuidEncoder.encode(lineReferenceKey.toString());
-			final SLLineReference lineRef = this.addChildNode(
-					SLLineReference.class, propName, fakeEncoder,
-					SLPersistenceMode.NORMAL, null, null);
-
-			lineRef.setStartLine(startLine);
-			lineRef.setEndLine(endLine);
-			lineRef.setStartColumn(startColumn);
-			lineRef.setEndColumn(endColumn);
-			lineRef.setStatement(statement);
-			lineRef.setArtifactId(artifactId);
-			lineRef.setArtifactVersion(artifactVersion);
-
-			return lineRef;
-		} catch (final SLGraphSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to add line reference.", e);
 		}
 	}
 
@@ -262,8 +266,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	public <T extends SLNode> T addNode(final Class<T> clazz, final String name)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, this.getSession()
-				.getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+		}
 	}
 
 	/*
@@ -279,9 +285,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, this.getSession()
-				.getDefaultEncoder(), SLPersistenceMode.NORMAL,
-				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
 	}
 
 	/*
@@ -294,8 +302,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final String name, final SLEncoder encoder)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, encoder,
-				SLPersistenceMode.NORMAL, null, null);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, encoder,
+					SLPersistenceMode.NORMAL, null, null);
+		}
 	}
 
 	/*
@@ -313,9 +323,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, this.getSession()
-				.getDefaultEncoder(), SLPersistenceMode.NORMAL,
-				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
 	}
 
 	/*
@@ -330,8 +342,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final SLPersistenceMode persistenceMode)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, encoder, persistenceMode, null,
-				null);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, encoder, persistenceMode,
+					null, null);
+		}
 	}
 
 	/*
@@ -351,8 +365,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, encoder, persistenceMode,
-				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, encoder, persistenceMode,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
 	}
 
 	/*
@@ -365,8 +381,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final String name, final SLPersistenceMode persistenceMode)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, this.getSession()
-				.getDefaultEncoder(), persistenceMode, null, null);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), persistenceMode, null, null);
+		}
 	}
 
 	/*
@@ -384,9 +402,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(clazz, name, this.getSession()
-				.getDefaultEncoder(), persistenceMode,
-				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), persistenceMode,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
 	}
 
 	// @Override
@@ -398,8 +418,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	public SLNode addNode(final String name)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(SLNode.class, name, this.getSession()
-				.getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+		synchronized (this.lock) {
+			return this.addChildNode(SLNode.class, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+		}
 	}
 
 	/*
@@ -411,8 +433,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	public SLNode addNode(final String name, final SLEncoder encoder)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		return this.addChildNode(SLNode.class, name, encoder,
-				SLPersistenceMode.NORMAL, null, null);
+		synchronized (this.lock) {
+			return this.addChildNode(SLNode.class, name, encoder,
+					SLPersistenceMode.NORMAL, null, null);
+		}
 	}
 
 	// @Override
@@ -422,14 +446,16 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(final SLNode node) {
-		try {
-			final SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy
-					.getInvocationHandler(node);
-			final SLNodeImpl n = (SLNodeImpl) handler.getNode();
-			return this.pNode.getPath().compareTo(n.pNode.getPath());
-		} catch (final SLException e) {
-			throw new SLRuntimeException("Error on attempt to compare nodes.",
-					e);
+		synchronized (this.lock) {
+			try {
+				final SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy
+						.getInvocationHandler(node);
+				final SLNodeImpl n = (SLNodeImpl) handler.getNode();
+				return this.pNode.getPath().compareTo(n.pNode.getPath());
+			} catch (final SLException e) {
+				throw new SLRuntimeException(
+						"Error on attempt to compare nodes.", e);
+			}
 		}
 	}
 
@@ -444,10 +470,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public <T extends SLNode> T createNodeProxy(final Class<T> clazz,
 			final SLPersistentNode pNode) {
-		final SLNode node = new SLNodeImpl(this.context, this, pNode,
-				this.eventPoster);
-		final InvocationHandler handler = new SLNodeInvocationHandler(node);
-		return ProxyUtil.createProxy(clazz, handler);
+		synchronized (this.lock) {
+			final SLNode node = new SLNodeImpl(this.context, this, pNode,
+					this.eventPoster);
+			final InvocationHandler handler = new SLNodeInvocationHandler(node);
+			return ProxyUtil.createProxy(clazz, handler);
+		}
 	}
 
 	// @Override
@@ -458,16 +486,18 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		try {
-			if (obj == null || !(obj instanceof SLNode)) {
-				return false;
+		synchronized (this.lock) {
+			try {
+				if (obj == null || !(obj instanceof SLNode)) {
+					return false;
+				}
+				final SLPersistentNode pNode = SLCommonSupport
+						.getPNode((SLNode) obj);
+				return this.pNode.getID().equals(pNode.getID());
+			} catch (final SLException e) {
+				throw new RuntimeException("Error on " + this.getClass()
+						+ " equals method.", e);
 			}
-			final SLPersistentNode pNode = SLCommonSupport
-					.getPNode((SLNode) obj);
-			return this.pNode.getID().equals(pNode.getID());
-		} catch (final SLException e) {
-			throw new RuntimeException("Error on " + this.getClass()
-					+ " equals method.", e);
 		}
 	}
 
@@ -690,19 +720,26 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public Collection<SLLineReference> getLineReferences()
 			throws SLGraphSessionException {
-		try {
-			final Collection<SLLineReference> lineReferences = new ArrayList<SLLineReference>();
-			final Collection<SLNode> nodes = this.getChildNodes("lineRef.*");
-			for (final SLNode node : nodes) {
-				final SLLineReference lineRef = SLLineReference.class
-						.cast(node);
-				lineReferences.add(lineRef);
+		synchronized (this.lock) {
+			try {
+				final Collection<SLLineReference> lineReferences = new ArrayList<SLLineReference>();
+				final Collection<SLNode> nodes = this
+						.getChildNodes("lineRef.*");
+				for (final SLNode node : nodes) {
+					final SLLineReference lineRef = SLLineReference.class
+							.cast(node);
+					lineReferences.add(lineRef);
+				}
+				return lineReferences;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve line references.", e);
 			}
-			return lineReferences;
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve line references.", e);
 		}
+	}
+
+	public Object getLockObject() {
+		return this.lock;
 	}
 
 	// @Override
@@ -712,14 +749,16 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * @see org.openspotlight.graph.SLNode#getName()
 	 */
 	public String getName() throws SLGraphSessionException {
-		try {
-			final String decodedName = SLCommonSupport
-					.getInternalPropertyAsString(this.pNode,
-							SLConsts.PROPERTY_NAME_DECODED_NAME);
-			return decodedName == null ? this.pNode.getName() : decodedName;
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve the node name.", e);
+		synchronized (this.lock) {
+			try {
+				final String decodedName = SLCommonSupport
+						.getInternalPropertyAsString(this.pNode,
+								SLConsts.PROPERTY_NAME_DECODED_NAME);
+				return decodedName == null ? this.pNode.getName() : decodedName;
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve the node name.", e);
+			}
 		}
 	}
 
@@ -732,7 +771,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public <T extends SLNode> T getNode(final Class<T> clazz, final String name)
 			throws SLInvalidNodeTypeException, SLGraphSessionException {
-		return this.getChildNode(clazz, name);
+		synchronized (this.lock) {
+			return this.getChildNode(clazz, name);
+		}
 	}
 
 	/*
@@ -744,7 +785,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	public <T extends SLNode> T getNode(final Class<T> clazz,
 			final String name, final SLEncoder encoder)
 			throws SLInvalidNodeTypeException, SLGraphSessionException {
-		return this.getChildNode(clazz, name, encoder);
+		synchronized (this.lock) {
+			return this.getChildNode(clazz, name, encoder);
+		}
 	}
 
 	// @Override
@@ -755,7 +798,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public SLNode getNode(final String name) throws SLInvalidNodeTypeException,
 			SLGraphSessionException {
-		return this.getChildNode(SLNode.class, name);
+		synchronized (this.lock) {
+			return this.getChildNode(SLNode.class, name);
+		}
 	}
 
 	// @Override
@@ -765,11 +810,13 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * @see org.openspotlight.graph.SLNode#getNodes()
 	 */
 	public Set<SLNode> getNodes() throws SLGraphSessionException {
-		try {
-			return this.getChildNodes(null);
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve child nodes.", e);
+		synchronized (this.lock) {
+			try {
+				return this.getChildNodes(null);
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve child nodes.", e);
+			}
 		}
 	}
 
@@ -829,26 +876,28 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public Set<SLNodeProperty<Serializable>> getProperties()
 			throws SLGraphSessionException {
-		try {
-			final Class<? extends SLNode> nodeType = this
-					.getNodeType(this.pNode);
-			final SLGraphFactory factory = AbstractFactory
-					.getDefaultInstance(SLGraphFactory.class);
-			final Set<SLNodeProperty<Serializable>> properties = new HashSet<SLNodeProperty<Serializable>>();
-			final Set<SLPersistentProperty<Serializable>> persistentProperties = this.pNode
-					.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
-			for (final SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
-				final SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType,
-						this);
-				final SLNodeProperty<Serializable> property = factory
-						.createProperty(nodeProxy, persistentProperty,
-								this.eventPoster);
-				properties.add(property);
+		synchronized (this.lock) {
+			try {
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(this.pNode);
+				final SLGraphFactory factory = AbstractFactory
+						.getDefaultInstance(SLGraphFactory.class);
+				final Set<SLNodeProperty<Serializable>> properties = new HashSet<SLNodeProperty<Serializable>>();
+				final Set<SLPersistentProperty<Serializable>> persistentProperties = this.pNode
+						.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
+				for (final SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
+					final SLNode nodeProxy = ProxyUtil.createNodeProxy(
+							nodeType, this);
+					final SLNodeProperty<Serializable> property = factory
+							.createProperty(nodeProxy, persistentProperty,
+									this.eventPoster);
+					properties.add(property);
+				}
+				return properties;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node properties.", e);
 			}
-			return properties;
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve node properties.", e);
 		}
 	}
 
@@ -863,7 +912,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Class<V> clazz, final String name)
 			throws SLNodePropertyNotFoundException,
 			SLInvalidNodePropertyTypeException, SLGraphSessionException {
-		return this.getProperty(clazz, name, null);
+		synchronized (this.lock) {
+			return this.getProperty(clazz, name, null);
+		}
 	}
 
 	// @Override
@@ -877,57 +928,61 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Class<V> clazz, final String name, final Collator collator)
 			throws SLNodePropertyNotFoundException,
 			SLInvalidNodePropertyTypeException, SLGraphSessionException {
+		synchronized (this.lock) {
 
-		SLNodeProperty<V> property = null;
+			SLNodeProperty<V> property = null;
 
-		try {
+			try {
 
-			final String propName = SLCommonSupport.toUserPropertyName(name);
-			SLPersistentProperty<V> pProperty = SLCommonSupport.getProperty(
-					this.pNode, clazz, propName);
-			final Class<? extends SLNode> nodeType = this
-					.getNodeType(this.pNode);
+				final String propName = SLCommonSupport
+						.toUserPropertyName(name);
+				SLPersistentProperty<V> pProperty = SLCommonSupport
+						.getProperty(this.pNode, clazz, propName);
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(this.pNode);
 
-			// if property not found find collator if its strength is not
-			// identical ...
-			if (pProperty == null) {
-				if (nodeType != null) {
-					final Set<SLPersistentProperty<Serializable>> pProperties = this.pNode
-							.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
-					for (final SLPersistentProperty<Serializable> current : pProperties) {
-						final String currentName = SLCommonSupport
-								.toSimplePropertyName(current.getName());
-						final Collator currentCollator = collator == null ? SLCollatorSupport
-								.getPropertyCollator(nodeType, currentName)
-								: collator;
-						if (currentCollator.compare(name, currentName) == 0) {
-							pProperty = this.pNode.getProperty(clazz, current
-									.getName());
-							break;
+				// if property not found find collator if its strength is not
+				// identical ...
+				if (pProperty == null) {
+					if (nodeType != null) {
+						final Set<SLPersistentProperty<Serializable>> pProperties = this.pNode
+								.getProperties(SLConsts.PROPERTY_PREFIX_USER
+										+ ".*");
+						for (final SLPersistentProperty<Serializable> current : pProperties) {
+							final String currentName = SLCommonSupport
+									.toSimplePropertyName(current.getName());
+							final Collator currentCollator = collator == null ? SLCollatorSupport
+									.getPropertyCollator(nodeType, currentName)
+									: collator;
+							if (currentCollator.compare(name, currentName) == 0) {
+								pProperty = this.pNode.getProperty(clazz,
+										current.getName());
+								break;
+							}
 						}
 					}
 				}
+
+				if (pProperty != null) {
+					final SLGraphFactory factory = AbstractFactory
+							.getDefaultInstance(SLGraphFactory.class);
+					final SLNode nodeProxy = ProxyUtil.createNodeProxy(
+							nodeType, this);
+					property = factory.createProperty(nodeProxy, pProperty,
+							this.eventPoster);
+				}
+			} catch (final SLInvalidPersistentPropertyTypeException e) {
+				throw new SLInvalidNodePropertyTypeException(e);
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node property.", e);
 			}
 
-			if (pProperty != null) {
-				final SLGraphFactory factory = AbstractFactory
-						.getDefaultInstance(SLGraphFactory.class);
-				final SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType,
-						this);
-				property = factory.createProperty(nodeProxy, pProperty,
-						this.eventPoster);
+			if (property == null) {
+				throw new SLNodePropertyNotFoundException(name);
 			}
-		} catch (final SLInvalidPersistentPropertyTypeException e) {
-			throw new SLInvalidNodePropertyTypeException(e);
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve node property.", e);
+			return property;
 		}
-
-		if (property == null) {
-			throw new SLNodePropertyNotFoundException(name);
-		}
-		return property;
 	}
 
 	// @Override
@@ -939,7 +994,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public String getPropertyValueAsString(final String name)
 			throws SLNodePropertyNotFoundException, SLGraphSessionException {
-		return this.getProperty(Serializable.class, name).getValue().toString();
+		synchronized (this.lock) {
+			return this.getProperty(Serializable.class, name).getValue()
+					.toString();
+		}
 	}
 
 	// @Override
@@ -957,17 +1015,21 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public SLTreeLineReference getTreeLineReferences()
 			throws SLGraphSessionException {
-		return new SLTreeLineReferenceImpl(this.getID(), this
-				.getLineReferences());
+		synchronized (this.lock) {
+			return new SLTreeLineReferenceImpl(this.getID(), this
+					.getLineReferences());
+		}
 	}
 
 	public String getTypeName() throws SLGraphSessionException {
-		try {
-			return SLCommonSupport.getInternalPropertyAsString(this.pNode,
-					SLConsts.PROPERTY_NAME_TYPE);
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve node type name.", e);
+		synchronized (this.lock) {
+			try {
+				return SLCommonSupport.getInternalPropertyAsString(this.pNode,
+						SLConsts.PROPERTY_NAME_TYPE);
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node type name.", e);
+			}
 		}
 	}
 
@@ -1041,28 +1103,30 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	public void remove() throws SLGraphSessionException,
 			SLInvalidCredentialException {
-		try {
-			if (!this.hasPrivileges(GraphElement.NODE, Action.DELETE)) {
-				throw new SLInvalidCredentialException(
-						"User does not have privilegies to delete nodes.");
-			}
-
-			final Collection<SLNode> childNodes = new ArrayList<SLNode>();
-			final Iterator<SLNode> iter = this.getNodes().iterator();
-			while (iter.hasNext()) {
-				this.addChildNodes(childNodes, iter.next());
-			}
-			for (final SLNode current : childNodes) {
-				final Collection<SLLink> links = this.getSession().getLinks(
-						current, null);
-				for (final SLLink link : links) {
-					link.remove();
+		synchronized (this.lock) {
+			try {
+				if (!this.hasPrivileges(GraphElement.NODE, Action.DELETE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to delete nodes.");
 				}
+
+				final Collection<SLNode> childNodes = new ArrayList<SLNode>();
+				final Iterator<SLNode> iter = this.getNodes().iterator();
+				while (iter.hasNext()) {
+					this.addChildNodes(childNodes, iter.next());
+				}
+				for (final SLNode current : childNodes) {
+					final Collection<SLLink> links = this.getSession()
+							.getLinks(current, null);
+					for (final SLLink link : links) {
+						link.remove();
+					}
+				}
+				this.pNode.remove();
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to remove node.", e);
 			}
-			this.pNode.remove();
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to remove node.", e);
 		}
 	}
 
@@ -1076,25 +1140,29 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	public <V extends Serializable> SLNodeProperty<V> setProperty(
 			final Class<V> clazz, final String name, final V value)
 			throws SLGraphSessionException, SLInvalidCredentialException {
-		try {
-			final String propName = SLCommonSupport.toUserPropertyName(name);
-			final SLPersistentProperty<V> pProperty = this.pNode.setProperty(
-					clazz, propName, value);
-			final SLGraphFactory factory = AbstractFactory
-					.getDefaultInstance(SLGraphFactory.class);
-			final Class<? extends SLNode> nodeType = this
-					.getNodeType(this.pNode);
-			final SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-			final SLNodeProperty<V> property = factory.createProperty(
-					nodeProxy, pProperty, this.eventPoster);
-			final SLNodePropertyEvent event = new SLNodePropertyEvent(
-					SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property,
-					pProperty);
-			this.eventPoster.post(event);
-			return property;
-		} catch (final SLException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to set property.", e);
+		synchronized (this.lock) {
+			try {
+				final String propName = SLCommonSupport
+						.toUserPropertyName(name);
+				final SLPersistentProperty<V> pProperty = this.pNode
+						.setProperty(clazz, propName, value);
+				final SLGraphFactory factory = AbstractFactory
+						.getDefaultInstance(SLGraphFactory.class);
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(this.pNode);
+				final SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType,
+						this);
+				final SLNodeProperty<V> property = factory.createProperty(
+						nodeProxy, pProperty, this.eventPoster);
+				final SLNodePropertyEvent event = new SLNodePropertyEvent(
+						SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property,
+						pProperty);
+				this.eventPoster.post(event);
+				return property;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to set property.", e);
+			}
 		}
 	}
 
@@ -1106,23 +1174,25 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	@Override
 	public String toString() {
-		try {
-			final StringBuilder sb = new StringBuilder();
-			sb.append(this.getName());
-			sb.append("\n\t");
-			sb.append("ID:");
-			sb.append(this.getID());
-			sb.append("\n\t");
-			for (final SLNodeProperty<Serializable> activeProperty : this
-					.getProperties()) {
-				sb.append(activeProperty.getName());
-				sb.append(":");
-				sb.append(activeProperty.getValueAsString());
+		synchronized (this.lock) {
+			try {
+				final StringBuilder sb = new StringBuilder();
+				sb.append(this.getName());
 				sb.append("\n\t");
+				sb.append("ID:");
+				sb.append(this.getID());
+				sb.append("\n\t");
+				for (final SLNodeProperty<Serializable> activeProperty : this
+						.getProperties()) {
+					sb.append(activeProperty.getName());
+					sb.append(":");
+					sb.append(activeProperty.getValueAsString());
+					sb.append("\n\t");
+				}
+				return sb.toString();
+			} catch (final SLGraphSessionException e) {
 			}
-			return sb.toString();
-		} catch (final SLGraphSessionException e) {
+			return this.pNode.toString();
 		}
-		return this.pNode.toString();
 	}
 }
