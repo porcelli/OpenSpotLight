@@ -389,7 +389,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			try {
 				this.session.save();
 			} catch (final Exception e) {
-				e.printStackTrace();
+				Exceptions.catchAndLog(e);
 				throw new SLPersistentTreeSessionException(
 						"Error on attempt to save persistent node.", e);
 			}
