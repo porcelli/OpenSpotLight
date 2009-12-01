@@ -32,12 +32,11 @@ public class MultithreadGraphSessionTest {
 
 		public State call() throws Exception {
 			try {
-				for (int i = 0; i < 500; i++) {
+				for (int i = 0; i < 100; i++) {
 					MultithreadGraphSessionTest.newNode.addNode("node " + i);
-					MultithreadGraphSessionTest.session.save();
 				}
-				MultithreadGraphSessionTest.session.close();
 				this.state = State.DONE;
+				MultithreadGraphSessionTest.session.save();
 			} catch (final Exception e) {
 				e.printStackTrace();
 				this.state = State.ERROR;
@@ -99,9 +98,9 @@ public class MultithreadGraphSessionTest {
 		MultithreadGraphSessionTest.session.save();
 		// session.close();
 
-		final ExecutorService executor = Executors.newFixedThreadPool(4);
+		final ExecutorService executor = Executors.newFixedThreadPool(8);
 		final List<Worker> workers = new ArrayList<Worker>();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 40; i++) {
 			workers.add(new Worker());
 		}
 		final List<Future<State>> allStatus = executor.invokeAll(workers);
