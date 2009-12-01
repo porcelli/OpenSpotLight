@@ -125,6 +125,12 @@
 				<artifactId>osl-logger</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-logger-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-logger-api</artifactId>
@@ -239,6 +245,13 @@
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-federation-dna-filesystem-loader</artifactId>
 				<version>${pom.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-core</artifactId>
+				<classifier>tests</classifier>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.identity.idm</groupId>
