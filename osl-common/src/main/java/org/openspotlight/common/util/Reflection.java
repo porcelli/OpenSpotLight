@@ -253,7 +253,11 @@ public class Reflection {
             } else if (theItemType instanceof Class<?>) {
                 itemType = (Class<T>)actualTypeArgs[0];
 
+            }else if(theItemType instanceof ParameterizedType){
+            	ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
+            	itemType = (Class<T>) valueTypeTyped.getRawType();
             }
+
 
         }
 
@@ -299,6 +303,9 @@ public class Reflection {
             } else if (theItemTypeKey instanceof Class<?>) {
                 keyType = (Class<K>)theItemTypeKey;
 
+            }else if(theItemTypeKey instanceof ParameterizedType){
+            	ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
+            	keyType = (Class<K>) theItemTypeKeyTyped.getRawType();
             }
             final Type theItemTypeValue = actualTypeArgs[1];
             if (theItemTypeValue instanceof WildcardType) {
@@ -314,6 +321,9 @@ public class Reflection {
             } else if (theItemTypeValue instanceof Class<?>) {
                 valueType = (Class<T>)theItemTypeValue;
 
+            }else if(theItemTypeValue instanceof ParameterizedType){
+            	ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
+            	valueType = (Class<T>) valueTypeTyped.getRawType();
             }
 
         }
