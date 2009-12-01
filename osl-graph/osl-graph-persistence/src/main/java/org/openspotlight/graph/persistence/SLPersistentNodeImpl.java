@@ -387,7 +387,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public void save() throws SLPersistentTreeSessionException {
 		synchronized (this.lock) {
 			try {
-				this.session.save();
+				this.jcrNode.save();
 			} catch (final Exception e) {
 				Exceptions.catchAndLog(e);
 				throw new SLPersistentTreeSessionException(

@@ -250,8 +250,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	public SLPersistentNode getRootNode()
 			throws SLPersistentTreeSessionException {
 		synchronized (this.lock) {
-			if (this.rootNode == null) {
-				try {
+			try {
+				if (this.rootNode == null) {
 					Node oslRootNode = JCRUtil.getChildNode(this.jcrSession
 							.getRootNode(),
 							SharedConstants.DEFAULT_JCR_ROOT_NAME);
@@ -283,14 +283,17 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 							// true);
 						}
 					}
-					this.rootNode.checkout();
-				} catch (final RepositoryException e) {
-					throw new SLPersistentTreeSessionException(
-							"Couldn't create persistent root node.", e);
+
 				}
+				if (!this.rootNode.isCheckedOut()) {
+					this.rootNode.checkout();
+				}
+				return new SLPersistentNodeImpl(this, null, this.rootNode,
+						this.eventPoster);
+			} catch (final RepositoryException e) {
+				throw new SLPersistentTreeSessionException(
+						"Couldn't create persistent root node.", e);
 			}
-			return new SLPersistentNodeImpl(this, null, this.rootNode,
-					this.eventPoster);
 		}
 	}
 
@@ -310,9 +313,10 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	public void save() throws SLPersistentTreeSessionException {
 		synchronized (this.lock) {
 			try {
-				// this.rootNode.save();
+				this.rootNode.save();
 				this.rootNode.checkin();
 				this.jcrSession.save();
+				this.rootNode.checkout();
 				// jcrSession.logout();
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
