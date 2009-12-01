@@ -5,40 +5,57 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.openspotlight</groupId>
-		<artifactId>osl-security</artifactId>
+		<artifactId>osl</artifactId>
 		<version>0.0.4-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>osl-security-core</artifactId>
+	<artifactId>osl-logger-core</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenSpotLight Security Core</name>
+	<name>OpenSpotLight Logger Core</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-security-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-jcr</artifactId>
+			<artifactId>osl-simple-persist</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-simple-persist</artifactId>
+			<artifactId>osl-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.identity.idm</groupId>
-			<artifactId>idm-testsuite</artifactId>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-logger-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-federation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

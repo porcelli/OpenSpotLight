@@ -2,6 +2,7 @@ mvn install:install-file -DgroupId=cajo -DartifactId=cajo -Dversion=1.127 -Dpack
 mvn install:install-file -DgroupId=org.clapper -DartifactId=ocutil -Dversion=2.4.4b -Dpackaging=jar -Dfile=ocutil-2.4.4b.jar 
 mvn install:install-file -DgroupId=dynamo -DartifactId=dynamo-file-gen -Dversion=1.0.1 -Dpackaging=jar -Dfile=dynamo-file-gen-1.0.1.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-api -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-api-1.0.0-Beta4-SNAPSHOT.jar
+mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-common -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-common-1.0.0-Beta4-SNAPSHOT.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-testsuite -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-testsuite-1.0.0-Beta4-SNAPSHOT.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-spi -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-spi-1.0.0-Beta4-SNAPSHOT.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-ldap -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-ldap-1.0.0-Beta4-SNAPSHOT.jar

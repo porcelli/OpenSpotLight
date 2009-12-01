@@ -30,7 +30,7 @@
 		</license>
 	</licenses>
 	<organization>
-		<name>Caravela</name>
+		<name>CaravelaTech</name>
 		<url>http://www.caravelatech.com/</url>
 	</organization>
 	<repositories>
@@ -76,7 +76,6 @@
 		<module>osl-jcr</module>
 		<module>osl-simple-persist</module>
 		<module>osl-logger</module>
-		<module>osl-logger-api</module>
 		<module>osl-security</module>
 		<module>osl-graph</module>
 		<module>osl-slql-console</module>
@@ -244,6 +243,21 @@
 			<dependency>
 				<groupId>org.jboss.identity.idm</groupId>
 				<artifactId>idm-core</artifactId>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-api</artifactId>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-spi</artifactId>
+				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.identity.idm</groupId>
+				<artifactId>idm-common</artifactId>
 				<version>1.0.0-Beta4-SNAPSHOT</version>
 			</dependency>
 			<dependency>

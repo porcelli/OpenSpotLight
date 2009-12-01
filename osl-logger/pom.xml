@@ -10,53 +10,11 @@
 	</parent>
 
 	<artifactId>osl-logger</artifactId>
-	<packaging>jar</packaging>
-	<name>OpenSpotLight Logger</name>
+	<packaging>pom</packaging>
+	<name>OpenSpotLight Logger Library</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-security-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-simple-persist</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-logger-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>osl-logger-api</module>
+		<module>osl-logger-core</module>
+	</modules>
 </project>
