@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governan�a de TI de C�digo Aberto 
+ * OpenSpotLight - Plataforma de GovernanÔøΩa de TI de CÔøΩdigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribui��o de direito autoral declarada e atribu�da pelo autor.
- * Todas as contribui��es de terceiros est�o distribu�das sob licen�a da
+ * @author ou por expressa atribuiÔøΩÔøΩo de direito autoral declarada e atribuÔøΩda pelo autor.
+ * Todas as contribuiÔøΩÔøΩes de terceiros estÔøΩo distribuÔøΩdas sob licenÔøΩa da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa � software livre; voc� pode redistribu�-lo e/ou modific�-lo sob os 
- * termos da Licen�a P�blica Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa ÔøΩ software livre; vocÔøΩ pode redistribuÔøΩ-lo e/ou modificÔøΩ-lo sob os 
+ * termos da LicenÔøΩa PÔøΩblica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa � distribu�do na expectativa de que seja �til, por�m, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia impl�cita de COMERCIABILIDADE OU ADEQUA��O A UMA
- * FINALIDADE ESPEC�FICA. Consulte a Licen�a P�blica Geral Menor do GNU para mais detalhes.  
+ * Este programa ÔøΩ distribuÔøΩdo na expectativa de que seja ÔøΩtil, porÔøΩm, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implÔøΩcita de COMERCIABILIDADE OU ADEQUAÔøΩÔøΩO A UMA
+ * FINALIDADE ESPECÔøΩFICA. Consulte a LicenÔøΩa PÔøΩblica Geral Menor do GNU para mais detalhes.  
  * 
- * Voc� deve ter recebido uma c�pia da Licen�a P�blica Geral Menor do GNU junto com este
- * programa; se n�o, escreva para: 
+ * VocÔøΩ deve ter recebido uma cÔøΩpia da LicenÔøΩa PÔøΩblica Geral Menor do GNU junto com este
+ * programa; se nÔøΩo, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA

@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de Governan√ßa de TI de C√≥digo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribui√ß√£o de direito autoral declarada e atribu√≠da pelo autor.
+ * Todas as contribui√ß√µes de terceiros est√£o distribu√≠das sob licen√ßa da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa √© software livre; voc√™ pode redistribu√≠-lo e/ou modific√°-lo sob os 
+ * termos da Licen√ßa P√∫blica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa √© distribu√≠do na expectativa de que seja √∫til, por√©m, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia impl√≠cita de COMERCIABILIDADE OU ADEQUA√á√ÉO A UMA
+ * FINALIDADE ESPEC√çFICA. Consulte a Licen√ßa P√∫blica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * Voc√™ deve ter recebido uma c√≥pia da Licen√ßa P√∫blica Geral Menor do GNU junto com este
+ * programa; se n√£o, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
