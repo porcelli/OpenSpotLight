@@ -50,12 +50,25 @@ package org.openspotlight.graph.persistence;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.concurrent.LockContainer;
+
 /**
  * The Interface SLPersistentProperty.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLPersistentProperty<V extends Serializable> {
+public interface SLPersistentProperty<V extends Serializable> extends
+		LockContainer {
+
+	/**
+	 * Gets the name.
+	 * 
+	 * @return the name
+	 * 
+	 * @throws SLPersistentTreeSessionException
+	 *             the SL persistent tree session exception
+	 */
+	public String getName() throws SLPersistentTreeSessionException;
 
 	/**
 	 * Gets the node.
@@ -65,39 +78,35 @@ public interface SLPersistentProperty<V extends Serializable> {
 	public SLPersistentNode getNode();
 
 	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public String getName() throws SLPersistentTreeSessionException;
-	
-	/**
 	 * Gets the value.
 	 * 
 	 * @return the value
 	 * 
-	 * @throws SLInvalidPersistentPropertyTypeException the SL invalid persistent property type exception
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 * @throws SLInvalidPersistentPropertyTypeException
+	 *             the SL invalid persistent property type exception
+	 * @throws SLPersistentTreeSessionException
+	 *             the SL persistent tree session exception
 	 */
-	public V getValue() throws SLInvalidPersistentPropertyTypeException, SLPersistentTreeSessionException;
-	
-	/**
-	 * Sets the value.
-	 * 
-	 * @param value the new value
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void setValue(V value) throws SLPersistentTreeSessionException;
+	public V getValue() throws SLInvalidPersistentPropertyTypeException,
+			SLPersistentTreeSessionException;
 
 	/**
 	 * Removes the.
 	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+	 * @throws SLPersistentTreeSessionException
+	 *             the SL persistent tree session exception
 	 */
 	public void remove() throws SLPersistentTreeSessionException;
-	
-}
 
+	/**
+	 * Sets the value.
+	 * 
+	 * @param value
+	 *            the new value
+	 * 
+	 * @throws SLPersistentTreeSessionException
+	 *             the SL persistent tree session exception
+	 */
+	public void setValue(V value) throws SLPersistentTreeSessionException;
+
+}

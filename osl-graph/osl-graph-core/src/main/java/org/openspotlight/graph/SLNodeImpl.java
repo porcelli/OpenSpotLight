@@ -49,10 +49,6 @@
 
 package org.openspotlight.graph;
 
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-import static org.openspotlight.graph.SLCommonSupport.getInternalPropertyAsString;
-import static org.openspotlight.graph.SLCommonSupport.setInternalStringProperty;
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -66,6 +62,7 @@ import java.util.Set;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -83,792 +80,1119 @@ import org.openspotlight.security.authz.graph.GraphElement;
  * @author Vitor Hugo Chagas
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
-
-    /** The context. */
-    private SLContext                 context;
-
-    /** The parent. */
-    private SLNode                    parent;
-
-    /** The p node. */
-    private SLPersistentNode          pNode;
-
-    /** The event poster. */
-    private SLGraphSessionEventPoster eventPoster;
-
-    /**
-     * Instantiates a new sL node impl.
-     * 
-     * @param context the context
-     * @param parent the parent
-     * @param persistentNode the persistent node
-     * @param eventPoster the event poster
-     */
-    public SLNodeImpl(
-                       SLContext context, SLNode parent, SLPersistentNode persistentNode, SLGraphSessionEventPoster eventPoster ) {
-        this.context = context;
-        this.parent = parent;
-        this.pNode = persistentNode;
-        this.eventPoster = eventPoster;
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLPNodeGetter#getPNode()
-     */
-    public SLPersistentNode getPNode() {
-        return pNode;
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getSession()
-     */
-    public SLGraphSession getSession() {
-        return context.getSession();
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getContext()
-     */
-    public SLContext getContext() {
-        return context;
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getID()
-     */
-    public String getID() throws SLGraphSessionException {
-        try {
-            return pNode.getID();
-        } catch (SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve the node ID.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getName()
-     */
-    public String getName() throws SLGraphSessionException {
-        try {
-            String decodedName = getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
-            return decodedName == null ? pNode.getName() : decodedName;
-        } catch (SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve the node name.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.String)
-     */
-    public SLNode addNode( String name )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(SLNode.class, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.String, org.openspotlight.graph.SLEncoder)
-     */
-    public SLNode addNode( String name,
-                           SLEncoder encoder )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(SLNode.class, name, encoder, SLPersistenceMode.NORMAL, null, null);
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLEncoder)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, encoder, SLPersistenceMode.NORMAL, null, null);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLPersistenceMode)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLPersistenceMode persistenceMode )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, getSession().getDefaultEncoder(), persistenceMode, null, null);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLEncoder, org.openspotlight.graph.SLPersistenceMode)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder,
-                                         SLPersistenceMode persistenceMode )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, encoder, persistenceMode, null, null);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, java.util.Collection, java.util.Collection)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLPersistenceMode, java.util.Collection, java.util.Collection)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLPersistenceMode persistenceMode,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, getSession().getDefaultEncoder(), persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLEncoder, java.util.Collection, java.util.Collection)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLEncoder, org.openspotlight.graph.SLPersistenceMode, java.util.Collection, java.util.Collection)
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder,
-                                         SLPersistenceMode persistenceMode,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return addChildNode(clazz, name, encoder, persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getNode(java.lang.String)
-     */
-    public SLNode getNode( String name ) throws SLInvalidNodeTypeException, SLGraphSessionException {
-        return getChildNode(SLNode.class, name);
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getNode(java.lang.Class, java.lang.String)
-     */
-    public <T extends SLNode> T getNode( Class<T> clazz,
-                                         String name ) throws SLInvalidNodeTypeException, SLGraphSessionException {
-        return getChildNode(clazz, name);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getNode(java.lang.Class, java.lang.String, org.openspotlight.graph.SLEncoder)
-     */
-    public <T extends SLNode> T getNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder ) throws SLInvalidNodeTypeException, SLGraphSessionException {
-        return getChildNode(clazz, name, encoder);
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getNodes()
-     */
-    public Set<SLNode> getNodes() throws SLGraphSessionException {
-        try {
-            return getChildNodes(null);
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve child nodes.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#remove()
-     */
-    public void remove() throws SLGraphSessionException, SLInvalidCredentialException {
-        try {
-            if (!hasPrivileges(GraphElement.NODE, Action.DELETE)) {
-                throw new SLInvalidCredentialException("User does not have privilegies to delete nodes.");
-            }
-
-            Collection<SLNode> childNodes = new ArrayList<SLNode>();
-            Iterator<SLNode> iter = getNodes().iterator();
-            while (iter.hasNext()) {
-                addChildNodes(childNodes, iter.next());
-            }
-            for (SLNode current : childNodes) {
-                Collection<SLLink> links = getSession().getLinks(current, null);
-                for (SLLink link : links) {
-                    link.remove();
-                }
-            }
-            pNode.remove();
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to remove node.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getParent()
-     */
-    public SLNode getParent() throws SLGraphSessionException {
-        return parent;
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#setProperty(java.lang.Class, java.lang.String, java.io.Serializable)
-     */
-    public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
-                                                                   String name,
-                                                                   V value )
-        throws SLGraphSessionException, SLInvalidCredentialException {
-        try {
-            String propName = SLCommonSupport.toUserPropertyName(name);
-            SLPersistentProperty<V> pProperty = pNode.setProperty(clazz, propName, value);
-            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            Class<? extends SLNode> nodeType = getNodeType(pNode);
-            SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-            SLNodeProperty<V> property = factory.createProperty(nodeProxy, pProperty, eventPoster);
-            SLNodePropertyEvent event = new SLNodePropertyEvent(SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property, pProperty);
-            eventPoster.post(event);
-            return property;
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to set property.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getProperty(java.lang.Class, java.lang.String)
-     */
-    public <V extends Serializable> SLNodeProperty<V> getProperty( Class<V> clazz,
-                                                                   String name )
-        throws SLNodePropertyNotFoundException, SLInvalidNodePropertyTypeException, SLGraphSessionException {
-        return getProperty(clazz, name, null);
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getProperty(java.lang.Class, java.lang.String, java.text.Collator)
-     */
-    public <V extends Serializable> SLNodeProperty<V> getProperty( Class<V> clazz,
-                                                                   String name,
-                                                                   Collator collator )
-        throws SLNodePropertyNotFoundException, SLInvalidNodePropertyTypeException, SLGraphSessionException {
-
-        SLNodeProperty<V> property = null;
-
-        try {
-
-            String propName = SLCommonSupport.toUserPropertyName(name);
-            SLPersistentProperty<V> pProperty = SLCommonSupport.getProperty(pNode, clazz, propName);
-            Class<? extends SLNode> nodeType = getNodeType(pNode);
-
-            // if property not found find collator if its strength is not identical ...
-            if (pProperty == null) {
-                if (nodeType != null) {
-                    Set<SLPersistentProperty<Serializable>> pProperties = pNode.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
-                    for (SLPersistentProperty<Serializable> current : pProperties) {
-                        String currentName = SLCommonSupport.toSimplePropertyName(current.getName());
-                        Collator currentCollator = collator == null ? SLCollatorSupport.getPropertyCollator(nodeType, currentName) : collator;
-                        if (currentCollator.compare(name, currentName) == 0) {
-                            pProperty = pNode.getProperty(clazz, current.getName());
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (pProperty != null) {
-                SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-                SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-                property = factory.createProperty(nodeProxy, pProperty, eventPoster);
-            }
-        } catch (SLInvalidPersistentPropertyTypeException e) {
-            throw new SLInvalidNodePropertyTypeException(e);
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve node property.", e);
-        }
-
-        if (property == null) throw new SLNodePropertyNotFoundException(name);
-        return property;
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getPropertyValueAsString(java.lang.String)
-     */
-    public String getPropertyValueAsString( String name ) throws SLNodePropertyNotFoundException, SLGraphSessionException {
-        return getProperty(Serializable.class, name).getValue().toString();
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getProperties()
-     */
-    public Set<SLNodeProperty<Serializable>> getProperties() throws SLGraphSessionException {
-        try {
-            Class<? extends SLNode> nodeType = getNodeType(pNode);
-            SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            Set<SLNodeProperty<Serializable>> properties = new HashSet<SLNodeProperty<Serializable>>();
-            Set<SLPersistentProperty<Serializable>> persistentProperties = pNode.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
-            for (SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
-                SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType, this);
-                SLNodeProperty<Serializable> property = factory.createProperty(nodeProxy, persistentProperty, eventPoster);
-                properties.add(property);
-            }
-            return properties;
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve node properties.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#addLineReference(int, int, int, int, java.lang.String, java.lang.String, java.lang.String)
-     */
-    public SLLineReference addLineReference( int startLine,
-                                             int endLine,
-                                             int startColumn,
-                                             int endColumn,
-                                             String statement,
-                                             String artifactId,
-                                             String artifactVersion )
-        throws SLGraphSessionException, SLInvalidCredentialException {
-
-        try {
-
-            if (!hasPrivileges(GraphElement.LINE_REFERENCE, Action.WRITE)) {
-                throw new SLInvalidCredentialException("User does not have privilegies to line references.");
-            }
-
-            StringBuilder lineReferenceKey = new StringBuilder()
-                                                                .append(startLine).append('.').append(endLine).append('.')
-                                                                .append(startColumn).append('.').append(endColumn).append('.')
-                                                                .append(statement).append(artifactId).append('.').append(artifactVersion);
-
-            SLEncoderFactory factory = getSession().getEncoderFactory();
-            SLEncoder fakeEncoder = factory.getFakeEncoder();
-            SLEncoder uuidEncoder = factory.getUUIDEncoder();
-
-            String propName = "lineRef." + uuidEncoder.encode(lineReferenceKey.toString());
-            SLLineReference lineRef = addChildNode(SLLineReference.class, propName, fakeEncoder, SLPersistenceMode.NORMAL, null, null);
-
-            lineRef.setStartLine(startLine);
-            lineRef.setEndLine(endLine);
-            lineRef.setStartColumn(startColumn);
-            lineRef.setEndColumn(endColumn);
-            lineRef.setStatement(statement);
-            lineRef.setArtifactId(artifactId);
-            lineRef.setArtifactVersion(artifactVersion);
-
-            return lineRef;
-        } catch (SLGraphSessionException e) {
-            throw new SLGraphSessionException("Error on attempt to add line reference.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.SLNode#getLineReferences()
-     */
-    public Collection<SLLineReference> getLineReferences() throws SLGraphSessionException {
-        try {
-            Collection<SLLineReference> lineReferences = new ArrayList<SLLineReference>();
-            Collection<SLNode> nodes = getChildNodes("lineRef.*");
-            for (SLNode node : nodes) {
-                SLLineReference lineRef = SLLineReference.class.cast(node);
-                lineReferences.add(lineRef);
-            }
-            return lineReferences;
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve line references.", e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SLTreeLineReference getTreeLineReferences() throws SLGraphSessionException {
-        return new SLTreeLineReferenceImpl(this.getID(), this.getLineReferences());
-    }
-
-    public String getTypeName() throws SLGraphSessionException {
-        try {
-            return SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
-        } catch (SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve node type name.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals( Object obj ) {
-        try {
-            if (obj == null || !(obj instanceof SLNode)) return false;
-            SLPersistentNode pNode = SLCommonSupport.getPNode((SLNode)obj);
-            return this.pNode.getID().equals(pNode.getID());
-        } catch (SLException e) {
-            throw new RuntimeException("Error on " + this.getClass() + " equals method.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode() {
-        try {
-            return getID().hashCode();
-        } catch (SLGraphSessionException e) {
-            throw new SLRuntimeException("Error on attempt to calculate node hash code.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo( SLNode node ) {
-        try {
-            SLNodeInvocationHandler handler = (SLNodeInvocationHandler)Proxy.getInvocationHandler(node);
-            SLNodeImpl n = (SLNodeImpl)handler.getNode();
-            return pNode.getPath().compareTo(n.pNode.getPath());
-        } catch (SLException e) {
-            throw new SLRuntimeException("Error on attempt to compare nodes.", e);
-        }
-    }
-
-    //@Override
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        try {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.getName());
-            sb.append("\n\t");
-            sb.append("ID:");
-            sb.append(this.getID());
-            sb.append("\n\t");
-            for (SLNodeProperty<Serializable> activeProperty : this.getProperties()) {
-                sb.append(activeProperty.getName());
-                sb.append(":");
-                sb.append(activeProperty.getValueAsString());
-                sb.append("\n\t");
-            }
-            return sb.toString();
-        } catch (SLGraphSessionException e) {
-        }
-        return pNode.toString();
-    }
-
-    /**
-     * Creates the node proxy.
-     * 
-     * @param clazz the clazz
-     * @param pNode the node
-     * @return the t
-     */
-    public <T extends SLNode> T createNodeProxy( Class<T> clazz,
-                                                 SLPersistentNode pNode ) {
-        SLNode node = new SLNodeImpl(context, this, pNode, eventPoster);
-        InvocationHandler handler = new SLNodeInvocationHandler(node);
-        return ProxyUtil.createProxy(clazz, handler);
-    }
-
-    /**
-     * Adds the child node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @param persistenceMode the persistence mode
-     * @param linkTypesForLinkDeletion the link types for link deletion
-     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
-     * @return the t
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private <T extends SLNode> T addChildNode( Class<T> clazz,
-                                               String name,
-                                               SLEncoder encoder,
-                                               SLPersistenceMode persistenceMode,
-                                               Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                               Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion )
-        throws SLGraphSessionException, SLInvalidCredentialException {
-        try {
-
-            if (!hasPrivileges(GraphElement.NODE, Action.WRITE)) {
-                throw new SLInvalidCredentialException("User does not have privilegies to add nodes.");
-            }
-
-            Class<T> type = null;
-            String encodedName = encoder.encode(name);
-            SLPersistentNode pChildNode = getHierarchyChildNode(clazz, name, encodedName);
-            if (pChildNode == null) {
-                type = clazz;
-                pChildNode = pNode.addNode(encodedName);
-                setInternalStringProperty(pChildNode, SLConsts.PROPERTY_NAME_DECODED_NAME, name);
-            } else {
-                Class<? extends SLNode> nodeType = getNodeType(pChildNode);
-                type = getLessGenericNodeType(clazz, nodeType);
-            }
-            setInternalStringProperty(pChildNode, SLConsts.PROPERTY_NAME_TYPE, type.getName());
-            T nodeProxy = createNodeProxy(type, pChildNode);
-            eventPoster.post(new SLNodeEvent(SLNodeEvent.TYPE_NODE_ADDED, nodeProxy, pChildNode, persistenceMode, linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion));
-            return nodeProxy;
-        } catch (SLException e) {
-            throw new SLGraphSessionException("Error on attempt to add node.", e);
-        }
-    }
-
-    /**
-     * Gets the child node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @return the child node
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    <T extends SLNode> T getChildNode( Class<T> clazz,
-                                       String name ) throws SLGraphSessionException {
-        return getChildNode(clazz, name, getSession().getDefaultEncoder());
-    }
-
-    /**
-     * Gets the child node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @return the child node
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    <T extends SLNode> T getChildNode( Class<T> clazz,
-                                       String name,
-                                       SLEncoder encoder ) throws SLGraphSessionException {
-        try {
-            T proxyNode = null;
-            String nodeName = encoder.encode(name);
-            Collection<SLPersistentNode> pChildNodes = pNode.getNodes(nodeName);
-            for (SLPersistentNode pChildNode : pChildNodes) {
-                Class<? extends SLNode> nodeType = getNodeType(pChildNode);
-                // if classes are of same hierarchy ...
-                if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
-                    // gets the less generic type ...
-                    Class<? extends T> lessGenericNodeType = getLessGenericNodeType(clazz, nodeType);
-                    SLNode node = new SLNodeImpl(getContext(), this, pChildNode, eventPoster);
-                    InvocationHandler handler = new SLNodeInvocationHandler(node);
-                    proxyNode = ProxyUtil.createProxy(lessGenericNodeType, handler);
-                    break;
-                }
-            }
-
-            // try collator if necessary ...
-            if (proxyNode == null && !SLCollatorSupport.isCollatorStrengthIdentical(clazz)) {
-                pChildNodes = pNode.getNodes();
-                Collator collator = SLCollatorSupport.getNodeCollator(clazz);
-                for (SLPersistentNode pChildNode : pChildNodes) {
-                    // if collator filter succeeds ...
-                    String currentDecodedName = SLCommonSupport.getUserNodeName(pChildNode);
-                    if (collator.compare(name, currentDecodedName) == 0) {
-                        Class<? extends SLNode> nodeType = getNodeType(pChildNode);
-                        // if classes are of same hierarchy ...
-                        if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
-                            // gets the less generic type ...
-                            Class<? extends T> lessGenericNodeType = getLessGenericNodeType(clazz, nodeType);
-                            SLNode node = new SLNodeImpl(getContext(), this, pChildNode, eventPoster);
-                            InvocationHandler handler = new SLNodeInvocationHandler(node);
-                            proxyNode = ProxyUtil.createProxy(lessGenericNodeType, handler);
-                            break;
-                        }
-                    }
-                }
-            }
-            return proxyNode;
-        } catch (Exception e) {
-            throw new SLGraphSessionException("Error on attempt to get node.", e);
-        }
-    }
-
-    /**
-     * Gets the less generic node type.
-     * 
-     * @param type1 the type1
-     * @param type2 the type2
-     * @return the less generic node type
-     */
-    @SuppressWarnings( "unchecked" )
-    private <T extends SLNode> Class<T> getLessGenericNodeType( Class<T> type1,
-                                                                Class<? extends SLNode> type2 ) {
-        return (Class<T>)(type1.isAssignableFrom(type2) ? type2 : type1);
-    }
-
-    /**
-     * Gets the hierarchy child node.
-     * 
-     * @param clazz the clazz
-     * @param decodedName the decoded name
-     * @param encodedName the encoded name
-     * @return the hierarchy child node
-     * @throws SLException the SL exception
-     */
-    private SLPersistentNode getHierarchyChildNode( Class<? extends SLNode> clazz,
-                                                    String decodedName,
-                                                    String encodedName ) throws SLException {
-
-        SLPersistentNode pChildNode = null;
-        String nodeName = encodedName == null ? decodedName : encodedName;
-        Collection<SLPersistentNode> pChildNodes = pNode.getNodes(nodeName);
-        for (SLPersistentNode current : pChildNodes) {
-            Class<? extends SLNode> nodeType = getNodeType(current);
-            if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
-                pChildNode = current;
-                break;
-            }
-        }
-
-        if (pChildNode == null && !SLCollatorSupport.isCollatorStrengthIdentical(clazz)) {
-            Collator collator = SLCollatorSupport.getNodeCollator(clazz);
-            for (SLPersistentNode current : pNode.getNodes()) {
-                String currentDecodedName = SLCommonSupport.getUserNodeName(current);
-                if (collator.compare(decodedName, currentDecodedName) == 0) {
-                    Class<? extends SLNode> nodeType = getNodeType(current);
-                    if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
-                        pChildNode = current;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return pChildNode;
-    }
-
-    /**
-     * Node types of same hierarchy.
-     * 
-     * @param type1 the type1
-     * @param type2 the type2
-     * @return true, if successful
-     */
-    private boolean nodeTypesOfSameHierarchy( Class<? extends SLNode> type1,
-                                              Class<? extends SLNode> type2 ) {
-        return type1.isAssignableFrom(type2) || type2.isAssignableFrom(type2);
-    }
-
-    /**
-     * Gets the node type.
-     * 
-     * @param pNode the node
-     * @return the node type
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    @SuppressWarnings( "unchecked" )
-    private Class<? extends SLNode> getNodeType( SLPersistentNode pNode ) throws SLGraphSessionException {
-        try {
-            Class<? extends SLNode> type = null;
-            String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-            SLPersistentProperty<String> typeNameProp = SLCommonSupport.getProperty(pNode, String.class, propName);
-            if (typeNameProp != null) {
-                type = (Class<? extends SLNode>)Class.forName(typeNameProp.getValue());
-            }
-            return type == null ? SLNode.class : type;
-        } catch (Exception e) {
-            throw new SLGraphSessionException("Error on attempt to retrieve node type.", e);
-        }
-    }
-
-    /**
-     * Adds the child nodes.
-     * 
-     * @param childNodes the child nodes
-     * @param node the node
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    private void addChildNodes( Collection<SLNode> childNodes,
-                                SLNode node ) throws SLGraphSessionException {
-        Collection<SLNode> nodes = node.getNodes();
-        for (SLNode current : nodes) {
-            addChildNodes(childNodes, current);
-        }
-        childNodes.add(node);
-    }
-
-    /**
-     * Gets the child nodes.
-     * 
-     * @param pattern the pattern
-     * @return the child nodes
-     * @throws SLException the SL exception
-     */
-    private Set<SLNode> getChildNodes( String pattern ) throws SLException {
-        SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        Set<SLNode> childNodes = new HashSet<SLNode>();
-        Collection<SLPersistentNode> persistentChildNodes = pattern == null ? pNode.getNodes() : pNode.getNodes(pattern);
-        for (SLPersistentNode persistentChildNode : persistentChildNodes) {
-            SLNode childNode = factory.createNode(getContext(), this, persistentChildNode, eventPoster);
-            SLNodeInvocationHandler handler = new SLNodeInvocationHandler(childNode);
-            Class<? extends SLNode> nodeType = getNodeType(persistentChildNode);
-            SLNode childNodeProxy = ProxyUtil.createProxy(nodeType, handler);
-            childNodes.add(childNodeProxy);
-        }
-        return childNodes;
-    }
-
-    /**
-     * Checks for privileges.
-     * 
-     * @param element the element
-     * @param action the action
-     * 
-     * @return true, if successful
-     */
-    private boolean hasPrivileges( GraphElement element,
-                                   Action action ) {
-        EnforcementContext enforcementContext = new EnforcementContext();
-        enforcementContext.setAttribute("user", getSession().getUser());
-        enforcementContext.setAttribute("graphElement", element);
-        enforcementContext.setAttribute("action", action);
-        enforcementContext.setAttribute("node", this);
-
-        try {
-            EnforcementResponse response = getSession().getPolicyEnforcement().checkAccess(enforcementContext);
-            if (response.equals(EnforcementResponse.GRANTED)) {
-                return true;
-            }
-            return false;
-        } catch (EnforcementException e) {
-            catchAndLog(e);
-            return false;
-        }
-    }
+	private final Object lock;
+	/** The context. */
+	private final SLContext context;
+
+	/** The parent. */
+	private final SLNode parent;
+
+	/** The p node. */
+	private final SLPersistentNode pNode;
+
+	/** The event poster. */
+	private final SLGraphSessionEventPoster eventPoster;
+
+	/**
+	 * Instantiates a new sL node impl.
+	 * 
+	 * @param context
+	 *            the context
+	 * @param parent
+	 *            the parent
+	 * @param persistentNode
+	 *            the persistent node
+	 * @param eventPoster
+	 *            the event poster
+	 */
+	public SLNodeImpl(final SLContext context, final SLNode parent,
+			final SLPersistentNode persistentNode,
+			final SLGraphSessionEventPoster eventPoster) {
+		this.context = context;
+		this.parent = parent;
+		this.pNode = persistentNode;
+		this.eventPoster = eventPoster;
+		this.lock = persistentNode.getLockObject();
+	}
+
+	/**
+	 * Adds the child node.
+	 * 
+	 * @param clazz
+	 *            the clazz
+	 * @param name
+	 *            the name
+	 * @param encoder
+	 *            the encoder
+	 * @param persistenceMode
+	 *            the persistence mode
+	 * @param linkTypesForLinkDeletion
+	 *            the link types for link deletion
+	 * @param linkTypesForLinkedNodeDeletion
+	 *            the link types for linked node deletion
+	 * @return the t
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	private <T extends SLNode> T addChildNode(
+			final Class<T> clazz,
+			final String name,
+			final SLEncoder encoder,
+			final SLPersistenceMode persistenceMode,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
+			throws SLGraphSessionException, SLInvalidCredentialException {
+		try {
+
+			if (!this.hasPrivileges(GraphElement.NODE, Action.WRITE)) {
+				throw new SLInvalidCredentialException(
+						"User does not have privilegies to add nodes.");
+			}
+
+			Class<T> type = null;
+			final String encodedName = encoder.encode(name);
+			SLPersistentNode pChildNode = this.getHierarchyChildNode(clazz,
+					name, encodedName);
+			if (pChildNode == null) {
+				type = clazz;
+				pChildNode = this.pNode.addNode(encodedName);
+				SLCommonSupport.setInternalStringProperty(pChildNode,
+						SLConsts.PROPERTY_NAME_DECODED_NAME, name);
+			} else {
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(pChildNode);
+				type = this.getLessGenericNodeType(clazz, nodeType);
+			}
+			final String typeName = SLCommonSupport
+					.getInternalPropertyAsString(pChildNode,
+							SLConsts.PROPERTY_NAME_TYPE);
+			if (typeName == null || !typeName.equals(type.getName())) {
+				SLCommonSupport.setInternalStringProperty(pChildNode,
+						SLConsts.PROPERTY_NAME_TYPE, type.getName());
+			}
+
+			final T nodeProxy = this.createNodeProxy(type, pChildNode);
+			this.eventPoster.post(new SLNodeEvent(SLNodeEvent.TYPE_NODE_ADDED,
+					nodeProxy, pChildNode, persistenceMode,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion));
+			return nodeProxy;
+		} catch (final SLException e) {
+			throw new SLGraphSessionException("Error on attempt to add node.",
+					e);
+		}
+	}
+
+	/**
+	 * Adds the child nodes.
+	 * 
+	 * @param childNodes
+	 *            the child nodes
+	 * @param node
+	 *            the node
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	private void addChildNodes(final Collection<SLNode> childNodes,
+			final SLNode node) throws SLGraphSessionException {
+		final Collection<SLNode> nodes = node.getNodes();
+		for (final SLNode current : nodes) {
+			this.addChildNodes(childNodes, current);
+		}
+		childNodes.add(node);
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addLineReference(int, int, int, int,
+	 * java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public SLLineReference addLineReference(final int startLine,
+			final int endLine, final int startColumn, final int endColumn,
+			final String statement, final String artifactId,
+			final String artifactVersion) throws SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+
+			try {
+
+				if (!this.hasPrivileges(GraphElement.LINE_REFERENCE,
+						Action.WRITE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to line references.");
+				}
+
+				final StringBuilder lineReferenceKey = new StringBuilder()
+						.append(startLine).append('.').append(endLine).append(
+								'.').append(startColumn).append('.').append(
+								endColumn).append('.').append(statement)
+						.append(artifactId).append('.').append(artifactVersion);
+
+				final SLEncoderFactory factory = this.getSession()
+						.getEncoderFactory();
+				final SLEncoder fakeEncoder = factory.getFakeEncoder();
+				final SLEncoder uuidEncoder = factory.getUUIDEncoder();
+
+				final String propName = "lineRef."
+						+ uuidEncoder.encode(lineReferenceKey.toString());
+				final SLLineReference lineRef = this.addChildNode(
+						SLLineReference.class, propName, fakeEncoder,
+						SLPersistenceMode.NORMAL, null, null);
+
+				lineRef.setStartLine(startLine);
+				lineRef.setEndLine(endLine);
+				lineRef.setStartColumn(startColumn);
+				lineRef.setEndColumn(endColumn);
+				lineRef.setStatement(statement);
+				lineRef.setArtifactId(artifactId);
+				lineRef.setArtifactVersion(artifactVersion);
+
+				return lineRef;
+			} catch (final SLGraphSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to add line reference.", e);
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String)
+	 */
+	public <T extends SLNode> T addNode(final Class<T> clazz, final String name)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, java.util.Collection, java.util.Collection)
+	 */
+	public <T extends SLNode> T addNode(
+			final Class<T> clazz,
+			final String name,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLEncoder)
+	 */
+	public <T extends SLNode> T addNode(final Class<T> clazz,
+			final String name, final SLEncoder encoder)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, encoder,
+					SLPersistenceMode.NORMAL, null, null);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLEncoder,
+	 * java.util.Collection, java.util.Collection)
+	 */
+	public <T extends SLNode> T addNode(
+			final Class<T> clazz,
+			final String name,
+			final SLEncoder encoder,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLEncoder,
+	 * org.openspotlight.graph.SLPersistenceMode)
+	 */
+	public <T extends SLNode> T addNode(final Class<T> clazz,
+			final String name, final SLEncoder encoder,
+			final SLPersistenceMode persistenceMode)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, encoder, persistenceMode,
+					null, null);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLEncoder,
+	 * org.openspotlight.graph.SLPersistenceMode, java.util.Collection,
+	 * java.util.Collection)
+	 */
+	public <T extends SLNode> T addNode(
+			final Class<T> clazz,
+			final String name,
+			final SLEncoder encoder,
+			final SLPersistenceMode persistenceMode,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, encoder, persistenceMode,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLPersistenceMode)
+	 */
+	public <T extends SLNode> T addNode(final Class<T> clazz,
+			final String name, final SLPersistenceMode persistenceMode)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), persistenceMode, null, null);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLPersistenceMode,
+	 * java.util.Collection, java.util.Collection)
+	 */
+	public <T extends SLNode> T addNode(
+			final Class<T> clazz,
+			final String name,
+			final SLPersistenceMode persistenceMode,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(clazz, name, this.getSession()
+					.getDefaultEncoder(), persistenceMode,
+					linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.String)
+	 */
+	public SLNode addNode(final String name)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(SLNode.class, name, this.getSession()
+					.getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#addNode(java.lang.String,
+	 * org.openspotlight.graph.SLEncoder)
+	 */
+	public SLNode addNode(final String name, final SLEncoder encoder)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			return this.addChildNode(SLNode.class, name, encoder,
+					SLPersistenceMode.NORMAL, null, null);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(final SLNode node) {
+		synchronized (this.lock) {
+			try {
+				final SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy
+						.getInvocationHandler(node);
+				final SLNodeImpl n = (SLNodeImpl) handler.getNode();
+				return this.pNode.getPath().compareTo(n.pNode.getPath());
+			} catch (final SLException e) {
+				throw new SLRuntimeException(
+						"Error on attempt to compare nodes.", e);
+			}
+		}
+	}
+
+	/**
+	 * Creates the node proxy.
+	 * 
+	 * @param clazz
+	 *            the clazz
+	 * @param pNode
+	 *            the node
+	 * @return the t
+	 */
+	public <T extends SLNode> T createNodeProxy(final Class<T> clazz,
+			final SLPersistentNode pNode) {
+		synchronized (this.lock) {
+			final SLNode node = new SLNodeImpl(this.context, this, pNode,
+					this.eventPoster);
+			final InvocationHandler handler = new SLNodeInvocationHandler(node);
+			return ProxyUtil.createProxy(clazz, handler);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		synchronized (this.lock) {
+			try {
+				if (obj == null || !(obj instanceof SLNode)) {
+					return false;
+				}
+				final SLPersistentNode pNode = SLCommonSupport
+						.getPNode((SLNode) obj);
+				return this.pNode.getID().equals(pNode.getID());
+			} catch (final SLException e) {
+				throw new RuntimeException("Error on " + this.getClass()
+						+ " equals method.", e);
+			}
+		}
+	}
+
+	/**
+	 * Gets the child node.
+	 * 
+	 * @param clazz
+	 *            the clazz
+	 * @param name
+	 *            the name
+	 * @return the child node
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	<T extends SLNode> T getChildNode(final Class<T> clazz, final String name)
+			throws SLGraphSessionException {
+		return this.getChildNode(clazz, name, this.getSession()
+				.getDefaultEncoder());
+	}
+
+	/**
+	 * Gets the child node.
+	 * 
+	 * @param clazz
+	 *            the clazz
+	 * @param name
+	 *            the name
+	 * @param encoder
+	 *            the encoder
+	 * @return the child node
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	<T extends SLNode> T getChildNode(final Class<T> clazz, final String name,
+			final SLEncoder encoder) throws SLGraphSessionException {
+		try {
+			T proxyNode = null;
+			final String nodeName = encoder.encode(name);
+			Collection<SLPersistentNode> pChildNodes = this.pNode
+					.getNodes(nodeName);
+			for (final SLPersistentNode pChildNode : pChildNodes) {
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(pChildNode);
+				// if classes are of same hierarchy ...
+				if (this.nodeTypesOfSameHierarchy(clazz, nodeType)) {
+					// gets the less generic type ...
+					final Class<? extends T> lessGenericNodeType = this
+							.getLessGenericNodeType(clazz, nodeType);
+					final SLNode node = new SLNodeImpl(this.getContext(), this,
+							pChildNode, this.eventPoster);
+					final InvocationHandler handler = new SLNodeInvocationHandler(
+							node);
+					proxyNode = ProxyUtil.createProxy(lessGenericNodeType,
+							handler);
+					break;
+				}
+			}
+
+			// try collator if necessary ...
+			if (proxyNode == null
+					&& !SLCollatorSupport.isCollatorStrengthIdentical(clazz)) {
+				pChildNodes = this.pNode.getNodes();
+				final Collator collator = SLCollatorSupport
+						.getNodeCollator(clazz);
+				for (final SLPersistentNode pChildNode : pChildNodes) {
+					// if collator filter succeeds ...
+					final String currentDecodedName = SLCommonSupport
+							.getUserNodeName(pChildNode);
+					if (collator.compare(name, currentDecodedName) == 0) {
+						final Class<? extends SLNode> nodeType = this
+								.getNodeType(pChildNode);
+						// if classes are of same hierarchy ...
+						if (this.nodeTypesOfSameHierarchy(clazz, nodeType)) {
+							// gets the less generic type ...
+							final Class<? extends T> lessGenericNodeType = this
+									.getLessGenericNodeType(clazz, nodeType);
+							final SLNode node = new SLNodeImpl(this
+									.getContext(), this, pChildNode,
+									this.eventPoster);
+							final InvocationHandler handler = new SLNodeInvocationHandler(
+									node);
+							proxyNode = ProxyUtil.createProxy(
+									lessGenericNodeType, handler);
+							break;
+						}
+					}
+				}
+			}
+			return proxyNode;
+		} catch (final Exception e) {
+			throw new SLGraphSessionException("Error on attempt to get node.",
+					e);
+		}
+	}
+
+	/**
+	 * Gets the child nodes.
+	 * 
+	 * @param pattern
+	 *            the pattern
+	 * @return the child nodes
+	 * @throws SLException
+	 *             the SL exception
+	 */
+	private Set<SLNode> getChildNodes(final String pattern) throws SLException {
+		final SLGraphFactory factory = AbstractFactory
+				.getDefaultInstance(SLGraphFactory.class);
+		final Set<SLNode> childNodes = new HashSet<SLNode>();
+		final Collection<SLPersistentNode> persistentChildNodes = pattern == null ? this.pNode
+				.getNodes()
+				: this.pNode.getNodes(pattern);
+		for (final SLPersistentNode persistentChildNode : persistentChildNodes) {
+			final SLNode childNode = factory.createNode(this.getContext(),
+					this, persistentChildNode, this.eventPoster);
+			final SLNodeInvocationHandler handler = new SLNodeInvocationHandler(
+					childNode);
+			final Class<? extends SLNode> nodeType = this
+					.getNodeType(persistentChildNode);
+			final SLNode childNodeProxy = ProxyUtil.createProxy(nodeType,
+					handler);
+			childNodes.add(childNodeProxy);
+		}
+		return childNodes;
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getContext()
+	 */
+	public SLContext getContext() {
+		return this.context;
+	}
+
+	/**
+	 * Gets the hierarchy child node.
+	 * 
+	 * @param clazz
+	 *            the clazz
+	 * @param decodedName
+	 *            the decoded name
+	 * @param encodedName
+	 *            the encoded name
+	 * @return the hierarchy child node
+	 * @throws SLException
+	 *             the SL exception
+	 */
+	private SLPersistentNode getHierarchyChildNode(
+			final Class<? extends SLNode> clazz, final String decodedName,
+			final String encodedName) throws SLException {
+
+		SLPersistentNode pChildNode = null;
+		final String nodeName = encodedName == null ? decodedName : encodedName;
+		final Collection<SLPersistentNode> pChildNodes = this.pNode
+				.getNodes(nodeName);
+		for (final SLPersistentNode current : pChildNodes) {
+			final Class<? extends SLNode> nodeType = this.getNodeType(current);
+			if (this.nodeTypesOfSameHierarchy(clazz, nodeType)) {
+				pChildNode = current;
+				break;
+			}
+		}
+
+		if (pChildNode == null
+				&& !SLCollatorSupport.isCollatorStrengthIdentical(clazz)) {
+			final Collator collator = SLCollatorSupport.getNodeCollator(clazz);
+			for (final SLPersistentNode current : this.pNode.getNodes()) {
+				final String currentDecodedName = SLCommonSupport
+						.getUserNodeName(current);
+				if (collator.compare(decodedName, currentDecodedName) == 0) {
+					final Class<? extends SLNode> nodeType = this
+							.getNodeType(current);
+					if (this.nodeTypesOfSameHierarchy(clazz, nodeType)) {
+						pChildNode = current;
+						break;
+					}
+				}
+			}
+		}
+
+		return pChildNode;
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getID()
+	 */
+	public String getID() throws SLGraphSessionException {
+		try {
+			return this.pNode.getID();
+		} catch (final SLPersistentTreeSessionException e) {
+			throw new SLGraphSessionException(
+					"Error on attempt to retrieve the node ID.", e);
+		}
+	}
+
+	/**
+	 * Gets the less generic node type.
+	 * 
+	 * @param type1
+	 *            the type1
+	 * @param type2
+	 *            the type2
+	 * @return the less generic node type
+	 */
+	@SuppressWarnings("unchecked")
+	private <T extends SLNode> Class<T> getLessGenericNodeType(
+			final Class<T> type1, final Class<? extends SLNode> type2) {
+		return (Class<T>) (type1.isAssignableFrom(type2) ? type2 : type1);
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getLineReferences()
+	 */
+	public Collection<SLLineReference> getLineReferences()
+			throws SLGraphSessionException {
+		synchronized (this.lock) {
+			try {
+				final Collection<SLLineReference> lineReferences = new ArrayList<SLLineReference>();
+				final Collection<SLNode> nodes = this
+						.getChildNodes("lineRef.*");
+				for (final SLNode node : nodes) {
+					final SLLineReference lineRef = SLLineReference.class
+							.cast(node);
+					lineReferences.add(lineRef);
+				}
+				return lineReferences;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve line references.", e);
+			}
+		}
+	}
+
+	public Object getLockObject() {
+		return this.lock;
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getName()
+	 */
+	public String getName() throws SLGraphSessionException {
+		synchronized (this.lock) {
+			try {
+				final String decodedName = SLCommonSupport
+						.getInternalPropertyAsString(this.pNode,
+								SLConsts.PROPERTY_NAME_DECODED_NAME);
+				return decodedName == null ? this.pNode.getName() : decodedName;
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve the node name.", e);
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getNode(java.lang.Class,
+	 * java.lang.String)
+	 */
+	public <T extends SLNode> T getNode(final Class<T> clazz, final String name)
+			throws SLInvalidNodeTypeException, SLGraphSessionException {
+		synchronized (this.lock) {
+			return this.getChildNode(clazz, name);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getNode(java.lang.Class,
+	 * java.lang.String, org.openspotlight.graph.SLEncoder)
+	 */
+	public <T extends SLNode> T getNode(final Class<T> clazz,
+			final String name, final SLEncoder encoder)
+			throws SLInvalidNodeTypeException, SLGraphSessionException {
+		synchronized (this.lock) {
+			return this.getChildNode(clazz, name, encoder);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getNode(java.lang.String)
+	 */
+	public SLNode getNode(final String name) throws SLInvalidNodeTypeException,
+			SLGraphSessionException {
+		synchronized (this.lock) {
+			return this.getChildNode(SLNode.class, name);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getNodes()
+	 */
+	public Set<SLNode> getNodes() throws SLGraphSessionException {
+		synchronized (this.lock) {
+			try {
+				return this.getChildNodes(null);
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve child nodes.", e);
+			}
+		}
+	}
+
+	/**
+	 * Gets the node type.
+	 * 
+	 * @param pNode
+	 *            the node
+	 * @return the node type
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	@SuppressWarnings("unchecked")
+	private Class<? extends SLNode> getNodeType(final SLPersistentNode pNode)
+			throws SLGraphSessionException {
+		try {
+			Class<? extends SLNode> type = null;
+			final String propName = SLCommonSupport
+					.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
+			final SLPersistentProperty<String> typeNameProp = SLCommonSupport
+					.getProperty(pNode, String.class, propName);
+			if (typeNameProp != null) {
+				type = (Class<? extends SLNode>) Class.forName(typeNameProp
+						.getValue());
+			}
+			return type == null ? SLNode.class : type;
+		} catch (final Exception e) {
+			throw new SLGraphSessionException(
+					"Error on attempt to retrieve node type.", e);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getParent()
+	 */
+	public SLNode getParent() throws SLGraphSessionException {
+		return this.parent;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLPNodeGetter#getPNode()
+	 */
+	public SLPersistentNode getPNode() {
+		return this.pNode;
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getProperties()
+	 */
+	public Set<SLNodeProperty<Serializable>> getProperties()
+			throws SLGraphSessionException {
+		synchronized (this.lock) {
+			try {
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(this.pNode);
+				final SLGraphFactory factory = AbstractFactory
+						.getDefaultInstance(SLGraphFactory.class);
+				final Set<SLNodeProperty<Serializable>> properties = new HashSet<SLNodeProperty<Serializable>>();
+				final Set<SLPersistentProperty<Serializable>> persistentProperties = this.pNode
+						.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
+				for (final SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
+					final SLNode nodeProxy = ProxyUtil.createNodeProxy(
+							nodeType, this);
+					final SLNodeProperty<Serializable> property = factory
+							.createProperty(nodeProxy, persistentProperty,
+									this.eventPoster);
+					properties.add(property);
+				}
+				return properties;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node properties.", e);
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getProperty(java.lang.Class,
+	 * java.lang.String)
+	 */
+	public <V extends Serializable> SLNodeProperty<V> getProperty(
+			final Class<V> clazz, final String name)
+			throws SLNodePropertyNotFoundException,
+			SLInvalidNodePropertyTypeException, SLGraphSessionException {
+		synchronized (this.lock) {
+			return this.getProperty(clazz, name, null);
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getProperty(java.lang.Class,
+	 * java.lang.String, java.text.Collator)
+	 */
+	public <V extends Serializable> SLNodeProperty<V> getProperty(
+			final Class<V> clazz, final String name, final Collator collator)
+			throws SLNodePropertyNotFoundException,
+			SLInvalidNodePropertyTypeException, SLGraphSessionException {
+		synchronized (this.lock) {
+
+			SLNodeProperty<V> property = null;
+
+			try {
+
+				final String propName = SLCommonSupport
+						.toUserPropertyName(name);
+				SLPersistentProperty<V> pProperty = SLCommonSupport
+						.getProperty(this.pNode, clazz, propName);
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(this.pNode);
+
+				// if property not found find collator if its strength is not
+				// identical ...
+				if (pProperty == null) {
+					if (nodeType != null) {
+						final Set<SLPersistentProperty<Serializable>> pProperties = this.pNode
+								.getProperties(SLConsts.PROPERTY_PREFIX_USER
+										+ ".*");
+						for (final SLPersistentProperty<Serializable> current : pProperties) {
+							final String currentName = SLCommonSupport
+									.toSimplePropertyName(current.getName());
+							final Collator currentCollator = collator == null ? SLCollatorSupport
+									.getPropertyCollator(nodeType, currentName)
+									: collator;
+							if (currentCollator.compare(name, currentName) == 0) {
+								pProperty = this.pNode.getProperty(clazz,
+										current.getName());
+								break;
+							}
+						}
+					}
+				}
+
+				if (pProperty != null) {
+					final SLGraphFactory factory = AbstractFactory
+							.getDefaultInstance(SLGraphFactory.class);
+					final SLNode nodeProxy = ProxyUtil.createNodeProxy(
+							nodeType, this);
+					property = factory.createProperty(nodeProxy, pProperty,
+							this.eventPoster);
+				}
+			} catch (final SLInvalidPersistentPropertyTypeException e) {
+				throw new SLInvalidNodePropertyTypeException(e);
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node property.", e);
+			}
+
+			if (property == null) {
+				throw new SLNodePropertyNotFoundException(name);
+			}
+			return property;
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLNode#getPropertyValueAsString(java.lang.String)
+	 */
+	public String getPropertyValueAsString(final String name)
+			throws SLNodePropertyNotFoundException, SLGraphSessionException {
+		synchronized (this.lock) {
+			return this.getProperty(Serializable.class, name).getValue()
+					.toString();
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#getSession()
+	 */
+	public SLGraphSession getSession() {
+		return this.context.getSession();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLTreeLineReference getTreeLineReferences()
+			throws SLGraphSessionException {
+		synchronized (this.lock) {
+			return new SLTreeLineReferenceImpl(this.getID(), this
+					.getLineReferences());
+		}
+	}
+
+	public String getTypeName() throws SLGraphSessionException {
+		synchronized (this.lock) {
+			try {
+				return SLCommonSupport.getInternalPropertyAsString(this.pNode,
+						SLConsts.PROPERTY_NAME_TYPE);
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node type name.", e);
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		try {
+			return this.getID().hashCode();
+		} catch (final SLGraphSessionException e) {
+			throw new SLRuntimeException(
+					"Error on attempt to calculate node hash code.", e);
+		}
+	}
+
+	/**
+	 * Checks for privileges.
+	 * 
+	 * @param element
+	 *            the element
+	 * @param action
+	 *            the action
+	 * 
+	 * @return true, if successful
+	 */
+	private boolean hasPrivileges(final GraphElement element,
+			final Action action) {
+		final EnforcementContext enforcementContext = new EnforcementContext();
+		enforcementContext.setAttribute("user", this.getSession().getUser());
+		enforcementContext.setAttribute("graphElement", element);
+		enforcementContext.setAttribute("action", action);
+		enforcementContext.setAttribute("node", this);
+
+		try {
+			final EnforcementResponse response = this.getSession()
+					.getPolicyEnforcement().checkAccess(enforcementContext);
+			if (response.equals(EnforcementResponse.GRANTED)) {
+				return true;
+			}
+			return false;
+		} catch (final EnforcementException e) {
+			Exceptions.catchAndLog(e);
+			return false;
+		}
+	}
+
+	/**
+	 * Node types of same hierarchy.
+	 * 
+	 * @param type1
+	 *            the type1
+	 * @param type2
+	 *            the type2
+	 * @return true, if successful
+	 */
+	private boolean nodeTypesOfSameHierarchy(
+			final Class<? extends SLNode> type1,
+			final Class<? extends SLNode> type2) {
+		return type1.isAssignableFrom(type2) || type2.isAssignableFrom(type2);
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#remove()
+	 */
+	public void remove() throws SLGraphSessionException,
+			SLInvalidCredentialException {
+		synchronized (this.lock) {
+			try {
+				if (!this.hasPrivileges(GraphElement.NODE, Action.DELETE)) {
+					throw new SLInvalidCredentialException(
+							"User does not have privilegies to delete nodes.");
+				}
+
+				final Collection<SLNode> childNodes = new ArrayList<SLNode>();
+				final Iterator<SLNode> iter = this.getNodes().iterator();
+				while (iter.hasNext()) {
+					this.addChildNodes(childNodes, iter.next());
+				}
+				for (final SLNode current : childNodes) {
+					final Collection<SLLink> links = this.getSession()
+							.getLinks(current, null);
+					for (final SLLink link : links) {
+						link.remove();
+					}
+				}
+				this.pNode.remove();
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to remove node.", e);
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#setProperty(java.lang.Class,
+	 * java.lang.String, java.io.Serializable)
+	 */
+	public <V extends Serializable> SLNodeProperty<V> setProperty(
+			final Class<V> clazz, final String name, final V value)
+			throws SLGraphSessionException, SLInvalidCredentialException {
+		synchronized (this.lock) {
+			try {
+				final String propName = SLCommonSupport
+						.toUserPropertyName(name);
+				final SLPersistentProperty<V> pProperty = this.pNode
+						.setProperty(clazz, propName, value);
+				final SLGraphFactory factory = AbstractFactory
+						.getDefaultInstance(SLGraphFactory.class);
+				final Class<? extends SLNode> nodeType = this
+						.getNodeType(this.pNode);
+				final SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType,
+						this);
+				final SLNodeProperty<V> property = factory.createProperty(
+						nodeProxy, pProperty, this.eventPoster);
+				final SLNodePropertyEvent event = new SLNodePropertyEvent(
+						SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property,
+						pProperty);
+				this.eventPoster.post(event);
+				return property;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to set property.", e);
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		synchronized (this.lock) {
+			try {
+				final StringBuilder sb = new StringBuilder();
+				sb.append(this.getName());
+				sb.append("\n\t");
+				sb.append("ID:");
+				sb.append(this.getID());
+				sb.append("\n\t");
+				for (final SLNodeProperty<Serializable> activeProperty : this
+						.getProperties()) {
+					sb.append(activeProperty.getName());
+					sb.append(":");
+					sb.append(activeProperty.getValueAsString());
+					sb.append("\n\t");
+				}
+				return sb.toString();
+			} catch (final SLGraphSessionException e) {
+			}
+			return this.pNode.toString();
+		}
+	}
 }
