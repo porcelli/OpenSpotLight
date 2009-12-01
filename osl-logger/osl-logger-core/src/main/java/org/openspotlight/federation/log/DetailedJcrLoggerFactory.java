@@ -106,7 +106,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 			SimplePersistSupport.convertBeanToJcr(initialPath, this.session,
 					entry);
 			try {
-				// this.session.save();
+				 this.session.save();
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 			}

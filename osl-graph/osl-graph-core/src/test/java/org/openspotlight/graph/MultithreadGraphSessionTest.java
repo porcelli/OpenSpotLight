@@ -99,11 +99,11 @@ public class MultithreadGraphSessionTest {
 		// session.close();
 
 		final ExecutorService executor = Executors.newFixedThreadPool(8);
-		final List<Worker> workers = new ArrayList<Worker>();
+		final List<Callable<State>> workers = new ArrayList<Callable<State>>();
 		for (int i = 0; i < 40; i++) {
 			workers.add(new Worker());
 		}
-		final List<Future<State>> allStatus = executor.invokeAll(workers);
+		final List<Future<State>> allStatus = executor.<State>invokeAll(workers);
 
 		for (final Future<State> status : allStatus) {
 			System.out.println(status.get());
