@@ -12,3 +12,4 @@ mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-common -Dversi
 mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-graph -Dversion=0.6 -Dpackaging=jar -Dfile=dna-graph-0.6.jar
 mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-connector-filesystem -Dversion=0.6 -Dpackaging=jar -Dfile=dna-connector-filesystem-0.6.jar
 mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-connector-svn -Dversion=0.6 -Dpackaging=jar -Dfile=dna-connector-svn-0.6.jar
+mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-core -Dversion=1.0.0-Beta4-SNAPSHOT -Dclassifier=tests -Dpackaging=jar -Dfile=idm-core-1.0.0-Beta4-SNAPSHOT-tests.jar
