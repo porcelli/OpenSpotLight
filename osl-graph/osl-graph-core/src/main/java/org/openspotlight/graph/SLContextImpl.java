@@ -52,7 +52,6 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.util.ProxyUtil;
 
-
 /**
  * The Class SLContextImpl.
  * 
@@ -62,61 +61,91 @@ public class SLContextImpl implements SLContext {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
-	
+
+	private final Object lock;
+
 	/** The session. */
-	private SLGraphSession session;
-	
+	private final SLGraphSession session;
+
 	/** The root node. */
-	private SLNode rootNode;
-	
+	private final SLNode rootNode;
+
 	/**
 	 * Instantiates a new sL context impl.
 	 * 
-	 * @param session the session
-	 * @param contextRootPersistentNode the context root persistent node
-	 * @param eventPoster the event poster
+	 * @param session
+	 *            the session
+	 * @param contextRootPersistentNode
+	 *            the context root persistent node
+	 * @param eventPoster
+	 *            the event poster
 	 */
-	public SLContextImpl(SLGraphSession session, SLPersistentNode contextRootPersistentNode, SLGraphSessionEventPoster eventPoster) {
+	public SLContextImpl(final SLGraphSession session,
+			final SLPersistentNode contextRootPersistentNode,
+			final SLGraphSessionEventPoster eventPoster) {
 		this.session = session;
-		this.rootNode = new SLNodeImpl(this, null, contextRootPersistentNode, eventPoster);
+		this.rootNode = new SLNodeImpl(this, null, contextRootPersistentNode,
+				eventPoster);
+		this.lock = session.getLockObject();
 	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLContext#getSession()
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public SLGraphSession getSession() {
-		return session;
+	@Override
+	public boolean equals(final Object obj) {
+		synchronized (this.lock) {
+			try {
+				if (obj == null) {
+					return false;
+				}
+				final SLContext context = (SLContext) obj;
+				return this.getID().equals(context.getID());
+			} catch (final SLGraphSessionException e) {
+				throw new SLRuntimeException(
+						"Error on attempt to execute SLContextImpl.equals() method.",
+						e);
+			}
+		}
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLContext#getID()
 	 */
 	public String getID() throws SLGraphSessionException {
-		return rootNode.getName();
+		return this.rootNode.getName();
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	public Object getLockObject() {
+		return this.lock;
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLContext#getRootNode()
 	 */
 	public SLNode getRootNode() throws SLGraphSessionException {
-		return ProxyUtil.createNodeProxy(SLNode.class, rootNode);
+		synchronized (this.lock) {
+			return ProxyUtil.createNodeProxy(SLNode.class, this.rootNode);
+		}
+
 	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLContext#getSession()
 	 */
-	public boolean equals(Object obj) {
-		try {
-			if (obj == null) return false;
-			SLContext context = (SLContext) obj;
-			return getID().equals(context.getID());
-		}
-		catch (SLGraphSessionException e) {
-			throw new SLRuntimeException("Error on attempt to execute SLContextImpl.equals() method.", e);
-		}
+	public SLGraphSession getSession() {
+		return this.session;
 	}
 }

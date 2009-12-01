@@ -11,7 +11,6 @@ import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -33,17 +32,11 @@ public class MultithreadGraphSessionTest {
 
 		public State call() throws Exception {
 			try {
-				final SLGraphSession session = MultithreadGraphSessionTest.graph
-						.openSession(MultithreadGraphSessionTest.user);
-				final SLNode rootNode = session.createContext("new context")
-						.getRootNode();
-				final SLNode newNode = rootNode.addNode("abc");
 				for (int i = 0; i < 100; i++) {
-					newNode.addNode("node " + i);
+					MultithreadGraphSessionTest.newNode.addNode("node " + i);
 				}
-				session.save();
-				session.close();
 				this.state = State.DONE;
+				MultithreadGraphSessionTest.session.save();
 			} catch (final Exception e) {
 				e.printStackTrace();
 				this.state = State.ERROR;
@@ -59,6 +52,10 @@ public class MultithreadGraphSessionTest {
 	private static SLGraphSession session;
 
 	private static AuthenticatedUser user;
+
+	private static SLNode rootNode;
+
+	private static SLNode newNode;
 
 	/**
 	 * Finish.
@@ -91,22 +88,26 @@ public class MultithreadGraphSessionTest {
 	}
 
 	@Test
-	@Ignore
 	public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
-		// final SLGraphSession session = MultithreadGraphSessionTest.graph
-		// .openSession(MultithreadGraphSessionTest.user);
-		// final SLNode rootNode = session.createContext("new context")
-		// .getRootNode();
-		// final SLNode newNode = rootNode.addNode("abc");
-		// session.save();
+		MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph
+				.openSession(MultithreadGraphSessionTest.user);
+		MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session
+				.createContext("new context").getRootNode();
+		MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode
+				.addNode("abc");
+		MultithreadGraphSessionTest.session.save();
 		// session.close();
 
-		final ExecutorService executor = Executors.newFixedThreadPool(4);
+		final ExecutorService executor = Executors.newFixedThreadPool(8);
 		final List<Worker> workers = new ArrayList<Worker>();
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 40; i++) {
 			workers.add(new Worker());
 		}
 		final List<Future<State>> allStatus = executor.invokeAll(workers);
+
+		for (final Future<State> status : allStatus) {
+			System.out.println(status.get());
+		}
 
 		for (final Future<State> status : allStatus) {
 			Assert.assertThat(status.get(), Is.is(State.DONE));

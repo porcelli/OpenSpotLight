@@ -62,76 +62,83 @@ import org.openspotlight.graph.query.SLQuery.SortMode;
  */
 public interface SLQueryTextInternal extends Serializable {
 
-    /**
-     * Gets the unique id.
-     * 
-     * @return the id
-     */
-    public String getId();
+	/**
+	 * Execute.
+	 * 
+	 * @param session
+	 *            the session
+	 * @param variableValues
+	 *            the variable values
+	 * @param inputNodesIDs
+	 *            the input nodes i ds
+	 * @param sortMode
+	 *            the sort mode
+	 * @param showSLQL
+	 *            the show slql
+	 * @param limit
+	 *            the limit
+	 * @param offset
+	 *            the offset
+	 * @return the sL query result
+	 * @throws SLInvalidQueryElementException
+	 *             the SL invalid query element exception
+	 * @throws SLQueryException
+	 *             the SL query exception
+	 * @throws SLInvalidQuerySyntaxException
+	 *             the SL invalid query syntax exception
+	 */
+	public SLQueryResult execute(final SLGraphSession session,
+			final Map<String, ?> variableValues, final String[] inputNodesIDs,
+			SortMode sortMode, boolean showSLQL, Integer limit, Integer offset)
+			throws SLInvalidQueryElementException, SLQueryException,
+			SLInvalidQuerySyntaxException;
 
-    /**
-     * Gets the output model name.
-     * 
-     * @return the output model name
-     */
-    public String getOutputModelName();
+	/**
+	 * Gets the unique id.
+	 * 
+	 * @return the id
+	 */
+	public String getId();
 
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
+	/**
+	 * Gets the output model name.
+	 * 
+	 * @return the output model name
+	 */
+	public String getOutputModelName();
 
-    /**
-     * Gets the target.
-     * 
-     * @return the target
-     */
-    public SLQueryTextInternal getTarget();
+	/**
+	 * Gets the target.
+	 * 
+	 * @return the target
+	 */
+	public SLQueryTextInternal getTarget();
 
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
+	/**
+	 * Gets the variables.
+	 * 
+	 * @return the variables
+	 */
+	public Collection<SLQLVariable> getVariables();
 
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasOutputModel();
+	/**
+	 * Checks for output model.
+	 * 
+	 * @return true, if successful
+	 */
+	public boolean hasOutputModel();
 
-    /**
-     * Gets the variables.
-     * 
-     * @return the variables
-     */
-    public Collection<SLQLVariable> getVariables();
+	/**
+	 * Checks for target.
+	 * 
+	 * @return true, if successful
+	 */
+	public boolean hasTarget();
 
-    /**
-     * Execute.
-     * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
+	/**
+	 * Checks for variables.
+	 * 
+	 * @return true, if successful
+	 */
+	public boolean hasVariables();
 }
