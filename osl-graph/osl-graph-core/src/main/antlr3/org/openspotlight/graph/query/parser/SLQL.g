@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de Governanca de TI de Codigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribuicao de direito autoral declarada e atribuida pelo autor.
+ * Todas as contribuicoes de terceiros estao distribuidas sob licenca da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa e software livre; voce pode redistribui-lo e/ou modifica-lo sob os 
+ * termos da Licenca Publica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa e distribuido na expectativa de que seja util, porem, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU ADEQUACAO A UMA
+ * FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * Voce deve ter recebido uma copia da Licenca Publica Geral Menor do GNU junto com este
+ * programa; se nao, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
@@ -123,24 +123,24 @@ tokens {
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de Governanca de TI de Codigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribuicao de direito autoral declarada e atribuida pelo autor.
+ * Todas as contribuicoes de terceiros estao distribuidas sob licenca da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa e software livre; voce pode redistribui-lo e/ou modifica-lo sob os 
+ * termos da Licenca Publica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa e distribuido na expectativa de que seja util, porem, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU ADEQUACAO A UMA
+ * FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * Voce deve ter recebido uma copia da Licenca Publica Geral Menor do GNU junto com este
+ * programa; se nao, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
@@ -179,24 +179,24 @@ import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
  * Boston, MA  02110-1301  USA 
  * 
  *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
+ * OpenSpotLight - Plataforma de Governanca de TI de Codigo Aberto 
  *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * @author ou por expressa atribuicao de direito autoral declarada e atribuida pelo autor.
+ * Todas as contribuicoes de terceiros estao distribuidas sob licenca da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
  * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
+ * Este programa e software livre; voce pode redistribui-lo e/ou modifica-lo sob os 
+ * termos da Licenca Publica Geral Menor do GNU conforme publicada pela Free Software 
  * Foundation. 
  * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
+ * Este programa e distribuido na expectativa de que seja util, porem, SEM NENHUMA 
+ * GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU ADEQUACAO A UMA
+ * FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral Menor do GNU para mais detalhes.  
  * 
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
+ * Voce deve ter recebido uma copia da Licenca Publica Geral Menor do GNU junto com este
+ * programa; se nao, escreva para: 
  * Free Software Foundation, Inc. 
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
