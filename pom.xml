@@ -125,12 +125,6 @@
 				<artifactId>osl-logger-core</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-logger-core</artifactId>
-				<version>${pom.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-logger-api</artifactId>
