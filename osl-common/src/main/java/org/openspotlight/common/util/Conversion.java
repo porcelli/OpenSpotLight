@@ -52,7 +52,9 @@ package org.openspotlight.common.util;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,10 +100,9 @@ public class Conversion {
 	private static final Map<Class<?>, Converter> CONVERTERS = new HashMap<Class<?>, Converter>();
 
 	static {
-		final DateConverter dateConverter = new DateConverter();
-		dateConverter.setPattern("EEE MMM dd HH:mm:ss zzz yyyy");
+		final SimpleDateFormat df = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
+		df.applyPattern("EEE MMM dd HH:mm:ss zzz yyyy");
 
-		Conversion.CONVERTERS.put(Date.class, dateConverter);
 		Conversion.CONVERTERS.put(Integer.class, new IntegerConverter());
 		Conversion.CONVERTERS.put(Double.class, new DoubleConverter());
 		Conversion.CONVERTERS.put(Short.class, new ShortConverter());
@@ -109,9 +110,39 @@ public class Conversion {
 		Conversion.CONVERTERS.put(Long.class, new LongConverter());
 		Conversion.CONVERTERS.put(Boolean.class, new BooleanConverter());
 		Conversion.CONVERTERS.put(Byte.class, new ByteConverter());
-		Conversion.CONVERTERS.put(String.class, new StringConverter());
 		Conversion.CONVERTERS.put(Float.class, new FloatConverter());
+		Conversion.CONVERTERS.put(Date.class, new Converter() {
+			
+			public Object convert(Class type, Object value) {
+				try {
+					if (type.equals(Date.class) && value instanceof String) {
+						String newValue = (String) value;
+						return df.parse(newValue);
+					}
+				} catch (final Exception e) {
+					throw Exceptions.logAndReturn(new IllegalStateException(e));
+				}
+				throw Exceptions.logAndReturn(new IllegalArgumentException());
 
+			}
+		});
+		Conversion.CONVERTERS.put(String.class, new Converter() {
+			
+			public Object convert(Class type, Object value) {
+				try {
+					if(value==null)
+						return null;
+					if (type.equals(String.class) && value instanceof Date) {
+						return df.format((Date)value);
+					}
+					return value.toString();
+				} catch (final Exception e) {
+					throw Exceptions.logAndReturn(new IllegalStateException(e));
+				}
+
+			}
+		});
+		
 		Conversion.CONVERTERS.put(int.class, new IntegerConverter());
 		Conversion.CONVERTERS.put(double.class, new DoubleConverter());
 		Conversion.CONVERTERS.put(short.class, new ShortConverter());
