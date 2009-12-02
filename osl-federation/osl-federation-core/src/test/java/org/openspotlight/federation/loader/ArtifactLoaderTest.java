@@ -45,9 +45,9 @@ public class ArtifactLoaderTest {
         boolean hasAny = false;
         for (final Artifact a : artifacts) {
             assertThat(a, is(notNullValue()));
-            assertThat(a.getArtifactCompleteName().startsWith(mapping.getTo()), is(true));
-            assertThat(a.getArtifactCompleteName().contains(mapping.getFrom()), is(false));
-            hasAny = true;
+            assertThat(a.getArtifactCompleteName().startsWith(mapping.getTo()+"/"), is(true));
+            assertThat(a.getArtifactCompleteName().contains(mapping.getFrom()+"/"), is(false));
+			hasAny = true;
         }
         assertThat(hasAny, is(true));
         loader.closeResources();
