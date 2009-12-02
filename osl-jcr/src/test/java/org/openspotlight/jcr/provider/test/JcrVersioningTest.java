@@ -6,11 +6,13 @@ import javax.jcr.Session;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.util.JCRUtil;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
+@Ignore
 public class JcrVersioningTest {
 
 	private static final String VERSIONABLE_NODE = "newVersionableNode";
