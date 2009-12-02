@@ -1,5 +1,5 @@
 select **
 	where
 		org.openspotlight.graph.test.domain.JavaInterface
-			property caption == "java.util.‚ollection"
+			property caption == "java.util.Ã‡ollection"
 	use collator level secondary;
