@@ -124,12 +124,12 @@ public class SLQueryTextInternalBuilder {
 
         SLQueryTextInternal target = null;
         if (queryInfo.hasTarget()) {
-            target = this.buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo.getDefineTargetContent());
+            target = this.buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo.getDefineTargetContent(), queryInfo.getStringsConstant());
         }
 
         final Set<SLQLVariable> variables = this.buildVariableCollection(queryInfo);
 
-        return this.buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), target, queryInfo.getContent());
+        return this.buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), queryInfo.getStringsConstant(), target, queryInfo.getContent());
     }
 
     /**
@@ -138,14 +138,18 @@ public class SLQueryTextInternalBuilder {
      * @param id the id
      * @param variables the variables
      * @param outputModelName the output model name
+     * @param stringConstants the string constants
      * @param target the target
      * @param executeContent the execute content
+     * 
      * @return the sL query text internal
+     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
     private SLQueryTextInternal buildQuery( final String id,
                                             final Set<SLQLVariable> variables,
                                             final String outputModelName,
+                                            final Map<Integer, String> stringConstants,
                                             final SLQueryTextInternal target,
                                             final String executeContent ) throws SLInvalidQuerySyntaxException {
         try {
@@ -159,8 +163,8 @@ public class SLQueryTextInternalBuilder {
             final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
-            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class);
-            return constr.newInstance(id, variables, outputModelName, target);
+            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class, Map.class);
+            return constr.newInstance(id, variables, outputModelName, target, stringConstants);
 
         } catch (final Exception e) {
             throw new SLInvalidQuerySyntaxException(e);
@@ -213,16 +217,21 @@ public class SLQueryTextInternalBuilder {
         }
     }
 
+
     /**
      * Builds the target query.
      * 
      * @param targetUniqueId the target unique id
      * @param defineTargetContent the define target content
+     * @param stringConstants the string constants
+     * 
      * @return the sL query text internal
+     * 
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
     private SLQueryTextInternal buildTargetQuery( final String targetUniqueId,
-                                                  final String defineTargetContent ) throws SLInvalidQuerySyntaxException {
+                                                  final String defineTargetContent,
+                                                  Map<Integer, String> stringConstants ) throws SLInvalidQuerySyntaxException {
         try {
             final String className = this.getClassName(targetUniqueId);
 
@@ -234,8 +243,8 @@ public class SLQueryTextInternalBuilder {
             final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
-            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class);
-            return constr.newInstance(targetUniqueId, null, null, null);
+            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class, Map.class);
+            return constr.newInstance(targetUniqueId, null, null, null, stringConstants);
 
         } catch (final Exception e) {
             throw new SLInvalidQuerySyntaxException(e);
@@ -321,8 +330,6 @@ public class SLQueryTextInternalBuilder {
                     }
                 }
             }
-
-            //            System.out.println("executeContent : " + executeContent);
 
             final CtConstructor newConstructor = CtNewConstructor.make(this.CONSTRUCTOR_ARGS, this.CONSTRUCTOR_THROWS, clas);
             clas.addConstructor(newConstructor);
