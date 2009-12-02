@@ -85,6 +85,9 @@ public class SLQueryTextInternalInfo {
     /** The domain variables. */
     private Map<String, Set<Serializable>> domainVariables     = new HashMap<String, Set<Serializable>>();
 
+    /** The string constants . */
+    private Map<Integer, String>           stringsConstant     = new HashMap<Integer, String>();
+
     /** The has target. */
     private boolean                        hasTarget           = false;
 
@@ -366,5 +369,23 @@ public class SLQueryTextInternalInfo {
      */
     public void setTargetUniqueId( final String targetUniqueId ) {
         this.targetUniqueId = targetUniqueId;
+    }
+
+    /**
+     * Gets the strings constant.
+     * 
+     * @return the strings constant
+     */
+    public Map<Integer, String> getStringsConstant() {
+        return stringsConstant;
+    }
+
+    /**
+     * Sets the strings constant.
+     * 
+     * @param stringsConstant the strings constant
+     */
+    public void setStringsConstant( Map<Integer, String> stringsConstant ) {
+        this.stringsConstant = stringsConstant;
     }
 }

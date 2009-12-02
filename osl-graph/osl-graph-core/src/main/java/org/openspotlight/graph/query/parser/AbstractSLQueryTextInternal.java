@@ -81,6 +81,9 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     /** The variables. */
     protected Map<String, SLQLVariable> variables        = null;
 
+    /** The string constants. */
+    protected Map<Integer, String>      stringConstants  = null;
+
     /** The target query. */
     protected SLQueryTextInternal       targetQuery      = null;
 
@@ -100,14 +103,16 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      * @param variables the variables
      * @param outputModelName the output model name
      * @param target the target
+     * @param stringConstants the string constants
      */
     public AbstractSLQueryTextInternal(
                                         final String id, final Set<SLQLVariable> variables, final String outputModelName,
-                                        final SLQueryTextInternal target ) {
+                                        final SLQueryTextInternal target, final Map<Integer, String> stringConstants ) {
         Assertions.checkNotEmpty("id", id);
 
         this.id = id;
         this.target = target;
+        this.stringConstants = stringConstants;
 
         if (outputModelName != null && outputModelName.trim().length() > 0) {
             this.outputModelName = outputModelName;
@@ -195,6 +200,19 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     protected String getStringValue( final String variableName ) {
         if (this.variables.containsKey(variableName)) {
             return ((SLQLVariableString)this.variables.get(variableName)).getValue();
+        }
+        return "";
+    }
+
+    /**
+     * Returns the String content.
+     * 
+     * @param variableName the variable name
+     * @return the string value
+     */
+    protected String getStringValue( final int element ) {
+        if (this.stringConstants.containsKey(element)) {
+            return stringConstants.get(element);
         }
         return "";
     }
