@@ -24,7 +24,6 @@ public class ArtifactLoaderTest {
         final String initialRawPath = new File("../..").getCanonicalPath();
         final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
         final String finalStr = initialRawPath.substring(initial.length());
-
         final ArtifactSource source = new ArtifactSource();
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setFrom(finalStr);
@@ -43,10 +42,11 @@ public class ArtifactLoaderTest {
 
         final Iterable<Artifact> artifacts = loader.loadArtifactsFromSource(source);
         boolean hasAny = false;
+        
         for (final Artifact a : artifacts) {
             assertThat(a, is(notNullValue()));
-            assertThat(a.getArtifactCompleteName().startsWith(mapping.getTo()), is(true));
-            assertThat(a.getArtifactCompleteName().contains(mapping.getFrom()), is(false));
+            assertThat(a.getArtifactCompleteName().startsWith(mapping.getTo()+"/"), is(true));
+            assertThat(a.getArtifactCompleteName().contains(mapping.getFrom()+"/"), is(false));
             hasAny = true;
         }
         assertThat(hasAny, is(true));
