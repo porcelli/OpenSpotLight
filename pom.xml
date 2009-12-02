@@ -98,12 +98,12 @@
 				</configuration>
 			</plugin>
             <plugin> 
-                    <groupId>org.apache.maven.plugins</groupId> 
-                    <artifactId>maven-resources-plugin</artifactId> 
-                    <version>2.4.1</version> 
-                    <configuration> 
-                            <encoding>UTF-8</encoding> 
-                    </configuration> 
+                 <groupId>org.apache.maven.plugins</groupId> 
+                 <artifactId>maven-resources-plugin</artifactId> 
+                 <version>2.4.1</version> 
+                 <configuration> 
+                         <encoding>UTF-8</encoding> 
+                 </configuration> 
             </plugin> 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -683,6 +683,18 @@
 				<groupId>com.ibm.icu</groupId>
 				<artifactId>icu4j</artifactId>
 				<version>4.0.1</version>
+			</dependency>
+
+			<!-- Dependencies that are transient (JBoss IDM and Dynamo) - for now we keep this here -->
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>2.3.9</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>2.1.8</version>
 			</dependency>
 
 		</dependencies>
