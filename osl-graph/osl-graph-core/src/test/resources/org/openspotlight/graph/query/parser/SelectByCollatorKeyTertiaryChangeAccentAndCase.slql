@@ -1,5 +1,5 @@
 select **
 	where
 		org.openspotlight.graph.test.domain.JavaInterface
-			property caption == "java.util.ÇollécTION"
+			property caption == "java.util.√áoll√©cTION"
 	use collator level tertiary;
