@@ -20,7 +20,7 @@ public class SimpleTemplateTest {
 		template.setAttributeArray("detail.{text}", "line 3");
 		template.setAttributeArray("detail.{text}", "line 4");
 		template.setAttributeArray("detail.{text}", "line 5");
-		assertThat(template.toString(),
+		assertThat(template.toString().replaceAll("\r", ""),
 				is("line 1\nline 2\nline 3\nline 4\nline 5\n"));
 	}
 

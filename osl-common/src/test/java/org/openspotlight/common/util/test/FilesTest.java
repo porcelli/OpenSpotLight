@@ -116,8 +116,7 @@ public class FilesTest {
 	@Test
 	public void shouldListFileNamesInARecursiveWay() throws Exception {
 		final Set<String> fileNames = listFileNamesFrom(__LOWEST_PATH);
-		final String completePath = new File(__LOWEST_PATH + RELATIVE_PATH_FILE)
-				.getCanonicalPath();
+		String completePath = Files.getNormalizedFileName(new File(__LOWEST_PATH + RELATIVE_PATH_FILE));
 		assertThat(fileNames.contains(completePath), is(true));
 	}
 
