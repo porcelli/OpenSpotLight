@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
@@ -29,6 +30,22 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     }
 
     private ConsoleState state = null;
+
+    /***
+     * We love you Windows... Thanks for all the enjoyable moments we spend together...
+     */
+    @Before
+    public void deleteFile() {
+        File f = new File("out.txt");
+        while (f.exists()) {
+            f.delete();
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+    }
 
     @After
     public void deleteTestFile() {
