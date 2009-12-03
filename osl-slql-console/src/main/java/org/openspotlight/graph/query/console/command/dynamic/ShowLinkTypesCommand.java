@@ -46,89 +46,84 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query.console.command.system;
+package org.openspotlight.graph.query.console.command.dynamic;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import java.io.PrintWriter;
+import java.util.Collection;
 
-import org.junit.Test;
+import jline.ConsoleReader;
+
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLMetaLinkType;
 import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.AbstractCommandTest;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
-public class TestClearSystemCommand extends AbstractCommandTest {
+public class ShowLinkTypesCommand implements DynamicCommand {
 
-    @Override
-    protected void setupCommand() {
-        command = new ClearSystemCommand();
+    public boolean accept( ConsoleState state ) {
+        Assertions.checkNotNull("state", state);
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("show link types")) {
+            return true;
+        }
+        return false;
     }
 
-    @Test( expected = IllegalArgumentException.class )
-    public void testAcceptNull() {
-        assertThat(command.accept(null), is(false));
-    }
-
-    @Test( expected = IllegalArgumentException.class )
-    public void testExecuteNull() {
-        command.execute(null, null, null);
-    }
-
-    @Test
-    public void testAcceptNullInout() {
-        ConsoleState state = new ConsoleState(null);
+    public void execute( ConsoleReader reader,
+                         PrintWriter out,
+                         ConsoleState state ) {
+        Assertions.checkNotNull("reader", reader);
+        Assertions.checkNotNull("out", out);
+        Assertions.checkNotNull("state", state);
+        if (!accept(state)) {
+            return;
+        }
+        try {
+            out.println("link types:");
+            if (state.getSession() == null) {
+                out.println("\t(none)");
+            } else {
+                Collection<SLMetaLinkType> nodeTypes = state.getSession().getMetadata().getMetaLinkTypes();
+                if (nodeTypes.size() == 0) {
+                    out.println("\t(none)");
+                } else {
+                    for (SLMetaLinkType linkType : nodeTypes) {
+                        out.print("\t- ");
+                        out.println(linkType.getType().getName());
+                    }
+                }
+            }
+        } catch (SLGraphSessionException e) {
+            out.print("ERROR: ");
+            out.println(e.getMessage());
+        }
+        out.flush();
         state.setInput(null);
-
-        assertThat(command.accept(state), is(false));
+        state.clearBuffer();
     }
 
-    @Test
-    public void testAcceptValidParameter() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("clear");
-
-        assertThat(command.accept(state), is(true));
+    public String getAutoCompleteCommand() {
+        return "show link types";
     }
 
-    @Test
-    public void testAcceptValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("clear  ");
-
-        assertThat(command.accept(state), is(true));
+    public String getCommand() {
+        return "show link types";
     }
 
-    @Test
-    public void testAcceptInValidParameter() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("xxclear ");
-
-        assertThat(command.accept(state), is(false));
+    public String getDescription() {
+        return "display link types available";
     }
 
-    @Test
-    public void testAcceptInValidParameter2() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("add clear");
-
-        assertThat(command.accept(state), is(false));
+    public String getFileCompletionCommand() {
+        return null;
     }
 
-    @Test
-    public void testAcceptInValidParameter3() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("clear something");
-
-        assertThat(command.accept(state), is(false));
+    public FileCompletionMode getFileCompletionMode() {
+        return null;
     }
 
-    @Test
-    public void testValidParameter() {
-        ConsoleState state = new ConsoleState(null);
-        state.setInput("clear");
-        state.appendBuffer("something");
-
-        command.execute(reader, out, state);
-
-        assertThat(state.getBuffer().length(), is(0));
-        assertThat(state.getInput(), is(""));
+    public boolean hasFileCompletion() {
+        return false;
     }
+
 }
