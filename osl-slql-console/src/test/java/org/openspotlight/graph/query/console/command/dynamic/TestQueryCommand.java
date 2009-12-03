@@ -33,6 +33,9 @@ public class TestQueryCommand extends AbstractCommandTest {
 
     private ConsoleState state = null;
 
+    /***
+     * We love you Windows... Thanks for all the enjoyable moments we spend together...
+     */
     @Before
     public void deleteFile() {
         File f = new File("out.txt");
