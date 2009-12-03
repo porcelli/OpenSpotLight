@@ -116,6 +116,36 @@ import java.io.Serializable;
 
 @members {
 	private SLQueryTextInternalInfo queryInfo = new SLQueryTextInternalInfo();
+	private int stringCount = -1;
+	
+	private String formatUnicodeString(String input){
+		try {
+			StringBuilder sb = new StringBuilder();
+	        char[] testArray = input.toCharArray();
+	        int index = 0;
+	        while (true) {
+	            if (testArray.length >= index + 1 && testArray[index] == '\\' && testArray[index + 1] == 'u') {
+	                StringBuilder tsb = new StringBuilder();
+	                tsb.append(testArray[index + 2]);
+	                tsb.append(testArray[index + 3]);
+	                tsb.append(testArray[index + 4]);
+	                tsb.append(testArray[index + 5]);
+	                Integer intValue = Integer.parseInt(tsb.toString(), 16);
+	                sb.append(Character.toChars(intValue)[0]);
+	                index = index + 6;
+	            } else {
+	                sb.append(testArray[index]);
+	                index++;
+	            }
+	            if (index == testArray.length) {
+	                break;
+	            }
+	        }
+	        return sb.toString();
+	    } catch (Exception ex){
+			return input;
+		}
+	}
 }
 
 compilationUnit returns [SLQueryTextInternalInfo queryInfoReturn]
@@ -352,8 +382,10 @@ booleanValue returns [Object value]
 	;
 
 stringValue returns [Object value]
-	:	STRING		{$value = $STRING.text;}								-> stringValue(value={$STRING.text})
-	|	VAR_STRING	{queryInfo.getStringVariables().add($VAR_STRING.text);}	-> stringVariableValue(variableName={$VAR_STRING.text})
+	:	STRING		{$value = $STRING.text; stringCount++; queryInfo.getStringsConstant().put(stringCount, formatUnicodeString($STRING.text.substring(1, $STRING.text.length() - 1)));}
+				-> stringValue(value={stringCount})
+	|	VAR_STRING	{queryInfo.getStringVariables().add($VAR_STRING.text);}
+				-> stringVariableValue(variableName={$VAR_STRING.text})
 	;
 
 numericValue returns [Object value]
