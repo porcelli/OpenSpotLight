@@ -300,6 +300,11 @@
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>1.4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.jboss.dna</groupId>
 				<artifactId>dna-connector-svn</artifactId>
 				<version>0.6</version>

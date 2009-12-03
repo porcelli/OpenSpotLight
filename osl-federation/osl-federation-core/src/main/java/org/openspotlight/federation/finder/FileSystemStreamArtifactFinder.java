@@ -81,7 +81,7 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
             }
             final String location = MessageFormat.format("{0}/{1}", this.artifactSource.getInitialLookup(), newPath);
 
-            final String pathToRemove = new File(this.artifactSource.getInitialLookup()).getCanonicalPath();
+            final String pathToRemove = Files.getNormalizedFileName(new File(this.artifactSource.getInitialLookup()));
 
             final Set<String> pathList = Files.listFileNamesFrom(location);
 
