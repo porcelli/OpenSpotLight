@@ -22,10 +22,10 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- External dependencies -->
-        <dependency>
-            <groupId>org.jboss.dna</groupId>
-            <artifactId>dna-connector-svn</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.jboss.dna</groupId>
+			<artifactId>dna-connector-svn</artifactId>
+		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -42,5 +42,10 @@
 			<artifactId>hamcrest-library</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.tmatesoft.svnkit</groupId>
+			<artifactId>svnkit</artifactId>
+		</dependency>
+
 	</dependencies>
 </project>
