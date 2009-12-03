@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query.console.command.system;
+package org.openspotlight.graph.query.console.command.dynamic;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -55,11 +55,11 @@ import org.junit.Test;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 
-public class TestClearSystemCommand extends AbstractCommandTest {
+public class TestShowLinkTypesCommand extends AbstractCommandTest {
 
     @Override
     protected void setupCommand() {
-        command = new ClearSystemCommand();
+        command = new ShowLinkTypesCommand();
     }
 
     @Test( expected = IllegalArgumentException.class )
@@ -83,7 +83,7 @@ public class TestClearSystemCommand extends AbstractCommandTest {
     @Test
     public void testAcceptValidParameter() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("clear");
+        state.setInput("show link types");
 
         assertThat(command.accept(state), is(true));
     }
@@ -91,7 +91,7 @@ public class TestClearSystemCommand extends AbstractCommandTest {
     @Test
     public void testAcceptValidParameter2() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("clear  ");
+        state.setInput("show link types  ");
 
         assertThat(command.accept(state), is(true));
     }
@@ -99,7 +99,7 @@ public class TestClearSystemCommand extends AbstractCommandTest {
     @Test
     public void testAcceptInValidParameter() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("xxclear ");
+        state.setInput("xxshow link types");
 
         assertThat(command.accept(state), is(false));
     }
@@ -107,7 +107,7 @@ public class TestClearSystemCommand extends AbstractCommandTest {
     @Test
     public void testAcceptInValidParameter2() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("add clear");
+        state.setInput("add property");
 
         assertThat(command.accept(state), is(false));
     }
@@ -115,7 +115,15 @@ public class TestClearSystemCommand extends AbstractCommandTest {
     @Test
     public void testAcceptInValidParameter3() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("clear something");
+        state.setInput("display property");
+
+        assertThat(command.accept(state), is(false));
+    }
+
+    @Test
+    public void testAcceptInValidParameter4() {
+        ConsoleState state = new ConsoleState(null);
+        state.setInput("show link types ?");
 
         assertThat(command.accept(state), is(false));
     }
@@ -123,7 +131,7 @@ public class TestClearSystemCommand extends AbstractCommandTest {
     @Test
     public void testValidParameter() {
         ConsoleState state = new ConsoleState(null);
-        state.setInput("clear");
+        state.setInput("show link types");
         state.appendBuffer("something");
 
         command.execute(reader, out, state);
