@@ -2,11 +2,13 @@ package org.openspotlight.federation.domain;
 
 import java.util.List;
 
+import org.openspotlight.common.Disposable;
+import org.openspotlight.persist.annotation.SimpleNodeType;
+
 /**
  * The Interface Schedulable.
  */
-public interface Schedulable {
-
+public interface Schedulable extends SimpleNodeType {
 	/**
 	 * The Interface SchedulableCommand.
 	 */
@@ -18,7 +20,11 @@ public interface Schedulable {
 		 * @param schedulable
 		 *            the schedulable
 		 */
-		public void execute(S schedulable);
+		public void execute(SchedulableContext ctx, S schedulable);
+	}
+
+	public static interface SchedulableContext extends Disposable {
+		// FIXME add entries
 	}
 
 	/**
@@ -29,5 +35,15 @@ public interface Schedulable {
 	 * @return the cron information
 	 */
 	public List<String> getCronInformation();
+
+	public void setSchedulableContext(SchedulableContext ctx);
+
+	/**
+	 * This string should return an unique identifier for this job to be used
+	 * inside the scheduler.
+	 * 
+	 * @return
+	 */
+	public String toUniqueJobString();
 
 }
