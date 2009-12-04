@@ -36,8 +36,6 @@ public interface Schedulable extends SimpleNodeType {
 	 */
 	public List<String> getCronInformation();
 
-	public void setSchedulableContext(SchedulableContext ctx);
-
 	/**
 	 * This string should return an unique identifier for this job to be used
 	 * inside the scheduler.
