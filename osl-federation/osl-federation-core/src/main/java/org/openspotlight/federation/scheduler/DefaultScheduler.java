@@ -34,7 +34,7 @@ import org.quartz.impl.StdSchedulerFactory;
 public enum DefaultScheduler implements SLScheduler {
 	INSTANCE;
 
-	static class OslCommand {
+	public static class OslInternalSchedulerCommand {
 
 		private final String jobName;
 
@@ -46,7 +46,7 @@ public enum DefaultScheduler implements SLScheduler {
 
 		private final SchedulableContextFactory factory;
 
-		public OslCommand(final Schedulable schedulable,
+		public OslInternalSchedulerCommand(final Schedulable schedulable,
 				final Class<? extends SchedulableCommand> commandType,
 				final SchedulableContextFactory factory,
 				final String cronInformation) {
@@ -88,7 +88,7 @@ public enum DefaultScheduler implements SLScheduler {
 
 	}
 
-	private static class RepositorySet implements SimpleNodeType {
+	public static class RepositorySet implements SimpleNodeType {
 
 		private Set<Repository> repositories;
 
@@ -117,9 +117,9 @@ public enum DefaultScheduler implements SLScheduler {
 
 	}
 
-	private final ConcurrentHashMap<String, OslCommand> oslCronCommands = new ConcurrentHashMap<String, OslCommand>();
+	private final ConcurrentHashMap<String, OslInternalSchedulerCommand> oslCronCommands = new ConcurrentHashMap<String, OslInternalSchedulerCommand>();
 
-	private final ConcurrentHashMap<String, OslCommand> oslImmediateCommands = new ConcurrentHashMap<String, OslCommand>();
+	private final ConcurrentHashMap<String, OslInternalSchedulerCommand> oslImmediateCommands = new ConcurrentHashMap<String, OslInternalSchedulerCommand>();
 
 	private static String DEFAULT_GROUP = "osl jobs";
 
@@ -151,21 +151,23 @@ public enum DefaultScheduler implements SLScheduler {
 			Assertions.checkNotNull("commandType:" + schedulable.getClass(),
 					commandType);
 
-			final OslCommand command = new OslCommand(schedulable, commandType,
-					getContextFactory(), IMMEDIATE);
+			final OslInternalSchedulerCommand command = new OslInternalSchedulerCommand(
+					schedulable, commandType, getContextFactory(), IMMEDIATE);
 			oslImmediateCommands.put(command.getUniqueName(), command);
-			final Date runTime = TriggerUtils.getEvenMinuteDate(new Date());
+			final Date runTime = TriggerUtils.getNextGivenSecondDate(
+					new Date(), 10);
 			final JobDetail job = new JobDetail(command.getUniqueName(),
 					DEFAULT_GROUP, OslQuartzJob.class);
-			new SimpleTrigger(command.getUniqueName(), DEFAULT_GROUP, runTime);
-			quartzScheduler.addJob(job, true);
+			final SimpleTrigger trigger = new SimpleTrigger(command
+					.getUniqueName(), DEFAULT_GROUP, runTime);
+			quartzScheduler.scheduleJob(job, trigger);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
-	OslCommand getCommandByName(final String name) {
-		OslCommand command = oslCronCommands.get(name);
+	OslInternalSchedulerCommand getCommandByName(final String name) {
+		OslInternalSchedulerCommand command = oslCronCommands.get(name);
 		if (command == null) {
 			command = oslImmediateCommands.get(name);
 		}
@@ -176,7 +178,7 @@ public enum DefaultScheduler implements SLScheduler {
 		return contextFactory.get();
 	}
 
-	private Map<String, OslCommand> groupJobsByCronInformation(
+	private Map<String, OslInternalSchedulerCommand> groupJobsByCronInformation(
 			final GlobalSettings settings, final Set<Repository> repositories) {
 		final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> commandMap = settings
 				.getSchedulableCommandMap();
@@ -187,15 +189,18 @@ public enum DefaultScheduler implements SLScheduler {
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(Schedulable.class,
 				repositorySet, visitor);
 		final List<Schedulable> schedulableList = visitor.getBeans();
-		final Map<String, OslCommand> newJobs = new HashMap<String, OslCommand>();
+		final Map<String, OslInternalSchedulerCommand> newJobs = new HashMap<String, OslInternalSchedulerCommand>();
 		for (final Schedulable s : schedulableList) {
 			for (final String cronInformation : s.getCronInformation()) {
-				final Class<? extends SchedulableCommand> commandType = commandMap
-						.get(s);
+
+				final Class<? extends SchedulableCommand> commandType = settings
+						.getSchedulableCommandMap().get(s.getClass());
+
 				Assertions.checkNotNull("commandType:" + s.getClass(),
 						commandType);
-				final OslCommand job = new OslCommand(s, commandType,
-						getContextFactory(), cronInformation);
+
+				final OslInternalSchedulerCommand job = new OslInternalSchedulerCommand(
+						s, commandType, getContextFactory(), cronInformation);
 				newJobs.put(job.getUniqueName(), job);
 			}
 		}
@@ -208,7 +213,7 @@ public enum DefaultScheduler implements SLScheduler {
 		Assertions.checkNotNull("repositories", repositories);
 		Assertions.checkNotNull("contextFactory", contextFactory.get());
 		this.settings.set(settings);
-		final Map<String, OslCommand> jobMap = groupJobsByCronInformation(
+		final Map<String, OslInternalSchedulerCommand> jobMap = groupJobsByCronInformation(
 				settings, repositories);
 		oslCronCommands.clear();
 		oslCronCommands.putAll(jobMap);
@@ -220,19 +225,19 @@ public enum DefaultScheduler implements SLScheduler {
 
 			jobsToRemove.removeAll(newJobNames);
 			for (final String jobToRemove : jobsToRemove) {
-				quartzScheduler.deleteJob(DEFAULT_GROUP, jobToRemove);
+				quartzScheduler.deleteJob(jobToRemove, DEFAULT_GROUP);
 			}
 			for (final String newJob : newJobNames) {
-				final OslCommand command = jobMap.get(newJob);
+				final OslInternalSchedulerCommand command = jobMap.get(newJob);
 				final JobDetail job = new JobDetail(command.getUniqueName(),
 						DEFAULT_GROUP, OslQuartzJob.class);
-				new CronTrigger(command.getUniqueName(), DEFAULT_GROUP, command
+				final CronTrigger trigger = new CronTrigger(command
+						.getUniqueName(), DEFAULT_GROUP, command
 						.getUniqueName(), DEFAULT_GROUP, command
 						.getCronInformation());
-				quartzScheduler.addJob(job, true);
+				quartzScheduler.scheduleJob(job, trigger);
 
 			}
-
 		} catch (final Exception e) {
 			stopScheduler();
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -240,7 +245,8 @@ public enum DefaultScheduler implements SLScheduler {
 
 	}
 
-	public void removeIfImediate(final OslCommand command) {
+	public void removeIfImediate(final OslInternalSchedulerCommand command) {
+		Assertions.checkNotNull("command", command);
 		if (IMMEDIATE.equals(command.getCronInformation())) {
 			oslImmediateCommands.remove(command.getUniqueName());
 		}
