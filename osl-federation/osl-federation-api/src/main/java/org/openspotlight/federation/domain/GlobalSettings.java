@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
-import org.openspotlight.federation.scheduler.ArtifactSourceSchedulable;
-import org.openspotlight.federation.scheduler.GroupSchedulable;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
@@ -32,9 +30,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 	private String systemPassword;
 
 	public GlobalSettings() {
-		schedulableCommandMap.put(Group.class, GroupSchedulable.class);
-		schedulableCommandMap.put(ArtifactSource.class,
-				ArtifactSourceSchedulable.class);
 	}
 
 	public long getDefaultSleepingIntervalInMilliseconds() {
