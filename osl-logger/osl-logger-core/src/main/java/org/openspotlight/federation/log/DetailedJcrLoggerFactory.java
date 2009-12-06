@@ -10,7 +10,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
-import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
@@ -31,105 +30,11 @@ import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.support.SimplePersistSupport;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
  * The Factory used to create {@link DetailedLogger}.
  */
 public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
-	/**
-	 * The JcrDetailedLogger is an implementation of {@link DetailedLogger}
-	 * based on Jcr. This kind of logger was implemented 'by hand' instead of
-	 * using {@link SLNode} or {@link ConfigurationNode} by a simple reason.
-	 * Should not be possible to log the log. If it's necessary this
-	 * implementation could be changed on the future.
-	 */
-	private static final class JcrDetailedLogger implements DetailedLogger {
-
-		/** The session. */
-		private final Session session;
-
-		public JcrDetailedLogger(final Session session) {
-			this.session = session;
-		}
-
-		public void log(final AuthenticatedUser user, final LogEventType type,
-				final ErrorCode errorCode, final String detailedMessage,
-				final LogableObject... anotherNodes) {
-
-		}
-
-		public void log(final AuthenticatedUser user, final LogEventType type,
-				final ErrorCode errorCode, final String message,
-				final String detailedMessage,
-				final LogableObject... anotherNodes) {
-			this.log(user, null, type, errorCode, message, detailedMessage,
-					anotherNodes);
-
-		}
-
-		public void log(final AuthenticatedUser user, final LogEventType type,
-				final String message, final LogableObject... anotherNodes) {
-			this.log(user, null, type, null, message, null, anotherNodes);
-
-		}
-
-		public void log(final AuthenticatedUser user, final LogEventType type,
-				final String message, final String detailedMessage,
-				final LogableObject... anotherNodes) {
-			this.log(user, null, type, null, message, detailedMessage,
-					anotherNodes);
-
-		}
-
-		public void log(final AuthenticatedUser user, final String repository,
-				final LogEventType type, final ErrorCode errorCode,
-				final String detailedMessage,
-				final LogableObject... anotherNodes) {
-			this.log(user, repository, type, errorCode, null, detailedMessage,
-					anotherNodes);
-
-		}
-
-		public void log(final AuthenticatedUser user, final String repository,
-				final LogEventType type, final ErrorCode errorCode,
-				final String message, final String detailedMessage,
-				final LogableObject... anotherNodes) {
-			final LogEntry entry = new LogEntry(errorCode, new Date(), type,
-					message, detailedMessage, LoggedObjectInformation
-							.getHierarchyFrom(anotherNodes));
-
-			final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME
-					+ "/" + (repository != null ? repository : "noRepository")
-					+ "/" + (user != null ? user.getId() : "noUser") + "/log";
-			SimplePersistSupport.convertBeanToJcr(initialPath, this.session,
-					entry);
-			try {
-				 this.session.save();
-			} catch (final Exception e) {
-				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-			}
-
-		}
-
-		public void log(final AuthenticatedUser user, final String repository,
-				final LogEventType type, final String message,
-				final LogableObject... anotherNodes) {
-			this.log(user, repository, type, null, message, null, anotherNodes);
-
-		}
-
-		public void log(final AuthenticatedUser user, final String repository,
-				final LogEventType type, final String message,
-				final String detailedMessage,
-				final LogableObject... anotherNodes) {
-			this.log(user, repository, type, null, message, detailedMessage,
-					anotherNodes);
-		}
-
-	}
-
 	/**
 	 * The Class LogEntry is used to represent a new log entry.
 	 */
@@ -186,7 +91,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 			this.detailedMessage = detailedMessage;
 			this.nodes = Collections.unmodifiableList(nodes);
 			this.date = date;
-			this.hashCode = HashCodes
+			hashCode = HashCodes
 					.hashOf(this.type, this.message, this.detailedMessage,
 							this.nodes, this.date, this.errorCode);
 		}
@@ -205,11 +110,10 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 				return false;
 			}
 			final LogEntry that = (LogEntry) obj;
-			return Equals.eachEquality(Arrays
-					.of(this.type, this.message, this.detailedMessage,
-							this.nodes, this.date, this.errorCode), Arrays
-					.andOf(that.type, that.message, that.detailedMessage,
-							that.nodes, that.date, that.errorCode));
+			return Equals.eachEquality(Arrays.of(type, message,
+					detailedMessage, nodes, date, errorCode), Arrays.andOf(
+					that.type, that.message, that.detailedMessage, that.nodes,
+					that.date, that.errorCode));
 		}
 
 		/**
@@ -219,7 +123,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public Date getDate() {
-			return this.date;
+			return date;
 		}
 
 		/**
@@ -229,11 +133,11 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public String getDetailedMessage() {
-			return this.detailedMessage;
+			return detailedMessage;
 		}
 
 		public ErrorCode getErrorCode() {
-			return this.errorCode;
+			return errorCode;
 		}
 
 		/**
@@ -243,7 +147,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public String getMessage() {
-			return this.message;
+			return message;
 		}
 
 		/**
@@ -252,7 +156,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 * @return the nodes
 		 */
 		public List<LoggedObjectInformation> getNodes() {
-			return this.nodes;
+			return nodes;
 		}
 
 		/**
@@ -262,7 +166,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public LogEventType getType() {
-			return this.type;
+			return type;
 		}
 
 		/*
@@ -272,7 +176,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@Override
 		public int hashCode() {
-			return this.hashCode;
+			return hashCode;
 		}
 
 		public void setDate(final Date date) {
@@ -363,7 +267,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 				}
 			} else {
 				return null;// other types have the path information. Now the
-							// parent nodes isn't necessary
+				// parent nodes isn't necessary
 			}
 		}
 
@@ -394,29 +298,29 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 			if (object instanceof SLNode) {
 				final SLNode node = (SLNode) object;
 				try {
-					this.uniqueId = node.getID();
+					uniqueId = node.getID();
 				} catch (final SLGraphSessionException e) {
 					throw Exceptions.logAndReturnNew(e,
 							SLRuntimeException.class);
 				}
-				this.friendlyDescription = node.toString();
-				this.className = node.getClass().getInterfaces()[0].getName();
+				friendlyDescription = node.toString();
+				className = node.getClass().getInterfaces()[0].getName();
 			} else if (object instanceof ArtifactSource) {
 				final ArtifactSource node = (ArtifactSource) object;
-				this.friendlyDescription = node.getName();
-				this.className = node.getClass().getName();
-				this.uniqueId = null;
+				friendlyDescription = node.getName();
+				className = node.getClass().getName();
+				uniqueId = null;
 			} else if (object instanceof Artifact) {
 				final Artifact node = (Artifact) object;
-				this.friendlyDescription = node.getArtifactCompleteName();
-				this.className = node.getClass().getName();
-				this.uniqueId = null;
+				friendlyDescription = node.getArtifactCompleteName();
+				className = node.getClass().getName();
+				uniqueId = null;
 			} else {
 				throw Exceptions.logAndReturn(new IllegalArgumentException());
 			}
-			Assertions.checkNotEmpty("friendlyDescription",
-					this.friendlyDescription);
-			Assertions.checkNotEmpty("className", this.className);
+			Assertions
+					.checkNotEmpty("friendlyDescription", friendlyDescription);
+			Assertions.checkNotEmpty("className", className);
 		}
 
 		/**
@@ -445,7 +349,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		}
 
 		public String getClassName() {
-			return this.className;
+			return className;
 		}
 
 		/**
@@ -455,7 +359,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public String getFriendlyDescription() {
-			return this.friendlyDescription;
+			return friendlyDescription;
 		}
 
 		/**
@@ -465,7 +369,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public int getOrder() {
-			return this.order;
+			return order;
 		}
 
 		/**
@@ -475,7 +379,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public String getTypeName() {
-			return this.className;
+			return className;
 		}
 
 		/**
@@ -485,7 +389,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 		 */
 		@KeyProperty
 		public String getUniqueId() {
-			return this.uniqueId;
+			return uniqueId;
 		}
 
 		public void setClassName(final String className) {
@@ -511,11 +415,11 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 	private final CopyOnWriteArrayList<Session> oppenedSessions = new CopyOnWriteArrayList<Session>();
 
 	public DetailedJcrLoggerFactory(final JcrConnectionDescriptor descriptor) {
-		this.provider = JcrConnectionProvider.createFromData(descriptor);
+		provider = JcrConnectionProvider.createFromData(descriptor);
 	}
 
 	public void closeResources() {
-		for (final Session session : this.oppenedSessions) {
+		for (final Session session : oppenedSessions) {
 			session.logout();
 		}
 
@@ -529,8 +433,8 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 	 * @return the detailed logger
 	 */
 	public DetailedLogger createNewLogger() {
-		final Session session = this.provider.openSession();
-		this.oppenedSessions.add(session);
+		final Session session = provider.openSession();
+		oppenedSessions.add(session);
 		return new JcrDetailedLogger(session);
 	}
 
