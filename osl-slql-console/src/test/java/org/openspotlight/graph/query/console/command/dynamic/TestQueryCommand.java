@@ -68,15 +68,12 @@ import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.GraphConnection;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData;
-import org.openspotlight.graph.server.RemoteGraphSessionServer;
 
 public class TestQueryCommand extends AbstractCommandTest {
 
-    private static RemoteGraphSessionServer remoteObjectServer;
-
     @BeforeClass
     public static void setupServer() throws Exception {
-        remoteObjectServer = ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
+        ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
     }
 
     private ConsoleState state = null;
