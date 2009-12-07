@@ -137,7 +137,7 @@ public class SLGraphTest {
 	public static void init() throws AbstractFactoryException,
 			SLInvalidCredentialException, IdentityException {
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 		final SLGraphFactory factory = AbstractFactory
 				.getDefaultInstance(SLGraphFactory.class);
 		graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);

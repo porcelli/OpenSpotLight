@@ -102,7 +102,7 @@ public class RemoteGraphSessionServer {
 			graph.shutdown();
 			final JcrConnectionProvider provider = JcrConnectionProvider
 					.createFromData(descriptor);
-			provider.closeRepository();
+			provider.closeRepositoryAndCleanResources();
 
 		}
 	}

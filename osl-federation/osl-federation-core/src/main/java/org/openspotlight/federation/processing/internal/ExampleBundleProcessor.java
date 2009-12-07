@@ -3,6 +3,7 @@ package org.openspotlight.federation.processing.internal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.StreamArtifact;
@@ -25,7 +26,7 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 	}
 
 	public void beforeProcessArtifact(final StreamArtifact artifact) {
-		this.logger.info("starting to process " + artifact);
+		logger.info("starting to process " + artifact);
 	}
 
 	public void didFinishProcessing(
@@ -37,7 +38,7 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 			final LastProcessStatus status) {
 		ExampleBundleProcessor.allStatus.add(status);
 
-		this.logger.info("processed " + artifact);
+		logger.info("processed " + artifact);
 	}
 
 	public Class<StreamArtifact> getArtifactType() {
@@ -50,9 +51,9 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 
 	public LastProcessStatus processArtifact(final StreamArtifact artifact,
 			final CurrentProcessorContext currentContext,
-			final BundleProcessorContext context) throws Exception {
-		context.getLogger().log(context.getAuthenticatedUser(),
-				LogEventType.DEBUG, "another test", artifact);
+			final ExecutionContext context) throws Exception {
+		context.getLogger().log(context.getUser(), LogEventType.DEBUG,
+				"another test", artifact);
 		for (int i = 0; i < 100; i++) {
 			final SLNode node = currentContext.getCurrentNodeGroup().addNode(
 					artifact.getArtifactCompleteName() + "i");
@@ -66,7 +67,7 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 
 	public void selectArtifactsToBeProcessed(
 			final CurrentProcessorContext currentContext,
-			final BundleProcessorContext context,
+			final ExecutionContext context,
 			final ArtifactChanges<StreamArtifact> changes,
 			final ArtifactsToBeProcessed<StreamArtifact> toBeReturned) {
 

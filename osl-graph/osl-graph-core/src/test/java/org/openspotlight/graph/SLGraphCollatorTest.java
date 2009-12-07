@@ -45,7 +45,7 @@ public class SLGraphCollatorTest {
 			SLInvalidCredentialException, IdentityException {
 
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
 		final SLGraphFactory factory = AbstractFactory
 				.getDefaultInstance(SLGraphFactory.class);

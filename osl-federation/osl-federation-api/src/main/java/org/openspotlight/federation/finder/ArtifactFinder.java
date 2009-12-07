@@ -11,41 +11,50 @@ import org.openspotlight.federation.domain.Artifact;
  */
 public interface ArtifactFinder<A extends Artifact> extends Disposable {
 
-    /**
-     * Find by path.
-     * 
-     * @param path the path
-     * @param artifactSource the artifact source
-     * @return the stream artifact
-     */
-    public A findByPath( String path );
+	/**
+	 * Find by path.
+	 * 
+	 * @param path
+	 *            the path
+	 * @param artifactSource
+	 *            the artifact source
+	 * @return the stream artifact
+	 */
+	public A findByPath(String path);
 
-    /**
-     * Find by relative path.
-     * 
-     * @param relativeTo the relative to
-     * @param path the path
-     * @param artifactSource the artifact source
-     * @return the stream artifact
-     */
-    public A findByRelativePath( A relativeTo,
-                                 String path );
+	/**
+	 * Find by relative path.
+	 * 
+	 * @param relativeTo
+	 *            the relative to
+	 * @param path
+	 *            the path
+	 * @param artifactSource
+	 *            the artifact source
+	 * @return the stream artifact
+	 */
+	public A findByRelativePath(A relativeTo, String path);
 
-    /**
-     * List by path.
-     * 
-     * @param path the path
-     * @param artifactSource the artifact source
-     * @return the set< stream artifact>
-     */
-    public Set<A> listByPath( String path );
+	public String getCurrentRepository();
 
-    /**
-     * Retrieve all artifact names.
-     * 
-     * @param artifactSource the artifact source
-     * @return the set< string>
-     */
-    public Set<String> retrieveAllArtifactNames( String initialPath );
+	/**
+	 * List by path.
+	 * 
+	 * @param path
+	 *            the path
+	 * @param artifactSource
+	 *            the artifact source
+	 * @return the set< stream artifact>
+	 */
+	public Set<A> listByPath(String path);
+
+	/**
+	 * Retrieve all artifact names.
+	 * 
+	 * @param artifactSource
+	 *            the artifact source
+	 * @return the set< string>
+	 */
+	public Set<String> retrieveAllArtifactNames(String initialPath);
 
 }

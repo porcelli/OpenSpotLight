@@ -221,7 +221,7 @@ public abstract class AbstractMethodResolutionTest {
 	public void setupGraphSession() throws Exception {
 
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
 		// FIXME this == null should be removed -> NOT I CAN'T OPEN ONE SESSION
 		// PER METHOD EXECUTION!!

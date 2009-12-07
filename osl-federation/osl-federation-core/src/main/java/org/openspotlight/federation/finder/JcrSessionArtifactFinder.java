@@ -49,6 +49,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 
 	private JcrSessionArtifactFinder(final Class<A> artifactType,
 			final Session session, final Repository repository) {
+		super(repository.getName());
 		Assertions.checkCondition("sessionAlive", session.isLive());
 		this.session = session;
 		this.artifactType = artifactType;
@@ -65,7 +66,15 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 
 	}
 
-	public A findByPath(final String path) {
+	public Class<A> getArtifactType() {
+		return this.artifactType;
+	}
+
+	public Class<? extends ArtifactSource> getSourceType() {
+		return null;
+	}
+
+	protected A internalFindByPath(final String path) {
 		Assertions.checkNotEmpty("path", path);
 		try {
 			final Set<A> found = SimplePersistSupport.findNodesByProperties(
@@ -85,15 +94,8 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 		}
 	}
 
-	public Class<A> getArtifactType() {
-		return this.artifactType;
-	}
-
-	public Class<? extends ArtifactSource> getSourceType() {
-		return null;
-	}
-
-	public Set<String> retrieveAllArtifactNames(final String initialPath) {
+	protected Set<String> internalRetrieveAllArtifactNames(
+			final String initialPath) {
 		try {
 			final String propertyName = MessageFormat
 					.format(SimplePersistSupport.PROPERTY_VALUE,
@@ -130,7 +132,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 	}
 
 	public void save(final A artifactToSave) {
-
+		artifactToSave.setRepositoryName(getCurrentRepository());
 		SimplePersistSupport.convertBeanToJcr(this.rootPath, this.session,
 				artifactToSave);
 	}

@@ -1,7 +1,7 @@
 package org.openspotlight.federation.processing.internal;
 
-import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
+import org.openspotlight.federation.context.ExecutionContext;
 
 public interface RunnableWithBundleContext extends Runnable {
-    public void setBundleContext( BundleProcessorContextImpl context );
+	public void setBundleContext(ExecutionContext context);
 }
