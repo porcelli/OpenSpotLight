@@ -9,7 +9,7 @@ import org.openspotlight.remote.server.test.RemoteObjectFactoryTest.AllowUserVal
 public class ShutdownAndRestartTheServerSeveralTimes {
 
     @Test
-    public void ShutdownAndRestartTheServerSeveralTimes() throws Exception {
+    public void shutdownAndRestartTheServerSeveralTimes() throws Exception {
 
         RemoteObjectServer server = RemoteObjectServerImpl.getDefault(new AllowUserValidAutenticator(), 7070, 250L);
         server.registerInternalObjectFactory(ExampleInterface.class, new ExampleInterfaceFactory());

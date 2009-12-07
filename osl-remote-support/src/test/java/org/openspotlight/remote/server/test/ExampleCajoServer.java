@@ -5,6 +5,7 @@ import gnu.cajo.utils.ItemServer;
 
 public class ExampleCajoServer {
 
+    @SuppressWarnings( "static-access" )
     public static void main( final String... args ) throws Exception {
         startServer();
         while (true) {
