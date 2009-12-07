@@ -11,6 +11,7 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.finder.ArtifactTypeRegistry;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -18,191 +19,225 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 // TODO: Auto-generated Javadoc
 /**
- * This is the {@link Artifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
- * {@link Artifact} based on another one. Please register any non-abstract implementation of Artifact subclass on
- * {@link ArtifactTypeRegistry}, so the bundle processor manager should load this classes.
+ * This is the {@link Artifact} class 'on steroids'. It has a lot of
+ * {@link PathElement path elements} used to locate a new {@link Artifact} based
+ * on another one. Please register any non-abstract implementation of Artifact
+ * subclass on {@link ArtifactTypeRegistry}, so the bundle processor manager
+ * should load this classes.
  */
-public abstract class Artifact implements SimpleNodeType, Serializable, LogableObject {
+public abstract class Artifact implements SimpleNodeType, Serializable,
+		LogableObject {
 
-    private static final long serialVersionUID  = 372692540369995072L;
+	/**
+	 * Creates the new artifact.
+	 * 
+	 * @param artifactCompletePath
+	 *            the artifact complete path
+	 * @param changeType
+	 *            the change type
+	 * @param artifactType
+	 *            the artifact type
+	 * @return the stream artifact
+	 */
+	public static <A extends Artifact> A createArtifact(
+			final Class<A> artifactType, final String artifactCompletePath,
+			final ChangeType changeType) {
 
-    private LastProcessStatus lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
+		try {
+			final String internalArtifactName = artifactCompletePath
+					.substring(artifactCompletePath.lastIndexOf('/') + 1);
+			final String path = artifactCompletePath.substring(0,
+					artifactCompletePath.length()
+							- internalArtifactName.length());
+			final PathElement pathElement = PathElement
+					.createFromPathString(path);
+			final A artifact = artifactType.newInstance();
 
-    private Date              lastProcessedDate;
+			artifact.setArtifactName(internalArtifactName);
+			artifact.setChangeType(changeType);
+			artifact.setParent(pathElement);
+			return artifact;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 
-    /** The Constant SEPARATOR. */
-    final static String       SEPARATOR         = "/";
+	private String repositoryName;
 
-    /**
-     * Creates the new artifact.
-     * 
-     * @param artifactCompletePath the artifact complete path
-     * @param changeType the change type
-     * @param artifactType the artifact type
-     * @return the stream artifact
-     */
-    public static <A extends Artifact> A createArtifact( final Class<A> artifactType,
-                                                         final String artifactCompletePath,
-                                                         final ChangeType changeType ) {
+	private static final long serialVersionUID = 372692540369995072L;
 
-        try {
-            final String internalArtifactName = artifactCompletePath.substring(artifactCompletePath.lastIndexOf('/') + 1);
-            final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
-            final PathElement pathElement = PathElement.createFromPathString(path);
-            final A artifact = artifactType.newInstance();
+	private LastProcessStatus lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
 
-            artifact.setArtifactName(internalArtifactName);
-            artifact.setChangeType(changeType);
-            artifact.setParent(pathElement);
-            return artifact;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+	private Date lastProcessedDate;
 
-    /** The artifact name. */
-    private String          artifactName;
+	/** The Constant SEPARATOR. */
+	final static String SEPARATOR = "/";
 
-    /** The artifact complete name. */
-    private volatile String artifactCompleteName;
+	/** The artifact name. */
+	private String artifactName;
 
-    /** The change type. */
-    private ChangeType      changeType;
+	/** The artifact complete name. */
+	private volatile String artifactCompleteName;
 
-    /** The parent. */
-    private PathElement     parent;
+	/** The change type. */
+	private ChangeType changeType;
 
-    /** The hashcode. */
-    private volatile int    hashcode;
+	/** The parent. */
+	private PathElement parent;
 
-    /**
-     * Content equals.
-     * 
-     * @param other the other
-     * @return true, if successful
-     */
-    public abstract boolean contentEquals( Artifact other );
+	/** The hashcode. */
+	private volatile int hashcode;
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals( final Object o ) {
-        if (!(o instanceof Artifact)) {
-            return false;
-        }
-        final Artifact that = (Artifact)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.getClass(), this.parent, this.artifactName, this.changeType),
-                                                   Arrays.andOf(that.getClass(), that.parent, that.artifactName, that.changeType));
-        return result;
-    }
+	/**
+	 * Content equals.
+	 * 
+	 * @param other
+	 *            the other
+	 * @return true, if successful
+	 */
+	public abstract boolean contentEquals(Artifact other);
 
-    /**
-     * Gets the artifact complete name.
-     * 
-     * @return the artifact complete name
-     */
-    public String getArtifactCompleteName() {
-        String result = this.artifactCompleteName;
-        if (result == null) {
-            if (this.parent != null && this.artifactName != null) {
-                result = this.parent.getCompletePath() + SEPARATOR + this.artifactName;
-                this.artifactCompleteName = result;
-            }
-        }
-        return result;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof Artifact)) {
+			return false;
+		}
+		final Artifact that = (Artifact) o;
+		final boolean result = Equals.eachEquality(Arrays.of(this.getClass(),
+				parent, artifactName, changeType), Arrays.andOf(
+				that.getClass(), that.parent, that.artifactName,
+				that.changeType));
+		return result;
+	}
 
-    /**
-     * Gets the artifact name.
-     * 
-     * @return the artifact name
-     */
-    @KeyProperty
-    public String getArtifactName() {
-        return this.artifactName;
-    }
+	/**
+	 * Gets the artifact complete name.
+	 * 
+	 * @return the artifact complete name
+	 */
+	public String getArtifactCompleteName() {
+		String result = artifactCompleteName;
+		if (result == null) {
+			if (parent != null && artifactName != null) {
+				result = parent.getCompletePath() + SEPARATOR + artifactName;
+				artifactCompleteName = result;
+			}
+		}
+		return result;
+	}
 
-    /**
-     * Gets the change type.
-     * 
-     * @return the change type
-     */
-    public ChangeType getChangeType() {
-        return this.changeType;
-    }
+	/**
+	 * Gets the artifact name.
+	 * 
+	 * @return the artifact name
+	 */
+	@KeyProperty
+	public String getArtifactName() {
+		return artifactName;
+	}
 
-    public Date getLastProcessedDate() {
-        return this.lastProcessedDate;
-    }
+	/**
+	 * Gets the change type.
+	 * 
+	 * @return the change type
+	 */
+	public ChangeType getChangeType() {
+		return changeType;
+	}
 
-    public LastProcessStatus getLastProcessStatus() {
-        return this.lastProcessStatus;
-    }
+	public Date getLastProcessedDate() {
+		return lastProcessedDate;
+	}
 
-    /**
-     * Gets the parent.
-     * 
-     * @return the parent
-     */
-    @ParentProperty
-    public PathElement getParent() {
-        return this.parent;
-    }
+	public LastProcessStatus getLastProcessStatus() {
+		return lastProcessStatus;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        int result = this.hashcode;
-        if (result == 0) {
-            result = HashCodes.hashOf(this.getClass(), this.parent, this.artifactName, this.changeType);
-            this.hashcode = result;
-        }
-        return result;
-    }
+	/**
+	 * Gets the parent.
+	 * 
+	 * @return the parent
+	 */
+	@ParentProperty
+	public PathElement getParent() {
+		return parent;
+	}
 
-    /**
-     * Sets the artifact name.
-     * 
-     * @param artifactName the new artifact name
-     */
-    public void setArtifactName( final String artifactName ) {
-        this.artifactName = artifactName;
-    }
+	public String getRepositoryName() {
+		return repositoryName;
+	}
 
-    /**
-     * Sets the change type.
-     * 
-     * @param changeType the new change type
-     */
-    public void setChangeType( final ChangeType changeType ) {
-        this.changeType = changeType;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		int result = hashcode;
+		if (result == 0) {
+			result = HashCodes.hashOf(this.getClass(), parent, artifactName,
+					changeType);
+			hashcode = result;
+		}
+		return result;
+	}
 
-    public void setLastProcessedDate( final Date lastProcessedDate ) {
-        this.lastProcessedDate = lastProcessedDate;
-    }
+	/**
+	 * Sets the artifact name.
+	 * 
+	 * @param artifactName
+	 *            the new artifact name
+	 */
+	public void setArtifactName(final String artifactName) {
+		this.artifactName = artifactName;
+	}
 
-    public void setLastProcessStatus( final LastProcessStatus lastProcessStatus ) {
-        this.lastProcessStatus = lastProcessStatus;
-    }
+	/**
+	 * Sets the change type.
+	 * 
+	 * @param changeType
+	 *            the new change type
+	 */
+	public void setChangeType(final ChangeType changeType) {
+		this.changeType = changeType;
+	}
 
-    /**
-     * Sets the parent.
-     * 
-     * @param parent the new parent
-     */
-    public void setParent( final PathElement parent ) {
-        this.parent = parent;
-    }
+	public void setLastProcessedDate(final Date lastProcessedDate) {
+		this.lastProcessedDate = lastProcessedDate;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return "StreamArtifact: " + this.getArtifactCompleteName() + " " + this.getChangeType();
-    }
+	public void setLastProcessStatus(final LastProcessStatus lastProcessStatus) {
+		this.lastProcessStatus = lastProcessStatus;
+	}
+
+	/**
+	 * Sets the parent.
+	 * 
+	 * @param parent
+	 *            the new parent
+	 */
+	public void setParent(final PathElement parent) {
+		this.parent = parent;
+	}
+
+	public void setRepositoryName(final String repositoryName) {
+		this.repositoryName = repositoryName;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "StreamArtifact: " + getArtifactCompleteName() + " "
+				+ getChangeType();
+	}
 
 }

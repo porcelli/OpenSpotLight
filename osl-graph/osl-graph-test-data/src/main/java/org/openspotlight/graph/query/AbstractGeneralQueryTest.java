@@ -532,7 +532,7 @@ public class AbstractGeneralQueryTest {
 	protected static void setupSession() throws Exception {
 
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
 		final SecurityFactory securityFactory = AbstractFactory
 				.getDefaultInstance(SecurityFactory.class);

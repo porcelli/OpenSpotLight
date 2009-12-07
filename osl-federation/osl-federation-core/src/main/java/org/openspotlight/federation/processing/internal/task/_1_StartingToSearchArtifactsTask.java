@@ -9,6 +9,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -16,10 +17,8 @@ import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.processing.BundleProcessor;
-import org.openspotlight.federation.processing.BundleProcessor.BundleProcessorContext;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
-import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -28,9 +27,6 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
 	private final AuthenticatedUser user;
 
-	/** The repository. */
-	private final Repository repository;
-
 	/** The artifact type. */
 	private final Class<T> artifactType;
 
@@ -38,7 +34,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 	private final ArtifactChangesImpl<T> changes;
 
 	/** The context. */
-	private BundleProcessorContext context;
+	private ExecutionContext context;
 
 	/** The to be returned. */
 	private final ArtifactsToBeProcessedImpl<T> toBeReturned;
@@ -69,13 +65,11 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 	@SuppressWarnings("unchecked")
 	public _1_StartingToSearchArtifactsTask(
 			final CurrentProcessorContextImpl currentContext,
-
 			final Repository repository, final AuthenticatedUser user,
 			final Class<? extends Artifact> artifactType,
 			final BundleProcessorType bundleProcessorType) {
 		this.currentContext = currentContext;
 		this.artifactType = (Class<T>) artifactType;
-		this.repository = repository;
 		this.bundleProcessorType = bundleProcessorType;
 		this.toBeReturned = new ArtifactsToBeProcessedImpl<T>();
 		this.changes = new ArtifactChangesImpl<T>();
@@ -101,8 +95,8 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 			final Set<T> notChangedArtifacts = new HashSet<T>();
 			final BundleProcessor<T> bundleProcessor = (BundleProcessor<T>) rawBundleProcessor;
 
-			final ArtifactFinder<T> finder = this.context.getArtifactFinder(
-					this.artifactType, this.repository);
+			final ArtifactFinder<T> finder = this.context
+					.getArtifactFinder(this.artifactType);
 			for (final BundleSource src : this.bundleProcessorType.getSources()) {
 
 				final Set<String> rawNames = finder
@@ -202,7 +196,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		return 1;
 	}
 
-	public void setBundleContext(final BundleProcessorContextImpl context) {
+	public void setBundleContext(final ExecutionContext context) {
 		this.context = context;
 
 	}

@@ -3,7 +3,6 @@ package org.openspotlight.federation.processing.internal;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.ArtifactSource;
@@ -21,7 +20,6 @@ import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 
-@Ignore
 public class BundleProcessorManagerTest {
 
 	private static DefaultJcrDescriptor descriptor;
@@ -34,6 +32,7 @@ public class BundleProcessorManagerTest {
 
 	@BeforeClass
 	public static void setupResources() throws Exception {
+
 		ExampleBundleProcessor.allStatus.clear();
 		BundleProcessorManagerTest.descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 		BundleProcessorManagerTest.bundleProcessor = BundleProcessorManagerImpl.INSTANCE;

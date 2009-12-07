@@ -13,13 +13,13 @@ public class OpenAndCloseJcrSeveralTimes {
 		JcrConnectionProvider provider = JcrConnectionProvider
 				.createFromData(desc);
 		provider.openRepository();
-		provider.closeRepository();
+		provider.closeRepositoryAndCleanResources();
 		provider = JcrConnectionProvider.createFromData(desc);
 		provider.openRepository();
-		provider.closeRepository();
+		provider.closeRepositoryAndCleanResources();
 		provider = JcrConnectionProvider.createFromData(desc);
 		provider.openRepository();
-		provider.closeRepository();
+		provider.closeRepositoryAndCleanResources();
 
 	}
 

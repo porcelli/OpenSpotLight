@@ -205,7 +205,7 @@ public abstract class JcrConnectionProvider {
 	 */
 	protected abstract void beforeCloseRepository();
 
-	public void closeRepository() {
+	public void closeRepositoryAndCleanResources() {
 		beforeCloseRepository();
 		JcrConnectionProvider.cache.remove(this);
 	}

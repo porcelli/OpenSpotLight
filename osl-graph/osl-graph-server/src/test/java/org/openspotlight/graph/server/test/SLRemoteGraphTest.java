@@ -149,7 +149,7 @@ public class SLRemoteGraphTest {
 	@BeforeClass
 	public static void init() throws Exception {
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
 		server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
@@ -484,7 +484,7 @@ public class SLRemoteGraphTest {
 	@Before
 	public void beforeTest() throws Exception {
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 		if (session == null) {
 			session = client.createRemoteGraphSession(user, pass);
 		}

@@ -51,295 +51,284 @@ package org.openspotlight.federation.processing;
 
 import java.util.Set;
 
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
-import org.openspotlight.log.DetailedLogger;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
 /**
- * This interface abstracts the bundle processing capabilite. It receive notification about all artifact events. With this events,
- * this interface implementation should process all artifacts that needs processing. All new types of {@link BundleProcessor} to
- * be used inside an OSL instance should be also inside {@link GlobalSettings} for this instance. The better scenario to implement
- * this class is with a stateless class with all logic to process just the target artifact inside the
- * {@link BundleProcessingGroup}. Other parameters are passed on the context just for convenience. Please, implement one of the
- * child interfaces that extended this {@link BundleProcessor} interface.
+ * This interface abstracts the bundle processing capabilite. It receive
+ * notification about all artifact events. With this events, this interface
+ * implementation should process all artifacts that needs processing. All new
+ * types of {@link BundleProcessor} to be used inside an OSL instance should be
+ * also inside {@link GlobalSettings} for this instance. The better scenario to
+ * implement this class is with a stateless class with all logic to process just
+ * the target artifact inside the {@link BundleProcessingGroup}. Other
+ * parameters are passed on the context just for convenience. Please, implement
+ * one of the child interfaces that extended this {@link BundleProcessor}
+ * interface.
  * 
- * @param <T> Artifact type for this bundle processor
+ * @param <T>
+ *            Artifact type for this bundle processor
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public interface BundleProcessor<T extends Artifact> {
 
-    /**
-     * The Interface ArtifactChanges.
-     */
-    public static interface ArtifactChanges<T extends Artifact> {
+	/**
+	 * The Interface ArtifactChanges.
+	 */
+	public static interface ArtifactChanges<T extends Artifact> {
 
-        /**
-         * Gets the changed artifacts.
-         * 
-         * @return the changed artifacts
-         */
-        public Set<T> getChangedArtifacts();
+		/**
+		 * Gets the changed artifacts.
+		 * 
+		 * @return the changed artifacts
+		 */
+		public Set<T> getChangedArtifacts();
 
-        /**
-         * Gets the excluded artifacts.
-         * 
-         * @return the excluded artifacts
-         */
-        public Set<T> getExcludedArtifacts();
+		/**
+		 * Gets the excluded artifacts.
+		 * 
+		 * @return the excluded artifacts
+		 */
+		public Set<T> getExcludedArtifacts();
 
-        /**
-         * Gets the included artifacts.
-         * 
-         * @return the included artifacts
-         */
-        public Set<T> getIncludedArtifacts();
+		/**
+		 * Gets the included artifacts.
+		 * 
+		 * @return the included artifacts
+		 */
+		public Set<T> getIncludedArtifacts();
 
-        /**
-         * Gets the not changed artifacts.
-         * 
-         * @return the not changed artifacts
-         */
-        public Set<T> getNotChangedArtifacts();
-    }
+		/**
+		 * Gets the not changed artifacts.
+		 * 
+		 * @return the not changed artifacts
+		 */
+		public Set<T> getNotChangedArtifacts();
+	}
 
-    /**
-     * The Interface ArtifactProcessingResults.
-     */
-    public static interface ArtifactProcessingResults<T extends Artifact> {
+	/**
+	 * The Interface ArtifactProcessingResults.
+	 */
+	public static interface ArtifactProcessingResults<T extends Artifact> {
 
-        /**
-         * Gets the artifacts with error.
-         * 
-         * @return the artifacts with error
-         */
-        public Set<T> getArtifactsWithError();
+		/**
+		 * Gets the artifacts with error.
+		 * 
+		 * @return the artifacts with error
+		 */
+		public Set<T> getArtifactsWithError();
 
-        /**
-         * Gets the ignored artifacts.
-         * 
-         * @return the ignored artifacts
-         */
-        public Set<T> getIgnoredArtifacts();
+		/**
+		 * Gets the ignored artifacts.
+		 * 
+		 * @return the ignored artifacts
+		 */
+		public Set<T> getIgnoredArtifacts();
 
-        /**
-         * Gets the processed arifacts.
-         * 
-         * @return the processed arifacts
-         */
-        public Set<T> getProcessedArifacts();
+		/**
+		 * Gets the processed arifacts.
+		 * 
+		 * @return the processed arifacts
+		 */
+		public Set<T> getProcessedArifacts();
 
-    }
+	}
 
-    /**
-     * The Interface ArtifactsToBeProcessed.
-     */
-    public static interface ArtifactsToBeProcessed<T extends Artifact> {
+	/**
+	 * The Interface ArtifactsToBeProcessed.
+	 */
+	public static interface ArtifactsToBeProcessed<T extends Artifact> {
 
-        /**
-         * Gets the artifacts already processed.
-         * 
-         * @return the artifacts already processed
-         */
-        public Set<T> getArtifactsAlreadyProcessed();
+		/**
+		 * Gets the artifacts already processed.
+		 * 
+		 * @return the artifacts already processed
+		 */
+		public Set<T> getArtifactsAlreadyProcessed();
 
-        /**
-         * Gets the artifacts to be processed.
-         * 
-         * @return the artifacts to be processed
-         */
-        public Set<T> getArtifactsToBeProcessed();
+		/**
+		 * Gets the artifacts to be processed.
+		 * 
+		 * @return the artifacts to be processed
+		 */
+		public Set<T> getArtifactsToBeProcessed();
 
-        /**
-         * Sets the artifacts already processed.
-         * 
-         * @param artifacts the new artifacts already processed
-         */
-        public void setArtifactsAlreadyProcessed( Set<T> artifacts );
+		/**
+		 * Sets the artifacts already processed.
+		 * 
+		 * @param artifacts
+		 *            the new artifacts already processed
+		 */
+		public void setArtifactsAlreadyProcessed(Set<T> artifacts);
 
-        /**
-         * Sets the artifacts to be processed.
-         * 
-         * @param artifacts the new artifacts to be processed
-         */
-        public void setArtifactsToBeProcessed( Set<T> artifacts );
+		/**
+		 * Sets the artifacts to be processed.
+		 * 
+		 * @param artifacts
+		 *            the new artifacts to be processed
+		 */
+		public void setArtifactsToBeProcessed(Set<T> artifacts);
 
-    }
+	}
 
-    /**
-     * The Interface BundleProcessorContext.
-     */
-    public static interface BundleProcessorContext {
+	/**
+	 * The Interface CurrentProcessorContext.
+	 */
+	public static interface CurrentProcessorContext {
 
-        /**
-         * Gets the default artifact finder.
-         * 
-         * @param artifactType the artifact type
-         * @param repository the repository
-         * @return the default artifact finder
-         */
-        public <A extends Artifact> ArtifactFinder<A> getArtifactFinder( Class<A> artifactType,
-                                                                         Repository repository );
+		/**
+		 * Gets the current group.
+		 * 
+		 * @return the current group
+		 */
+		public Group getCurrentGroup();
 
-        /**
-         * Gets the authenticated user.
-         * 
-         * @return the authenticated user
-         */
-        public AuthenticatedUser getAuthenticatedUser();
+		/**
+		 * Gets the current node group.
+		 * 
+		 * @return the current node group
+		 * @throws SLInvalidCredentialException
+		 *             the SL invalid credential exception
+		 * @throws SLGraphSessionException
+		 *             the SL graph session exception
+		 * @throws SLNodeTypeNotInExistentHierarchy
+		 *             the SL node type not in existent hierarchy
+		 */
+		public SLNode getCurrentNodeGroup()
+				throws SLNodeTypeNotInExistentHierarchy,
+				SLGraphSessionException, SLInvalidCredentialException;
 
-        /**
-         * Gets the graph session.
-         * 
-         * @return the graph session
-         */
-        public SLGraphSession getGraphSession();
+		/**
+		 * Gets the current repository.
+		 * 
+		 * @return the current repository
+		 */
+		public Repository getCurrentRepository();
 
-        /**
-         * Gets the logger.
-         * 
-         * @return the logger
-         */
-        public DetailedLogger getLogger();
+		/**
+		 * Gets the node for group.
+		 * 
+		 * @param group
+		 *            the group
+		 * @return the node for group
+		 * @throws SLInvalidCredentialException
+		 *             the SL invalid credential exception
+		 * @throws SLGraphSessionException
+		 *             the SL graph session exception
+		 * @throws SLNodeTypeNotInExistentHierarchy
+		 *             the SL node type not in existent hierarchy
+		 */
+		public SLNode getNodeForGroup(Group group)
+				throws SLNodeTypeNotInExistentHierarchy,
+				SLGraphSessionException, SLInvalidCredentialException;
 
-    }
+	}
 
-    /**
-     * The Interface CurrentProcessorContext.
-     */
-    public static interface CurrentProcessorContext {
+	/**
+	 * The Enum SaveBehavior.
+	 */
+	public static enum SaveBehavior {
 
-        /**
-         * Gets the current group.
-         * 
-         * @return the current group
-         */
-        public Group getCurrentGroup();
+		/** The PE r_ artifact. */
+		PER_ARTIFACT,
 
-        /**
-         * Gets the current node group.
-         * 
-         * @return the current node group
-         * @throws SLInvalidCredentialException the SL invalid credential exception
-         * @throws SLGraphSessionException the SL graph session exception
-         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-         */
-        public SLNode getCurrentNodeGroup()
-            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
+		/** The PE r_ processing. */
+		PER_PROCESSING
+	}
 
-        /**
-         * Gets the current repository.
-         * 
-         * @return the current repository
-         */
-        public Repository getCurrentRepository();
+	/**
+	 * Accept kind of artifact.
+	 * 
+	 * @param kindOfArtifact
+	 *            the kind of artifact
+	 * @return true, if successful
+	 */
+	public <A extends Artifact> boolean acceptKindOfArtifact(
+			Class<A> kindOfArtifact);
 
-        /**
-         * Gets the node for group.
-         * 
-         * @param group the group
-         * @return the node for group
-         * @throws SLInvalidCredentialException the SL invalid credential exception
-         * @throws SLGraphSessionException the SL graph session exception
-         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-         */
-        public SLNode getNodeForGroup( Group group )
-            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException;
+	/**
+	 * Before process artifact.
+	 * 
+	 * @param artifact
+	 *            the artifact
+	 */
+	public void beforeProcessArtifact(T artifact);
 
-    }
+	/**
+	 * Did finishi processing.
+	 * 
+	 * @param changes
+	 *            the changes
+	 */
+	public void didFinishProcessing(ArtifactChanges<T> changes);
 
-    /**
-     * The Enum SaveBehavior.
-     */
-    public static enum SaveBehavior {
+	/**
+	 * After process artifact.
+	 * 
+	 * @param artifact
+	 *            the artifact
+	 * @param status
+	 *            the status
+	 */
+	public void didFinishToProcessArtifact(T artifact, LastProcessStatus status);
 
-        /** The PE r_ artifact. */
-        PER_ARTIFACT,
+	/**
+	 * Gets the artifact type.
+	 * 
+	 * @return the artifact type
+	 */
+	public Class<T> getArtifactType();
 
-        /** The PE r_ processing. */
-        PER_PROCESSING
-    }
+	/**
+	 * Gets the save behavior.
+	 * 
+	 * @return the save behavior
+	 */
+	public SaveBehavior getSaveBehavior();
 
-    /**
-     * Accept kind of artifact.
-     * 
-     * @param kindOfArtifact the kind of artifact
-     * @return true, if successful
-     */
-    public <A extends Artifact> boolean acceptKindOfArtifact( Class<A> kindOfArtifact );
+	/**
+	 * Process artifact.
+	 * 
+	 * @param artifact
+	 *            the artifact
+	 * @param context
+	 *            the context
+	 * @param currentContext
+	 *            the current context
+	 * @return the last process status
+	 * @throws Exception
+	 *             the exception
+	 */
+	public LastProcessStatus processArtifact(T artifact,
+			CurrentProcessorContext currentContext, ExecutionContext context)
+			throws Exception;
 
-    /**
-     * Before process artifact.
-     * 
-     * @param artifact the artifact
-     */
-    public void beforeProcessArtifact( T artifact );
+	/**
+	 * Return artifacts to be processed.
+	 * 
+	 * @param changes
+	 *            the changes
+	 * @param context
+	 *            the context
+	 * @param toBeReturned
+	 *            the to be returned
+	 * @param currentContext
+	 *            the current context
+	 * @return the artifacts to be processed< t>
+	 */
+	public void selectArtifactsToBeProcessed(
+			CurrentProcessorContext currentContext, ExecutionContext context,
+			ArtifactChanges<T> changes,
 
-    /**
-     * Did finishi processing.
-     * 
-     * @param changes the changes
-     */
-    public void didFinishProcessing( ArtifactChanges<T> changes );
-
-    /**
-     * After process artifact.
-     * 
-     * @param artifact the artifact
-     * @param status the status
-     */
-    public void didFinishToProcessArtifact( T artifact,
-                                            LastProcessStatus status );
-
-    /**
-     * Gets the artifact type.
-     * 
-     * @return the artifact type
-     */
-    public Class<T> getArtifactType();
-
-    /**
-     * Gets the save behavior.
-     * 
-     * @return the save behavior
-     */
-    public SaveBehavior getSaveBehavior();
-
-    /**
-     * Process artifact.
-     * 
-     * @param artifact the artifact
-     * @param context the context
-     * @param currentContext the current context
-     * @return the last process status
-     * @throws Exception the exception
-     */
-    public LastProcessStatus processArtifact( T artifact,
-                                              CurrentProcessorContext currentContext,
-                                              BundleProcessorContext context ) throws Exception;
-
-    /**
-     * Return artifacts to be processed.
-     * 
-     * @param changes the changes
-     * @param context the context
-     * @param toBeReturned the to be returned
-     * @param currentContext the current context
-     * @return the artifacts to be processed< t>
-     */
-    public void selectArtifactsToBeProcessed( CurrentProcessorContext currentContext,
-                                              BundleProcessorContext context,
-                                              ArtifactChanges<T> changes,
-
-                                              ArtifactsToBeProcessed<T> toBeReturned );
+			ArtifactsToBeProcessed<T> toBeReturned);
 
 }

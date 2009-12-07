@@ -137,7 +137,7 @@ public class SLGraphQueryCacheTest {
 		try {
 
 			JcrConnectionProvider.createFromData(
-					DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
+					DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
 			final SecurityFactory securityFactory = AbstractFactory
 					.getDefaultInstance(SecurityFactory.class);

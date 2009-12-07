@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.LastProcessStatus;
@@ -11,13 +12,12 @@ import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.BundleProcessor.SaveBehavior;
-import org.openspotlight.federation.processing.internal.domain.BundleProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 
 public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	/** The bundle processor context. */
-	private BundleProcessorContextImpl bundleProcessorContext;
+	private ExecutionContext bundleProcessorContext;
 
 	/** The artifact type. */
 	private final Class<T> artifactType;
@@ -80,7 +80,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
 			Exceptions.catchAndLog(e);
 			this.bundleProcessorContext.getLogger().log(
-					this.bundleProcessorContext.getAuthenticatedUser(),
+					this.bundleProcessorContext.getUser(),
 					LogEventType.ERROR,
 					"Error during artifact processing on bundle processor "
 							+ this.bundleProcessor.getClass().getName(),
@@ -89,8 +89,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 		this.artifact.setLastProcessStatus(result);
 		this.artifact.setLastProcessedDate(new Date());
 		final ArtifactFinder<T> finder = this.bundleProcessorContext
-				.getArtifactFinder(this.artifactType, this.currentContextImpl
-						.getCurrentRepository());
+				.getArtifactFinder(this.artifactType);
 		if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
 			final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
 			this.queue.offer(new _3_SaveEachArtifactStatusTask(this.artifact,
@@ -107,7 +106,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 		return 2;
 	}
 
-	public void setBundleContext(final BundleProcessorContextImpl context) {
+	public void setBundleContext(final ExecutionContext context) {
 		this.bundleProcessorContext = context;
 
 	}
