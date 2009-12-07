@@ -20,195 +20,192 @@ import org.openspotlight.persist.annotation.TransientProperty;
 /**
  * The Class Group.
  */
-@Name("group")
+@Name( "group" )
 public class Group implements SimpleNodeType, Serializable, Schedulable {
 
-	private Set<Group> groups = new HashSet<Group>();
+    private static final long         serialVersionUID = -722058711327567623L;
 
-	/** The repository. */
-	private Repository repository;
+    private Set<Group>                groups           = new HashSet<Group>();
 
-	/** The type. */
-	private String type;
+    /** The repository. */
+    private Repository                repository;
 
-	/** The name. */
-	private String name;
+    /** The type. */
+    private String                    type;
 
-	/** The active. */
-	private boolean active;
+    /** The name. */
+    private String                    name;
 
-	/** The group. */
-	private Group group;
+    /** The active. */
+    private boolean                   active;
 
-	private volatile int hashCode;
+    /** The group. */
+    private Group                     group;
 
-	private Set<BundleProcessorType> bundleTypes = new HashSet<BundleProcessorType>();
+    private volatile int              hashCode;
 
-	private final List<String> cronInformation = new ArrayList<String>();
+    private Set<BundleProcessorType>  bundleTypes      = new HashSet<BundleProcessorType>();
 
-	private volatile transient String uniqueName;
+    private final List<String>        cronInformation  = new ArrayList<String>();
 
-	public void acceptVisitor(final GroupVisitor visitor) {
-		visitor.visitGroup(this);
-		for (final Group g : getGroups()) {
-			g.acceptVisitor(visitor);
-		}
-	}
+    private volatile transient String uniqueName;
 
-	public boolean equals(final Object o) {
-		if (!(o instanceof Group)) {
-			return false;
-		}
-		final Group that = (Group) o;
-		final boolean result = Equals.eachEquality(Arrays.of(group, repository,
-				name), Arrays.andOf(that.group, that.repository, that.name));
-		return result;
-	}
+    public void acceptVisitor( final GroupVisitor visitor ) {
+        visitor.visitGroup(this);
+        for (final Group g : getGroups()) {
+            g.acceptVisitor(visitor);
+        }
+    }
 
-	public Set<BundleProcessorType> getBundleTypes() {
-		return bundleTypes;
-	}
+    public boolean equals( final Object o ) {
+        if (!(o instanceof Group)) {
+            return false;
+        }
+        final Group that = (Group)o;
+        final boolean result = Equals.eachEquality(Arrays.of(group, repository,
+                                                             name), Arrays.andOf(that.group, that.repository, that.name));
+        return result;
+    }
 
-	public List<String> getCronInformation() {
-		return cronInformation;
-	}
+    public Set<BundleProcessorType> getBundleTypes() {
+        return bundleTypes;
+    }
 
-	/**
-	 * Gets the group.
-	 * 
-	 * @return the group
-	 */
-	@ParentProperty
-	public Group getGroup() {
-		return group;
-	}
+    public List<String> getCronInformation() {
+        return cronInformation;
+    }
 
-	public Set<Group> getGroups() {
-		return groups;
-	}
+    /**
+     * Gets the group.
+     * 
+     * @return the group
+     */
+    @ParentProperty
+    public Group getGroup() {
+        return group;
+    }
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	@KeyProperty
-	public String getName() {
-		return name;
-	}
+    public Set<Group> getGroups() {
+        return groups;
+    }
 
-	/**
-	 * Gets the repository.
-	 * 
-	 * @return the repository
-	 */
-	@ParentProperty
-	public Repository getRepository() {
-		return repository;
-	}
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    @KeyProperty
+    public String getName() {
+        return name;
+    }
 
-	@TransientProperty
-	public Repository getRootRepository() {
-		return repository != null ? repository : getGroup().getRootRepository();
-	}
+    /**
+     * Gets the repository.
+     * 
+     * @return the repository
+     */
+    @ParentProperty
+    public Repository getRepository() {
+        return repository;
+    }
 
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 */
-	public String getType() {
-		return type;
-	}
+    @TransientProperty
+    public Repository getRootRepository() {
+        return repository != null ? repository : getGroup().getRootRepository();
+    }
 
-	public String getUniqueName() {
-		String result = uniqueName;
-		if (result == null) {
-			result = (group != null ? group.getUniqueName() : repository
-					.getName())
-					+ "/" + getName();
-			uniqueName = result;
-		}
-		return result;
-	}
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
 
-	public int hashCode() {
-		int result = hashCode;
-		if (result == 0) {
-			result = HashCodes.hashOf(group, repository, name);
-			hashCode = result;
-		}
-		return result;
-	}
+    public String getUniqueName() {
+        String result = uniqueName;
+        if (result == null) {
+            result = (group != null ? group.getUniqueName() : repository
+                                                                        .getName())
+                     + "/" + getName();
+            uniqueName = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Checks if is active.
-	 * 
-	 * @return true, if is active
-	 */
-	public boolean isActive() {
-		return active;
-	}
+    public int hashCode() {
+        int result = hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(group, repository, name);
+            hashCode = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Sets the active.
-	 * 
-	 * @param active
-	 *            the new active
-	 */
-	public void setActive(final boolean active) {
-		this.active = active;
-	}
+    /**
+     * Checks if is active.
+     * 
+     * @return true, if is active
+     */
+    public boolean isActive() {
+        return active;
+    }
 
-	public void setBundleTypes(final Set<BundleProcessorType> bundleTypes) {
-		this.bundleTypes = bundleTypes;
-	}
+    /**
+     * Sets the active.
+     * 
+     * @param active the new active
+     */
+    public void setActive( final boolean active ) {
+        this.active = active;
+    }
 
-	/**
-	 * Sets the group.
-	 * 
-	 * @param group
-	 *            the new group
-	 */
-	public void setGroup(final Group group) {
-		this.group = group;
-	}
+    public void setBundleTypes( final Set<BundleProcessorType> bundleTypes ) {
+        this.bundleTypes = bundleTypes;
+    }
 
-	public void setGroups(final Set<Group> groups) {
-		this.groups = groups;
-	}
+    /**
+     * Sets the group.
+     * 
+     * @param group the new group
+     */
+    public void setGroup( final Group group ) {
+        this.group = group;
+    }
 
-	/**
-	 * Sets the name.
-	 * 
-	 * @param name
-	 *            the new name
-	 */
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setGroups( final Set<Group> groups ) {
+        this.groups = groups;
+    }
 
-	/**
-	 * Sets the repository.
-	 * 
-	 * @param repository
-	 *            the new repository
-	 */
-	public void setRepository(final Repository repository) {
-		this.repository = repository;
-	}
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	/**
-	 * Sets the type.
-	 * 
-	 * @param type
-	 *            the new type
-	 */
-	public void setType(final String type) {
-		this.type = type;
-	}
+    /**
+     * Sets the repository.
+     * 
+     * @param repository the new repository
+     */
+    public void setRepository( final Repository repository ) {
+        this.repository = repository;
+    }
 
-	public String toUniqueJobString() {
-		return getUniqueName();
-	}
+    /**
+     * Sets the type.
+     * 
+     * @param type the new type
+     */
+    public void setType( final String type ) {
+        this.type = type;
+    }
+
+    public String toUniqueJobString() {
+        return getUniqueName();
+    }
 }

@@ -11,10 +11,12 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "database" )
 public class TableArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
-    private String      tableName;
-    private String      catalogName;
-    private String      schemaName;
-    private Set<Column> columns = new HashSet<Column>();
+    private static final long serialVersionUID = -4527063248944852023L;
+
+    private String            tableName;
+    private String            catalogName;
+    private String            schemaName;
+    private Set<Column>       columns          = new HashSet<Column>();
 
     @Override
     public boolean contentEquals( final Artifact other ) {

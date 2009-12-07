@@ -36,309 +36,318 @@ import org.xml.sax.SAXException;
 
 class SessionWrapper implements SessionWithLock {
 
-	private final Object lock = new Object();
+    private final Object              lock = new Object();
 
-	private final Session session;
-	private final StackTraceElement[] creationStackTrace;
-	private final int sessionId;
-	final SessionClosingListener sessionClosingListener;
+    private final Session             session;
+    private final StackTraceElement[] creationStackTrace;
+    private final int                 sessionId;
+    final SessionClosingListener      sessionClosingListener;
+
+    public SessionWrapper(
+                           final Session session, final int sessionId,
+                           final SessionClosingListener sessionClosingListener ) {
+        this.session = session;
+        this.creationStackTrace = Thread.currentThread().getStackTrace();
+        this.sessionId = sessionId;
+        this.sessionClosingListener = sessionClosingListener;
+    }
 
-	public SessionWrapper(final Session session, final int sessionId,
-			final SessionClosingListener sessionClosingListener) {
-		this.session = session;
-		this.creationStackTrace = Thread.currentThread().getStackTrace();
-		this.sessionId = sessionId;
-		this.sessionClosingListener = sessionClosingListener;
-	}
+    public void addLockToken( final String lt ) throws LockException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public void addLockToken(final String lt) throws LockException,
-			RepositoryException {
-		synchronized (this.lock) {
+            this.session.addLockToken(lt);
+        }
+    }
 
-			this.session.addLockToken(lt);
-		}
-	}
+    public void checkPermission( final String absPath,
+                                 final String actions )
+        throws AccessControlException, RepositoryException {
+        synchronized (this.lock) {
 
-	public void checkPermission(final String absPath, final String actions)
-			throws AccessControlException, RepositoryException {
-		synchronized (this.lock) {
+            this.session.checkPermission(absPath, actions);
 
-			this.session.checkPermission(absPath, actions);
+        }
+    }
 
-		}
-	}
+    public void exportDocumentView( final String absPath,
+                                    final ContentHandler contentHandler,
+                                    final boolean skipBinary,
+                                    final boolean noRecurse ) throws PathNotFoundException,
+        SAXException, RepositoryException {
+        synchronized (this.lock) {
 
-	public void exportDocumentView(final String absPath,
-			final ContentHandler contentHandler, final boolean skipBinary,
-			final boolean noRecurse) throws PathNotFoundException,
-			SAXException, RepositoryException {
-		synchronized (this.lock) {
+            this.session.exportDocumentView(absPath, contentHandler,
+                                            skipBinary, noRecurse);
 
-			this.session.exportDocumentView(absPath, contentHandler,
-					skipBinary, noRecurse);
+        }
+    }
 
-		}
-	}
+    public void exportDocumentView( final String absPath,
+                                    final OutputStream out,
+                                    final boolean skipBinary,
+                                    final boolean noRecurse ) throws IOException, PathNotFoundException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public void exportDocumentView(final String absPath,
-			final OutputStream out, final boolean skipBinary,
-			final boolean noRecurse) throws IOException, PathNotFoundException,
-			RepositoryException {
-		synchronized (this.lock) {
+            this.session
+                        .exportDocumentView(absPath, out, skipBinary, noRecurse);
 
-			this.session
-					.exportDocumentView(absPath, out, skipBinary, noRecurse);
+        }
+    }
 
-		}
-	}
+    public void exportSystemView( final String absPath,
+                                  final ContentHandler contentHandler,
+                                  final boolean skipBinary,
+                                  final boolean noRecurse ) throws PathNotFoundException,
+        SAXException, RepositoryException {
+        synchronized (this.lock) {
 
-	public void exportSystemView(final String absPath,
-			final ContentHandler contentHandler, final boolean skipBinary,
-			final boolean noRecurse) throws PathNotFoundException,
-			SAXException, RepositoryException {
-		synchronized (this.lock) {
+            this.session.exportSystemView(absPath, contentHandler, skipBinary,
+                                          noRecurse);
 
-			this.session.exportSystemView(absPath, contentHandler, skipBinary,
-					noRecurse);
+        }
+    }
 
-		}
-	}
+    public void exportSystemView( final String absPath,
+                                  final OutputStream out,
+                                  final boolean skipBinary,
+                                  final boolean noRecurse )
+        throws IOException, PathNotFoundException, RepositoryException {
+        synchronized (this.lock) {
 
-	public void exportSystemView(final String absPath, final OutputStream out,
-			final boolean skipBinary, final boolean noRecurse)
-			throws IOException, PathNotFoundException, RepositoryException {
-		synchronized (this.lock) {
+            this.session.exportSystemView(absPath, out, skipBinary, noRecurse);
 
-			this.session.exportSystemView(absPath, out, skipBinary, noRecurse);
+        }
+    }
 
-		}
-	}
+    public Object getAttribute( final String name ) {
+        synchronized (this.lock) {
 
-	public Object getAttribute(final String name) {
-		synchronized (this.lock) {
+            return this.session.getAttribute(name);
 
-			return this.session.getAttribute(name);
+        }
+    }
 
-		}
-	}
+    public String[] getAttributeNames() {
+        synchronized (this.lock) {
 
-	public String[] getAttributeNames() {
-		synchronized (this.lock) {
+            return this.session.getAttributeNames();
 
-			return this.session.getAttributeNames();
+        }
+    }
 
-		}
-	}
+    public ContentHandler getImportContentHandler( final String parentAbsPath,
+                                                   final int uuidBehavior ) throws PathNotFoundException,
+        ConstraintViolationException, VersionException, LockException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public ContentHandler getImportContentHandler(final String parentAbsPath,
-			final int uuidBehavior) throws PathNotFoundException,
-			ConstraintViolationException, VersionException, LockException,
-			RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getImportContentHandler(parentAbsPath,
+                                                        uuidBehavior);
 
-			return this.session.getImportContentHandler(parentAbsPath,
-					uuidBehavior);
+        }
+    }
 
-		}
-	}
+    public Item getItem( final String absPath ) throws PathNotFoundException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public Item getItem(final String absPath) throws PathNotFoundException,
-			RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getItem(absPath);
 
-			return this.session.getItem(absPath);
+        }
+    }
 
-		}
-	}
+    public Object getLockObject() {
+        return this.lock;
+    }
 
-	public Object getLockObject() {
-		return this.lock;
-	}
+    public String[] getLockTokens() {
+        synchronized (this.lock) {
 
-	public String[] getLockTokens() {
-		synchronized (this.lock) {
+            return this.session.getLockTokens();
 
-			return this.session.getLockTokens();
+        }
+    }
 
-		}
-	}
+    public String getNamespacePrefix( final String uri )
+        throws NamespaceException, RepositoryException {
+        synchronized (this.lock) {
 
-	public String getNamespacePrefix(final String uri)
-			throws NamespaceException, RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getNamespacePrefix(uri);
 
-			return this.session.getNamespacePrefix(uri);
+        }
+    }
 
-		}
-	}
+    public String[] getNamespacePrefixes() throws RepositoryException {
+        synchronized (this.lock) {
 
-	public String[] getNamespacePrefixes() throws RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getNamespacePrefixes();
 
-			return this.session.getNamespacePrefixes();
+        }
+    }
 
-		}
-	}
+    public String getNamespaceURI( final String prefix )
+        throws NamespaceException, RepositoryException {
+        synchronized (this.lock) {
 
-	public String getNamespaceURI(final String prefix)
-			throws NamespaceException, RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getNamespaceURI(prefix);
 
-			return this.session.getNamespaceURI(prefix);
+        }
+    }
 
-		}
-	}
+    public Node getNodeByUUID( final String uuid ) throws ItemNotFoundException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public Node getNodeByUUID(final String uuid) throws ItemNotFoundException,
-			RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getNodeByUUID(uuid);
 
-			return this.session.getNodeByUUID(uuid);
+        }
+    }
 
-		}
-	}
+    public Repository getRepository() {
+        synchronized (this.lock) {
 
-	public Repository getRepository() {
-		synchronized (this.lock) {
+            return this.session.getRepository();
 
-			return this.session.getRepository();
+        }
+    }
 
-		}
-	}
+    public Node getRootNode() throws RepositoryException {
+        synchronized (this.lock) {
 
-	public Node getRootNode() throws RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getRootNode();
 
-			return this.session.getRootNode();
+        }
+    }
 
-		}
-	}
+    public String getUserID() {
+        synchronized (this.lock) {
 
-	public String getUserID() {
-		synchronized (this.lock) {
+            return this.session.getUserID();
 
-			return this.session.getUserID();
+        }
+    }
 
-		}
-	}
+    public ValueFactory getValueFactory()
+        throws UnsupportedRepositoryOperationException, RepositoryException {
+        synchronized (this.lock) {
 
-	public ValueFactory getValueFactory()
-			throws UnsupportedRepositoryOperationException, RepositoryException {
-		synchronized (this.lock) {
+            return this.session.getValueFactory();
 
-			return this.session.getValueFactory();
+        }
+    }
 
-		}
-	}
+    public Workspace getWorkspace() {
+        synchronized (this.lock) {
 
-	public Workspace getWorkspace() {
-		synchronized (this.lock) {
+            return this.session.getWorkspace();
 
-			return this.session.getWorkspace();
+        }
+    }
 
-		}
-	}
+    public boolean hasPendingChanges() throws RepositoryException {
+        synchronized (this.lock) {
 
-	public boolean hasPendingChanges() throws RepositoryException {
-		synchronized (this.lock) {
+            return this.session.hasPendingChanges();
 
-			return this.session.hasPendingChanges();
+        }
+    }
 
-		}
-	}
+    public Session impersonate( final Credentials credentials )
+        throws LoginException, RepositoryException {
+        synchronized (this.lock) {
 
-	public Session impersonate(final Credentials credentials)
-			throws LoginException, RepositoryException {
-		synchronized (this.lock) {
+            return this.session.impersonate(credentials);
 
-			return this.session.impersonate(credentials);
+        }
+    }
 
-		}
-	}
+    public void importXML( final String parentAbsPath,
+                           final InputStream in,
+                           final int uuidBehavior ) throws IOException, PathNotFoundException,
+        ItemExistsException, ConstraintViolationException,
+        VersionException, InvalidSerializedDataException, LockException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public void importXML(final String parentAbsPath, final InputStream in,
-			final int uuidBehavior) throws IOException, PathNotFoundException,
-			ItemExistsException, ConstraintViolationException,
-			VersionException, InvalidSerializedDataException, LockException,
-			RepositoryException {
-		synchronized (this.lock) {
+            this.session.importXML(parentAbsPath, in, uuidBehavior);
 
-			this.session.importXML(parentAbsPath, in, uuidBehavior);
+        }
+    }
 
-		}
-	}
+    public boolean isLive() {
+        synchronized (this.lock) {
 
-	public boolean isLive() {
-		synchronized (this.lock) {
+            return this.session.isLive();
 
-			return this.session.isLive();
+        }
+    }
 
-		}
-	}
+    public boolean itemExists( final String absPath ) throws RepositoryException {
+        synchronized (this.lock) {
 
-	public boolean itemExists(final String absPath) throws RepositoryException {
-		synchronized (this.lock) {
+            return this.session.itemExists(absPath);
 
-			return this.session.itemExists(absPath);
+        }
+    }
 
-		}
-	}
+    public void logout() {
+        synchronized (this.lock) {
 
-	public void logout() {
-		synchronized (this.lock) {
+            this.session.logout();
+            this.sessionClosingListener.sessionClosed(this.sessionId, this,
+                                                      this.session);
 
-			this.session.logout();
-			this.sessionClosingListener.sessionClosed(this.sessionId, this,
-					this.session);
+        }
+    }
 
-		}
-	}
+    public void move( final String srcAbsPath,
+                      final String destAbsPath )
+        throws ItemExistsException, PathNotFoundException,
+        VersionException, ConstraintViolationException, LockException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public void move(final String srcAbsPath, final String destAbsPath)
-			throws ItemExistsException, PathNotFoundException,
-			VersionException, ConstraintViolationException, LockException,
-			RepositoryException {
-		synchronized (this.lock) {
+            this.session.move(srcAbsPath, destAbsPath);
 
-			this.session.move(srcAbsPath, destAbsPath);
+        }
+    }
 
-		}
-	}
+    public void refresh( final boolean keepChanges ) throws RepositoryException {
+        synchronized (this.lock) {
 
-	public void refresh(final boolean keepChanges) throws RepositoryException {
-		synchronized (this.lock) {
+            this.session.refresh(keepChanges);
 
-			this.session.refresh(keepChanges);
+        }
+    }
 
-		}
-	}
+    public void removeLockToken( final String lt ) {
+        synchronized (this.lock) {
 
-	public void removeLockToken(final String lt) {
-		synchronized (this.lock) {
+            this.session.removeLockToken(lt);
 
-			this.session.removeLockToken(lt);
+        }
+    }
 
-		}
-	}
+    public void save() throws AccessDeniedException, ItemExistsException,
+        ConstraintViolationException, InvalidItemStateException,
+        VersionException, LockException, NoSuchNodeTypeException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public void save() throws AccessDeniedException, ItemExistsException,
-			ConstraintViolationException, InvalidItemStateException,
-			VersionException, LockException, NoSuchNodeTypeException,
-			RepositoryException {
-		synchronized (this.lock) {
+            this.session.save();
 
-			this.session.save();
+        }
+    }
 
-		}
-	}
+    public void setNamespacePrefix( final String newPrefix,
+                                    final String existingUri ) throws NamespaceException,
+        RepositoryException {
+        synchronized (this.lock) {
 
-	public void setNamespacePrefix(final String newPrefix,
-			final String existingUri) throws NamespaceException,
-			RepositoryException {
-		synchronized (this.lock) {
+            this.session.setNamespacePrefix(newPrefix, existingUri);
 
-			this.session.setNamespacePrefix(newPrefix, existingUri);
-
-		}
-	}
+        }
+    }
 }

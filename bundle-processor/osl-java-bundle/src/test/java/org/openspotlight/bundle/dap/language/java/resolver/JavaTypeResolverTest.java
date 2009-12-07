@@ -387,11 +387,11 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldDoNotFindAutoboxedTypeWhenItsTurnedOff() throws Exception {
-        final JavaType primitiveType = this.java14TypeFinder.getType("int");
-        final JavaType wrapperType = this.java14TypeFinder.getType("java.lang.Integer");
+        final JavaType primitiveType = java14TypeFinder.getType("int");
+        final JavaType wrapperType = java14TypeFinder.getType("java.lang.Integer");
 
-        assertThat(this.java14TypeFinder.isTypeOf(primitiveType, wrapperType), is(false));
-        assertThat(this.java14TypeFinder.isTypeOf(wrapperType, primitiveType), is(false));
+        assertThat(java14TypeFinder.isTypeOf(primitiveType, wrapperType), is(false));
+        assertThat(java14TypeFinder.isTypeOf(wrapperType, primitiveType), is(false));
     }
 
     /**

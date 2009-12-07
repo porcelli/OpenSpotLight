@@ -19,6 +19,8 @@ import org.openspotlight.persist.annotation.TransientProperty;
 @Name( "path_element" )
 public class PathElement implements Comparable<PathElement>, SimpleNodeType, Serializable {
 
+    private static final long serialVersionUID = -6520096568789344933L;
+
     /**
      * Creates the from path string.
      * 

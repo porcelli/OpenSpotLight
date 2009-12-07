@@ -5,6 +5,8 @@ import java.util.Set;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
+    private static final long      serialVersionUID     = -3359480990669655877L;
+
     /** The syntax information set. */
     private Set<SyntaxInformation> syntaxInformationSet = new HashSet<SyntaxInformation>();
 

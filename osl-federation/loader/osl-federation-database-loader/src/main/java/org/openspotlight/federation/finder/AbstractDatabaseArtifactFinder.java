@@ -6,7 +6,6 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

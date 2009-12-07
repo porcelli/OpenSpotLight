@@ -11,12 +11,14 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "database" )
 public class RoutineArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
+    private static final long     serialVersionUID = 3060861243165317562L;
+
     private String                tableName;
     private String                catalogName;
     private RoutineType           type;
     private String                schemaName;
 
-    private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
+    private Set<RoutineParameter> parameters       = new HashSet<RoutineParameter>();
 
     @Override
     public boolean contentEquals( final Artifact other ) {

@@ -88,10 +88,10 @@ public class Pair<K1, K2> {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof Pair)) {
+        if (!(o instanceof Pair<?, ?>)) {
             return false;
         }
-        final Pair that = (Pair)o;
+        final Pair<?, ?> that = (Pair<?, ?>)o;
         return Equals.eachEquality(Arrays.of(this.k1, this.k2), Arrays.andOf(that.k1, that.k2));
     }
 
