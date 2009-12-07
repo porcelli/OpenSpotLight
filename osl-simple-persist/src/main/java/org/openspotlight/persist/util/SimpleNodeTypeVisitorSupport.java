@@ -19,7 +19,6 @@ import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMetho
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
  * Class with static method to accept visitor of beans of type
