@@ -2,11 +2,15 @@ package org.openspotlight.federation.context;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.concurrent.DefaultAtomicLazyResource;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.JcrSessionArtifactFinder;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.JcrSessionConfigurationManagerFactory;
 import org.openspotlight.federation.log.JcrDetailedLogger;
@@ -70,15 +74,10 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 		@Override
 		protected SLGraphSession createReference() throws Exception {
-			final SecurityFactory securityFactory = AbstractFactory
-					.getDefaultInstance(SecurityFactory.class);
-			final User simpleUser = securityFactory.createUser(username);
-			final AuthenticatedUser user = securityFactory
-					.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-					.authenticate(simpleUser, password);
 			final SLGraph graph = AbstractFactory.getDefaultInstance(
 					SLGraphFactory.class).createGraph(descriptor);
-			return graph.openSession(user, repositoryName);
+			return graph.openSession(lazyAuthenticatedUserReference.get(),
+					repositoryName);
 		}
 	}
 
@@ -102,6 +101,20 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final Object lock = new Object();
 	private final ConcurrentHashMap<? extends Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
 
+	private final DefaultAtomicLazyResource<AuthenticatedUser> lazyAuthenticatedUserReference = new DefaultAtomicLazyResource<AuthenticatedUser>() {
+
+		@Override
+		protected AuthenticatedUser createReference() throws Exception {
+			final SecurityFactory securityFactory = AbstractFactory
+					.getDefaultInstance(SecurityFactory.class);
+			final User simpleUser = securityFactory.createUser(username);
+			final AuthenticatedUser user = securityFactory
+					.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+					.authenticate(simpleUser, password);
+			return user;
+		}
+	};
+
 	private final DefaultAtomicLazyResource<JcrConnectionProvider> lazyConnectionProviderReference = new LazyJcrConnectionProvider(
 			this);
 
@@ -114,8 +127,8 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final DefaultAtomicLazyResource<DetailedLogger> lazyDetailedLoggerReference = new LazyDetailedLoggerProvider(
 			this);
 
-	public DefaultExecutionContext(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
+	DefaultExecutionContext(final String username, final String password,
+			final JcrConnectionDescriptor descriptor,
 			final String repositoryName, final ClosingListener listener) {
 		this.username = username;
 		this.password = password;
@@ -139,17 +152,25 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		}
 	}
 
-	public <A extends Artifact> ArtifactFinder<A> getDefaultArtifactFinder(
+	@SuppressWarnings("unchecked")
+	public <A extends Artifact> ArtifactFinder<A> getArtifactFinder(
 			final Class<A> type) {
 		synchronized (lock) {
 			DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference = artifactFinderReferences
 					.get(type);
 			if (lazyReference == null) {
 				lazyReference = new DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>() {
-
 					@Override
 					protected ArtifactFinder<? extends Artifact> createReference() {
-						return null;
+						final Repository typedRepository = new Repository();
+						typedRepository.setName(repositoryName);
+						final ArtifactFinder<A> newFinder = JcrSessionArtifactFinder
+								.<A> createArtifactFinder(
+										type,
+										typedRepository,
+										(Session) lazyConnectionProviderReference
+												.get().openSession());
+						return newFinder;
 					}
 				};
 			}
@@ -175,6 +196,14 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 	public DetailedLogger getLogger() {
 		return lazyDetailedLoggerReference.get();
+	}
+
+	public String getRepository() {
+		return repositoryName;
+	}
+
+	public AuthenticatedUser getUser() {
+		return lazyAuthenticatedUserReference.get();
 	}
 
 }
