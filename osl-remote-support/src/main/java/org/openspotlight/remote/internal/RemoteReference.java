@@ -10,7 +10,6 @@ import static org.openspotlight.common.util.HashCodes.hashOf;
 import java.io.Serializable;
 
 import org.openspotlight.common.util.Arrays;
-import org.openspotlight.remote.server.RemoteObjectServer;
 
 /**
  * The Class RemoteReference will be used to locate the remote reference on

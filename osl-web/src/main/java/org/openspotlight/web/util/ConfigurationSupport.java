@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
