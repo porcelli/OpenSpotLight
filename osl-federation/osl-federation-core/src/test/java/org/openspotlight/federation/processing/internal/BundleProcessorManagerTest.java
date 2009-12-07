@@ -14,7 +14,6 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.LocalSourceArtifactFinderByRepositoryProviderFactory;
-import org.openspotlight.federation.loader.ExampleBundleProcessor;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
 import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
