@@ -1,49 +1,49 @@
 /*
  * OpenSpotLight - Open Source IT Governance Platform
- *  
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA 
- * or third-party contributors as indicated by the @author tags or express 
- * copyright attribution statements applied by the authors.  All third-party 
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E 
- * TECNOLOGIA EM INFORMATICA LTDA. 
- * 
- * This copyrighted material is made available to anyone wishing to use, modify, 
- * copy, or redistribute it subject to the terms and conditions of the GNU 
- * Lesser General Public License, as published by the Free Software Foundation. 
- * 
- * This program is distributed in the hope that it will be useful, 
+ *
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
+ * or third-party contributors as indicated by the @author tags or express
+ * copyright attribution statements applied by the authors.  All third-party
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E
+ * TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * See the GNU Lesser General Public License  for more details. 
- * 
- * You should have received a copy of the GNU Lesser General Public License 
- * along with this distribution; if not, write to: 
- * Free Software Foundation, Inc. 
- * 51 Franklin Street, Fifth Floor 
- * Boston, MA  02110-1301  USA 
- * 
- *********************************************************************** 
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto 
  *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA 
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta 
+ * See the GNU Lesser General Public License  for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ *
+ ***********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
  * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
  * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. 
- * 
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os 
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software 
- * Foundation. 
- * 
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA 
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
+ * Foundation.
+ *
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
  * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.  
- * 
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
+ *
  * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para: 
- * Free Software Foundation, Inc. 
- * 51 Franklin Street, Fifth Floor 
+ * programa; se não, escreva para:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
 
@@ -67,14 +67,14 @@ import org.openspotlight.common.Pair;
 
 /**
  * This class has a set of static methods to use for reflection purposes.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Reflection {
 
     /**
      * This enum has the inheritance types between two classes.
-     * 
+     *
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static enum InheritanceType {
@@ -91,7 +91,7 @@ public class Reflection {
 
     /**
      * The Class UnwrappedCollectionTypeFromMethodReturn.
-     * 
+     *
      * @param <T>
      */
     public static class UnwrappedCollectionTypeFromMethodReturn<T> {
@@ -104,7 +104,7 @@ public class Reflection {
 
         /**
          * Instantiates a new unwrapped collection type from method return.
-         * 
+         *
          * @param collectionType the collection type
          * @param itemType the item type
          */
@@ -118,7 +118,7 @@ public class Reflection {
 
         /**
          * Gets the collection type.
-         * 
+         *
          * @return the collection type
          */
         public Class<? extends Collection<?>> getCollectionType() {
@@ -127,7 +127,7 @@ public class Reflection {
 
         /**
          * Gets the item type.
-         * 
+         *
          * @return the item type
          */
         public Class<T> getItemType() {
@@ -138,7 +138,7 @@ public class Reflection {
 
     /**
      * The Class UnwrappedMapTypeFromMethodReturn.
-     * 
+     *
      * @param <K>
      * @param <T>
      */
@@ -149,7 +149,7 @@ public class Reflection {
 
         /**
          * Instantiates a new unwrapped map type from method return.
-         * 
+         *
          * @param itemType the item type
          */
         UnwrappedMapTypeFromMethodReturn(
@@ -160,7 +160,7 @@ public class Reflection {
 
         /**
          * Gets the item type.
-         * 
+         *
          * @return the item type
          */
         public Pair<Class<K>, Class<T>> getItemType() {
@@ -174,7 +174,7 @@ public class Reflection {
 
     /**
      * Search for inheritance type on the given type array.
-     * 
+     *
      * @param type the type
      * @param types the types
      * @return the inheritance type between the type and found type in a array
@@ -198,7 +198,7 @@ public class Reflection {
 
     /**
      * Search for a type on the given type array.
-     * 
+     *
      * @param type the type
      * @param types the types
      * @return the type (same or inherited) in the given array, or null if it was not found
@@ -222,7 +222,7 @@ public class Reflection {
 
     /**
      * Unwrap collection from method return.
-     * 
+     *
      * @param <T>
      * @param method the method
      * @return the unwrapped collection type from method return< t>
@@ -254,7 +254,7 @@ public class Reflection {
                 itemType = (Class<T>)actualTypeArgs[0];
 
             }else if(theItemType instanceof ParameterizedType){
-            	ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
+            	final ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
             	itemType = (Class<T>) valueTypeTyped.getRawType();
             }
 
@@ -271,7 +271,7 @@ public class Reflection {
 
     /**
      * Unwrap map from method return.
-     * 
+     *
      * @param <K>
      * @param <T>
      * @param method the method
@@ -304,7 +304,7 @@ public class Reflection {
                 keyType = (Class<K>)theItemTypeKey;
 
             }else if(theItemTypeKey instanceof ParameterizedType){
-            	ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
+            	final ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
             	keyType = (Class<K>) theItemTypeKeyTyped.getRawType();
             }
             final Type theItemTypeValue = actualTypeArgs[1];
@@ -322,7 +322,7 @@ public class Reflection {
                 valueType = (Class<T>)theItemTypeValue;
 
             }else if(theItemTypeValue instanceof ParameterizedType){
-            	ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
+            	final ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
             	valueType = (Class<T>) valueTypeTyped.getRawType();
             }
 
