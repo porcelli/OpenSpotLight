@@ -95,10 +95,10 @@ public class Triple<K1, K2, K3> {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof Triple)) {
+        if (!(o instanceof Triple<?, ?, ?>)) {
             return false;
         }
-        final Triple that = (Triple)o;
+        final Triple<?, ?, ?> that = (Triple<?, ?, ?>)o;
         return Equals.eachEquality(Arrays.of(this.k1, this.k2, this.k3), Arrays.andOf(that.k1, that.k2, that.k3));
     }
 

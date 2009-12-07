@@ -18,6 +18,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "bundle_source" )
 public class BundleSource implements SimpleNodeType, Serializable {
 
+    private static final long   serialVersionUID = -5266436076638737597L;
+
     /** The relative. */
     private String              relative;
 
@@ -25,10 +27,10 @@ public class BundleSource implements SimpleNodeType, Serializable {
     private BundleProcessorType bundleProcessorType;
 
     /** The excludeds. */
-    private Set<String>         excludeds = new HashSet<String>();
+    private Set<String>         excludeds        = new HashSet<String>();
 
     /** The includeds. */
-    private Set<String>         includeds = new HashSet<String>();
+    private Set<String>         includeds        = new HashSet<String>();
 
     /** The hash code. */
     private volatile int        hashCode;

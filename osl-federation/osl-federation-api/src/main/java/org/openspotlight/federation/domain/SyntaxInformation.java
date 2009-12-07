@@ -16,11 +16,13 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "syntax_information" )
 public class SyntaxInformation implements Comparable<SyntaxInformation>, SimpleNodeType, Serializable {
 
+    private static final long     serialVersionUID = 9056717121341748618L;
+
     /** The hashcode. */
     private volatile int          hashcode;
 
     /** The stream artifact. */
-    private Artifact        streamArtifact;
+    private Artifact              streamArtifact;
 
     /** The line start. */
     private int                   lineStart;

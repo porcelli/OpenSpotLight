@@ -1,8 +1,10 @@
 package org.openspotlight.federation.domain;
 
 public class DnaSvnArtifactSource extends ArtifactSource {
-    private String userName;
-    private String password;
+    private static final long serialVersionUID = 780480895292133774L;
+
+    private String            userName;
+    private String            password;
 
     public String getPassword() {
         return this.password;

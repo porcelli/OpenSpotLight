@@ -12,96 +12,96 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Class Configuration.
  */
-@Name("configuration")
+@Name( "configuration" )
 public class GlobalSettings implements SimpleNodeType, Serializable {
 
-	private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
+    private static final long                                                      serialVersionUID      = 3443359462450366393L;
 
-	private long defaultSleepingIntervalInMilliseconds;
+    private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
 
-	/** The number of parallel threads. */
-	private int numberOfParallelThreads;
+    private long                                                                   defaultSleepingIntervalInMilliseconds;
 
-	/** The max result list size. */
-	private int maxResultListSize;
+    /** The number of parallel threads. */
+    private int                                                                    numberOfParallelThreads;
 
-	private String systemUser;
+    /** The max result list size. */
+    private int                                                                    maxResultListSize;
 
-	private String systemPassword;
+    private String                                                                 systemUser;
 
-	public GlobalSettings() {
-	}
+    private String                                                                 systemPassword;
 
-	public long getDefaultSleepingIntervalInMilliseconds() {
-		return defaultSleepingIntervalInMilliseconds;
-	}
+    public GlobalSettings() {
+    }
 
-	/**
-	 * Gets the max result list size.
-	 * 
-	 * @return the max result list size
-	 */
-	public int getMaxResultListSize() {
-		return maxResultListSize;
-	}
+    public long getDefaultSleepingIntervalInMilliseconds() {
+        return defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Gets the number of parallel threads.
-	 * 
-	 * @return the number of parallel threads
-	 */
-	public int getNumberOfParallelThreads() {
-		return numberOfParallelThreads;
-	}
+    /**
+     * Gets the max result list size.
+     * 
+     * @return the max result list size
+     */
+    public int getMaxResultListSize() {
+        return maxResultListSize;
+    }
 
-	public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
-		return schedulableCommandMap;
-	}
+    /**
+     * Gets the number of parallel threads.
+     * 
+     * @return the number of parallel threads
+     */
+    public int getNumberOfParallelThreads() {
+        return numberOfParallelThreads;
+    }
 
-	public String getSystemPassword() {
-		return systemPassword;
-	}
+    public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
+        return schedulableCommandMap;
+    }
 
-	public String getSystemUser() {
-		return systemUser;
-	}
+    public String getSystemPassword() {
+        return systemPassword;
+    }
 
-	public void setDefaultSleepingIntervalInMilliseconds(
-			final long defaultSleepingIntervalInMilliseconds) {
-		this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
-	}
+    public String getSystemUser() {
+        return systemUser;
+    }
 
-	/**
-	 * Sets the max result list size.
-	 * 
-	 * @param maxResultListSize
-	 *            the new max result list size
-	 */
-	public void setMaxResultListSize(final int maxResultListSize) {
-		this.maxResultListSize = maxResultListSize;
-	}
+    public void setDefaultSleepingIntervalInMilliseconds(
+                                                          final long defaultSleepingIntervalInMilliseconds ) {
+        this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Sets the number of parallel threads.
-	 * 
-	 * @param numberOfParallelThreads
-	 *            the new number of parallel threads
-	 */
-	public void setNumberOfParallelThreads(final int numberOfParallelThreads) {
-		this.numberOfParallelThreads = numberOfParallelThreads;
-	}
+    /**
+     * Sets the max result list size.
+     * 
+     * @param maxResultListSize the new max result list size
+     */
+    public void setMaxResultListSize( final int maxResultListSize ) {
+        this.maxResultListSize = maxResultListSize;
+    }
 
-	public void setSchedulableCommandMap(
-			final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap) {
-		this.schedulableCommandMap = schedulableCommandMap;
-	}
+    /**
+     * Sets the number of parallel threads.
+     * 
+     * @param numberOfParallelThreads the new number of parallel threads
+     */
+    public void setNumberOfParallelThreads( final int numberOfParallelThreads ) {
+        this.numberOfParallelThreads = numberOfParallelThreads;
+    }
 
-	public void setSystemPassword(final String systemPassword) {
-		this.systemPassword = systemPassword;
-	}
+    public void setSchedulableCommandMap(
+                                          final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap ) {
+        this.schedulableCommandMap = schedulableCommandMap;
+    }
 
-	public void setSystemUser(final String systemUser) {
-		this.systemUser = systemUser;
-	}
+    public void setSystemPassword( final String systemPassword ) {
+        this.systemPassword = systemPassword;
+    }
+
+    public void setSystemUser( final String systemUser ) {
+        this.systemUser = systemUser;
+    }
 
 }

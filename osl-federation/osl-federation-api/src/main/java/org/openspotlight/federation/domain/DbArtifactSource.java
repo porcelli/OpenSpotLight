@@ -1,11 +1,13 @@
 package org.openspotlight.federation.domain;
 
 public class DbArtifactSource extends ArtifactSource {
-    private String       driverClass;
-    private String       user;
-    private String       password;
-    private DatabaseType type;
-    private int          maxConnections;
+    private static final long serialVersionUID = -430683831296857466L;
+
+    private String            driverClass;
+    private String            user;
+    private String            password;
+    private DatabaseType      type;
+    private int               maxConnections;
 
     public String getDriverClass() {
         return this.driverClass;

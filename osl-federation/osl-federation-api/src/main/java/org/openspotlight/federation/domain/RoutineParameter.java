@@ -9,6 +9,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "routine_parameter" )
 public class RoutineParameter implements SimpleNodeType, Serializable {
+    private static final long    serialVersionUID = -4738878595542581888L;
+
     private String               name;
     private ColumnType           type;
     private NullableSqlType      nullable;

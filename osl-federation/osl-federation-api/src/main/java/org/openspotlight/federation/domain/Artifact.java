@@ -11,7 +11,6 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.finder.ArtifactTypeRegistry;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -24,6 +23,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * {@link ArtifactTypeRegistry}, so the bundle processor manager should load this classes.
  */
 public abstract class Artifact implements SimpleNodeType, Serializable, LogableObject {
+
+    private static final long serialVersionUID  = 372692540369995072L;
 
     private LastProcessStatus lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
 
@@ -85,7 +86,6 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @SuppressWarnings( "unchecked" )
     @Override
     public boolean equals( final Object o ) {
         if (!(o instanceof Artifact)) {

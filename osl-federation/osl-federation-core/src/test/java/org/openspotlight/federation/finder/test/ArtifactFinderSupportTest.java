@@ -9,14 +9,11 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.ArtifactFinderSupport;
 
 public class ArtifactFinderSupportTest {
-
-    private ArtifactSource artifactSource;
 
     @Test
     public void shouldCleanAllArtifactsMarkedWithExcluded() {

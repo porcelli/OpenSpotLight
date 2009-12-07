@@ -1,7 +1,5 @@
 package org.openspotlight.federation.domain;
 
-import java.sql.DatabaseMetaData;
-import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 

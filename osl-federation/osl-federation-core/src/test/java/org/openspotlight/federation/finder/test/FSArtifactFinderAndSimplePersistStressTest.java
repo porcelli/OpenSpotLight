@@ -1,7 +1,5 @@
 package org.openspotlight.federation.finder.test;
 
-import java.util.Set;
-
 import javax.jcr.Session;
 
 import org.junit.After;
@@ -9,7 +7,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -63,8 +60,7 @@ public class FSArtifactFinderAndSimplePersistStressTest {
     @Test
     public void shouldFindSourceAndStoreItOnJcr() throws Exception {
         final FileSystemStreamArtifactFinder finder = new FileSystemStreamArtifactFinder(this.artifactSource);
-        final Set<StreamArtifact> lotsOfSource = finder.listByPath(null);
-
+        finder.listByPath(null);
     }
 
 }

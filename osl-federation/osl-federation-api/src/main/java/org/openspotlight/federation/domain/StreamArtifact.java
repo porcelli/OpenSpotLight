@@ -1,6 +1,5 @@
 package org.openspotlight.federation.domain;
 
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 
@@ -12,8 +11,10 @@ import org.openspotlight.persist.annotation.Name;
 @Name( "stream_artifact" )
 public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
+    private static final long serialVersionUID = -8912205023568005794L;
+
     /** The content. */
-    private String                 content;
+    private String            content;
 
     @Override
     public boolean contentEquals( final Artifact other ) {

@@ -20,6 +20,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "repository" )
 public class Repository implements SimpleNodeType, Serializable {
 
+    private static final long serialVersionUID = -8278810189446649901L;
+
     public static interface GroupVisitor {
         public void visitGroup( Group group );
     }

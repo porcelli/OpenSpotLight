@@ -18,23 +18,25 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "artifact_source_mapping" )
 public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
+    private static final long serialVersionUID = -242895748094958633L;
+
     /** The to. */
-    private String         to;
+    private String            to;
 
     /** The relative. */
-    private String         from;
+    private String            from;
 
     /** The source. */
-    private ArtifactSource source;
+    private ArtifactSource    source;
 
     /** The excludeds. */
-    private Set<String>    excludeds = new HashSet<String>();
+    private Set<String>       excludeds        = new HashSet<String>();
 
     /** The includeds. */
-    private Set<String>    includeds = new HashSet<String>();
+    private Set<String>       includeds        = new HashSet<String>();
 
     /** The hash code. */
-    private volatile int   hashCode;
+    private volatile int      hashCode;
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)

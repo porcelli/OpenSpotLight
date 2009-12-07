@@ -9,12 +9,14 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "column" )
 public class Column implements SimpleNodeType, Serializable {
-    private String          name;
-    private ColumnType      type;
-    private NullableSqlType nullable;
-    private int             columnSize;
-    private int             decimalSize;
-    private TableArtifact   table;
+    private static final long serialVersionUID = -1495010016475838851L;
+
+    private String            name;
+    private ColumnType        type;
+    private NullableSqlType   nullable;
+    private int               columnSize;
+    private int               decimalSize;
+    private TableArtifact     table;
 
     public int getColumnSize() {
         return this.columnSize;

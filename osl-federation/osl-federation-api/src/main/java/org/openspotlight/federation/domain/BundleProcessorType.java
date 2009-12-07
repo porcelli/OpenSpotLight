@@ -19,6 +19,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "bundle_processor_type" )
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
+    private static final long                                    serialVersionUID = -8305990807194729295L;
+
     /** The type. */
     private Class<? extends BundleProcessor<? extends Artifact>> type;
 
@@ -29,7 +31,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
     private Group                                                group;
 
     /** The sources. */
-    private Set<BundleSource>                                    sources = new HashSet<BundleSource>();
+    private Set<BundleSource>                                    sources          = new HashSet<BundleSource>();
 
     /** The hash code. */
     private volatile int                                         hashCode;
