@@ -71,7 +71,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
@@ -486,7 +485,8 @@ public class SLRemoteGraphTest {
 	 */
 	@Before
 	public void beforeTest() throws Exception {
-		// org.openspotlight.common.util.Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
+		JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
 		if (session == null) {
 			session = client.createRemoteGraphSession(user, pass);
 		}
@@ -2874,7 +2874,6 @@ public class SLRemoteGraphTest {
 	 * Test link types for linked node deletion mark case.
 	 */
 	@Test
-	@Ignore
 	// ( dependsOnMethods =
 	// "testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" )
 	public void testLinkTypesForLinkedNodeDeletionMarkCase() {
@@ -3245,7 +3244,6 @@ public class SLRemoteGraphTest {
 	 * Test transient links without annotations.
 	 */
 	@Test
-	@Ignore
 	// ( dependsOnMethods = "testTransientLinksWithAnnotations" )
 	public void testTransientLinksWithoutAnnotations() {
 
