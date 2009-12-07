@@ -66,7 +66,6 @@ import org.openspotlight.federation.log.JcrDetailedLogger;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
@@ -121,8 +120,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		protected SLGraphSession createReference() throws Exception {
 			final SLGraph graph = AbstractFactory.getDefaultInstance(
 					SLGraphFactory.class).createGraph(descriptor);
-			return graph.openSession(lazyAuthenticatedUserReference.get(),
-					repositoryName);
+			return graph.openSession(getUser(), repositoryName);
 		}
 	}
 
@@ -154,8 +152,8 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 					.getDefaultInstance(SecurityFactory.class);
 			final User simpleUser = securityFactory.createUser(username);
 			final AuthenticatedUser user = securityFactory
-					.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-					.authenticate(simpleUser, password);
+					.createIdentityManager(descriptor).authenticate(simpleUser,
+							password);
 			return user;
 		}
 	};
@@ -210,13 +208,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 					protected ArtifactFinder<? extends Artifact> createReference() {
 						final Repository typedRepository = new Repository();
 						typedRepository.setName(repositoryName);
-						final ArtifactFinder<A> newFinder = JcrSessionArtifactFinder
-								.<A> createArtifactFinder(
-										type,
-										typedRepository,
-										(Session) lazyConnectionProviderReference
-												.get().openSession());
-						return newFinder;
+						return internalCreateFinder(type, typedRepository);
 					}
 				};
 			}
@@ -250,6 +242,14 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 	public AuthenticatedUser getUser() {
 		return lazyAuthenticatedUserReference.get();
+	}
+
+	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
+			final Class<A> type, final Repository typedRepository) {
+		final ArtifactFinder<A> newFinder = JcrSessionArtifactFinder
+				.<A> createArtifactFinder(type, typedRepository,
+						(Session) getDefaultConnectionProvider().openSession());
+		return newFinder;
 	}
 
 }

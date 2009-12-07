@@ -46,40 +46,51 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.finder;
+package org.openspotlight.federation.context;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.jcr.Session;
-
-import org.openspotlight.common.Pair;
+import org.openspotlight.common.DisposingListener;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
-public class JcrSessionArtifactFinderByRepositoryProvider implements
-		ArtifactFinderByRepositoryProvider {
+/**
+ * This class is an {@link ExecutionContext} which initialize all resources in a
+ * lazy way, and also close it in a lazy way also.
+ * 
+ * @author feu
+ * 
+ */
+public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 
-	private final Session session;
+	private final ArtifactSource source;
 
-	private final Map<Pair<Repository, Class<? extends Artifact>>, ArtifactFinder<? extends Artifact>> cache = new HashMap<Pair<Repository, Class<? extends Artifact>>, ArtifactFinder<? extends Artifact>>();
-
-	public JcrSessionArtifactFinderByRepositoryProvider(final Session session) {
-		this.session = session;
+	TestExecutionContext(final String username, final String password,
+			final JcrConnectionDescriptor descriptor,
+			final String repositoryName,
+			final DisposingListener<DefaultExecutionContext> listener,
+			final AuthenticatedUser user,
+			final SLGraphSession uniqueGraphSession, final ArtifactSource source) {
+		super(username, password, descriptor, repositoryName, listener, user,
+				uniqueGraphSession);
+		this.source = source;
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized <A extends Artifact> ArtifactFinder<A> getByRepository(
-			final Class<A> artifactType, final Repository repository) {
-		final Pair<Repository, Class<? extends Artifact>> key = new Pair<Repository, Class<? extends Artifact>>(
-				repository, artifactType);
-		ArtifactFinder<A> result = (ArtifactFinder<A>) cache.get(key);
-		if (result == null) {
-			result = JcrSessionArtifactFinder.createArtifactFinder(
-					artifactType, repository, session);
-			cache.put(key, result);
-		}
-		return result;
+	@Override
+	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
+			final Class<A> type, final Repository typedRepository) {
+		Assertions.checkCondition("artifactTypeAsStream", StreamArtifact.class
+				.equals(type));
+		final LocalSourceStreamArtifactFinder finder = new LocalSourceStreamArtifactFinder(
+				source);
+		return (ArtifactFinder<A>) finder;
 	}
 
 }
