@@ -7,9 +7,9 @@ import org.openspotlight.common.util.Exceptions;
  * This class is used to wrap resources with lazy initialization. This also
  * synchronizes the important methods using the {@link LockContainer} passed on
  * constructor.
- * 
+ *
  * @author feu
- * 
+ *
  * @param <R>
  */
 public abstract class AtomicLazyResource<R, E extends Exception> implements
@@ -32,7 +32,7 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 	/**
 	 * creates a new instance using the specified {@link LockContainer} internal
 	 * lock.
-	 * 
+	 *
 	 * @param lockContainer
 	 */
 	protected AtomicLazyResource(final LockContainer lockContainer,
@@ -45,7 +45,7 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 	 * This method will be called before try to close resources. Why try?
 	 * Because the wrapped resource "could" implement {@link Disposable}, but
 	 * this isn't mandatory.
-	 * 
+	 *
 	 * @param mayBeNullReference
 	 */
 	protected void afterTryToCloseResources(final R mayBeNullReference) {
@@ -53,11 +53,11 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 	}
 
 	public final void closeResources() {
-		synchronized (lock) {
-			if (reference instanceof Disposable) {
-				((Disposable) reference).closeResources();
+		synchronized (this.lock) {
+			if (this.reference instanceof Disposable) {
+				((Disposable) this.reference).closeResources();
 			}
-			afterTryToCloseResources(reference);
+			this.afterTryToCloseResources(this.reference);
 		}
 
 	}
@@ -65,21 +65,21 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 	/**
 	 * Method used to create a new reference. It will be called once and within
 	 * a synchronized block.
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract R createReference() throws Exception;
 
 	public final R get() throws E {
-		synchronized (lock) {
-			if (reference == null) {
+		synchronized (this.lock) {
+			if (this.reference == null) {
 				try {
-					reference = createReference();
+					this.reference = this.createReference();
 				} catch (final Exception e) {
 					throw Exceptions.logAndReturnNew(e, this.exceptionType);
 				}
 			}
-			return reference;
+			return this.reference;
 		}
 	}
 

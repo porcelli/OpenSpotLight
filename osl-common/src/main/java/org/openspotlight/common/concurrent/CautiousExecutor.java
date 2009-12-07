@@ -25,7 +25,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
         /**
          * Instantiates a new delegate thread factory.
-         * 
+         *
          * @param wrapped the wrapped
          */
         public DelegateThreadFactory(
@@ -35,7 +35,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
         /**
          * Adds the thread listener.
-         * 
+         *
          * @param l the l
          */
         public void addThreadListener( final ThreadListener l ) {
@@ -55,7 +55,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
         /**
          * Removes the thread listener.
-         * 
+         *
          * @param l the l
          */
         public void removeThreadListener( final ThreadListener l ) {
@@ -69,14 +69,14 @@ public class CautiousExecutor extends ThreadPoolExecutor {
      * <code>addTaskListener<code> method. When
      * the task event occurs, that object's appropriate
      * method is invoked.
-     * 
+     *
      * @see TaskEvent
      */
     public static interface TaskListener {
 
         /**
          * After executing task.
-         * 
+         *
          * @param r the r
          * @param t the t
          */
@@ -85,7 +85,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
         /**
          * Before executing task.
-         * 
+         *
          * @param t the t
          * @param r the r
          */
@@ -99,14 +99,14 @@ public class CautiousExecutor extends ThreadPoolExecutor {
      * <code>addThreadListener<code> method. When
      * the thread event occurs, that object's appropriate
      * method is invoked.
-     * 
+     *
      * @see ThreadEvent
      */
     public static interface ThreadListener {
 
         /**
          * After creating thread.
-         * 
+         *
          * @param t the t
          */
         public void afterCreatingThread( Thread t );
@@ -114,7 +114,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
     /**
      * New fixed thread pool.
-     * 
+     *
      * @param nThreads the n threads
      * @return the cautious executor
      */
@@ -134,7 +134,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
     /**
      * Instantiates a new cautious executor.
-     * 
+     *
      * @param corePoolSize the core pool size
      * @param maximumPoolSize the maximum pool size
      * @param keepAliveTime the keep alive time
@@ -152,7 +152,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
     /**
      * Adds the task listener.
-     * 
+     *
      * @param l the l
      */
     public void addTaskListener( final TaskListener l ) {
@@ -161,7 +161,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
     /**
      * Adds the thread listener.
-     * 
+     *
      * @param l the l
      */
     public void addThreadListener( final ThreadListener l ) {
@@ -193,7 +193,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
     /**
      * Removes the task listener.
-     * 
+     *
      * @param l the l
      */
     public void removeTaskListener( final TaskListener l ) {
@@ -202,7 +202,7 @@ public class CautiousExecutor extends ThreadPoolExecutor {
 
     /**
      * Removes the thread listener.
-     * 
+     *
      * @param l the l
      */
     public void removeThreadListener( final ThreadListener l ) {
