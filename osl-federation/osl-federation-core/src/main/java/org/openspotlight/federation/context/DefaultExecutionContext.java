@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jcr.Session;
 
+import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.concurrent.DefaultAtomicLazyResource;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
@@ -33,10 +34,6 @@ import org.openspotlight.security.idm.User;
  * 
  */
 public class DefaultExecutionContext implements ExecutionContext, LockContainer {
-
-	public static interface ClosingListener {
-		public void didCloseResources(DefaultExecutionContext context);
-	}
 
 	private final class LazyConfigurationManagerProvider extends
 			DefaultAtomicLazyResource<ConfigurationManager> {
@@ -97,7 +94,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
 	private final String repositoryName;
-	private final ClosingListener listener;
+	private final DisposingListener listener;
 	private final Object lock = new Object();
 	private final ConcurrentHashMap<? extends Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
 
@@ -129,7 +126,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 	DefaultExecutionContext(final String username, final String password,
 			final JcrConnectionDescriptor descriptor,
-			final String repositoryName, final ClosingListener listener) {
+			final String repositoryName, final DisposingListener listener) {
 		this.username = username;
 		this.password = password;
 		this.descriptor = descriptor;
@@ -148,7 +145,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 			lazyDetailedLoggerReference.closeResources();
 			lazyGraphSessionReference.closeResources();
 			lazyConnectionProviderReference.closeResources();
-			listener.didCloseResources(this);
+			listener.didCloseResource(this);
 		}
 	}
 

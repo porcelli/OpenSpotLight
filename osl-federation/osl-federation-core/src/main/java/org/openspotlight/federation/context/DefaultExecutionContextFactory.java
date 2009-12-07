@@ -2,11 +2,11 @@ package org.openspotlight.federation.context;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.openspotlight.federation.context.DefaultExecutionContext.ClosingListener;
+import org.openspotlight.common.DisposingListener;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public class DefaultExecutionContextFactory implements ExecutionContextFactory,
-		ClosingListener {
+		DisposingListener<DefaultExecutionContext> {
 
 	public static ExecutionContextFactory createFactory() {
 		return new DefaultExecutionContextFactory();
@@ -32,7 +32,7 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory,
 		return newContext;
 	}
 
-	public void didCloseResources(final DefaultExecutionContext context) {
+	public void didCloseResource(final DefaultExecutionContext context) {
 		openedContexts.remove(context);
 	}
 
