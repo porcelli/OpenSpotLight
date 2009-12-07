@@ -83,197 +83,241 @@ import org.openspotlight.graph.test.domain.MethodContainsParam;
 import org.openspotlight.graph.test.domain.MethodParam;
 import org.openspotlight.graph.test.domain.TypeContainsMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 
 public class SLGraphQueryCacheTest {
 
-    /** The Constant LOGGER. */
-    static final Logger                    LOGGER = Logger.getLogger(SLGraphQueryCacheTest.class);
+	/** The Constant LOGGER. */
+	static final Logger LOGGER = Logger.getLogger(SLGraphQueryCacheTest.class);
 
-    /** The graph. */
-    private static SLGraph                 graph;
+	/** The graph. */
+	private static SLGraph graph;
 
-    /** The session. */
-    private static SLGraphSession          session;
+	/** The session. */
+	private static SLGraphSession session;
 
-    private static SLPersistentTreeSession treeSession;
+	private static SLPersistentTreeSession treeSession;
 
-    private static SLQueryCacheImpl        queryCache;
+	private static SLQueryCacheImpl queryCache;
 
-    private static AuthenticatedUser user;
+	private static AuthenticatedUser user;
 
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public static void finish() {
-        session.close();
-        graph.shutdown();
-    }
+	/**
+	 * Finish.
+	 */
+	@AfterClass
+	public static void finish() {
+		session.close();
+		graph.shutdown();
+	}
 
-    /**
-     * Gets the i face type set.
-     * 
-     * @return the i face type set
-     */
-    private static Set<Class<?>> getIFaceTypeSet() {
-        final Set<Class<?>> set = new HashSet<Class<?>>();
-        set.add(java.util.Collection.class);
-        set.add(java.util.Map.class);
-        set.add(java.util.List.class);
-        set.add(java.util.Set.class);
-        set.add(java.util.SortedSet.class);
-        return set;
-    }
+	/**
+	 * Gets the i face type set.
+	 * 
+	 * @return the i face type set
+	 */
+	private static Set<Class<?>> getIFaceTypeSet() {
+		final Set<Class<?>> set = new HashSet<Class<?>>();
+		set.add(java.util.Collection.class);
+		set.add(java.util.Map.class);
+		set.add(java.util.List.class);
+		set.add(java.util.Set.class);
+		set.add(java.util.SortedSet.class);
+		return set;
+	}
 
-    /**
-     * Quick graph population.
-     */
-    @BeforeClass
-    public static void quickGraphPopulation() {
-        try {
-            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-            final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+	/**
+	 * Quick graph population.
+	 */
+	@BeforeClass
+	public static void quickGraphPopulation() {
+		try {
 
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            session = graph.openSession(user);
-            final SLContext context = session.createContext("cacheTest");
-            final SLNode root = context.getRootNode();
-            final Set<Class<?>> types = getIFaceTypeSet();
-            for (final Class<?> type : types) {
-                final Method[] methods = type.getDeclaredMethods();
-                LOGGER.info(type.getName() + ": " + methods.length + " methods");
-                final JavaInterface javaInteface = root.addNode(JavaInterface.class, type.getName());
-                javaInteface.setProperty(String.class, "caption", type.getName());
-                for (final Method method : methods) {
-                    final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());
-                    javaMethod.setProperty(String.class, "caption", method.getName());
-                    session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
-                    final Class<?>[] paramTypes = method.getParameterTypes();
-                    LOGGER.info("\t\t" + method.getName() + ": " + paramTypes.length + " params");
-                    for (final Class<?> paramType : paramTypes) {
-                        final MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramType.getName());
-                        methodParam.setProperty(String.class, "caption", paramType.getName());
-                        session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
-                    }
-                }
-            }
-            session.save();
-            session.close();
-            session = graph.openSession(user);
+			JcrConnectionProvider.createFromData(
+					DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
 
-            final SLPersistentTreeFactory pFactory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
-            final SLPersistentTree tree = pFactory.createPersistentTree(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            treeSession = tree.openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
+			final SecurityFactory securityFactory = AbstractFactory
+					.getDefaultInstance(SecurityFactory.class);
+			final User simpleUser = securityFactory.createUser("testUser");
+			user = securityFactory.createIdentityManager(
+					DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+					simpleUser, "password");
 
-            queryCache = new SLQueryCacheImpl(treeSession, session);
+			final SLGraphFactory factory = AbstractFactory
+					.getDefaultInstance(SLGraphFactory.class);
+			graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+			session = graph.openSession(user);
+			final SLContext context = session.createContext("cacheTest");
+			final SLNode root = context.getRootNode();
+			final Set<Class<?>> types = getIFaceTypeSet();
+			for (final Class<?> type : types) {
+				final Method[] methods = type.getDeclaredMethods();
+				LOGGER
+						.info(type.getName() + ": " + methods.length
+								+ " methods");
+				final JavaInterface javaInteface = root.addNode(
+						JavaInterface.class, type.getName());
+				javaInteface.setProperty(String.class, "caption", type
+						.getName());
+				for (final Method method : methods) {
+					final JavaTypeMethod javaMethod = javaInteface.addNode(
+							JavaTypeMethod.class, method.getName());
+					javaMethod.setProperty(String.class, "caption", method
+							.getName());
+					session.addLink(TypeContainsMethod.class, javaInteface,
+							javaMethod, false);
+					final Class<?>[] paramTypes = method.getParameterTypes();
+					LOGGER.info("\t\t" + method.getName() + ": "
+							+ paramTypes.length + " params");
+					for (final Class<?> paramType : paramTypes) {
+						final MethodParam methodParam = javaMethod.addNode(
+								MethodParam.class, paramType.getName());
+						methodParam.setProperty(String.class, "caption",
+								paramType.getName());
+						session.addLink(MethodContainsParam.class, javaMethod,
+								methodParam, false);
+					}
+				}
+			}
+			session.save();
+			session.close();
+			session = graph.openSession(user);
 
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+			final SLPersistentTreeFactory pFactory = AbstractFactory
+					.getDefaultInstance(SLPersistentTreeFactory.class);
+			final SLPersistentTree tree = pFactory
+					.createPersistentTree(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+			treeSession = tree.openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
 
-    @Test
-    //( dependsOnMethods = "selectTypes" )
-    public void selectMethods() throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialException {
-        String queryId = null;
-        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
+			queryCache = new SLQueryCacheImpl(treeSession, session);
 
-        final SLQueryApi query = this.session.createQueryApi();
+		} catch (final Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 
-        query.select().type(JavaTypeMethod.class.getName()).selectEnd();
+	@Test
+	// ( dependsOnMethods = "selectTypes" )
+	public void selectMethods() throws SLGraphSessionException,
+			SLInvalidQuerySyntaxException, SLPersistentTreeException,
+			SLInvalidCredentialException {
+		String queryId = null;
+		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
 
-        final SLQueryResult result = query.execute();
-        queryId = result.getQueryId();
+		final SLQueryApi query = session.createQueryApi();
 
-        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(true));
-        assertThat(this.queryCache.getCache(result.getQueryId()), is(notNullValue()));
+		query.select().type(JavaTypeMethod.class.getName()).selectEnd();
 
-        final SLQueryApi query2 = this.session.createQueryApi();
+		final SLQueryResult result = query.execute();
+		queryId = result.getQueryId();
 
-        query2.select().type(JavaTypeMethod.class.getName()).selectEnd();
+		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
+		assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
 
-        final SLQueryResult result2 = query2.execute();
+		final SLQueryApi query2 = session.createQueryApi();
 
-        assertThat(result2.getQueryId(), is(queryId));
+		query2.select().type(JavaTypeMethod.class.getName()).selectEnd();
 
-        this.graph.gc(user);
-        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
-    }
+		final SLQueryResult result2 = query2.execute();
 
-    @Test
-    public void selectTypes()
-        throws SLGraphSessionException, SLInvalidQuerySyntaxException, SLPersistentTreeException, SLInvalidCredentialException {
-        String queryId = null;
-        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
+		assertThat(result2.getQueryId(), is(queryId));
 
-        final SLQueryApi query = this.session.createQueryApi();
+		graph.gc(user);
+		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+	}
 
-        query.select().type(JavaType.class.getName()).subTypes().selectEnd();
+	@Test
+	public void selectTypes() throws SLGraphSessionException,
+			SLInvalidQuerySyntaxException, SLPersistentTreeException,
+			SLInvalidCredentialException {
+		String queryId = null;
+		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
 
-        final SLQueryResult result = query.execute(SortMode.SORTED, false);
-        queryId = result.getQueryId();
+		final SLQueryApi query = session.createQueryApi();
 
-        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(true));
-        assertThat(this.queryCache.getCache(result.getQueryId()), is(notNullValue()));
+		query.select().type(JavaType.class.getName()).subTypes().selectEnd();
 
-        QueryUtil.printResult(result.getNodes());
+		final SLQueryResult result = query.execute(SortMode.SORTED, false);
+		queryId = result.getQueryId();
 
-        final NodeWrapper[] wrappers = this.wrapNodes(result.getNodes());
-        assertThat(wrappers.length, is(5));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.Collection"), is(wrappers[0]));
-        assertThat(new NodeWrapper(JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.List"), is(wrappers[1]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.Map"), is(wrappers[2]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.Set"), is(wrappers[3]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.SortedSet"), is(wrappers[4]));
+		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
+		assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
 
-        final SLQueryApi query2 = this.session.createQueryApi();
+		QueryUtil.printResult(result.getNodes());
 
-        query2.select().type(JavaType.class.getName()).subTypes().selectEnd();
+		final NodeWrapper[] wrappers = wrapNodes(result.getNodes());
+		assertThat(wrappers.length, is(5));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.Collection"),
+				is(wrappers[0]));
+		assertThat(new NodeWrapper(JavaInterface.class.getName(), "cacheTest",
+				"java.util.List"), is(wrappers[1]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.Map"),
+				is(wrappers[2]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.Set"),
+				is(wrappers[3]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.SortedSet"),
+				is(wrappers[4]));
 
-        final SLQueryResult result2 = query2.execute(SortMode.SORTED, false);
+		final SLQueryApi query2 = session.createQueryApi();
 
-        assertThat(result2.getQueryId(), is(queryId));
+		query2.select().type(JavaType.class.getName()).subTypes().selectEnd();
 
-        final NodeWrapper[] wrappers2 = this.wrapNodes(result2.getNodes());
-        assertThat(wrappers2.length, is(5));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.Collection"), is(wrappers2[0]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.List"), is(wrappers2[1]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.Map"), is(wrappers2[2]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.Set"), is(wrappers2[3]));
-        assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "cacheTest",
-                                   "java.util.SortedSet"), is(wrappers2[4]));
+		final SLQueryResult result2 = query2.execute(SortMode.SORTED, false);
 
-        this.graph.gc(user);
-        assertThat(SLCommonSupport.containsQueryCache(this.treeSession), is(false));
-    }
+		assertThat(result2.getQueryId(), is(queryId));
 
-    /**
-     * Wrap nodes.
-     * 
-     * @param nodes the nodes
-     * @return the node wrapper[]
-     */
-    protected NodeWrapper[] wrapNodes( final List<SLNode> nodes ) {
-        final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
+		final NodeWrapper[] wrappers2 = wrapNodes(result2.getNodes());
+		assertThat(wrappers2.length, is(5));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.Collection"),
+				is(wrappers2[0]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.List"),
+				is(wrappers2[1]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.Map"),
+				is(wrappers2[2]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.Set"),
+				is(wrappers2[3]));
+		assertThat(new NodeWrapper(
+				org.openspotlight.graph.test.domain.JavaInterface.class
+						.getName(), "cacheTest", "java.util.SortedSet"),
+				is(wrappers2[4]));
 
-        for (int i = 0; i < wrappers.length; i++) {
-            wrappers[i] = new NodeWrapper(nodes.get(i));
-        }
-        return wrappers;
-    }
+		graph.gc(user);
+		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+	}
+
+	/**
+	 * Wrap nodes.
+	 * 
+	 * @param nodes
+	 *            the nodes
+	 * @return the node wrapper[]
+	 */
+	protected NodeWrapper[] wrapNodes(final List<SLNode> nodes) {
+		final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
+
+		for (int i = 0; i < wrappers.length; i++) {
+			wrappers[i] = new NodeWrapper(nodes.get(i));
+		}
+		return wrappers;
+	}
 
 }
