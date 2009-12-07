@@ -12,6 +12,7 @@ import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.processing.internal.ExampleBundleProcessor;
 
 /**
  * The Class XmlConfigurationManagerTest.

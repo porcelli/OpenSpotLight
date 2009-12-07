@@ -48,7 +48,7 @@
           <hashCode>1826163802</hashCode>
           <bundleTypes>
             <osl.BundleProcessorType>
-              <type>org.openspotlight.federation.loader.ExampleBundleProcessor</type>
+              <type>org.openspotlight.federation.processing.internal.ExampleBundleProcessor</type>
               <active>true</active>
               <group reference="../../.."/>
               <sources>

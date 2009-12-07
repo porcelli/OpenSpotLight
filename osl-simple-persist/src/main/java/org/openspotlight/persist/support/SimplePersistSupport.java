@@ -1000,8 +1000,11 @@ public class SimplePersistSupport {
 					propertyWhereXpath.append(" and ");
 				}
 			}
-			final String xpath = MessageFormat.format("{0}//{1}[{2}]",
-					rootPath, jcrNodeName, propertyWhereXpath.toString());
+			String xpath = MessageFormat.format("{0}//{1}[{2}]", rootPath,
+					jcrNodeName, propertyWhereXpath.toString());
+			if (xpath.endsWith("[]")) {
+				xpath = xpath.substring(0, xpath.length() - 2);
+			}
 			final Query query = session.getWorkspace().getQueryManager()
 					.createQuery(xpath, Query.XPATH);
 			final QueryResult result = query.execute();
