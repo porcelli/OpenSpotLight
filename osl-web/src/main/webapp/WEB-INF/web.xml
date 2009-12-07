@@ -5,6 +5,9 @@
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
 	<listener>
+		<listener-class>org.openspotlight.web.OslSessionListener</listener-class>
+	</listener>
+	<listener>
 		<listener-class>org.openspotlight.web.OslContextListener</listener-class>
 	</listener>
 	<servlet>
