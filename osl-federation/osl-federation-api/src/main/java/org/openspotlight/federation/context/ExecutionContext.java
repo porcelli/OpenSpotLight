@@ -7,9 +7,10 @@ import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 public interface ExecutionContext extends Disposable {
-	public <A extends Artifact> ArtifactFinder<A> getDefaultArtifactFinder(
+	public <A extends Artifact> ArtifactFinder<A> getArtifactFinder(
 			Class<A> type);
 
 	public ConfigurationManager getDefaultConfigurationManager();
@@ -19,4 +20,8 @@ public interface ExecutionContext extends Disposable {
 	public SLGraphSession getGraphSession();
 
 	public DetailedLogger getLogger();
+
+	public String getRepository();
+
+	public AuthenticatedUser getUser();
 }

@@ -15,34 +15,34 @@ import org.openspotlight.federation.domain.PathElement;
  * @author feu
  * @param <A>
  */
-public abstract class AbstractArtifactFinder<A extends Artifact> implements ArtifactFinder<A> {
+public abstract class AbstractArtifactFinder<A extends Artifact> implements
+		ArtifactFinder<A> {
 
-    public void closeResources() {
+	public A findByRelativePath(final A relativeTo, final String path) {
+		final String newPath = PathElement.createRelativePath(
+				relativeTo.getParent(), path).getCompletePath();
 
-    }
+		return findByPath(newPath);
+	}
 
-    public A findByRelativePath( final A relativeTo,
-                                 final String path ) {
-        final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
-
-        return this.findByPath(newPath);
-    }
-
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.finder.ArtifactFinder#listByPath(org.openspotlight.federation.domain.ArtifactSource, java.lang.String)
-     */
-    public Set<A> listByPath( final String rawPath ) {
-        try {
-            final Set<A> result = new HashSet<A>();
-            final Set<String> allFilePaths = this.retrieveAllArtifactNames(rawPath);
-            for (final String path : allFilePaths) {
-                final A sa = this.findByPath(path);
-                result.add(sa);
-            }
-            return result;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.openspotlight.federation.finder.ArtifactFinder#listByPath(org.
+	 * openspotlight.federation.domain.ArtifactSource, java.lang.String)
+	 */
+	public Set<A> listByPath(final String rawPath) {
+		try {
+			final Set<A> result = new HashSet<A>();
+			final Set<String> allFilePaths = retrieveAllArtifactNames(rawPath);
+			for (final String path : allFilePaths) {
+				final A sa = findByPath(path);
+				result.add(sa);
+			}
+			return result;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 
 }
