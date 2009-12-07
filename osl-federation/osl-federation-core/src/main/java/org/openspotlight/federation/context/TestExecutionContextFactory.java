@@ -86,8 +86,9 @@ public class TestExecutionContextFactory implements ExecutionContextFactory,
 		}
 	}
 
-	public ExecutionContext createExecutionContext(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
+	public synchronized ExecutionContext createExecutionContext(
+			final String username, final String password,
+			final JcrConnectionDescriptor descriptor,
 			final String repositoryName) {
 		try {
 			if (user == null || graphSession == null) {
