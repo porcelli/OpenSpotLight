@@ -9,7 +9,6 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LogEntry;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInformation;
-import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.support.SimplePersistSupport;
