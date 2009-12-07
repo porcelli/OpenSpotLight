@@ -13,6 +13,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
+@SuppressWarnings("unused")
 public class SimplePersistVisitorSupportTest {
 
 	private static class SimpleObject1 implements SimpleNodeType {
@@ -26,20 +27,20 @@ public class SimplePersistVisitorSupportTest {
 		private List<SimpleObject2> anotherChildren = new ArrayList<SimpleObject2>();
 
 		public List<SimpleObject2> getAnotherChildren() {
-			return this.anotherChildren;
+			return anotherChildren;
 		}
 
 		public List<SimpleObject2> getChildren() {
-			return this.children;
+			return children;
 		}
 
 		@KeyProperty
 		public String getName() {
-			return this.name;
+			return name;
 		}
 
 		public boolean isFlag() {
-			return this.flag;
+			return flag;
 		}
 
 		public void setAnotherChildren(final List<SimpleObject2> anotherChildren) {
@@ -71,21 +72,21 @@ public class SimplePersistVisitorSupportTest {
 		private Map<String, SimpleObject3> map = new HashMap<String, SimpleObject3>();
 
 		public Map<String, SimpleObject3> getMap() {
-			return this.map;
+			return map;
 		}
 
 		@KeyProperty
 		public String getName() {
-			return this.name;
+			return name;
 		}
 
 		@ParentProperty
 		public SimpleObject1 getParent() {
-			return this.parent;
+			return parent;
 		}
 
 		public boolean isFlag() {
-			return this.flag;
+			return flag;
 		}
 
 		public void setFlag(final boolean flag) {
@@ -117,21 +118,21 @@ public class SimplePersistVisitorSupportTest {
 		private SimpleObject4 child;
 
 		public SimpleObject4 getChild() {
-			return this.child;
+			return child;
 		}
 
 		@KeyProperty
 		public String getName() {
-			return this.name;
+			return name;
 		}
 
 		@ParentProperty
 		public SimpleObject2 getParent() {
-			return this.parent;
+			return parent;
 		}
 
 		public boolean isFlag() {
-			return this.flag;
+			return flag;
 		}
 
 		public void setChild(final SimpleObject4 child) {
@@ -162,26 +163,26 @@ public class SimplePersistVisitorSupportTest {
 		private SimpleObject3 parent;
 
 		public SimpleObject4 getAutoRelationShip() {
-			return this.autoRelationShip;
+			return autoRelationShip;
 		}
 
 		@KeyProperty
 		public String getName() {
-			return this.name;
+			return name;
 		}
 
 		@ParentProperty
 		public SimpleObject3 getParent() {
-			return this.parent;
+			return parent;
 		}
 
 		@ParentProperty
 		public SimpleObject4 getParentObj4() {
-			return this.parentObj4;
+			return parentObj4;
 		}
 
 		public boolean isFlag() {
-			return this.flag;
+			return flag;
 		}
 
 		public void setAutoRelationShip(final SimpleObject4 autoRelationShip) {
@@ -243,7 +244,7 @@ public class SimplePersistVisitorSupportTest {
 
 	@Test
 	public void shouldVisitCollectionProperties() throws Exception {
-		final SimpleObject1 root = this.createSampleData();
+		final SimpleObject1 root = createSampleData();
 		final AtomicInteger count = new AtomicInteger(0);
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject2.class, root,
 				new SimpleNodeTypeVisitor<SimpleObject2>() {
@@ -258,7 +259,7 @@ public class SimplePersistVisitorSupportTest {
 
 	@Test
 	public void shouldVisitMapValueProperties() throws Exception {
-		final SimpleObject1 root = this.createSampleData();
+		final SimpleObject1 root = createSampleData();
 		final AtomicInteger count = new AtomicInteger(0);
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject3.class, root,
 				new SimpleNodeTypeVisitor<SimpleObject3>() {
@@ -273,7 +274,7 @@ public class SimplePersistVisitorSupportTest {
 
 	@Test
 	public void shouldVisitSimpleProperties() throws Exception {
-		final SimpleObject1 root = this.createSampleData();
+		final SimpleObject1 root = createSampleData();
 		final AtomicInteger count = new AtomicInteger(0);
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject4.class, root,
 				new SimpleNodeTypeVisitor<SimpleObject4>() {

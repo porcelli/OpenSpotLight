@@ -20,6 +20,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimiti
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
 
+@SuppressWarnings("unused")
 public class TestIntegratedMethodResolution extends
 		AbstractMethodResolutionTest {
 
@@ -776,7 +777,6 @@ public class TestIntegratedMethodResolution extends
 				.createMethod("org.openspotlight", "SLObject", "toString",
 						"toString()");
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeAndMethodSLObject.getK1(), "toString");
 
@@ -803,7 +803,6 @@ public class TestIntegratedMethodResolution extends
 				.createMethod("java.lang", "Object", "wait",
 						"wait(java.lang.String)", stringParameter);
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeAndMethod.getK1(), "wait", parameterList);
 
@@ -894,7 +893,6 @@ public class TestIntegratedMethodResolution extends
 		final JavaType typeSLObject = createType("org.openspotlight",
 				"SLObject", typeAndMethodObject.getK1(), true);
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeSLObject, "toString");
 
@@ -918,7 +916,6 @@ public class TestIntegratedMethodResolution extends
 		final JavaType typeSLObject5 = createType("org.openspotlight",
 				"SLObject5", typeSLObject4, true);
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeSLObject5, "toString");
 
@@ -945,7 +942,6 @@ public class TestIntegratedMethodResolution extends
 				.createMethod("org.openspotlight", "SLObject5", "toString",
 						"toString()");
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeAndMethodObject5.getK1(), "toString");
 
@@ -989,7 +985,6 @@ public class TestIntegratedMethodResolution extends
 		final JavaType typeSLObject2 = createType("org.openspotlight",
 				"SLObject2", typeSLObject, true);
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeSLObject2, "toString");
 
@@ -1003,7 +998,6 @@ public class TestIntegratedMethodResolution extends
 		final Pair<JavaType, JavaMethod> typeAndMethod = this.createMethod(
 				"java.lang", "Object", "toString", "toString()");
 
-		@SuppressWarnings("unchecked")
 		final JavaMethodMethod foundMethod = (JavaMethodMethod) methodResolver
 				.getMethod(typeAndMethod.getK1(), "toString");
 

@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
@@ -16,27 +17,6 @@ import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
  * {@link ConfigurationManager} saved data.
  */
 public class ConfigurationSupport {
-
-	private static class ActualConfiguration {
-		private Set<Repository> repositories;
-		private GlobalSettings settings;
-
-		public Set<Repository> getRepositories() {
-			return repositories;
-		}
-
-		public GlobalSettings getSettings() {
-			return settings;
-		}
-
-		public void setRepositories(final Set<Repository> repositories) {
-			this.repositories = repositories;
-		}
-
-		public void setSettings(final GlobalSettings settings) {
-			this.settings = settings;
-		}
-	}
 
 	/**
 	 * Initialize configuration.
@@ -71,8 +51,8 @@ public class ConfigurationSupport {
 	 * @throws SLException
 	 *             the SL exception
 	 */
-	private static ActualConfiguration saveXmlOnJcr(
-			final ConfigurationManager manager) throws Exception {
+	private static void saveXmlOnJcr(final ConfigurationManager manager)
+			throws Exception {
 		GlobalSettings settings;
 		Set<Repository> repositories;
 		final InputStream is = ClassPathResource
@@ -90,9 +70,5 @@ public class ConfigurationSupport {
 		for (final Repository repository : repositories) {
 			manager.saveRepository(repository);
 		}
-		final ActualConfiguration configuration2 = new ActualConfiguration();
-		configuration2.setRepositories(repositories);
-		configuration2.setSettings(settings);
-		return configuration2;
 	}
 }

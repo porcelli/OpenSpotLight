@@ -36,102 +36,121 @@ import org.openspotlight.security.idm.User;
 
 public class DetailedLoggerTest {
 
-    public static class CustomErrorCode implements ErrorCode {
+	public static class CustomErrorCode implements ErrorCode {
 
-        public String getDescription() {
-            return "CustomErrorCode:description";
-        }
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3703345396653682388L;
 
-        public String getErrorCode() {
-            return "CustomErrorCode:errorCode";
-        }
+		public String getDescription() {
+			return "CustomErrorCode:description";
+		}
 
-    }
+		public String getErrorCode() {
+			return "CustomErrorCode:errorCode";
+		}
 
-    private static DetailedJcrLoggerFactory factory;
+	}
 
-    private Session                         session;
+	private static DetailedJcrLoggerFactory factory;
 
-    private SLGraphSession                  graphSession;
+	private Session session;
 
-    private static JcrConnectionProvider    provider;
+	private SLGraphSession graphSession;
 
-    private static SLGraph                  graph;
+	private static JcrConnectionProvider provider;
 
-    private static AuthenticatedUser        user;
+	private static SLGraph graph;
 
-    @BeforeClass
-    public static void setupJcr() throws Exception {
-        provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        factory = new DetailedJcrLoggerFactory(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-        final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+	private static AuthenticatedUser user;
 
-    }
+	@BeforeClass
+	public static void setupJcr() throws Exception {
+		provider = JcrConnectionProvider
+				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+		graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class)
+				.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+		factory = new DetailedJcrLoggerFactory(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+		final SecurityFactory securityFactory = AbstractFactory
+				.getDefaultInstance(SecurityFactory.class);
+		final User simpleUser = securityFactory.createUser("testUser");
+		user = securityFactory.createIdentityManager(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
+				"password");
 
-    private DetailedLogger logger;
+	}
 
-    @After
-    public void releaseAttributes() throws Exception {
-        this.factory.closeResources();
-        if (this.session != null) {
-            if (this.session.isLive()) {
-                this.session.logout();
-            }
-            this.session = null;
-        }
-        if (this.graphSession != null) {
-            this.graphSession.close();
-            this.graphSession = null;
-        }
-        this.logger = null;
-    }
+	private DetailedLogger logger;
 
-    @Before
-    public void setupAttributes() throws Exception {
-        this.session = provider.openSession();
-        this.graphSession = graph.openSession(user, "tempRepo");
-        this.logger = factory.createNewLogger();
-    }
+	@After
+	public void releaseAttributes() throws Exception {
+		factory.closeResources();
+		if (session != null) {
+			if (session.isLive()) {
+				session.logout();
+			}
+			session = null;
+		}
+		if (graphSession != null) {
+			graphSession.close();
+			graphSession = null;
+		}
+		logger = null;
+	}
 
-    @Test
-    public void shouldLogSomeStuff() throws Exception {
+	@Before
+	public void setupAttributes() throws Exception {
+		session = provider.openSession();
+		graphSession = graph.openSession(user, "tempRepo");
+		logger = factory.createNewLogger();
+	}
 
-        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(StreamArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
-        final SLNode node = this.graphSession.createContext("ctx").getRootNode().addNode("node1");
-        final SLNode node2 = node.addNode("node2");
-        final SLNode node3 = node2.addNode("node3");
-        this.logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "firstEntry", node3, artifact);
+	@Test
+	public void shouldLogSomeStuff() throws Exception {
 
-        this.logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);
-        this.logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(), "thirdEntry", node3);
+		final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
+				StreamArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
+		final SLNode node = graphSession.createContext("ctx").getRootNode()
+				.addNode("node1");
+		final SLNode node2 = node.addNode("node2");
+		final SLNode node3 = node2.addNode("node3");
+		logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(),
+				"firstEntry", node3, artifact);
 
-        final Query query = this.session.getWorkspace().getQueryManager().createQuery(
-                                                                                      SharedConstants.DEFAULT_JCR_ROOT_NAME
-                                                                                      + "//"
-                                                                                      + SimplePersistSupport.getJcrNodeName(LogEntry.class),
-                                                                                      Query.XPATH);
-        final NodeIterator foundNodes = query.execute().getNodes();
-        final Iterable<LogEntry> foundEntries = SimplePersistSupport.convertJcrsToBeans(this.session, foundNodes, LazyType.EAGER);
-        boolean hasAnyEntry = false;
-        boolean hasAnyObject = false;
-        for (final LogEntry entry : foundEntries) {
-            hasAnyEntry = true;
-            for (final LoggedObjectInformation info : entry.getNodes()) {
-                hasAnyObject = true;
-                assertThat(info.getClassName(), is(notNullValue()));
-                assertThat(info.getFriendlyDescription(), is(notNullValue()));
-            }
-            assertThat(entry.getType(), is(notNullValue()));
-            assertThat(entry.getDate(), is(notNullValue()));
-            assertThat(entry.getDetailedMessage(), is(notNullValue()));
-            assertThat(entry.getErrorCode(), is(notNullValue()));
-        }
-        assertThat(hasAnyEntry, is(true));
-        assertThat(hasAnyObject, is(true));
+		logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(),
+				"secondEntry", artifact);
+		logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(),
+				"thirdEntry", node3);
 
-    }
+		final Query query = session.getWorkspace().getQueryManager()
+				.createQuery(
+						SharedConstants.DEFAULT_JCR_ROOT_NAME
+								+ "//"
+								+ SimplePersistSupport
+										.getJcrNodeName(LogEntry.class),
+						Query.XPATH);
+		final NodeIterator foundNodes = query.execute().getNodes();
+		final Iterable<LogEntry> foundEntries = SimplePersistSupport
+				.convertJcrsToBeans(session, foundNodes, LazyType.EAGER);
+		boolean hasAnyEntry = false;
+		boolean hasAnyObject = false;
+		for (final LogEntry entry : foundEntries) {
+			hasAnyEntry = true;
+			for (final LoggedObjectInformation info : entry.getNodes()) {
+				hasAnyObject = true;
+				assertThat(info.getClassName(), is(notNullValue()));
+				assertThat(info.getFriendlyDescription(), is(notNullValue()));
+			}
+			assertThat(entry.getType(), is(notNullValue()));
+			assertThat(entry.getDate(), is(notNullValue()));
+			assertThat(entry.getDetailedMessage(), is(notNullValue()));
+			assertThat(entry.getErrorCode(), is(notNullValue()));
+		}
+		assertThat(hasAnyEntry, is(true));
+		assertThat(hasAnyObject, is(true));
+
+	}
 
 }

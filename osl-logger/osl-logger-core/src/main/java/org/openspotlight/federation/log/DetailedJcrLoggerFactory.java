@@ -41,6 +41,11 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 	@Name("log_entry")
 	public static class LogEntry implements SimpleNodeType, Serializable {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1429744150741798679L;
+
 		/** The error code. */
 		private ErrorCode errorCode;
 
@@ -212,6 +217,11 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 	@Name("logged_object_information")
 	public static class LoggedObjectInformation implements SimpleNodeType,
 			Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 2812040814742711306L;
 
 		private static List<LogableObject> getHierarchyFrom(
 				final LogableObject o) {

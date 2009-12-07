@@ -11,13 +11,14 @@ import org.openspotlight.federation.domain.StreamArtifact;
 
 public enum ArtifactTypeRegistry {
 
-    INSTANCE;
+	INSTANCE;
 
-    private final Set<Class<? extends Artifact>> artifactTypes = unmodifiableSet(setOf(StreamArtifact.class,
-                                                                                       DatabaseCustomArtifact.class));
+	@SuppressWarnings("unchecked")
+	private final Set<Class<? extends Artifact>> artifactTypes = unmodifiableSet(setOf(
+			StreamArtifact.class, DatabaseCustomArtifact.class));
 
-    public Set<Class<? extends Artifact>> getRegisteredArtifactTypes() {
-        return this.artifactTypes;
-    }
+	public Set<Class<? extends Artifact>> getRegisteredArtifactTypes() {
+		return artifactTypes;
+	}
 
 }
