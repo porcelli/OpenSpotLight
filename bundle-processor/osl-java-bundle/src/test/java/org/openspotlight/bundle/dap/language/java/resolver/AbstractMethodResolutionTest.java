@@ -124,7 +124,7 @@ public abstract class AbstractMethodResolutionTest {
 			final String fullMethodName) throws Exception {
 
 		return this.createMethod(packageName, typeName, simpleMethodName,
-				fullMethodName, false, (SLNode) null);
+				fullMethodName, false, (SLNode[]) null);
 	}
 
 	protected Pair<JavaType, JavaMethod> createMethod(final String packageName,
@@ -133,7 +133,7 @@ public abstract class AbstractMethodResolutionTest {
 			throws Exception {
 
 		return this.createMethod(packageName, typeName, simpleMethodName,
-				fullMethodName, isConstructor, (SLNode) null);
+				fullMethodName, isConstructor, (SLNode[]) null);
 	}
 
 	protected Pair<JavaType, JavaMethod> createMethod(final String packageName,
