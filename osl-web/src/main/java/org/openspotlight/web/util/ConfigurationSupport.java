@@ -1,16 +1,43 @@
 package org.openspotlight.web.util;
 
-import javax.jcr.Session;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 
 /**
  * The Class ConfigurationSupport contains methods to be used on
  * {@link ConfigurationManager} saved data.
  */
 public class ConfigurationSupport {
+
+	private static class ActualConfiguration {
+		private Set<Repository> repositories;
+		private GlobalSettings settings;
+
+		public Set<Repository> getRepositories() {
+			return repositories;
+		}
+
+		public GlobalSettings getSettings() {
+			return settings;
+		}
+
+		public void setRepositories(final Set<Repository> repositories) {
+			this.repositories = repositories;
+		}
+
+		public void setSettings(final GlobalSettings settings) {
+			this.settings = settings;
+		}
+	}
 
 	/**
 	 * Initialize configuration.
@@ -24,22 +51,16 @@ public class ConfigurationSupport {
 	 *             the SL exception
 	 */
 	public static boolean initializeConfiguration(final boolean forceReload,
-			final Session jcrSession) throws SLException {
-		// final ConfigurationManager manager = new
-		// JcrSessionConfigurationManager(jcrSession);
-		// boolean firstTime = false;
-		// try {
-		// manager.load(LazyType.LAZY);
-		// } catch (final NoConfigurationYetException e) {
-		// firstTime = true;
-		// }
-		// boolean reloaded = false;
-		// if (firstTime || forceReload) {
-		// saveXmlOnJcr(manager);
-		// reloaded = true;
-		// }
-		// return reloaded;
-		return false;
+			final ConfigurationManager jcrConfigurationManager)
+			throws Exception {
+		final boolean firstTime = jcrConfigurationManager.getAllRepositories()
+				.size() == 0;
+		boolean reloaded = false;
+		if (firstTime || forceReload) {
+			saveXmlOnJcr(jcrConfigurationManager);
+			reloaded = true;
+		}
+		return reloaded;
 	}
 
 	/**
@@ -51,18 +72,28 @@ public class ConfigurationSupport {
 	 * @throws SLException
 	 *             the SL exception
 	 */
-	private static GlobalSettings saveXmlOnJcr(
-			final ConfigurationManager manager) throws SLException {
-		// GlobalSettings configuration;
-		// final InputStream is =
-		// ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
-		// final XmlConfigurationManager xmlManager = new
-		// XmlConfigurationManager(is);
-		// configuration = xmlManager.load(LazyType.EAGER);
-		// configuration.getInstanceMetadata().accept(new
-		// MarkAllAsDirtyVisitor());
-		// manager.saveRepository(configuration);
-		// return configuration;
-		return null;
+	private static ActualConfiguration saveXmlOnJcr(
+			final ConfigurationManager manager) throws Exception {
+		GlobalSettings settings;
+		Set<Repository> repositories;
+		final InputStream is = ClassPathResource
+				.getResourceFromClassPath("osl-configuration.xml");
+		final StringWriter writter = new StringWriter();
+		IOUtils.copy(is, writter);
+		final String xmlContent = writter.toString();
+		is.close();
+		final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
+				.loadImmutableFromXmlContent(xmlContent);
+		settings = xmlManager.getGlobalSettings();
+		repositories = xmlManager.getAllRepositories();
+
+		manager.saveGlobalSettings(settings);
+		for (final Repository repository : repositories) {
+			manager.saveRepository(repository);
+		}
+		final ActualConfiguration configuration2 = new ActualConfiguration();
+		configuration2.setRepositories(repositories);
+		configuration2.setSettings(settings);
+		return configuration2;
 	}
 }
