@@ -19,7 +19,9 @@ import org.openspotlight.persist.annotation.TransientProperty;
 
 public class SLPasswordEntry implements SimpleNodeType, Serializable {
 
-	@SuppressWarnings("unchecked")
+    private static final long serialVersionUID = -989160074137053633L;
+
+    @SuppressWarnings("unchecked")
 	public static SLPasswordEntry create(final IdentityObject identityObject,
 			final IdentityObjectCredential credential) {
 		final SLPasswordEntry entry = new SLPasswordEntry();

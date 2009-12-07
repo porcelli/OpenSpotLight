@@ -36,7 +36,9 @@ import org.openspotlight.persist.annotation.TransientProperty;
 public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 		Serializable {
 
-	private String typeAsString;
+    private static final long serialVersionUID = -4651245099086963026L;
+
+    private String typeAsString;
 
 	private Set<SLAttributeEntry> attributes = new HashSet<SLAttributeEntry>();
 

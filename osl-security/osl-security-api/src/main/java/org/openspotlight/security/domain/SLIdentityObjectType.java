@@ -10,7 +10,9 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class SLIdentityObjectType implements IdentityObjectType,
 		SimpleNodeType, Serializable {
 
-	private String name;
+    private static final long serialVersionUID = 802461661886618314L;
+
+    private String name;
 
 	private SLIdentityObject parent;
 

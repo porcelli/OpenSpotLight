@@ -12,7 +12,9 @@ import org.openspotlight.persist.annotation.TransientProperty;
 public class SLIdentityObjectRelationship implements SimpleNodeType,
 		Serializable, IdentityObjectRelationship {
 
-	private String typeAsString;
+    private static final long serialVersionUID = 4264443925216883621L;
+
+    private String typeAsString;
 
 	private String fromIdentityObjectId;
 

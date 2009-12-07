@@ -661,6 +661,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
                 final SLAttributeEntry attribute = new SLAttributeEntry();
                 attribute.setName(entry.getName());
                 attribute.setParent(identityAsSlId);
+                @SuppressWarnings( "unchecked" )
                 final Collection<String> entries = entry.getValues();
                 attribute.setEntries(new HashSet<String>(entries));
                 identityAsSlId.getAttributes().add(attribute);
