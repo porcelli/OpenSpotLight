@@ -72,6 +72,7 @@ public class FileSystemStreamArtifactFinder extends
 	private final ArtifactSource artifactSource;
 
 	public FileSystemStreamArtifactFinder(final ArtifactSource artifactSource) {
+		super(artifactSource.getRepository().getName());
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("sourceExists", new File(artifactSource
 				.getInitialLookup()).exists());
@@ -82,7 +83,15 @@ public class FileSystemStreamArtifactFinder extends
 
 	}
 
-	public StreamArtifact findByPath(final String rawPath) {
+	public Class<StreamArtifact> getArtifactType() {
+		return StreamArtifact.class;
+	}
+
+	public Class<? extends ArtifactSource> getSourceType() {
+		return ArtifactSource.class;
+	}
+
+	protected StreamArtifact internalFindByPath(final String rawPath) {
 		Assertions.checkNotEmpty("rawPath", rawPath);
 		final String path = rawPath.startsWith("/") ? Strings
 				.removeBegginingFrom("/", rawPath) : rawPath;
@@ -116,15 +125,8 @@ public class FileSystemStreamArtifactFinder extends
 
 	}
 
-	public Class<StreamArtifact> getArtifactType() {
-		return StreamArtifact.class;
-	}
-
-	public Class<? extends ArtifactSource> getSourceType() {
-		return ArtifactSource.class;
-	}
-
-	public Set<String> retrieveAllArtifactNames(final String initialPath) {
+	protected Set<String> internalRetrieveAllArtifactNames(
+			final String initialPath) {
 		final String rawPath = initialPath == null ? "." : initialPath;
 		try {
 			final Set<String> result = new HashSet<String>();

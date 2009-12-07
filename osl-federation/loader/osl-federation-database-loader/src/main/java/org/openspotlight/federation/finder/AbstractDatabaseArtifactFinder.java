@@ -113,6 +113,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 
 	protected AbstractDatabaseArtifactFinder(
 			final DbArtifactSource artifactSource) {
+		super(artifactSource.getRepository().getName());
 		this.artifactSource = artifactSource;
 	}
 
@@ -188,6 +189,62 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 		}
 		return conn;
 
+	}
+
+	protected Set<String> internalRetrieveAllArtifactNames(
+			final String initialPath) {
+
+		final DbArtifactSource dbBundle = (DbArtifactSource) this.artifactSource;
+		try {
+			final Connection conn = this.getConnectionFromSource(dbBundle);
+			synchronized (conn) {
+				final Set<String> loadedNames = new HashSet<String>();
+
+				try {
+					final DatabaseType databaseType = dbBundle.getType();
+					for (final ScriptType scriptType : ScriptType.values()) {
+						final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
+								.getScript(databaseType, scriptType);
+						if (scriptDescription == null) {
+							continue;
+						}
+						final Class<? extends DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
+								.getNameHandlerClass();
+						final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType
+								.newInstance()
+								: null;
+
+						final ResultSet resultSet = executeStatement(
+								scriptDescription.getDataSelect(), conn);
+						walkingOnResult: while (resultSet.next()) {
+							final String result = this.fillName(
+									scriptDescription, resultSet, nameHandler);
+							if (nameHandler != null) {
+								final boolean shouldProcess = nameHandler
+										.shouldIncludeName(result, scriptType,
+												resultSet);
+								if (!shouldProcess) {
+									continue walkingOnResult;
+								}
+							}
+							if (isMatchingWithoutCaseSentitiveness(result,
+									initialPath + "*")) {
+								loadedNames.add(result);
+							}
+
+						}
+						resultSet.close();
+					}
+					return loadedNames;
+				} catch (final Exception e) {
+					logAndReturnNew(e, ConfigurationException.class);
+				}
+
+			}
+		} catch (final Exception e) {
+			logAndReturnNew(e, ConfigurationException.class);
+		}
+		return emptySet();
 	}
 
 	/**
@@ -358,61 +415,6 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 				resultSet.close();
 			}
 		}
-	}
-
-	public Set<String> retrieveAllArtifactNames(final String initialPath) {
-
-		final DbArtifactSource dbBundle = (DbArtifactSource) this.artifactSource;
-		try {
-			final Connection conn = this.getConnectionFromSource(dbBundle);
-			synchronized (conn) {
-				final Set<String> loadedNames = new HashSet<String>();
-
-				try {
-					final DatabaseType databaseType = dbBundle.getType();
-					for (final ScriptType scriptType : ScriptType.values()) {
-						final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
-								.getScript(databaseType, scriptType);
-						if (scriptDescription == null) {
-							continue;
-						}
-						final Class<? extends DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
-								.getNameHandlerClass();
-						final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType
-								.newInstance()
-								: null;
-
-						final ResultSet resultSet = executeStatement(
-								scriptDescription.getDataSelect(), conn);
-						walkingOnResult: while (resultSet.next()) {
-							final String result = this.fillName(
-									scriptDescription, resultSet, nameHandler);
-							if (nameHandler != null) {
-								final boolean shouldProcess = nameHandler
-										.shouldIncludeName(result, scriptType,
-												resultSet);
-								if (!shouldProcess) {
-									continue walkingOnResult;
-								}
-							}
-							if (isMatchingWithoutCaseSentitiveness(result,
-									initialPath + "*")) {
-								loadedNames.add(result);
-							}
-
-						}
-						resultSet.close();
-					}
-					return loadedNames;
-				} catch (final Exception e) {
-					logAndReturnNew(e, ConfigurationException.class);
-				}
-
-			}
-		} catch (final Exception e) {
-			logAndReturnNew(e, ConfigurationException.class);
-		}
-		return emptySet();
 	}
 
 }

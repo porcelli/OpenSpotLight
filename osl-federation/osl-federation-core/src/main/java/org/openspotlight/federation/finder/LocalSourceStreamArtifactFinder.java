@@ -67,109 +67,121 @@ import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.PathElement;
 import org.openspotlight.federation.domain.StreamArtifact;
 
-public class LocalSourceStreamArtifactFinder implements ArtifactFinder<StreamArtifact> {
+public class LocalSourceStreamArtifactFinder extends
+		AbstractArtifactFinder<StreamArtifact> {
 
-    private final ArtifactSource artifactSource;
+	private final ArtifactSource artifactSource;
 
-    public LocalSourceStreamArtifactFinder(
-                                            final ArtifactSource artifactSource ) {
-        Assertions.checkNotNull("artifactSource", artifactSource);
-        Assertions.checkCondition("fileExists", new File(artifactSource.getInitialLookup() + "/").exists());
-        this.artifactSource = artifactSource;
-    }
+	public LocalSourceStreamArtifactFinder(final ArtifactSource artifactSource) {
+		super(artifactSource.getRepository().getName());
+		Assertions.checkNotNull("artifactSource", artifactSource);
+		Assertions.checkCondition("fileExists", new File(artifactSource
+				.getInitialLookup()
+				+ "/").exists());
+		this.artifactSource = artifactSource;
+	}
 
-    public void closeResources() {
-        // TODO Auto-generated method stub
+	public void closeResources() {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
-    public StreamArtifact findByPath( final String rawPath ) {
-        Assertions.checkNotEmpty("rawPath", rawPath);
-        for (final ChangeType t : ChangeType.values()) {
-            try {
+	public Class<StreamArtifact> getArtifactType() {
+		return StreamArtifact.class;
+	}
 
-                final String location = MessageFormat.format("{0}/{1}/{2}", this.artifactSource.getInitialLookup(),
-                                                             t.toString().toLowerCase(), rawPath);
+	public Class<? extends ArtifactSource> getSourceType() {
+		return null;
+	}
 
-                final File file = new File(location);
-                if (!file.exists()) {
-                    continue;
-                }
+	protected StreamArtifact internalFindByPath(final String rawPath) {
+		Assertions.checkNotEmpty("rawPath", rawPath);
+		for (final ChangeType t : ChangeType.values()) {
+			try {
 
-                final FileInputStream resource = new FileInputStream(file);
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
-                final StringBuilder buffer = new StringBuilder();
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line);
-                    buffer.append('\n');
-                }
-                final String content = buffer.toString();
-                final StreamArtifact streamArtifact = Artifact.createArtifact(StreamArtifact.class, rawPath, t);
-                streamArtifact.setContent(content);
-                return streamArtifact;
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-            }
-        }
+				final String location = MessageFormat.format("{0}/{1}/{2}",
+						artifactSource.getInitialLookup(), t.toString()
+								.toLowerCase(), rawPath);
 
-        return null;
+				final File file = new File(location);
+				if (!file.exists()) {
+					continue;
+				}
 
-    }
+				final FileInputStream resource = new FileInputStream(file);
+				final BufferedReader reader = new BufferedReader(
+						new InputStreamReader(resource));
+				final StringBuilder buffer = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					buffer.append(line);
+					buffer.append('\n');
+				}
+				final String content = buffer.toString();
+				final StreamArtifact streamArtifact = Artifact.createArtifact(
+						StreamArtifact.class, rawPath, t);
+				streamArtifact.setContent(content);
+				return streamArtifact;
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			}
+		}
 
-    public StreamArtifact findByRelativePath( final StreamArtifact relativeTo,
-                                              final String path ) {
-        Assertions.checkNotNull("artifactSource", this.artifactSource);
-        Assertions.checkNotNull("relativeTo", relativeTo);
-        Assertions.checkNotEmpty("path", path);
-        final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
+		return null;
 
-        return this.findByPath(newPath);
-    }
+	}
 
-    public Class<StreamArtifact> getArtifactType() {
-        return StreamArtifact.class;
-    }
+	protected StreamArtifact internalFindByRelativePath(
+			final StreamArtifact relativeTo, final String path) {
+		Assertions.checkNotNull("artifactSource", artifactSource);
+		Assertions.checkNotNull("relativeTo", relativeTo);
+		Assertions.checkNotEmpty("path", path);
+		final String newPath = PathElement.createRelativePath(
+				relativeTo.getParent(), path).getCompletePath();
 
-    public Class<? extends ArtifactSource> getSourceType() {
-        return null;
-    }
+		return findByPath(newPath);
+	}
 
-    public Set<StreamArtifact> listByPath( final String rawPath ) {
-        try {
-            final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
-            final Set<String> allFilePaths = this.retrieveAllArtifactNames(rawPath);
-            for (final String path : allFilePaths) {
-                final StreamArtifact sa = this.findByPath(path);
-                result.add(sa);
-            }
-            return result;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+	protected Set<StreamArtifact> internalListByPath(final String rawPath) {
+		try {
+			final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
+			final Set<String> allFilePaths = retrieveAllArtifactNames(rawPath);
+			for (final String path : allFilePaths) {
+				final StreamArtifact sa = findByPath(path);
+				result.add(sa);
+			}
+			return result;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 
-    public Set<String> retrieveAllArtifactNames( final String initialPath ) {
-        final String rawPath = initialPath == null ? "." : initialPath;
-        try {
-            final Set<String> result = new HashSet<String>();
-            for (final ChangeType t : ChangeType.values()) {
+	protected Set<String> internalRetrieveAllArtifactNames(
+			final String initialPath) {
+		final String rawPath = initialPath == null ? "." : initialPath;
+		try {
+			final Set<String> result = new HashSet<String>();
+			for (final ChangeType t : ChangeType.values()) {
 
-                final String location = MessageFormat.format("{0}/{1}/{2}", this.artifactSource.getInitialLookup(),
-                                                             t.toString().toLowerCase(), rawPath);
+				final String location = MessageFormat.format("{0}/{1}/{2}",
+						artifactSource.getInitialLookup(), t.toString()
+								.toLowerCase(), rawPath);
 
-                final String pathToRemove = Files.getNormalizedFileName(new File(this.artifactSource.getInitialLookup())) + "/"
-                                            + t.toString().toLowerCase() + "/";
-                final Set<String> pathList = Files.listFileNamesFrom(location);
+				final String pathToRemove = Files
+						.getNormalizedFileName(new File(artifactSource
+								.getInitialLookup()))
+						+ "/" + t.toString().toLowerCase() + "/";
+				final Set<String> pathList = Files.listFileNamesFrom(location);
 
-                for (final String p : pathList) {
-                    final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
-                    result.add(correctRelativePath);
-                }
-            }
-            return result;
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+				for (final String p : pathList) {
+					final String correctRelativePath = Strings
+							.removeBegginingFrom(pathToRemove, p);
+					result.add(correctRelativePath);
+				}
+			}
+			return result;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 }

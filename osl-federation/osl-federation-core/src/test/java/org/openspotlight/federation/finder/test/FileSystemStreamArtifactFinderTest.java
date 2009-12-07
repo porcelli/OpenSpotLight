@@ -56,6 +56,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactWithSyntaxInformation;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 
@@ -64,52 +65,65 @@ import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
  */
 public class FileSystemStreamArtifactFinderTest {
 
-    /** The stream artifact finder. */
-    private FileSystemStreamArtifactFinder streamArtifactFinder;
+	/** The stream artifact finder. */
+	private FileSystemStreamArtifactFinder streamArtifactFinder;
 
-    /** The artifact source. */
-    private ArtifactSource                 artifactSource;
+	/** The artifact source. */
+	private ArtifactSource artifactSource;
 
-    /**
-     * Prepare artifact source.
-     * 
-     * @throws Exception the exception
-     */
-    @Before
-    public void prepareArtifactSource() throws Exception {
-        this.artifactSource = new ArtifactSource();
-        this.artifactSource.setName("classpath");
-        this.artifactSource.setInitialLookup("./src/test/resources/artifacts/not_changed");
-        this.streamArtifactFinder = new FileSystemStreamArtifactFinder(this.artifactSource);
-    }
+	/**
+	 * Prepare artifact source.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Before
+	public void prepareArtifactSource() throws Exception {
+		final Repository repository = new Repository();
+		repository.setName("repositoryName");
+		artifactSource = new ArtifactSource();
+		artifactSource.setRepository(repository);
+		artifactSource.setName("classpath");
+		artifactSource
+				.setInitialLookup("./src/test/resources/artifacts/not_changed");
+		streamArtifactFinder = new FileSystemStreamArtifactFinder(
+				artifactSource);
+	}
 
-    /**
-     * Should find by relative path.
-     * 
-     * @throws Exception the exception
-     */
-    @Test
-    public void shouldFindByRelativePath() throws Exception {
-        final StreamArtifact streamArtifact1 = this.streamArtifactFinder.findByPath("/folder/subfolder/file_not_changed1");
-        final StreamArtifact streamArtifact2 = this.streamArtifactFinder.findByRelativePath(streamArtifact1,
-                                                                                            "../file_not_changed1");
-        assertThat(streamArtifact2, is(notNullValue()));
-        assertThat(streamArtifact2.getArtifactCompleteName(), is("/folder/file_not_changed1"));
-    }
+	/**
+	 * Should find by relative path.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void shouldFindByRelativePath() throws Exception {
+		final StreamArtifact streamArtifact1 = streamArtifactFinder
+				.findByPath("/folder/subfolder/file_not_changed1");
+		final StreamArtifact streamArtifact2 = streamArtifactFinder
+				.findByRelativePath(streamArtifact1, "../file_not_changed1");
+		assertThat(streamArtifact2, is(notNullValue()));
+		assertThat(streamArtifact2.getArtifactCompleteName(),
+				is("/folder/file_not_changed1"));
+	}
 
-    /**
-     * Should load not changed artifact.
-     * 
-     * @throws Exception the exception
-     */
-    @Test
-    public void shouldLoadNotChangedArtifact() throws Exception {
-        final ArtifactWithSyntaxInformation streamArtifact1 = this.streamArtifactFinder.findByPath("folder/file_not_changed1");
-        final ArtifactWithSyntaxInformation streamArtifact2 = this.streamArtifactFinder.findByPath("folder/subfolder/file_not_changed1");
-        final ArtifactWithSyntaxInformation streamArtifact3 = this.streamArtifactFinder.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
-        assertThat(streamArtifact1, is(notNullValue()));
-        assertThat(streamArtifact2, is(notNullValue()));
-        assertThat(streamArtifact3, is(notNullValue()));
-    }
+	/**
+	 * Should load not changed artifact.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void shouldLoadNotChangedArtifact() throws Exception {
+		final ArtifactWithSyntaxInformation streamArtifact1 = streamArtifactFinder
+				.findByPath("folder/file_not_changed1");
+		final ArtifactWithSyntaxInformation streamArtifact2 = streamArtifactFinder
+				.findByPath("folder/subfolder/file_not_changed1");
+		final ArtifactWithSyntaxInformation streamArtifact3 = streamArtifactFinder
+				.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
+		assertThat(streamArtifact1, is(notNullValue()));
+		assertThat(streamArtifact2, is(notNullValue()));
+		assertThat(streamArtifact3, is(notNullValue()));
+	}
 
 }
