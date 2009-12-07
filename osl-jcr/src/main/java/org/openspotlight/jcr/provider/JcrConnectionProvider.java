@@ -65,24 +65,24 @@ public abstract class JcrConnectionProvider {
 		 */
 		@Override
 		public synchronized void beforeCloseRepository() {
-			if (this.repository == null) {
-				this.repositoryClosed = true;
+			if (repository == null) {
+				repositoryClosed = true;
 				return;
 			}
-			final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl) this.repository;
+			final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl) repository;
 
 			repositoryCasted.shutdown();
 
 			final RepositoryLock repoLock = new RepositoryLock();
 			try {
-				repoLock.init(this.getData().getConfigurationDirectory());
+				repoLock.init(getData().getConfigurationDirectory());
 				repoLock.acquire();
 				repoLock.release();
 			} catch (final RepositoryException e) {
 			}
-			if (this.getData().isTemporary()) {
+			if (getData().isTemporary()) {
 				try {
-					Files.delete(this.getData().getConfigurationDirectory());
+					Files.delete(getData().getConfigurationDirectory());
 				} catch (final SLException e) {
 					throw Exceptions.logAndReturnNew(e,
 							SLRuntimeException.class);
@@ -90,29 +90,28 @@ public abstract class JcrConnectionProvider {
 				}
 			}
 
-			this.repositoryClosed = true;
+			repositoryClosed = true;
 		}
 
 		@Override
 		public void openRepository() {
-			if (this.repository == null || this.repositoryClosed) {
+			if (repository == null || repositoryClosed) {
 				try {
 					try {
-						Files
-								.delete(this.getData()
-										.getConfigurationDirectory());
+						Files.delete(getData().getConfigurationDirectory());
 					} catch (final SLException e) {
 						throw Exceptions.logAndReturnNew(e,
 								SLRuntimeException.class);
 					}
 
 					final RepositoryConfig config = RepositoryConfig.create(
-							ClassPathResource.getResourceFromClassPath(this
-									.getData().getXmlClasspathLocation()), this
-									.getData().getConfigurationDirectory());
+							ClassPathResource
+									.getResourceFromClassPath(getData()
+											.getXmlClasspathLocation()),
+							getData().getConfigurationDirectory());
 
-					this.repository = RepositoryImpl.create(config);
-					this.repositoryClosed = false;
+					repository = RepositoryImpl.create(config);
+					repositoryClosed = false;
 				} catch (final Exception e) {
 					throw Exceptions.logAndReturnNew(e,
 							ConfigurationException.class);
@@ -124,28 +123,13 @@ public abstract class JcrConnectionProvider {
 		 * (non-Javadoc)
 		 * 
 		 * @see
-		 * org.openspotlight.jcr.provider.JcrConnectionProvider#openRepository()
-		 */
-		@Override
-		public synchronized void openRepositoryAndCleanIfItIsTemporary() {
-			if (this.getData().isTemporary()) {
-				this.beforeCloseRepository();
-			}
-
-			this.openRepository();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
 		 * org.openspotlight.jcr.provider.JcrConnectionProvider#openSession()
 		 */
 		@Override
 		public SessionWithLock openSession() {
 			try {
-				this.openRepository();
-				final Session newSession = this.repository.login(this.getData()
+				openRepository();
+				final Session newSession = repository.login(getData()
 						.getCredentials());
 				final int sessionId = JackRabbitConnectionProvider.sessionIdFactory
 						.getAndIncrement();
@@ -222,7 +206,7 @@ public abstract class JcrConnectionProvider {
 	protected abstract void beforeCloseRepository();
 
 	public void closeRepository() {
-		this.beforeCloseRepository();
+		beforeCloseRepository();
 		JcrConnectionProvider.cache.remove(this);
 	}
 
@@ -232,11 +216,11 @@ public abstract class JcrConnectionProvider {
 	 * @return the data
 	 */
 	public JcrConnectionDescriptor getData() {
-		return this.data;
+		return data;
 	}
 
 	public final boolean isTemporary() {
-		return this.data.isTemporary();
+		return data.isTemporary();
 	}
 
 	/**
@@ -245,13 +229,6 @@ public abstract class JcrConnectionProvider {
 	 * @return the repository
 	 */
 	public abstract void openRepository();
-
-	/**
-	 * Open repository.
-	 * 
-	 * @return the repository
-	 */
-	public abstract void openRepositoryAndCleanIfItIsTemporary();
 
 	/**
 	 * Open session.

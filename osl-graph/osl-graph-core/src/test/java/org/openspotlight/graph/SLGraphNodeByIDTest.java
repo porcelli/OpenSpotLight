@@ -59,6 +59,7 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.JavaInterface;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
@@ -71,61 +72,71 @@ import org.openspotlight.security.idm.User;
 
 public class SLGraphNodeByIDTest {
 
-    /** The Constant LOGGER. */
-    static final Logger              LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+	/** The Constant LOGGER. */
+	static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
 
-    /** The graph. */
-    private static SLGraph           graph;
+	/** The graph. */
+	private static SLGraph graph;
 
-    /** The session. */
-    private static SLGraphSession    session;
+	/** The session. */
+	private static SLGraphSession session;
 
-    private static AuthenticatedUser user;
+	private static AuthenticatedUser user;
 
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public static void finish() {
-        session.close();
-        graph.shutdown();
-    }
+	/**
+	 * Finish.
+	 */
+	@AfterClass
+	public static void finish() {
+		session.close();
+		graph.shutdown();
+	}
 
-    /**
-     * Sets the up.
-     */
-    @BeforeClass
-    public static void setUp() {
-        try {
-            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+	/**
+	 * Sets the up.
+	 */
+	@BeforeClass
+	public static void setUp() {
+		try {
 
-            final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+			JcrConnectionProvider.createFromData(
+					DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
 
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            session = graph.openSession(user);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+			final SecurityFactory securityFactory = AbstractFactory
+					.getDefaultInstance(SecurityFactory.class);
 
-    /**
-     * Test get node by id casting.
-     */
-    @Test
-    public void testGetNodeByIDCasting() {
-        try {
+			final User simpleUser = securityFactory.createUser("testUser");
+			user = securityFactory.createIdentityManager(
+					DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+					simpleUser, "password");
 
-            final SLContext context = session.createContext("linkCountTest");
-            final SLNode root = context.getRootNode();
+			final SLGraphFactory factory = AbstractFactory
+					.getDefaultInstance(SLGraphFactory.class);
+			graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+			session = graph.openSession(user);
+		} catch (final Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 
-            final JavaInterface javaInterface = root.addNode(JavaInterface.class, "javaInterface");
-            final JavaInterface javaInterface2 = (JavaInterface)session.getNodeByID(javaInterface.getID());
+	/**
+	 * Test get node by id casting.
+	 */
+	@Test
+	public void testGetNodeByIDCasting() {
+		try {
 
-            assertThat(javaInterface, is(javaInterface2));
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+			final SLContext context = session.createContext("linkCountTest");
+			final SLNode root = context.getRootNode();
+
+			final JavaInterface javaInterface = root.addNode(
+					JavaInterface.class, "javaInterface");
+			final JavaInterface javaInterface2 = (JavaInterface) session
+					.getNodeByID(javaInterface.getID());
+
+			assertThat(javaInterface, is(javaInterface2));
+		} catch (final Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 }
