@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -1126,6 +1127,7 @@ public class SimplePersistSupport {
 	 * @throws Exception
 	 *             the exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> void handlePropertyOfComplexCollection(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedCollectionTypeFromMethodReturn<Object> metadata)
@@ -1165,6 +1167,7 @@ public class SimplePersistSupport {
 	 * @throws Exception
 	 *             the exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> void handlePropertyOfComplexMap(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata)
@@ -1210,6 +1213,7 @@ public class SimplePersistSupport {
 	 * @throws SLException
 	 *             the SL exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> void handlePropertyOfSimpleCollection(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedCollectionTypeFromMethodReturn<Object> metadata)
@@ -1252,6 +1256,7 @@ public class SimplePersistSupport {
 	 * @throws SLException
 	 *             the SL exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> void handlePropertyOfSimpleMap(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata)
@@ -1421,6 +1426,7 @@ public class SimplePersistSupport {
 	 * @throws Exception
 	 *             the exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> void setComplexCollectionPropertyFromDescriptorToBean(
 			final BeanDescriptor beanDescriptor, final T newObject,
 			final PropertyDescriptor desc) throws Exception {
@@ -1755,6 +1761,7 @@ public class SimplePersistSupport {
 	 * @throws InvocationTargetException
 	 *             the invocation target exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static <T> void setSimpleCollectionPropertyFromDescriptorToBean(
 			final BeanDescriptor beanDescriptor, final T newObject,
 			final PropertyDescriptor desc) throws ClassNotFoundException,

@@ -40,12 +40,14 @@ public enum DefaultScheduler implements SLScheduler {
 
 		private final String cronInformation;
 
+		@SuppressWarnings("unchecked")
 		private final Class<? extends SchedulableCommand> commandType;
 
 		private final Schedulable schedulable;
 
 		private final SchedulableContextFactory factory;
 
+		@SuppressWarnings("unchecked")
 		public OslInternalSchedulerCommand(final Schedulable schedulable,
 				final Class<? extends SchedulableCommand> commandType,
 				final SchedulableContextFactory factory,
@@ -57,6 +59,7 @@ public enum DefaultScheduler implements SLScheduler {
 			jobName = schedulable.toUniqueJobString();
 		}
 
+		@SuppressWarnings("unchecked")
 		public void execute() throws JobExecutionException {
 
 			SchedulableContext context = null;
@@ -139,6 +142,7 @@ public enum DefaultScheduler implements SLScheduler {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends Schedulable> void fireSchedulable(final T schedulable) {
 		try {
 			Assertions.checkNotNull("schedulable", schedulable);
@@ -178,8 +182,10 @@ public enum DefaultScheduler implements SLScheduler {
 		return contextFactory.get();
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, OslInternalSchedulerCommand> groupJobsByCronInformation(
 			final GlobalSettings settings, final Set<Repository> repositories) {
+		@SuppressWarnings("unused")
 		final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> commandMap = settings
 				.getSchedulableCommandMap();
 

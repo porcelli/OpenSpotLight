@@ -59,6 +59,89 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 		return rs;
 	}
 
+	protected final DbArtifactSource artifactSource;
+
+	private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
+
+	protected AbstractDatabaseArtifactFinder(
+			final DbArtifactSource artifactSource) {
+		this.artifactSource = artifactSource;
+	}
+
+	public synchronized void closeResources() {
+		final ArrayList<Connection> connections = new ArrayList<Connection>(
+				this.connectionMap.values());
+		for (final Connection conn : connections) {
+			try {
+				conn.close();
+			} catch (final Exception e) {
+				Exceptions.catchAndLog(e);
+			}
+		}
+		this.connectionMap.clear();
+	}
+
+	/**
+	 * Fill name based on the column names configured on
+	 * {@link DatabaseMetadataScript} xml file.
+	 * 
+	 * @param script
+	 *            the script
+	 * @param resultSet
+	 *            the result set
+	 * @param nameHandler
+	 *            the name handler
+	 * @return the artifact name
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	private String fillName(final DatabaseMetadataScript script,
+			final ResultSet resultSet,
+			final DatabaseArtifactNameHandler nameHandler) throws SQLException {
+		final StringBuilder buffer = new StringBuilder();
+		String catalogColumnName = script.getColumnAliasMap().get(
+				ColumnsNamesForMetadataSelect.catalog_name);
+		String nameColumnName = script.getColumnAliasMap().get(
+				ColumnsNamesForMetadataSelect.name);
+		String schemaColumnName = script.getColumnAliasMap().get(
+				ColumnsNamesForMetadataSelect.schema_name);
+		catalogColumnName = catalogColumnName != null ? catalogColumnName
+				: ColumnsNamesForMetadataSelect.catalog_name.name();
+		nameColumnName = nameColumnName != null ? nameColumnName
+				: ColumnsNamesForMetadataSelect.name.name();
+		schemaColumnName = schemaColumnName != null ? schemaColumnName
+				: ColumnsNamesForMetadataSelect.schema_name.name();
+
+		final String catalog = resultSet.getString(catalogColumnName);
+		final String name = nameHandler == null ? resultSet
+				.getString(nameColumnName) : nameHandler.fixName(resultSet
+				.getString(nameColumnName));
+		final String schema = resultSet.getString(schemaColumnName);
+		buffer.append(schema);
+		buffer.append('/');
+		buffer.append(script.getScriptType().name());
+		buffer.append('/');
+		if (catalog != null && !"".equals(catalog.trim())) {
+			buffer.append(catalog);
+			buffer.append('/');
+		}
+		buffer.append(name);
+		final String result = buffer.toString();
+		return result;
+	}
+
+	protected synchronized Connection getConnectionFromSource(
+			final DbArtifactSource dbBundle) throws Exception {
+
+		Connection conn = this.connectionMap.get(dbBundle);
+		if (conn == null) {
+			conn = createConnection(dbBundle);
+			this.connectionMap.put(dbBundle, conn);
+		}
+		return conn;
+
+	}
+
 	/**
 	 * Loads the stream content by using a sql statement to fill it.
 	 * 
@@ -76,9 +159,8 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 	 * @throws Exception
 	 *             the exception
 	 */
-	protected static byte[] loadFromSql(final String catalog,
-			final String schema, final String name,
-			final DatabaseMetadataScript scriptDescription,
+	protected byte[] loadFromSql(final String catalog, final String schema,
+			final String name, final DatabaseMetadataScript scriptDescription,
 			final DatabaseStreamHandler streamHandler, final Connection conn)
 			throws Exception {
 		final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
@@ -139,7 +221,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 	 * @throws Exception
 	 *             the exception
 	 */
-	protected static byte[] loadFromTemplate(final String catalog,
+	protected byte[] loadFromTemplate(final String catalog,
 			final String schema, final String name,
 			final DatabaseMetadataScript scriptDescription,
 			final DatabaseStreamHandler streamHandler, final Connection conn)
@@ -228,89 +310,6 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 				resultSet.close();
 			}
 		}
-	}
-
-	protected final DbArtifactSource artifactSource;
-
-	private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
-
-	protected AbstractDatabaseArtifactFinder(
-			final DbArtifactSource artifactSource) {
-		this.artifactSource = artifactSource;
-	}
-
-	public synchronized void closeResources() {
-		final ArrayList<Connection> connections = new ArrayList<Connection>(
-				this.connectionMap.values());
-		for (final Connection conn : connections) {
-			try {
-				conn.close();
-			} catch (final Exception e) {
-				Exceptions.catchAndLog(e);
-			}
-		}
-		this.connectionMap.clear();
-	}
-
-	/**
-	 * Fill name based on the column names configured on
-	 * {@link DatabaseMetadataScript} xml file.
-	 * 
-	 * @param script
-	 *            the script
-	 * @param resultSet
-	 *            the result set
-	 * @param nameHandler
-	 *            the name handler
-	 * @return the artifact name
-	 * @throws SQLException
-	 *             the SQL exception
-	 */
-	private String fillName(final DatabaseMetadataScript script,
-			final ResultSet resultSet,
-			final DatabaseArtifactNameHandler nameHandler) throws SQLException {
-		final StringBuilder buffer = new StringBuilder();
-		String catalogColumnName = script.getColumnAliasMap().get(
-				ColumnsNamesForMetadataSelect.catalog_name);
-		String nameColumnName = script.getColumnAliasMap().get(
-				ColumnsNamesForMetadataSelect.name);
-		String schemaColumnName = script.getColumnAliasMap().get(
-				ColumnsNamesForMetadataSelect.schema_name);
-		catalogColumnName = catalogColumnName != null ? catalogColumnName
-				: ColumnsNamesForMetadataSelect.catalog_name.name();
-		nameColumnName = nameColumnName != null ? nameColumnName
-				: ColumnsNamesForMetadataSelect.name.name();
-		schemaColumnName = schemaColumnName != null ? schemaColumnName
-				: ColumnsNamesForMetadataSelect.schema_name.name();
-
-		final String catalog = resultSet.getString(catalogColumnName);
-		final String name = nameHandler == null ? resultSet
-				.getString(nameColumnName) : nameHandler.fixName(resultSet
-				.getString(nameColumnName));
-		final String schema = resultSet.getString(schemaColumnName);
-		buffer.append(schema);
-		buffer.append('/');
-		buffer.append(script.getScriptType().name());
-		buffer.append('/');
-		if (catalog != null && !"".equals(catalog.trim())) {
-			buffer.append(catalog);
-			buffer.append('/');
-		}
-		buffer.append(name);
-		final String result = buffer.toString();
-		return result;
-	}
-
-	protected synchronized Connection getConnectionFromSource(
-			final DbArtifactSource dbBundle) throws Exception {
-
-		Connection conn = this.connectionMap.get(dbBundle);
-		if (conn == null) {
-			conn = createConnection(dbBundle);
-			this.connectionMap.put(dbBundle, conn);
-		}
-		return conn;
-
 	}
 
 	public Set<String> retrieveAllArtifactNames(final String initialPath) {

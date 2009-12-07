@@ -3,7 +3,6 @@ package org.openspotlight.web;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 /**
@@ -35,7 +34,5 @@ public class OslServletDataSupport implements OslDataConstants {
 		return (String) request.getSession().getAttribute(
 				OslDataConstants.SESSION__USER_NAME);
 	}
-
-	private ExecutionContextFactory contextFactory;
 
 }

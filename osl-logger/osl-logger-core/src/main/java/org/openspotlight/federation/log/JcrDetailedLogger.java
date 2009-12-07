@@ -12,17 +12,15 @@ import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInf
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;
-import org.openspotlight.log.DetailedLogger.ErrorCode;
-import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * The JcrDetailedLogger is an implementation of {@link DetailedLogger}
- * based on Jcr. This kind of logger was implemented 'by hand' instead of
- * using {@link SLNode} or {@link ConfigurationNode} by a simple reason.
- * Should not be possible to log the log. If it's necessary this
- * implementation could be changed on the future.
+ * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on
+ * Jcr. This kind of logger was implemented 'by hand' instead of using
+ * {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be
+ * possible to log the log. If it's necessary this implementation could be
+ * changed on the future.
  */
 public final class JcrDetailedLogger implements DetailedLogger {
 
@@ -41,8 +39,7 @@ public final class JcrDetailedLogger implements DetailedLogger {
 
 	public void log(final AuthenticatedUser user, final LogEventType type,
 			final ErrorCode errorCode, final String message,
-			final String detailedMessage,
-			final LogableObject... anotherNodes) {
+			final String detailedMessage, final LogableObject... anotherNodes) {
 		this.log(user, null, type, errorCode, message, detailedMessage,
 				anotherNodes);
 
@@ -57,15 +54,15 @@ public final class JcrDetailedLogger implements DetailedLogger {
 	public void log(final AuthenticatedUser user, final LogEventType type,
 			final String message, final String detailedMessage,
 			final LogableObject... anotherNodes) {
-		this.log(user, null, type, null, message, detailedMessage,
-				anotherNodes);
+		this
+				.log(user, null, type, null, message, detailedMessage,
+						anotherNodes);
 
 	}
 
 	public void log(final AuthenticatedUser user, final String repository,
 			final LogEventType type, final ErrorCode errorCode,
-			final String detailedMessage,
-			final LogableObject... anotherNodes) {
+			final String detailedMessage, final LogableObject... anotherNodes) {
 		this.log(user, repository, type, errorCode, null, detailedMessage,
 				anotherNodes);
 
@@ -79,9 +76,9 @@ public final class JcrDetailedLogger implements DetailedLogger {
 				message, detailedMessage, LoggedObjectInformation
 						.getHierarchyFrom(anotherNodes));
 
-		final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME
-				+ "/" + (repository != null ? repository : "noRepository")
-				+ "/" + (user != null ? user.getId() : "noUser") + "/log";
+		final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
+				+ (repository != null ? repository : "noRepository") + "/"
+				+ (user != null ? user.getId() : "noUser") + "/log";
 		SimplePersistSupport.convertBeanToJcr(initialPath, session, entry);
 		try {
 			session.save();
@@ -100,8 +97,7 @@ public final class JcrDetailedLogger implements DetailedLogger {
 
 	public void log(final AuthenticatedUser user, final String repository,
 			final LogEventType type, final String message,
-			final String detailedMessage,
-			final LogableObject... anotherNodes) {
+			final String detailedMessage, final LogableObject... anotherNodes) {
 		this.log(user, repository, type, null, message, detailedMessage,
 				anotherNodes);
 	}

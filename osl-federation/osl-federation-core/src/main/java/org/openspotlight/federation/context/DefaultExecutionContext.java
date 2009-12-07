@@ -94,7 +94,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
 	private final String repositoryName;
-	private final DisposingListener listener;
+	private final DisposingListener<DefaultExecutionContext> listener;
 	private final Object lock = new Object();
 	private final ConcurrentHashMap<? extends Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
 
@@ -126,7 +126,8 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 	DefaultExecutionContext(final String username, final String password,
 			final JcrConnectionDescriptor descriptor,
-			final String repositoryName, final DisposingListener listener) {
+			final String repositoryName,
+			final DisposingListener<DefaultExecutionContext> listener) {
 		this.username = username;
 		this.password = password;
 		this.descriptor = descriptor;
