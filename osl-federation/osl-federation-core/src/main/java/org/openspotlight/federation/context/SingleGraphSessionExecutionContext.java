@@ -46,19 +46,45 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.finder;
+package org.openspotlight.federation.context;
 
-import org.openspotlight.common.Disposable;
+import org.openspotlight.common.DisposingListener;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * A factory for creating ArtifactFinderByRepositoryProvider objects. This will be used on BundleProcessing.
+ * This class is an {@link ExecutionContext} which initialize all resources in a
+ * lazy way, and also close it in a lazy way also.
+ * 
+ * @author feu
+ * 
  */
-public interface ArtifactFinderByRepositoryProviderFactory extends Disposable {
+public class SingleGraphSessionExecutionContext extends DefaultExecutionContext {
 
-    /**
-     * Creates a new ArtifactFinderByRepositoryProvider object.
-     * 
-     * @return the artifact finder by repository provider
-     */
-    public ArtifactFinderByRepositoryProvider createNew();
+	private final AuthenticatedUser user;
+	private final SLGraphSession uniqueGraphSession;
+
+	SingleGraphSessionExecutionContext(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
+			final String repositoryName,
+			final DisposingListener<DefaultExecutionContext> listener,
+			final AuthenticatedUser user,
+			final SLGraphSession uniqueGraphSession) {
+		super(username, password, descriptor, repositoryName, listener);
+		this.uniqueGraphSession = uniqueGraphSession;
+		this.user = user;
+
+	}
+
+	@Override
+	public SLGraphSession getGraphSession() {
+		return uniqueGraphSession;
+	}
+
+	@Override
+	public AuthenticatedUser getUser() {
+		return user;
+	}
+
 }

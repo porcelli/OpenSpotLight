@@ -46,50 +46,72 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.finder;
+package org.openspotlight.federation.context;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.jcr.Session;
-
+import org.openspotlight.common.DisposingListener;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphFactory;
+import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
-// TODO: Auto-generated Javadoc
-/**
- * A factory for creating JcrArtifactFinderByRepositoryProvider objects.
- */
-public class JcrArtifactFinderByRepositoryProviderFactory implements ArtifactFinderByRepositoryProviderFactory {
+public class TestExecutionContextFactory implements ExecutionContextFactory,
+		DisposingListener<DefaultExecutionContext> {
 
-    private final CopyOnWriteArrayList<Session> oppendedSessions = new CopyOnWriteArrayList<Session>();
+	public static ExecutionContextFactory createFactory(
+			final ArtifactSource source) {
+		return new TestExecutionContextFactory(source);
+	}
 
-    /** The provider. */
-    private final JcrConnectionProvider         provider;
+	private final CopyOnWriteArrayList<TestExecutionContext> openedContexts = new CopyOnWriteArrayList<TestExecutionContext>();
+	private final ArtifactSource source;
+	private AuthenticatedUser user;
+	private SLGraphSession graphSession;
 
-    /**
-     * Instantiates a new jcr artifact finder by repository provider factory.
-     * 
-     * @param descriptor the descriptor
-     */
-    public JcrArtifactFinderByRepositoryProviderFactory(
-                                                         final JcrConnectionDescriptor descriptor ) {
-        this.provider = JcrConnectionProvider.createFromData(descriptor);
-    }
+	private TestExecutionContextFactory(final ArtifactSource source) {
+		this.source = source;
+	}
 
-    public synchronized void closeResources() {
-        for (final Session sess : this.oppendedSessions) {
-            sess.logout();
-        }
+	public void closeResources() {
+		for (final TestExecutionContext openedContext : openedContexts) {
+			openedContext.closeResources();
+		}
+	}
 
-    }
+	public ExecutionContext createExecutionContext(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
+			final String repositoryName) {
+		try {
+			if (user == null || graphSession == null) {
+				final SecurityFactory securityFactory = AbstractFactory
+						.getDefaultInstance(SecurityFactory.class);
+				final User simpleUser = securityFactory.createUser(username);
+				user = securityFactory.createIdentityManager(descriptor)
+						.authenticate(simpleUser, password);
+				final SLGraph graph = AbstractFactory.getDefaultInstance(
+						SLGraphFactory.class).createGraph(descriptor);
+				graphSession = graph.openSession(user, repositoryName);
+			}
+			final TestExecutionContext newContext = new TestExecutionContext(
+					username, password, descriptor, repositoryName, this, user,
+					graphSession, source);
+			openedContexts.add(newContext);
+			return newContext;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.finder.ArtifactFinderByRepositoryProviderFactory#createNew()
-     */
-    public ArtifactFinderByRepositoryProvider createNew() {
-        final Session session = this.provider.openSession();
-        this.oppendedSessions.add(session);
-        return new JcrSessionArtifactFinderByRepositoryProvider(session);
-    }
+	public void didCloseResource(final DefaultExecutionContext context) {
+		openedContexts.remove(context);
+	}
 
 }
