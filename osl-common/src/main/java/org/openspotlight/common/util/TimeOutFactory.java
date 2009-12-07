@@ -1,3 +1,51 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
+ * or third-party contributors as indicated by the @author tags or express
+ * copyright attribution statements applied by the authors.  All third-party
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E
+ * TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License  for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ *
+ ***********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
+ * Foundation.
+ *
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
+ *
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.common.util;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
@@ -14,14 +62,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * This class wraps object instances from a given interface inside a timeout object. This timeout object will run a background
  * thread to monitor how many time the wrapped object wasn't invoked. If this time is so long, it will finalize this object,
  * calling a method decribed inside an interface called {@link TaskFinalizer}.
- * 
+ *
  * @author feu
  */
 public final class TimeOutFactory {
 
     /**
      * This interface will be used when the monitored object reaches the time out.
-     * 
+     *
      * @param <T> object type
      * @author feu
      */
@@ -29,7 +77,7 @@ public final class TimeOutFactory {
 
         /**
          * Finalize task.
-         * 
+         *
          * @param target the target
          */
         public void finalizeTask( T target );
@@ -38,7 +86,7 @@ public final class TimeOutFactory {
     /**
      * This Java Proxy {@link InvocationHandler} will start a background thread to monitor if the wrapped object reaches the time
      * out or not. And this invocation handler will update the {@link #lastInvocation} attribute each time it is invoked.
-     * 
+     *
      * @author feu
      * @param <T> object type
      */
@@ -91,7 +139,7 @@ public final class TimeOutFactory {
 
         /**
          * Instantiates a new time out cache interceptor.
-         * 
+         *
          * @param intervalInMilliseconds the interval in milliseconds
          * @param wrapped the wrapped
          * @param taskFinalizer the task finalizer
@@ -127,7 +175,7 @@ public final class TimeOutFactory {
 
     /**
      * Creates a new timed out object.
-     * 
+     *
      * @param <T> Object type
      * @param interfaceType the interface type
      * @param intervalInMilliseconds the interval in milliseconds
