@@ -125,6 +125,7 @@ public abstract class DnaArtifactFinder extends
 	private final Map<ArtifactSource, Session> mappingSessions = new ConcurrentHashMap<ArtifactSource, Session>();
 
 	public DnaArtifactFinder(final ArtifactSource source) {
+		super(source.getRepository().getName());
 		artifactSource = source;
 	}
 
@@ -143,7 +144,29 @@ public abstract class DnaArtifactFinder extends
 			RepositorySourceDefinition<JcrConfiguration> repositorySource2,
 			ArtifactSource source);
 
-	public StreamArtifact findByPath(final String rawPath) {
+	/**
+	 * @param name
+	 * @return the jcr session
+	 * @throws Exception
+	 */
+	public synchronized Session getSessionForSource(final ArtifactSource source)
+			throws Exception {
+		Session session = mappingSessions.get(source);
+		if (session == null) {
+			JcrEngine engine = mappingEngines.get(source);
+			if (engine == null) {
+				setupSource(source);
+				engine = mappingEngines.get(source);
+			}
+			session = engine.getRepository(repositoryName).login(
+					new SecurityContextCredentials(
+							DefaultSecurityContext.READ_ONLY));
+			mappingSessions.put(source, session);
+		}
+		return session;
+	}
+
+	protected StreamArtifact internalFindByPath(final String rawPath) {
 		try {
 			String path;
 			if (rawPath.startsWith("/")) {
@@ -174,29 +197,8 @@ public abstract class DnaArtifactFinder extends
 
 	}
 
-	/**
-	 * @param name
-	 * @return the jcr session
-	 * @throws Exception
-	 */
-	public synchronized Session getSessionForSource(final ArtifactSource source)
-			throws Exception {
-		Session session = mappingSessions.get(source);
-		if (session == null) {
-			JcrEngine engine = mappingEngines.get(source);
-			if (engine == null) {
-				setupSource(source);
-				engine = mappingEngines.get(source);
-			}
-			session = engine.getRepository(repositoryName).login(
-					new SecurityContextCredentials(
-							DefaultSecurityContext.READ_ONLY));
-			mappingSessions.put(source, session);
-		}
-		return session;
-	}
-
-	public Set<String> retrieveAllArtifactNames(final String initialPath) {
+	protected Set<String> internalRetrieveAllArtifactNames(
+			final String initialPath) {
 		try {
 			final Set<String> result = new HashSet<String>();
 			final Node rootNode = getSessionForSource(artifactSource)

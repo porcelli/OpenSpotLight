@@ -772,7 +772,22 @@ public class DatabaseCustomArtifactFinder extends
 		return table;
 	}
 
-	public DatabaseCustomArtifact findByPath(final String path) {
+	private synchronized Map<String, org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.DatabaseItemDescription> getResultFrom(
+			final DbArtifactSource source) throws Exception {
+		Map<String, DatabaseItemDescription> result = resultCache.get(source);
+		if (result == null) {
+			final DatabaseCustomArtifactInternalLoader loader = new DatabaseCustomArtifactInternalLoader();
+			final Connection conn = getConnectionFromSource(source);
+			synchronized (conn) {
+				result = loader.loadDatabaseMetadata(conn.getMetaData());
+			}
+			resultCache.put(source, result);
+		}
+		return result;
+
+	}
+
+	protected DatabaseCustomArtifact internalFindByPath(final String path) {
 		try {
 
 			final DbArtifactSource dbBundle = (DbArtifactSource) artifactSource;
@@ -790,23 +805,9 @@ public class DatabaseCustomArtifactFinder extends
 		}
 	}
 
-	private synchronized Map<String, org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.DatabaseItemDescription> getResultFrom(
-			final DbArtifactSource source) throws Exception {
-		Map<String, DatabaseItemDescription> result = resultCache.get(source);
-		if (result == null) {
-			final DatabaseCustomArtifactInternalLoader loader = new DatabaseCustomArtifactInternalLoader();
-			final Connection conn = getConnectionFromSource(source);
-			synchronized (conn) {
-				result = loader.loadDatabaseMetadata(conn.getMetaData());
-			}
-			resultCache.put(source, result);
-		}
-		return result;
-
-	}
-
 	@Override
-	public Set<String> retrieveAllArtifactNames(final String initialPath) {
+	protected Set<String> internalRetrieveAllArtifactNames(
+			final String initialPath) {
 		try {
 			final String pathToMatch = initialPath.endsWith("/") ? initialPath
 					+ "*" : initialPath + "/*";
