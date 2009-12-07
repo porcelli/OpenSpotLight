@@ -9,7 +9,6 @@ import static org.junit.Assert.assertThat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.dap.language.java.metamodel.link.MethodParameterDefinition;
@@ -20,18 +19,9 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class TestIntegratedMethodResolution extends
 		AbstractMethodResolutionTest {
-
-	@BeforeClass
-	public static void cleanTempData() throws Exception {
-		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepository();
-
-	}
 
 	@Test()
 	public void getMethodBetween2Matches() throws Exception {
