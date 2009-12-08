@@ -54,9 +54,9 @@ import static org.junit.Assert.assertThat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.openspotlight.common.concurrent.CautiousExecutor;
-import org.openspotlight.common.concurrent.CautiousExecutor.TaskListener;
-import org.openspotlight.common.concurrent.CautiousExecutor.ThreadListener;
+import org.openspotlight.common.concurrent.GossipExecutor;
+import org.openspotlight.common.concurrent.GossipExecutor.TaskListener;
+import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
 
 public class CautiousExecutorTest {
 
@@ -100,12 +100,12 @@ public class CautiousExecutorTest {
 
     private final CustomThreadListener threadListener = new CustomThreadListener();
     private final CustomTaskListener   taskListener   = new CustomTaskListener();
-    private CautiousExecutor           executor;
+    private GossipExecutor           executor;
 
     @Test
     public void setup() throws Exception {
 
-        this.executor = CautiousExecutor.newFixedThreadPool(4);
+        this.executor = GossipExecutor.newFixedThreadPool(4);
         this.executor.addTaskListener(this.taskListener);
         this.executor.addThreadListener(this.threadListener);
         for (int i = 0; i < 100; i++) {

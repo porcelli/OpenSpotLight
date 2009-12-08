@@ -154,6 +154,10 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 		return 2;
 	}
 
+	public String getRepositoryName() {
+		return this.artifact.getRepositoryName();
+	}
+
 	public void setBundleContext(final ExecutionContext context) {
 		this.bundleProcessorContext = context;
 

@@ -69,11 +69,9 @@ import org.openspotlight.federation.processing.internal.domain.ArtifactChangesIm
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
-	private final AuthenticatedUser user;
 
 	/** The artifact type. */
 	private final Class<T> artifactType;
@@ -94,6 +92,8 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 
 	private PriorityBlockingQueue<ArtifactTask> queue;
 
+	private final Repository repository;
+
 	/**
 	 * Instantiates a new starting runnable.
 	 * 
@@ -113,7 +113,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 	@SuppressWarnings("unchecked")
 	public _1_StartingToSearchArtifactsTask(
 			final CurrentProcessorContextImpl currentContext,
-			final Repository repository, final AuthenticatedUser user,
+			final Repository repository,
 			final Class<? extends Artifact> artifactType,
 			final BundleProcessorType bundleProcessorType) {
 		this.currentContext = currentContext;
@@ -121,7 +121,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		this.bundleProcessorType = bundleProcessorType;
 		this.toBeReturned = new ArtifactsToBeProcessedImpl<T>();
 		this.changes = new ArtifactChangesImpl<T>();
-		this.user = user;
+		this.repository = repository;
 	}
 
 	/*
@@ -195,7 +195,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 					artifactAlreadyProcessed
 							.setLastProcessStatus(LastProcessStatus.PROCESSED);
 					this.context.getLogger().log(
-							this.user,
+							this.context.getUser(),
 							LogEventType.TRACE,
 							"Artifact processed on starting for bundle Processor "
 									+ bundleProcessor.getClass().getName(),
@@ -213,7 +213,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 							this.artifactType));
 				}
 				this.queue.add(new _4_EndingToProcessArtifactsTask<T>(
-						this.changes, bundleProcessor));
+						this.changes, bundleProcessor, repository.getName()));
 
 			} catch (final Exception e) {
 				for (final T artifactWithError : this.toBeReturned
@@ -222,7 +222,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 					artifactWithError
 							.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
 					this.context.getLogger().log(
-							this.user,
+							this.context.getUser(),
 							LogEventType.ERROR,
 							"Error on trying to process artifact on starting for bundle Processor "
 									+ bundleProcessor.getClass().getName(),
@@ -242,6 +242,10 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 
 	public int getPriority() {
 		return 1;
+	}
+
+	public String getRepositoryName() {
+		return this.repository.getName();
 	}
 
 	public void setBundleContext(final ExecutionContext context) {

@@ -48,6 +48,7 @@
  */
 package org.openspotlight.federation.context;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openspotlight.common.DisposingListener;
@@ -70,17 +71,20 @@ public class SingleGraphSessionExecutionContextFactory implements
 	}
 
 	private final CopyOnWriteArrayList<SingleGraphSessionExecutionContext> openedContexts = new CopyOnWriteArrayList<SingleGraphSessionExecutionContext>();
-	private SLGraphSession graphSession;
 	private AuthenticatedUser user;
+
+	private final ConcurrentHashMap<String, SLGraphSession> sessionMap = new ConcurrentHashMap<String, SLGraphSession>();
 
 	private SingleGraphSessionExecutionContextFactory() {
 	}
 
-	public void closeResources() {
+	public synchronized void closeResources() {
 		for (final SingleGraphSessionExecutionContext openedContext : openedContexts) {
 			openedContext.closeResources();
 		}
-		graphSession.close();
+		for (final SLGraphSession session : sessionMap.values()) {
+			session.close();
+		}
 	}
 
 	public synchronized ExecutionContext createExecutionContext(
@@ -89,6 +93,7 @@ public class SingleGraphSessionExecutionContextFactory implements
 			final String repositoryName) {
 
 		try {
+			SLGraphSession graphSession = sessionMap.get(repositoryName);
 			if (user == null || graphSession == null) {
 				final SecurityFactory securityFactory = AbstractFactory
 						.getDefaultInstance(SecurityFactory.class);
@@ -98,6 +103,7 @@ public class SingleGraphSessionExecutionContextFactory implements
 				final SLGraph graph = AbstractFactory.getDefaultInstance(
 						SLGraphFactory.class).createGraph(descriptor);
 				graphSession = graph.openSession(user, repositoryName);
+				sessionMap.put(repositoryName, graphSession);
 			}
 			final SingleGraphSessionExecutionContext newContext = new SingleGraphSessionExecutionContext(
 					username, password, descriptor, repositoryName, this, user,

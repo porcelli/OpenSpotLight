@@ -48,6 +48,21 @@
  */
 package org.openspotlight.federation.processing;
 
+import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+
 public interface BundleProcessorManager {
+	public void executeBundles(final String username, final String password,
+			final JcrConnectionDescriptor descriptor,
+			ExecutionContextFactory contextFactory,
+			final GlobalSettings settings, final Repository... repositories)
+			throws Exception;
+
+	public void executeBundlesInBackground(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
+			ExecutionContextFactory contextFactory,
+			final GlobalSettings settings, final Repository... repositories);
 
 }

@@ -48,6 +48,7 @@
  */
 package org.openspotlight.federation.processing.internal;
 
+import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -64,12 +65,10 @@ import org.slf4j.LoggerFactory;
 public class ArtifactWorker implements RunnableWithBundleContext {
 	private final AtomicBoolean working = new AtomicBoolean(false);
 	private final AtomicBoolean stopped = new AtomicBoolean(false);
-
+	private Map<String, ExecutionContext> contextMap;
 	private final long timeoutInMilli;
 
 	private final PriorityBlockingQueue<ArtifactTask> queue;
-
-	private ExecutionContext context;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -101,6 +100,9 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 						logger.info("starting " + task.getClass() + " "
 								+ task.toString());
 						task.setQueue(queue);
+						final String repositoryName = task.getRepositoryName();
+						final ExecutionContext context = contextMap
+								.get(repositoryName);
 						task.setBundleContext(context);
 						final CurrentProcessorContextImpl currentCtx = task
 								.getCurrentContext();
@@ -127,8 +129,8 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 		}
 	}
 
-	public void setBundleContext(final ExecutionContext context) {
-		this.context = context;
+	public void setBundleContext(final Map<String, ExecutionContext> contextMap) {
+		this.contextMap = contextMap;
 	}
 
 	public void stop() {

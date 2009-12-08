@@ -54,8 +54,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import org.openspotlight.common.concurrent.CautiousExecutor;
+import org.openspotlight.common.concurrent.GossipExecutor;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -67,7 +68,7 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
-import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -75,147 +76,167 @@ import org.openspotlight.security.idm.AuthenticatedUser;
  */
 public class BundleProcessorExecution {
 
-    /** The executor. */
-    private final CautiousExecutor                    executor;
+	/** The executor. */
+	private final GossipExecutor executor;
 
-    /** The repositories. */
-    private final Repository[]                        repositories;
+	/** The repositories. */
+	private final Repository[] repositories;
 
-    /** The context factory. */
-    private final BundleProcessorContextFactory       contextFactory;
+	/** The context factory. */
+	private final ExecutionContextFactory contextFactory;
 
-    /** The artifact types. */
-    private final Set<Class<? extends Artifact>>      artifactTypes;
+	/** The artifact types. */
+	private final Set<Class<? extends Artifact>> artifactTypes;
 
-    /** The default sleep interval in millis. */
-    private final long                                defaultSleepIntervalInMillis;
+	/** The default sleep interval in millis. */
+	private final long defaultSleepIntervalInMillis;
 
-    /** The threads. */
-    private final int                                 threads;
+	/** The threads. */
+	private final int threads;
 
-    /** The queue. */
-    private final PriorityBlockingQueue<ArtifactTask> queue = new PriorityBlockingQueue<ArtifactTask>(
-                                                                                                      1000,
-                                                                                                      new ArtifactTaskPriorityComparator());
+	/** The queue. */
+	private final PriorityBlockingQueue<ArtifactTask> queue = new PriorityBlockingQueue<ArtifactTask>(
+			1000, new ArtifactTaskPriorityComparator());
 
-    /**
-     * Instantiates a new bundle processor execution.
-     * 
-     * @param contextFactory the context factory
-     * @param settings the settings
-     * @param repositories the repositories
-     * @param artifactTypes the artifact types
-     */
-    public BundleProcessorExecution(
-                                     final BundleProcessorContextFactory contextFactory, final GlobalSettings settings,
-                                     final Repository[] repositories, final Set<Class<? extends Artifact>> artifactTypes ) {
-        this.repositories = repositories;
-        this.contextFactory = contextFactory;
-        this.artifactTypes = artifactTypes;
-        this.threads = settings.getNumberOfParallelThreads();
-        if (this.threads <= 0) {
-            Exceptions.logAndThrow(new IllegalStateException("Default Thread size must be positive!"));
-        }
-        this.defaultSleepIntervalInMillis = settings.getDefaultSleepingIntervalInMilliseconds();
-        if (this.defaultSleepIntervalInMillis <= 0) {
-            Exceptions.logAndThrow(new IllegalStateException("Default Thread sleep time in millis must be positive!"));
-        }
-        this.executor = CautiousExecutor.newFixedThreadPool(this.threads);
-        final BundleContextThreadInjector listener = new BundleContextThreadInjector(contextFactory);
-        this.executor.addTaskListener(listener);
-        this.executor.addThreadListener(listener);
-    }
+	/**
+	 * Instantiates a new bundle processor execution.
+	 * 
+	 * @param contextFactory
+	 *            the context factory
+	 * @param settings
+	 *            the settings
+	 * @param repositories
+	 *            the repositories
+	 * @param artifactTypes
+	 *            the artifact types
+	 */
+	public BundleProcessorExecution(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
+			final ExecutionContextFactory contextFactory,
+			final GlobalSettings settings, final Repository[] repositories,
+			final Set<Class<? extends Artifact>> artifactTypes) {
+		final String[] repositoryNames = new String[repositories.length];
+		for (int i = 0, size = repositories.length; i < size; i++) {
+			repositoryNames[i] = repositories[i].getName();
+		}
 
-    /**
-     * Execute.
-     * 
-     * @throws BundleExecutionException the bundle execution exception
-     */
-    public void execute() throws BundleExecutionException {
-        final Set<Group> groupsWithBundles = this.findGroupsWithBundles();
+		this.repositories = repositories;
+		this.contextFactory = contextFactory;
+		this.artifactTypes = artifactTypes;
+		threads = settings.getNumberOfParallelThreads();
+		if (threads <= 0) {
+			Exceptions.logAndThrow(new IllegalStateException(
+					"Default Thread size must be positive!"));
+		}
+		defaultSleepIntervalInMillis = settings
+				.getDefaultSleepingIntervalInMilliseconds();
+		if (defaultSleepIntervalInMillis <= 0) {
+			Exceptions.logAndThrow(new IllegalStateException(
+					"Default Thread sleep time in millis must be positive!"));
+		}
+		executor = GossipExecutor.newFixedThreadPool(threads);
+		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
+				contextFactory, repositoryNames, username, password, descriptor);
+		executor.addTaskListener(listener);
+		executor.addThreadListener(listener);
+	}
 
-        this.fillTaskQueue(groupsWithBundles);
+	/**
+	 * Execute.
+	 * 
+	 * @throws BundleExecutionException
+	 *             the bundle execution exception
+	 */
+	public void execute() throws BundleExecutionException {
+		final Set<Group> groupsWithBundles = findGroupsWithBundles();
 
-        final List<ArtifactWorker> workers = this.setupWorkers();
+		fillTaskQueue(groupsWithBundles);
 
-        this.monitorThreadActivity(workers);
-        this.contextFactory.closeResources();
-    }
+		final List<ArtifactWorker> workers = setupWorkers();
 
-    private void fillTaskQueue( final Set<Group> groupsWithBundles ) {
-        final AuthenticatedUser user = this.contextFactory.getUser();
-        for (final Class<? extends Artifact> artifactType : this.artifactTypes) {
-            for (final Group group : groupsWithBundles) {
-                for (final BundleProcessorType processor : group.getBundleTypes()) {
-                    final Repository repository = group.getRootRepository();
-                    final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
-                    currentContextImpl.setCurrentGroup(group);
-                    currentContextImpl.setCurrentRepository(repository);
-                    final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(currentContextImpl, repository,
-                                                                                             user, artifactType, processor);
-                    this.queue.add(task);
-                }
-            }
-        }
-    }
+		monitorThreadActivity(workers);
+		contextFactory.closeResources();
+	}
 
-    private Set<Group> findGroupsWithBundles() {
-        final Set<Group> groupsWithBundles = new HashSet<Group>();
-        final GroupVisitor visitor = new GroupVisitor() {
-            public void visitGroup( final Group group ) {
-                if (group.isActive()) {
-                    if (group.getBundleTypes() != null && group.getBundleTypes().size() > 0) {
-                        for (final BundleProcessorType type : group.getBundleTypes()) {
-                            if (type.isActive()) {
-                                groupsWithBundles.add(group);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        for (final Repository repository : this.repositories) {
-            if (repository.isActive()) {
-                repository.acceptGroupVisitor(visitor);
-            }
-        }
-        return groupsWithBundles;
-    }
+	private void fillTaskQueue(final Set<Group> groupsWithBundles) {
+		for (final Class<? extends Artifact> artifactType : artifactTypes) {
+			for (final Group group : groupsWithBundles) {
+				for (final BundleProcessorType processor : group
+						.getBundleTypes()) {
+					final Repository repository = group.getRootRepository();
+					final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
+					currentContextImpl.setCurrentGroup(group);
+					currentContextImpl.setCurrentRepository(repository);
+					final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(
+							currentContextImpl, repository, artifactType,
+							processor);
+					queue.add(task);
+				}
+			}
+		}
+	}
 
-    private void monitorThreadActivity( final List<ArtifactWorker> workers ) {
-        monitor: while (true) {
-            try {
-                Thread.sleep(this.defaultSleepIntervalInMillis);
-            } catch (final InterruptedException e) {
-                Exceptions.catchAndLog(e);
-            }
-            if (this.queue.isEmpty()) {
-                boolean hasAnyWorker = false;
-                findingWorkers: for (final ArtifactWorker worker : workers) {
-                    if (!worker.isWorking()) {
-                        worker.stop();
-                        continue findingWorkers;
-                    } else {
-                        hasAnyWorker = true;
-                    }
-                }
-                if (!hasAnyWorker) {
-                    break monitor;
-                }
-            }
-        }
-    }
+	private Set<Group> findGroupsWithBundles() {
+		final Set<Group> groupsWithBundles = new HashSet<Group>();
+		final GroupVisitor visitor = new GroupVisitor() {
+			public void visitGroup(final Group group) {
+				if (group.isActive()) {
+					if (group.getBundleTypes() != null
+							&& group.getBundleTypes().size() > 0) {
+						for (final BundleProcessorType type : group
+								.getBundleTypes()) {
+							if (type.isActive()) {
+								groupsWithBundles.add(group);
+								return;
+							}
+						}
+					}
+				}
+			}
+		};
+		for (final Repository repository : repositories) {
+			if (repository.isActive()) {
+				repository.acceptGroupVisitor(visitor);
+			}
+		}
+		return groupsWithBundles;
+	}
 
-    private List<ArtifactWorker> setupWorkers() {
-        final List<ArtifactWorker> workers = new ArrayList<ArtifactWorker>(this.threads);
+	private void monitorThreadActivity(final List<ArtifactWorker> workers) {
+		monitor: while (true) {
+			try {
+				Thread.sleep(defaultSleepIntervalInMillis);
+			} catch (final InterruptedException e) {
+				Exceptions.catchAndLog(e);
+			}
+			if (queue.isEmpty()) {
+				boolean hasAnyWorker = false;
+				findingWorkers: for (final ArtifactWorker worker : workers) {
+					if (!worker.isWorking()) {
+						worker.stop();
+						continue findingWorkers;
+					} else {
+						hasAnyWorker = true;
+					}
+				}
+				if (!hasAnyWorker) {
+					break monitor;
+				}
+			}
+		}
+	}
 
-        for (int i = 0; i < this.threads; i++) {
-            final ArtifactWorker worker = new ArtifactWorker(this.defaultSleepIntervalInMillis, this.queue);
-            workers.add(worker);
-            this.executor.execute(worker);
-        }
-        return workers;
-    }
+	private List<ArtifactWorker> setupWorkers() {
+		final List<ArtifactWorker> workers = new ArrayList<ArtifactWorker>(
+				threads);
+
+		for (int i = 0; i < threads; i++) {
+			final ArtifactWorker worker = new ArtifactWorker(
+					defaultSleepIntervalInMillis, queue);
+			workers.add(worker);
+			executor.execute(worker);
+		}
+		return workers;
+	}
 
 }
