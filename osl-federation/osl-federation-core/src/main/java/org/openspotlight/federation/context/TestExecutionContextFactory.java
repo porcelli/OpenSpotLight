@@ -66,9 +66,14 @@ import org.openspotlight.security.idm.User;
 
 public class TestExecutionContextFactory implements ExecutionContextFactory,
 		DisposingListener<DefaultExecutionContext> {
+
+	public static enum ArtifactFinderType {
+		LOCAL_SOURCE, FILESYSTEM
+	}
+
 	public static ExecutionContextFactory createFactory(
-			final ArtifactSource artifactSource) {
-		return new TestExecutionContextFactory(artifactSource);
+			final ArtifactFinderType type, final ArtifactSource artifactSource) {
+		return new TestExecutionContextFactory(type, artifactSource);
 	}
 
 	private final ArtifactSource artifactSource;
@@ -77,9 +82,12 @@ public class TestExecutionContextFactory implements ExecutionContextFactory,
 	private AuthenticatedUser user;
 
 	private final ConcurrentHashMap<String, SLGraphSession> sessionMap = new ConcurrentHashMap<String, SLGraphSession>();
+	private final ArtifactFinderType type;
 
-	private TestExecutionContextFactory(final ArtifactSource artifactSource) {
+	private TestExecutionContextFactory(final ArtifactFinderType type,
+			final ArtifactSource artifactSource) {
 		this.artifactSource = artifactSource;
+		this.type = type;
 	}
 
 	public synchronized void closeResources() {
@@ -111,7 +119,7 @@ public class TestExecutionContextFactory implements ExecutionContextFactory,
 			}
 			final TestExecutionContext newContext = new TestExecutionContext(
 					username, password, descriptor, repositoryName, this, user,
-					graphSession, artifactSource);
+					graphSession, artifactSource, type);
 			openedContexts.add(newContext);
 			return newContext;
 		} catch (final Exception e) {

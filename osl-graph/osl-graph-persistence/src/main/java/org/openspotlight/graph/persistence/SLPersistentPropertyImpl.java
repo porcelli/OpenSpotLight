@@ -59,8 +59,8 @@ import javax.jcr.Value;
 
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.JCRUtil;
 import org.openspotlight.common.util.SerializationUtil;
+import org.openspotlight.jcr.util.JCRUtil;
 
 /**
  * The Class SLPersistentPropertyImpl.

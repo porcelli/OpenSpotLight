@@ -54,8 +54,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.concurrent.GossipExecutor;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.BundleProcessorType;
@@ -68,7 +70,10 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.jcr.util.JCRUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -78,7 +83,9 @@ public class BundleProcessorExecution {
 
 	/** The executor. */
 	private final GossipExecutor executor;
-
+	private final String username;
+	private final String password;
+	private final JcrConnectionDescriptor descriptor;
 	/** The repositories. */
 	private final Repository[] repositories;
 
@@ -115,6 +122,9 @@ public class BundleProcessorExecution {
 			final ExecutionContextFactory contextFactory,
 			final GlobalSettings settings, final Repository[] repositories,
 			final Set<Class<? extends Artifact>> artifactTypes) {
+		this.username = username;
+		this.password = password;
+		this.descriptor = descriptor;
 		final String[] repositoryNames = new String[repositories.length];
 		for (int i = 0, size = repositories.length; i < size; i++) {
 			repositoryNames[i] = repositories[i].getName();
@@ -148,6 +158,7 @@ public class BundleProcessorExecution {
 	 *             the bundle execution exception
 	 */
 	public void execute() throws BundleExecutionException {
+		initializeAllRepositoryNodes();
 		final Set<Group> groupsWithBundles = findGroupsWithBundles();
 
 		fillTaskQueue(groupsWithBundles);
@@ -200,6 +211,28 @@ public class BundleProcessorExecution {
 			}
 		}
 		return groupsWithBundles;
+	}
+
+	private void initializeAllRepositoryNodes() {
+		try {
+			final ExecutionContext context = contextFactory
+					.createExecutionContext(username, password, descriptor,
+							SLConsts.DEFAULT_REPOSITORY_NAME);
+			final SessionWithLock session = context
+					.getDefaultConnectionProvider().openSession();
+			for (final Repository repository : repositories) {
+				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
+						SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
+								+ repository.getName());
+			}
+			session.save();
+			session.logout();
+			context.closeResources();
+
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, BundleExecutionException.class);
+		}
+
 	}
 
 	private void monitorThreadActivity(final List<ArtifactWorker> workers) {
