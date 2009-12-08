@@ -55,60 +55,67 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class FSArtifactFinderAndSimplePersistStressTest {
 
-    private ArtifactSource               artifactSource;
+	private ArtifactSource artifactSource;
 
-    /** The provider. */
-    private static JcrConnectionProvider provider;
+	/** The provider. */
+	private static JcrConnectionProvider provider;
 
-    /**
-     * Setup.
-     * 
-     * @throws Exception the exception
-     */
-    @BeforeClass
-    public static void setup() throws Exception {
-        provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-    }
+	/**
+	 * Setup.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@BeforeClass
+	public static void setup() throws Exception {
+		provider = JcrConnectionProvider
+				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+	}
 
-    /** The session. */
-    private Session session = null;
+	/** The session. */
+	private Session session = null;
 
-    /**
-     * Close session.
-     */
-    @After
-    public void closeSession() {
-        if (this.session != null) {
-            this.session.logout();
-            this.session = null;
-        }
-    }
+	/**
+	 * Close session.
+	 */
+	@After
+	public void closeSession() {
+		if (session != null) {
+			session.logout();
+			session = null;
+		}
+	}
 
-    @Before
-    public void prepareArtifactSource() throws Exception {
-        this.artifactSource = new ArtifactSource();
-        this.artifactSource.setName("filesystem");
-        this.artifactSource.setInitialLookup("./src");
-    }
+	@Before
+	public void prepareArtifactSource() throws Exception {
+		artifactSource = new ArtifactSource();
+		final Repository repository = new Repository();
+		repository.setName("repository");
+		artifactSource.setRepository(repository);
+		artifactSource.setName("filesystem");
+		artifactSource.setInitialLookup("./src");
+	}
 
-    /**
-     * Setup session.
-     */
-    @Before
-    public void setupSession() {
-        this.session = provider.openSession();
-    }
+	/**
+	 * Setup session.
+	 */
+	@Before
+	public void setupSession() {
+		session = provider.openSession();
+	}
 
-    @Test
-    public void shouldFindSourceAndStoreItOnJcr() throws Exception {
-        final FileSystemStreamArtifactFinder finder = new FileSystemStreamArtifactFinder(this.artifactSource);
-        finder.listByPath(null);
-    }
+	@Test
+	public void shouldFindSourceAndStoreItOnJcr() throws Exception {
+		final FileSystemStreamArtifactFinder finder = new FileSystemStreamArtifactFinder(
+				artifactSource);
+		finder.listByPath(null);
+	}
 
 }
