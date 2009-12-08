@@ -70,7 +70,8 @@ public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
 
 	public void doTask() {
 		try {
-			this.finder.save(this.artifact);
+			this.finder.addTransientArtifact(this.artifact);
+			this.finder.save();
 		} catch (final Exception e) {
 			Exceptions.catchAndLog(e);
 		}

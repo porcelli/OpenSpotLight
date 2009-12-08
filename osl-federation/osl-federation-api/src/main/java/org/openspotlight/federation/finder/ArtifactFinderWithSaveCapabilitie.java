@@ -54,12 +54,16 @@ import org.openspotlight.federation.domain.Artifact;
 /**
  * The Interface ArtifactFinderWithSaveCapabilitie.
  */
-public interface ArtifactFinderWithSaveCapabilitie<A extends Artifact> extends ArtifactFinder<A> {
+public interface ArtifactFinderWithSaveCapabilitie<A extends Artifact> extends
+		ArtifactFinder<A> {
 
-    /**
-     * Save.
-     * 
-     * @param artifactToSave the artifact to save
-     */
-    public void save( A artifactToSave );
+	/**
+	 * Save.
+	 * 
+	 * @param artifactToSave
+	 *            the artifact to save
+	 */
+	public void addTransientArtifact(A artifactToSave);
+
+	public void save();
 }
