@@ -48,25 +48,128 @@
  */
 package org.openspotlight.federation.processing.internal;
 
+import java.io.File;
+import java.util.HashSet;
+
 import org.hamcrest.core.Is;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.context.SingleGraphSessionExecutionContextFactory;
 import org.openspotlight.federation.context.TestExecutionContextFactory;
 import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
+import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
+import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class BundleProcessorManagerTest {
 
+	private static final int PARALLEL_THREADS = 1;// FIXME change this to 8
+
+	@BeforeClass
+	public static void cleanupOldEntries() throws Exception {
+		JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
+	}
+
 	@Test
-	public void shouldProcessMappedArtifacts() throws Exception {
+	public void shouldProcessMappedArtifactsUsingJcrStreamArtifacts()
+			throws Exception {
+		ExampleBundleProcessor.allStatus.clear();
+
+		final ArtifactSource source = new ArtifactSource();
+		final String initialRawPath = Files
+				.getNormalizedFileName(new File(".."));
+		final String initial = initialRawPath.substring(0, initialRawPath
+				.lastIndexOf('/'));
+		final String finalStr = initialRawPath.substring(initial.length());
+		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+		mapping.setFrom(finalStr);
+		mapping.setTo("/sources/java/myProject");
+		mapping.setIncludeds(new HashSet<String>());
+		mapping.setExcludeds(new HashSet<String>());
+		mapping.getIncludeds().add("*.java");
+		source.setMappings(new HashSet<ArtifactSourceMapping>());
+		source.getMappings().add(mapping);
+		source.setActive(true);
+		source.setInitialLookup(initial);
+		source.setName("sourceName");
+
+		final GlobalSettings settings = new GlobalSettings();
+		settings.setDefaultSleepingIntervalInMilliseconds(1000);
+		settings.setNumberOfParallelThreads(PARALLEL_THREADS);
+		final Repository repository = new Repository();
+		repository.setActive(true);
+		repository.setName("repository");
+		source.setRepository(repository);
+		final Group group = new Group();
+		group.setActive(true);
+		group.setName("Group name");
+		group.setRepository(repository);
+		repository.getGroups().add(group);
+		final BundleProcessorType bundleType = new BundleProcessorType();
+		bundleType.setActive(true);
+		bundleType.setGroup(group);
+		bundleType.setType(ExampleBundleProcessor.class);
+		group.getBundleTypes().add(bundleType);
+		final BundleSource bundleSource = new BundleSource();
+		bundleType.getSources().add(bundleSource);
+		bundleSource.setBundleProcessorType(bundleType);
+		bundleSource.setRelative("/sources/java/myProject");
+		bundleSource.getIncludeds().add("**/*.java");
+
+		final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(
+				settings, new FileSystemArtifactBySourceProvider());
+
+		final Iterable<Artifact> artifacts = loader
+				.loadArtifactsFromSource(source);
+
+		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
+				.createFactory();
+		final ExecutionContext context = contextFactory.createExecutionContext(
+				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				repository.getName());
+		final ArtifactFinderWithSaveCapabilitie<StreamArtifact> finder = (ArtifactFinderWithSaveCapabilitie<StreamArtifact>) context
+				.getArtifactFinder(StreamArtifact.class);
+
+		for (final Artifact a : artifacts) {
+			finder.addTransientArtifact((StreamArtifact) a);
+			finder.save();
+		}
+		contextFactory.closeResources();
+
+		BundleProcessorManagerImpl.INSTANCE.executeBundles("username",
+				"password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				SingleGraphSessionExecutionContextFactory.createFactory(),
+				settings, repository);
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.ERROR), Is.is(false));
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
+				.is(false));
+	}
+
+	@Test
+	public void shouldProcessMappedArtifactsUsingLocalFiles() throws Exception {
 		ExampleBundleProcessor.allStatus.clear();
 
 		final ArtifactSource source = new ArtifactSource();
@@ -75,7 +178,7 @@ public class BundleProcessorManagerTest {
 
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(8);
+		settings.setNumberOfParallelThreads(PARALLEL_THREADS);
 		final Repository repository = new Repository();
 		repository.setActive(true);
 		repository.setName("repository");

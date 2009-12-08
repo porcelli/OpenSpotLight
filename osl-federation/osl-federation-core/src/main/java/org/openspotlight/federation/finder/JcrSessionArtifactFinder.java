@@ -104,6 +104,12 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 		this.rootPath = getArtifactRootPathFor(repository);
 	}
 
+	public void addTransientArtifact(final A artifactToSave) {
+		artifactToSave.setRepositoryName(getCurrentRepository());
+		SimplePersistSupport.convertBeanToJcr(this.rootPath, this.session,
+				artifactToSave);
+	}
+
 	public boolean canAcceptArtifactSource(final ArtifactSource artifactSource) {
 		return true;
 	}
@@ -179,9 +185,11 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 		}
 	}
 
-	public void save(final A artifactToSave) {
-		artifactToSave.setRepositoryName(getCurrentRepository());
-		SimplePersistSupport.convertBeanToJcr(this.rootPath, this.session,
-				artifactToSave);
+	public void save() {
+		try {
+			this.session.save();
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 }
