@@ -64,7 +64,7 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.JCRUtil;
+import org.openspotlight.jcr.util.JCRUtil;
 
 /**
  * The Class SLPersistentNodeImpl.
@@ -107,7 +107,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		this.parent = parent;
 		this.jcrNode = jcrNode;
 		this.eventPoster = eventPoster;
-		this.lock = session.getLockObject();
+		lock = session.getLockObject();
 	}
 
 	// @Override
@@ -120,16 +120,16 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public SLPersistentNode addNode(final String name)
 			throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 
 			SLPersistentNode persistentNode = null;
 			try {
 				final Node jcrChildNode;
-				jcrChildNode = this.jcrNode.addNode(name);
+				jcrChildNode = jcrNode.addNode(name);
 				jcrChildNode.addMixin("mix:referenceable");
-				persistentNode = new SLPersistentNodeImpl(this.session, this,
-						jcrChildNode, this.eventPoster);
-				this.eventPoster.post(new SLPersistentNodeEvent(
+				persistentNode = new SLPersistentNodeImpl(session, this,
+						jcrChildNode, eventPoster);
+				eventPoster.post(new SLPersistentNodeEvent(
 						SLPersistentNodeEvent.TYPE_NODE_ADDED, persistentNode));
 
 			} catch (final RepositoryException e) {
@@ -148,9 +148,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#getID()
 	 */
 	public String getID() throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				return this.jcrNode.getUUID();
+				return jcrNode.getUUID();
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
 						"Error on attempt to retrieve the persistent node ID.",
@@ -160,7 +160,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	}
 
 	public Object getLockObject() {
-		return this.lock;
+		return lock;
 	}
 
 	// @Override
@@ -170,9 +170,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#getName()
 	 */
 	public String getName() throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				return this.jcrNode.getName();
+				return jcrNode.getName();
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
 						"Error on attempt to retrieve the persistent node name.",
@@ -192,12 +192,12 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public SLPersistentNode getNode(final String name)
 			throws SLPersistentTreeSessionException {
 		SLPersistentNode childPersistentNode = null;
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final Node jcrChildNode;
-				jcrChildNode = this.jcrNode.getNode(name);
-				childPersistentNode = new SLPersistentNodeImpl(this.session,
-						this, jcrChildNode, this.eventPoster);
+				jcrChildNode = jcrNode.getNode(name);
+				childPersistentNode = new SLPersistentNodeImpl(session, this,
+						jcrChildNode, eventPoster);
 			} catch (final PathNotFoundException e) {
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
@@ -215,14 +215,14 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public Set<SLPersistentNode> getNodes()
 			throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final Set<SLPersistentNode> persistentNodes = new HashSet<SLPersistentNode>();
-				final NodeIterator iter = this.jcrNode.getNodes();
+				final NodeIterator iter = jcrNode.getNodes();
 				while (iter.hasNext()) {
 					final Node childNode = iter.nextNode();
 					final SLPersistentNode childPersistentNode = new SLPersistentNodeImpl(
-							this.session, this, childNode, this.eventPoster);
+							session, this, childNode, eventPoster);
 					persistentNodes.add(childPersistentNode);
 				}
 				return persistentNodes;
@@ -245,13 +245,13 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public Collection<SLPersistentNode> getNodes(final String name)
 			throws SLPersistentTreeSessionException {
 		final Collection<SLPersistentNode> pNodes = new ArrayList<SLPersistentNode>();
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				final NodeIterator nodeIter = this.jcrNode.getNodes(name);
+				final NodeIterator nodeIter = jcrNode.getNodes(name);
 				while (nodeIter.hasNext()) {
 					final Node childNode = nodeIter.nextNode();
 					final SLPersistentNode pNode = new SLPersistentNodeImpl(
-							this.session, this, childNode, this.eventPoster);
+							session, this, childNode, eventPoster);
 					pNodes.add(pNode);
 				}
 			} catch (final RepositoryException e) {
@@ -269,7 +269,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#getParent()
 	 */
 	public SLPersistentNode getParent() throws SLPersistentTreeSessionException {
-		return this.parent;
+		return parent;
 	}
 
 	// @Override
@@ -279,9 +279,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#getPath()
 	 */
 	public String getPath() throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				return this.jcrNode.getPath();
+				return jcrNode.getPath();
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
 						"Error on attempt to retrieve persistent node path.", e);
@@ -299,16 +299,15 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	public Set<SLPersistentProperty<Serializable>> getProperties(
 			final String pattern) throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final Set<SLPersistentProperty<Serializable>> persistentProperties = new HashSet<SLPersistentProperty<Serializable>>();
-				final PropertyIterator iter = this.jcrNode
-						.getProperties(pattern);
+				final PropertyIterator iter = jcrNode.getProperties(pattern);
 				while (iter.hasNext()) {
 					final Property jcrProperty = iter.nextProperty();
 					final SLPersistentProperty<Serializable> persistentProperty = new SLPersistentPropertyImpl<Serializable>(
 							this, Serializable.class, jcrProperty, true,
-							this.eventPoster);
+							eventPoster);
 					persistentProperties.add(persistentProperty);
 				}
 				return persistentProperties;
@@ -332,12 +331,12 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			final Class<V> clazz, final String name)
 			throws SLPersistentPropertyNotFoundException,
 			SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			SLPersistentProperty<V> persistentProperty = null;
 			try {
-				final Property jcrProperty = this.jcrNode.getProperty(name);
+				final Property jcrProperty = jcrNode.getProperty(name);
 				persistentProperty = new SLPersistentPropertyImpl<V>(this,
-						clazz, jcrProperty, true, this.eventPoster);
+						clazz, jcrProperty, true, eventPoster);
 			} catch (final PathNotFoundException e) {
 				throw new SLPersistentPropertyNotFoundException(name);
 			} catch (final RepositoryException e) {
@@ -356,7 +355,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#getSession()
 	 */
 	public SLPersistentTreeSession getSession() {
-		return this.session;
+		return session;
 	}
 
 	// @Override
@@ -366,10 +365,10 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#remove()
 	 */
 	public void remove() throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				this.jcrNode.remove();
-				this.eventPoster.post(new SLPersistentNodeEvent(
+				jcrNode.remove();
+				eventPoster.post(new SLPersistentNodeEvent(
 						SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));
 			} catch (final RepositoryException e) {
 				throw new SLPersistentTreeSessionException(
@@ -385,9 +384,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#save()
 	 */
 	public void save() throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				this.jcrNode.save();
+				jcrNode.save();
 			} catch (final Exception e) {
 				Exceptions.catchAndLog(e);
 				throw new SLPersistentTreeSessionException(
@@ -407,24 +406,24 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public <V extends Serializable> SLPersistentProperty<V> setProperty(
 			final Class<V> clazz, final String name, final V value)
 			throws SLPersistentTreeSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			SLPersistentProperty<V> persistentProperty = null;
 			try {
 
 				Property jcrProperty;
-				final Session session = this.jcrNode.getSession();
+				final Session session = jcrNode.getSession();
 				if (value.getClass().isArray()) {
 					final Value[] jcrValues = JCRUtil.createValues(session,
 							value);
-					jcrProperty = this.jcrNode.setProperty(name, jcrValues);
+					jcrProperty = jcrNode.setProperty(name, jcrValues);
 				} else {
 					final Value jcrValue = JCRUtil.createValue(session, value);
-					jcrProperty = this.jcrNode.setProperty(name, jcrValue);
+					jcrProperty = jcrNode.setProperty(name, jcrValue);
 				}
 
 				persistentProperty = new SLPersistentPropertyImpl<V>(this,
-						clazz, jcrProperty, false, this.eventPoster);
-				this.eventPoster.post(new SLPersistentPropertyEvent(
+						clazz, jcrProperty, false, eventPoster);
+				eventPoster.post(new SLPersistentPropertyEvent(
 						SLPersistentPropertyEvent.TYPE_PROPERTY_SET,
 						persistentProperty));
 			} catch (final Exception e) {
@@ -445,8 +444,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 */
 	@Override
 	public String toString() {
-		synchronized (this.lock) {
-			return this.jcrNode.toString();
+		synchronized (lock) {
+			return jcrNode.toString();
 		}
 	}
 }

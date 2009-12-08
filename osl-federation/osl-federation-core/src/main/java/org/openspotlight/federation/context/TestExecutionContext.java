@@ -50,11 +50,14 @@ package org.openspotlight.federation.context;
 
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
@@ -68,7 +71,7 @@ import org.openspotlight.security.idm.AuthenticatedUser;
  * 
  */
 public class TestExecutionContext extends SingleGraphSessionExecutionContext {
-
+	private final ArtifactFinderType type;
 	private final ArtifactSource source;
 
 	TestExecutionContext(final String username, final String password,
@@ -76,21 +79,37 @@ public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 			final String repositoryName,
 			final DisposingListener<DefaultExecutionContext> listener,
 			final AuthenticatedUser user,
-			final SLGraphSession uniqueGraphSession, final ArtifactSource source) {
+			final SLGraphSession uniqueGraphSession,
+			final ArtifactSource source, final ArtifactFinderType type) {
 		super(username, password, descriptor, repositoryName, listener, user,
 				uniqueGraphSession);
 		this.source = source;
+		this.type = type;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
-			final Class<A> type, final Repository typedRepository) {
+			final Class<A> artifactType, final Repository typedRepository) {
 		Assertions.checkCondition("artifactTypeAsStream", StreamArtifact.class
-				.equals(type));
-		final LocalSourceStreamArtifactFinder finder = new LocalSourceStreamArtifactFinder(
-				source);
-		return (ArtifactFinder<A>) finder;
+				.equals(artifactType));
+		ArtifactFinder<A> finder;
+		switch (type) {
+		case LOCAL_SOURCE:
+			finder = (ArtifactFinder<A>) new LocalSourceStreamArtifactFinder(
+					source);
+
+			break;
+		case FILESYSTEM:
+			finder = (ArtifactFinder<A>) new FileSystemStreamArtifactFinder(
+					source);
+
+			break;
+		default:
+			throw Exceptions.logAndReturn(new IllegalStateException(
+					"invalid enum type"));
+		}
+		return finder;
 	}
 
 }

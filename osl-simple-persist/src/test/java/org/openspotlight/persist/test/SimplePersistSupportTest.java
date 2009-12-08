@@ -66,9 +66,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.util.JCRUtil;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
