@@ -84,6 +84,10 @@ public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
 		return 3;
 	}
 
+	public String getRepositoryName() {
+		return this.artifact.getRepositoryName();
+	}
+
 	public void setBundleContext(final ExecutionContext context) {
 
 	}

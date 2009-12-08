@@ -48,8 +48,10 @@
  */
 package org.openspotlight.federation.processing.internal;
 
+import java.util.Map;
+
 import org.openspotlight.federation.context.ExecutionContext;
 
 public interface RunnableWithBundleContext extends Runnable {
-	public void setBundleContext(ExecutionContext context);
+	public void setBundleContext(Map<String, ExecutionContext> context);
 }

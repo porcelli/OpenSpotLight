@@ -69,6 +69,8 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 	/** The processor. */
 	private final BundleProcessor<T> processor;
 
+	private final String repositoryName;
+
 	/**
 	 * Instantiates a new _6_ ending to process artifacts task.
 	 * 
@@ -79,10 +81,11 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 	 */
 	public _4_EndingToProcessArtifactsTask(
 			final ArtifactChangesImpl<T> changes,
-			final BundleProcessor<T> processor) {
+			final BundleProcessor<T> processor, final String repositoryName) {
 		super();
 		this.changes = changes;
 		this.processor = processor;
+		this.repositoryName = repositoryName;
 	}
 
 	/*
@@ -108,6 +111,10 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 
 	public int getPriority() {
 		return 4;
+	}
+
+	public String getRepositoryName() {
+		return this.repositoryName;
 	}
 
 	/*

@@ -50,63 +50,64 @@
 package org.openspotlight.federation.processing;
 
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.finder.ArtifactFinderByRepositoryProviderFactory;
 import org.openspotlight.federation.finder.ArtifactTypeRegistry;
-import org.openspotlight.federation.processing.internal.BundleProcessorContextFactory;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.log.DetailedLoggerFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 // TODO: Auto-generated Javadoc
 /**
- * The {@link BundleProcessorManagerImpl} is the class reposable to get an {@link GlobalSettings} and to process all
- * {@link Artifact artifacts} on this {@link GlobalSettings}. The {@link BundleProcessorManagerImpl} should get the
- * {@link ArtifactSource bundle's} {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each
- * {@link BundleProcessorType type} . After all {@link BundleProcessor processors} was found, the
- * {@link BundleProcessorManagerImpl} should distribute the processing job in some threads obeying the
- * {@link GlobalSettings#getNumberOfParallelThreads() number of threads} configured for this {@link Repository}.
+ * The {@link BundleProcessorManagerImpl} is the class reposable to get an
+ * {@link GlobalSettings} and to process all {@link Artifact artifacts} on this
+ * {@link GlobalSettings}. The {@link BundleProcessorManagerImpl} should get the
+ * {@link ArtifactSource bundle's} {@link BundleProcessorType types} and find
+ * all the {@link BundleProcessor processors} for each
+ * {@link BundleProcessorType type} . After all {@link BundleProcessor
+ * processors} was found, the {@link BundleProcessorManagerImpl} should
+ * distribute the processing job in some threads obeying the
+ * {@link GlobalSettings#getNumberOfParallelThreads() number of threads}
+ * configured for this {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public enum BundleProcessorManagerImpl implements BundleProcessorManager {
 
-    INSTANCE;
+	INSTANCE;
 
-    public void executeBundles( final AuthenticatedUser user,
-                                final JcrConnectionDescriptor descriptor,
-                                final GlobalSettings settings,
-                                final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
-                                final DetailedLoggerFactory loggerFactory,
-                                final Repository... repositories ) throws Exception {
+	public void executeBundles(final String username, final String password,
+			final JcrConnectionDescriptor descriptor,
+			final ExecutionContextFactory contextFactory,
+			final GlobalSettings settings, final Repository... repositories)
+			throws Exception {
 
-        final BundleProcessorContextFactory factory = new BundleProcessorContextFactory(user, descriptor, artifactFinderFactory,
-                                                                                        loggerFactory);
-        new BundleProcessorExecution(factory, settings, repositories, ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes()).execute();
-    }
+		new BundleProcessorExecution(username, password, descriptor,
+				contextFactory, settings, repositories,
+				ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes())
+				.execute();
+	}
 
-    public void executeBundlesInBackground( final AuthenticatedUser user,
-                                            final JcrConnectionDescriptor descriptor,
-                                            final GlobalSettings settings,
-                                            final ArtifactFinderByRepositoryProviderFactory artifactFinderFactory,
-                                            final DetailedLoggerFactory loggerFactory,
-                                            final Repository... repositories ) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    final BundleProcessorContextFactory factory = new BundleProcessorContextFactory(user, descriptor,
-                                                                                                    artifactFinderFactory,
-                                                                                                    loggerFactory);
-                    new BundleProcessorExecution(factory, settings, repositories,
-                                                 ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes()).execute();
+	public void executeBundlesInBackground(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
+			final ExecutionContextFactory contextFactory,
+			final GlobalSettings settings, final Repository... repositories) {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					new BundleProcessorExecution(username, password,
+							descriptor, contextFactory, settings, repositories,
+							ArtifactTypeRegistry.INSTANCE
+									.getRegisteredArtifactTypes()).execute();
 
-                } catch (final Exception e) {
-                    Exceptions.catchAndLog(e);
-                }
+				} catch (final Exception e) {
+					Exceptions.catchAndLog(e);
+				}
 
-            }
-        }).start();
-    }
+			}
+		}).start();
+	}
 }

@@ -61,6 +61,8 @@ public interface ArtifactTask {
 
 	public int getPriority();
 
+	public String getRepositoryName();
+
 	public void setBundleContext(ExecutionContext context);
 
 	public void setQueue(PriorityBlockingQueue<ArtifactTask> queue);

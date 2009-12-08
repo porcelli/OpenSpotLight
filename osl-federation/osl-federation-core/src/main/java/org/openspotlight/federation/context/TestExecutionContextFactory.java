@@ -48,6 +48,7 @@
  */
 package org.openspotlight.federation.context;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openspotlight.common.DisposingListener;
@@ -65,24 +66,28 @@ import org.openspotlight.security.idm.User;
 
 public class TestExecutionContextFactory implements ExecutionContextFactory,
 		DisposingListener<DefaultExecutionContext> {
-
 	public static ExecutionContextFactory createFactory(
-			final ArtifactSource source) {
-		return new TestExecutionContextFactory(source);
+			final ArtifactSource artifactSource) {
+		return new TestExecutionContextFactory(artifactSource);
 	}
+
+	private final ArtifactSource artifactSource;
 
 	private final CopyOnWriteArrayList<TestExecutionContext> openedContexts = new CopyOnWriteArrayList<TestExecutionContext>();
-	private final ArtifactSource source;
 	private AuthenticatedUser user;
-	private SLGraphSession graphSession;
 
-	private TestExecutionContextFactory(final ArtifactSource source) {
-		this.source = source;
+	private final ConcurrentHashMap<String, SLGraphSession> sessionMap = new ConcurrentHashMap<String, SLGraphSession>();
+
+	private TestExecutionContextFactory(final ArtifactSource artifactSource) {
+		this.artifactSource = artifactSource;
 	}
 
-	public void closeResources() {
+	public synchronized void closeResources() {
 		for (final TestExecutionContext openedContext : openedContexts) {
 			openedContext.closeResources();
+		}
+		for (final SLGraphSession session : sessionMap.values()) {
+			session.close();
 		}
 	}
 
@@ -90,7 +95,9 @@ public class TestExecutionContextFactory implements ExecutionContextFactory,
 			final String username, final String password,
 			final JcrConnectionDescriptor descriptor,
 			final String repositoryName) {
+
 		try {
+			SLGraphSession graphSession = sessionMap.get(repositoryName);
 			if (user == null || graphSession == null) {
 				final SecurityFactory securityFactory = AbstractFactory
 						.getDefaultInstance(SecurityFactory.class);
@@ -100,10 +107,11 @@ public class TestExecutionContextFactory implements ExecutionContextFactory,
 				final SLGraph graph = AbstractFactory.getDefaultInstance(
 						SLGraphFactory.class).createGraph(descriptor);
 				graphSession = graph.openSession(user, repositoryName);
+				sessionMap.put(repositoryName, graphSession);
 			}
 			final TestExecutionContext newContext = new TestExecutionContext(
 					username, password, descriptor, repositoryName, this, user,
-					graphSession, source);
+					graphSession, artifactSource);
 			openedContexts.add(newContext);
 			return newContext;
 		} catch (final Exception e) {

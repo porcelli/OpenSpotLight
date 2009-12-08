@@ -1,28 +1,50 @@
 package org.openspotlight.federation.processing.internal;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.openspotlight.common.concurrent.CautiousExecutor.TaskListener;
-import org.openspotlight.common.concurrent.CautiousExecutor.ThreadListener;
+import org.openspotlight.common.concurrent.GossipExecutor.TaskListener;
+import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public class BundleContextThreadInjector implements ThreadListener,
 		TaskListener {
 
-	private final ConcurrentHashMap<Thread, ExecutionContext> contextsPerThread = new ConcurrentHashMap<Thread, ExecutionContext>();
+	private final ConcurrentHashMap<Thread, Map<String, ExecutionContext>> contextsPerThread = new ConcurrentHashMap<Thread, Map<String, ExecutionContext>>();
 
-	private final BundleProcessorContextFactory factory;
+	private final ExecutionContextFactory factory;
 
-	public BundleContextThreadInjector(
-			final BundleProcessorContextFactory factory) {
+	private final String[] repositoryNames;
+
+	private final String username;
+	private final String password;
+	private final JcrConnectionDescriptor descriptor;
+
+	public BundleContextThreadInjector(final ExecutionContextFactory factory,
+			final String[] repositoryNames, final String username,
+			final String password, final JcrConnectionDescriptor descriptor) {
 		this.factory = factory;
+		this.repositoryNames = repositoryNames;
+		this.descriptor = descriptor;
+		this.username = username;
+		this.password = password;
 	}
 
 	public void afterCreatingThread(final Thread t) {
 		try {
-			contextsPerThread.put(t, factory.createBundleContext());
+			final Map<String, ExecutionContext> executionContextMap = new HashMap<String, ExecutionContext>();
+			for (final String repositoryName : repositoryNames) {
+				final ExecutionContext executionContext = factory
+						.createExecutionContext(username, password, descriptor,
+								repositoryName);
+				executionContextMap.put(repositoryName, executionContext);
+			}
+			contextsPerThread.put(t, executionContextMap);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -42,7 +64,8 @@ public class BundleContextThreadInjector implements ThreadListener,
 		if (r instanceof RunnableWithBundleContext) {
 			try {
 				final RunnableWithBundleContext rwbc = (RunnableWithBundleContext) r;
-				final ExecutionContext ctx = contextsPerThread.get(t);
+				final Map<String, ExecutionContext> ctx = contextsPerThread
+						.get(t);
 				rwbc.setBundleContext(ctx);
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
