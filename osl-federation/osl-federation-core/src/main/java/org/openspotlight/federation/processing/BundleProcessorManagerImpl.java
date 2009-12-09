@@ -55,6 +55,7 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactTypeRegistry;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
@@ -82,24 +83,23 @@ public enum BundleProcessorManagerImpl implements BundleProcessorManager {
 	public void executeBundles(final String username, final String password,
 			final JcrConnectionDescriptor descriptor,
 			final ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Repository... repositories)
+			final GlobalSettings settings, final Group... groups)
 			throws Exception {
 
 		new BundleProcessorExecution(username, password, descriptor,
-				contextFactory, settings, repositories,
-				ArtifactTypeRegistry.INSTANCE.getRegisteredArtifactTypes())
-				.execute();
+				contextFactory, settings, groups, ArtifactTypeRegistry.INSTANCE
+						.getRegisteredArtifactTypes()).execute();
 	}
 
 	public void executeBundlesInBackground(final String username,
 			final String password, final JcrConnectionDescriptor descriptor,
 			final ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Repository... repositories) {
+			final GlobalSettings settings, final Group... groups) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
 					new BundleProcessorExecution(username, password,
-							descriptor, contextFactory, settings, repositories,
+							descriptor, contextFactory, settings, groups,
 							ArtifactTypeRegistry.INSTANCE
 									.getRegisteredArtifactTypes()).execute();
 

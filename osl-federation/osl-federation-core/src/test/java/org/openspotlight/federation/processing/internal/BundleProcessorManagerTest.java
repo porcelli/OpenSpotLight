@@ -163,7 +163,7 @@ public class BundleProcessorManagerTest {
 		BundleProcessorManagerImpl.INSTANCE.executeBundles("username",
 				"password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 				SingleGraphSessionExecutionContextFactory.createFactory(),
-				settings, repository);
+				settings, group);
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.ERROR), Is.is(false));
 		Assert.assertThat(ExampleBundleProcessor.allStatus
@@ -208,11 +208,12 @@ public class BundleProcessorManagerTest {
 		bundleSource.setRelative("/osl-federation");
 		bundleSource.getIncludeds().add("**/*.java");
 
-		BundleProcessorManagerImpl.INSTANCE.executeBundles("username",
-				"password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				TestExecutionContextFactory.createFactory(
-						ArtifactFinderType.FILESYSTEM, source), settings,
-				repository);
+		BundleProcessorManagerImpl.INSTANCE
+				.executeBundles("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+						TestExecutionContextFactory.createFactory(
+								ArtifactFinderType.FILESYSTEM, source),
+						settings, group);
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.ERROR), Is.is(false));
 		Assert.assertThat(ExampleBundleProcessor.allStatus
