@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.finder;
+package org.openspotlight.federation.registry;
 
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Collections.setOf;

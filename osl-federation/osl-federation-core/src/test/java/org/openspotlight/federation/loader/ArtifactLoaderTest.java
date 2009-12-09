@@ -54,21 +54,37 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 
 public class ArtifactLoaderTest {
 
+	public static class SampleArtifactRegistry implements
+			ArtifactFinderRegistry {
+
+		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
+			return Collections
+					.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
+		}
+
+	}
+
 	@Test
 	public void shouldLoad() throws Exception {
 		final GlobalSettings configuration = new GlobalSettings();
+		configuration
+				.setArtifactFinderRegistryClass(SampleArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
 		configuration.setNumberOfParallelThreads(4);
 		final String initialRawPath = Files.getNormalizedFileName(new File(
@@ -92,8 +108,8 @@ public class ArtifactLoaderTest {
 		source.setInitialLookup(initial);
 		source.setName("sourceName");
 
-		final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(
-				configuration, new FileSystemArtifactBySourceProvider());
+		final ArtifactLoader loader = ArtifactLoaderFactory
+				.createNewLoader(configuration);
 
 		final Iterable<Artifact> artifacts = loader
 				.loadArtifactsFromSource(source);

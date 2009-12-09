@@ -151,7 +151,7 @@ public enum DefaultScheduler implements SLScheduler {
 							settingsCopy, data.descriptor, data.username,
 							data.password, repositoryName, data.contextFactory);
 				}
-				command.execute(context, schedulable);
+				command.execute(settings.get(), context, schedulable);
 			} catch (final Exception e) {
 				Exceptions.logAndReturnNew(e, JobExecutionException.class);
 			} finally {

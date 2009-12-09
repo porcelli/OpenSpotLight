@@ -65,6 +65,8 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	private static final long serialVersionUID = 3443359462450366393L;
 
+	private Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass;
+
 	@SuppressWarnings("unchecked")
 	private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
 
@@ -81,6 +83,10 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 	private String systemPassword;
 
 	public GlobalSettings() {
+	}
+
+	public Class<? extends ArtifactFinderRegistry> getArtifactFinderRegistryClass() {
+		return artifactFinderRegistryClass;
 	}
 
 	public long getDefaultSleepingIntervalInMilliseconds() {
@@ -116,6 +122,11 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	public String getSystemUser() {
 		return systemUser;
+	}
+
+	public void setArtifactFinderRegistryClass(
+			final Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass) {
+		this.artifactFinderRegistryClass = artifactFinderRegistryClass;
 	}
 
 	public void setDefaultSleepingIntervalInMilliseconds(
