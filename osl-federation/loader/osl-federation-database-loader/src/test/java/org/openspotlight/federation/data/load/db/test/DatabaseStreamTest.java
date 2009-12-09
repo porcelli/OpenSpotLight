@@ -75,7 +75,6 @@ import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.StreamArtifact;
 import org.openspotlight.federation.finder.DatabaseStreamArtifactFinder;
-import org.openspotlight.federation.finder.DatabaseStreamArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
@@ -83,135 +82,154 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This test is intended to be used to test scripts to retrieve stream artifacts for a given {@link DatabaseType}. Most of the
- * environments used to run <code>mvn clean install</code> would not have all the database types. But there's a need to have a
- * test for each type on the source code. On this cases, the tests will be annotated with {@link Ignore} annotation.
+ * This test is intended to be used to test scripts to retrieve stream artifacts
+ * for a given {@link DatabaseType}. Most of the environments used to run
+ * <code>mvn clean install</code> would not have all the database types. But
+ * there's a need to have a test for each type on the source code. On this
+ * cases, the tests will be annotated with {@link Ignore} annotation.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public abstract class DatabaseStreamTest {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Before
-    public void cleanFiles() throws Exception {
-        delete("./target/test-data/" + this.getClass().getSimpleName() + "/");
-    }
+	@Before
+	public void cleanFiles() throws Exception {
+		delete("./target/test-data/" + this.getClass().getSimpleName() + "/");
+	}
 
-    /**
-     * Here a valid configuration to connect on the target database should be created. The necessary data to be created here are
-     * the database connection and also the artifact mappings to load all artifacts been tested for a given type.
-     * 
-     * @return a valid database configuration
-     */
-    protected abstract DbArtifactSource createValidConfigurationWithMappings();
+	/**
+	 * Here a valid configuration to connect on the target database should be
+	 * created. The necessary data to be created here are the database
+	 * connection and also the artifact mappings to load all artifacts been
+	 * tested for a given type.
+	 * 
+	 * @return a valid database configuration
+	 */
+	protected abstract DbArtifactSource createValidConfigurationWithMappings();
 
-    /**
-     * Fill the data necessary to run the database tests. For example, here it could be created procedure, triggers and so on.
-     * 
-     * @param conn
-     * @throws Exception
-     */
-    protected void fillDatabase( final Connection conn ) throws Exception {
-        //
-    }
+	/**
+	 * Fill the data necessary to run the database tests. For example, here it
+	 * could be created procedure, triggers and so on.
+	 * 
+	 * @param conn
+	 * @throws Exception
+	 */
+	protected void fillDatabase(final Connection conn) throws Exception {
+		//
+	}
 
-    /**
-     * Here's an option to reset all filled data on the database.
-     * 
-     * @param conn
-     * @throws Exception
-     */
-    protected void resetDatabase( final Connection conn ) throws Exception {
-        //
-    };
+	/**
+	 * Here's an option to reset all filled data on the database.
+	 * 
+	 * @param conn
+	 * @throws Exception
+	 */
+	protected void resetDatabase(final Connection conn) throws Exception {
+		//
+	};
 
-    /**
-     * This test method will load all artifacts from the configuration and assert if all artifacts of the {@link #typesToAssert()}
-     * are loaded.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void shouldLoadAllValidTypes() throws Exception {
-        if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
-            if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
-                this.validateAllTypes();
-            } else {
-                this.logger.warn(format("Ignoring test {0} because system property {1} isn't set to true.",
-                                        this.getClass().getSimpleName(), "runDatabaseVendorTests"));
-            }
-        } else {
-            this.validateAllTypes();
-        }
+	/**
+	 * This test method will load all artifacts from the configuration and
+	 * assert if all artifacts of the {@link #typesToAssert()} are loaded.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldLoadAllValidTypes() throws Exception {
+		if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
+			if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
+				validateAllTypes();
+			} else {
+				logger
+						.warn(format(
+								"Ignoring test {0} because system property {1} isn't set to true.",
+								this.getClass().getSimpleName(),
+								"runDatabaseVendorTests"));
+			}
+		} else {
+			validateAllTypes();
+		}
 
-    }
+	}
 
-    /**
-     * @return the types to load during the test.
-     */
-    protected abstract Set<ScriptType> typesToAssert();
+	/**
+	 * @return the types to load during the test.
+	 */
+	protected abstract Set<ScriptType> typesToAssert();
 
-    private void validateAllTypes() throws Exception {
-        final DbArtifactSource bundle = this.createValidConfigurationWithMappings();
-        Connection conn = createConnection(bundle);
-        this.fillDatabase(conn);
-        if (!conn.isClosed()) {
-            conn.close();
-        }
-        final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder(bundle);
-        final GlobalSettings configuration = new GlobalSettings();
-        configuration.setDefaultSleepingIntervalInMilliseconds(500);
-        configuration.setNumberOfParallelThreads(4);
+	private void validateAllTypes() throws Exception {
+		final DbArtifactSource bundle = createValidConfigurationWithMappings();
+		Connection conn = createConnection(bundle);
+		fillDatabase(conn);
+		if (!conn.isClosed()) {
+			conn.close();
+		}
+		final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder(
+				bundle);
+		final GlobalSettings configuration = new GlobalSettings();
+		configuration
+				.setArtifactFinderRegistryClass(SampleDatabaseStreamArtifactRegistry.class);
+		configuration.setDefaultSleepingIntervalInMilliseconds(500);
+		configuration.setNumberOfParallelThreads(4);
 
-        final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(configuration,
-                                                                            new DatabaseStreamArtifactFinderBySourceProvider());
+		final ArtifactLoader loader = ArtifactLoaderFactory
+				.createNewLoader(configuration);
 
-        conn = createConnection(bundle);
-        this.resetDatabase(conn);
-        if (!conn.isClosed()) {
-            conn.close();
-        }
+		conn = createConnection(bundle);
+		resetDatabase(conn);
+		if (!conn.isClosed()) {
+			conn.close();
+		}
 
-        final Iterable<Artifact> loadedArtifacts = loader.loadArtifactsFromSource(bundle);
-        final Set<String> failMessages = new HashSet<String>();
-        lookingTypes: for (final ScriptType typeToAssert : this.typesToAssert()) {
-            for (final Artifact artifact : loadedArtifacts) {
-                final StreamArtifact streamArtifact = (StreamArtifact)artifact;
-                final String relativeName = streamArtifact.getArtifactCompleteName();
-                if (relativeName.contains(typeToAssert.name())) {
-                    assertThat(streamArtifact.getContent(), is(notNullValue()));
-                    continue lookingTypes;
-                }
-            }
-            failMessages.add(format("Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
-                                    typeToAssert, loadedArtifacts));
-        }
-        if (!failMessages.isEmpty()) {
-            fail(failMessages.toString());
-        }
-        for (final Artifact artifact : loadedArtifacts) {
-            final StreamArtifact streamArtifact = (StreamArtifact)artifact;
-            final String name = "./target/test-data/" + this.getClass().getSimpleName() + "/"
-                                + streamArtifact.getArtifactCompleteName().replaceAll(" ", "");// DB2 has
-            // some
-            // spaces
-            final String dirName = name.substring(0, name.lastIndexOf('/'));
-            new File(dirName).mkdirs();
-            final OutputStream fos = new BufferedOutputStream(new FileOutputStream(name + ".sql"));
-            final InputStream is = new ByteArrayInputStream(streamArtifact.getContent().getBytes());
-            while (true) {
-                final int data = is.read();
-                if (data == -1) {
-                    break;
-                }
-                fos.write(data);
-            }
-            fos.flush();
-            fos.close();
-        }
+		final Iterable<Artifact> loadedArtifacts = loader
+				.loadArtifactsFromSource(bundle);
+		final Set<String> failMessages = new HashSet<String>();
+		lookingTypes: for (final ScriptType typeToAssert : typesToAssert()) {
+			for (final Artifact artifact : loadedArtifacts) {
+				final StreamArtifact streamArtifact = (StreamArtifact) artifact;
+				final String relativeName = streamArtifact
+						.getArtifactCompleteName();
+				if (relativeName.contains(typeToAssert.name())) {
+					assertThat(streamArtifact.getContent(), is(notNullValue()));
+					continue lookingTypes;
+				}
+			}
+			failMessages.add(format(
+					"Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
+					typeToAssert, loadedArtifacts));
+		}
+		if (!failMessages.isEmpty()) {
+			fail(failMessages.toString());
+		}
+		for (final Artifact artifact : loadedArtifacts) {
+			final StreamArtifact streamArtifact = (StreamArtifact) artifact;
+			final String name = "./target/test-data/"
+					+ this.getClass().getSimpleName()
+					+ "/"
+					+ streamArtifact.getArtifactCompleteName().replaceAll(" ",
+							"");// DB2 has
+			// some
+			// spaces
+			final String dirName = name.substring(0, name.lastIndexOf('/'));
+			new File(dirName).mkdirs();
+			final OutputStream fos = new BufferedOutputStream(
+					new FileOutputStream(name + ".sql"));
+			final InputStream is = new ByteArrayInputStream(streamArtifact
+					.getContent().getBytes());
+			while (true) {
+				final int data = is.read();
+				if (data == -1) {
+					break;
+				}
+				fos.write(data);
+			}
+			fos.flush();
+			fos.close();
+		}
 
-    }
+	}
 
 }
