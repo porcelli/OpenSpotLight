@@ -76,7 +76,10 @@ import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
+import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
+import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -166,6 +169,12 @@ public class BundleProcessorManagerTest {
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
 				.is(false));
+		final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
+				.loadMutableFromFile("target/BundleProcessorManagerTest/exampleConfigurationFile.xml");
+		GlobalSettingsSupport.initializeScheduleMap(settings);
+		xmlManager.saveGlobalSettings(settings);
+		xmlManager.saveRepository(repository);
+
 	}
 
 	@Test

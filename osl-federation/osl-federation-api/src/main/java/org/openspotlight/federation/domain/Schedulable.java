@@ -50,7 +50,8 @@ package org.openspotlight.federation.domain;
 
 import java.util.List;
 
-import org.openspotlight.common.Disposable;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 /**
@@ -68,11 +69,15 @@ public interface Schedulable extends SimpleNodeType {
 		 * @param schedulable
 		 *            the schedulable
 		 */
-		public void execute(SchedulableContext ctx, S schedulable);
+		public void execute(ExecutionContext ctx, S schedulable);
+
+		public String getRepositoryNameBeforeExecution(S schedulable);
 	}
 
-	public static interface SchedulableContext extends Disposable {
-		// FIXME add entries
+	public static interface SchedulableCommandWithContextFactory<S extends Schedulable>
+			extends SchedulableCommand<S> {
+		public void setContextFactoryBeforeExecution(
+				ExecutionContextFactory factory);
 	}
 
 	/**
