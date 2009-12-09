@@ -108,6 +108,8 @@ public enum DefaultScheduler implements SLScheduler {
 
 		private final String cronInformation;
 
+		private final AtomicReference<GlobalSettings> settings;
+
 		private final AtomicReference<InternalData> internalData;
 
 		@SuppressWarnings("unchecked")
@@ -119,8 +121,10 @@ public enum DefaultScheduler implements SLScheduler {
 		public OslInternalSchedulerCommand(final Schedulable schedulable,
 				final Class<? extends SchedulableCommand> commandType,
 				final AtomicReference<InternalData> internalData,
+				final AtomicReference<GlobalSettings> settings,
 				final String cronInformation) {
 			this.schedulable = schedulable;
+			this.settings = settings;
 			this.internalData = internalData;
 			this.commandType = commandType;
 			this.cronInformation = cronInformation;
@@ -131,9 +135,8 @@ public enum DefaultScheduler implements SLScheduler {
 		public void execute() throws JobExecutionException {
 			ExecutionContext context = null;
 			try {
-
+				final GlobalSettings settingsCopy = settings.get();
 				final InternalData data = internalData.get();
-
 				final SchedulableCommand<Schedulable> command = commandType
 						.newInstance();
 				final String repositoryName = command
@@ -144,8 +147,9 @@ public enum DefaultScheduler implements SLScheduler {
 
 				if (command instanceof SchedulableCommandWithContextFactory) {
 					final SchedulableCommandWithContextFactory<Schedulable> commandWithFactory = (SchedulableCommandWithContextFactory<Schedulable>) command;
-					commandWithFactory
-							.setContextFactoryBeforeExecution(data.contextFactory);
+					commandWithFactory.setContextFactoryBeforeExecution(
+							settingsCopy, data.descriptor, data.username,
+							data.password, repositoryName, data.contextFactory);
 				}
 				command.execute(context, schedulable);
 			} catch (final Exception e) {
@@ -236,7 +240,7 @@ public enum DefaultScheduler implements SLScheduler {
 					commandType);
 
 			final OslInternalSchedulerCommand command = new OslInternalSchedulerCommand(
-					schedulable, commandType, internalData, IMMEDIATE);
+					schedulable, commandType, internalData, settings, IMMEDIATE);
 			oslImmediateCommands.put(command.getUniqueName(), command);
 			final Date runTime = TriggerUtils.getNextGivenSecondDate(
 					new Date(), 10);
@@ -282,7 +286,8 @@ public enum DefaultScheduler implements SLScheduler {
 						commandType);
 
 				final OslInternalSchedulerCommand job = new OslInternalSchedulerCommand(
-						s, commandType, internalData, cronInformation);
+						s, commandType, internalData, this.settings,
+						cronInformation);
 				newJobs.put(job.getUniqueName(), job);
 			}
 		}
