@@ -198,10 +198,11 @@ public class ArtifactLoaderFactory {
 					for (final Class<? extends Artifact> type : artifactTypes) {
 						final ArtifactFinder<? extends Artifact> artifactFinder = provider
 								.getForType(type, source);
-						sourcesToLoad
-								.add(new Pair<ArtifactFinder<?>, ArtifactSource>(
-										artifactFinder, source));
-
+						if (artifactFinder != null) {
+							sourcesToLoad
+									.add(new Pair<ArtifactFinder<?>, ArtifactSource>(
+											artifactFinder, source));
+						}
 					}
 				}
 			}
