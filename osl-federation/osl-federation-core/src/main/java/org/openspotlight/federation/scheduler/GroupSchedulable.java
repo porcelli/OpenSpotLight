@@ -50,25 +50,41 @@ package org.openspotlight.federation.scheduler;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
+import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public class GroupSchedulable implements
 		SchedulableCommandWithContextFactory<Group> {
 
-	public void execute(final ExecutionContext ctx, final Group schedulable) {
-		// TODO Auto-generated method stub
+	private ExecutionContextFactory factory;
 
+	private JcrConnectionDescriptor descriptor;
+	private String username;
+	private String password;
+	private GlobalSettings settings;
+
+	public void execute(final ExecutionContext ctx, final Group schedulable)
+			throws Exception {
+		BundleProcessorManagerImpl.INSTANCE.executeBundles(username, password,
+				descriptor, factory, settings, schedulable);
 	}
 
 	public String getRepositoryNameBeforeExecution(final Group schedulable) {
 		return schedulable.getRepository().getName();
 	}
 
-	public void setContextFactoryBeforeExecution(
+	public void setContextFactoryBeforeExecution(final GlobalSettings settings,
+			final JcrConnectionDescriptor descriptor, final String username,
+			final String password, final String repository,
 			final ExecutionContextFactory factory) {
-		// TODO Auto-generated method stub
-
+		this.descriptor = descriptor;
+		this.username = username;
+		this.password = password;
+		this.factory = factory;
+		this.settings = settings;
 	}
 
 }

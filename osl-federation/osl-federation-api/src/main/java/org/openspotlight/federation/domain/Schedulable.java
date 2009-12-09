@@ -52,6 +52,7 @@ import java.util.List;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 /**
@@ -69,14 +70,17 @@ public interface Schedulable extends SimpleNodeType {
 		 * @param schedulable
 		 *            the schedulable
 		 */
-		public void execute(ExecutionContext ctx, S schedulable);
+		public void execute(ExecutionContext ctx, S schedulable)
+				throws Exception;
 
 		public String getRepositoryNameBeforeExecution(S schedulable);
 	}
 
 	public static interface SchedulableCommandWithContextFactory<S extends Schedulable>
 			extends SchedulableCommand<S> {
-		public void setContextFactoryBeforeExecution(
+		public void setContextFactoryBeforeExecution(GlobalSettings settings,
+				JcrConnectionDescriptor descriptor, String username,
+				String password, String repository,
 				ExecutionContextFactory factory);
 	}
 
