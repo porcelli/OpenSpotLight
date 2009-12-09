@@ -58,7 +58,7 @@ public class FileSystemArtifactBySourceProvider implements
 	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
 		if (artifactType.equals(StreamArtifact.class)) {
-			new FileSystemStreamArtifactFinder(source);
+			return new FileSystemStreamArtifactFinder(source);
 		}
 		return null;
 	}
