@@ -62,11 +62,14 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
-import org.openspotlight.federation.domain.Schedulable.SchedulableContext;
+import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
@@ -82,26 +85,43 @@ import org.quartz.impl.StdSchedulerFactory;
 public enum DefaultScheduler implements SLScheduler {
 	INSTANCE;
 
+	private static class InternalData {
+		public final String username;
+		public final String password;
+		public final JcrConnectionDescriptor descriptor;
+		public final ExecutionContextFactory contextFactory;
+
+		public InternalData(final String username, final String password,
+				final JcrConnectionDescriptor descriptor,
+				final ExecutionContextFactory contextFactory) {
+			super();
+			this.username = username;
+			this.password = password;
+			this.descriptor = descriptor;
+			this.contextFactory = contextFactory;
+		}
+	}
+
 	public static class OslInternalSchedulerCommand {
 
 		private final String jobName;
 
 		private final String cronInformation;
 
+		private final AtomicReference<InternalData> internalData;
+
 		@SuppressWarnings("unchecked")
 		private final Class<? extends SchedulableCommand> commandType;
 
 		private final Schedulable schedulable;
 
-		private final SchedulableContextFactory factory;
-
 		@SuppressWarnings("unchecked")
 		public OslInternalSchedulerCommand(final Schedulable schedulable,
 				final Class<? extends SchedulableCommand> commandType,
-				final SchedulableContextFactory factory,
+				final AtomicReference<InternalData> internalData,
 				final String cronInformation) {
 			this.schedulable = schedulable;
-			this.factory = factory;
+			this.internalData = internalData;
 			this.commandType = commandType;
 			this.cronInformation = cronInformation;
 			jobName = schedulable.toUniqueJobString();
@@ -109,12 +129,24 @@ public enum DefaultScheduler implements SLScheduler {
 
 		@SuppressWarnings("unchecked")
 		public void execute() throws JobExecutionException {
-
-			SchedulableContext context = null;
+			ExecutionContext context = null;
 			try {
-				context = factory.createContext();
+
+				final InternalData data = internalData.get();
+
 				final SchedulableCommand<Schedulable> command = commandType
 						.newInstance();
+				final String repositoryName = command
+						.getRepositoryNameBeforeExecution(schedulable);
+				context = data.contextFactory.createExecutionContext(
+						data.username, data.password, data.descriptor,
+						repositoryName);
+
+				if (command instanceof SchedulableCommandWithContextFactory) {
+					final SchedulableCommandWithContextFactory<Schedulable> commandWithFactory = (SchedulableCommandWithContextFactory<Schedulable>) command;
+					commandWithFactory
+							.setContextFactoryBeforeExecution(data.contextFactory);
+				}
 				command.execute(context, schedulable);
 			} catch (final Exception e) {
 				Exceptions.logAndReturnNew(e, JobExecutionException.class);
@@ -174,7 +206,7 @@ public enum DefaultScheduler implements SLScheduler {
 
 	private static String DEFAULT_GROUP = "osl jobs";
 
-	private final AtomicReference<SchedulableContextFactory> contextFactory = new AtomicReference<SchedulableContextFactory>();
+	private final AtomicReference<InternalData> internalData = new AtomicReference<InternalData>();
 
 	private final Scheduler quartzScheduler;
 
@@ -194,7 +226,7 @@ public enum DefaultScheduler implements SLScheduler {
 	public <T extends Schedulable> void fireSchedulable(final T schedulable) {
 		try {
 			Assertions.checkNotNull("schedulable", schedulable);
-			Assertions.checkNotNull("contextFactory", contextFactory.get());
+			Assertions.checkNotNull("internalData", internalData.get());
 			Assertions.checkNotNull("settings", settings.get());
 			final Class<? extends SchedulableCommand> commandType = settings
 					.get().getSchedulableCommandMap().get(
@@ -204,7 +236,7 @@ public enum DefaultScheduler implements SLScheduler {
 					commandType);
 
 			final OslInternalSchedulerCommand command = new OslInternalSchedulerCommand(
-					schedulable, commandType, getContextFactory(), IMMEDIATE);
+					schedulable, commandType, internalData, IMMEDIATE);
 			oslImmediateCommands.put(command.getUniqueName(), command);
 			final Date runTime = TriggerUtils.getNextGivenSecondDate(
 					new Date(), 10);
@@ -224,10 +256,6 @@ public enum DefaultScheduler implements SLScheduler {
 			command = oslImmediateCommands.get(name);
 		}
 		return command;
-	}
-
-	private SchedulableContextFactory getContextFactory() {
-		return contextFactory.get();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -254,18 +282,32 @@ public enum DefaultScheduler implements SLScheduler {
 						commandType);
 
 				final OslInternalSchedulerCommand job = new OslInternalSchedulerCommand(
-						s, commandType, getContextFactory(), cronInformation);
+						s, commandType, internalData, cronInformation);
 				newJobs.put(job.getUniqueName(), job);
 			}
 		}
 		return newJobs;
 	}
 
+	public void initializeSettings(
+			final ExecutionContextFactory contextFactory,
+			final String username, final String password,
+			final JcrConnectionDescriptor descriptor) {
+		Assertions.checkNotEmpty("username", username);
+		Assertions.checkNotEmpty("password", password);
+		Assertions.checkNotNull("contextFactory", contextFactory);
+		Assertions.checkNotNull("descriptor", descriptor);
+
+		final InternalData newData = new InternalData(username, password,
+				descriptor, contextFactory);
+		internalData.set(newData);
+	}
+
 	public synchronized void refreshJobs(final GlobalSettings settings,
 			final Set<Repository> repositories) {
 		Assertions.checkNotNull("settings", settings);
 		Assertions.checkNotNull("repositories", repositories);
-		Assertions.checkNotNull("contextFactory", contextFactory.get());
+		Assertions.checkNotNull("internalData", internalData.get());
 		this.settings.set(settings);
 		final Map<String, OslInternalSchedulerCommand> jobMap = groupJobsByCronInformation(
 				settings, repositories);
@@ -307,13 +349,8 @@ public enum DefaultScheduler implements SLScheduler {
 
 	}
 
-	public synchronized void setSchedulableContextFactory(
-			final SchedulableContextFactory contextFactory) {
-		this.contextFactory.set(contextFactory);
-	}
-
 	public void startScheduler() {
-		Assertions.checkNotNull("contextFactory", contextFactory.get());
+		Assertions.checkNotNull("internalData", internalData.get());
 		try {
 			quartzScheduler.start();
 		} catch (final Exception e) {

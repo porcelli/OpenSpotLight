@@ -48,6 +48,7 @@
  */
 package org.openspotlight.federation.scheduler.test;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,39 +60,32 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.TestExecutionContextFactory;
+import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
-import org.openspotlight.federation.domain.Schedulable.SchedulableContext;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
-import org.openspotlight.federation.scheduler.SLScheduler.SchedulableContextFactory;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
 public class DefaultSchedulerTest {
 
 	public static class SampleArtifactSourceSchedulableCommand implements
 			SchedulableCommand<ArtifactSource> {
 
-		public void execute(final SchedulableContext ctx,
+		public void execute(final ExecutionContext ctx,
 				final ArtifactSource schedulable) {
-			// TODO Auto-generated method stub
-
+			ctx.getUser();
 		}
 
-	}
-
-	public static class SampleContextFactory implements
-			SchedulableContextFactory {
-
-		public SchedulableContext createContext() {
-			return new SchedulableContext() {
-
-				public void closeResources() {
-
-				}
-			};
+		public String getRepositoryNameBeforeExecution(
+				final ArtifactSource schedulable) {
+			return schedulable.getRepository().getName();
 		}
 
 	}
@@ -103,11 +97,15 @@ public class DefaultSchedulerTest {
 
 		private static AtomicInteger counter = new AtomicInteger();
 
-		public void execute(final SchedulableContext ctx,
-				final Group schedulable) {
+		public void execute(final ExecutionContext ctx, final Group schedulable) {
+			ctx.getUser();
 			System.out.println(schedulable.getName());
 			wasExecuted.set(true);
 			counter.incrementAndGet();
+		}
+
+		public String getRepositoryNameBeforeExecution(final Group schedulable) {
+			return schedulable.getRepository().getName();
 		}
 
 	}
@@ -120,6 +118,15 @@ public class DefaultSchedulerTest {
 
 	@BeforeClass
 	public static void setupScheduler() {
+		final ArtifactSource source = new ArtifactSource();
+		final String initialRawPath = Files
+				.getNormalizedFileName(new File(".."));
+		final String initial = initialRawPath.substring(0, initialRawPath
+				.lastIndexOf('/'));
+		final String finalStr = initialRawPath.substring(initial.length());
+		source.setActive(true);
+		source.setInitialLookup(initial);
+		source.setName("sourceName");
 
 		settings = new GlobalSettings();
 		settings.getSchedulableCommandMap().clear();
@@ -131,6 +138,7 @@ public class DefaultSchedulerTest {
 		repositories.add(repository);
 		repository.setActive(true);
 		repository.setName("repository");
+		source.setRepository(repository);
 
 		final Group group = new Group();
 		group.setActive(true);
@@ -138,7 +146,9 @@ public class DefaultSchedulerTest {
 		group.setRepository(repository);
 		group.setType("types");
 		repository.getGroups().add(group);
-		scheduler.setSchedulableContextFactory(new SampleContextFactory());
+		scheduler.initializeSettings(TestExecutionContextFactory.createFactory(
+				ArtifactFinderType.FILESYSTEM, source), "user", "password",
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		scheduler.refreshJobs(settings, repositories);
 		scheduler.startScheduler();
 	}

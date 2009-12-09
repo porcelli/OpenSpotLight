@@ -54,11 +54,14 @@ import org.openspotlight.federation.domain.Group;
 
 public class GlobalSettingsSupport {
 
-	public void initializeScheduleMap(final GlobalSettings settings) {
+	public static void initializeScheduleMap(final GlobalSettings settings) {
 		settings.getSchedulableCommandMap().put(Group.class,
 				GroupSchedulable.class);
 		settings.getSchedulableCommandMap().put(ArtifactSource.class,
 				ArtifactSourceSchedulable.class);
+	}
+
+	private GlobalSettingsSupport() {
 	}
 
 }
