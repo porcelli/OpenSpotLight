@@ -66,7 +66,7 @@ public class GroupSchedulable implements
 	private String password;
 	private GlobalSettings settings;
 
-	public void execute(final ExecutionContext ctx, final Group schedulable)
+	public void execute(GlobalSettings settigns,final ExecutionContext ctx, final Group schedulable)
 			throws Exception {
 		BundleProcessorManagerImpl.INSTANCE.executeBundles(username, password,
 				descriptor, factory, settings, schedulable);

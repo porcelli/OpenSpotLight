@@ -78,8 +78,8 @@ public class DefaultSchedulerTest {
 	public static class SampleArtifactSourceSchedulableCommand implements
 			SchedulableCommand<ArtifactSource> {
 
-		public void execute(final ExecutionContext ctx,
-				final ArtifactSource schedulable) {
+		public void execute(final GlobalSettings settigns,
+				final ExecutionContext ctx, final ArtifactSource schedulable) {
 			ctx.getUser();
 		}
 
@@ -97,7 +97,8 @@ public class DefaultSchedulerTest {
 
 		private static AtomicInteger counter = new AtomicInteger();
 
-		public void execute(final ExecutionContext ctx, final Group schedulable) {
+		public void execute(final GlobalSettings settigns,
+				final ExecutionContext ctx, final Group schedulable) {
 			ctx.getUser();
 			System.out.println(schedulable.getName());
 			wasExecuted.set(true);

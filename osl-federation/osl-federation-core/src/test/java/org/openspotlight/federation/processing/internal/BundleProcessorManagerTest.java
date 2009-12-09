@@ -50,11 +50,13 @@ package org.openspotlight.federation.processing.internal;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -63,6 +65,7 @@ import org.openspotlight.federation.context.SingleGraphSessionExecutionContextFa
 import org.openspotlight.federation.context.TestExecutionContextFactory;
 import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
@@ -72,6 +75,7 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 import org.openspotlight.federation.loader.ArtifactLoader;
@@ -84,6 +88,16 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class BundleProcessorManagerTest {
+
+	public static class SampleArtifactRegistry implements
+			ArtifactFinderRegistry {
+
+		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
+			return Collections
+					.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
+		}
+
+	}
 
 	private static final int PARALLEL_THREADS = 1;// FIXME change this to 8
 
@@ -118,6 +132,8 @@ public class BundleProcessorManagerTest {
 		source.setName("sourceName");
 
 		final GlobalSettings settings = new GlobalSettings();
+		settings.setArtifactFinderRegistryClass(SampleArtifactRegistry.class);
+
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
 		settings.setNumberOfParallelThreads(PARALLEL_THREADS);
 		final Repository repository = new Repository();
@@ -140,8 +156,8 @@ public class BundleProcessorManagerTest {
 		bundleSource.setRelative("/sources/java/myProject");
 		bundleSource.getIncludeds().add("**/*.java");
 
-		final ArtifactLoader loader = ArtifactLoaderFactory.createNewLoader(
-				settings, new FileSystemArtifactBySourceProvider());
+		final ArtifactLoader loader = ArtifactLoaderFactory
+				.createNewLoader(settings);
 
 		final Iterable<Artifact> artifacts = loader
 				.loadArtifactsFromSource(source);

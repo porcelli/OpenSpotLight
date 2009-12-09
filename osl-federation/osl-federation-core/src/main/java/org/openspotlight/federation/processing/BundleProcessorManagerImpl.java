@@ -57,8 +57,8 @@ import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.finder.ArtifactTypeRegistry;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
+import org.openspotlight.federation.registry.ArtifactTypeRegistry;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 // TODO: Auto-generated Javadoc

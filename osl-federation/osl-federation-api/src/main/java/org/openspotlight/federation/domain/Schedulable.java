@@ -70,8 +70,8 @@ public interface Schedulable extends SimpleNodeType {
 		 * @param schedulable
 		 *            the schedulable
 		 */
-		public void execute(ExecutionContext ctx, S schedulable)
-				throws Exception;
+		public void execute(GlobalSettings settings, ExecutionContext ctx,
+				S schedulable) throws Exception;
 
 		public String getRepositoryNameBeforeExecution(S schedulable);
 	}

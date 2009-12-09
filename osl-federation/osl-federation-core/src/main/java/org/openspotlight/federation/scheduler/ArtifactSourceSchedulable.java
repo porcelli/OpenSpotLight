@@ -48,9 +48,24 @@
  */
 package org.openspotlight.federation.scheduler;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.ArtifactFinderSupport;
+import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
+import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoaderFactory;
+import org.openspotlight.federation.registry.ArtifactTypeRegistry;
 
 /**
  * The Class ArtifactSourceSchedulable.
@@ -58,10 +73,63 @@ import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
 public class ArtifactSourceSchedulable implements
 		SchedulableCommand<ArtifactSource> {
 
-	public void execute(final ExecutionContext ctx,
-			final ArtifactSource schedulable) {
-		// TODO Auto-generated method stub
+	@SuppressWarnings("unchecked")
+	public void execute(final GlobalSettings settigns,
+			final ExecutionContext ctx, final ArtifactSource schedulable) {
 
+		final ArtifactLoader loader = ArtifactLoaderFactory
+				.createNewLoader(settigns);
+		final Set<Class<? extends Artifact>> types = ArtifactTypeRegistry.INSTANCE
+				.getRegisteredArtifactTypes();
+
+		final Map<Class<? extends Artifact>, Set<Artifact>> newArtifactsByType = new HashMap<Class<? extends Artifact>, Set<Artifact>>();
+		final Map<Class<? extends Artifact>, Set<Artifact>> existentArtifactsByType = new HashMap<Class<? extends Artifact>, Set<Artifact>>();
+		for (final Class<? extends Artifact> type : types) {
+			newArtifactsByType.put(type, new HashSet<Artifact>());
+		}
+
+		final Iterable<Artifact> loadedArtifacts = loader
+				.loadArtifactsFromSource(schedulable);
+		for (final Artifact artifact : loadedArtifacts) {
+			for (final Class<? extends Artifact> type : types) {
+				if (type.isAssignableFrom(artifact.getClass())) {
+					newArtifactsByType.get(type).add(artifact);
+					continue;
+				}
+			}
+			Exceptions.logAndThrow(new IllegalStateException(
+					"Artifact type not "));
+		}
+		for (final Class<? extends Artifact> type : types) {
+			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
+					.getArtifactFinder(type);
+			Set<Artifact> existentArtifacts;
+			if (finder != null) {
+				existentArtifacts = finder.listByPath(null);
+				existentArtifactsByType.put(type, existentArtifacts);
+			} else {
+				existentArtifactsByType.put(type, Collections
+						.<Artifact> emptySet());
+			}
+		}
+		for (final Class<? extends Artifact> type : types) {
+			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
+					.getArtifactFinder(type);
+			if (finder instanceof ArtifactFinderWithSaveCapabilitie<?>) {
+				final ArtifactFinderWithSaveCapabilitie<Artifact> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<Artifact>) finder;
+				final Set<Artifact> existentArtifacts = existentArtifactsByType
+						.get(type);
+				final Set<Artifact> newArtifacts = newArtifactsByType.get(type);
+				final Set<Artifact> withDifferences = ArtifactFinderSupport
+						.applyDifferenceOnExistents(existentArtifacts,
+								newArtifacts);
+				// FIXME this could be parallel
+				for (final Artifact toSave : withDifferences) {
+					finderWithSaveCapabilitie.addTransientArtifact(toSave);
+					finderWithSaveCapabilitie.save();
+				}
+			}
+		}
 	}
 
 	public String getRepositoryNameBeforeExecution(
