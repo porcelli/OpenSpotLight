@@ -87,7 +87,7 @@ public class BundleProcessorExecution {
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
 	/** The repositories. */
-	private final Repository[] repositories;
+	private final Group[] groups;
 
 	/** The context factory. */
 	private final ExecutionContextFactory contextFactory;
@@ -112,7 +112,7 @@ public class BundleProcessorExecution {
 	 *            the context factory
 	 * @param settings
 	 *            the settings
-	 * @param repositories
+	 * @param groups
 	 *            the repositories
 	 * @param artifactTypes
 	 *            the artifact types
@@ -120,17 +120,17 @@ public class BundleProcessorExecution {
 	public BundleProcessorExecution(final String username,
 			final String password, final JcrConnectionDescriptor descriptor,
 			final ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Repository[] repositories,
+			final GlobalSettings settings, final Group[] groups,
 			final Set<Class<? extends Artifact>> artifactTypes) {
 		this.username = username;
 		this.password = password;
 		this.descriptor = descriptor;
-		final String[] repositoryNames = new String[repositories.length];
-		for (int i = 0, size = repositories.length; i < size; i++) {
-			repositoryNames[i] = repositories[i].getName();
+		final String[] repositoryNames = new String[groups.length];
+		for (int i = 0, size = groups.length; i < size; i++) {
+			repositoryNames[i] = groups[i].getRepository().getName();
 		}
 
-		this.repositories = repositories;
+		this.groups = groups;
 		this.contextFactory = contextFactory;
 		this.artifactTypes = artifactTypes;
 		threads = settings.getNumberOfParallelThreads();
@@ -205,9 +205,9 @@ public class BundleProcessorExecution {
 				}
 			}
 		};
-		for (final Repository repository : repositories) {
-			if (repository.isActive()) {
-				repository.acceptGroupVisitor(visitor);
+		for (final Group group : groups) {
+			if (group.isActive() && group.getRepository().isActive()) {
+				group.acceptVisitor(visitor);
 			}
 		}
 		return groupsWithBundles;
@@ -220,10 +220,10 @@ public class BundleProcessorExecution {
 							SLConsts.DEFAULT_REPOSITORY_NAME);
 			final SessionWithLock session = context
 					.getDefaultConnectionProvider().openSession();
-			for (final Repository repository : repositories) {
+			for (final Group group : groups) {
 				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
 						SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
-								+ repository.getName());
+								+ group.getRepository().getName());
 			}
 			session.save();
 			session.logout();

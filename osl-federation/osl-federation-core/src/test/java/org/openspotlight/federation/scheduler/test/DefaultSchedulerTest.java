@@ -123,7 +123,6 @@ public class DefaultSchedulerTest {
 				.getNormalizedFileName(new File(".."));
 		final String initial = initialRawPath.substring(0, initialRawPath
 				.lastIndexOf('/'));
-		final String finalStr = initialRawPath.substring(initial.length());
 		source.setActive(true);
 		source.setInitialLookup(initial);
 		source.setName("sourceName");
