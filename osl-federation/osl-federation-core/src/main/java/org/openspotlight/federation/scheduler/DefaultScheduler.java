@@ -69,8 +69,8 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
+import org.openspotlight.federation.util.RepositorySet;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.quartz.CronTrigger;
@@ -175,20 +175,7 @@ public enum DefaultScheduler implements SLScheduler {
 
 	}
 
-	public static class RepositorySet implements SimpleNodeType {
-
-		private Set<Repository> repositories;
-
-		public Set<Repository> getRepositories() {
-			return repositories;
-		}
-
-		public void setRepositories(final Set<Repository> repositories) {
-			this.repositories = repositories;
-		}
-	}
-
-	private static class SchedulableVisitor implements
+	public static class SchedulableVisitor implements
 			SimpleNodeTypeVisitor<Schedulable> {
 
 		private final List<Schedulable> beans = new LinkedList<Schedulable>();
@@ -227,30 +214,41 @@ public enum DefaultScheduler implements SLScheduler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends Schedulable> void fireSchedulable(final T schedulable) {
-		try {
+	public <T extends Schedulable> void fireSchedulable(final String username,
+			final String password, final T... schedulables) {
+		Assertions.checkNotNull("schedulables", schedulables);
+		Assertions.checkNotNull("internalData", internalData.get());
+		Assertions.checkNotNull("settings", settings.get());
+
+		for (final Schedulable schedulable : schedulables) {
 			Assertions.checkNotNull("schedulable", schedulable);
-			Assertions.checkNotNull("internalData", internalData.get());
-			Assertions.checkNotNull("settings", settings.get());
-			final Class<? extends SchedulableCommand> commandType = settings
-					.get().getSchedulableCommandMap().get(
-							schedulable.getClass());
+			try {
 
-			Assertions.checkNotNull("commandType:" + schedulable.getClass(),
-					commandType);
+				final Class<? extends SchedulableCommand> commandType = settings
+						.get().getSchedulableCommandMap().get(
+								schedulable.getClass());
 
-			final OslInternalSchedulerCommand command = new OslInternalSchedulerCommand(
-					schedulable, commandType, internalData, settings, IMMEDIATE);
-			oslImmediateCommands.put(command.getUniqueName(), command);
-			final Date runTime = TriggerUtils.getNextGivenSecondDate(
-					new Date(), 10);
-			final JobDetail job = new JobDetail(command.getUniqueName(),
-					DEFAULT_GROUP, OslQuartzJob.class);
-			final SimpleTrigger trigger = new SimpleTrigger(command
-					.getUniqueName(), DEFAULT_GROUP, runTime);
-			quartzScheduler.scheduleJob(job, trigger);
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+				Assertions.checkNotNull(
+						"commandType:" + schedulable.getClass(), commandType);
+				final InternalData copy = new InternalData(username, password,
+						internalData.get().descriptor,
+						internalData.get().contextFactory);
+				final AtomicReference<InternalData> copyRef = new AtomicReference<InternalData>(
+						copy);
+				final OslInternalSchedulerCommand command = new OslInternalSchedulerCommand(
+						schedulable, commandType, copyRef, settings, IMMEDIATE);
+				oslImmediateCommands.put(command.getUniqueName(), command);
+				final Date runTime = TriggerUtils.getNextGivenSecondDate(
+						new Date(), 10);
+				final JobDetail job = new JobDetail(command.getUniqueName(),
+						DEFAULT_GROUP, OslQuartzJob.class);
+				final SimpleTrigger trigger = new SimpleTrigger(command
+						.getUniqueName(), DEFAULT_GROUP, runTime);
+				quartzScheduler.scheduleJob(job, trigger);
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			}
+
 		}
 	}
 

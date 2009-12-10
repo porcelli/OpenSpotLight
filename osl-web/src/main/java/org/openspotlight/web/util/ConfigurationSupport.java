@@ -53,11 +53,13 @@ import java.io.StringWriter;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
+import org.openspotlight.web.WebGlobalSettingsSupport;
 
 /**
  * The Class ConfigurationSupport contains methods to be used on
@@ -111,8 +113,8 @@ public class ConfigurationSupport {
 		final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
 				.loadImmutableFromXmlContent(xmlContent);
 		settings = xmlManager.getGlobalSettings();
+		WebGlobalSettingsSupport.initializeSettings(settings);
 		repositories = xmlManager.getAllRepositories();
-
 		manager.saveGlobalSettings(settings);
 		for (final Repository repository : repositories) {
 			manager.saveRepository(repository);

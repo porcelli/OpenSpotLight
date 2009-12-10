@@ -69,7 +69,11 @@ public interface ExecutionContext extends Disposable {
 
 	public DetailedLogger getLogger();
 
+	public String getPassword();
+
 	public String getRepository();
 
 	public AuthenticatedUser getUser();
+
+	public String getUserName();
 }

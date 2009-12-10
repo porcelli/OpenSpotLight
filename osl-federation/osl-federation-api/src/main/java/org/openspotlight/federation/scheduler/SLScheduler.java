@@ -58,7 +58,8 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface SLScheduler {
 
-	public <T extends Schedulable> void fireSchedulable(final T schedulable);
+	public <T extends Schedulable> void fireSchedulable(String username,
+			String password, final T... schedulable);
 
 	public void initializeSettings(ExecutionContextFactory contextFactory,
 			String username, String password, JcrConnectionDescriptor descriptor);

@@ -56,7 +56,7 @@ import net.sf.json.JSONObject;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
@@ -70,7 +70,7 @@ import org.openspotlight.web.json.Message;
 /**
  * The Class ImediateBundleProcessingWebCommand.
  */
-public class ImediateBundleProcessingWebCommand implements WebCommand {
+public class ImediateArtifactLoadingWebCommand implements WebCommand {
 
 	/*
 	 * (non-Javadoc)
@@ -87,11 +87,12 @@ public class ImediateBundleProcessingWebCommand implements WebCommand {
 			final RepositorySet repositorySet = new RepositorySet();
 			repositorySet.setRepositories(allRepositories);
 			final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-			final Set<Group> groups = new HashSet<Group>();
-			SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
-					repositorySet, new AggregateVisitor<Group>(groups));
+			final Set<ArtifactSource> sources = new HashSet<ArtifactSource>();
+			SimpleNodeTypeVisitorSupport.acceptVisitorOn(ArtifactSource.class,
+					repositorySet,
+					new AggregateVisitor<ArtifactSource>(sources));
 			scheduler.fireSchedulable(context.getUserName(), context
-					.getPassword(), groups.toArray(new Group[0]));
+					.getPassword(), sources.toArray(new ArtifactSource[0]));
 			final Message message = new Message();
 			message.setMessage("execution fired");
 			return JSONObject.fromObject(message).toString();

@@ -236,12 +236,20 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		return lazyDetailedLoggerReference.get();
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
 	public String getRepository() {
 		return repositoryName;
 	}
 
 	public AuthenticatedUser getUser() {
 		return lazyAuthenticatedUserReference.get();
+	}
+
+	public String getUserName() {
+		return username;
 	}
 
 	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
