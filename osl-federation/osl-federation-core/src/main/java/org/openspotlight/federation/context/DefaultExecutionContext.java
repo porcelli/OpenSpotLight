@@ -62,13 +62,14 @@ import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.JcrSessionArtifactFinder;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.JcrSessionConfigurationManagerFactory;
-import org.openspotlight.federation.log.JcrDetailedLogger;
+import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.log.DetailedLoggerFactory;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
@@ -105,8 +106,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 		@Override
 		protected DetailedLogger createReference() {
-			return new JcrDetailedLogger(JcrConnectionProvider.createFromData(
-					descriptor).openSession());
+			return logFactory.createNewLogger();
 		}
 	}
 
@@ -170,6 +170,8 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final DefaultAtomicLazyResource<DetailedLogger> lazyDetailedLoggerReference = new LazyDetailedLoggerProvider(
 			this);
 
+	private final DetailedLoggerFactory logFactory;
+
 	DefaultExecutionContext(final String username, final String password,
 			final JcrConnectionDescriptor descriptor,
 			final String repositoryName,
@@ -179,7 +181,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		this.descriptor = descriptor;
 		this.repositoryName = repositoryName;
 		this.listener = listener;
-
+		logFactory = new DetailedJcrLoggerFactory(descriptor);
 	}
 
 	public void closeResources() {

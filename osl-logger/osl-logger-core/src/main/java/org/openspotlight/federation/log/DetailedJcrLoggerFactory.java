@@ -58,6 +58,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
+import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
@@ -82,7 +83,9 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Factory used to create {@link DetailedLogger}.
  */
-public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
+public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
+		LockContainer {
+
 	/**
 	 * The Class LogEntry is used to represent a new log entry.
 	 */
@@ -468,6 +471,8 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 
 	}
 
+	private static final Object LOG_LOCK_OBJECT = new Object();
+
 	final JcrConnectionProvider provider;
 
 	private final CopyOnWriteArrayList<Session> oppenedSessions = new CopyOnWriteArrayList<Session>();
@@ -493,7 +498,11 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory {
 	public DetailedLogger createNewLogger() {
 		final Session session = provider.openSession();
 		oppenedSessions.add(session);
-		return new JcrDetailedLogger(session);
+		return new JcrDetailedLogger(session, this);
+	}
+
+	public Object getLockObject() {
+		return LOG_LOCK_OBJECT;
 	}
 
 }

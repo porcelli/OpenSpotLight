@@ -49,15 +49,18 @@
 package org.openspotlight.federation.log;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.jcr.Session;
 
 import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LogEntry;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInformation;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.support.SimplePersistSupport;
@@ -72,11 +75,30 @@ import org.openspotlight.security.idm.AuthenticatedUser;
  */
 public final class JcrDetailedLogger implements DetailedLogger {
 
+	// FIXME remove this as soon as apache's ticket JCR-2428 is solved. To test
+	// it, run the bundle processor test with multiple threads enabled
+
+	private final String initialPath;
+
 	/** The session. */
 	private final Session session;
 
-	public JcrDetailedLogger(final Session session) {
-		this.session = session;
+	public JcrDetailedLogger(final Session session,
+			final LockContainer temporaryLock) {
+		try {
+			this.session = session;
+			final String thisSessionEntry = UUID.randomUUID().toString();
+			initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/log/"
+					+ thisSessionEntry;
+			synchronized (temporaryLock.getLockObject()) {
+				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
+						initialPath);
+				this.session.save();
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+
 	}
 
 	public void log(final AuthenticatedUser user, final LogEventType type,
@@ -124,7 +146,7 @@ public final class JcrDetailedLogger implements DetailedLogger {
 				message, detailedMessage, LoggedObjectInformation
 						.getHierarchyFrom(anotherNodes));
 
-		final String initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
+		final String initialPath = this.initialPath + "/"
 				+ (repository != null ? repository : "noRepository") + "/"
 				+ (user != null ? user.getId() : "noUser") + "/log";
 		SimplePersistSupport.convertBeanToJcr(initialPath, session, entry);
