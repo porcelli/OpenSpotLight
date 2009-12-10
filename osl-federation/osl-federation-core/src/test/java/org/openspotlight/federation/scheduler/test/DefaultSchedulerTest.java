@@ -183,8 +183,8 @@ public class DefaultSchedulerTest {
 
 	@Test
 	public void shouldStartImediateJob() throws Exception {
-		scheduler.fireSchedulable(repositories.iterator().next().getGroups()
-				.iterator().next());
+		scheduler.fireSchedulable("username", "password", repositories
+				.iterator().next().getGroups().iterator().next());
 		for (int i = 0; i < 20; i++) {
 			if (SampleGroupSchedulableCommand.wasExecuted.get()) {
 				return;

@@ -83,4 +83,8 @@ public enum WebExecutionContextFactory {
 		return newContext;
 	}
 
+	public ExecutionContextFactory getFactory() {
+		return factory;
+	}
+
 }

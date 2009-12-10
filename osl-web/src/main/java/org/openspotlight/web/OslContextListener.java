@@ -53,6 +53,10 @@ import javax.servlet.ServletContextListener;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.scheduler.DefaultScheduler;
+import org.openspotlight.federation.scheduler.SLScheduler;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
@@ -93,6 +97,11 @@ public class OslContextListener implements ServletContextListener,
 			arg0.getServletContext().setAttribute(CONTEXT__JCR_DESCRIPTOR,
 					descriptor);
 			WebExecutionContextFactory.INSTANCE.contextStarted();
+			final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE
+					.getFactory();
+			final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+			scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER,
+					SLConsts.SYSTEM_PASSWORD, descriptor);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
 		}
