@@ -99,7 +99,7 @@ public class BundleProcessorManagerTest {
 
 	}
 
-	private static final int PARALLEL_THREADS = 1;// FIXME change this to 8
+	private static final int PARALLEL_THREADS = 8;
 
 	@BeforeClass
 	public static void cleanupOldEntries() throws Exception {
