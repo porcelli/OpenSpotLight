@@ -169,8 +169,10 @@ public class GroupSupport {
 			final RepositoryGroupDifferences differences,
 			final Set<Repository> oldRepositories,
 			final Set<Repository> newRepositories) {
-
+		final Set<Repository> copyOfOldOnes = new HashSet<Repository>(
+				oldRepositories);
 		loopingOnNewOnes: for (final Repository newOne : newRepositories) {
+			copyOfOldOnes.remove(newOne);
 			final Set<Group> newGroups = findAllGroups(newOne);
 			for (final Repository oldOne : oldRepositories) {
 				if (oldOne.equals(newOne)) {
@@ -181,6 +183,11 @@ public class GroupSupport {
 			}
 			createDifferences(differences, newOne, newGroups, Collections
 					.<Group> emptySet());
+		}
+		for (final Repository excluded : copyOfOldOnes) {
+			final Set<Group> oldGroups = findAllGroups(excluded);
+			createDifferences(differences, excluded, Collections
+					.<Group> emptySet(), oldGroups);
 		}
 		return differences;
 	}
