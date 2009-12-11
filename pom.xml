@@ -165,7 +165,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-web</artifactId>
+				<artifactId>osl-web-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-web-war</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
