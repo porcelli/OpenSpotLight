@@ -10,6 +10,10 @@
 	<listener>
 		<listener-class>org.openspotlight.web.OslContextListener</listener-class>
 	</listener>
+	<context-param>
+		<param-name>JCR_DESCRIPTOR</param-name>
+		<param-value>TEMP_DESCRIPTOR</param-value>
+	</context-param>
 	<servlet>
 		<servlet-name>core servlet</servlet-name>
 		<servlet-class>org.openspotlight.web.CoreServlet</servlet-class>
