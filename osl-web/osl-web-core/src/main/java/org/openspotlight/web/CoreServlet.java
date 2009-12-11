@@ -215,7 +215,6 @@ public class CoreServlet extends HttpServlet {
 	@Override
 	public void init(final ServletConfig config) throws ServletException {
 		config.getServletContext();
-
 		super.init(config);
 	}
 }
