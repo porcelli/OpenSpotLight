@@ -2,9 +2,7 @@ package org.openspotlight.federation.util;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jcr.Session;
@@ -19,7 +17,6 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
@@ -30,8 +27,6 @@ public class GroupSupport {
 			Serializable {
 
 		private String repositoryName;
-
-		private RepositoryGroupDifferences repositoryGroupDifferences;
 
 		/**
 		 * 
@@ -48,11 +43,8 @@ public class GroupSupport {
 				return false;
 			}
 			final GroupDifferences that = (GroupDifferences) obj;
-			return Equals
-					.eachEquality(Arrays.of(getRepositoryName(),
-							getRepositoryGroupDifferences()), Arrays.andOf(that
-							.getRepositoryName(), that
-							.getRepositoryGroupDifferences()));
+			return Equals.eachEquality(Arrays.of(getRepositoryName()), Arrays
+					.andOf(that.getRepositoryName()));
 		}
 
 		public Set<String> getAddedGroups() {
@@ -61,11 +53,6 @@ public class GroupSupport {
 
 		public Set<String> getRemovedGroups() {
 			return removedGroups;
-		}
-
-		@ParentProperty
-		public RepositoryGroupDifferences getRepositoryGroupDifferences() {
-			return repositoryGroupDifferences;
 		}
 
 		@KeyProperty
@@ -78,42 +65,8 @@ public class GroupSupport {
 			return HashCodes.hashOf(getClass(), repositoryName);
 		}
 
-		public void setRepositoryGroupDifferences(
-				final RepositoryGroupDifferences repositoryGroupDifferences) {
-			this.repositoryGroupDifferences = repositoryGroupDifferences;
-		}
-
 		public void setRepositoryName(final String repositoryName) {
 			this.repositoryName = repositoryName;
-		}
-
-	}
-
-	public static class RepositoryGroupDifferences implements SimpleNodeType,
-			Serializable {
-		/**
-	 * 
-	 */
-		private static final long serialVersionUID = -7604798465423650188L;
-		private Map<String, GroupDifferences> differencesByRepository = new HashMap<String, GroupDifferences>();
-
-		@Override
-		public boolean equals(final Object obj) {
-			return obj instanceof RepositoryGroupDifferences;
-		}
-
-		public Map<String, GroupDifferences> getDifferencesByRepository() {
-			return differencesByRepository;
-		}
-
-		@Override
-		public int hashCode() {
-			return HashCodes.hashOf(getClass());
-		}
-
-		public void setDifferencesByRepository(
-				final Map<String, GroupDifferences> differencesByRepository) {
-			this.differencesByRepository = differencesByRepository;
 		}
 
 	}
@@ -121,25 +74,16 @@ public class GroupSupport {
 	private static String ROOT_NODE = SharedConstants.DEFAULT_JCR_ROOT_NAME
 			+ "/differences";
 
-	private static GroupDifferences createDifferences(
-			final RepositoryGroupDifferences differences,
+	private static void createDifferences(final GroupDifferences differences,
 			final Repository newOne, final Set<Group> newGroups,
 			final Set<Group> oldGroups) {
-		GroupDifferences groupDifferences = differences
-				.getDifferencesByRepository().get(newOne.getName());
-		if (groupDifferences == null) {
-			groupDifferences = new GroupDifferences();
-			groupDifferences.setRepositoryGroupDifferences(differences);
-			groupDifferences.setRepositoryName(newOne.getName());
-			differences.getDifferencesByRepository().put(newOne.getName(),
-					groupDifferences);
-		}
-		groupDifferences = findChangesOnNewGroups(groupDifferences, oldGroups,
-				newGroups);
-		return groupDifferences;
+		findChangesOnNewGroups(differences, oldGroups, newGroups);
 	}
 
 	public static Set<Group> findAllGroups(final Repository repository) {
+		if (repository == null) {
+			return Collections.<Group> emptySet();
+		}
 		final Set<Group> groups = new HashSet<Group>();
 		final AggregateVisitor<Group> visitor = new AggregateVisitor<Group>(
 				groups);
@@ -148,7 +92,7 @@ public class GroupSupport {
 		return groups;
 	}
 
-	private static GroupDifferences findChangesOnNewGroups(
+	private static void findChangesOnNewGroups(
 			final GroupDifferences differences, final Set<Group> oldGroups,
 			final Set<Group> newOnes) {
 
@@ -162,42 +106,23 @@ public class GroupSupport {
 				differences.getRemovedGroups().add(oldOne.getUniqueName());
 			}
 		}
-		return differences;
 	}
 
-	public static RepositoryGroupDifferences findDifferencesOnAllRepositories(
-			final RepositoryGroupDifferences differences,
-			final Set<Repository> oldRepositories,
-			final Set<Repository> newRepositories) {
-		final Set<Repository> copyOfOldOnes = new HashSet<Repository>(
-				oldRepositories);
-		loopingOnNewOnes: for (final Repository newOne : newRepositories) {
-			copyOfOldOnes.remove(newOne);
-			final Set<Group> newGroups = findAllGroups(newOne);
-			for (final Repository oldOne : oldRepositories) {
-				if (oldOne.equals(newOne)) {
-					final Set<Group> oldGroups = findAllGroups(oldOne);
-					createDifferences(differences, newOne, newGroups, oldGroups);
-					continue loopingOnNewOnes;
-				}
-			}
-			createDifferences(differences, newOne, newGroups, Collections
-					.<Group> emptySet());
-		}
-		for (final Repository excluded : copyOfOldOnes) {
-			final Set<Group> oldGroups = findAllGroups(excluded);
-			createDifferences(differences, excluded, Collections
-					.<Group> emptySet(), oldGroups);
-		}
-		return differences;
+	public static void findDifferencesOnAllRepositories(
+			final GroupDifferences differences, final Repository oldOne,
+			final Repository newOne) {
+		final Set<Group> newGroups = findAllGroups(newOne);
+		final Set<Group> oldGroups = findAllGroups(oldOne);
+		createDifferences(differences, newOne, newGroups, oldGroups);
 	}
 
-	public static RepositoryGroupDifferences getDifferences(
-			final Session session) {
-		final Set<RepositoryGroupDifferences> result = SimplePersistSupport
+	public static GroupDifferences getDifferences(final Session session,
+			final String repositoryName) {
+		final Set<GroupDifferences> result = SimplePersistSupport
 				.findNodesByProperties(ROOT_NODE, session,
-						RepositoryGroupDifferences.class, LazyType.EAGER,
-						new String[0], new Object[0]);
+						GroupDifferences.class, LazyType.EAGER,
+						new String[] { "repositoryName" },
+						new Object[] { repositoryName });
 		if (result.size() > 0) {
 			return result.iterator().next();
 		}
@@ -206,7 +131,7 @@ public class GroupSupport {
 	}
 
 	public static void saveDifferences(final Session session,
-			final RepositoryGroupDifferences differences) {
+			final GroupDifferences differences) {
 		try {
 			SimplePersistSupport.convertBeanToJcr(ROOT_NODE, session,
 					differences);

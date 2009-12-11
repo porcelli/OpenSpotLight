@@ -50,42 +50,81 @@ package org.openspotlight.federation.loader;
 
 import javax.jcr.Session;
 
+import org.hamcrest.core.Is;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.util.GroupSupport;
+import org.openspotlight.federation.util.GroupSupport.GroupDifferences;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * The Class JcrSessionConfigurationManagerTest.
  */
-public class JcrSessionConfigurationManagerTest extends AbstractConfigurationManagerTest {
+public class JcrSessionConfigurationManagerTest extends
+		AbstractConfigurationManagerTest {
 
-    private static JcrConnectionProvider provider;
+	private static JcrConnectionProvider provider;
 
-    @BeforeClass
-    public static void setupJcrRepo() throws Exception {
-        provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-    }
+	@BeforeClass
+	public static void setupJcrRepo() throws Exception {
+		provider = JcrConnectionProvider
+				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+	}
 
-    private Session session;
+	private Session session;
 
-    @After
-    public void closeSession() throws Exception {
-        if (this.session != null && this.session.isLive()) {
-            this.session.logout();
-            this.session = null;
-        }
-    }
+	@After
+	public void closeSession() throws Exception {
+		if (session != null && session.isLive()) {
+			session.logout();
+			session = null;
+		}
+	}
 
-    @Override
-    protected ConfigurationManager createNewConfigurationManager() {
-        return JcrSessionConfigurationManagerFactory.createMutableUsingSession(this.session);
-    }
+	@Override
+	protected ConfigurationManager createNewConfigurationManager() {
+		return JcrSessionConfigurationManagerFactory
+				.createMutableUsingSession(session);
+	}
 
-    @Before
-    public void setupSession() throws Exception {
-        this.session = provider.openSession();
-    }
+	@Before
+	public void setupSession() throws Exception {
+		session = provider.openSession();
+	}
+
+	@Test
+	public void shouldFindGroupDeltas() throws Exception {
+		final Repository repository = new Repository();
+		repository.setName("newRepository");
+		final Group group = new Group();
+		group.setName("willBeRemoved");
+		group.setRepository(repository);
+		repository.getGroups().add(group);
+		final ConfigurationManager manager1 = createNewConfigurationManager();
+		manager1.saveRepository(repository);
+		final Group group2 = new Group();
+		group2.setName("new");
+		group2.setRepository(repository);
+		repository.getGroups().add(group2);
+		repository.getGroups().remove(group);
+		manager1.saveRepository(repository);
+
+		final GroupDifferences differences = GroupSupport.getDifferences(
+				session, repository.getName());
+
+		Assert.assertThat(differences.getAddedGroups().contains(
+				"newRepository/new"), Is.is(true));
+		Assert.assertThat(differences.getAddedGroups().contains(
+				"newRepository/willBeRemoved"), Is.is(true));
+		Assert.assertThat(differences.getRemovedGroups().contains(
+				"newRepository/willBeRemoved"), Is.is(true));
+
+	}
 
 }
