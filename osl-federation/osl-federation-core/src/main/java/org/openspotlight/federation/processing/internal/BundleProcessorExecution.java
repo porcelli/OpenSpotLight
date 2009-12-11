@@ -63,6 +63,7 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.GroupListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
@@ -70,10 +71,16 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
+import org.openspotlight.federation.util.AggregateVisitor;
+import org.openspotlight.federation.util.GroupDifferences;
+import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
+import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -158,7 +165,7 @@ public class BundleProcessorExecution {
 	 *             the bundle execution exception
 	 */
 	public void execute() throws BundleExecutionException {
-		initializeAllRepositoryNodes();
+		setupParentNodesAndCallGroupListeners();
 		final Set<Group> groupsWithBundles = findGroupsWithBundles();
 
 		fillTaskQueue(groupsWithBundles);
@@ -213,28 +220,6 @@ public class BundleProcessorExecution {
 		return groupsWithBundles;
 	}
 
-	private void initializeAllRepositoryNodes() {
-		try {
-			final ExecutionContext context = contextFactory
-					.createExecutionContext(username, password, descriptor,
-							SLConsts.DEFAULT_REPOSITORY_NAME);
-			final SessionWithLock session = context
-					.getDefaultConnectionProvider().openSession();
-			for (final Group group : groups) {
-				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
-						SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
-								+ group.getRepository().getName());
-			}
-			session.save();
-			session.logout();
-			context.closeResources();
-
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, BundleExecutionException.class);
-		}
-
-	}
-
 	private void monitorThreadActivity(final List<ArtifactWorker> workers) {
 		monitor: while (true) {
 			try {
@@ -257,6 +242,89 @@ public class BundleProcessorExecution {
 				}
 			}
 		}
+	}
+
+	private void setupParentNodesAndCallGroupListeners() {
+		try {
+			final ExecutionContext context = contextFactory
+					.createExecutionContext(username, password, descriptor,
+							SLConsts.DEFAULT_REPOSITORY_NAME);
+			final SessionWithLock session = context
+					.getDefaultConnectionProvider().openSession();
+			final Set<String> repositoryNames = new HashSet<String>();
+			for (final Group group : groups) {
+				repositoryNames.add(group.getRepository().getName());
+			}
+
+			for (final String repository : repositoryNames) {
+				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
+						SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
+								+ repository);
+			}
+			final Set<Group> allGroups = new HashSet<Group>();
+			final AggregateVisitor<Group> visitor = new AggregateVisitor<Group>(
+					allGroups);
+			for (final Group group : groups) {
+				SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
+						group, visitor);
+			}
+
+			for (final String repositoryName : repositoryNames) {
+
+				final ExecutionContext internalContext = contextFactory
+						.createExecutionContext(username, password, descriptor,
+								repositoryName);
+				final GroupDifferences differences = GroupSupport
+						.getDifferences(session, repositoryName);
+
+				final SLContext groupContext = internalContext
+						.getGraphSession().createContext(
+								SLConsts.DEFAULT_GROUP_CONTEXT);
+				for (final Group group : allGroups) {
+					groupContext.getRootNode().addNode(group.getName());
+				}
+				final Repository repository = context
+						.getDefaultConfigurationManager().getRepositoryByName(
+								repositoryName);
+				final Set<GroupListener> groupListenerInstances = new HashSet<GroupListener>();
+				if (repository.getGroupListeners() != null) {
+					for (final Class<? extends GroupListener> listenerType : repository
+							.getGroupListeners()) {
+						groupListenerInstances.add(listenerType.newInstance());
+					}
+				}
+				for (final GroupListener instance : groupListenerInstances) {
+					for (final String added : differences.getAddedGroups()) {
+						final SLNode groupAsSLNode = groupContext.getRootNode()
+								.getNode(added);
+						try {
+							instance.groupAdded(groupAsSLNode, internalContext);
+						} catch (final Exception e) {
+							Exceptions.catchAndLog(e);
+						}
+					}
+					for (final String removed : differences.getRemovedGroups()) {
+						final SLNode groupAsSLNode = groupContext.getRootNode()
+								.getNode(removed);
+						try {
+							instance.groupRemoved(groupAsSLNode,
+									internalContext);
+						} catch (final Exception e) {
+							Exceptions.catchAndLog(e);
+						}
+					}
+				}
+				internalContext.closeResources();
+			}
+			session.save();
+			session.logout();
+
+			context.closeResources();
+
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, BundleExecutionException.class);
+		}
+
 	}
 
 	private List<ArtifactWorker> setupWorkers() {
