@@ -206,6 +206,9 @@ public class JcrSessionConfigurationManagerFactory {
 								MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
 								session, Repository.class, LazyType.EAGER,
 								new String[] { "name" }, new Object[] { name });
+				if (repository.size() == 0) {
+					return null;
+				}
 				return repository.iterator().next();
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e,

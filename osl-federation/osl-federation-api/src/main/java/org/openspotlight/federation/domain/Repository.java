@@ -52,7 +52,9 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.util.Equals;
@@ -65,108 +67,121 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Class Repository.
  */
-@Name( "repository" )
+@Name("repository")
 public class Repository implements SimpleNodeType, Serializable {
 
-    private static final long serialVersionUID = -8278810189446649901L;
+	public static interface GroupVisitor {
+		public void visitGroup(Group group);
+	}
 
-    public static interface GroupVisitor {
-        public void visitGroup( Group group );
-    }
+	private List<Class<? extends GroupListener>> groupListeners = new ArrayList<Class<? extends GroupListener>>();
 
-    /** The artifact sources. */
-    private Set<ArtifactSource> artifactSources = new HashSet<ArtifactSource>();
+	private static final long serialVersionUID = -8278810189446649901L;
 
-    /** The name. */
-    private String              name;
+	/** The artifact sources. */
+	private Set<ArtifactSource> artifactSources = new HashSet<ArtifactSource>();
 
-    /** The groups. */
-    private Set<Group>          groups          = new HashSet<Group>();
+	/** The name. */
+	private String name;
 
-    /** The active. */
-    private boolean             active;
+	/** The groups. */
+	private Set<Group> groups = new HashSet<Group>();
 
-    private volatile int        hashCode;
+	/** The active. */
+	private boolean active;
 
-    public void acceptGroupVisitor( final GroupVisitor visitor ) {
-        for (final Group entry : this.getGroups()) {
-            entry.acceptVisitor(visitor);
-        }
-    }
+	private volatile int hashCode;
 
-    public boolean equals( final Object o ) {
-        if (!(o instanceof Repository)) {
-            return false;
-        }
-        final Repository that = (Repository)o;
-        return Equals.eachEquality(of(this.name), andOf(that.name));
-    }
+	public void acceptGroupVisitor(final GroupVisitor visitor) {
+		for (final Group entry : getGroups()) {
+			entry.acceptVisitor(visitor);
+		}
+	}
 
-    public Set<ArtifactSource> getArtifactSources() {
-        return this.artifactSources;
-    }
+	public boolean equals(final Object o) {
+		if (!(o instanceof Repository)) {
+			return false;
+		}
+		final Repository that = (Repository) o;
+		return Equals.eachEquality(of(name), andOf(that.name));
+	}
 
-    /**
-     * Gets the groups.
-     * 
-     * @return the groups
-     */
-    public Set<Group> getGroups() {
-        return this.groups;
-    }
+	public Set<ArtifactSource> getArtifactSources() {
+		return artifactSources;
+	}
 
-    /**
-     * Gets the name.
-     * 
-     * @return the name
-     */
-    @KeyProperty
-    public String getName() {
-        return this.name;
-    }
+	public List<Class<? extends GroupListener>> getGroupListeners() {
+		return groupListeners;
+	}
 
-    public int hashCode() {
-        int result = this.hashCode;
-        if (result == 0) {
-            result = HashCodes.hashOf(this.name);
-            this.hashCode = result;
-        }
-        return result;
-    }
+	/**
+	 * Gets the groups.
+	 * 
+	 * @return the groups
+	 */
+	public Set<Group> getGroups() {
+		return groups;
+	}
 
-    /**
-     * Checks if is active.
-     * 
-     * @return true, if is active
-     */
-    public boolean isActive() {
-        return this.active;
-    }
+	/**
+	 * Gets the name.
+	 * 
+	 * @return the name
+	 */
+	@KeyProperty
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Sets the active.
-     * 
-     * @param active the new active
-     */
-    public void setActive( final boolean active ) {
-        this.active = active;
-    }
+	public int hashCode() {
+		int result = hashCode;
+		if (result == 0) {
+			result = HashCodes.hashOf(name);
+			hashCode = result;
+		}
+		return result;
+	}
 
-    public void setArtifactSources( final Set<ArtifactSource> artifactSources ) {
-        this.artifactSources = artifactSources;
-    }
+	/**
+	 * Checks if is active.
+	 * 
+	 * @return true, if is active
+	 */
+	public boolean isActive() {
+		return active;
+	}
 
-    public void setGroups( final Set<Group> groups ) {
-        this.groups = groups;
-    }
+	/**
+	 * Sets the active.
+	 * 
+	 * @param active
+	 *            the new active
+	 */
+	public void setActive(final boolean active) {
+		this.active = active;
+	}
 
-    /**
-     * Sets the name.
-     * 
-     * @param name the new name
-     */
-    public void setName( final String name ) {
-        this.name = name;
-    }
+	public void setArtifactSources(final Set<ArtifactSource> artifactSources) {
+		this.artifactSources = artifactSources;
+	}
+
+	public void setGroupListeners(
+			final List<Class<? extends GroupListener>> groupListeners) {
+		this.groupListeners = groupListeners;
+	}
+
+	public void setGroups(final Set<Group> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * Sets the name.
+	 * 
+	 * @param name
+	 *            the new name
+	 */
+	public void setName(final String name) {
+		this.name = name;
+	}
 
 }

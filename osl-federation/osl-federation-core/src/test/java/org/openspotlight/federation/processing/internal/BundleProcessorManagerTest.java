@@ -167,6 +167,9 @@ public class BundleProcessorManagerTest {
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 				repository.getName());
+		context.getDefaultConfigurationManager().saveGlobalSettings(settings);
+		context.getDefaultConfigurationManager().saveRepository(repository);
+
 		final ArtifactFinderWithSaveCapabilitie<StreamArtifact> finder = (ArtifactFinderWithSaveCapabilitie<StreamArtifact>) context
 				.getArtifactFinder(StreamArtifact.class);
 
@@ -223,6 +226,15 @@ public class BundleProcessorManagerTest {
 		bundleSource.setBundleProcessorType(bundleType);
 		bundleSource.setRelative("/osl-federation");
 		bundleSource.getIncludeds().add("**/*.java");
+		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
+				.createFactory();
+		final ExecutionContext context = contextFactory.createExecutionContext(
+				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				repository.getName());
+
+		context.getDefaultConfigurationManager().saveGlobalSettings(settings);
+		context.getDefaultConfigurationManager().saveRepository(repository);
+		context.closeResources();
 
 		BundleProcessorManagerImpl.INSTANCE
 				.executeBundles("username", "password",
