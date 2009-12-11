@@ -98,14 +98,14 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class SimplePersistSupport.
  */
 public class SimplePersistSupport {
-
-	// FIXME implement Lazy and DoNotLoad
 
 	/**
 	 * The Class BeanDescriptor.
@@ -136,6 +136,8 @@ public class SimplePersistSupport {
 		}
 
 	}
+
+	// FIXME implement Lazy and DoNotLoad
 
 	/**
 	 * The Class ComplexMultiplePropertyDescriptor.
@@ -193,6 +195,9 @@ public class SimplePersistSupport {
 		String valueType;
 
 	}
+
+	private static Logger logger = LoggerFactory
+			.getLogger(SimplePersistSupport.class);
 
 	/** The Constant defaultPrefix. */
 	private static final String DEFAULT_NODE_PREFIX = "node.";
@@ -643,7 +648,11 @@ public class SimplePersistSupport {
 			if (desc.getName().equals("class")) {
 				continue;
 			}
+
 			if (desc.getWriteMethod() == null) {
+				logger.warn("ignoring property " + desc.getName()
+						+ "  because it don't have writer method");
+
 				continue;
 			}
 			if (desc.getReadMethod().isAnnotationPresent(
@@ -1060,24 +1069,6 @@ public class SimplePersistSupport {
 			final Set<T> resultNodes = new HashSet<T>();
 			while (nodes.hasNext()) {
 				final Node jcrNode = nodes.nextNode();
-				final PropertyIterator iterator = jcrNode.getProperties();
-				System.out.println();
-				System.out.println();
-				System.out.println();
-				System.out.println();
-				while (iterator.hasNext()) {
-					final Property property = iterator.nextProperty();
-					System.out.println(property.getName());
-					try {
-						System.out.print(property.getString() + "=");
-					} catch (final ValueFormatException e) {
-						final Value[] values = property.getValues();
-						for (final Value v : values) {
-							System.out.print(v.getString() + ", ");
-						}
-						System.out.println();
-					}
-				}
 				final T bean = SimplePersistSupport.<T> convertJcrToBean(
 						session, jcrNode, multipleLoadingStrategy);
 				resultNodes.add(bean);
@@ -1660,7 +1651,6 @@ public class SimplePersistSupport {
 		if (multiplePropertiesAlreadyLoaded.contains(name)) {
 			return;
 		}
-		multiplePropertiesAlreadyLoaded.add(name);
 		final SimpleMultiplePropertyDescriptor desc = new SimpleMultiplePropertyDescriptor();
 		final String keys = MessageFormat.format(
 				SimplePersistSupport.MULTIPLE_PROPERTY_KEYS, name);
@@ -1687,6 +1677,7 @@ public class SimplePersistSupport {
 				}
 			}
 			descriptor.multipleSimpleProperties.put(name, desc);
+			multiplePropertiesAlreadyLoaded.add(name);
 
 		} catch (final PathNotFoundException e) {
 			Exceptions.catchAndLog(

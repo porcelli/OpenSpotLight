@@ -13,8 +13,7 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public class GroupDifferences implements SimpleNodeType,
-		Serializable {
+public class GroupDifferences implements SimpleNodeType, Serializable {
 
 	private String repositoryName;
 
@@ -23,9 +22,9 @@ public class GroupDifferences implements SimpleNodeType,
 	 */
 	private static final long serialVersionUID = 6595595697385787637L;
 
-	private final Set<String> addedGroups = new HashSet<String>();
+	private Set<String> addedGroups = new HashSet<String>();
 
-	private final Set<String> removedGroups = new HashSet<String>();
+	private Set<String> removedGroups = new HashSet<String>();
 
 	@Override
 	public boolean equals(final Object obj) {
@@ -53,6 +52,14 @@ public class GroupDifferences implements SimpleNodeType,
 	@Override
 	public int hashCode() {
 		return HashCodes.hashOf(getClass(), repositoryName);
+	}
+
+	public void setAddedGroups(final Set<String> addedGroups) {
+		this.addedGroups = addedGroups;
+	}
+
+	public void setRemovedGroups(final Set<String> removedGroups) {
+		this.removedGroups = removedGroups;
 	}
 
 	public void setRepositoryName(final String repositoryName) {
