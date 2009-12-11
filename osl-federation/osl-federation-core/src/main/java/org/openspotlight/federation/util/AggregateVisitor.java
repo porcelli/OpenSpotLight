@@ -5,10 +5,10 @@ package org.openspotlight.federation.util;
 
 import java.util.Set;
 
-import org.openspotlight.federation.domain.Schedulable;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 
-public class AggregateVisitor<A extends Schedulable> implements
+public class AggregateVisitor<A extends SimpleNodeType> implements
 		SimpleNodeTypeVisitor<A> {
 	private final Set<A> sources;
 
