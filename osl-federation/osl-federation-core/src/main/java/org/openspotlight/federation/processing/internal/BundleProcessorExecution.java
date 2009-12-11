@@ -65,6 +65,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.GroupListener;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.GroupListener.ListenerAction;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
@@ -294,21 +295,31 @@ public class BundleProcessorExecution {
 					}
 				}
 				for (final GroupListener instance : groupListenerInstances) {
-					for (final String added : differences.getAddedGroups()) {
+					adding: for (final String added : differences
+							.getAddedGroups()) {
 						final SLNode groupAsSLNode = groupContext.getRootNode()
 								.getNode(added);
 						try {
-							instance.groupAdded(groupAsSLNode, internalContext);
+							final ListenerAction response = instance
+									.groupAdded(groupAsSLNode, internalContext);
+							if (ListenerAction.IGNORE.equals(response)) {
+								continue adding;
+							}
 						} catch (final Exception e) {
 							Exceptions.catchAndLog(e);
 						}
 					}
-					for (final String removed : differences.getRemovedGroups()) {
+					removing: for (final String removed : differences
+							.getRemovedGroups()) {
 						final SLNode groupAsSLNode = groupContext.getRootNode()
 								.getNode(removed);
 						try {
-							instance.groupRemoved(groupAsSLNode,
-									internalContext);
+							final ListenerAction response = instance
+									.groupRemoved(groupAsSLNode,
+											internalContext);
+							if (ListenerAction.IGNORE.equals(response)) {
+								continue removing;
+							}
 						} catch (final Exception e) {
 							Exceptions.catchAndLog(e);
 						}

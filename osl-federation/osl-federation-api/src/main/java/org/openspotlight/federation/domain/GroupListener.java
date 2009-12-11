@@ -5,8 +5,13 @@ import org.openspotlight.graph.SLNode;
 
 public interface GroupListener {
 
-	public void groupAdded(SLNode groupNode, ExecutionContext context);
+	public static enum ListenerAction {
+		CONTINUE, IGNORE
+	}
 
-	public void groupRemoved(SLNode groupNode, ExecutionContext context);
+	public ListenerAction groupAdded(SLNode groupNode, ExecutionContext context);
+
+	public ListenerAction groupRemoved(SLNode groupNode,
+			ExecutionContext context);
 
 }
