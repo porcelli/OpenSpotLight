@@ -124,7 +124,7 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 				try {
 					this.reference = this.createReference();
 				} catch (final Exception e) {
-					throw Exceptions.<E> logAndReturnNew(e, this.exceptionType);
+					throw Exceptions.logAndReturnNew(e, this.exceptionType);
 				}
 			}
 			return this.reference;
