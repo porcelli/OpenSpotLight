@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.loader;
 
+import java.util.Set;
+
 import javax.jcr.Session;
 
 import org.hamcrest.core.Is;
@@ -58,8 +60,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
-import org.openspotlight.federation.util.GroupSupport.GroupDifferences;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -117,13 +119,14 @@ public class JcrSessionConfigurationManagerTest extends
 
 		final GroupDifferences differences = GroupSupport.getDifferences(
 				session, repository.getName());
+		final Set<String> added = differences.getAddedGroups();
+		final Set<String> removed = differences.getRemovedGroups();
 
-		Assert.assertThat(differences.getAddedGroups().contains(
-				"newRepository/new"), Is.is(true));
-		Assert.assertThat(differences.getAddedGroups().contains(
-				"newRepository/willBeRemoved"), Is.is(true));
-		Assert.assertThat(differences.getRemovedGroups().contains(
-				"newRepository/willBeRemoved"), Is.is(true));
+		Assert.assertThat(added.contains("newRepository/new"), Is.is(true));
+		Assert.assertThat(added.contains("newRepository/willBeRemoved"), Is
+				.is(true));
+		Assert.assertThat(removed.contains("newRepository/willBeRemoved"), Is
+				.is(true));
 
 	}
 

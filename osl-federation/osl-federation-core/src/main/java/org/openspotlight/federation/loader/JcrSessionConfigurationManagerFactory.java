@@ -62,8 +62,8 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
-import org.openspotlight.federation.util.GroupSupport.GroupDifferences;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
