@@ -6,8 +6,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
-import org.openspotlight.federation.util.GroupSupport.GroupDifferences;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.SessionWithLock;
 
 public class GroupSupportTest {
 
@@ -257,5 +260,29 @@ public class GroupSupportTest {
 				"repositoryName/existentBefore"), Is.is(true));
 		Assert.assertThat(notEmpty.getRemovedGroups().contains(
 				"repositoryName/excludedBefore"), Is.is(true));
+	}
+
+	@Test
+	public void shouldPersistAndRetrieveProperties() throws Exception {
+		final SessionWithLock session = JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR).openSession();
+		final GroupDifferences differences = new GroupDifferences();
+		differences.setRepositoryName("repositoryName");
+		differences.getAddedGroups().add("a");
+		differences.getAddedGroups().add("b");
+		differences.getAddedGroups().add("c");
+
+		differences.getRemovedGroups().add("d");
+		differences.getRemovedGroups().add("e");
+		differences.getRemovedGroups().add("f");
+		GroupSupport.saveDifferences(session, differences);
+		session.save();
+		final GroupDifferences loaded = GroupSupport.getDifferences(session,
+				"repositoryName");
+		Assert.assertThat(loaded.getRepositoryName(), Is.is(differences
+				.getRepositoryName()));
+		Assert.assertThat(loaded.getAddedGroups().size(), Is.is(3));
+		Assert.assertThat(loaded.getRemovedGroups().size(), Is.is(3));
+
 	}
 }

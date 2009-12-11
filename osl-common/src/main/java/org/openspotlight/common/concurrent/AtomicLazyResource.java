@@ -49,6 +49,7 @@
 package org.openspotlight.common.concurrent;
 
 import org.openspotlight.common.Disposable;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 
 /**
@@ -60,21 +61,18 @@ import org.openspotlight.common.util.Exceptions;
  * 
  * @param <R>
  */
-public abstract class AtomicLazyResource<R, E extends Exception> implements
-		LockContainer, Disposable {
+public abstract class AtomicLazyResource<R> implements LockContainer,
+		Disposable {
 
 	private final Object lock;
 
 	private R reference = null;
 
-	private final Class<E> exceptionType;
-
 	/**
 	 * creates an new instance with a new lock object
 	 */
-	protected AtomicLazyResource(final Class<E> exceptionType) {
+	protected AtomicLazyResource() {
 		this.lock = new Object();
-		this.exceptionType = exceptionType;
 	}
 
 	/**
@@ -83,10 +81,8 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 	 * 
 	 * @param lockContainer
 	 */
-	protected AtomicLazyResource(final LockContainer lockContainer,
-			final Class<E> exceptionType) {
+	protected AtomicLazyResource(final LockContainer lockContainer) {
 		this.lock = lockContainer.getLockObject();
-		this.exceptionType = exceptionType;
 	}
 
 	/**
@@ -118,13 +114,14 @@ public abstract class AtomicLazyResource<R, E extends Exception> implements
 	 */
 	protected abstract R createReference() throws Exception;
 
-	public final R get() throws E {
+	public final R get() throws SLRuntimeException {
 		synchronized (this.lock) {
 			if (this.reference == null) {
 				try {
 					this.reference = this.createReference();
 				} catch (final Exception e) {
-					throw Exceptions.<E> logAndReturnNew(e, this.exceptionType);
+					throw Exceptions.logAndReturnNew(e,
+							SLRuntimeException.class);
 				}
 			}
 			return this.reference;

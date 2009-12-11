@@ -64,6 +64,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -1059,6 +1060,24 @@ public class SimplePersistSupport {
 			final Set<T> resultNodes = new HashSet<T>();
 			while (nodes.hasNext()) {
 				final Node jcrNode = nodes.nextNode();
+				final PropertyIterator iterator = jcrNode.getProperties();
+				System.out.println();
+				System.out.println();
+				System.out.println();
+				System.out.println();
+				while (iterator.hasNext()) {
+					final Property property = iterator.nextProperty();
+					System.out.println(property.getName());
+					try {
+						System.out.print(property.getString() + "=");
+					} catch (final ValueFormatException e) {
+						final Value[] values = property.getValues();
+						for (final Value v : values) {
+							System.out.print(v.getString() + ", ");
+						}
+						System.out.println();
+					}
+				}
 				final T bean = SimplePersistSupport.<T> convertJcrToBean(
 						session, jcrNode, multipleLoadingStrategy);
 				resultNodes.add(bean);

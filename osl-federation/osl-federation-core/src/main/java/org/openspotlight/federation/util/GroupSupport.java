@@ -1,75 +1,27 @@
 package org.openspotlight.federation.util;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
 
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 
 public class GroupSupport {
-
-	public static class GroupDifferences implements SimpleNodeType,
-			Serializable {
-
-		private String repositoryName;
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 6595595697385787637L;
-
-		private final Set<String> addedGroups = new HashSet<String>();
-
-		private final Set<String> removedGroups = new HashSet<String>();
-
-		@Override
-		public boolean equals(final Object obj) {
-			if (!(obj instanceof GroupDifferences)) {
-				return false;
-			}
-			final GroupDifferences that = (GroupDifferences) obj;
-			return Equals.eachEquality(Arrays.of(getRepositoryName()), Arrays
-					.andOf(that.getRepositoryName()));
-		}
-
-		public Set<String> getAddedGroups() {
-			return addedGroups;
-		}
-
-		public Set<String> getRemovedGroups() {
-			return removedGroups;
-		}
-
-		@KeyProperty
-		public String getRepositoryName() {
-			return repositoryName;
-		}
-
-		@Override
-		public int hashCode() {
-			return HashCodes.hashOf(getClass(), repositoryName);
-		}
-
-		public void setRepositoryName(final String repositoryName) {
-			this.repositoryName = repositoryName;
-		}
-
-	}
 
 	private static String ROOT_NODE = SharedConstants.DEFAULT_JCR_ROOT_NAME
 			+ "/differences";
@@ -133,8 +85,27 @@ public class GroupSupport {
 	public static void saveDifferences(final Session session,
 			final GroupDifferences differences) {
 		try {
-			SimplePersistSupport.convertBeanToJcr(ROOT_NODE, session,
-					differences);
+			Assertions.checkNotNull("differences", differences);
+			Assertions.checkNotNull("differences.repositoryName", differences
+					.getRepositoryName());
+
+			final Node node = SimplePersistSupport.convertBeanToJcr(ROOT_NODE,
+					session, differences);
+			final PropertyIterator iterator = node.getProperties();
+			while (iterator.hasNext()) {
+				final Property property = iterator.nextProperty();
+				System.out.println(property.getName());
+				try {
+					System.out.print(property.getString() + "=");
+				} catch (final ValueFormatException e) {
+					final Value[] values = property.getValues();
+					for (final Value v : values) {
+						System.out.print(v.getString() + ", ");
+					}
+					System.out.println();
+				}
+
+			}
 			session.save();
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

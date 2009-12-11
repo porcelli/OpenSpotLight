@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.jcr.Session;
 
 import org.openspotlight.common.DisposingListener;
-import org.openspotlight.common.concurrent.DefaultAtomicLazyResource;
+import org.openspotlight.common.concurrent.AtomicLazyResource;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Artifact;
@@ -84,7 +84,7 @@ import org.openspotlight.security.idm.User;
 public class DefaultExecutionContext implements ExecutionContext, LockContainer {
 
 	private final class LazyConfigurationManagerProvider extends
-			DefaultAtomicLazyResource<ConfigurationManager> {
+			AtomicLazyResource<ConfigurationManager> {
 		private LazyConfigurationManagerProvider(
 				final LockContainer lockContainer) {
 			super(lockContainer);
@@ -99,7 +99,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	}
 
 	private final class LazyDetailedLoggerProvider extends
-			DefaultAtomicLazyResource<DetailedLogger> {
+			AtomicLazyResource<DetailedLogger> {
 		private LazyDetailedLoggerProvider(final LockContainer lockContainer) {
 			super(lockContainer);
 		}
@@ -111,7 +111,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	}
 
 	private final class LazyGraphSessionProvider extends
-			DefaultAtomicLazyResource<SLGraphSession> {
+			AtomicLazyResource<SLGraphSession> {
 		private LazyGraphSessionProvider(final LockContainer lockContainer) {
 			super(lockContainer);
 		}
@@ -125,7 +125,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	}
 
 	private final class LazyJcrConnectionProvider extends
-			DefaultAtomicLazyResource<JcrConnectionProvider> {
+			AtomicLazyResource<JcrConnectionProvider> {
 		private LazyJcrConnectionProvider(final LockContainer lockContainer) {
 			super(lockContainer);
 		}
@@ -142,9 +142,9 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final String repositoryName;
 	private final DisposingListener<DefaultExecutionContext> listener;
 	private final Object lock = new Object();
-	private final ConcurrentHashMap<? extends Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
+	private final ConcurrentHashMap<? extends Artifact, AtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, AtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
 
-	private final DefaultAtomicLazyResource<AuthenticatedUser> lazyAuthenticatedUserReference = new DefaultAtomicLazyResource<AuthenticatedUser>() {
+	private final AtomicLazyResource<AuthenticatedUser> lazyAuthenticatedUserReference = new AtomicLazyResource<AuthenticatedUser>() {
 
 		@Override
 		protected AuthenticatedUser createReference() throws Exception {
@@ -158,16 +158,16 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		}
 	};
 
-	private final DefaultAtomicLazyResource<JcrConnectionProvider> lazyConnectionProviderReference = new LazyJcrConnectionProvider(
+	private final AtomicLazyResource<JcrConnectionProvider> lazyConnectionProviderReference = new LazyJcrConnectionProvider(
 			this);
 
-	private final DefaultAtomicLazyResource<ConfigurationManager> lazyConfigurationManagerReference = new LazyConfigurationManagerProvider(
+	private final AtomicLazyResource<ConfigurationManager> lazyConfigurationManagerReference = new LazyConfigurationManagerProvider(
 			this);
 
-	private final DefaultAtomicLazyResource<SLGraphSession> lazyGraphSessionReference = new LazyGraphSessionProvider(
+	private final AtomicLazyResource<SLGraphSession> lazyGraphSessionReference = new LazyGraphSessionProvider(
 			this);
 
-	private final DefaultAtomicLazyResource<DetailedLogger> lazyDetailedLoggerReference = new LazyDetailedLoggerProvider(
+	private final AtomicLazyResource<DetailedLogger> lazyDetailedLoggerReference = new LazyDetailedLoggerProvider(
 			this);
 
 	private final DetailedLoggerFactory logFactory;
@@ -186,7 +186,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 	public void closeResources() {
 		synchronized (lock) {
-			for (final DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference : artifactFinderReferences
+			for (final AtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference : artifactFinderReferences
 					.values()) {
 				lazyReference.closeResources();
 			}
@@ -202,10 +202,10 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	public <A extends Artifact> ArtifactFinder<A> getArtifactFinder(
 			final Class<A> type) {
 		synchronized (lock) {
-			DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference = artifactFinderReferences
+			AtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference = artifactFinderReferences
 					.get(type);
 			if (lazyReference == null) {
-				lazyReference = new DefaultAtomicLazyResource<ArtifactFinder<? extends Artifact>>() {
+				lazyReference = new AtomicLazyResource<ArtifactFinder<? extends Artifact>>() {
 					@Override
 					protected ArtifactFinder<? extends Artifact> createReference() {
 						final Repository typedRepository = new Repository();
