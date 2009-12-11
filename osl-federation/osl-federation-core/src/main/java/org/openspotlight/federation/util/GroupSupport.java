@@ -4,12 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
 
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
@@ -89,23 +84,8 @@ public class GroupSupport {
 			Assertions.checkNotNull("differences.repositoryName", differences
 					.getRepositoryName());
 
-			final Node node = SimplePersistSupport.convertBeanToJcr(ROOT_NODE,
-					session, differences);
-			final PropertyIterator iterator = node.getProperties();
-			while (iterator.hasNext()) {
-				final Property property = iterator.nextProperty();
-				System.out.println(property.getName());
-				try {
-					System.out.print(property.getString() + "=");
-				} catch (final ValueFormatException e) {
-					final Value[] values = property.getValues();
-					for (final Value v : values) {
-						System.out.print(v.getString() + ", ");
-					}
-					System.out.println();
-				}
-
-			}
+			SimplePersistSupport.convertBeanToJcr(ROOT_NODE, session,
+					differences);
 			session.save();
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
