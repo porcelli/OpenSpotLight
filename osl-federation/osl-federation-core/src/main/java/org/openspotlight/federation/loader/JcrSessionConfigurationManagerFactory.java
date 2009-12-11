@@ -62,6 +62,8 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.util.GroupSupport;
+import org.openspotlight.federation.util.GroupSupport.GroupDifferences;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
@@ -96,6 +98,33 @@ public class JcrSessionConfigurationManagerFactory {
 			this.session = session;
 		}
 
+		private void applyGroupDeltas(final Repository configuration) {
+			GroupDifferences existentDeltas = GroupSupport.getDifferences(
+					session, configuration.getName());
+			if (existentDeltas == null) {
+				existentDeltas = new GroupDifferences();
+				existentDeltas.setRepositoryName(configuration.getName());
+			}
+			final Set<Repository> existentRepository = SimplePersistSupport
+					.findNodesByProperties(
+							MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
+							session, Repository.class, LazyType.EAGER,
+							new String[] { "name" },
+							new Object[] { configuration.getName() });
+			Repository old = null;
+			if (existentRepository.size() > 1) {
+				throw Exceptions
+						.logAndReturn(new IllegalStateException(
+								"unexpected number of repositories with the same name found"));
+			} else if (existentRepository.size() == 1) {
+				old = existentRepository.iterator().next();
+			}
+
+			GroupSupport.findDifferencesOnAllRepositories(existentDeltas, old,
+					configuration);
+			GroupSupport.saveDifferences(session, existentDeltas);
+		}
+
 		/*
 		 * (non-Javadoc)
 		 * 
@@ -104,8 +133,8 @@ public class JcrSessionConfigurationManagerFactory {
 		 * ()
 		 */
 		public void closeResources() {
-			if (this.session.isLive()) {
-				this.session.logout();
+			if (session.isLive()) {
+				session.logout();
 			}
 
 		}
@@ -115,7 +144,7 @@ public class JcrSessionConfigurationManagerFactory {
 			final Set<Repository> repositories = SimplePersistSupport
 					.findNodesByProperties(
 							MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-							this.session, Repository.class, LazyType.EAGER,
+							session, Repository.class, LazyType.EAGER,
 							new String[] {}, new Object[] {});
 			return repositories;
 		}
@@ -125,7 +154,7 @@ public class JcrSessionConfigurationManagerFactory {
 			final Set<Repository> repositories = SimplePersistSupport
 					.findNodesByProperties(
 							MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-							this.session, Repository.class, LazyType.EAGER,
+							session, Repository.class, LazyType.EAGER,
 							new String[] {}, new Object[] {});
 			final Set<String> repositoryNames = new HashSet<String>();
 			for (final Repository repo : repositories) {
@@ -146,14 +175,13 @@ public class JcrSessionConfigurationManagerFactory {
 						.getJcrNodeName(GlobalSettings.class);
 				final String xpath = MutableJcrSessionConfigurationManager.GLOBAL_SETTINGS_LOCATION
 						+ "/" + nodeName;
-				final Query query = this.session.getWorkspace()
-						.getQueryManager().createQuery(xpath, Query.XPATH);
+				final Query query = session.getWorkspace().getQueryManager()
+						.createQuery(xpath, Query.XPATH);
 				final NodeIterator nodeIterator = query.execute().getNodes();
 				if (nodeIterator.hasNext()) {
 					final Node node = nodeIterator.nextNode();
 					final GlobalSettings settings = SimplePersistSupport
-							.convertJcrToBean(this.session, node,
-									LazyType.EAGER);
+							.convertJcrToBean(session, node, LazyType.EAGER);
 					return settings;
 				}
 				return null;
@@ -176,7 +204,7 @@ public class JcrSessionConfigurationManagerFactory {
 				final Set<Repository> repository = SimplePersistSupport
 						.findNodesByProperties(
 								MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-								this.session, Repository.class, LazyType.EAGER,
+								session, Repository.class, LazyType.EAGER,
 								new String[] { "name" }, new Object[] { name });
 				return repository.iterator().next();
 			} catch (final Exception e) {
@@ -198,8 +226,8 @@ public class JcrSessionConfigurationManagerFactory {
 				SimplePersistSupport
 						.convertBeanToJcr(
 								MutableJcrSessionConfigurationManager.GLOBAL_SETTINGS_LOCATION,
-								this.session, globalSettings);
-				this.session.save();
+								session, globalSettings);
+				session.save();
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e,
 						ConfigurationException.class);
@@ -216,11 +244,12 @@ public class JcrSessionConfigurationManagerFactory {
 		public void saveRepository(final Repository configuration)
 				throws ConfigurationException {
 			try {
+				applyGroupDeltas(configuration);
 				SimplePersistSupport
 						.convertBeanToJcr(
 								MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-								this.session, configuration);
-				this.session.save();
+								session, configuration);
+				session.save();
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e,
 						ConfigurationException.class);
