@@ -1656,7 +1656,7 @@ public class SimplePersistSupport {
 			RepositoryException {
 		String name = Strings.removeBegginingFrom(
 				SimplePersistSupport.DEFAULT_MULTIPLE_PROPERTY_PREFIX, rawName);
-		name = name.substring(0, name.lastIndexOf('.'));
+		name = name.substring(0, name.indexOf('.'));
 		if (multiplePropertiesAlreadyLoaded.contains(name)) {
 			return;
 		}
@@ -1689,7 +1689,8 @@ public class SimplePersistSupport {
 			descriptor.multipleSimpleProperties.put(name, desc);
 
 		} catch (final PathNotFoundException e) {
-			return;
+			Exceptions.catchAndLog(
+					"value for multiple property not setted yet", e);
 
 		}
 	}
