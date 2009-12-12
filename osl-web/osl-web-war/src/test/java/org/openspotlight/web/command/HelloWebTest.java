@@ -46,14 +46,21 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.web.command;
 
-import java.util.Set;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
+import org.junit.Test;
+import org.openspotlight.web.WebException;
 
-public interface ArtifactFinderRegistry {
+public class HelloWebTest {
 
-	public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders();
+    @Test
+    public void testHelloWorld() throws WebException {
+        HelloWebCommand command = new HelloWebCommand();
+        String result = command.execute(null, null);
 
+        assertThat(result, is("{\"message\":\"hello world!\"}"));
+    }
 }
