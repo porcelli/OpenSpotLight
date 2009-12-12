@@ -46,14 +46,34 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.web.command;
 
-import java.util.Set;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
+import java.io.IOException;
 
-public interface ArtifactFinderRegistry {
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.junit.Test;
 
-	public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders();
+public class ITHelloWeb {
 
+    @Test
+    public void testHelloWorld() throws ClientProtocolException, IOException {
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpGet httpget = new HttpGet(
+                                      "http://localhost:8080/osl-web-war/?action=hello");
+        HttpResponse response = httpclient.execute(httpget);
+        HttpEntity entity = response.getEntity();
+
+        String result = EntityUtils.toString(entity);
+
+        assertThat(result, is("{\"message\":\"hello world!\"}"));
+    }
 }

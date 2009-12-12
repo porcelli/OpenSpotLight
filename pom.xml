@@ -476,6 +476,11 @@
 				<version>1.1</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+			  <groupId>org.apache.httpcomponents</groupId>
+			  <artifactId>httpclient</artifactId>
+			  <version>4.0</version>
+			</dependency>
 			<!-- JAAS implementation (and dependencies) for DNA security -->
 			<dependency>
 				<groupId>org.jboss.security</groupId>
