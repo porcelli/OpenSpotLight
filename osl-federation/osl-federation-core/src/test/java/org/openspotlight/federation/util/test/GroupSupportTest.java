@@ -311,6 +311,27 @@ public class GroupSupportTest {
 	}
 
 	@Test
+	public void shouldNotSeeAddedAndRemovedGroups() throws Exception {
+		final GroupDifferences empty = new GroupDifferences();
+		final Repository repository = new Repository();
+		repository.setName("repositoryName");
+		final Group newGroup = new Group();
+		newGroup.setRepository(repository);
+		newGroup.setName("1");
+		repository.getGroups().add(newGroup);
+		GroupSupport.findDifferencesOnAllRepositories(empty, null, repository);
+		Assert.assertThat(empty.getAddedGroups().contains("repositoryName/1"),
+				Is.is(true));
+		GroupSupport.findDifferencesOnAllRepositories(empty, repository,
+				new Repository());
+		Assert.assertThat(empty.getAddedGroups().contains("repositoryName/1"),
+				Is.is(false));
+		Assert.assertThat(
+				empty.getRemovedGroups().contains("repositoryName/1"), Is
+						.is(false));
+	}
+
+	@Test
 	public void shouldPersistAndRetrieveProperties() throws Exception {
 		final SessionWithLock session = JcrConnectionProvider.createFromData(
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR).openSession();
