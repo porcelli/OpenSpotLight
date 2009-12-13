@@ -64,8 +64,10 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.web.command.InitialImportWebCommand;
 
 /**
@@ -81,6 +83,8 @@ import org.openspotlight.web.command.InitialImportWebCommand;
 public class OslContextListener implements ServletContextListener,
 		OslDataConstants {
 
+	private RemoteGraphSessionServer server;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -91,7 +95,7 @@ public class OslContextListener implements ServletContextListener,
 		WebExecutionContextFactory.INSTANCE.contextStopped();
 		final SLScheduler scheduler = DefaultScheduler.INSTANCE;
 		scheduler.stopScheduler();
-
+		server.shutdown();
 	}
 
 	/*
@@ -147,6 +151,16 @@ public class OslContextListener implements ServletContextListener,
 			scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER,
 					SLConsts.SYSTEM_PASSWORD, descriptor);
 			scheduler.refreshJobs(settings, repositories);
+
+			server = new RemoteGraphSessionServer(new UserAuthenticator() {
+
+				public boolean canConnect(final String userName,
+						final String password, final String clientHost) {
+					return true;
+					// FIXME create user authenticator
+				}
+			}, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
 		}
