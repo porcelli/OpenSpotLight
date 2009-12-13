@@ -120,13 +120,8 @@ public class JcrSessionConfigurationManagerTest extends
 		final GroupDifferences differences = GroupSupport.getDifferences(
 				session, repository.getName());
 		final Set<String> added = differences.getAddedGroups();
-		final Set<String> removed = differences.getRemovedGroups();
 
 		Assert.assertThat(added.contains("newRepository/new"), Is.is(true));
-		Assert.assertThat(added.contains("newRepository/willBeRemoved"), Is
-				.is(true));
-		Assert.assertThat(removed.contains("newRepository/willBeRemoved"), Is
-				.is(true));
 
 	}
 
