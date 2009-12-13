@@ -54,6 +54,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -64,70 +66,89 @@ import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.web.command.InitialImportWebCommand;
 
 /**
- * The listener interface for receiving oslContext events. The class that is interested in processing a oslContext event
- * implements this interface, and the object created with that class is registered with a component using the component's
- * <code>addOslContextListener<code> method. When
+ * The listener interface for receiving oslContext events. The class that is
+ * interested in processing a oslContext event implements this interface, and
+ * the object created with that class is registered with a component using the
+ * component's <code>addOslContextListener<code> method. When
  * the oslContext event occurs, that object's appropriate
  * method is invoked.
  * 
  * @see OslContextEvent
  */
-public class OslContextListener implements ServletContextListener, OslDataConstants {
+public class OslContextListener implements ServletContextListener,
+		OslDataConstants {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @seejavax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
-     * ServletContextEvent)
-     */
-    public void contextDestroyed( final ServletContextEvent arg0 ) {
-        WebExecutionContextFactory.INSTANCE.contextStopped();
-        final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-        scheduler.stopScheduler();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seejavax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
+	 * ServletContextEvent)
+	 */
+	public void contextDestroyed(final ServletContextEvent arg0) {
+		WebExecutionContextFactory.INSTANCE.contextStopped();
+		final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+		scheduler.stopScheduler();
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * javax.servlet.ServletContextListener#contextInitialized(javax.servlet
-     * .ServletContextEvent)
-     */
-    public void contextInitialized( final ServletContextEvent sce ) {
-        try {
-            JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
-            String jcrDescriptorName = sce.getServletContext().getInitParameter("JCR_DESCRIPTOR");
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.ServletContextListener#contextInitialized(javax.servlet
+	 * .ServletContextEvent)
+	 */
+	public void contextInitialized(final ServletContextEvent sce) {
+		try {
+			JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
+			final String jcrDescriptorName = sce.getServletContext()
+					.getInitParameter("JCR_DESCRIPTOR");
 
-            if (jcrDescriptorName != null) {
-                try {
-                    descriptor = DefaultJcrDescriptor.valueOf(jcrDescriptorName);
-                } catch (IllegalArgumentException e) {
-                }
-            }
+			if (jcrDescriptorName != null) {
+				try {
+					descriptor = DefaultJcrDescriptor
+							.valueOf(jcrDescriptorName);
+				} catch (final IllegalArgumentException e) {
+				}
+			}
 
-            sce.getServletContext().setAttribute(CONTEXT__JCR_DESCRIPTOR,
-                                                 descriptor);
-            WebExecutionContextFactory.INSTANCE.contextStarted();
-            final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE
-                                                                                       .getFactory();
-            final ExecutionContext context = factory.createExecutionContext(
-                                                                            SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor,
-                                                                            SLConsts.DEFAULT_REPOSITORY_NAME);
+			sce.getServletContext().setAttribute(CONTEXT__JCR_DESCRIPTOR,
+					descriptor);
+			WebExecutionContextFactory.INSTANCE.contextStarted();
+			final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE
+					.getFactory();
+			final ExecutionContext context = factory.createExecutionContext(
+					SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
-            //FIXME first time we won't have repositories.. so repositories are null!
-            //            final GlobalSettings settings = context
-            //                                                   .getDefaultConfigurationManager().getGlobalSettings();
-            //            final Set<Repository> repositories = context
-            //                                                        .getDefaultConfigurationManager().getAllRepositories();
-            //            final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-            //            scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER,
-            //                                         SLConsts.SYSTEM_PASSWORD, descriptor);
-            //            scheduler.refreshJobs(settings, repositories);
-        } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
-        }
-    }
+			GlobalSettings settings = context.getDefaultConfigurationManager()
+					.getGlobalSettings();
+			Set<Repository> repositories = context
+					.getDefaultConfigurationManager().getAllRepositories();
+
+			if (settings == null || repositories == null
+					|| repositories.size() == 0) {
+				// needs to load the xml again
+				new InitialImportWebCommand().execute(context, Arrays.map(
+						Arrays.of("forceReload"), Arrays.andOf("true")));
+				settings = context.getDefaultConfigurationManager()
+						.getGlobalSettings();
+				repositories = context.getDefaultConfigurationManager()
+						.getAllRepositories();
+				Assertions.checkNotNull("settings", settings);
+				Assertions.checkNotNull("repositories", repositories);
+				Assertions.checkCondition("repositoriesSizePositive",
+						repositories.size() > 0);
+			}
+			final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+			scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER,
+					SLConsts.SYSTEM_PASSWORD, descriptor);
+			scheduler.refreshJobs(settings, repositories);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
+		}
+	}
 }
