@@ -54,8 +54,13 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface BundleProcessorManager {
-	public void executeBundles(final String username, final String password,
-			final JcrConnectionDescriptor descriptor,
+
+	public static enum GlobalExecutionStatus {
+		SUCCESS, ERROR
+	}
+
+	public GlobalExecutionStatus executeBundles(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
 			ExecutionContextFactory contextFactory,
 			final GlobalSettings settings, final Group... groups)
 			throws Exception;

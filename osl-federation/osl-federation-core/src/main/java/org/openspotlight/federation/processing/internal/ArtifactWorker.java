@@ -63,7 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ArtifactWorker implements RunnableWithBundleContext {
+
 	private final AtomicBoolean working = new AtomicBoolean(false);
+	private final AtomicBoolean error = new AtomicBoolean(false);
 	private final AtomicBoolean stopped = new AtomicBoolean(false);
 	private Map<String, ExecutionContext> contextMap;
 	private final long timeoutInMilli;
@@ -78,11 +80,16 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 		this.timeoutInMilli = timeoutInMilli;
 	}
 
+	public boolean hasError() {
+		return error.get();
+	}
+
 	public boolean isWorking() {
 		return working.get();
 	}
 
 	public void run() {
+
 		ArtifactTask task = null;
 		infiniteLoop: while (true) {
 			try {
@@ -115,9 +122,11 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 						task.doTask();
 					} catch (final Exception e) {
 						Exceptions.catchAndLog(e);
+						error.set(true);
 					}
 				} catch (final InterruptedException e) {
 					Exceptions.catchAndLog(e);
+					error.set(true);
 				}
 			} finally {
 				if (task != null) {

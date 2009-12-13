@@ -88,6 +88,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Conversion;
+import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Strings;
@@ -1401,11 +1402,12 @@ public class SimplePersistSupport {
 						.addUpdateOrRemoveJcrNode(
 								JcrNodeType.MULTIPLE_NODE_PROPERTY, session,
 								parent, propertyEntry.getK2(), entry.getKey());
-				propertyNode.setProperty(type, desc.multipleType);
-				propertyNode.setProperty(valueType, desc.valueType);
+				setPropertyOnJcrNode(propertyNode, type, desc.multipleType);
+				setPropertyOnJcrNode(propertyNode, valueType, desc.valueType);
 				if (desc.keyType != null) {
-					propertyNode.setProperty(keyType, desc.keyType);
-					propertyNode.setProperty(keyValue, propertyEntry.getK1());
+					setPropertyOnJcrNode(propertyNode, keyType, desc.keyType);
+					setPropertyOnJcrNode(propertyNode, keyValue, propertyEntry
+							.getK1());
 				}
 				final String hash = propertyNode.getProperty(
 						SimplePersistSupport.HASH_VALUE).getString();
@@ -1459,13 +1461,14 @@ public class SimplePersistSupport {
 					SimplePersistSupport.MULTIPLE_PROPERTY_KEY_TYPE, entry
 							.getKey());
 			final SimpleMultiplePropertyDescriptor desc = entry.getValue();
-			result.setProperty(type, desc.multipleType);
-			result.setProperty(valueType, desc.valueType);
-			result.setProperty(values, desc.valuesAsStrings
+			setPropertyOnJcrNode(result, type, desc.multipleType);
+			setPropertyOnJcrNode(result, valueType, desc.valueType);
+			setPropertyOnJcrNode(result, values, desc.valuesAsStrings
 					.toArray(new String[0]));
+
 			if (desc.keyType != null) {
-				result.setProperty(keyType, desc.keyType);
-				result.setProperty(keys, desc.keysAsStrings
+				setPropertyOnJcrNode(result, keyType, desc.keyType);
+				setPropertyOnJcrNode(result, keys, desc.keysAsStrings
 						.toArray(new String[0]));
 			}
 		}
@@ -1799,6 +1802,42 @@ public class SimplePersistSupport {
 		final Object newPropertyValue = Conversion.convert(
 				propertyValueAsString, propertyType);
 		desc.getWriteMethod().invoke(newObject, newPropertyValue);
+	}
+
+	private static void setPropertyOnJcrNode(final Node jcrNode,
+			final String propertyName, final String propertyValue)
+			throws RepositoryException {
+		if (jcrNode.hasProperty(propertyName)) {
+			final String value = jcrNode.getProperty(propertyName).getString();
+			if (!Equals.eachEquality(value, propertyValue)) {
+				jcrNode.setProperty(propertyName, propertyValue);
+			}
+		} else {
+			jcrNode.setProperty(propertyName, propertyValue);
+		}
+	}
+
+	private static void setPropertyOnJcrNode(final Node jcrNode,
+			final String propertyName, final String propertyValue[])
+			throws RepositoryException {
+		if (jcrNode.hasProperty(propertyName)) {
+			final Value[] rawValues = jcrNode.getProperty(propertyName)
+					.getValues();
+			final String[] values = new String[rawValues != null ? rawValues.length
+					: 0];
+			if (rawValues != null) {
+				for (int i = 0, size = rawValues.length; i < size; i++) {
+					values[i] = rawValues[i].getString();
+				}
+			}
+			if (!java.util.Arrays.equals(values, propertyValue)) {
+				jcrNode.setProperty(propertyName, propertyValue);
+
+			}
+		} else {
+			jcrNode.setProperty(propertyName, propertyValue);
+
+		}
 	}
 
 	/**

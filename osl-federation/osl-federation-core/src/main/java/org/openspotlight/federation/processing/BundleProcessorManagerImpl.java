@@ -51,6 +51,9 @@ package org.openspotlight.federation.processing;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
@@ -76,15 +79,16 @@ public enum BundleProcessorManagerImpl implements BundleProcessorManager {
 
 	INSTANCE;
 
-	public void executeBundles(final String username, final String password,
-			final JcrConnectionDescriptor descriptor,
+	public GlobalExecutionStatus executeBundles(final String username,
+			final String password, final JcrConnectionDescriptor descriptor,
 			final ExecutionContextFactory contextFactory,
 			final GlobalSettings settings, final Group... groups)
 			throws Exception {
-
-		new BundleProcessorExecution(username, password, descriptor,
-				contextFactory, settings, groups, ArtifactTypeRegistry.INSTANCE
+		final GlobalExecutionStatus result = new BundleProcessorExecution(
+				username, password, descriptor, contextFactory, settings,
+				groups, ArtifactTypeRegistry.INSTANCE
 						.getRegisteredArtifactTypes()).execute();
+		return result;
 	}
 
 	public void executeBundlesInBackground(final String username,
