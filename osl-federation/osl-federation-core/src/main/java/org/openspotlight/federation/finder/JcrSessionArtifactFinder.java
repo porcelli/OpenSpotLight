@@ -185,6 +185,16 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 		}
 	}
 
+	public void markAsRemoved(final A artifactToRemove) {
+		try {
+			final Node node = SimplePersistSupport.convertBeanToJcr(
+					this.rootPath, this.session, artifactToRemove);
+			node.remove();
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
+
 	public void save() {
 		try {
 			this.session.save();

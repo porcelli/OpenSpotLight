@@ -140,7 +140,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 				.getArtifactFinder(this.artifactType);
 		if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
 			final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
-			this.queue.offer(new _3_SaveEachArtifactStatusTask(this.artifact,
+			this.queue.offer(new _3_SaveEachArtifactStatusOrPerformCleanupTask(this.artifact,
 					finderWithSaveCapabilitie));
 		}
 		this.bundleProcessor.didFinishToProcessArtifact(this.artifact, result);
