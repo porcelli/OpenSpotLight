@@ -53,10 +53,11 @@ import java.util.concurrent.PriorityBlockingQueue;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
-public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
+public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact> implements
 		ArtifactTask {
 	// FIXME find out what is firing the parent changing or remove this after
 	// issue from jackrabbit is fixed
@@ -64,7 +65,7 @@ public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
 	private final T artifact;
 	private final ArtifactFinderWithSaveCapabilitie<T> finder;
 
-	public _3_SaveEachArtifactStatusTask(final T artifact,
+	public _3_SaveEachArtifactStatusOrPerformCleanupTask(final T artifact,
 			final ArtifactFinderWithSaveCapabilitie<T> finder) {
 		this.artifact = artifact;
 		this.finder = finder;
@@ -73,7 +74,11 @@ public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
 	public void doTask() {
 		try {
 			synchronized (SAVE_LOCK) {
-				this.finder.addTransientArtifact(this.artifact);
+				if (ChangeType.EXCLUDED.equals(this.artifact.getChangeType())) {
+					this.finder.markAsRemoved(this.artifact);
+				} else {
+					this.finder.addTransientArtifact(this.artifact);
+				}
 				this.finder.save();
 			}
 		} catch (final Exception e) {

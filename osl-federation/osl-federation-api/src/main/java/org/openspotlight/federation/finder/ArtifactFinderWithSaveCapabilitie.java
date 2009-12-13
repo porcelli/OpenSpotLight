@@ -65,5 +65,7 @@ public interface ArtifactFinderWithSaveCapabilitie<A extends Artifact> extends
 	 */
 	public void addTransientArtifact(A artifactToSave);
 
+	public void markAsRemoved(A artifactToRemove);
+
 	public void save();
 }
