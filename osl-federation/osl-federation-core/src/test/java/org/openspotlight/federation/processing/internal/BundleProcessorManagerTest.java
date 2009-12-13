@@ -56,7 +56,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Files;
@@ -124,16 +123,16 @@ public class BundleProcessorManagerTest {
 
 	private static final int PARALLEL_THREADS = 8;
 
-	@BeforeClass
-	public static void cleanupOldEntries() throws Exception {
-		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-				.closeRepositoryAndCleanResources();
-	}
-
 	@Before
 	public void cleanGroupListenerCount() throws Exception {
 		SampleGroupListener.count.set(0);
+	}
+
+	@Before
+	public void cleanupOldEntries() throws Exception {
+		JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
 	}
 
 	@Test
