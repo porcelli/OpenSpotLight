@@ -68,6 +68,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.GroupListener.ListenerAction;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
+import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
@@ -89,6 +90,7 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
  */
 public class BundleProcessorExecution {
 
+	private GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
 	/** The executor. */
 	private final GossipExecutor executor;
 	private final String username;
@@ -165,7 +167,7 @@ public class BundleProcessorExecution {
 	 * @throws BundleExecutionException
 	 *             the bundle execution exception
 	 */
-	public void execute() throws BundleExecutionException {
+	public GlobalExecutionStatus execute() throws BundleExecutionException {
 		setupParentNodesAndCallGroupListeners();
 		final Set<Group> groupsWithBundles = findGroupsWithBundles();
 
@@ -175,6 +177,8 @@ public class BundleProcessorExecution {
 
 		monitorThreadActivity(workers);
 		contextFactory.closeResources();
+
+		return status;
 	}
 
 	private void fillTaskQueue(final Set<Group> groupsWithBundles) {
@@ -231,6 +235,9 @@ public class BundleProcessorExecution {
 			if (queue.isEmpty()) {
 				boolean hasAnyWorker = false;
 				findingWorkers: for (final ArtifactWorker worker : workers) {
+					if (worker.hasError()) {
+						status = GlobalExecutionStatus.ERROR;
+					}
 					if (!worker.isWorking()) {
 						worker.stop();
 						continue findingWorkers;

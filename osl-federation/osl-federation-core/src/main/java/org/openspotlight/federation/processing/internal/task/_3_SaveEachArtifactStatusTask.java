@@ -58,7 +58,9 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 
 public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
 		ArtifactTask {
-
+	// FIXME find out what is firing the parent changing or remove this after
+	// issue from jackrabbit is fixed
+	private static final Object SAVE_LOCK = new Object();
 	private final T artifact;
 	private final ArtifactFinderWithSaveCapabilitie<T> finder;
 
@@ -70,8 +72,10 @@ public class _3_SaveEachArtifactStatusTask<T extends Artifact> implements
 
 	public void doTask() {
 		try {
-			this.finder.addTransientArtifact(this.artifact);
-			this.finder.save();
+			synchronized (SAVE_LOCK) {
+				this.finder.addTransientArtifact(this.artifact);
+				this.finder.save();
+			}
 		} catch (final Exception e) {
 			Exceptions.catchAndLog(e);
 		}

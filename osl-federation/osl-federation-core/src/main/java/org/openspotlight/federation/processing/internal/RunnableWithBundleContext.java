@@ -53,5 +53,7 @@ import java.util.Map;
 import org.openspotlight.federation.context.ExecutionContext;
 
 public interface RunnableWithBundleContext extends Runnable {
+	public boolean hasError();
+
 	public void setBundleContext(Map<String, ExecutionContext> context);
 }

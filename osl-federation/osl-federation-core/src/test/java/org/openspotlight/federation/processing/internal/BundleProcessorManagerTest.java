@@ -51,9 +51,11 @@ package org.openspotlight.federation.processing.internal;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.core.Is;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Collections;
@@ -72,6 +74,7 @@ import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.GroupListener;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.StreamArtifact;
@@ -83,7 +86,9 @@ import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
+import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -99,6 +104,24 @@ public class BundleProcessorManagerTest {
 
 	}
 
+	public static class SampleGroupListener implements GroupListener {
+
+		public static AtomicInteger count = new AtomicInteger();
+
+		public ListenerAction groupAdded(final SLNode groupNode,
+				final ExecutionContext context) {
+			count.incrementAndGet();
+			return ListenerAction.CONTINUE;
+		}
+
+		public ListenerAction groupRemoved(final SLNode groupNode,
+				final ExecutionContext context) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
+
 	private static final int PARALLEL_THREADS = 8;
 
 	@BeforeClass
@@ -106,6 +129,11 @@ public class BundleProcessorManagerTest {
 		JcrConnectionProvider.createFromData(
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
 				.closeRepositoryAndCleanResources();
+	}
+
+	@Before
+	public void cleanGroupListenerCount() throws Exception {
+		SampleGroupListener.count.set(0);
 	}
 
 	@Test
@@ -179,15 +207,17 @@ public class BundleProcessorManagerTest {
 		}
 		contextFactory.closeResources();
 
-		BundleProcessorManagerImpl.INSTANCE.executeBundles("username",
-				"password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				SingleGraphSessionExecutionContextFactory.createFactory(),
-				settings, group);
+		final GlobalExecutionStatus result = BundleProcessorManagerImpl.INSTANCE
+				.executeBundles("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+						SingleGraphSessionExecutionContextFactory
+								.createFactory(), settings, group);
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.ERROR), Is.is(false));
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
 				.is(false));
+		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 		final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
 				.loadMutableFromFile("target/BundleProcessorManagerTest/exampleConfigurationFile.xml");
 		GlobalSettingsSupport.initializeScheduleMap(settings);
@@ -197,7 +227,8 @@ public class BundleProcessorManagerTest {
 	}
 
 	@Test
-	public void shouldProcessMappedArtifactsUsingLocalFiles() throws Exception {
+	public void shouldProcessMappedArtifactsUsingLocalFilesAndCallingAGroupListener()
+			throws Exception {
 		ExampleBundleProcessor.allStatus.clear();
 
 		final ArtifactSource source = new ArtifactSource();
@@ -210,6 +241,7 @@ public class BundleProcessorManagerTest {
 		final Repository repository = new Repository();
 		repository.setActive(true);
 		repository.setName("repository");
+		repository.getGroupListeners().add(SampleGroupListener.class);
 		source.setRepository(repository);
 		final Group group = new Group();
 		group.setActive(true);
@@ -236,17 +268,20 @@ public class BundleProcessorManagerTest {
 		context.getDefaultConfigurationManager().saveRepository(repository);
 		context.closeResources();
 
-		BundleProcessorManagerImpl.INSTANCE
+		final GlobalExecutionStatus result = BundleProcessorManagerImpl.INSTANCE
 				.executeBundles("username", "password",
 						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 						TestExecutionContextFactory.createFactory(
 								ArtifactFinderType.FILESYSTEM, source),
 						settings, group);
+		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
+
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.ERROR), Is.is(false));
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
 				.is(false));
+		Assert.assertThat(SampleGroupListener.count.get(), Is.is(1));
 	}
 
 }
