@@ -109,6 +109,7 @@ public class GroupSupport {
 		final Set<Group> newGroups = findAllGroups(newOne);
 		final Set<Group> oldGroups = findAllGroups(oldOne);
 		createDifferences(differences, newOne, newGroups, oldGroups);
+		removeDupplicates(differences);
 	}
 
 	public static GroupDifferences getDifferences(final Session session,
@@ -123,6 +124,17 @@ public class GroupSupport {
 		}
 		return null;
 
+	}
+
+	private static void removeDupplicates(final GroupDifferences differences) {
+		final Set<String> dupplicate = new HashSet<String>();
+		for (final String s : differences.getAddedGroups()) {
+			if (differences.getRemovedGroups().contains(s)) {
+				dupplicate.add(s);
+			}
+		}
+		differences.getAddedGroups().removeAll(dupplicate);
+		differences.getRemovedGroups().removeAll(dupplicate);
 	}
 
 	public static void saveDifferences(final Session session,
