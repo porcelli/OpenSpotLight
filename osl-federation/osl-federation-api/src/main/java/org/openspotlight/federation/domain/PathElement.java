@@ -78,6 +78,11 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType, Ser
     public static PathElement createFromPathString( final String pathString ) {
         Assertions.checkNotEmpty("pathString", pathString);
         final StringTokenizer tok = new StringTokenizer(pathString, "/");
+
+        if (!tok.hasMoreTokens()) {
+            return null;
+        }
+
         PathElement lastPath = new PathElement();
         lastPath.setName(tok.nextToken());
         while (tok.hasMoreTokens()) {
