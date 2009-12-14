@@ -262,6 +262,9 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 		this.type = type;
 	}
 
+	public void setUniqueName(final String s) {
+	}
+
 	public String toUniqueJobString() {
 		return getUniqueName();
 	}

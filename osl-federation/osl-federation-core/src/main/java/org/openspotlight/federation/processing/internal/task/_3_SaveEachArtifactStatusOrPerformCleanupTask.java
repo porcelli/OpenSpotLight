@@ -50,7 +50,6 @@ package org.openspotlight.federation.processing.internal.task;
 
 import java.util.concurrent.PriorityBlockingQueue;
 
-import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ChangeType;
@@ -69,22 +68,18 @@ public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 		this.finder = finder;
 	}
 
-	public void doTask() {
-		try {
-			if (LastProcessStatus.PROCESSED.equals(artifact
-					.getLastProcessStatus())
-					|| LastProcessStatus.IGNORED.equals(artifact
-							.getLastProcessStatus())) {
-				if (ChangeType.EXCLUDED.equals(this.artifact.getChangeType())) {
-					this.finder.markAsRemoved(this.artifact);
-				} else {
-					this.finder.addTransientArtifact(this.artifact);
-				}
-				this.finder.save();
+	public void doTask() throws Exception {
+		if (LastProcessStatus.PROCESSED.equals(artifact.getLastProcessStatus())
+				|| LastProcessStatus.IGNORED.equals(artifact
+						.getLastProcessStatus())) {
+			if (ChangeType.EXCLUDED.equals(this.artifact.getChangeType())) {
+				this.finder.markAsRemoved(this.artifact);
+			} else {
+				this.finder.addTransientArtifact(this.artifact);
 			}
-		} catch (final Exception e) {
-			Exceptions.catchAndLog(e);
+			this.finder.save();
 		}
+
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {

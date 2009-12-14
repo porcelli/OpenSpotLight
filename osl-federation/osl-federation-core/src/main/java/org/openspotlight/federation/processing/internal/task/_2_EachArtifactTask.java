@@ -110,9 +110,9 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	@SuppressWarnings("unchecked")
-	public void doTask() {
+	public void doTask() throws Exception {
 		this.bundleProcessor.beforeProcessArtifact(this.artifact);
-		LastProcessStatus result;
+		LastProcessStatus result = null;
 		try {
 			if (this.artifact instanceof ArtifactWithSyntaxInformation) {
 				final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation) this.artifact;
@@ -133,17 +133,21 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 					"Error during artifact processing on bundle processor "
 							+ this.bundleProcessor.getClass().getName(),
 					this.artifact);
+			throw e;
+		} finally {
+			this.artifact.setLastProcessStatus(result);
+			this.artifact.setLastProcessedDate(new Date());
+			final ArtifactFinder<T> finder = this.bundleProcessorContext
+					.getArtifactFinder(this.artifactType);
+			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
+				final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
+				this.queue
+						.offer(new _3_SaveEachArtifactStatusOrPerformCleanupTask(
+								this.artifact, finderWithSaveCapabilitie));
+			}
+			this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
+					result);
 		}
-		this.artifact.setLastProcessStatus(result);
-		this.artifact.setLastProcessedDate(new Date());
-		final ArtifactFinder<T> finder = this.bundleProcessorContext
-				.getArtifactFinder(this.artifactType);
-		if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
-			final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
-			this.queue.offer(new _3_SaveEachArtifactStatusOrPerformCleanupTask(this.artifact,
-					finderWithSaveCapabilitie));
-		}
-		this.bundleProcessor.didFinishToProcessArtifact(this.artifact, result);
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {

@@ -95,6 +95,8 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 
 	private final Session session;
 
+	public static boolean firesExceptionOnParentModified = false;
+
 	private JcrSessionArtifactFinder(final Class<A> artifactType,
 			final Session session, final Repository repository) {
 		super(repository.getName());

@@ -650,15 +650,18 @@ public class SimplePersistSupport {
 				continue;
 			}
 
-			if (desc.getWriteMethod() == null) {
-				logger.warn("ignoring property " + desc.getName()
-						+ "  because it don't have writer method");
-
-				continue;
-			}
 			if (desc.getReadMethod().isAnnotationPresent(
 					TransientProperty.class)) {
 				continue;
+			}
+			if (desc.getWriteMethod() == null) {
+				throw Exceptions
+						.logAndReturn(new IllegalStateException(
+								"Property "
+										+ typeClass.getName()
+										+ "#"
+										+ desc.getName()
+										+ " without setter. To ignore this use @TransientProperty annotation"));
 			}
 			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
 				if (parent == null) {

@@ -95,7 +95,7 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 	 * org.openspotlight.federation.processing.internal.task.ArtifactTask#doTask
 	 * ()
 	 */
-	public void doTask() {
+	public void doTask() throws Exception {
 		this.processor.didFinishProcessing(this.changes);
 	}
 

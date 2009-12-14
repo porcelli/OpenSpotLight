@@ -99,6 +99,14 @@ public class DetailedLoggerTest {
 			return "CustomErrorCode:errorCode";
 		}
 
+		public void setDescription(final String s) {
+
+		}
+
+		public void setErrorCode(final String s) {
+
+		}
+
 	}
 
 	private static DetailedJcrLoggerFactory factory;

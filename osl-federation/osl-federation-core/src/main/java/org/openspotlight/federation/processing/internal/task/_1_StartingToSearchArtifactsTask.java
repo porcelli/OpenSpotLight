@@ -55,7 +55,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
@@ -130,110 +129,103 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 	 * @see java.lang.Runnable#run()
 	 */
 	@SuppressWarnings("unchecked")
-	public void doTask() {
+	public void doTask() throws Exception {
+		final BundleProcessor<?> rawBundleProcessor = this.bundleProcessorType
+				.getType().newInstance();
+		if (!rawBundleProcessor.acceptKindOfArtifact(this.artifactType)) {
+			return;
+		}
+		final Set<T> changedArtifacts = new HashSet<T>();
+		final Set<T> excludedArtifacts = new HashSet<T>();
+		final Set<T> includedArtifacts = new HashSet<T>();
+		final Set<T> notChangedArtifacts = new HashSet<T>();
+		final BundleProcessor<T> bundleProcessor = (BundleProcessor<T>) rawBundleProcessor;
+
+		final ArtifactFinder<T> finder = this.context
+				.getArtifactFinder(this.artifactType);
+		for (final BundleSource src : this.bundleProcessorType.getSources()) {
+
+			final Set<String> rawNames = finder.retrieveAllArtifactNames(src
+					.getRelative());
+			final FilterResult newNames = filterNamesByPattern(rawNames, src
+					.getIncludeds(), src.getExcludeds(), false);
+			for (final String name : newNames.getIncludedNames()) {
+				final T savedArtifact = finder.findByPath(name);
+				switch (savedArtifact.getChangeType()) {
+				case CHANGED:
+					changedArtifacts.add(savedArtifact);
+					break;
+				case EXCLUDED:
+					excludedArtifacts.add(savedArtifact);
+					break;
+				case INCLUDED:
+					includedArtifacts.add(savedArtifact);
+					break;
+				case NOT_CHANGED:
+					notChangedArtifacts.add(savedArtifact);
+					break;
+				}
+			}
+
+		}
+
+		this.changes.setChangedArtifacts(changedArtifacts);
+		this.changes.setExcludedArtifacts(excludedArtifacts);
+		this.changes.setIncludedArtifacts(includedArtifacts);
+		this.changes.setNotChangedArtifacts(notChangedArtifacts);
+
+		final Set<T> artifactsAlreadyProcessed = new HashSet<T>();
+		this.toBeReturned
+				.setArtifactsAlreadyProcessed(artifactsAlreadyProcessed);
+		final Set<T> artifactsToBeProcessed = new HashSet<T>();
+		artifactsToBeProcessed.addAll(changedArtifacts);
+		artifactsToBeProcessed.addAll(includedArtifacts);
+		this.toBeReturned.setArtifactsToBeProcessed(artifactsToBeProcessed);
+		final Date lastProcessedDate = new Date();
 		try {
-			final BundleProcessor<?> rawBundleProcessor = this.bundleProcessorType
-					.getType().newInstance();
-			if (!rawBundleProcessor.acceptKindOfArtifact(this.artifactType)) {
-				return;
+			bundleProcessor.selectArtifactsToBeProcessed(this.currentContext,
+					this.context, this.changes, this.toBeReturned);
+			for (final T artifactAlreadyProcessed : this.toBeReturned
+					.getArtifactsAlreadyProcessed()) {
+				artifactAlreadyProcessed
+						.setLastProcessedDate(lastProcessedDate);
+				artifactAlreadyProcessed
+						.setLastProcessStatus(LastProcessStatus.PROCESSED);
+				this.context.getLogger().log(
+						this.context.getUser(),
+						LogEventType.TRACE,
+						"Artifact processed on starting for bundle Processor "
+								+ bundleProcessor.getClass().getName(),
+						artifactAlreadyProcessed);
 			}
-			final Set<T> changedArtifacts = new HashSet<T>();
-			final Set<T> excludedArtifacts = new HashSet<T>();
-			final Set<T> includedArtifacts = new HashSet<T>();
-			final Set<T> notChangedArtifacts = new HashSet<T>();
-			final BundleProcessor<T> bundleProcessor = (BundleProcessor<T>) rawBundleProcessor;
-
-			final ArtifactFinder<T> finder = this.context
-					.getArtifactFinder(this.artifactType);
-			for (final BundleSource src : this.bundleProcessorType.getSources()) {
-
-				final Set<String> rawNames = finder
-						.retrieveAllArtifactNames(src.getRelative());
-				final FilterResult newNames = filterNamesByPattern(rawNames,
-						src.getIncludeds(), src.getExcludeds(), false);
-				for (final String name : newNames.getIncludedNames()) {
-					final T savedArtifact = finder.findByPath(name);
-					switch (savedArtifact.getChangeType()) {
-					case CHANGED:
-						changedArtifacts.add(savedArtifact);
-						break;
-					case EXCLUDED:
-						excludedArtifacts.add(savedArtifact);
-						break;
-					case INCLUDED:
-						includedArtifacts.add(savedArtifact);
-						break;
-					case NOT_CHANGED:
-						notChangedArtifacts.add(savedArtifact);
-						break;
-					}
-				}
-
+			for (final T artifactToProcess : this.toBeReturned
+					.getArtifactsToBeProcessed()) {
+				final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
+				taskCtx.setCurrentGroup(this.currentContext.getCurrentGroup());
+				taskCtx.setCurrentRepository(this.currentContext
+						.getCurrentRepository());
+				this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
+						artifactToProcess, bundleProcessor, this.artifactType));
 			}
-
-			this.changes.setChangedArtifacts(changedArtifacts);
-			this.changes.setExcludedArtifacts(excludedArtifacts);
-			this.changes.setIncludedArtifacts(includedArtifacts);
-			this.changes.setNotChangedArtifacts(notChangedArtifacts);
-
-			final Set<T> artifactsAlreadyProcessed = new HashSet<T>();
-			this.toBeReturned
-					.setArtifactsAlreadyProcessed(artifactsAlreadyProcessed);
-			final Set<T> artifactsToBeProcessed = new HashSet<T>();
-			artifactsToBeProcessed.addAll(changedArtifacts);
-			artifactsToBeProcessed.addAll(includedArtifacts);
-			this.toBeReturned.setArtifactsToBeProcessed(artifactsToBeProcessed);
-			final Date lastProcessedDate = new Date();
-			try {
-				bundleProcessor.selectArtifactsToBeProcessed(
-						this.currentContext, this.context, this.changes,
-						this.toBeReturned);
-				for (final T artifactAlreadyProcessed : this.toBeReturned
-						.getArtifactsAlreadyProcessed()) {
-					artifactAlreadyProcessed
-							.setLastProcessedDate(lastProcessedDate);
-					artifactAlreadyProcessed
-							.setLastProcessStatus(LastProcessStatus.PROCESSED);
-					this.context.getLogger().log(
-							this.context.getUser(),
-							LogEventType.TRACE,
-							"Artifact processed on starting for bundle Processor "
-									+ bundleProcessor.getClass().getName(),
-							artifactAlreadyProcessed);
-				}
-				for (final T artifactToProcess : this.toBeReturned
-						.getArtifactsToBeProcessed()) {
-					final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
-					taskCtx.setCurrentGroup(this.currentContext
-							.getCurrentGroup());
-					taskCtx.setCurrentRepository(this.currentContext
-							.getCurrentRepository());
-					this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
-							artifactToProcess, bundleProcessor,
-							this.artifactType));
-				}
-				this.queue.add(new _4_EndingToProcessArtifactsTask<T>(
-						this.changes, bundleProcessor, repository.getName()));
-
-			} catch (final Exception e) {
-				for (final T artifactWithError : this.toBeReturned
-						.getArtifactsToBeProcessed()) {
-					artifactWithError.setLastProcessedDate(lastProcessedDate);
-					artifactWithError
-							.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
-					this.context.getLogger().log(
-							this.context.getUser(),
-							LogEventType.ERROR,
-							"Error on trying to process artifact on starting for bundle Processor "
-									+ bundleProcessor.getClass().getName(),
-							artifactWithError);
-				}
-				throw e;
-			}
+			this.queue.add(new _4_EndingToProcessArtifactsTask<T>(this.changes,
+					bundleProcessor, repository.getName()));
 
 		} catch (final Exception e) {
-			Exceptions.catchAndLog(e);
+			for (final T artifactWithError : this.toBeReturned
+					.getArtifactsToBeProcessed()) {
+				artifactWithError.setLastProcessedDate(lastProcessedDate);
+				artifactWithError
+						.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
+				this.context.getLogger().log(
+						this.context.getUser(),
+						LogEventType.ERROR,
+						"Error on trying to process artifact on starting for bundle Processor "
+								+ bundleProcessor.getClass().getName(),
+						artifactWithError);
+			}
+			throw e;
 		}
+
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {

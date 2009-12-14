@@ -55,7 +55,7 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 
 public interface ArtifactTask {
 
-	public void doTask();
+	public void doTask() throws Exception;
 
 	public CurrentProcessorContextImpl getCurrentContext();
 

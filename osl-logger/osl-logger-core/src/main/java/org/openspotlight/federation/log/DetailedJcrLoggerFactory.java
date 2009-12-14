@@ -341,7 +341,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 		private String friendlyDescription;
 
 		/** The class name. */
-		private String className;
+		private String typeName;
 
 		public LoggedObjectInformation() {
 		}
@@ -365,23 +365,23 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 							SLRuntimeException.class);
 				}
 				friendlyDescription = node.toString();
-				className = node.getClass().getInterfaces()[0].getName();
+				typeName = node.getClass().getInterfaces()[0].getName();
 			} else if (object instanceof ArtifactSource) {
 				final ArtifactSource node = (ArtifactSource) object;
 				friendlyDescription = node.getName();
-				className = node.getClass().getName();
+				typeName = node.getClass().getName();
 				uniqueId = null;
 			} else if (object instanceof Artifact) {
 				final Artifact node = (Artifact) object;
 				friendlyDescription = node.getArtifactCompleteName();
-				className = node.getClass().getName();
+				typeName = node.getClass().getName();
 				uniqueId = null;
 			} else {
 				throw Exceptions.logAndReturn(new IllegalArgumentException());
 			}
 			Assertions
 					.checkNotEmpty("friendlyDescription", friendlyDescription);
-			Assertions.checkNotEmpty("className", className);
+			Assertions.checkNotEmpty("className", typeName);
 		}
 
 		/**
@@ -405,12 +405,12 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 			this.order = order;
 			this.uniqueId = uniqueId;
 			this.friendlyDescription = friendlyDescription;
-			this.className = className;
+			typeName = className;
 
 		}
 
 		public String getClassName() {
-			return className;
+			return typeName;
 		}
 
 		/**
@@ -440,7 +440,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 		 */
 		@KeyProperty
 		public String getTypeName() {
-			return className;
+			return typeName;
 		}
 
 		/**
@@ -454,7 +454,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 		}
 
 		public void setClassName(final String className) {
-			this.className = className;
+			typeName = className;
 		}
 
 		public void setFriendlyDescription(final String friendlyDescription) {
@@ -463,6 +463,10 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 
 		public void setOrder(final int order) {
 			this.order = order;
+		}
+
+		public void setTypeName(final String typeName) {
+			this.typeName = typeName;
 		}
 
 		public void setUniqueId(final String uniqueId) {

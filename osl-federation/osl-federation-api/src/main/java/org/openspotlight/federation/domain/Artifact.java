@@ -232,6 +232,10 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 		return result;
 	}
 
+	public void setArtifactCompleteName(final String artifactCompleteName) {
+		this.artifactCompleteName = artifactCompleteName;
+	}
+
 	/**
 	 * Sets the artifact name.
 	 * 
