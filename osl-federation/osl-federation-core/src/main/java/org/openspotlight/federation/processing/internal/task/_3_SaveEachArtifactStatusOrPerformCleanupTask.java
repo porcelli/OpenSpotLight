@@ -50,6 +50,7 @@ package org.openspotlight.federation.processing.internal.task;
 
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ChangeType;
@@ -59,6 +60,9 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 
 public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 		implements ArtifactTask {
+	// FIXME find out what is firing the parent changing or remove this after
+	// issue from jackrabbit is fixed
+	private static final Object SAVE_LOCK = new Object();
 	private final T artifact;
 	private final ArtifactFinderWithSaveCapabilitie<T> finder;
 
@@ -68,18 +72,25 @@ public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 		this.finder = finder;
 	}
 
-	public void doTask() throws Exception {
-		if (LastProcessStatus.PROCESSED.equals(artifact.getLastProcessStatus())
-				|| LastProcessStatus.IGNORED.equals(artifact
-						.getLastProcessStatus())) {
-			if (ChangeType.EXCLUDED.equals(this.artifact.getChangeType())) {
-				this.finder.markAsRemoved(this.artifact);
-			} else {
-				this.finder.addTransientArtifact(this.artifact);
+	public void doTask() {
+		try {
+			if (LastProcessStatus.PROCESSED.equals(artifact
+					.getLastProcessStatus())
+					|| LastProcessStatus.IGNORED.equals(artifact
+							.getLastProcessStatus())) {
+				synchronized (SAVE_LOCK) {
+					if (ChangeType.EXCLUDED.equals(this.artifact
+							.getChangeType())) {
+						this.finder.markAsRemoved(this.artifact);
+					} else {
+						this.finder.addTransientArtifact(this.artifact);
+					}
+					this.finder.save();
+				}
 			}
-			this.finder.save();
+		} catch (final Exception e) {
+			Exceptions.catchAndLog(e);
 		}
-
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {
