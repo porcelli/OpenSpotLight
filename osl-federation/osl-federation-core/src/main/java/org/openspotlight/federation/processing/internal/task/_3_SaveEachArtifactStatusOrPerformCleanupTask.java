@@ -60,9 +60,6 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 
 public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 		implements ArtifactTask {
-	// FIXME find out what is firing the parent changing or remove this after
-	// issue from jackrabbit is fixed
-	private static final Object SAVE_LOCK = new Object();
 	private final T artifact;
 	private final ArtifactFinderWithSaveCapabilitie<T> finder;
 
@@ -78,15 +75,12 @@ public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 					.getLastProcessStatus())
 					|| LastProcessStatus.IGNORED.equals(artifact
 							.getLastProcessStatus())) {
-				synchronized (SAVE_LOCK) {
-					if (ChangeType.EXCLUDED.equals(this.artifact
-							.getChangeType())) {
-						this.finder.markAsRemoved(this.artifact);
-					} else {
-						this.finder.addTransientArtifact(this.artifact);
-					}
-					this.finder.save();
+				if (ChangeType.EXCLUDED.equals(this.artifact.getChangeType())) {
+					this.finder.markAsRemoved(this.artifact);
+				} else {
+					this.finder.addTransientArtifact(this.artifact);
 				}
+				this.finder.save();
 			}
 		} catch (final Exception e) {
 			Exceptions.catchAndLog(e);
