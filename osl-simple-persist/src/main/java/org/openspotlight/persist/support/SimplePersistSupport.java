@@ -1041,7 +1041,15 @@ public class SimplePersistSupport {
 					JcrNodeType.NODE, fakeBeanDescriptor, null);
 
 			final StringBuilder propertyWhereXpath = new StringBuilder();
+			final T dummyInstance = nodeType.newInstance();
 			for (int i = 0, size = propertyNames.length; i < size; i++) {
+				try {
+					PropertyUtils.getProperty(dummyInstance, propertyNames[i]);
+				} catch (final Exception e) {
+					throw Exceptions.logAndReturnNew("No property named "
+							+ nodeType.getName() + "#" + propertyNames[i], e,
+							SLRuntimeException.class);
+				}
 				final String keyString = MessageFormat.format(
 						SimplePersistSupport.PROPERTY_VALUE, propertyNames[i]);
 
@@ -1689,8 +1697,8 @@ public class SimplePersistSupport {
 			multiplePropertiesAlreadyLoaded.add(name);
 
 		} catch (final PathNotFoundException e) {
-			Exceptions.catchAndLog(
-					"value for multiple property not setted yet", e);
+			// value for multiple property not setted yet. Do not need to be
+			// worried about this exception
 
 		}
 	}

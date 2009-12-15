@@ -68,6 +68,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.util.JCRUtil;
@@ -722,6 +723,13 @@ public class SimplePersistSupportTest {
 						LazyType.EAGER, new String[] { "property" },
 						new Object[] { null });
 		Assert.assertThat(result.size(), Is.is(1));
+	}
+
+	@Test(expected = SLRuntimeException.class)
+	public void shouldNotFindWithWrongPropertyName() throws Exception {
+		SimplePersistSupport.findNodesByProperties("a/b/c", session,
+				RootObj.class, LazyType.EAGER,
+				new String[] { "invalidProperty" }, new Object[] { null });
 	}
 
 	@Test
