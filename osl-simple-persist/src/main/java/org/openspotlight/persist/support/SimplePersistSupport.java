@@ -99,8 +99,6 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -196,9 +194,6 @@ public class SimplePersistSupport {
 		String valueType;
 
 	}
-
-	private static Logger logger = LoggerFactory
-			.getLogger(SimplePersistSupport.class);
 
 	/** The Constant defaultPrefix. */
 	private static final String DEFAULT_NODE_PREFIX = "node.";
@@ -1049,14 +1044,22 @@ public class SimplePersistSupport {
 			for (int i = 0, size = propertyNames.length; i < size; i++) {
 				final String keyString = MessageFormat.format(
 						SimplePersistSupport.PROPERTY_VALUE, propertyNames[i]);
-				final String propertyValye = Conversion.convert(
-						propertyValues[i], String.class);
-				propertyWhereXpath.append('@');
-				propertyWhereXpath.append(keyString);
-				propertyWhereXpath.append('=');
-				propertyWhereXpath.append("'");
-				propertyWhereXpath.append(propertyValye);
-				propertyWhereXpath.append("'");
+
+				if (propertyValues[i] != null) {
+					final String propertyValye = Conversion.convert(
+							propertyValues[i], String.class);
+					propertyWhereXpath.append('@');
+					propertyWhereXpath.append(keyString);
+					propertyWhereXpath.append('=');
+					propertyWhereXpath.append("'");
+					propertyWhereXpath.append(propertyValye);
+					propertyWhereXpath.append("'");
+				} else {
+					propertyWhereXpath.append(" not(@");
+					propertyWhereXpath.append(keyString);
+					propertyWhereXpath.append(") ");
+
+				}
 				if (i != size - 1) {
 					propertyWhereXpath.append(" and ");
 				}

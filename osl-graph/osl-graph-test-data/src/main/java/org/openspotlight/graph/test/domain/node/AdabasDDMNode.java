@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -48,37 +47,38 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.graph.test.domain.node;
+
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface for node Adabas DDM.
  * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription("Adabas DDM")
 public interface AdabasDDMNode extends SLNode {
-    
-    /**
-     * Gets the caption.
-     * 
-     * @return the caption
-     * 
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    @SLProperty
-    public String getCaption() throws SLGraphSessionException;
-    
-    /**
-     * Sets the caption.
-     * 
-     * @param caption the new caption
-     * 
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void setCaption(String caption) throws SLGraphSessionException;
-}
 
-        
+	/**
+	 * Gets the caption.
+	 * 
+	 * @return the caption
+	 * 
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+
+	public String getCaption() throws SLGraphSessionException;
+
+	/**
+	 * Sets the caption.
+	 * 
+	 * @param caption
+	 *            the new caption
+	 * 
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void setCaption(String caption) throws SLGraphSessionException;
+}

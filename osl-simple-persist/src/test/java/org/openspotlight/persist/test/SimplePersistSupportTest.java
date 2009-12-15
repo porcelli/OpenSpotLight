@@ -54,6 +54,8 @@ import java.util.HashMap;
 import java.util.Set;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.Session;
 
 import org.hamcrest.core.Is;
@@ -99,9 +101,9 @@ public class SimplePersistSupportTest {
 	 */
 	@After
 	public void closeSession() {
-		if (this.session != null) {
-			this.session.logout();
-			this.session = null;
+		if (session != null) {
+			session.logout();
+			session = null;
 		}
 	}
 
@@ -110,7 +112,7 @@ public class SimplePersistSupportTest {
 	 */
 	@Before
 	public void setupSession() {
-		this.session = SimplePersistSupportTest.provider.openSession();
+		session = SimplePersistSupportTest.provider.openSession();
 	}
 
 	@Test
@@ -124,10 +126,10 @@ public class SimplePersistSupportTest {
 		propertyObj.setName("name");
 		propertyObj.setValue(3);
 		levelTwo.setPropertyObj(propertyObj);
-		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, levelTwo);
+		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
+				levelTwo);
 		LevelTwoObj anotherLevelTwo = SimplePersistSupport.convertJcrToBean(
-				this.session, asJcr, LazyType.LAZY);
+				session, asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
 				.is(propertyObj.getName()));
 		Assert.assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
@@ -135,19 +137,19 @@ public class SimplePersistSupportTest {
 
 		propertyObj.setName("anotherName");
 		propertyObj.setValue(4);
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelTwo);
-		anotherLevelTwo = SimplePersistSupport.convertJcrToBean(this.session,
-				asJcr, LazyType.LAZY);
+		anotherLevelTwo = SimplePersistSupport.convertJcrToBean(session, asJcr,
+				LazyType.LAZY);
 		Assert.assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
 				.is(propertyObj.getName()));
 		Assert.assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
 				.is(propertyObj.getValue()));
 		levelTwo.setPropertyObj(null);
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelTwo);
-		anotherLevelTwo = SimplePersistSupport.convertJcrToBean(this.session,
-				asJcr, LazyType.LAZY);
+		anotherLevelTwo = SimplePersistSupport.convertJcrToBean(session, asJcr,
+				LazyType.LAZY);
 		Assert.assertThat(anotherLevelTwo.getPropertyObj(), Is.is(IsNull
 				.nullValue()));
 
@@ -167,10 +169,10 @@ public class SimplePersistSupportTest {
 		obj1.setName("obj 1");
 		obj1.setValue(5);
 		levelThree.getObjList().add(obj1);
-		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, levelThree);
+		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
+				levelThree);
 		LevelThreeObj anotherLevelThree = SimplePersistSupport
-				.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+				.convertJcrToBean(session, asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
 		Assert.assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is
 				.is(obj1.getValue()));
@@ -182,9 +184,9 @@ public class SimplePersistSupportTest {
 		obj2.setName("another name 2");
 		obj2.setValue(33);
 		levelThree.getObjList().add(obj2);
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjList().size(), Is.is(2));
 		Assert.assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is
@@ -197,9 +199,9 @@ public class SimplePersistSupportTest {
 				.is(obj2.getName()));
 
 		levelThree.getObjList().clear();
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjList().size(), Is.is(0));
 	}
@@ -218,10 +220,10 @@ public class SimplePersistSupportTest {
 		obj1.setName("obj 1");
 		obj1.setValue(5);
 		levelThree.getObjMap().put(2, obj1);
-		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, levelThree);
+		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
+				levelThree);
 		LevelThreeObj anotherLevelThree = SimplePersistSupport
-				.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+				.convertJcrToBean(session, asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjMap().size(), Is.is(1));
 		Assert.assertThat(anotherLevelThree.getObjMap().get(2).getValue(), Is
 				.is(obj1.getValue()));
@@ -229,9 +231,9 @@ public class SimplePersistSupportTest {
 				.is(obj1.getName()));
 
 		obj1.setValue(4);
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjMap().size(), Is.is(1));
 		Assert.assertThat(anotherLevelThree.getObjMap().get(2).getValue(), Is
@@ -240,9 +242,9 @@ public class SimplePersistSupportTest {
 				.is(obj1.getName()));
 
 		levelThree.getObjMap().clear();
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjMap().size(), Is.is(0));
 	}
@@ -258,18 +260,18 @@ public class SimplePersistSupportTest {
 		levelThree.setLevelTwoObj(levelTwo);
 		levelThree.setBooleanList(new ArrayList<Boolean>());
 		levelThree.getBooleanList().add(true);
-		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, levelThree);
+		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
+				levelThree);
 		LevelThreeObj anotherLevelThree = SimplePersistSupport
-				.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+				.convertJcrToBean(session, asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getBooleanList().size(), Is.is(1));
 		Assert.assertThat(anotherLevelThree.getBooleanList().get(0), Is
 				.is(true));
 
 		levelThree.getBooleanList().add(false);
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getBooleanList().size(), Is.is(2));
 		Assert.assertThat(anotherLevelThree.getBooleanList().get(0), Is
@@ -278,9 +280,9 @@ public class SimplePersistSupportTest {
 				.is(false));
 
 		levelThree.getBooleanList().clear();
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getObjList().size(), Is.is(0));
 	}
@@ -296,27 +298,27 @@ public class SimplePersistSupportTest {
 		levelThree.setLevelTwoObj(levelTwo);
 		levelThree.setNumberMap(new HashMap<Double, Integer>());
 		levelThree.getNumberMap().put(1.0, 1);
-		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, levelThree);
+		Node asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
+				levelThree);
 		LevelThreeObj anotherLevelThree = SimplePersistSupport
-				.convertJcrToBean(this.session, asJcr, LazyType.LAZY);
+				.convertJcrToBean(session, asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getNumberMap().size(), Is.is(1));
 		Assert.assertThat(anotherLevelThree.getNumberMap().get(1.0), Is.is(1));
 
 		levelThree.getNumberMap().put(2.0, 2);
 
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getNumberMap().size(), Is.is(2));
 		Assert.assertThat(anotherLevelThree.getNumberMap().get(1.0), Is.is(1));
 		Assert.assertThat(anotherLevelThree.getNumberMap().get(2.0), Is.is(2));
 
 		levelThree.getNumberMap().clear();
-		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", this.session,
+		asJcr = SimplePersistSupport.convertBeanToJcr("a/b/c", session,
 				levelThree);
-		anotherLevelThree = SimplePersistSupport.convertJcrToBean(this.session,
+		anotherLevelThree = SimplePersistSupport.convertJcrToBean(session,
 				asJcr, LazyType.LAZY);
 		Assert.assertThat(anotherLevelThree.getNumberMap().size(), Is.is(0));
 	}
@@ -342,7 +344,7 @@ public class SimplePersistSupportTest {
 		obj3.setLevelTwoObj(obj2);
 		obj2.setProperty("propVal");
 		final Node node = SimplePersistSupport.convertBeanToJcr(
-				SharedConstants.DEFAULT_JCR_ROOT_NAME, this.session, obj3);
+				SharedConstants.DEFAULT_JCR_ROOT_NAME, session, obj3);
 		final String path = node.getPath();
 		Assert
 				.assertThat(
@@ -444,9 +446,9 @@ public class SimplePersistSupportTest {
 
 		final Node node = SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj3);
+				session, obj3);
 		final LevelThreeObj convertedFromJcr = SimplePersistSupport
-				.convertJcrToBean(this.session, node, LazyType.EAGER);
+				.convertJcrToBean(session, node, LazyType.EAGER);
 		Assert.assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
 		Assert.assertThat(obj3.getProperty(), Is.is(convertedFromJcr
 				.getProperty()));
@@ -532,35 +534,35 @@ public class SimplePersistSupportTest {
 
 		SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj2);
+				session, obj2);
 		SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj2_1);
+				session, obj2_1);
 		SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj2_2);
+				session, obj2_2);
 
-		this.session.save();// necessary for the xpath to work
+		session.save();// necessary for the xpath to work
 		final Set<LevelTwoObj> result1 = SimplePersistSupport
 				.findNodesByPrimaryKeyElements(
 						SharedConstants.DEFAULT_JCR_ROOT_NAME
-								+ "/lalala/lelele", this.session,
-						LevelTwoObj.class, LazyType.LAZY,
-						org.openspotlight.common.util.Arrays.of("key"),
+								+ "/lalala/lelele", session, LevelTwoObj.class,
+						LazyType.LAZY, org.openspotlight.common.util.Arrays
+								.of("key"),
 						org.openspotlight.common.util.Arrays.of("1"));
 		final Set<LevelTwoObj> result2 = SimplePersistSupport
 				.findNodesByPrimaryKeyElements(
 						SharedConstants.DEFAULT_JCR_ROOT_NAME
-								+ "/lalala/lelele", this.session,
-						LevelTwoObj.class, LazyType.LAZY,
-						org.openspotlight.common.util.Arrays.of("key"),
+								+ "/lalala/lelele", session, LevelTwoObj.class,
+						LazyType.LAZY, org.openspotlight.common.util.Arrays
+								.of("key"),
 						org.openspotlight.common.util.Arrays.of("2"));
 		final Set<LevelTwoObj> result3 = SimplePersistSupport
 				.findNodesByPrimaryKeyElements(
 						SharedConstants.DEFAULT_JCR_ROOT_NAME
-								+ "/lalala/lelele", this.session,
-						LevelTwoObj.class, LazyType.LAZY,
-						org.openspotlight.common.util.Arrays.of("key"),
+								+ "/lalala/lelele", session, LevelTwoObj.class,
+						LazyType.LAZY, org.openspotlight.common.util.Arrays
+								.of("key"),
 						org.openspotlight.common.util.Arrays.of("3"));
 
 		Assert.assertThat(result1.size(), Is.is(1));
@@ -629,30 +631,30 @@ public class SimplePersistSupportTest {
 
 		SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj2);
+				session, obj2);
 		SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj2_1);
+				session, obj2_1);
 		SimplePersistSupport.convertBeanToJcr(
 				SharedConstants.DEFAULT_JCR_ROOT_NAME + "/lalala/lelele",
-				this.session, obj2_2);
+				session, obj2_2);
 
-		this.session.save();// necessary for the xpath to work
+		session.save();// necessary for the xpath to work
 		final Set<LevelTwoObj> result1 = SimplePersistSupport
 				.findNodesByProperties(SharedConstants.DEFAULT_JCR_ROOT_NAME
-						+ "/lalala/lelele", this.session, LevelTwoObj.class,
+						+ "/lalala/lelele", session, LevelTwoObj.class,
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("1"));
 		final Set<LevelTwoObj> result2 = SimplePersistSupport
 				.findNodesByProperties(SharedConstants.DEFAULT_JCR_ROOT_NAME
-						+ "/lalala/lelele", this.session, LevelTwoObj.class,
+						+ "/lalala/lelele", session, LevelTwoObj.class,
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("2"));
 		final Set<LevelTwoObj> result3 = SimplePersistSupport
 				.findNodesByProperties(SharedConstants.DEFAULT_JCR_ROOT_NAME
-						+ "/lalala/lelele", this.session, LevelTwoObj.class,
+						+ "/lalala/lelele", session, LevelTwoObj.class,
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("3"));
@@ -685,15 +687,41 @@ public class SimplePersistSupportTest {
 		object3.setKey1("another key");
 		object3.setKey2(1);
 
-		SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, object1);
-		SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, object2);
-		SimplePersistSupport.convertBeanToJcr("a/b/c", this.session, object3);
-		this.session.save();
+		SimplePersistSupport.convertBeanToJcr("a/b/c", session, object1);
+		SimplePersistSupport.convertBeanToJcr("a/b/c", session, object2);
+		SimplePersistSupport.convertBeanToJcr("a/b/c", session, object3);
+		session.save();
 		final Set<ComposedKeyObject> foundNodes = SimplePersistSupport
-				.findNodesByProperties("a/b/c", this.session,
+				.findNodesByProperties("a/b/c", session,
 						ComposedKeyObject.class, LazyType.EAGER,
 						new String[] { "key1" }, new Object[] { "same key" });
 		Assert.assertThat(foundNodes.size(), Is.is(2));
+	}
+
+	@Test
+	public void shouldFindObjectsByNullParameter() throws Exception {
+		final LevelOneObj obj1 = new LevelOneObj();
+		obj1.setProperty("prop");
+		final LevelOneObj obj2 = new LevelOneObj();
+		obj2.setProperty(null);
+
+		SimplePersistSupport.convertBeanToJcr("a/b/c", session, obj1);
+		final Node node = SimplePersistSupport.convertBeanToJcr("a/b/c",
+				session, obj2);
+		final PropertyIterator propIt = node.getProperties();
+		Property prop;
+		while (propIt.hasNext()) {
+			prop = propIt.nextProperty();
+			System.out.print(prop.getName());
+			System.out.print("=");
+			System.out.println(prop.getValue().getString());
+		}
+		session.save();
+		final Set<LevelOneObj> result = SimplePersistSupport
+				.findNodesByProperties("a/b/c", session, LevelOneObj.class,
+						LazyType.EAGER, new String[] { "property" },
+						new Object[] { null });
+		Assert.assertThat(result.size(), Is.is(1));
 	}
 
 	@Test
@@ -711,15 +739,15 @@ public class SimplePersistSupportTest {
 		object3.setKey2(1);
 
 		final Node newNode1 = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, object1);
+				session, object1);
 		final Node newNode2 = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, object2);
+				session, object2);
 		final Node newNode3 = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				this.session, object3);
+				session, object3);
 		JCRUtil.makeReferenceable(newNode1);
 		JCRUtil.makeReferenceable(newNode2);
 		JCRUtil.makeReferenceable(newNode3);
-		this.session.save();
+		session.save();
 		Assert.assertThat(newNode1.getUUID(), Is.is(IsNot.not(newNode2
 				.getUUID())));
 		Assert.assertThat(newNode1.getUUID(), Is.is(newNode3.getUUID()));
