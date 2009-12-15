@@ -545,23 +545,20 @@ public class SimplePersistSupportTest {
 
 		session.save();// necessary for the xpath to work
 		final Set<LevelTwoObj> result1 = SimplePersistSupport
-				.findNodesByPrimaryKeyElements(
-						SharedConstants.DEFAULT_JCR_ROOT_NAME
-								+ "/lalala/lelele", session, LevelTwoObj.class,
+				.findNodesByProperties(SharedConstants.DEFAULT_JCR_ROOT_NAME
+						+ "/lalala/lelele", session, LevelTwoObj.class,
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("1"));
 		final Set<LevelTwoObj> result2 = SimplePersistSupport
-				.findNodesByPrimaryKeyElements(
-						SharedConstants.DEFAULT_JCR_ROOT_NAME
-								+ "/lalala/lelele", session, LevelTwoObj.class,
+				.findNodesByProperties(SharedConstants.DEFAULT_JCR_ROOT_NAME
+						+ "/lalala/lelele", session, LevelTwoObj.class,
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("2"));
 		final Set<LevelTwoObj> result3 = SimplePersistSupport
-				.findNodesByPrimaryKeyElements(
-						SharedConstants.DEFAULT_JCR_ROOT_NAME
-								+ "/lalala/lelele", session, LevelTwoObj.class,
+				.findNodesByProperties(SharedConstants.DEFAULT_JCR_ROOT_NAME
+						+ "/lalala/lelele", session, LevelTwoObj.class,
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("3"));
