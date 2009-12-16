@@ -82,6 +82,7 @@
 		<module>osl-federation</module>
 		<module>osl-web</module>
 		<module>bundle-processor/osl-java-bundle</module>
+		<module>bundle-processor/osl-db-bundle</module>
 	</modules>
 	<build>
 		<plugins>

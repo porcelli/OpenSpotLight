@@ -1,0 +1,2862 @@
+<TypeDefinitionSet>
+  <name>Dynamo</name>
+  <version>1.0.1</version>
+  <types class="List">
+    <TypeDefinition>
+      <packageName>dynamo.file.util</packageName>
+      <typeName>FileDescriptorManager$FileSavingListener</typeName>
+      <type>INTERFACE</type>
+      <access>1537</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1025</access>
+          <constructor>false</constructor>
+          <fullName>fileSaved(dynamo.file.vo.FileDescriptor)</fullName>
+          <name>fileSaved</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.file.vo</packageName>
+                <typeName>FileDescriptor</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.util</packageName>
+      <typeName>FileDescriptorManager</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileDescriptorManager()</fullName>
+          <name>FileDescriptorManager</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>createFromResult(java.lang.String)</fullName>
+          <name>createFromResult</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>129</access>
+          <constructor>false</constructor>
+          <fullName>saveToFile(dynamo.runner.RunningParameters, dynamo.file.vo.FileDescriptor[])</fullName>
+          <name>saveToFile</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.runner</packageName>
+                <typeName>RunningParameters</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>dynamo.file.vo</packageName>
+                  <typeName>FileDescriptor</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.util</packageName>
+      <typeName>FileUtil</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileUtil()</fullName>
+          <name>FileUtil</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>9</access>
+          <constructor>false</constructor>
+          <fullName>readFromFile(java.io.File)</fullName>
+          <name>readFromFile</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.io</packageName>
+                <typeName>File</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.vo</packageName>
+      <typeName>FileCollection</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>files</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileCollection()</fullName>
+          <name>FileCollection</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getFiles()</fullName>
+          <name>getFiles</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setFiles(java.util.List)</fullName>
+          <name>setFiles</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.util</packageName>
+                <typeName>List</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.vo</packageName>
+      <typeName>FileDescriptor</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>name</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>location</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>content</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileDescriptor()</fullName>
+          <name>FileDescriptor</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getName()</fullName>
+          <name>getName</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setName(java.lang.String)</fullName>
+          <name>setName</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getLocation()</fullName>
+          <name>getLocation</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setLocation(java.lang.String)</fullName>
+          <name>setLocation</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getContent()</fullName>
+          <name>getContent</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setContent(java.lang.String)</fullName>
+          <name>setContent</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.freemarker</packageName>
+      <typeName>FreemarkerProcessor</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>cfg</name>
+          <access>18</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>freemarker.template</packageName>
+            <typeName>Configuration</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FreemarkerProcessor(java.lang.String)</fullName>
+          <name>FreemarkerProcessor</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>processTemplate(java.lang.String, java.lang.String)</fullName>
+          <name>processTemplate</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.main</packageName>
+      <typeName>Main</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>Main()</fullName>
+          <name>Main</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>137</access>
+          <constructor>false</constructor>
+          <fullName>main(java.lang.String[])</fullName>
+          <name>main</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.runner</packageName>
+      <typeName>FileHelper</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileHelper()</fullName>
+          <name>FileHelper</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>generate(dynamo.runner.RunningParameters)</fullName>
+          <name>generate</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.runner</packageName>
+                <typeName>RunningParameters</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.runner</packageName>
+      <typeName>RunningParameters</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>listeners</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>templatePath</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>outputDir</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>inputTemplates</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>inputXmls</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getListeners()</fullName>
+          <name>getListeners</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setListeners(java.util.List)</fullName>
+          <name>setListeners</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.util</packageName>
+                <typeName>List</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>addListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)</fullName>
+          <name>addListener</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.file.util</packageName>
+                <typeName>FileDescriptorManager$FileSavingListener</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>BOOLEAN</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>removeListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)</fullName>
+          <name>removeListener</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.file.util</packageName>
+                <typeName>FileDescriptorManager$FileSavingListener</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>BOOLEAN</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>RunningParameters()</fullName>
+          <name>RunningParameters</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getOutputDir()</fullName>
+          <name>getOutputDir</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setOutputDir(java.lang.String)</fullName>
+          <name>setOutputDir</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getInputTemplates()</fullName>
+          <name>getInputTemplates</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>129</access>
+          <constructor>false</constructor>
+          <fullName>setInputTemplates(java.lang.String[])</fullName>
+          <name>setInputTemplates</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getInputXmls()</fullName>
+          <name>getInputXmls</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>129</access>
+          <constructor>false</constructor>
+          <fullName>setInputXmls(java.lang.String[])</fullName>
+          <name>setInputXmls</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getTemplatePath()</fullName>
+          <name>getTemplatePath</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setTemplatePath(java.lang.String)</fullName>
+          <name>setTemplatePath</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.runner</packageName>
+      <typeName>RunningParametersFactory</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>PROP_OUTPUT_DIR</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>PROP_INPUT_TEMPLATES</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>PROP_INPUT_XMLS</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>PROP_TEMPLATE_PATH</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_TEMPLATE_PATH</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_OUTPUT_DIR</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_INPUT_TEMPLATES</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_INPUT_XMLS</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>RunningParametersFactory()</fullName>
+          <name>RunningParametersFactory</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>9</access>
+          <constructor>false</constructor>
+          <fullName>createFromProperties(java.util.Properties)</fullName>
+          <name>createFromProperties</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.util</packageName>
+                <typeName>Properties</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>dynamo.runner</packageName>
+            <typeName>RunningParameters</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>137</access>
+          <constructor>false</constructor>
+          <fullName>createFromArgs(java.lang.String[])</fullName>
+          <name>createFromArgs</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>dynamo.runner</packageName>
+            <typeName>RunningParameters</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.string</packageName>
+      <typeName>StringTool</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>StringTool()</fullName>
+          <name>StringTool</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>lowerFirst(java.lang.String)</fullName>
+          <name>lowerFirst</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>upperFirst(java.lang.String)</fullName>
+          <name>upperFirst</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelCase(java.lang.String)</fullName>
+          <name>camelCase</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelToLowerUnderlined(java.lang.String)</fullName>
+          <name>camelToLowerUnderlined</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelToUpperUnderlined(java.lang.String)</fullName>
+          <name>camelToUpperUnderlined</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelToUnderlined(java.lang.String)</fullName>
+          <name>camelToUnderlined</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getter(java.lang.String, java.lang.String)</fullName>
+          <name>getter</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setter(java.lang.String, java.lang.String)</fullName>
+          <name>setter</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>property(java.lang.String, java.lang.String)</fullName>
+          <name>property</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>get(java.lang.String)</fullName>
+          <name>get</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>set(java.lang.String, java.lang.String)</fullName>
+          <name>set</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getAttr(java.lang.String)</fullName>
+          <name>getAttr</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setAttr(java.lang.String, java.lang.String)</fullName>
+          <name>setAttr</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.util</packageName>
+      <typeName>FileDescriptorManager$FileSavingListener</typeName>
+      <type>INTERFACE</type>
+      <access>1537</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1025</access>
+          <constructor>false</constructor>
+          <fullName>fileSaved(dynamo.file.vo.FileDescriptor)</fullName>
+          <name>fileSaved</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.file.vo</packageName>
+                <typeName>FileDescriptor</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.util</packageName>
+      <typeName>FileDescriptorManager</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileDescriptorManager()</fullName>
+          <name>FileDescriptorManager</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>createFromResult(java.lang.String)</fullName>
+          <name>createFromResult</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>129</access>
+          <constructor>false</constructor>
+          <fullName>saveToFile(dynamo.runner.RunningParameters, dynamo.file.vo.FileDescriptor[])</fullName>
+          <name>saveToFile</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.runner</packageName>
+                <typeName>RunningParameters</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>dynamo.file.vo</packageName>
+                  <typeName>FileDescriptor</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.util</packageName>
+      <typeName>FileUtil</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileUtil()</fullName>
+          <name>FileUtil</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>9</access>
+          <constructor>false</constructor>
+          <fullName>readFromFile(java.io.File)</fullName>
+          <name>readFromFile</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.io</packageName>
+                <typeName>File</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.vo</packageName>
+      <typeName>FileCollection</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>files</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileCollection()</fullName>
+          <name>FileCollection</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getFiles()</fullName>
+          <name>getFiles</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setFiles(java.util.List)</fullName>
+          <name>setFiles</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.util</packageName>
+                <typeName>List</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.file.vo</packageName>
+      <typeName>FileDescriptor</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>name</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>location</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>content</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileDescriptor()</fullName>
+          <name>FileDescriptor</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getName()</fullName>
+          <name>getName</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setName(java.lang.String)</fullName>
+          <name>setName</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getLocation()</fullName>
+          <name>getLocation</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setLocation(java.lang.String)</fullName>
+          <name>setLocation</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getContent()</fullName>
+          <name>getContent</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setContent(java.lang.String)</fullName>
+          <name>setContent</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.freemarker</packageName>
+      <typeName>FreemarkerProcessor</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>cfg</name>
+          <access>18</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>freemarker.template</packageName>
+            <typeName>Configuration</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FreemarkerProcessor(java.lang.String)</fullName>
+          <name>FreemarkerProcessor</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>processTemplate(java.lang.String, java.lang.String)</fullName>
+          <name>processTemplate</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.main</packageName>
+      <typeName>Main</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>Main()</fullName>
+          <name>Main</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>137</access>
+          <constructor>false</constructor>
+          <fullName>main(java.lang.String[])</fullName>
+          <name>main</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.runner</packageName>
+      <typeName>FileHelper</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>FileHelper()</fullName>
+          <name>FileHelper</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>generate(dynamo.runner.RunningParameters)</fullName>
+          <name>generate</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.runner</packageName>
+                <typeName>RunningParameters</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.runner</packageName>
+      <typeName>RunningParameters</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>listeners</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>templatePath</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>outputDir</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>inputTemplates</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>inputXmls</name>
+          <access>2</access>
+          <isPrivate>true</isPrivate>
+          <type class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getListeners()</fullName>
+          <name>getListeners</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.util</packageName>
+            <typeName>List</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setListeners(java.util.List)</fullName>
+          <name>setListeners</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.util</packageName>
+                <typeName>List</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>addListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)</fullName>
+          <name>addListener</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.file.util</packageName>
+                <typeName>FileDescriptorManager$FileSavingListener</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>BOOLEAN</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>removeListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)</fullName>
+          <name>removeListener</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>dynamo.file.util</packageName>
+                <typeName>FileDescriptorManager$FileSavingListener</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>BOOLEAN</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>RunningParameters()</fullName>
+          <name>RunningParameters</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getOutputDir()</fullName>
+          <name>getOutputDir</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setOutputDir(java.lang.String)</fullName>
+          <name>setOutputDir</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getInputTemplates()</fullName>
+          <name>getInputTemplates</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>129</access>
+          <constructor>false</constructor>
+          <fullName>setInputTemplates(java.lang.String[])</fullName>
+          <name>setInputTemplates</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getInputXmls()</fullName>
+          <name>getInputXmls</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="ArrayTypeReference">
+            <arrayDimensions>1</arrayDimensions>
+            <type class="SimpleTypeReference">
+              <packageName>java.lang</packageName>
+              <typeName>String</typeName>
+            </type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>129</access>
+          <constructor>false</constructor>
+          <fullName>setInputXmls(java.lang.String[])</fullName>
+          <name>setInputXmls</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getTemplatePath()</fullName>
+          <name>getTemplatePath</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setTemplatePath(java.lang.String)</fullName>
+          <name>setTemplatePath</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.runner</packageName>
+      <typeName>RunningParametersFactory</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List">
+        <FieldDeclaration>
+          <name>PROP_OUTPUT_DIR</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>PROP_INPUT_TEMPLATES</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>PROP_INPUT_XMLS</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>PROP_TEMPLATE_PATH</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_TEMPLATE_PATH</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_OUTPUT_DIR</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_INPUT_TEMPLATES</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+        <FieldDeclaration>
+          <name>ARG_INPUT_XMLS</name>
+          <access>25</access>
+          <isPrivate>false</isPrivate>
+          <type class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </type>
+        </FieldDeclaration>
+      </fields>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>RunningParametersFactory()</fullName>
+          <name>RunningParametersFactory</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>9</access>
+          <constructor>false</constructor>
+          <fullName>createFromProperties(java.util.Properties)</fullName>
+          <name>createFromProperties</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.util</packageName>
+                <typeName>Properties</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>dynamo.runner</packageName>
+            <typeName>RunningParameters</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>137</access>
+          <constructor>false</constructor>
+          <fullName>createFromArgs(java.lang.String[])</fullName>
+          <name>createFromArgs</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="ArrayTypeReference">
+                <arrayDimensions>1</arrayDimensions>
+                <type class="SimpleTypeReference">
+                  <packageName>java.lang</packageName>
+                  <typeName>String</typeName>
+                </type>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>dynamo.runner</packageName>
+            <typeName>RunningParameters</typeName>
+          </returnType>
+          <thrownExceptions class="List">
+            <SimpleTypeReference>
+              <packageName>java.lang</packageName>
+              <typeName>Exception</typeName>
+            </SimpleTypeReference>
+          </thrownExceptions>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+    <TypeDefinition>
+      <packageName>dynamo.string</packageName>
+      <typeName>StringTool</typeName>
+      <type>CLASS</type>
+      <access>33</access>
+      <isPrivate>false</isPrivate>
+      <extendsDef class="SimpleTypeReference">
+        <packageName>java.lang</packageName>
+        <typeName>Object</typeName>
+      </extendsDef>
+      <implementsDef class="List"/>
+      <fields class="List"/>
+      <methods class="List">
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>true</constructor>
+          <fullName>StringTool()</fullName>
+          <name>StringTool</name>
+          <parameters class="List"/>
+          <private>false</private>
+          <returnType class="PrimitiveTypeReference">
+            <type>VOID</type>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>lowerFirst(java.lang.String)</fullName>
+          <name>lowerFirst</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>upperFirst(java.lang.String)</fullName>
+          <name>upperFirst</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelCase(java.lang.String)</fullName>
+          <name>camelCase</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelToLowerUnderlined(java.lang.String)</fullName>
+          <name>camelToLowerUnderlined</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelToUpperUnderlined(java.lang.String)</fullName>
+          <name>camelToUpperUnderlined</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>camelToUnderlined(java.lang.String)</fullName>
+          <name>camelToUnderlined</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getter(java.lang.String, java.lang.String)</fullName>
+          <name>getter</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setter(java.lang.String, java.lang.String)</fullName>
+          <name>setter</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>property(java.lang.String, java.lang.String)</fullName>
+          <name>property</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>get(java.lang.String)</fullName>
+          <name>get</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>set(java.lang.String, java.lang.String)</fullName>
+          <name>set</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>getAttr(java.lang.String)</fullName>
+          <name>getAttr</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+        <MethodDeclaration>
+          <access>1</access>
+          <constructor>false</constructor>
+          <fullName>setAttr(java.lang.String, java.lang.String)</fullName>
+          <name>setAttr</name>
+          <parameters class="List">
+            <MethodParameterDefinition>
+              <position>0</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+            <MethodParameterDefinition>
+              <position>1</position>
+              <dataType class="SimpleTypeReference">
+                <packageName>java.lang</packageName>
+                <typeName>String</typeName>
+              </dataType>
+            </MethodParameterDefinition>
+          </parameters>
+          <private>false</private>
+          <returnType class="SimpleTypeReference">
+            <packageName>java.lang</packageName>
+            <typeName>String</typeName>
+          </returnType>
+          <thrownExceptions class="List"/>
+          <typeParameters class="List"/>
+        </MethodDeclaration>
+      </methods>
+    </TypeDefinition>
+  </types>
+</TypeDefinitionSet>
