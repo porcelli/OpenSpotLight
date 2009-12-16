@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.dap.language.java.tool.template;
+package org.openspotlight.bundle.db.tool.template;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
