@@ -1,130 +1,34 @@
 <root>
-	<package packageName="java">
+	<package packageName="db">
+		<linkData linkName="Server - Database" linkType="A2B">
+			<description sideA="Server" sideB="Database" />
+		</linkData>
+		<linkData linkName="Database - Schema" linkType="A2B">
+			<description sideA="Database" sideB="Schema" />
+		</linkData>
+		<linkData linkName="Schema - Catalog" linkType="A2B">
+			<description sideA="Schema" sideB="Catalog" />
+		</linkData>
+		<linkData linkName="Schema - TableView" linkType="A2B">
+			<description sideA="Schema" sideB="TableView" />
+		</linkData>
+		<linkData linkName="Catalog - TableView" linkType="A2B">
+			<description sideA="Catalog" sideB="TableView" />
+		</linkData>
+		<linkData linkName="TableView - Columns" linkType="A2B">
+			<description sideA="TableView" sideB="Column" />
+		</linkData>
+		<linkData linkName="Column DataType" linkType="A2B">
+			<description sideA="Column" sideB="DataType" />
+		</linkData>
+		<linkData linkName="Foreign Key" linkType="A2B">
+			<description sideA="Column" sideB="Column" />
+		</linkData>
 		<linkData linkName="Abstract Type Bind" linkType="A2B">
-			<description sideA="Java Context" sideB="Java Type" />
+			<description sideA="TableView" sideB="TableView" />
 		</linkData>
-		<linkData linkName="Package - Type" linkType="A2B">
-			<description sideA="Java Package" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Autoboxes" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type Primitive" />
-		</linkData>
-		<linkData linkName="AutoboxedBy" linkType="A2B">
-			<description sideA="Java Type Primitive" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Implicit Primitive Cast" linkType="A2B">
-			<description sideA="Java Type Primitive" sideB="Java Type Primitive" />
-			<property propertyName="distance" propertyType="Integer" />
-		</linkData>
-		<linkData linkName="Artifact - Element" linkType="A2B">
-			<description sideA="Artifact" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Inner Class" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Implements" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Extends" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="InterfaceExtends" linkType="A2B">
-			<description sideA="Java Type Interface" sideB="Java Type Interface" />
-		</linkData>
-        <linkData linkName="References" linkType="A2B">
-            <description sideA="Java Type" sideB="Java Type" />
-        </linkData>
-        <linkData linkName="Import" linkType="A2B">
-            <description sideA="Java Type" sideB="Java Type" />
-        </linkData>
-		<linkData linkName="JavaDoc References" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-			<description sideA="Java Method" sideB="" />
-			<description sideA="Java Data" sideB="" />
-		</linkData>
-		<linkData linkName="Implicit References" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Implicit Extends" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Type Parameter" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Type Argument" linkType="A2B">
-			<description sideA="Java Data" sideB="Java Type" />
-			<description sideA="Java Method" sideB="" />
-		</linkData>
-		<linkData linkName="Type Declares" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Data" />
-			<description sideA="Java Method" sideB="" />
-		</linkData>
-		<linkData linkName="Data Type" linkType="A2B">
-			<description sideA="Java Data" sideB="Java Type" />
-			<property propertyName="array" propertyType="Boolean" />
-			<property propertyName="arrayDimension" propertyType="Integer" />
-		</linkData>
-		<linkData linkName="Method Returns" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Type" />
-			<property propertyName="array" propertyType="Boolean" />
-			<property propertyName="arrayDimension" propertyType="Integer" />
-		</linkData>
-		<linkData linkName="Method Throws" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Method Parameter Declare" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Data.Parameter" />
-		</linkData>
-		<linkData linkName="Method Type Parameter" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Method Type Argument" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Method - Block" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Block" />
-		</linkData>
-		<linkData linkName="Type - Block" linkType="A2B">
-			<description sideA="Java Type" sideB="Java Block" />
-		</linkData>
-		<linkData linkName="Block - Label" linkType="A2B">
-			<description sideA="Java Block" sideB="Java Label" />
-		</linkData>
-		<linkData linkName="Java Application Classpath" linkType="A2B">
-			<description sideA="Java Application" sideB="Java Artifact" />
-		</linkData>
-		<linkData linkName="Java Artifact Contains Abstract Type"
-			linkType="A2B">
-			<description sideA="Java Artifact" sideB="Java Abstract Type" />
-		</linkData>
-		<linkData linkName="Java Abstract Type Concrete Type"
-			linkType="A2B">
-			<description sideA="Java Abstract Type" sideB="Java Type" />
-		</linkData>
-		<linkData linkName="Java Abstract Type Contains" linkType="A2B">
-			<description sideA="Java Abstract Type" sideB="Java Data" />
-			<description sideA="Java Method" sideB="" />
-		</linkData>
-		<linkData linkName="Package Contains Package" linkType="A2B">
-			<description sideA="Java Package" sideB="Java Package" />
-		</linkData>
-		<linkData linkName="Data Propagation" linkType="A2B">
-			<description sideA="Java Data" sideB="Java Method" />
-			<description sideA="Java Data" sideB="" />
-		</linkData>
-		<linkData linkName="Data Comparison" linkType="BOTH">
-			<description sideA="Java Data" sideB="Java Data" />
-			<description sideA="Java Method" sideB="Java Method" />
-		</linkData>
-		<linkData linkName="Data - Parameter" linkType="A2B">
-			<description sideA="Java Data" sideB="Java Data.Parameter" />
-			<description sideA="Java Method" sideB="" />
-		</linkData>
-		<linkData linkName="Method Parameter Definition" linkType="A2B">
-			<description sideA="Java Method" sideB="Java Type" />
-			<property propertyName="order" propertyType="Integer" />
-			<property propertyName="array" propertyType="Boolean" />
-			<property propertyName="arrayDimension" propertyType="Integer" />
+		<linkData linkName="Abstract Type Bind" linkType="A2B">
+			<description sideA="Column" sideB="Column" />
 		</linkData>
 	</package>
 </root>
