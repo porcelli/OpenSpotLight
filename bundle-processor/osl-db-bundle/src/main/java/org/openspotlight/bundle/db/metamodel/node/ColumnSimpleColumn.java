@@ -1,17 +1,4 @@
-<files>
-<#list doc.root.package as package>
-<#assign nodes = package.nodes>
-<#list nodes.nodeData as node>
-    <#assign parentClassName="SLNode">
-    <#assign className = node.@typeName?replace(" ","")?replace(".","")?replace("-","")>
-	<#if node.@parentTypeName != "">
-	    <#assign parentClassName = node.@parentTypeName?replace(" ","")?replace(".","")?replace("-","") >
-	    <#assign className = parentClassName + node.@typeName?replace(" ","")?replace(".","")?replace("-","")>
-	</#if>
-    <file>
-        <name>${className}.java</name>
-        <location>bundle-processor/osl-${package.@packageName}-bundle/src/main/java/org/openspotlight/bundle/${package.@packageName}/metamodel/node</location>
-        <content>
+
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -60,38 +47,21 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.${package.@packageName}.metamodel.node;
+package org.openspotlight.bundle.db.metamodel.node;
 
-<#if node.@parentTypeName == "">
-import org.openspotlight.graph.SLNode;
-</#if>
-import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node ${(node.@parentTypeName + " " + node.@typeName)?trim} Meta Model.
+ * The Interface for node Column Simple Column Meta Model.
  *
-<#list node.validParent as parent>
-<#assign linkedParentClassName=parent?replace(" ","")?replace(".","")?replace("-","")>
- * {@link ${linkedParentClassName}} should be used as parent.
-</#list>
+ * {@link TableView} should be used as parent.
  *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-@SLDescription("${(node.@parentTypeName + " " + node.@typeName)?trim}")
-public interface ${className} extends ${parentClassName}<#if node.@parentTypeName != ""></#if> {
+@SLDescription("Column Simple Column")
+public interface ColumnSimpleColumn extends Column {
 
-<#list node.property as property>
-    @SLProperty
-    public ${property.@propertyType} get${t.upperFirst(property.@propertyName)}();
-    public void set${t.upperFirst(property.@propertyName)}(${property.@propertyType} new${t.upperFirst(property.@propertyName)});
-
-</#list>
     
 }
 
-        </content>
-    </file>
-</#list>
-</#list>
-</files>
+        
