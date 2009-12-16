@@ -64,7 +64,6 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
