@@ -81,6 +81,7 @@
 		<module>osl-slql-console</module>
 		<module>osl-federation</module>
 		<module>osl-web</module>
+		<module>bundle-processor/osl-bundle-common</module>
 		<module>bundle-processor/osl-java-bundle</module>
 		<module>bundle-processor/osl-db-bundle</module>
 	</modules>
@@ -212,6 +213,16 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-graph-persistence</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-bundle-common</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-db-bundle</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>

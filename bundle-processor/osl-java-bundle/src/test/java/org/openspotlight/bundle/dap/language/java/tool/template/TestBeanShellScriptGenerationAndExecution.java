@@ -53,6 +53,7 @@ import java.io.File;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.junit.Test;
+import org.openspotlight.bundle.common.tool.template.TemplateTask;
 
 public class TestBeanShellScriptGenerationAndExecution {
 
