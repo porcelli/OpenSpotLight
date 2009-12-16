@@ -1,88 +1,54 @@
 <root>
-	<package packageName="java">
-		<nodes>
-			<nodeData parentTypeName="" typeName="Java Package">
-				<validParent>Java Package</validParent>
-				<validParent>Java Type</validParent>
-				<validParent>Java Block</validParent>
+	<package packageName="db">
+		<nodes>	
+			<nodeData parentTypeName="" typeName="Server">
 			</nodeData>
-			<nodeData parentTypeName="" typeName="Java Type">
-				<property propertyName="static" propertyType="Boolean" />
-				<property propertyName="anonymous" propertyType="Boolean" />
-				<property propertyName="inner" propertyType="Boolean" />
-				<property propertyName="version" propertyType="String" />
-				<property propertyName="public" propertyType="Boolean" />
-				<property propertyName="private" propertyType="Boolean" />
-				<property propertyName="final" propertyType="Boolean" />
-				<property propertyName="protected" propertyType="Boolean" />
-				<property propertyName="simpleName" propertyType="String" />
-				<property propertyName="completeName" propertyType="String" />
+			<nodeData parentTypeName="" typeName="Database">
+				<validParent>Server</validParent>
 			</nodeData>
-			<nodeData parentTypeName="Java Type" typeName="Class" />
-			<nodeData parentTypeName="Java Type" typeName="Interface" />
-			<nodeData parentTypeName="Java Type" typeName="Annotation" />
-			<nodeData parentTypeName="Java Type" typeName="Enum" />
-			<nodeData parentTypeName="Java Type" typeName="Primitive" />
-			<nodeData parentTypeName="Java Type" typeName="Parameterized" />
-			<nodeData parentTypeName="" typeName="Java Data">
-				<validParent>Java Type</validParent>
-				<validParent>Java Block</validParent>
+			<nodeData parentTypeName="" typeName="Schema">
+				<validParent>Database</validParent>
 			</nodeData>
-			<nodeData parentTypeName="Java Data" typeName="Field">
-				<property propertyName="static" propertyType="Boolean" />
-				<property propertyName="final" propertyType="Boolean" />
-				<property propertyName="protected" propertyType="Boolean" />
-				<property propertyName="transient" propertyType="Boolean" />
-				<property propertyName="volatile" propertyType="Boolean" />
-				<property propertyName="public" propertyType="Boolean" />
-				<property propertyName="private" propertyType="Boolean" />
+			<nodeData parentTypeName="" typeName="Catalog">
+				<validParent>Schema</validParent>
 			</nodeData>
-			<nodeData parentTypeName="Java Data" typeName="Variable" />
-			<nodeData parentTypeName="Java Data" typeName="Parameter" />
-			<nodeData parentTypeName="" typeName="Java Method">
-				<validParent>Java Type</validParent>
-				<property propertyName="static" propertyType="Boolean" />
-				<property propertyName="version" propertyType="String" />
-				<property propertyName="public" propertyType="Boolean" />
-				<property propertyName="protected" propertyType="Boolean" />
-				<property propertyName="final" propertyType="Boolean" />
-				<property propertyName="synchronized" propertyType="Boolean" />
-				<property propertyName="private" propertyType="Boolean" />
-				<property propertyName="simpleName" propertyType="String" />
+			<nodeData parentTypeName="" typeName="TableView">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
 			</nodeData>
-			<nodeData parentTypeName="Java Method" typeName="Constructor ">
+			<nodeData parentTypeName="" typeName="Column">
+				<validParent>TableView</validParent>
 			</nodeData>
-			<nodeData parentTypeName="Java Method" typeName="Method ">
+			<nodeData parentTypeName="" typeName="DataType">
+				<validParent>Column</validParent>
 			</nodeData>
-			<nodeData parentTypeName="" typeName="Java Block" />
-			<nodeData parentTypeName="Java Block" typeName="If " />
-			<nodeData parentTypeName="Java Block" typeName="For " />
-			<nodeData parentTypeName="Java Block" typeName="While" />
-			<nodeData parentTypeName="Java Block" typeName="Method " />
-			<nodeData parentTypeName="Java Block" typeName="Enhanced For" />
-			<nodeData parentTypeName="Java Block" typeName="Switch " />
-			<nodeData parentTypeName="Java Block" typeName="Simple " />
-			<nodeData parentTypeName="Java Block" typeName="Type" />
-			<nodeData parentTypeName="Java Block" typeName="Method " />
-			<nodeData parentTypeName="" typeName="Java Label">
-				<validParent>Java Block</validParent>
+			<nodeData parentTypeName="TableView" typeName="Table">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
 			</nodeData>
-			<nodeData parentTypeName="" typeName="Java Application">
-				<property propertyName="version" propertyType="String" />
+			<nodeData parentTypeName="TableView" typeName="View">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
 			</nodeData>
-			<nodeData parentTypeName="" typeName="Java Context">
-				<property propertyName="version" propertyType="String" />
-				<property propertyName="name" propertyType="String" />
+			<nodeData parentTypeName="TableView" typeName="Materialized View">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
 			</nodeData>
-			<nodeData parentTypeName="" typeName="Java Artifact" />
-			<nodeData parentTypeName="Java Artifact" typeName="Jar">
-				<property propertyName="version" propertyType="String" />
+			<nodeData parentTypeName="Column" typeName="Computed Column">
+				<validParent>TableView</validParent>
+				<property propertyName="order" propertyType="Integer" />
+				<property propertyName="dataType" propertyType="String" />
+				<property propertyName="pk" propertyType="String" />
 			</nodeData>
-			<nodeData parentTypeName="Java Artifact" typeName="Class ">
-				<property propertyName="version" propertyType="String" />
+			<nodeData parentTypeName="Column" typeName="Simple Column">
+				<validParent>TableView</validParent>
 			</nodeData>
-			<nodeData parentTypeName="Java Artifact" typeName="JavaSourceFile" />
-			<nodeData parentTypeName="" typeName="Java Abstract Type" />
+			<nodeData parentTypeName="DataType" typeName="Primitive">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="DataType" typeName="UserDefinedType">
+				<validParent>Column</validParent>
+			</nodeData>
 		</nodes>
 	</package>
 </root>
