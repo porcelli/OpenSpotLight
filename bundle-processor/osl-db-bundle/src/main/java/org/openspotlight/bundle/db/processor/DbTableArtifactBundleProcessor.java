@@ -11,51 +11,42 @@ public class DbTableArtifactBundleProcessor implements
 
 	public <A extends Artifact> boolean acceptKindOfArtifact(
 			final Class<A> kindOfArtifact) {
-		// TODO Auto-generated method stub
-		return false;
+		return TableArtifact.class.isAssignableFrom(kindOfArtifact);
 	}
 
 	public void beforeProcessArtifact(final TableArtifact artifact) {
-		// TODO Auto-generated method stub
 
 	}
 
-	public void didFinishProcessing(
-			final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<TableArtifact> changes) {
-		// TODO Auto-generated method stub
+	public void didFinishProcessing(final ArtifactChanges<TableArtifact> changes) {
 
 	}
 
 	public void didFinishToProcessArtifact(final TableArtifact artifact,
 			final LastProcessStatus status) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public Class<TableArtifact> getArtifactType() {
-		// TODO Auto-generated method stub
-		return null;
+		return TableArtifact.class;
 	}
 
-	public org.openspotlight.federation.processing.BundleProcessor.SaveBehavior getSaveBehavior() {
-		// TODO Auto-generated method stub
-		return null;
+	public SaveBehavior getSaveBehavior() {
+		return SaveBehavior.PER_ARTIFACT;
 	}
 
-	public LastProcessStatus processArtifact(
-			final TableArtifact artifact,
-			final org.openspotlight.federation.processing.BundleProcessor.CurrentProcessorContext currentContext,
+	public LastProcessStatus processArtifact(final TableArtifact artifact,
+			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		currentContext.getCurrentNodeGroup().addNode(artifact.getTableName());
+		return LastProcessStatus.PROCESSED;
 	}
 
 	public void selectArtifactsToBeProcessed(
-			final org.openspotlight.federation.processing.BundleProcessor.CurrentProcessorContext currentContext,
+			final CurrentProcessorContext currentContext,
 			final ExecutionContext context,
-			final org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges<TableArtifact> changes,
-			final org.openspotlight.federation.processing.BundleProcessor.ArtifactsToBeProcessed<TableArtifact> toBeReturned) {
-		// TODO Auto-generated method stub
+			final ArtifactChanges<TableArtifact> changes,
+			final ArtifactsToBeProcessed<TableArtifact> toBeReturned) {
 
 	}
 

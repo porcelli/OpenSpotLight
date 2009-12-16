@@ -219,14 +219,23 @@ public enum DefaultScheduler implements SLScheduler {
 		Assertions.checkNotNull("schedulables", schedulables);
 		Assertions.checkNotNull("internalData", internalData.get());
 		Assertions.checkNotNull("settings", settings.get());
-
+		final GlobalSettings settingsReference = settings.get();
 		for (final Schedulable schedulable : schedulables) {
 			Assertions.checkNotNull("schedulable", schedulable);
 			try {
 
-				final Class<? extends SchedulableCommand> commandType = settings
-						.get().getSchedulableCommandMap().get(
-								schedulable.getClass());
+				Class<? extends SchedulableCommand> commandType = null;
+				Class<? extends Schedulable> lastClass = schedulable.getClass();
+				while (commandType == null && lastClass != null
+						&& !Object.class.equals(lastClass)) {
+					commandType = settingsReference.getSchedulableCommandMap()
+							.get(lastClass);
+					if (commandType != null) {
+						break;
+					}
+					lastClass = (Class<? extends Schedulable>) lastClass
+							.getSuperclass();
+				}
 
 				Assertions.checkNotNull(
 						"commandType:" + schedulable.getClass(), commandType);
