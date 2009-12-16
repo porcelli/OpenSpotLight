@@ -229,10 +229,12 @@ public class BundleProcessorManagerTest {
 	public void shouldProcessMappedArtifactsUsingLocalFilesAndCallingAGroupListener()
 			throws Exception {
 		ExampleBundleProcessor.allStatus.clear();
+		final String initialRawPath = Files.getNormalizedFileName(new File(
+				"../.."));
 
 		final ArtifactSource source = new ArtifactSource();
 		source.setName("classpath");
-		source.setInitialLookup("../../../OpenSpotLight");
+		source.setInitialLookup(initialRawPath);
 
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
