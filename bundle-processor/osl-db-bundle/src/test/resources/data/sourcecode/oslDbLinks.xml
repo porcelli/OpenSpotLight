@@ -30,5 +30,8 @@
 		<linkData linkName="Abstract Type Bind" linkType="A2B">
 			<description sideA="Column" sideB="Column" />
 		</linkData>
+		<linkData linkName="Group - Database" linkType="A2B">
+			<description sideA="Group" sideB="Database" />
+		</linkData>
 	</package>
 </root>
