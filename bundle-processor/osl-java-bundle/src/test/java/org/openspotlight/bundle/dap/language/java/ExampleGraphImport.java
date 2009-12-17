@@ -70,7 +70,6 @@ public class ExampleGraphImport {
 
     @Test
     public void shouldImportSomeData() throws Exception {
-
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         final AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");

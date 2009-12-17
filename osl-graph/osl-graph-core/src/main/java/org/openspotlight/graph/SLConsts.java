@@ -62,9 +62,6 @@ public class SLConsts implements SharedConstants {
 
 	public static final String DEFAULT_GROUP_CONTEXT = "groupContext";
 
-	/** The Constant DEFAULT_REPOSITORY_NAME. */
-	public static final String DEFAULT_REPOSITORY_NAME = "default";
-
 	/** The Constant NODE_NAME_LINK. */
 	public static final String NODE_NAME_LINK = "link";
 
