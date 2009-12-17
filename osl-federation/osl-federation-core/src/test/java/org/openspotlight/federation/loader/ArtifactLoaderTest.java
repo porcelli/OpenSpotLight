@@ -102,6 +102,7 @@ public class ArtifactLoaderTest {
 		mapping.setIncludeds(new HashSet<String>());
 		mapping.setExcludeds(new HashSet<String>());
 		mapping.getIncludeds().add("*.java");
+		mapping.setSource(source);
 		source.setMappings(new HashSet<ArtifactSourceMapping>());
 		source.getMappings().add(mapping);
 		source.setActive(true);
