@@ -8,7 +8,7 @@ import java.util.Set;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -32,6 +32,7 @@ import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class DbTableArtifactBundleProcessorTest {
 
@@ -45,7 +46,13 @@ public class DbTableArtifactBundleProcessorTest {
 
 	}
 
-	@Ignore
+	@Before
+	public void cleanUpRepository() throws Exception {
+		JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
+	}
+
 	@Test
 	public void shouldExecuteBundleProcessor() throws Exception {
 		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
@@ -127,9 +134,9 @@ public class DbTableArtifactBundleProcessorTest {
 		scheduler.refreshJobs(settings, Collections.setOf(repository));
 		scheduler.startScheduler();
 		scheduler.fireSchedulable("username", "password", artifactSource);
-		Thread.sleep(5000);
+		Thread.sleep(10000);
 		scheduler.fireSchedulable("username", "password", group);
-		Thread.sleep(5000);
+		Thread.sleep(10000);
 
 		final ExecutionContext executionContext = contextFactory
 				.createExecutionContext("username", "password",
@@ -144,7 +151,6 @@ public class DbTableArtifactBundleProcessorTest {
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
 
 		scheduler.stopScheduler();
-		Assert.fail("verify if the expected graph nodes was created or not");
 
 	}
 

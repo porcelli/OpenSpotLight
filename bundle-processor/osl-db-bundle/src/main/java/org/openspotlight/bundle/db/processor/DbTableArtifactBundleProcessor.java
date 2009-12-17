@@ -42,7 +42,10 @@ public class DbTableArtifactBundleProcessor implements
 	public LastProcessStatus processArtifact(final TableArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
-		logger.info("adding node " + artifact.getTableName());
+		logger.info("adding node " + artifact.getTableName() + " into slnode "
+				+ currentContext.getCurrentNodeGroup().getName()
+				+ " on repository "
+				+ currentContext.getCurrentRepository().getName());
 		currentContext.getCurrentNodeGroup().addNode(artifact.getTableName());
 		return LastProcessStatus.PROCESSED;
 	}
