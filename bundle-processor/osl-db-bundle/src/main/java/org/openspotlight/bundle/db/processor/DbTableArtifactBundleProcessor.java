@@ -5,9 +5,13 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.TableArtifact;
 import org.openspotlight.federation.processing.BundleProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbTableArtifactBundleProcessor implements
 		BundleProcessor<TableArtifact> {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public <A extends Artifact> boolean acceptKindOfArtifact(
 			final Class<A> kindOfArtifact) {
@@ -38,6 +42,7 @@ public class DbTableArtifactBundleProcessor implements
 	public LastProcessStatus processArtifact(final TableArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
+		logger.info("adding node " + artifact.getTableName());
 		currentContext.getCurrentNodeGroup().addNode(artifact.getTableName());
 		return LastProcessStatus.PROCESSED;
 	}

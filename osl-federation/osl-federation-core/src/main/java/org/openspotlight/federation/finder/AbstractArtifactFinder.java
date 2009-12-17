@@ -150,7 +150,7 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 
 	public final Set<String> retrieveAllArtifactNames(final String initialPath) {
 		final Set<String> result = internalRetrieveAllArtifactNames(initialPath);
-		logger.info("retrieved names: " + result);
+		logger.info("retrieved names for path " + initialPath + ": " + result);
 
 		return result;
 	}

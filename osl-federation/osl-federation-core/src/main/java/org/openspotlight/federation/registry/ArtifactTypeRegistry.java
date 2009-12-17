@@ -54,8 +54,10 @@ import static org.openspotlight.common.util.Collections.setOf;
 import java.util.Set;
 
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.RoutineArtifact;
 import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.TableArtifact;
+import org.openspotlight.federation.domain.ViewArtifact;
 
 public enum ArtifactTypeRegistry {
 
@@ -63,7 +65,8 @@ public enum ArtifactTypeRegistry {
 
 	@SuppressWarnings("unchecked")
 	private final Set<Class<? extends Artifact>> artifactTypes = unmodifiableSet(setOf(
-			StreamArtifact.class, DatabaseCustomArtifact.class));
+			StreamArtifact.class, RoutineArtifact.class, TableArtifact.class,
+			ViewArtifact.class));
 
 	public Set<Class<? extends Artifact>> getRegisteredArtifactTypes() {
 		return artifactTypes;

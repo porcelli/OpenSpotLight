@@ -67,6 +67,8 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JcrSessionArtifactFinder<A extends Artifact> extends
 		AbstractArtifactFinder<A> implements
@@ -95,7 +97,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 
 	private final Session session;
 
-	public static boolean firesExceptionOnParentModified = false;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private JcrSessionArtifactFinder(final Class<A> artifactType,
 			final Session session, final Repository repository) {
@@ -181,6 +183,8 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 					names.add(propVal);
 				}
 			}
+			logger.info("found names for " + this.artifactType + ":"
+					+ initialPath + " : " + names);
 			return names;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
