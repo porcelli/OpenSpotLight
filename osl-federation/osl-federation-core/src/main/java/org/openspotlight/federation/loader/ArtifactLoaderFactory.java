@@ -320,6 +320,9 @@ public class ArtifactLoaderFactory {
 									.createFromPathString(newPathString);
 							loaded.setParent(newPath);
 							loadedArtifacts.add(loaded);
+							logger.info("mapping artifact from "
+									+ currentPathString + " to "
+									+ newPathString);
 
 						} catch (final Exception e) {
 							Exceptions.catchAndLog(e);

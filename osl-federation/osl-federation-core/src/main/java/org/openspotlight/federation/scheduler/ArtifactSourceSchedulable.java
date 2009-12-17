@@ -65,12 +65,16 @@ import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.registry.ArtifactTypeRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class ArtifactSourceSchedulable.
  */
 public class ArtifactSourceSchedulable implements
 		SchedulableCommand<ArtifactSource> {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@SuppressWarnings("unchecked")
 	public void execute(final GlobalSettings settigns,
@@ -89,10 +93,14 @@ public class ArtifactSourceSchedulable implements
 
 		final Iterable<Artifact> loadedArtifacts = loader
 				.loadArtifactsFromSource(schedulable);
+
 		for (final Artifact artifact : loadedArtifacts) {
 			for (final Class<? extends Artifact> type : types) {
 				if (type.isAssignableFrom(artifact.getClass())) {
 					newArtifactsByType.get(type).add(artifact);
+					logger.info("adding artifact "
+							+ artifact.getArtifactCompleteName()
+							+ " on type map " + type);
 					continue;
 				}
 			}
@@ -122,8 +130,12 @@ public class ArtifactSourceSchedulable implements
 								newArtifacts);
 				// FIXME this could be parallel
 				for (final Artifact toSave : withDifferences) {
+
 					finderWithSaveCapabilitie.addTransientArtifact(toSave);
 					finderWithSaveCapabilitie.save();
+					logger.info("saving transient artifact "
+							+ toSave.getArtifactCompleteName());
+
 				}
 			}
 		}

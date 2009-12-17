@@ -8,7 +8,6 @@ import java.util.Set;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -45,7 +44,6 @@ public class DbTableArtifactBundleProcessorTest {
 
 	}
 
-	@Ignore
 	@Test
 	public void shouldExecuteBundleProcessor() throws Exception {
 		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
