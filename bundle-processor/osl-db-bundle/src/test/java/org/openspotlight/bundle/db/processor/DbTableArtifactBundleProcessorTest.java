@@ -134,9 +134,7 @@ public class DbTableArtifactBundleProcessorTest {
 		scheduler.refreshJobs(settings, Collections.setOf(repository));
 		scheduler.startScheduler();
 		scheduler.fireSchedulable("username", "password", artifactSource);
-		Thread.sleep(10000);
 		scheduler.fireSchedulable("username", "password", group);
-		Thread.sleep(10000);
 
 		final ExecutionContext executionContext = contextFactory
 				.createExecutionContext("username", "password",
