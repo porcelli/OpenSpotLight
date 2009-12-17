@@ -71,6 +71,7 @@ public class DbTableArtifactBundleProcessorTest {
 		repository.getGroups().add(group);
 		group.setActive(true);
 		final DbArtifactSource artifactSource = new DbArtifactSource();
+		artifactSource.setServerName("server name");
 		repository.getArtifactSources().add(artifactSource);
 		artifactSource.setRepository(repository);
 		artifactSource.setName("h2");

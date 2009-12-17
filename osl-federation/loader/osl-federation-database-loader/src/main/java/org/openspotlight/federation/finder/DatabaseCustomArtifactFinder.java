@@ -799,6 +799,8 @@ public class DatabaseCustomArtifactFinder extends
 			} else {// Its a routine description
 				result = createRoutineMetadata(artifactSource, metadata);
 			}
+			result.setServerName(dbBundle.getName());
+			result.setUrl(dbBundle.getInitialLookup());
 			return result;
 		} catch (final Exception e) {
 			throw logAndReturnNew(e, ConfigurationException.class);

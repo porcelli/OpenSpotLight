@@ -52,6 +52,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.annotation.SLProperty;
 
 /**
@@ -60,106 +61,127 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Vitor Hugo Chagas
  */
 public class SLInvocationHandlerSupport {
-	
-	/**
-	 * Checks if is getter.
-	 * 
-	 * @param proxy the proxy
-	 * @param method the method
-	 * 
-	 * @return true, if is getter
-	 */
-	static boolean isGetter(Object proxy, Method method) {
-		try {
-			boolean status = false;
-			if (method.getName().startsWith("get") && !method.getReturnType().equals(void.class) && method.getParameterTypes().length == 0) {
-				SLProperty propertyAnnotation = method.getAnnotation(SLProperty.class);
-				if (propertyAnnotation == null) {
-					try {
-						String setterName = "set".concat(method.getName().substring(3));
-						Class<?> iFace = proxy.getClass().getInterfaces()[0];
-						Method setterMethod = iFace.getMethod(setterName, new Class<?>[] {method.getReturnType()});
-						status = setterMethod.getAnnotation(SLProperty.class) != null && setterMethod.getReturnType().equals(void.class);
-					}
-					catch (NoSuchMethodException e) {}
-				}
-				else {
-					status = true;
-				}
-			}
-			return status;
-		}
-		catch (Exception e) {
-			throw new SLRuntimeException("Error on attempt to verify if method is getter.", e);
-		}
-	}
-	
-	/**
-	 * Checks if is setter.
-	 * 
-	 * @param proxy the proxy
-	 * @param method the method
-	 * 
-	 * @return true, if is setter
-	 */
-	static boolean isSetter(Object proxy, Method method) {
-		try {
-			boolean status = false;
-			if (method.getName().startsWith("set") && method.getReturnType().equals(void.class) && method.getParameterTypes().length == 1) {
-				SLProperty propertyAnnotation = method.getAnnotation(SLProperty.class);
-				if (propertyAnnotation == null) {
-					try {
-						String getterName = "get".concat(method.getName().substring(3));
-						Class<?> iFace = proxy.getClass().getInterfaces()[0];
-						Method getterMethod = iFace.getMethod(getterName, new Class<?>[] {});
-						status = getterMethod.getAnnotation(SLProperty.class) != null 
-							&& getterMethod.getReturnType().equals(method.getParameterTypes()[0]);
-					}
-					catch (NoSuchMethodException e) {}
-				}
-				else {
-					status = true;
-				}
-			}
-			return status;
-		}
-		catch (Exception e) {
-			throw new SLRuntimeException("Error on attempt to verify if method is setter.", e);
-		}
-	}
-	
-	/**
-	 * Invoke method.
-	 * 
-	 * @param object the object
-	 * @param method the method
-	 * @param args the args
-	 * 
-	 * @return the object
-	 * 
-	 * @throws Throwable the throwable
-	 */
-	static Object invokeMethod(Object object, Method method, Object[] args) throws Throwable {
-		try {
-			return method.invoke(object, args);
-		}
-		catch (InvocationTargetException e) {
-			throw e.getTargetException();
-		}
-		catch (Exception e) {
-			throw new SLRuntimeException("Error on node proxy.", e);
-		}
-	}
-	
+
 	/**
 	 * Gets the property name.
 	 * 
-	 * @param method the method
+	 * @param method
+	 *            the method
 	 * 
 	 * @return the property name
 	 */
-	static String getPropertyName(Method method) {
-		return method.getName().substring(3, 4).toLowerCase().concat(method.getName().substring(4));
+	static String getPropertyName(final Method method) {
+		return method.getName().substring(3, 4).toLowerCase().concat(
+				method.getName().substring(4));
+	}
+
+	/**
+	 * Invoke method.
+	 * 
+	 * @param object
+	 *            the object
+	 * @param method
+	 *            the method
+	 * @param args
+	 *            the args
+	 * 
+	 * @return the object
+	 * 
+	 * @throws Throwable
+	 *             the throwable
+	 */
+	static Object invokeMethod(final Object object, final Method method,
+			final Object[] args) throws Throwable {
+		try {
+			return method.invoke(object, args);
+		} catch (final InvocationTargetException e) {
+			throw e.getTargetException();
+		} catch (final Exception e) {
+			Exceptions.catchAndLog(e);
+			throw new SLRuntimeException("Error on node proxy.", e);
+		}
+	}
+
+	/**
+	 * Checks if is getter.
+	 * 
+	 * @param proxy
+	 *            the proxy
+	 * @param method
+	 *            the method
+	 * 
+	 * @return true, if is getter
+	 */
+	static boolean isGetter(final Object proxy, final Method method) {
+		try {
+			boolean status = false;
+			if (method.getName().startsWith("get")
+					&& !method.getReturnType().equals(void.class)
+					&& method.getParameterTypes().length == 0) {
+				final SLProperty propertyAnnotation = method
+						.getAnnotation(SLProperty.class);
+				if (propertyAnnotation == null) {
+					try {
+						final String setterName = "set".concat(method.getName()
+								.substring(3));
+						final Class<?> iFace = proxy.getClass().getInterfaces()[0];
+						final Method setterMethod = iFace.getMethod(setterName,
+								new Class<?>[] { method.getReturnType() });
+						status = setterMethod.getAnnotation(SLProperty.class) != null
+								&& setterMethod.getReturnType().equals(
+										void.class);
+					} catch (final NoSuchMethodException e) {
+					}
+				} else {
+					status = true;
+				}
+			}
+			return status;
+		} catch (final Exception e) {
+			throw new SLRuntimeException(
+					"Error on attempt to verify if method is getter.", e);
+		}
+	}
+
+	/**
+	 * Checks if is setter.
+	 * 
+	 * @param proxy
+	 *            the proxy
+	 * @param method
+	 *            the method
+	 * 
+	 * @return true, if is setter
+	 */
+	static boolean isSetter(final Object proxy, final Method method) {
+		try {
+			boolean status = false;
+			if (method.getName().startsWith("set")
+					&& method.getReturnType().equals(void.class)
+					&& method.getParameterTypes().length == 1) {
+				final SLProperty propertyAnnotation = method
+						.getAnnotation(SLProperty.class);
+				if (propertyAnnotation == null) {
+					try {
+						final String getterName = "get".concat(method.getName()
+								.substring(3));
+						final Class<?> iFace = proxy.getClass().getInterfaces()[0];
+						final Method getterMethod = iFace.getMethod(getterName,
+								new Class<?>[] {});
+						status = getterMethod.getAnnotation(SLProperty.class) != null
+								&& getterMethod.getReturnType().equals(
+										method.getParameterTypes()[0]);
+					} catch (final NoSuchMethodException e) {
+					}
+				} else {
+					status = true;
+				}
+			}
+			return status;
+		} catch (final Exception e) {
+			throw new SLRuntimeException(
+					"Error on attempt to verify if method is setter.", e);
+		}
 	}
 
 }

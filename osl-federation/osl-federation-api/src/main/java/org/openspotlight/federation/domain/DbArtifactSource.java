@@ -49,51 +49,61 @@
 package org.openspotlight.federation.domain;
 
 public class DbArtifactSource extends ArtifactSource {
-    private static final long serialVersionUID = -430683831296857466L;
+	private static final long serialVersionUID = -430683831296857466L;
+	private String serverName;
+	private String driverClass;
 
-    private String            driverClass;
-    private String            user;
-    private String            password;
-    private DatabaseType      type;
-    private int               maxConnections;
+	private String user;
 
-    public String getDriverClass() {
-        return this.driverClass;
-    }
+	private String password;
+	private DatabaseType type;
+	private int maxConnections;
 
-    public int getMaxConnections() {
-        return this.maxConnections;
-    }
+	public String getDriverClass() {
+		return driverClass;
+	}
 
-    public String getPassword() {
-        return this.password;
-    }
+	public int getMaxConnections() {
+		return maxConnections;
+	}
 
-    public DatabaseType getType() {
-        return this.type;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getUser() {
-        return this.user;
-    }
+	public String getServerName() {
+		return serverName;
+	}
 
-    public void setDriverClass( final String driverClass ) {
-        this.driverClass = driverClass;
-    }
+	public DatabaseType getType() {
+		return type;
+	}
 
-    public void setMaxConnections( final int maxConnections ) {
-        this.maxConnections = maxConnections;
-    }
+	public String getUser() {
+		return user;
+	}
 
-    public void setPassword( final String password ) {
-        this.password = password;
-    }
+	public void setDriverClass(final String driverClass) {
+		this.driverClass = driverClass;
+	}
 
-    public void setType( final DatabaseType type ) {
-        this.type = type;
-    }
+	public void setMaxConnections(final int maxConnections) {
+		this.maxConnections = maxConnections;
+	}
 
-    public void setUser( final String user ) {
-        this.user = user;
-    }
+	public void setPassword(final String password) {
+		this.password = password;
+	}
+
+	public void setServerName(final String serverName) {
+		this.serverName = serverName;
+	}
+
+	public void setType(final DatabaseType type) {
+		this.type = type;
+	}
+
+	public void setUser(final String user) {
+		this.user = user;
+	}
 }
