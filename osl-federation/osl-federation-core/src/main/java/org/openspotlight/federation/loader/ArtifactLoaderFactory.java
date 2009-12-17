@@ -51,6 +51,7 @@ package org.openspotlight.federation.loader;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Queue;
 import java.util.Set;
@@ -73,6 +74,8 @@ import org.openspotlight.federation.domain.PathElement;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.registry.ArtifactTypeRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -137,6 +140,8 @@ public class ArtifactLoaderFactory {
 		/** The executor. */
 		private ExecutorService executor;
 
+		private final Logger logger = LoggerFactory.getLogger(getClass());
+
 		/**
 		 * Instantiates a new artifact loader impl.
 		 * 
@@ -192,8 +197,12 @@ public class ArtifactLoaderFactory {
 
 			addingSources: for (final ArtifactSource source : sources) {
 				if (!source.isActive()) {
+					logger.info("ignoring innactive source " + source.getName()
+							+ ":" + source.getInitialLookup());
 					continue addingSources;
 				}
+				logger.info("looking for artifact finders for source "
+						+ source.getName() + ":" + source.getInitialLookup());
 				for (final ArtifactFinderBySourceProvider provider : artifactProviders) {
 					for (final Class<? extends Artifact> type : artifactTypes) {
 						final ArtifactFinder<? extends Artifact> artifactFinder = provider
@@ -202,11 +211,18 @@ public class ArtifactLoaderFactory {
 							sourcesToLoad
 									.add(new Pair<ArtifactFinder<?>, ArtifactSource>(
 											artifactFinder, source));
+							logger.info("added artifact finder"
+									+ artifactFinder + " for source "
+									+ source.getName() + ":"
+									+ source.getInitialLookup());
 						}
 					}
 				}
 			}
 			if (sourcesToLoad.size() == 0) {
+				logger
+						.info("didn' find any artifact finder for artifact sources "
+								+ Arrays.toString(sources));
 				return Collections.emptySet();
 			}
 			for (final Pair<ArtifactFinder<?>, ArtifactSource> pair : new ArrayList<Pair<ArtifactFinder<?>, ArtifactSource>>(
@@ -217,13 +233,37 @@ public class ArtifactLoaderFactory {
 						try {
 							for (final ArtifactSourceMapping mapping : pair
 									.getK2().getMappings()) {
+								logger.info("finding names for source mapping "
+										+ mapping.getSource().getName()
+										+ ""
+										+ mapping.getSource()
+												.getInitialLookup() + " "
+										+ mapping.getFrom() + "->"
+										+ mapping.getTo());
+
 								final Set<String> rawNames = pair.getK1()
 										.retrieveAllArtifactNames(
 												mapping.getFrom());
+
 								final FilterResult newNames = filterNamesByPattern(
 										rawNames, mapping.getIncludeds(),
 										mapping.getExcludeds(), false);
 
+								logger
+										.info("done finding names for source mapping "
+												+ mapping.getSource().getName()
+												+ ""
+												+ mapping.getSource()
+														.getInitialLookup()
+												+ " "
+												+ mapping.getFrom()
+												+ "->" + mapping.getTo());
+								logger.info("included names: "
+										+ newNames.getIncludedNames());
+								logger.info("excluded names: "
+										+ newNames.getExcludedNames());
+								logger.info("ignored names: "
+										+ newNames.getIgnoredNames());
 								for (final String name : newNames
 										.getIncludedNames()) {
 

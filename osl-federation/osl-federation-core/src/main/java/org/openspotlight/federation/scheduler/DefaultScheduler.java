@@ -82,6 +82,8 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum DefaultScheduler implements SLScheduler {
 	INSTANCE;
@@ -139,6 +141,8 @@ public enum DefaultScheduler implements SLScheduler {
 
 		private final Schedulable schedulable;
 
+		private final Logger logger = LoggerFactory.getLogger(getClass());
+
 		@SuppressWarnings("unchecked")
 		public OslInternalSchedulerCommand(final Schedulable schedulable,
 				final Class<? extends SchedulableCommand> commandType,
@@ -173,7 +177,13 @@ public enum DefaultScheduler implements SLScheduler {
 							settingsCopy, data.descriptor, data.username,
 							data.password, repositoryName, data.contextFactory);
 				}
+				logger.info("about to execute " + command.getClass()
+						+ " with schedulable "
+						+ schedulable.toUniqueJobString());
 				command.execute(settings.get(), context, schedulable);
+				logger.info("executed successfully " + command.getClass()
+						+ " with schedulable "
+						+ schedulable.toUniqueJobString());
 			} catch (final Exception e) {
 				Exceptions.logAndReturnNew(e, JobExecutionException.class);
 			} finally {

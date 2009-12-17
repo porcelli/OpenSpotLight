@@ -55,6 +55,8 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.PathElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class AbstractArtifactFinder.
@@ -66,6 +68,8 @@ import org.openspotlight.federation.domain.PathElement;
 public abstract class AbstractArtifactFinder<A extends Artifact> implements
 		ArtifactFinder<A> {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private final String currentRepository;
 
 	protected AbstractArtifactFinder(final String currentRepository) {
@@ -75,6 +79,7 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 	private void didLoadArtifact(final A artifact) {
 		if (artifact != null) {
 			artifact.setRepositoryName(currentRepository);
+			logger.info("loaded " + artifact.getArtifactCompleteName());
 		}
 	}
 
@@ -83,6 +88,7 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 			for (final A artifact : artifacts) {
 				if (artifact != null) {
 					artifact.setRepositoryName(currentRepository);
+					logger.info("loaded " + artifact.getArtifactCompleteName());
 				}
 			}
 		}
@@ -143,7 +149,10 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 	}
 
 	public final Set<String> retrieveAllArtifactNames(final String initialPath) {
-		return internalRetrieveAllArtifactNames(initialPath);
+		final Set<String> result = internalRetrieveAllArtifactNames(initialPath);
+		logger.info("retrieved names: " + result);
+
+		return result;
 	}
 
 }

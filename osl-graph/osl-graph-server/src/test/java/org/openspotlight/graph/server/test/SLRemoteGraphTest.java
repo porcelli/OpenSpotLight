@@ -72,8 +72,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
@@ -149,7 +152,8 @@ public class SLRemoteGraphTest {
 	@BeforeClass
 	public static void init() throws Exception {
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
 
 		server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
@@ -484,9 +488,11 @@ public class SLRemoteGraphTest {
 	@Before
 	public void beforeTest() throws Exception {
 		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
 		if (session == null) {
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 		}
 	}
 
@@ -2746,7 +2752,8 @@ public class SLRemoteGraphTest {
 					javaClassNode1, javaMethodNode2, false);
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -2794,7 +2801,8 @@ public class SLRemoteGraphTest {
 					linkTypesForLinkDeletion, null);
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -2849,7 +2857,8 @@ public class SLRemoteGraphTest {
 					"javaMethodNode1");
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -2898,7 +2907,8 @@ public class SLRemoteGraphTest {
 					linkTypesForLinkedNodesDeletion);
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3217,7 +3227,8 @@ public class SLRemoteGraphTest {
 					javaMethodNode2, false);
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3265,7 +3276,8 @@ public class SLRemoteGraphTest {
 					javaClassNode1, javaMethodNode2, false, NORMAL);
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3307,7 +3319,8 @@ public class SLRemoteGraphTest {
 			javaMethodNode1.addNode(TransientNode.class, "transNode2");
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3355,7 +3368,8 @@ public class SLRemoteGraphTest {
 			javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
 
 			session.save();
-			session = client.createRemoteGraphSession(user, pass);
+			session = client.createRemoteGraphSession(user, pass,
+					SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,

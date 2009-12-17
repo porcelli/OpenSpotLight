@@ -111,13 +111,16 @@ public class RemoteGraphSessionServer {
 		public synchronized SLGraphSession createNewInstance(
 				final Object... parameters) throws Exception {
 			checkNotNull("parameters", parameters);
-			checkCondition("correctParamSize", parameters.length == 2);
+			checkCondition("correctParamSize", parameters.length == 3);
 			checkCondition("correctTypeForFirstParam",
 					parameters[0] instanceof String);
 			checkCondition("correctTypeForSecondParam",
 					parameters[1] instanceof String);
+			checkCondition("correctTypeForThirdParam",
+					parameters[2] instanceof String);
 			final String user = (String) parameters[0];
 			final String pass = (String) parameters[1];
+			final String repository = (String) parameters[2];
 			final SecurityFactory securityFactory = AbstractFactory
 					.getDefaultInstance(SecurityFactory.class);
 			final User simpleUser = securityFactory.createUser(user);
@@ -125,7 +128,7 @@ public class RemoteGraphSessionServer {
 					.createIdentityManager(descriptor).authenticate(simpleUser,
 							pass);
 
-			return graph.openSession(authenticatedUser);
+			return graph.openSession(authenticatedUser, repository);
 		}
 
 		/*

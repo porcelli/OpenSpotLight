@@ -59,78 +59,97 @@ import org.openspotlight.security.idm.User;
  */
 public interface SLGraph {
 
-    /**
-     * The Enum GraphState.
-     * 
-     * @author porcelli
-     */
-    public enum GraphState {
+	/**
+	 * The Enum GraphState.
+	 * 
+	 * @author porcelli
+	 */
+	public enum GraphState {
 
-        /** The OPENED. */
-        OPENED,
+		/** The OPENED. */
+		OPENED,
 
-        /** The SHUTDOWN. */
-        SHUTDOWN;
-    }
+		/** The SHUTDOWN. */
+		SHUTDOWN;
+	}
 
-    /**
-     * Open repository session.
-     * 
-     * @param user the user
-     * @param repositoryName the repository name
-     * @return the sL graph session
-     * @throws SLGraphException the SL graph exception
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
-     */
-    public SLGraphSession openSession( AuthenticatedUser user,
-                                       String repositoryName ) throws SLGraphException, SLInvalidCredentialException;
+	/**
+	 * Runs the garbage collector on default repository.
+	 * 
+	 * @param user
+	 *            the user
+	 * @throws SLPersistentTreeException
+	 *             the SL persistent tree exception
+	 * @throws SLInvalidCredentialsException
+	 *             the SL invalid credentials exception
+	 */
+	public void gc(AuthenticatedUser user) throws SLPersistentTreeException,
+			SLInvalidCredentialException;
 
-    /**
-     * Open default repository session.
-     * 
-     * @param user the user
-     * @return the sL graph session
-     * @throws SLGraphException the SL graph exception
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
-     */
-    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialException;
+	/**
+	 * Runs the garbage collector.
+	 * 
+	 * @param user
+	 *            the user
+	 * @param repositoryName
+	 *            the repository name
+	 * @throws SLPersistentTreeException
+	 *             the SL persistent tree exception
+	 * @throws SLInvalidCredentialsException
+	 *             the SL invalid credentials exception
+	 */
+	public void gc(AuthenticatedUser user, String repositoryName)
+			throws SLPersistentTreeException, SLInvalidCredentialException;
 
-    /**
-     * Shutdown.
-     */
-    public void shutdown();
+	/**
+	 * Gets the graph state.
+	 * 
+	 * @return the graph state
+	 */
+	public GraphState getGraphState();
 
-    /**
-     * Runs the garbage collector on default repository.
-     * 
-     * @param user the user
-     * @throws SLPersistentTreeException the SL persistent tree exception
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
-     */
-    public void gc( AuthenticatedUser user ) throws SLPersistentTreeException, SLInvalidCredentialException;
+	/**
+	 * Gets the user.
+	 * 
+	 * @return the user
+	 */
+	public User getUser();
 
-    /**
-     * Runs the garbage collector.
-     * 
-     * @param user the user
-     * @param repositoryName the repository name
-     * @throws SLPersistentTreeException the SL persistent tree exception
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
-     */
-    public void gc( AuthenticatedUser user,
-                    String repositoryName ) throws SLPersistentTreeException, SLInvalidCredentialException;
+	/**
+	 * Open default repository session.
+	 * 
+	 * @deprecated use the openSession with repository name instead
+	 * @param user
+	 *            the user
+	 * @return the sL graph session
+	 * @throws SLGraphException
+	 *             the SL graph exception
+	 * @throws SLInvalidCredentialsException
+	 *             the SL invalid credentials exception
+	 */
+	@Deprecated
+	public SLGraphSession openSession(AuthenticatedUser user)
+			throws SLGraphException, SLInvalidCredentialException;
 
-    /**
-     * Gets the graph state.
-     * 
-     * @return the graph state
-     */
-    public GraphState getGraphState();
+	/**
+	 * Open repository session.
+	 * 
+	 * @param user
+	 *            the user
+	 * @param repositoryName
+	 *            the repository name
+	 * @return the sL graph session
+	 * @throws SLGraphException
+	 *             the SL graph exception
+	 * @throws SLInvalidCredentialsException
+	 *             the SL invalid credentials exception
+	 */
+	public SLGraphSession openSession(AuthenticatedUser user,
+			String repositoryName) throws SLGraphException,
+			SLInvalidCredentialException;
 
-    /**
-     * Gets the user.
-     * 
-     * @return the user
-     */
-    public User getUser();
+	/**
+	 * Shutdown.
+	 */
+	public void shutdown();
 }

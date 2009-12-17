@@ -58,6 +58,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
@@ -94,8 +95,11 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
 	private static final String pass = "password";
 
+	private static final String repository = "repository";
+
 	protected static void openNewSession() throws Exception {
-		session = factory.createRemoteGraphSession(user, pass);
+		session = factory.createRemoteGraphSession(user, pass,
+				SLConsts.DEFAULT_REPOSITORY_NAME);
 	}
 
 	protected static void setupSession() throws Exception {
@@ -129,7 +133,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 						return "***";
 					}
 				});
-		session = factory.createRemoteGraphSession(user, pass);
+		session = factory.createRemoteGraphSession(user, pass, repository);
 	}
 
 	protected static void shutdownTest() {
