@@ -272,6 +272,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	 */
 	public void setParent(final PathElement parent) {
 		this.parent = parent;
+		artifactCompleteName = null;
 	}
 
 	public void setRepositoryName(final String repositoryName) {

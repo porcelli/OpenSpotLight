@@ -140,7 +140,7 @@ public class DbTableArtifactBundleProcessorTest {
 		final SLNode groupNode = groupContext.getRootNode().getNode(
 				group.getUniqueName());
 		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
-		final SLNode exampleTableNode = groupNode.getNode("exampleTable");
+		final SLNode exampleTableNode = groupNode.getNode("EXAMPLETABLE");
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
 
 		scheduler.stopScheduler();
