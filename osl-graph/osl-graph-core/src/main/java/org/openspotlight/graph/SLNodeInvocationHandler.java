@@ -52,25 +52,29 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import org.openspotlight.common.util.Assertions;
+
 /**
  * The Class SLNodeInvocationHandler.
  * 
  * @author Vitor Hugo Chagas
  */
 public class SLNodeInvocationHandler implements InvocationHandler {
-	
+
 	/** The node. */
-	private SLNode node;
-	
+	private final SLNode node;
+
 	/**
 	 * Instantiates a new sL node invocation handler.
 	 * 
-	 * @param node the node
+	 * @param node
+	 *            the node
 	 */
-	public SLNodeInvocationHandler(SLNode node) {
+	public SLNodeInvocationHandler(final SLNode node) {
+		Assertions.checkNotNull("node", node);
 		this.node = node;
 	}
-	
+
 	/**
 	 * Gets the node.
 	 * 
@@ -80,26 +84,34 @@ public class SLNodeInvocationHandler implements InvocationHandler {
 		return node;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+	 * java.lang.reflect.Method, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	//@Override
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+	// @Override
+	public Object invoke(final Object proxy, final Method method,
+			final Object[] args) throws Throwable {
 		Object result = null;
-		if (!method.getDeclaringClass().equals(SLNode.class) && SLNode.class.isAssignableFrom(method.getDeclaringClass())) {
+		if (!method.getDeclaringClass().equals(SLNode.class)
+				&& SLNode.class.isAssignableFrom(method.getDeclaringClass())) {
 			if (SLInvocationHandlerSupport.isGetter(proxy, method)) {
-				String propName = SLInvocationHandlerSupport.getPropertyName(method);
-				Class<? extends Serializable> typeClass = (Class<? extends Serializable>) method.getReturnType();
+				final String propName = SLInvocationHandlerSupport
+						.getPropertyName(method);
+				final Class<? extends Serializable> typeClass = (Class<? extends Serializable>) method
+						.getReturnType();
 				result = node.getProperty(typeClass, propName).getValue();
+			} else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
+				final String propName = SLInvocationHandlerSupport
+						.getPropertyName(method);
+				node.setProperty(Serializable.class, propName,
+						(Serializable) args[0]);
 			}
-			else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
-				String propName = SLInvocationHandlerSupport.getPropertyName(method);
-				node.setProperty(Serializable.class, propName, (Serializable) args[0]);
-			}
-		}
-		else {
-			result = SLInvocationHandlerSupport.invokeMethod(node, method, args);
+		} else {
+			result = SLInvocationHandlerSupport
+					.invokeMethod(node, method, args);
 		}
 		return result;
 	}
