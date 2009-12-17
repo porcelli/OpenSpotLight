@@ -25,8 +25,6 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
-import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
-import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
@@ -73,7 +71,7 @@ public class DbTableArtifactBundleProcessorTest {
 		artifactSource.setMaxConnections(4);
 		artifactSource.setType(DatabaseType.H2);
 		artifactSource
-				.setInitialLookup("jdbc:h2:./target/test-data/DbTableArtifactBundleProcessorTest/h2/db");
+				.setInitialLookup("jdbc:h2:./target/test-data/DbTableArtifactBundleProcessorTest/h2/db;DB_CLOSE_ON_EXIT=FALSE");
 		artifactSource.setDriverClass("org.h2.Driver");
 
 		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
@@ -127,12 +125,9 @@ public class DbTableArtifactBundleProcessorTest {
 		scheduler.refreshJobs(settings, Collections.setOf(repository));
 		scheduler.startScheduler();
 		scheduler.fireSchedulable("username", "password", artifactSource);
-		final GlobalExecutionStatus result = BundleProcessorManagerImpl.INSTANCE
-				.executeBundles("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, contextFactory,
-						settings, group);
-
-		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
+		Thread.sleep(5000);
+		scheduler.fireSchedulable("username", "password", group);
+		Thread.sleep(5000);
 
 		final ExecutionContext executionContext = contextFactory
 				.createExecutionContext("username", "password",
@@ -142,6 +137,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode = groupContext.getRootNode().getNode(
 				group.getUniqueName());
+		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
 		final SLNode exampleTableNode = groupNode.getNode("exampleTable");
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
 

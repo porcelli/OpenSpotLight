@@ -55,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -100,6 +101,27 @@ public enum DefaultScheduler implements SLScheduler {
 			this.descriptor = descriptor;
 			this.contextFactory = contextFactory;
 		}
+	}
+
+	public static class OslInternalImmediateCommand extends
+			OslInternalSchedulerCommand {
+
+		private final String identifier;
+
+		public OslInternalImmediateCommand(final Schedulable schedulable,
+				final Class<? extends SchedulableCommand> commandType,
+				final AtomicReference<InternalData> internalData,
+				final AtomicReference<GlobalSettings> settings) {
+			super(schedulable, commandType, internalData, settings, IMMEDIATE);
+			identifier = UUID.randomUUID().toString();
+
+		}
+
+		@Override
+		public String getUniqueName() {
+			return identifier;
+		}
+
 	}
 
 	public static class OslInternalSchedulerCommand {
@@ -244,11 +266,11 @@ public enum DefaultScheduler implements SLScheduler {
 						internalData.get().contextFactory);
 				final AtomicReference<InternalData> copyRef = new AtomicReference<InternalData>(
 						copy);
-				final OslInternalSchedulerCommand command = new OslInternalSchedulerCommand(
-						schedulable, commandType, copyRef, settings, IMMEDIATE);
+				final OslInternalImmediateCommand command = new OslInternalImmediateCommand(
+						schedulable, commandType, copyRef, settings);
 				oslImmediateCommands.put(command.getUniqueName(), command);
 				final Date runTime = TriggerUtils.getNextGivenSecondDate(
-						new Date(), 10);
+						new Date(), 1);
 				final JobDetail job = new JobDetail(command.getUniqueName(),
 						DEFAULT_GROUP, OslQuartzJob.class);
 				final SimpleTrigger trigger = new SimpleTrigger(command

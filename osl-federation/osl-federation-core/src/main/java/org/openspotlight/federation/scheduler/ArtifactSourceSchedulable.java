@@ -54,7 +54,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
@@ -97,8 +96,6 @@ public class ArtifactSourceSchedulable implements
 					continue;
 				}
 			}
-			Exceptions.logAndThrow(new IllegalStateException(
-					"Artifact type not "));
 		}
 		for (final Class<? extends Artifact> type : types) {
 			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
