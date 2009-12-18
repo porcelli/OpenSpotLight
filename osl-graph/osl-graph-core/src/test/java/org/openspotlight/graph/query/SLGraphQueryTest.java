@@ -55,6 +55,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.lang.reflect.Method;
 import java.text.Collator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -65,6 +66,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
@@ -120,7 +122,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                           .getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory
                                          .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            final SLGraphSession session = graph.openSession(user);
+            final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
             final AbstractGeneralQueryTest test = new SLGraphQueryTest(session,
                                                                        SortMode.SORTED, true);
             int option = 0;
@@ -142,6 +144,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             LOGGER.info("bye!");
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -241,6 +244,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -292,6 +296,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -394,6 +399,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -427,6 +433,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -634,6 +641,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -738,6 +746,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1023,6 +1032,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1070,6 +1080,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1104,6 +1115,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1287,6 +1299,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1314,6 +1327,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1341,6 +1355,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1368,6 +1383,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1398,6 +1414,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1425,6 +1442,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1452,6 +1470,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1478,6 +1497,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1501,6 +1521,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1528,6 +1549,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1551,6 +1573,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1574,6 +1597,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1597,6 +1621,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -1652,6 +1677,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -2167,6 +2193,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -2682,6 +2709,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -2772,6 +2800,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -2868,6 +2897,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3044,6 +3074,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3120,6 +3151,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3235,6 +3267,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3307,6 +3340,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3419,6 +3453,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3521,6 +3556,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3598,6 +3634,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3698,6 +3735,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3772,6 +3810,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3810,6 +3849,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3847,6 +3887,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3885,6 +3926,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3922,6 +3964,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -3989,6 +4032,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4035,6 +4079,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4294,6 +4339,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4333,6 +4379,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4392,6 +4439,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4448,6 +4496,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4499,6 +4548,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4558,6 +4608,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4613,6 +4664,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4660,6 +4712,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4717,6 +4770,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -4784,6 +4838,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -5037,6 +5092,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -5193,6 +5249,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -5926,6 +5983,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             printResult(nodes);
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -6059,6 +6117,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 
@@ -6158,6 +6217,58 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
+        }
+    }
+
+    /**
+     * Test select types that contains set or list.
+     */
+    @Test
+    public void testSearchAll() {
+        try {
+
+            final SLQueryApi query = session.createQueryApi();
+
+            query.select().type(SLNode.class.getName()).subTypes()
+                 .selectEnd()
+                 .where().type(SLNode.class.getName()).subTypes().each()
+                 .property("caption").contains().value("Set")
+                 .typeEnd()
+                 .whereEnd().collator(Collator.PRIMARY);
+
+            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(wrappers.length, is(99));
+                }
+            }.execute();
+            printResult(nodes);
+
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
+        }
+    }
+
+    /**
+     * Test select types that contains set or list.
+     */
+    @Test
+    public void testSearchAllNative() {
+        try {
+
+            final Collection<SLNode> nodes = session.searchNodes("Set");
+
+            assertThat(nodes.size(), is(99));
+            printResult(nodes);
+
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
         }
     }
 }
