@@ -9,6 +9,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Database;
@@ -40,6 +41,7 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
+@Ignore
 public class DbTableArtifactBundleProcessorTest {
 
 	public static class SampleDbArtifactRegistry implements
