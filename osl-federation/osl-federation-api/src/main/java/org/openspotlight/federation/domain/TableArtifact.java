@@ -57,69 +57,71 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "database" )
-public class TableArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
-    private static final long serialVersionUID = -4527063248944852023L;
+@Name("database")
+public class TableArtifact extends DatabaseCustomArtifact implements
+		SimpleNodeType, Serializable {
+	private static final long serialVersionUID = -4527063248944852023L;
 
-    private String            tableName;
-    private String            catalogName;
-    private String            schemaName;
-    private Set<Column>       columns          = new HashSet<Column>();
+	private String tableName;
+	private String catalogName;
+	private String schemaName;
+	private Set<Column> columns = new HashSet<Column>();
 
-    @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!(other instanceof TableArtifact)) {
-            return false;
-        }
-        final TableArtifact that = (TableArtifact)other;
-        return Equals.eachEquality(this.getColumns(), that.getColumns());
-    }
+	@Override
+	public boolean contentEquals(final Artifact other) {
+		if (!(other instanceof TableArtifact)) {
+			return false;
+		}
+		final TableArtifact that = (TableArtifact) other;
+		return Equals.eachEquality(getColumns(), that.getColumns());
+	}
 
-    public String getCatalogName() {
-        return this.catalogName;
-    }
+	public String getCatalogName() {
+		return catalogName;
+	}
 
-    public Set<Column> getColumns() {
-        return this.columns;
-    }
+	public Set<Column> getColumns() {
+		return columns;
+	}
 
-    public String getSchemaName() {
-        return this.schemaName;
-    }
+	public String getSchemaName() {
+		return schemaName;
+	}
 
-    public String getTableName() {
-        return this.tableName;
-    }
+	public String getTableName() {
+		return tableName;
+	}
 
-    public void loadProperties() {
-        final StringTokenizer tok = new StringTokenizer(this.getArtifactCompleteName(), "/"); //$NON-NLS-1$
-        if (tok.countTokens() == 4) {
-            this.setSchemaName(tok.nextToken());
-            this.setCatalogName(tok.nextToken());
-            tok.nextToken();// puts away its table type
-            this.setTableName(tok.nextToken());
-        } else {
+	public void loadProperties() {
+		final StringTokenizer tok = new StringTokenizer(
+				getArtifactCompleteName(), "/"); //$NON-NLS-1$
+		if (tok.countTokens() == 4) {
+			setSchemaName(tok.nextToken());
+			tok.nextToken();// puts away its table type
+			setCatalogName(tok.nextToken());
+			setTableName(tok.nextToken());
+		} else {
 
-            this.setSchemaName(tok.nextToken());
-            tok.nextToken();// puts away its table type
-            this.setTableName(tok.nextToken());
-        }
-    }
+			setSchemaName(tok.nextToken());
+			tok.nextToken();// puts away its table type
+			setTableName(tok.nextToken());
+		}
+	}
 
-    public void setCatalogName( final String catalogName ) {
-        this.catalogName = catalogName;
-    }
+	public void setCatalogName(final String catalogName) {
+		this.catalogName = catalogName;
+	}
 
-    public void setColumns( final Set<Column> columns ) {
-        this.columns = columns;
-    }
+	public void setColumns(final Set<Column> columns) {
+		this.columns = columns;
+	}
 
-    public void setSchemaName( final String schemaName ) {
-        this.schemaName = schemaName;
-    }
+	public void setSchemaName(final String schemaName) {
+		this.schemaName = schemaName;
+	}
 
-    public void setTableName( final String tableName ) {
-        this.tableName = tableName;
-    }
+	public void setTableName(final String tableName) {
+		this.tableName = tableName;
+	}
 
 }

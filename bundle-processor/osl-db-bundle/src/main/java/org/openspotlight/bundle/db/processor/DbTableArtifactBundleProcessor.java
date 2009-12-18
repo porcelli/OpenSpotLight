@@ -7,6 +7,7 @@ import org.openspotlight.bundle.db.DBConstants;
 import org.openspotlight.bundle.db.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.metamodel.link.CatalogTableView;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
+import org.openspotlight.bundle.db.metamodel.link.DatabaseSchema;
 import org.openspotlight.bundle.db.metamodel.link.GroupDatabase;
 import org.openspotlight.bundle.db.metamodel.link.SchemaCatalog;
 import org.openspotlight.bundle.db.metamodel.link.SchemaTableView;
@@ -14,6 +15,7 @@ import org.openspotlight.bundle.db.metamodel.link.TableViewColumns;
 import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DataType;
+import org.openspotlight.bundle.db.metamodel.node.Database;
 import org.openspotlight.bundle.db.metamodel.node.Schema;
 import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
@@ -63,13 +65,20 @@ public class DbTableArtifactBundleProcessor implements
 			final ExecutionContext context) throws Exception {
 		final SLContext databaseContext = context.getGraphSession()
 				.createContext(DB_ABSTRACT_CONTEXT);
+
 		final SLNode databaseContextNode = databaseContext.getRootNode();
 		final Server server = currentContext.getCurrentNodeGroup().addNode(
 				Server.class, artifact.getServerName());
-		final Schema schema = server.addNode(Schema.class, artifact
-				.getSchemaName());
+		final Database database = server.addNode(Database.class, artifact
+				.getDatabaseName());
 		context.getGraphSession().addLink(GroupDatabase.class,
-				currentContext.getCurrentNodeGroup(), server, false);
+				currentContext.getCurrentNodeGroup(), database, false);
+
+		final Schema schema = database.addNode(Schema.class, artifact
+				.getSchemaName());
+
+		context.getGraphSession().addLink(DatabaseSchema.class, database,
+				schema, false);
 
 		Catalog catalog = null;
 		if (artifact.getCatalogName() != null) {

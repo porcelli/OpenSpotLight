@@ -800,6 +800,7 @@ public class DatabaseCustomArtifactFinder extends
 				result = createRoutineMetadata(artifactSource, metadata);
 			}
 			result.setServerName(dbBundle.getName());
+			result.setDatabaseName(dbBundle.getDatabaseName());
 			result.setUrl(dbBundle.getInitialLookup());
 			return result;
 		} catch (final Exception e) {

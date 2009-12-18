@@ -9,8 +9,13 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.openspotlight.bundle.db.metamodel.node.Catalog;
+import org.openspotlight.bundle.db.metamodel.node.Database;
+import org.openspotlight.bundle.db.metamodel.node.Schema;
+import org.openspotlight.bundle.db.metamodel.node.Server;
+import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
+import org.openspotlight.bundle.db.metamodel.node.TableViewView;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -35,7 +40,6 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-@Ignore
 public class DbTableArtifactBundleProcessorTest {
 
 	public static class SampleDbArtifactRegistry implements
@@ -81,6 +85,7 @@ public class DbTableArtifactBundleProcessorTest {
 		artifactSource.setUser("sa");
 		artifactSource.setPassword("sa");
 		artifactSource.setMaxConnections(4);
+		artifactSource.setDatabaseName("db");
 		artifactSource.setType(DatabaseType.H2);
 		artifactSource
 				.setInitialLookup("jdbc:h2:./target/test-data/DbTableArtifactBundleProcessorTest/h2/db;DB_CLOSE_ON_EXIT=FALSE");
@@ -149,11 +154,25 @@ public class DbTableArtifactBundleProcessorTest {
 				group.getUniqueName());
 		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
 		final SLNode exampleServerNode = groupNode.getNode("h2");
+		Assert.assertThat(exampleServerNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleServerNode, Is.is(Server.class));
+		final SLNode exampleDatabaseNode = exampleServerNode.getNode("db");
+		Assert.assertThat(exampleDatabaseNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleDatabaseNode, Is.is(Database.class));
+		final SLNode exampleSchemaNode = exampleDatabaseNode.getNode("PUBLIC");
+		Assert.assertThat(exampleSchemaNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleSchemaNode, Is.is(Schema.class));
+		final SLNode exampleCatalogNode = exampleSchemaNode.getNode("DB");
+		Assert.assertThat(exampleCatalogNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleCatalogNode, Is.is(Catalog.class));
+		final SLNode exampleTableNode = exampleCatalogNode
+				.getNode("EXAMPLETABLE");
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleTableNode, Is.is(Server.class));
-		final SLNode exampleSchemaNode = exampleServerNode.getNode("PUBLIC");
-		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleTableNode, Is.is(Server.class));
+		Assert.assertThat(exampleTableNode, Is.is(TableViewTable.class));
+		final SLNode exampleViewNode = exampleCatalogNode
+				.getNode("EXAMPLEVIEW");
+		Assert.assertThat(exampleViewNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleViewNode, Is.is(TableViewView.class));
 
 		scheduler.stopScheduler();
 

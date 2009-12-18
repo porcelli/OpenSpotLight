@@ -54,10 +54,15 @@ import org.openspotlight.persist.annotation.Name;
 public abstract class DatabaseCustomArtifact extends Artifact {
 
 	private String serverName;
+	private String databaseName;
 
 	private String url;
 
 	private static final long serialVersionUID = -1600651697651996477L;
+
+	public String getDatabaseName() {
+		return databaseName;
+	}
 
 	public String getServerName() {
 		return serverName;
@@ -65,6 +70,10 @@ public abstract class DatabaseCustomArtifact extends Artifact {
 
 	public String getUrl() {
 		return url;
+	}
+
+	public void setDatabaseName(final String databaseName) {
+		this.databaseName = databaseName;
 	}
 
 	public void setServerName(final String serverName) {
