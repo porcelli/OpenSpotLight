@@ -48,42 +48,44 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.concurrent.LockContainer;
+
 /**
  * The Class SLGraphSessionEvent.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLGraphSessionEvent {
-	
+public class SLGraphSessionEvent implements LockContainer {
+
+	protected final Object lock;
+
 	/** The Constant TYPE_BEFORE_SAVE. */
 	public static final int TYPE_BEFORE_SAVE = 1;
-	
+
 	/** The type. */
-	protected int type;
-	
+	protected final int type;
+
 	/** The session. */
-	protected SLGraphSession session;
-	
+	protected final SLGraphSession session;
+
 	/**
 	 * Instantiates a new sL graph session event.
 	 * 
-	 * @param type the type
-	 * @param session the session
+	 * @param type
+	 *            the type
+	 * @param session
+	 *            the session
 	 */
-	public SLGraphSessionEvent(int type, SLGraphSession session) {
+	public SLGraphSessionEvent(final int type, final SLGraphSession session) {
 		this.type = type;
 		this.session = session;
+		lock = session.getLockObject();
 	}
-	
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 */
-	public int getType() {
-		return type;
+
+	public Object getLockObject() {
+		return lock;
 	}
-	
+
 	/**
 	 * Gets the session.
 	 * 
@@ -92,5 +94,13 @@ public class SLGraphSessionEvent {
 	public SLGraphSession getSession() {
 		return session;
 	}
-}
 
+	/**
+	 * Gets the type.
+	 * 
+	 * @return the type
+	 */
+	public int getType() {
+		return type;
+	}
+}

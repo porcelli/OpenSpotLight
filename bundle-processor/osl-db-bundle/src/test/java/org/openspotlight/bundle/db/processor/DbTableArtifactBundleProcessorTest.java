@@ -65,7 +65,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
+		settings.setNumberOfParallelThreads(8);
 		settings.setArtifactFinderRegistryClass(SampleDbArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		final Repository repository = new Repository();

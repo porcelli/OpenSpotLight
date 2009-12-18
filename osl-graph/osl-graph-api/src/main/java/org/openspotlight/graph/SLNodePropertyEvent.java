@@ -59,50 +59,46 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
  * @author Vitor Hugo Chagas
  */
 public class SLNodePropertyEvent extends SLGraphSessionEvent {
-	
+
 	/** The Constant TYPE_NODE_PROPERTY_SET. */
 	public static final int TYPE_NODE_PROPERTY_SET = 1;
-	
+
 	/** The Constant TYPE_NODE_PROPERTY_REMOVED. */
 	public static final int TYPE_NODE_PROPERTY_REMOVED = 2;
-	
+
 	/** The property. */
-	private SLNodeProperty<? extends Serializable> property;
-	
+	private final SLNodeProperty<? extends Serializable> property;
+
 	/** The p property. */
-	private SLPersistentProperty<? extends Serializable> pProperty;
-	
+	private final SLPersistentProperty<? extends Serializable> pProperty;
+
 	/** The p node. */
 	private SLPersistentNode pNode;
-	
+
 	/** The property name. */
 	private String propertyName;
-	
+
 	/** The string. */
 	private boolean string;
 
 	/**
 	 * Instantiates a new sL node property event.
 	 * 
-	 * @param type the type
-	 * @param property the property
-	 * @param pProperty the property
+	 * @param type
+	 *            the type
+	 * @param property
+	 *            the property
+	 * @param pProperty
+	 *            the property
 	 */
-	public SLNodePropertyEvent(int type, SLNodeProperty<? extends Serializable> property, SLPersistentProperty<? extends Serializable> pProperty) {
+	public SLNodePropertyEvent(final int type,
+			final SLNodeProperty<? extends Serializable> property,
+			final SLPersistentProperty<? extends Serializable> pProperty) {
 		super(type, property.getNode().getSession());
 		this.property = property;
 		this.pProperty = pProperty;
 	}
-	
-	/**
-	 * Gets the property.
-	 * 
-	 * @return the property
-	 */
-	public SLNodeProperty<? extends Serializable> getProperty() {
-		return property;
-	}
-	
+
 	/**
 	 * Gets the persistent property.
 	 * 
@@ -112,27 +108,48 @@ public class SLNodePropertyEvent extends SLGraphSessionEvent {
 		return pProperty;
 	}
 
-	public String getPropertyName() {
-		return propertyName;
-	}
-
-	public void setPropertyName(String propertyName) {
-		this.propertyName = propertyName;
-	}
-
 	public SLPersistentNode getPNode() {
-		return pNode;
+		synchronized (lock) {
+			return pNode;
+		}
 	}
 
-	public void setPNode(SLPersistentNode node) {
-		pNode = node;
+	/**
+	 * Gets the property.
+	 * 
+	 * @return the property
+	 */
+	public SLNodeProperty<? extends Serializable> getProperty() {
+		return property;
+	}
+
+	public String getPropertyName() {
+		synchronized (lock) {
+			return propertyName;
+		}
 	}
 
 	public boolean isString() {
-		return string;
+		synchronized (lock) {
+			return string;
+		}
 	}
 
-	public void setString(boolean string) {
-		this.string = string;
+	public void setPNode(final SLPersistentNode node) {
+		synchronized (lock) {
+			pNode = node;
+		}
+	}
+
+	public void setPropertyName(final String propertyName) {
+		synchronized (lock) {
+			this.propertyName = propertyName;
+		}
+	}
+
+	public void setString(final boolean string) {
+		synchronized (lock) {
+			this.string = string;
+		}
 	}
 }

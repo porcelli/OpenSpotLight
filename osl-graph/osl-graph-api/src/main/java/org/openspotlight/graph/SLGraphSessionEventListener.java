@@ -48,75 +48,97 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.concurrent.LockContainer;
+
 /**
- * The listener interface for receiving SLGraphSessionEvent events. The class that is interested in processing a
- * SLGraphSessionEvent event implements this interface, and the object created with that class is registered with a component
- * using the component's <code>addSLGraphSessionEventListener<code> method. When
+ * The listener interface for receiving SLGraphSessionEvent events. The class
+ * that is interested in processing a SLGraphSessionEvent event implements this
+ * interface, and the object created with that class is registered with a
+ * component using the component's
+ * <code>addSLGraphSessionEventListener<code> method. When
  * the SLGraphSessionEvent event occurs, that object's appropriate
  * method is invoked.
  * 
  * @see SLGraphSessionEventEvent
  */
-public interface SLGraphSessionEventListener {
+public interface SLGraphSessionEventListener extends LockContainer {
 
-    /**
-     * Before save.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void beforeSave( SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException;
+	/**
+	 * Before save.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void beforeSave(SLGraphSessionEvent event)
+			throws SLGraphSessionException, SLInvalidCredentialException;
 
-    /**
-     * Link added.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void linkAdded( SLLinkEvent event ) throws SLGraphSessionException;
+	/**
+	 * Link added.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException;
 
-    /**
-     * Link removed.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void linkRemoved( SLLinkEvent event ) throws SLGraphSessionException;
+	/**
+	 * Link property set.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void linkPropertySet(SLLinkPropertyEvent event)
+			throws SLGraphSessionException;
 
-    /**
-     * Link property set.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void linkPropertySet( SLLinkPropertyEvent event ) throws SLGraphSessionException;
+	/**
+	 * Link removed.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException;
 
-    /**
-     * Node added.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void nodeAdded( SLNodeEvent event ) throws SLGraphSessionException;
+	/**
+	 * Node added.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException;
 
-    /**
-     * Node property set.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void nodePropertySet( SLNodePropertyEvent event ) throws SLGraphSessionException;
+	/**
+	 * Node property removed.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void nodePropertyRemoved(SLNodePropertyEvent event)
+			throws SLGraphSessionException;
 
-    /**
-     * Node property removed.
-     * 
-     * @param event the event
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public void nodePropertyRemoved( SLNodePropertyEvent event ) throws SLGraphSessionException;
+	/**
+	 * Node property set.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public void nodePropertySet(SLNodePropertyEvent event)
+			throws SLGraphSessionException;
 
-    /**
-     * Session cleaned.
-     */
-    public void sessionCleaned();
+	/**
+	 * Session cleaned.
+	 */
+	public void sessionCleaned();
 }
