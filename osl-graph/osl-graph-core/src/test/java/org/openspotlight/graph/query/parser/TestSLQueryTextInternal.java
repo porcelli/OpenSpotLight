@@ -3748,11 +3748,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         final NodeWrapper[] wrappers = this.wrapNodes(result.getNodes());
 
+        printInfo = true;
         this.printResult(result.getNodes());
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(4));
+                assertThat(wrappers.length, is(6));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.util",
                                            "java.lang.Iterable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang",
@@ -3761,6 +3762,10 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                                            "java.lang.Comparable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaInterface.class.getName(), "java.lang",
                                            "java.lang.Runnable"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.util",
+                                            "java.lang.Object"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(org.openspotlight.graph.test.domain.JavaClass.class.getName(), "java.security",
+                                            "java.lang.Object"), isOneOf(wrappers));
             }
         }.execute();
     }

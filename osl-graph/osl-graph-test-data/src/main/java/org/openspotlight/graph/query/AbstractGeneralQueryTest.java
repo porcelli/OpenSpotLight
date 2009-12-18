@@ -275,10 +275,10 @@ public class AbstractGeneralQueryTest {
 			final Package iFacePack = iFace.getPackage();
 			final JavaPackage javaPackage = root.addNode(JavaPackage.class,
 					iFacePack.getName());
-			javaPackage.setCaption(iFacePack.getName());
+			//javaPackage.setCaption(iFacePack.getName());
 			final JavaInterface javaInterface = javaPackage.addNode(
 					JavaInterface.class, iFace.getName());
-			javaInterface.setCaption(iFace.getName());
+			//javaInterface.setCaption(iFace.getName());
 			final ClassImplementsInterface link = session.addLink(
 					ClassImplementsInterface.class, javaClass, javaInterface,
 					false);
@@ -306,7 +306,7 @@ public class AbstractGeneralQueryTest {
 		for (final Method method : methods) {
 			final JavaTypeMethod javaTypeMethod = javaClass.addNode(
 					JavaTypeMethod.class, method.getName());
-			javaTypeMethod.setCaption(method.getName());
+			//javaTypeMethod.setCaption(method.getName());
 			final TypeContainsMethod link = session.addLink(
 					TypeContainsMethod.class, javaClass, javaTypeMethod, false);
 			link.setTag(randomTag());
@@ -333,7 +333,7 @@ public class AbstractGeneralQueryTest {
 			final Package classPack = clazz.getPackage();
 			final JavaPackage javaPackage = root.addNode(JavaPackage.class,
 					classPack.getName());
-			javaPackage.setCaption(classPack.getName());
+			//javaPackage.setCaption(classPack.getName());
 			final JavaClass superJavaClass = javaPackage.addNode(
 					JavaClass.class, superClass.getName());
 			session.addLink(PackageContainsType.class, javaPackage,
@@ -364,7 +364,7 @@ public class AbstractGeneralQueryTest {
 		for (final Method method : methods) {
 			final JavaTypeMethod javaTypeMethod = javaInterface.addNode(
 					JavaTypeMethod.class, method.getName());
-			javaTypeMethod.setCaption(method.getName());
+			//javaTypeMethod.setCaption(method.getName());
 			final TypeContainsMethod link = session.addLink(
 					TypeContainsMethod.class, javaInterface, javaTypeMethod,
 					false);
@@ -392,12 +392,12 @@ public class AbstractGeneralQueryTest {
 			final Package iFacePack = iFace.getPackage();
 			final JavaPackage javaPackage = root.addNode(JavaPackage.class,
 					iFacePack.getName());
-			javaPackage.setCaption(iFacePack.getName());
+			//javaPackage.setCaption(iFacePack.getName());
 			final JavaInterface superJavaInterface = javaPackage.addNode(
 					JavaInterface.class, superIFace.getName());
 			session.addLink(PackageContainsType.class, javaPackage,
 					superJavaInterface, false);
-			superJavaInterface.setCaption(superIFace.getName());
+			//superJavaInterface.setCaption(superIFace.getName());
 			session.addLink(JavaInterfaceHierarchy.class, javaInterface,
 					superJavaInterface, false);
 			addJavaInterfaceHirarchyLinks(root, superIFace, superJavaInterface);
@@ -471,7 +471,7 @@ public class AbstractGeneralQueryTest {
 			final Package pack = java.util.Date.class.getPackage();
 			final JavaPackage utilJavaPackage = root.addNode(JavaPackage.class,
 					pack.getName());
-			utilJavaPackage.setCaption(pack.getName());
+			//utilJavaPackage.setCaption(pack.getName());
 
 			int count = 0;
 			final float floatValue = 0.3F;
@@ -480,7 +480,7 @@ public class AbstractGeneralQueryTest {
 						JavaInterface.class, iFace.getName());
 				session.addLink(PackageContainsType.class, utilJavaPackage,
 						javaInterface, false);
-				javaInterface.setCaption(iFace.getName());
+				//javaInterface.setCaption(iFace.getName());
 				javaInterface.setProperty(Integer.class, "intValue", count);
 				javaInterface.setProperty(Float.class, "decValue", new Float(
 						count + floatValue));
@@ -499,7 +499,7 @@ public class AbstractGeneralQueryTest {
 						JavaClass.class, clazz.getName());
 				session.addLink(PackageContainsType.class, utilJavaPackage,
 						javaClass, false);
-				javaClass.setCaption(clazz.getName());
+				//javaClass.setCaption(clazz.getName());
 				javaClass.setProperty(Integer.class, "intValue", count);
 				javaClass.setProperty(Float.class, "decValue", new Float(count
 						+ floatValue));
