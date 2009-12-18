@@ -50,6 +50,7 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
@@ -60,58 +61,79 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  */
 public class SLMetaRenderHintImpl implements SLMetaRenderHint {
 
+	private final Lock lock;
+
 	/** The meta node. */
-	private SLMetaNodeType metaNode;
-	
+	private final SLMetaNodeType metaNode;
+
 	/** The property. */
-	private SLPersistentProperty<Serializable> property;
-	
+	private final SLPersistentProperty<Serializable> property;
+
 	/**
 	 * Instantiates a new sL meta render hint impl.
 	 * 
-	 * @param metaNode the meta node
-	 * @param property the property
+	 * @param metaNode
+	 *            the meta node
+	 * @param property
+	 *            the property
 	 */
-	SLMetaRenderHintImpl(SLMetaNodeType metaNode, SLPersistentProperty<Serializable> property) {
+	SLMetaRenderHintImpl(final SLMetaNodeType metaNode,
+			final SLPersistentProperty<Serializable> property) {
 		this.metaNode = metaNode;
 		this.property = property;
+		lock = property.getLockObject();
 	}
 
-	/* (non-Javadoc)
+	public Lock getLockObject() {
+		return lock;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaElement#getMetadata()
 	 */
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metaNode.getMetadata();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaRenderHint#getMetaNode()
 	 */
 	public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
 		return metaNode;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaRenderHint#getName()
 	 */
 	public String getName() throws SLGraphSessionException {
-		try {
-			return SLCommonSupport.toSimplePropertyName(property.getName());
-		} 
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve render hint name.", e);
+		synchronized (lock) {
+
+			try {
+				return SLCommonSupport.toSimplePropertyName(property.getName());
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve render hint name.", e);
+			}
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaRenderHint#getValue()
 	 */
 	public String getValue() throws SLGraphSessionException {
 		try {
 			return property.getValue().toString();
-		} 
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve render hint value.", e);
+		} catch (final SLPersistentTreeSessionException e) {
+			throw new SLGraphSessionException(
+					"Error on attempt to retrieve render hint value.", e);
 		}
 	}
 

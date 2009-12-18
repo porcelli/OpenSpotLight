@@ -54,6 +54,7 @@ import javax.jcr.Session;
 
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.concurrent.AtomicLazyResource;
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Artifact;
@@ -141,7 +142,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final JcrConnectionDescriptor descriptor;
 	private final String repositoryName;
 	private final DisposingListener<DefaultExecutionContext> listener;
-	private final Object lock = new Object();
+	private final Lock lock = new Lock();
 	private final ConcurrentHashMap<? extends Artifact, AtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, AtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
 
 	private final AtomicLazyResource<AuthenticatedUser> lazyAuthenticatedUserReference = new AtomicLazyResource<AuthenticatedUser>() {
@@ -230,7 +231,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		return lazyGraphSessionReference.get();
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return lock;
 	}
 

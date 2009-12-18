@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.listeners;
 
-import static org.openspotlight.graph.SLCommonSupport.toSimplePropertyName;
-
 import java.io.Serializable;
 import java.text.Collator;
 
+import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLCollatorSupport;
+import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNodePropertyEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -63,10 +63,9 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
 // TODO: Auto-generated Javadoc
 /**
- * The listener interface for receiving SLCollator events.
- * The class that is interested in processing a SLCollator
- * event implements this interface, and the object created
- * with that class is registered with a component using the
+ * The listener interface for receiving SLCollator events. The class that is
+ * interested in processing a SLCollator event implements this interface, and
+ * the object created with that class is registered with a component using the
  * component's <code>addSLCollatorListener<code> method. When
  * the SLCollator event occurs, that object's appropriate
  * method is invoked.
@@ -74,81 +73,138 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * @see SLCollatorEvent
  */
 public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet(org.openspotlight.graph.SLNodePropertyEvent)
+
+	public SLCollatorListener(final LockContainer parent) {
+		super(parent);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.openspotlight.graph.SLAbstractGraphSessionEventListener#
+	 * nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
 	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodePropertySet(SLNodePropertyEvent event) throws SLGraphSessionException {
-		try {
-			SLPersistentProperty<? extends Serializable> pProperty = event.getPersistentProperty();
-			if (pProperty.getValue() instanceof String) {
-				String name = toSimplePropertyName(pProperty.getName());
-				String value = pProperty.getValue().toString();
-				
-				String primaryKey = SLCollatorSupport.getCollatorKey(Collator.PRIMARY, value);
-				String secondaryKey = SLCollatorSupport.getCollatorKey(Collator.SECONDARY, value);
-				String tertiaryKey = SLCollatorSupport.getCollatorKey(Collator.TERTIARY, value);
-
-				String primaryDescription = SLCollatorSupport.getCollatorDescription(Collator.PRIMARY, value);
-				String secondaryDescription = SLCollatorSupport.getCollatorDescription(Collator.SECONDARY, value);
-				String tertiaryDescription = SLCollatorSupport.getCollatorDescription(Collator.TERTIARY, value);
-
-				String primaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.PRIMARY);
-				String secondaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.SECONDARY);
-				String tertiaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.TERTIARY);
-
-				String primaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name, Collator.PRIMARY);
-				String secondaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name, Collator.SECONDARY);
-				String tertiaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name, Collator.TERTIARY);
-
-				SLPersistentNode pNode = pProperty.getNode();
-				pNode.setProperty(String.class, primaryKeyPropName, primaryKey);
-				pNode.setProperty(String.class, secondaryKeyPropName, secondaryKey);
-				pNode.setProperty(String.class, tertiaryKeyPropName, tertiaryKey);
-				
-				pNode.setProperty(String.class, primaryDescriptionPropName, primaryDescription);
-				pNode.setProperty(String.class, secondaryDescriptionPropName, secondaryDescription);
-				pNode.setProperty(String.class, tertiaryDescriptionPropName, tertiaryDescription);
+	public void nodePropertyRemoved(final SLNodePropertyEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				if (event.isString()) {
+					final String name = event.getPropertyName();
+					final String primaryKeyPropName = SLCollatorSupport
+							.getCollatorKeyPropName(name, Collator.PRIMARY);
+					final String secondaryKeyPropName = SLCollatorSupport
+							.getCollatorKeyPropName(name, Collator.SECONDARY);
+					final String tertiaryKeyPropName = SLCollatorSupport
+							.getCollatorKeyPropName(name, Collator.TERTIARY);
+					final String primaryDescriptionPropName = SLCollatorSupport
+							.getCollatorDescriptionPropName(name,
+									Collator.PRIMARY);
+					final String secondaryDescriptionPropName = SLCollatorSupport
+							.getCollatorDescriptionPropName(name,
+									Collator.SECONDARY);
+					final String tertiaryDescriptionPropName = SLCollatorSupport
+							.getCollatorDescriptionPropName(name,
+									Collator.TERTIARY);
+					final SLPersistentNode pNode = event.getPNode();
+					pNode.getProperty(String.class, primaryKeyPropName)
+							.remove();
+					pNode.getProperty(String.class, secondaryKeyPropName)
+							.remove();
+					pNode.getProperty(String.class, tertiaryKeyPropName)
+							.remove();
+					pNode.getProperty(String.class, primaryDescriptionPropName)
+							.remove();
+					pNode.getProperty(String.class,
+							secondaryDescriptionPropName).remove();
+					pNode
+							.getProperty(String.class,
+									tertiaryDescriptionPropName).remove();
+				}
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to remove callation property data.",
+						e);
 			}
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to update callation property data.", e);
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet
+	 * (org.openspotlight.graph.SLNodePropertyEvent)
 	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodePropertyRemoved(SLNodePropertyEvent event) throws SLGraphSessionException {
-		try {
-			if (event.isString()) {
-				String name = event.getPropertyName();
-				String primaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.PRIMARY);
-				String secondaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.SECONDARY);
-				String tertiaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.TERTIARY);
-				String primaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name, Collator.PRIMARY);
-				String secondaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name, Collator.SECONDARY);
-				String tertiaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name, Collator.TERTIARY);
-				SLPersistentNode pNode = event.getPNode();
-				pNode.getProperty(String.class, primaryKeyPropName).remove();
-				pNode.getProperty(String.class, secondaryKeyPropName).remove();
-				pNode.getProperty(String.class, tertiaryKeyPropName).remove();
-				pNode.getProperty(String.class, primaryDescriptionPropName).remove();
-				pNode.getProperty(String.class, secondaryDescriptionPropName).remove();
-				pNode.getProperty(String.class, tertiaryDescriptionPropName).remove();
+	public void nodePropertySet(final SLNodePropertyEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				final SLPersistentProperty<? extends Serializable> pProperty = event
+						.getPersistentProperty();
+				if (pProperty.getValue() instanceof String) {
+					final String name = SLCommonSupport
+							.toSimplePropertyName(pProperty.getName());
+					final String value = pProperty.getValue().toString();
+
+					final String primaryKey = SLCollatorSupport.getCollatorKey(
+							Collator.PRIMARY, value);
+					final String secondaryKey = SLCollatorSupport
+							.getCollatorKey(Collator.SECONDARY, value);
+					final String tertiaryKey = SLCollatorSupport
+							.getCollatorKey(Collator.TERTIARY, value);
+
+					final String primaryDescription = SLCollatorSupport
+							.getCollatorDescription(Collator.PRIMARY, value);
+					final String secondaryDescription = SLCollatorSupport
+							.getCollatorDescription(Collator.SECONDARY, value);
+					final String tertiaryDescription = SLCollatorSupport
+							.getCollatorDescription(Collator.TERTIARY, value);
+
+					final String primaryKeyPropName = SLCollatorSupport
+							.getCollatorKeyPropName(name, Collator.PRIMARY);
+					final String secondaryKeyPropName = SLCollatorSupport
+							.getCollatorKeyPropName(name, Collator.SECONDARY);
+					final String tertiaryKeyPropName = SLCollatorSupport
+							.getCollatorKeyPropName(name, Collator.TERTIARY);
+
+					final String primaryDescriptionPropName = SLCollatorSupport
+							.getCollatorDescriptionPropName(name,
+									Collator.PRIMARY);
+					final String secondaryDescriptionPropName = SLCollatorSupport
+							.getCollatorDescriptionPropName(name,
+									Collator.SECONDARY);
+					final String tertiaryDescriptionPropName = SLCollatorSupport
+							.getCollatorDescriptionPropName(name,
+									Collator.TERTIARY);
+
+					final SLPersistentNode pNode = pProperty.getNode();
+					pNode.setProperty(String.class, primaryKeyPropName,
+							primaryKey);
+					pNode.setProperty(String.class, secondaryKeyPropName,
+							secondaryKey);
+					pNode.setProperty(String.class, tertiaryKeyPropName,
+							tertiaryKey);
+
+					pNode.setProperty(String.class, primaryDescriptionPropName,
+							primaryDescription);
+					pNode.setProperty(String.class,
+							secondaryDescriptionPropName, secondaryDescription);
+					pNode.setProperty(String.class,
+							tertiaryDescriptionPropName, tertiaryDescription);
+				}
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to update callation property data.",
+						e);
 			}
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to remove callation property data.", e);
 		}
 	}
 }
-

@@ -57,6 +57,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.SerializationUtil;
@@ -70,7 +71,7 @@ import org.openspotlight.jcr.util.JCRUtil;
 public class SLPersistentPropertyImpl<V extends Serializable> implements
 		SLPersistentProperty<V> {
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The persistent node. */
 	private final SLPersistentNode persistentNode;
@@ -311,7 +312,7 @@ public class SLPersistentPropertyImpl<V extends Serializable> implements
 		return value;
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return this.lock;
 	}
 

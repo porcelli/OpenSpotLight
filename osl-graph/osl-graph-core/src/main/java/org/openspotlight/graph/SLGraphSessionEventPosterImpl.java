@@ -50,6 +50,7 @@ package org.openspotlight.graph;
 
 import java.util.Collection;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 
 /**
@@ -60,7 +61,7 @@ import org.openspotlight.common.concurrent.LockContainer;
 public class SLGraphSessionEventPosterImpl implements
 		SLGraphSessionEventPoster, LockContainer {
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The listeners. */
 	private final Collection<SLGraphSessionEventListener> listeners;
@@ -78,7 +79,7 @@ public class SLGraphSessionEventPosterImpl implements
 		lock = parent.getLockObject();
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return lock;
 	}
 

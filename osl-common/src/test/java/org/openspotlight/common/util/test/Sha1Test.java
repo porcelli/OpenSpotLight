@@ -57,6 +57,7 @@ import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Sha1;
 
 /**
  * Test class for {@link Sha1}

@@ -48,12 +48,10 @@
  */
 package org.openspotlight.graph;
 
-import static org.openspotlight.graph.SLRecursiveMode.NOT_RECURSIVE;
-import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -68,7 +66,7 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
  */
 public class SLMetadataImpl implements SLMetadata {
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The tree session. */
 	private final SLPersistentTreeSession treeSession;
@@ -81,7 +79,7 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetadataImpl(final SLPersistentTreeSession treeSession) {
 		this.treeSession = treeSession;
-		this.lock = treeSession.getLockObject();
+		lock = treeSession.getLockObject();
 	}
 
 	/*
@@ -92,7 +90,7 @@ public class SLMetadataImpl implements SLMetadata {
 	public SLMetaNodeType findMetaNodeType(
 			final Class<? extends SLNode> nodeClass)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			return this.findMetaNodeType(nodeClass.getName());
 		}
 	}
@@ -105,14 +103,14 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetaNodeType findMetaNodeType(final String typeName)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				final StringBuilder statement = new StringBuilder(
-						this.treeSession.getXPathRootPath()
-								+ "/metadata/types//*");
+				final StringBuilder statement = new StringBuilder(treeSession
+						.getXPathRootPath()
+						+ "/metadata/types//*");
 				StringBuilderUtil.append(statement, '[',
 						SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
-				final SLPersistentQuery query = this.treeSession.createQuery(
+				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
 				SLMetaNodeType metaNode = null;
@@ -138,15 +136,15 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetaNodeType findMetaNodeTypeByDescription(final String description)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				final StringBuilder statement = new StringBuilder(
-						this.treeSession.getXPathRootPath()
-								+ "/metadata/types//*");
+				final StringBuilder statement = new StringBuilder(treeSession
+						.getXPathRootPath()
+						+ "/metadata/types//*");
 				StringBuilderUtil.append(statement, '[',
 						SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description,
 						"']");
-				final SLPersistentQuery query = this.treeSession.createQuery(
+				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
 				SLMetaNodeType metaNode = null;
@@ -163,8 +161,8 @@ public class SLMetadataImpl implements SLMetadata {
 		}
 	}
 
-	public Object getLockObject() {
-		return this.lock;
+	public Lock getLockObject() {
+		return lock;
 	}
 
 	// @Override
@@ -175,7 +173,7 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetaLinkType getMetaLinkType(final Class<? extends SLLink> linkType)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			return this.getMetaLinkType(linkType.getName());
 		}
 	}
@@ -187,13 +185,13 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetaLinkType getMetaLinkType(final String name)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final StringBuilder statement = new StringBuilder();
 				statement.append(
-						this.treeSession.getXPathRootPath()
-								+ "/metadata/links/").append(name);
-				final SLPersistentQuery query = this.treeSession.createQuery(
+						treeSession.getXPathRootPath() + "/metadata/links/")
+						.append(name);
+				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
 				SLMetaLinkType metaLinkType = null;
@@ -218,15 +216,15 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public SLMetaLinkType getMetaLinkTypeByDescription(final String description)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final StringBuilder statement = new StringBuilder();
-				statement.append(this.treeSession.getXPathRootPath()
+				statement.append(treeSession.getXPathRootPath()
 						+ "/metadata/links/*");
 				StringBuilderUtil.append(statement, '[',
 						SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description,
 						"']");
-				final SLPersistentQuery query = this.treeSession.createQuery(
+				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
 				SLMetaLinkType metaLinkType = null;
@@ -250,13 +248,13 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public Collection<SLMetaLinkType> getMetaLinkTypes()
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final Collection<SLMetaLinkType> metaLinkTypes = new ArrayList<SLMetaLinkType>();
-				final StringBuilder statement = new StringBuilder(
-						this.treeSession.getXPathRootPath()
-								+ "/metadata/links/*");
-				final SLPersistentQuery query = this.treeSession.createQuery(
+				final StringBuilder statement = new StringBuilder(treeSession
+						.getXPathRootPath()
+						+ "/metadata/links/*");
+				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
 				final Collection<SLPersistentNode> linkTypeNodes = result
@@ -281,8 +279,8 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public Collection<SLMetaNodeType> getMetaNodesTypes()
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
-			return this.getMetaNodesTypes(NOT_RECURSIVE);
+		synchronized (lock) {
+			return this.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE);
 		}
 	}
 
@@ -294,17 +292,18 @@ public class SLMetadataImpl implements SLMetadata {
 	 */
 	public Collection<SLMetaNodeType> getMetaNodesTypes(
 			final SLRecursiveMode recursiveMode) throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
-				final StringBuilder statement = new StringBuilder(
-						this.treeSession.getXPathRootPath() + "/metadata/types");
-				if (recursiveMode.equals(RECURSIVE)) {
+				final StringBuilder statement = new StringBuilder(treeSession
+						.getXPathRootPath()
+						+ "/metadata/types");
+				if (recursiveMode.equals(SLRecursiveMode.RECURSIVE)) {
 					statement.append("//*");
 				} else {
 					statement.append("/*");
 				}
-				final SLPersistentQuery query = this.treeSession.createQuery(
+				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
 				final Collection<SLPersistentNode> pNodes = result.getNodes();

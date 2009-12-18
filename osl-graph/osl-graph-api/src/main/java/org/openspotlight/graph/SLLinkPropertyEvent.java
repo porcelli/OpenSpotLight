@@ -58,36 +58,32 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
  * @author Vitor Hugo Chagas
  */
 public class SLLinkPropertyEvent extends SLGraphSessionEvent {
-	
+
 	/** The Constant TYPE_LINK_PROPERTY_SET. */
 	public static final int TYPE_LINK_PROPERTY_SET = 1;
-	
+
 	/** The property. */
-	private SLLinkProperty<? extends Serializable> property;
-	
+	private final SLLinkProperty<? extends Serializable> property;
+
 	/** The p property. */
-	private SLPersistentProperty<? extends Serializable> pProperty;
+	private final SLPersistentProperty<? extends Serializable> pProperty;
 
 	/**
 	 * Instantiates a new sL link property event.
 	 * 
-	 * @param type the type
-	 * @param property the property
-	 * @param pProperty the property
+	 * @param type
+	 *            the type
+	 * @param property
+	 *            the property
+	 * @param pProperty
+	 *            the property
 	 */
-	public SLLinkPropertyEvent(int type, SLLinkProperty<? extends Serializable> property, SLPersistentProperty<? extends Serializable> pProperty) {
+	public SLLinkPropertyEvent(final int type,
+			final SLLinkProperty<? extends Serializable> property,
+			final SLPersistentProperty<? extends Serializable> pProperty) {
 		super(type, property.getLink().getSession());
 		this.property = property;
 		this.pProperty = pProperty;
-	}
-
-	/**
-	 * Gets the property.
-	 * 
-	 * @return the property
-	 */
-	public SLLinkProperty<? extends Serializable> getProperty() {
-		return property;
 	}
 
 	/**
@@ -97,6 +93,15 @@ public class SLLinkPropertyEvent extends SLGraphSessionEvent {
 	 */
 	public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
 		return pProperty;
+	}
+
+	/**
+	 * Gets the property.
+	 * 
+	 * @return the property
+	 */
+	public SLLinkProperty<? extends Serializable> getProperty() {
+		return property;
 	}
 
 }

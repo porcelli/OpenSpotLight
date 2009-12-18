@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 
 /**
@@ -57,7 +58,7 @@ import org.openspotlight.common.concurrent.LockContainer;
  */
 public class SLGraphSessionEvent implements LockContainer {
 
-	protected final Object lock;
+	protected final Lock lock;
 
 	/** The Constant TYPE_BEFORE_SAVE. */
 	public static final int TYPE_BEFORE_SAVE = 1;
@@ -82,7 +83,7 @@ public class SLGraphSessionEvent implements LockContainer {
 		lock = session.getLockObject();
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return lock;
 	}
 

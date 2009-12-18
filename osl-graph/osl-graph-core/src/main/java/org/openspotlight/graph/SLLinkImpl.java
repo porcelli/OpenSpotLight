@@ -53,6 +53,7 @@ import java.text.Collator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
@@ -71,7 +72,7 @@ public class SLLinkImpl implements SLLink {
 	/** The session. */
 	private final SLGraphSession session;
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The link node. */
 	private final SLPersistentNode linkNode;
@@ -93,7 +94,7 @@ public class SLLinkImpl implements SLLink {
 			final SLPersistentNode linkNode,
 			final SLGraphSessionEventPoster eventPoster) {
 		this.session = session;
-		this.lock = session.getLockObject();
+		lock = session.getLockObject();
 		this.linkNode = linkNode;
 		this.eventPoster = eventPoster;
 	}
@@ -105,17 +106,17 @@ public class SLLinkImpl implements SLLink {
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(final SLLink l) {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final SLLinkImpl link = (SLLinkImpl) ProxyUtil
 						.getLinkFromProxy(l);
-				final String linkClassName1 = this.getLinkClassNode().getName();
+				final String linkClassName1 = getLinkClassNode().getName();
 				final String linkClassName2 = link.getLinkClassNode().getName();
 				if (linkClassName1.equals(linkClassName2)) {
-					final String pairName1 = this.getPairKeyNode().getName();
+					final String pairName1 = getPairKeyNode().getName();
 					final String pairName2 = link.getPairKeyNode().getName();
 					if (pairName1.equals(pairName2)) {
-						final Long linkCount1 = this.linkNode.getProperty(
+						final Long linkCount1 = linkNode.getProperty(
 								Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT)
 								.getValue();
 						final Long linkCount2 = link.linkNode.getProperty(
@@ -144,13 +145,13 @@ public class SLLinkImpl implements SLLink {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				if (obj == null || !(obj instanceof SLLink)) {
 					return false;
 				}
-				final SLPersistentNode classNode1 = this.getLinkClassNode();
-				final SLPersistentNode pairNode1 = this.getPairKeyNode();
+				final SLPersistentNode classNode1 = getLinkClassNode();
+				final SLPersistentNode pairNode1 = getPairKeyNode();
 				final String name1 = classNode1.getName().concat(
 						pairNode1.getName());
 				final SLLinkImpl link = (SLLinkImpl) ProxyUtil
@@ -176,10 +177,13 @@ public class SLLinkImpl implements SLLink {
 	 *             the SL exception
 	 */
 	private SLNode getANode() throws SLException {
-		final SLPersistentNode pairKeyNode = this.getPairKeyNode();
-		final SLPersistentProperty<String> nodeIDProp = pairKeyNode
-				.getProperty(String.class, SLConsts.PROPERTY_NAME_A_NODE_ID);
-		return this.session.getNodeByID(nodeIDProp.getValue());
+		synchronized (lock) {
+
+			final SLPersistentNode pairKeyNode = getPairKeyNode();
+			final SLPersistentProperty<String> nodeIDProp = pairKeyNode
+					.getProperty(String.class, SLConsts.PROPERTY_NAME_A_NODE_ID);
+			return session.getNodeByID(nodeIDProp.getValue());
+		}
 	}
 
 	/**
@@ -191,10 +195,13 @@ public class SLLinkImpl implements SLLink {
 	 *             the SL exception
 	 */
 	private SLNode getBNode() throws SLException {
-		final SLPersistentNode pairKeyNode = this.getPairKeyNode();
-		final SLPersistentProperty<String> nodeIDProp = pairKeyNode
-				.getProperty(String.class, SLConsts.PROPERTY_NAME_B_NODE_ID);
-		return this.session.getNodeByID(nodeIDProp.getValue());
+		synchronized (lock) {
+
+			final SLPersistentNode pairKeyNode = getPairKeyNode();
+			final SLPersistentProperty<String> nodeIDProp = pairKeyNode
+					.getProperty(String.class, SLConsts.PROPERTY_NAME_B_NODE_ID);
+			return session.getNodeByID(nodeIDProp.getValue());
+		}
 	}
 
 	/**
@@ -206,9 +213,12 @@ public class SLLinkImpl implements SLLink {
 	 *             the SL persistent tree session exception
 	 */
 	private int getDirection() throws SLPersistentTreeSessionException {
-		final SLPersistentProperty<Integer> directionProp = this.linkNode
-				.getProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION);
-		return directionProp.getValue();
+		synchronized (lock) {
+			final SLPersistentProperty<Integer> directionProp = linkNode
+					.getProperty(Integer.class,
+							SLConsts.PROPERTY_NAME_DIRECTION);
+			return directionProp.getValue();
+		}
 	}
 
 	// @Override
@@ -218,11 +228,13 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#getID()
 	 */
 	public String getID() throws SLGraphSessionException {
-		try {
-			return this.linkNode.getID();
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve link ID.", e);
+		synchronized (lock) {
+			try {
+				return linkNode.getID();
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve link ID.", e);
+			}
 		}
 	}
 
@@ -236,7 +248,9 @@ public class SLLinkImpl implements SLLink {
 	 */
 	private SLPersistentNode getLinkClassNode()
 			throws SLPersistentTreeSessionException {
-		return this.getPairKeyNode().getParent();
+		synchronized (lock) {
+			return getPairKeyNode().getParent();
+		}
 	}
 
 	/*
@@ -246,10 +260,10 @@ public class SLLinkImpl implements SLLink {
 	 */
 	@SuppressWarnings("unchecked")
 	public Class<? extends SLLink> getLinkType() throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				return (Class<? extends SLLink>) Class.forName(this
-						.getLinkClassNode().getName());
+				return (Class<? extends SLLink>) Class
+						.forName(getLinkClassNode().getName());
 			} catch (final Exception e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve link type.", e);
@@ -257,8 +271,8 @@ public class SLLinkImpl implements SLLink {
 		}
 	}
 
-	public Object getLockObject() {
-		return this.lock;
+	public Lock getLockObject() {
+		return lock;
 	}
 
 	// @Override
@@ -271,11 +285,11 @@ public class SLLinkImpl implements SLLink {
 	 */
 	public SLNode getOtherSide(final SLNode side)
 			throws SLInvalidLinkSideException, SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			SLNode otherSide = null;
 			try {
-				final SLNode aNode = this.getANode();
-				final SLNode bNode = this.getBNode();
+				final SLNode aNode = getANode();
+				final SLNode bNode = getBNode();
 				if (aNode.equals(bNode) && aNode.equals(side)) {
 					otherSide = side;
 				} else {
@@ -306,7 +320,9 @@ public class SLLinkImpl implements SLLink {
 	 */
 	private SLPersistentNode getPairKeyNode()
 			throws SLPersistentTreeSessionException {
-		return this.linkNode.getParent();
+		synchronized (lock) {
+			return linkNode.getParent();
+		}
 	}
 
 	// @Override
@@ -317,14 +333,14 @@ public class SLLinkImpl implements SLLink {
 	 */
 	public Set<SLLinkProperty<Serializable>> getProperties()
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final Set<SLLinkProperty<Serializable>> properties = new HashSet<SLLinkProperty<Serializable>>();
-				final Set<SLPersistentProperty<Serializable>> persistentProperties = this.linkNode
+				final Set<SLPersistentProperty<Serializable>> persistentProperties = linkNode
 						.getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
 				for (final SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
-					final SLLink linkProxy = ProxyUtil.createLinkProxy(this
-							.getLinkType(), this);
+					final SLLink linkProxy = ProxyUtil.createLinkProxy(
+							getLinkType(), this);
 					final SLLinkProperty<Serializable> property = new SLLinkPropertyImpl<Serializable>(
 							linkProxy, persistentProperty);
 					properties.add(property);
@@ -347,7 +363,7 @@ public class SLLinkImpl implements SLLink {
 			final Class<V> clazz, final String name)
 			throws SLLinkPropertyNotFoundException,
 			SLInvalidLinkPropertyTypeException, SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			return this.getProperty(clazz, name, null);
 		}
 	}
@@ -363,7 +379,7 @@ public class SLLinkImpl implements SLLink {
 			final Class<V> clazz, final String name, final Collator collator)
 			throws SLLinkPropertyNotFoundException,
 			SLInvalidLinkPropertyTypeException, SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 
 			SLLinkProperty<V> property = null;
 
@@ -372,14 +388,14 @@ public class SLLinkImpl implements SLLink {
 				final String propName = SLCommonSupport
 						.toUserPropertyName(name);
 				SLPersistentProperty<V> pProperty = SLCommonSupport
-						.getProperty(this.linkNode, clazz, propName);
+						.getProperty(linkNode, clazz, propName);
 
 				// if property not found find collator if its strength is not
 				// identical ...
 				if (pProperty == null) {
-					final Class<? extends SLLink> nodeType = this.getLinkType();
+					final Class<? extends SLLink> nodeType = getLinkType();
 					if (nodeType != null) {
-						final Set<SLPersistentProperty<Serializable>> pProperties = this.linkNode
+						final Set<SLPersistentProperty<Serializable>> pProperties = linkNode
 								.getProperties(SLConsts.PROPERTY_PREFIX_USER
 										+ ".*");
 						for (final SLPersistentProperty<Serializable> current : pProperties) {
@@ -389,8 +405,8 @@ public class SLLinkImpl implements SLLink {
 									.getPropertyCollator(nodeType, currentName)
 									: collator;
 							if (currentCollator.compare(name, currentName) == 0) {
-								pProperty = this.linkNode.getProperty(clazz,
-										current.getName());
+								pProperty = linkNode.getProperty(clazz, current
+										.getName());
 								break;
 							}
 						}
@@ -398,8 +414,8 @@ public class SLLinkImpl implements SLLink {
 				}
 
 				if (pProperty != null) {
-					final SLLink linkProxy = ProxyUtil.createLinkProxy(this
-							.getLinkType(), this);
+					final SLLink linkProxy = ProxyUtil.createLinkProxy(
+							getLinkType(), this);
 					property = new SLLinkPropertyImpl<V>(linkProxy, pProperty);
 				}
 			} catch (final SLInvalidPersistentPropertyTypeException e) {
@@ -425,7 +441,7 @@ public class SLLinkImpl implements SLLink {
 	 */
 	public String getPropertyValueAsString(final String name)
 			throws SLLinkPropertyNotFoundException, SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			return this.getProperty(Serializable.class, name).getValue()
 					.toString();
 		}
@@ -438,7 +454,7 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#getSession()
 	 */
 	public SLGraphSession getSession() {
-		return this.session;
+		return session;
 	}
 
 	// @Override
@@ -448,10 +464,10 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#getSides()
 	 */
 	public SLNode[] getSides() throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				final SLNode a = this.getANode();
-				final SLNode b = this.getBNode();
+				final SLNode a = getANode();
+				final SLNode b = getBNode();
 				return new SLNode[] { a, b };
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
@@ -467,8 +483,8 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#getSource()
 	 */
 	public SLNode getSource() throws SLGraphSessionException {
-		synchronized (this.lock) {
-			if (this.isBidirectional()) {
+		synchronized (lock) {
+			if (isBidirectional()) {
 				// this method cannot be used on bidirecional links, because
 				// source and targets are relatives.
 				// on unidirecional links, source and target are well defined.
@@ -476,8 +492,8 @@ public class SLLinkImpl implements SLLink {
 						"SLLink.getSource() cannot be used on bidirecional links.");
 			}
 			try {
-				return this.getDirection() == SLConsts.DIRECTION_AB ? this
-						.getANode() : this.getBNode();
+				return getDirection() == SLConsts.DIRECTION_AB ? getANode()
+						: getBNode();
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve link source.", e);
@@ -492,8 +508,8 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#getTarget()
 	 */
 	public SLNode getTarget() throws SLGraphSessionException {
-		synchronized (this.lock) {
-			if (this.isBidirectional()) {
+		synchronized (lock) {
+			if (isBidirectional()) {
 				// this method cannot be used on bidirecional links, because
 				// source and targets are relatives.
 				// on unidirecional links, source and target are well defined.
@@ -501,8 +517,8 @@ public class SLLinkImpl implements SLLink {
 						"SLLink.getTarget() cannot be used on bidirecional links.");
 			}
 			try {
-				return this.getDirection() == SLConsts.DIRECTION_AB ? this
-						.getBNode() : this.getANode();
+				return getDirection() == SLConsts.DIRECTION_AB ? getBNode()
+						: getANode();
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve link source.", e);
@@ -518,9 +534,9 @@ public class SLLinkImpl implements SLLink {
 	 */
 	@Override
 	public int hashCode() {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
-				return this.getID().hashCode();
+				return getID().hashCode();
 			} catch (final SLGraphSessionException e) {
 				throw new SLRuntimeException(
 						"Error on attempt to execute SLLinkImpl.hasCode().", e);
@@ -535,11 +551,14 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#isBidirectional()
 	 */
 	public boolean isBidirectional() throws SLGraphSessionException {
-		try {
-			return this.getDirection() == SLConsts.DIRECTION_BOTH;
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to verify if link is bidirectional.", e);
+		synchronized (lock) {
+			try {
+				return getDirection() == SLConsts.DIRECTION_BOTH;
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to verify if link is bidirectional.",
+						e);
+			}
 		}
 	}
 
@@ -550,19 +569,19 @@ public class SLLinkImpl implements SLLink {
 	 * @see org.openspotlight.graph.SLLink#remove()
 	 */
 	public void remove() throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final SLLinkEvent event = new SLLinkEvent(
 						SLLinkEvent.TYPE_LINK_REMOVED, this);
-				event.setBidirectional(this.isBidirectional());
+				event.setBidirectional(isBidirectional());
 				if (event.isBidirectional()) {
-					event.setSides(this.getSides());
+					event.setSides(getSides());
 				} else {
-					event.setSource(this.getSource());
-					event.setTarget(this.getTarget());
+					event.setSource(getSource());
+					event.setTarget(getTarget());
 				}
-				this.linkNode.remove();
-				this.eventPoster.post(event);
+				linkNode.remove();
+				eventPoster.post(event);
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to remove link.", e);
@@ -580,20 +599,20 @@ public class SLLinkImpl implements SLLink {
 	public <V extends Serializable> SLLinkProperty<V> setProperty(
 			final Class<V> clazz, final String name, final V value)
 			throws SLGraphSessionException {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				final String propName = SLCommonSupport
 						.toUserPropertyName(name);
-				final SLPersistentProperty<V> pProperty = this.linkNode
-						.setProperty(clazz, propName, value);
-				final SLLink linkProxy = ProxyUtil.createLinkProxy(this
-						.getLinkType(), this);
+				final SLPersistentProperty<V> pProperty = linkNode.setProperty(
+						clazz, propName, value);
+				final SLLink linkProxy = ProxyUtil.createLinkProxy(
+						getLinkType(), this);
 				final SLLinkProperty<V> property = new SLLinkPropertyImpl<V>(
 						linkProxy, pProperty);
 				final SLLinkPropertyEvent event = new SLLinkPropertyEvent(
 						SLLinkPropertyEvent.TYPE_LINK_PROPERTY_SET, property,
 						pProperty);
-				this.eventPoster.post(event);
+				eventPoster.post(event);
 				return property;
 			} catch (final Exception e) {
 				throw new SLGraphSessionException(
@@ -610,7 +629,9 @@ public class SLLinkImpl implements SLLink {
 	 */
 	@Override
 	public String toString() {
-		return this.linkNode.toString();
+		synchronized (lock) {
+			return linkNode.toString();
+		}
 	}
 
 }

@@ -48,8 +48,7 @@
  */
 package org.openspotlight.graph.listeners;
 
-import static org.openspotlight.graph.SLCommonSupport.getLinkType;
-
+import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
@@ -62,10 +61,9 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
 // TODO: Auto-generated Javadoc
 /**
- * The listener interface for receiving SLLinkCount events.
- * The class that is interested in processing a SLLinkCount
- * event implements this interface, and the object created
- * with that class is registered with a component using the
+ * The listener interface for receiving SLLinkCount events. The class that is
+ * interested in processing a SLLinkCount event implements this interface, and
+ * the object created with that class is registered with a component using the
  * component's <code>addSLLinkCountListener<code> method. When
  * the SLLinkCount event occurs, that object's appropriate
  * method is invoked.
@@ -73,109 +71,157 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * @see SLLinkCountEvent
  */
 public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded(org.openspotlight.graph.SLLinkEvent)
+
+	public SLLinkCountListener(final LockContainer parent) {
+		super(parent);
+	}
+
+	/**
+	 * Adds the source count.
+	 * 
+	 * @param pNode
+	 *            the node
+	 * @param linkType
+	 *            the link type
+	 * @param n
+	 *            the n
+	 * 
+	 * @throws SLPersistentTreeSessionException
+	 *             the SL persistent tree session exception
+	 */
+	private void addSourceCount(final SLPersistentNode pNode,
+			final Class<? extends SLLink> linkType, final int n)
+			throws SLPersistentTreeSessionException {
+		synchronized (lock) {
+			final String sourceLinkCountName = SLCommonSupport
+					.toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_COUNT
+							+ "." + linkType.getName().hashCode());
+			final SLPersistentProperty<Integer> prop = SLCommonSupport
+					.getProperty(pNode, Integer.class, sourceLinkCountName);
+			Integer sourceLinkCount = prop == null ? null : prop.getValue();
+			sourceLinkCount = sourceLinkCount == null ? 1 : sourceLinkCount + n;
+			if (sourceLinkCount <= 0) {
+				prop.remove();
+			} else {
+				pNode.setProperty(Integer.class, sourceLinkCountName,
+						sourceLinkCount);
+			}
+		}
+	}
+
+	/**
+	 * Adds the target count.
+	 * 
+	 * @param pNode
+	 *            the node
+	 * @param linkType
+	 *            the link type
+	 * @param n
+	 *            the n
+	 * 
+	 * @throws SLPersistentTreeSessionException
+	 *             the SL persistent tree session exception
+	 */
+	private void addTargetCount(final SLPersistentNode pNode,
+			final Class<? extends SLLink> linkType, final int n)
+			throws SLPersistentTreeSessionException {
+		synchronized (lock) {
+			final String targetLinkCountName = SLCommonSupport
+					.toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_COUNT
+							+ "." + linkType.getName().hashCode());
+			final SLPersistentProperty<Integer> prop = SLCommonSupport
+					.getProperty(pNode, Integer.class, targetLinkCountName);
+			Integer targetLinkCount = prop == null ? null : prop.getValue();
+			targetLinkCount = targetLinkCount == null ? 1 : targetLinkCount + n;
+			if (targetLinkCount <= 0) {
+				prop.remove();
+			} else {
+				pNode.setProperty(Integer.class, targetLinkCountName,
+						targetLinkCount);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
+	 * (org.openspotlight.graph.SLLinkEvent)
 	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException {
-		try {
-			SLLink link = event.getLink();
-			Class<? extends SLLink> linkType = getLinkType(link);
-			SLPersistentNode sourceNode = SLCommonSupport.getPNode(event.getSource());
-			SLPersistentNode targetNode = SLCommonSupport.getPNode(event.getTarget());
-			if (event.isNewLink()) {
-				if (link.isBidirectional()) {
+	public void linkAdded(final SLLinkEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				final SLLink link = event.getLink();
+				final Class<? extends SLLink> linkType = SLCommonSupport
+						.getLinkType(link);
+				final SLPersistentNode sourceNode = SLCommonSupport
+						.getPNode(event.getSource());
+				final SLPersistentNode targetNode = SLCommonSupport
+						.getPNode(event.getTarget());
+				if (event.isNewLink()) {
+					if (link.isBidirectional()) {
+						addSourceCount(sourceNode, linkType, 1);
+						addSourceCount(targetNode, linkType, 1);
+						addTargetCount(sourceNode, linkType, 1);
+						addTargetCount(targetNode, linkType, 1);
+					} else {
+						addSourceCount(sourceNode, linkType, 1);
+						addTargetCount(targetNode, linkType, 1);
+					}
+				} else if (event.isChangedToBidirectional()) {
 					addSourceCount(sourceNode, linkType, 1);
-					addSourceCount(targetNode, linkType, 1);
-					addTargetCount(sourceNode, linkType, 1);
 					addTargetCount(targetNode, linkType, 1);
 				}
-				else {
-					addSourceCount(sourceNode, linkType, 1);
-					addTargetCount(targetNode, linkType, 1);
-				}
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to add link count data.", e);
 			}
-			else if (event.isChangedToBidirectional()) {
-				addSourceCount(sourceNode, linkType, 1);
-				addTargetCount(targetNode, linkType, 1);
-			}
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to add link count data.", e);
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkRemoved(org.openspotlight.graph.SLLinkEvent)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkRemoved
+	 * (org.openspotlight.graph.SLLinkEvent)
 	 */
 	/**
 	 * {@inheritDoc}
 	 */
-	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException {
-		try {
-			SLLink link = event.getLink();
-			Class<? extends SLLink> linkType = link.getLinkType();
-			if (event.isBidirectional()) {
-				SLPersistentNode sideNode1 = SLCommonSupport.getPNode(event.getSides()[0]);
-				SLPersistentNode sideNode2 = SLCommonSupport.getPNode(event.getSides()[1]);
-				addSourceCount(sideNode1, linkType, -1);
-				addSourceCount(sideNode2, linkType, -1);
-				addTargetCount(sideNode1, linkType, -1);
-				addTargetCount(sideNode2, linkType, -1);
-			}
-			else {
-				SLPersistentNode sourceNode = SLCommonSupport.getPNode(event.getSource());
-				SLPersistentNode targetNode = SLCommonSupport.getPNode(event.getTarget());
-				addSourceCount(sourceNode, linkType, -1);
-				addTargetCount(targetNode, linkType, -1);
+	public void linkRemoved(final SLLinkEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				final SLLink link = event.getLink();
+				final Class<? extends SLLink> linkType = link.getLinkType();
+				if (event.isBidirectional()) {
+					final SLPersistentNode sideNode1 = SLCommonSupport
+							.getPNode(event.getSides()[0]);
+					final SLPersistentNode sideNode2 = SLCommonSupport
+							.getPNode(event.getSides()[1]);
+					addSourceCount(sideNode1, linkType, -1);
+					addSourceCount(sideNode2, linkType, -1);
+					addTargetCount(sideNode1, linkType, -1);
+					addTargetCount(sideNode2, linkType, -1);
+				} else {
+					final SLPersistentNode sourceNode = SLCommonSupport
+							.getPNode(event.getSource());
+					final SLPersistentNode targetNode = SLCommonSupport
+							.getPNode(event.getTarget());
+					addSourceCount(sourceNode, linkType, -1);
+					addTargetCount(targetNode, linkType, -1);
+				}
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to remove link count data.", e);
 			}
 		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to remove link count data.", e);
-		}
-	}
-	
-	/**
-	 * Adds the source count.
-	 * 
-	 * @param pNode the node
-	 * @param linkType the link type
-	 * @param n the n
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	private void addSourceCount(SLPersistentNode pNode, Class<? extends SLLink> linkType, int n) throws SLPersistentTreeSessionException {
-		String sourceLinkCountName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_COUNT + "." + linkType.getName().hashCode());
-		SLPersistentProperty<Integer> prop = SLCommonSupport.getProperty(pNode, Integer.class, sourceLinkCountName);
-		Integer sourceLinkCount = prop == null ? null : prop.getValue();
-		sourceLinkCount = sourceLinkCount == null ? 1 : sourceLinkCount + n;
-		if (sourceLinkCount <= 0) prop.remove();
-		else pNode.setProperty(Integer.class, sourceLinkCountName, sourceLinkCount); 
-	}
-	
-	/**
-	 * Adds the target count.
-	 * 
-	 * @param pNode the node
-	 * @param linkType the link type
-	 * @param n the n
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	private void addTargetCount(SLPersistentNode pNode, Class<? extends SLLink> linkType, int n) throws SLPersistentTreeSessionException {
-		String targetLinkCountName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_COUNT + "." + linkType.getName().hashCode());
-		SLPersistentProperty<Integer> prop = SLCommonSupport.getProperty(pNode, Integer.class, targetLinkCountName);
-		Integer targetLinkCount = prop == null ? null : prop.getValue();
-		targetLinkCount = targetLinkCount == null ? 1 : targetLinkCount + n;
-		if (targetLinkCount <= 0) prop.remove();
-		else pNode.setProperty(Integer.class, targetLinkCountName, targetLinkCount);
 	}
 }
-
-
-
-

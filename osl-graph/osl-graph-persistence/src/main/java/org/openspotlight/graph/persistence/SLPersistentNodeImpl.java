@@ -63,6 +63,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.util.JCRUtil;
 
@@ -76,7 +77,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	/** The session. */
 	private final SLPersistentTreeSession session;
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The jcr node. */
 	private final Node jcrNode;
@@ -159,7 +160,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 		}
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return lock;
 	}
 

@@ -57,6 +57,7 @@ import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 import java.util.Set;
 
 import org.junit.Test;
+import org.openspotlight.common.util.PatternMatcher;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 
 /**

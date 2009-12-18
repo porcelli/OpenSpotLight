@@ -55,6 +55,7 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.HashCodes.hashOf;
 
 import org.junit.Test;
+import org.openspotlight.common.util.HashCodes;
 
 /**
  * Test class for {@link HashCodes}

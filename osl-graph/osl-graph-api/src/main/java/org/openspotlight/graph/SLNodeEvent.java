@@ -61,33 +61,45 @@ public class SLNodeEvent extends SLGraphSessionEvent {
 
 	/** The Constant TYPE_NODE_ADDED. */
 	public static final int TYPE_NODE_ADDED = 1;
-	
+
 	/** The node. */
-	private SLNode node;
-	
+	private final SLNode node;
+
 	/** The p node. */
-	private SLPersistentNode pNode;
-	
+	private final SLPersistentNode pNode;
+
 	/** The persistent mode. */
-	private SLPersistenceMode persistentMode;
-	
+	private final SLPersistenceMode persistentMode;
+
 	/** The link types for link deletion. */
-	private Collection<Class<? extends SLLink>> linkTypesForLinkDeletion;
-	
+	private final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion;
+
 	/** The link types for linked node deletion. */
-	private Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion;
+	private final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion;
 
 	/**
 	 * Instantiates a new sL node event.
 	 * 
-	 * @param type the type
-	 * @param node the node
-	 * @param pNode the node
-	 * @param persistentMode the persistent mode
-	 * @param linkTypesForLinkDeletion the link types for link deletion
-	 * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
+	 * @param type
+	 *            the type
+	 * @param node
+	 *            the node
+	 * @param pNode
+	 *            the node
+	 * @param persistentMode
+	 *            the persistent mode
+	 * @param linkTypesForLinkDeletion
+	 *            the link types for link deletion
+	 * @param linkTypesForLinkedNodeDeletion
+	 *            the link types for linked node deletion
 	 */
-	public SLNodeEvent(int type, SLNode node, SLPersistentNode pNode, SLPersistenceMode persistentMode, Collection<Class<? extends SLLink>> linkTypesForLinkDeletion, Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
+	public SLNodeEvent(
+			final int type,
+			final SLNode node,
+			final SLPersistentNode pNode,
+			final SLPersistenceMode persistentMode,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
 		super(type, node.getSession());
 		this.node = node;
 		this.pNode = pNode;
@@ -95,34 +107,7 @@ public class SLNodeEvent extends SLGraphSessionEvent {
 		this.linkTypesForLinkDeletion = linkTypesForLinkDeletion;
 		this.linkTypesForLinkedNodeDeletion = linkTypesForLinkedNodeDeletion;
 	}
-	
-	/**
-	 * Gets the node.
-	 * 
-	 * @return the node
-	 */
-	public SLNode getNode() {
-		return node;
-	}
-	
-	/**
-	 * Gets the persistent node.
-	 * 
-	 * @return the persistent node
-	 */
-	public SLPersistentNode getPersistentNode() {
-		return pNode;
-	}
-	
-	/**
-	 * Gets the persistence mode.
-	 * 
-	 * @return the persistence mode
-	 */
-	public SLPersistenceMode getPersistenceMode() {
-		return persistentMode;
-	}
-	
+
 	/**
 	 * Gets the link types for link deletion.
 	 * 
@@ -131,7 +116,7 @@ public class SLNodeEvent extends SLGraphSessionEvent {
 	public Collection<Class<? extends SLLink>> getLinkTypesForLinkDeletion() {
 		return linkTypesForLinkDeletion;
 	}
-	
+
 	/**
 	 * Gets the link types for linked nodes deletion.
 	 * 
@@ -139,5 +124,32 @@ public class SLNodeEvent extends SLGraphSessionEvent {
 	 */
 	public Collection<Class<? extends SLLink>> getLinkTypesForLinkedNodesDeletion() {
 		return linkTypesForLinkedNodeDeletion;
+	}
+
+	/**
+	 * Gets the node.
+	 * 
+	 * @return the node
+	 */
+	public SLNode getNode() {
+		return node;
+	}
+
+	/**
+	 * Gets the persistence mode.
+	 * 
+	 * @return the persistence mode
+	 */
+	public SLPersistenceMode getPersistenceMode() {
+		return persistentMode;
+	}
+
+	/**
+	 * Gets the persistent node.
+	 * 
+	 * @return the persistent node
+	 */
+	public SLPersistentNode getPersistentNode() {
+		return pNode;
 	}
 }

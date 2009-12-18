@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionEvent;
@@ -75,123 +76,131 @@ import org.openspotlight.graph.SLNodeEvent;
  * @author Vitor Hugo Chagas
  */
 public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
-    
-    /** The links for deletion. */
-    private final Set<SLLink> linksForDeletion;
-    
-    /** The nodes for deletion. */
-    private final Set<SLNode> nodesForDeletion;
-    
-    /**
-     * Instantiates a new sL object mark listener.
-     */
-    public SLObjectMarkListener() {
-        this.linksForDeletion = new HashSet<SLLink>();
-        this.nodesForDeletion = new HashSet<SLNode>();
-    }
-    
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#beforeSave
-     * (org.openspotlight.graph.SLGraphSessionEvent)
-     */
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void beforeSave(final SLGraphSessionEvent event)
-            throws SLGraphSessionException, SLInvalidCredentialException {
-        
-        // delete links ...
-        for (final SLLink link : this.linksForDeletion) {
-            link.remove();
-        }
-        
-        // delete nodes ...
-        for (final SLNode node : this.nodesForDeletion) {
-            node.remove();
-        }
-    }
-    
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
-     * (org.openspotlight.graph.SLLinkEvent)
-     */
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void linkAdded(final SLLinkEvent event)
-            throws SLGraphSessionException {
-        // unmark link and its sides ...
-        final SLLink link = event.getLink();
-        if (this.linksForDeletion.size() > 0) {
-            this.linksForDeletion.remove(link);
-        }
-        if (this.nodesForDeletion.size() > 0) {
-            final SLNode[] sides = link.getSides();
-            this.nodesForDeletion.remove(sides[0]);
-            this.nodesForDeletion.remove(sides[1]);
-            
-        }
-    }
-    
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
-     * (org.openspotlight.graph.SLNodeEvent)
-     */
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void nodeAdded(final SLNodeEvent event)
-            throws SLGraphSessionException {
-        
-        final SLGraphSession session = event.getSession();
-        final SLNode node = event.getNode();
-        final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = event
-                .getLinkTypesForLinkDeletion();
-        final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion = event
-                .getLinkTypesForLinkedNodesDeletion();
-        
-        if (linkTypesForLinkDeletion != null) {
-            // mark for deletion links that have the added node as side ...
-            for (final Class<? extends SLLink> linkType : linkTypesForLinkDeletion) {
-                final Collection<? extends SLLink> links = session.getLinks(
-                        linkType, node, null, SLLink.DIRECTION_ANY);
-                this.linksForDeletion.addAll(links);
-            }
-        }
-        
-        if (linkTypesForLinkedNodeDeletion != null) {
-            // mark for deletion all the nodes linked to this node ...
-            for (final Class<? extends SLLink> linkType : linkTypesForLinkedNodeDeletion) {
-                final Collection<SLNode> nodes = session.getNodesByLink(
-                        linkType, node);
-                this.nodesForDeletion.addAll(nodes);
-            }
-        }
-        
-        // unmark the added node (if it's present in the set) ...
-        this.nodesForDeletion.remove(node);
-    }
-    
-    /**
-     * 
-     * {@inheritDoc}
-     */
-    public void sessionCleaned() {
-        // 
-    }
+
+	/** The links for deletion. */
+	private final Set<SLLink> linksForDeletion;
+
+	/** The nodes for deletion. */
+	private final Set<SLNode> nodesForDeletion;
+
+	/**
+	 * Instantiates a new sL object mark listener.
+	 */
+	public SLObjectMarkListener(final LockContainer parent) {
+		super(parent);
+		linksForDeletion = new HashSet<SLLink>();
+		nodesForDeletion = new HashSet<SLNode>();
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#beforeSave
+	 * (org.openspotlight.graph.SLGraphSessionEvent)
+	 */
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void beforeSave(final SLGraphSessionEvent event)
+			throws SLGraphSessionException, SLInvalidCredentialException {
+		synchronized (lock) {
+
+			// delete links ...
+			for (final SLLink link : linksForDeletion) {
+				link.remove();
+			}
+
+			// delete nodes ...
+			for (final SLNode node : nodesForDeletion) {
+				node.remove();
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
+	 * (org.openspotlight.graph.SLLinkEvent)
+	 */
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void linkAdded(final SLLinkEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			// unmark link and its sides ...
+			final SLLink link = event.getLink();
+			if (linksForDeletion.size() > 0) {
+				linksForDeletion.remove(link);
+			}
+			if (nodesForDeletion.size() > 0) {
+				final SLNode[] sides = link.getSides();
+				nodesForDeletion.remove(sides[0]);
+				nodesForDeletion.remove(sides[1]);
+
+			}
+		}
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
+	 * (org.openspotlight.graph.SLNodeEvent)
+	 */
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void nodeAdded(final SLNodeEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+
+			final SLGraphSession session = event.getSession();
+			final SLNode node = event.getNode();
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = event
+					.getLinkTypesForLinkDeletion();
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion = event
+					.getLinkTypesForLinkedNodesDeletion();
+
+			if (linkTypesForLinkDeletion != null) {
+				// mark for deletion links that have the added node as side ...
+				for (final Class<? extends SLLink> linkType : linkTypesForLinkDeletion) {
+					final Collection<? extends SLLink> links = session
+							.getLinks(linkType, node, null,
+									SLLink.DIRECTION_ANY);
+					linksForDeletion.addAll(links);
+				}
+			}
+
+			if (linkTypesForLinkedNodeDeletion != null) {
+				// mark for deletion all the nodes linked to this node ...
+				for (final Class<? extends SLLink> linkType : linkTypesForLinkedNodeDeletion) {
+					final Collection<SLNode> nodes = session.getNodesByLink(
+							linkType, node);
+					nodesForDeletion.addAll(nodes);
+				}
+			}
+
+			// unmark the added node (if it's present in the set) ...
+			nodesForDeletion.remove(node);
+		}
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public void sessionCleaned() {
+		// 
+	}
 }

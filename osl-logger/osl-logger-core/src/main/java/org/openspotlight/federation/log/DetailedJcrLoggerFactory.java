@@ -58,6 +58,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
@@ -475,7 +476,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 
 	}
 
-	private static final Object LOG_LOCK_OBJECT = new Object();
+	private static final Lock LOG_LOCK_OBJECT = new Lock();
 
 	final JcrConnectionProvider provider;
 
@@ -505,7 +506,7 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 		return new JcrDetailedLogger(session, this);
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return LOG_LOCK_OBJECT;
 	}
 

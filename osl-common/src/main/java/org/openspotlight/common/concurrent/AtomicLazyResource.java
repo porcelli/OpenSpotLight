@@ -64,7 +64,7 @@ import org.openspotlight.common.util.Exceptions;
 public abstract class AtomicLazyResource<R> implements LockContainer,
 		Disposable {
 
-	private final Object lock;
+	private final Lock lock;
 
 	private R reference = null;
 
@@ -72,7 +72,7 @@ public abstract class AtomicLazyResource<R> implements LockContainer,
 	 * creates an new instance with a new lock object
 	 */
 	protected AtomicLazyResource() {
-		this.lock = new Object();
+		this.lock = new Lock();
 	}
 
 	/**
@@ -128,7 +128,7 @@ public abstract class AtomicLazyResource<R> implements LockContainer,
 		}
 	}
 
-	public final Object getLockObject() {
+	public final Lock getLockObject() {
 
 		return this.lock;
 	}

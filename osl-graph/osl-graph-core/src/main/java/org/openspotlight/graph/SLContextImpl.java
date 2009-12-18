@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.util.ProxyUtil;
@@ -62,7 +63,7 @@ public class SLContextImpl implements SLContext {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The session. */
 	private final SLGraphSession session;
@@ -84,9 +85,9 @@ public class SLContextImpl implements SLContext {
 			final SLPersistentNode contextRootPersistentNode,
 			final SLGraphSessionEventPoster eventPoster) {
 		this.session = session;
-		this.rootNode = new SLNodeImpl(this, null, contextRootPersistentNode,
+		rootNode = new SLNodeImpl(this, null, contextRootPersistentNode,
 				eventPoster);
-		this.lock = session.getLockObject();
+		lock = session.getLockObject();
 	}
 
 	// @Override
@@ -97,13 +98,13 @@ public class SLContextImpl implements SLContext {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			try {
 				if (obj == null) {
 					return false;
 				}
 				final SLContext context = (SLContext) obj;
-				return this.getID().equals(context.getID());
+				return getID().equals(context.getID());
 			} catch (final SLGraphSessionException e) {
 				throw new SLRuntimeException(
 						"Error on attempt to execute SLContextImpl.equals() method.",
@@ -119,11 +120,11 @@ public class SLContextImpl implements SLContext {
 	 * @see org.openspotlight.graph.SLContext#getID()
 	 */
 	public String getID() throws SLGraphSessionException {
-		return this.rootNode.getName();
+		return rootNode.getName();
 	}
 
-	public Object getLockObject() {
-		return this.lock;
+	public Lock getLockObject() {
+		return lock;
 	}
 
 	// @Override
@@ -133,8 +134,8 @@ public class SLContextImpl implements SLContext {
 	 * @see org.openspotlight.graph.SLContext#getRootNode()
 	 */
 	public SLNode getRootNode() throws SLGraphSessionException {
-		synchronized (this.lock) {
-			return ProxyUtil.createNodeProxy(SLNode.class, this.rootNode);
+		synchronized (lock) {
+			return ProxyUtil.createNodeProxy(SLNode.class, rootNode);
 		}
 
 	}
@@ -146,6 +147,6 @@ public class SLContextImpl implements SLContext {
 	 * @see org.openspotlight.graph.SLContext#getSession()
 	 */
 	public SLGraphSession getSession() {
-		return this.session;
+		return session;
 	}
 }

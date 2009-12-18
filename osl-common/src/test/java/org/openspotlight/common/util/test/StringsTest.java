@@ -57,6 +57,7 @@ import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import static org.openspotlight.common.util.Strings.replaceLast;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Strings;
 
 /**
  * Test class for {@link Strings}

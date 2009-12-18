@@ -120,7 +120,9 @@ public class SLNodePropertyEvent extends SLGraphSessionEvent {
 	 * @return the property
 	 */
 	public SLNodeProperty<? extends Serializable> getProperty() {
-		return property;
+		synchronized (lock) {
+			return property;
+		}
 	}
 
 	public String getPropertyName() {

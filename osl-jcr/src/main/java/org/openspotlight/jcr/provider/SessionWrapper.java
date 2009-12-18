@@ -75,13 +75,14 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.jcr.provider.JcrConnectionProvider.SessionClosingListener;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 class SessionWrapper implements SessionWithLock {
 
-	private final Object lock = new Object();
+	private final Lock lock = new Lock();
 
 	private final Session session;
 	private final int sessionId;
@@ -192,7 +193,7 @@ class SessionWrapper implements SessionWithLock {
 		}
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return lock;
 	}
 

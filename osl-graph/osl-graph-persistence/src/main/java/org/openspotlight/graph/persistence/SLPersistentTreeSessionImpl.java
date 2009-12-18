@@ -55,6 +55,7 @@ import javax.jcr.Session;
 
 import org.apache.log4j.Logger;
 import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
@@ -66,7 +67,7 @@ import org.openspotlight.jcr.util.JCRUtil;
  */
 public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 
-	private final Object lock;
+	private final Lock lock;
 
 	/** The Constant LOGGER. */
 	static final Logger LOGGER = Logger
@@ -175,7 +176,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 		rootNode = repositoryRootNode.addNode(repositoryName);
 	}
 
-	public Object getLockObject() {
+	public Lock getLockObject() {
 		return lock;
 	}
 

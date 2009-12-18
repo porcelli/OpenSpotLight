@@ -60,6 +60,7 @@ import static org.openspotlight.common.util.Dates.stringFromDateTime;
 import java.util.Date;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Dates;
 
 /**
  * Test class for {@link Dates}

@@ -50,6 +50,7 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
@@ -59,64 +60,92 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * @author Vitor Hugo Chagas
  */
 public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
-	
+
+	private final Lock lock;
+
 	/** The meta link. */
-	private SLMetaLinkImpl metaLink;
-	
+	private final SLMetaLinkImpl metaLink;
+
 	/** The p property. */
-	private SLPersistentProperty<Serializable> pProperty;
+	private final SLPersistentProperty<Serializable> pProperty;
 
 	/**
 	 * Instantiates a new sL meta link property impl.
 	 * 
-	 * @param metaLink the meta link
-	 * @param pProperty the property
+	 * @param metaLink
+	 *            the meta link
+	 * @param pProperty
+	 *            the property
 	 */
-	public SLMetaLinkPropertyImpl(SLMetaLinkImpl metaLink, SLPersistentProperty<Serializable> pProperty) {
+	public SLMetaLinkPropertyImpl(final SLMetaLinkImpl metaLink,
+			final SLPersistentProperty<Serializable> pProperty) {
 		this.metaLink = metaLink;
 		this.pProperty = pProperty;
+		lock = pProperty.getLockObject();
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	public Lock getLockObject() {
+		return lock;
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaElement#getMetadata()
 	 */
 	public SLMetadata getMetadata() throws SLGraphSessionException {
 		return metaLink.getMetadata();
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaLinkProperty#getMetaLink()
 	 */
 	public SLMetaLink getMetaLink() throws SLGraphSessionException {
 		return metaLink;
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaLinkProperty#getName()
 	 */
 	public String getName() throws SLGraphSessionException {
-		try {
-			return SLCommonSupport.toSimplePropertyName(pProperty.getName());
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve meta link property name.", e);
+		synchronized (lock) {
+
+			try {
+				return SLCommonSupport
+						.toSimplePropertyName(pProperty.getName());
+			} catch (final SLPersistentTreeSessionException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve meta link property name.",
+						e);
+			}
 		}
 	}
-	
-	//@Override
-	/* (non-Javadoc)
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLMetaLinkProperty#getType()
 	 */
 	@SuppressWarnings("unchecked")
-	public Class<? extends Serializable> getType() throws SLGraphSessionException {
-		try {
-			return (Class<? extends Serializable>) Class.forName((String) pProperty.getValue());
-		}
-		catch (Exception e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve meta link property type.", e);
+	public Class<? extends Serializable> getType()
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				return (Class<? extends Serializable>) Class
+						.forName((String) pProperty.getValue());
+			} catch (final Exception e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve meta link property type.",
+						e);
+			}
 		}
 	}
 }
