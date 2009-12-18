@@ -9,6 +9,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -34,6 +35,7 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
+@Ignore
 public class DbTableArtifactBundleProcessorTest {
 
 	public static class SampleDbArtifactRegistry implements
@@ -59,7 +61,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(2);
+		settings.setNumberOfParallelThreads(1);
 		settings.setArtifactFinderRegistryClass(SampleDbArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		final Repository repository = new Repository();
@@ -146,8 +148,12 @@ public class DbTableArtifactBundleProcessorTest {
 		final SLNode groupNode = groupContext.getRootNode().getNode(
 				group.getUniqueName());
 		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
-		final SLNode exampleTableNode = groupNode.getNode("EXAMPLETABLE");
+		final SLNode exampleServerNode = groupNode.getNode("h2");
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleTableNode, Is.is(Server.class));
+		final SLNode exampleSchemaNode = exampleServerNode.getNode("PUBLIC");
+		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(exampleTableNode, Is.is(Server.class));
 
 		scheduler.stopScheduler();
 
