@@ -33,5 +33,8 @@
 		<linkData linkName="Group - Database" linkType="A2B">
 			<description sideA="Group" sideB="Database" />
 		</linkData>
+		<linkData linkName="Contraint - Database Column	" linkType="A2B">
+			<description sideA="Database Constraint" sideB="Column" />
+		</linkData>
 	</package>
 </root>

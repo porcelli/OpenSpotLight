@@ -79,6 +79,7 @@ public class ConfigurationExamples {
 		group.setActive(true);
 		final DbArtifactSource artifactSource = new DbArtifactSource();
 		artifactSource.setServerName("server name " + sourceName);
+		artifactSource.setDatabaseName("db name " + sourceName);
 		repository.getArtifactSources().add(artifactSource);
 		artifactSource.setRepository(repository);
 		artifactSource.setName(sourceName);

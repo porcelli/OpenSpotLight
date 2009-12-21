@@ -52,6 +52,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.common.util.Arrays;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -63,7 +66,7 @@ public class Column implements SimpleNodeType, Serializable {
 
 	private Set<ExportedFk> exportedFks = new HashSet<ExportedFk>();
 
-	private String pkName;
+	private Set<String> pks = new HashSet<String>();
 
 	private String name;
 
@@ -74,7 +77,21 @@ public class Column implements SimpleNodeType, Serializable {
 	private int columnSize;
 
 	private int decimalSize;
+
 	private TableArtifact table;
+
+	private volatile transient String description;
+
+	private volatile transient int hashCode;
+
+	public boolean equals(final Object o) {
+		if (!(o instanceof Column)) {
+			return false;
+		}
+		final Column that = (Column) o;
+		return Equals.eachEquality(Arrays.of(table, name), Arrays.andOf(
+				that.table, that.name));
+	}
 
 	public int getColumnSize() {
 		return columnSize;
@@ -97,8 +114,8 @@ public class Column implements SimpleNodeType, Serializable {
 		return nullable;
 	}
 
-	public String getPkName() {
-		return pkName;
+	public Set<String> getPks() {
+		return pks;
 	}
 
 	@ParentProperty
@@ -108,6 +125,15 @@ public class Column implements SimpleNodeType, Serializable {
 
 	public ColumnType getType() {
 		return type;
+	}
+
+	public int hashCode() {
+		int res = hashCode;
+		if (res == 0) {
+			res = HashCodes.hashOf(table, name);
+			hashCode = res;
+		}
+		return res;
 	}
 
 	public void setColumnSize(final int columnSize) {
@@ -130,8 +156,8 @@ public class Column implements SimpleNodeType, Serializable {
 		this.nullable = nullable;
 	}
 
-	public void setPkName(final String pkName) {
-		this.pkName = pkName;
+	public void setPks(final Set<String> pks) {
+		this.pks = pks;
 	}
 
 	public void setTable(final TableArtifact table) {
@@ -140,5 +166,15 @@ public class Column implements SimpleNodeType, Serializable {
 
 	public void setType(final ColumnType type) {
 		this.type = type;
+	}
+
+	public String toString() {
+		String toString = description;
+		if (toString == null) {
+			toString = "Column " + name + " "
+					+ (table != null ? table.toString() : "no_table ");
+			description = toString;
+		}
+		return toString;
 	}
 }

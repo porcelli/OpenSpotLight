@@ -81,7 +81,6 @@ import org.openspotlight.federation.domain.RoutineType;
 import org.openspotlight.federation.domain.TableArtifact;
 import org.openspotlight.federation.domain.ViewArtifact;
 
-@SuppressWarnings("unused")
 public class DatabaseCustomArtifactFinder extends
 		AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
 
@@ -113,7 +112,6 @@ public class DatabaseCustomArtifactFinder extends
 				final String catalog = rs.getString("PROCEDURE_CAT"); //$NON-NLS-1$
 				final String schema = rs.getString("PROCEDURE_SCHEM"); //$NON-NLS-1$
 				final String name = rs.getString("PROCEDURE_NAME"); //$NON-NLS-1$
-				final String remarks = rs.getString("REMARKS"); //$NON-NLS-1$
 				final int type = rs.getInt("PROCEDURE_TYPE"); //$NON-NLS-1$
 				final RoutineType typeAsEnum = RoutineType.getTypeByInt(type);
 				String description;
@@ -186,23 +184,33 @@ public class DatabaseCustomArtifactFinder extends
 				}
 
 				TableArtifact desc = null;
-				if ("VIEW".equals(tableType)) { //$NON-NLS-1$
-					desc = Artifact.createArtifact(ViewArtifact.class,
-							description, ChangeType.INCLUDED);
+
+				if (tableMetadata.containsKey(description)) {
+					desc = tableMetadata.get(description);
 				} else {
-					desc = Artifact.createArtifact(TableArtifact.class,
-							description, ChangeType.INCLUDED);
+					if ("VIEW".equals(tableType)) { //$NON-NLS-1$
+						desc = Artifact.createArtifact(ViewArtifact.class,
+								description, ChangeType.INCLUDED);
+					} else {
+						desc = Artifact.createArtifact(TableArtifact.class,
+								description, ChangeType.INCLUDED);
+					}
 				}
 				desc.setSchemaName(schema);
 				desc.setCatalogName(catalog);
 				desc.setTableName(tableName);
-				final Map<String, String> pkMap = new HashMap<String, String>();
+				final Map<String, Set<String>> pkMap = new HashMap<String, Set<String>>();
 				final ResultSet pkRs = metadata.getPrimaryKeys(catalog, schema,
 						tableName);
 				while (pkRs.next()) {
 					final String pkColumn = pkRs.getString("COLUMN_NAME");
 					final String pkName = pkRs.getString("PK_NAME");
-					pkMap.put(pkColumn, pkName);
+					Set<String> set = pkMap.get(pkColumn);
+					if (set == null) {
+						set = new HashSet<String>();
+						pkMap.put(pkColumn, set);
+					}
+					set.add(pkName);
 				}
 
 				final Map<String, Set<ExportedFk>> exportedFks = new HashMap<String, Set<ExportedFk>>();
@@ -246,10 +254,21 @@ public class DatabaseCustomArtifactFinder extends
 					final Integer decimalSize = columnRs
 							.getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
 
-					final Column column = new Column();
+					Column column = new Column();
 					column.setTable(desc);
-					column.setPkName(pkMap.get(columnName));
 					column.setName(columnName);
+					findingColumn: if (desc.getColumns().contains(column)) {
+						for (final Column c : desc.getColumns()) {
+							if (c.equals(column)) {
+								column = c;
+								break findingColumn;
+							}
+						}
+					}
+					final Set<String> pks = pkMap.get(columnName);
+					if (pks != null) {
+						column.getPks().addAll(pks);
+					}
 					column.setType(type);
 					column.setNullable(nullable);
 					column.setColumnSize(columnSize);

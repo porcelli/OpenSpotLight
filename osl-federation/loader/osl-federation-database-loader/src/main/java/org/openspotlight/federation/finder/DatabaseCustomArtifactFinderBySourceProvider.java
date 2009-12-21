@@ -48,6 +48,9 @@
  */
 package org.openspotlight.federation.finder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DatabaseCustomArtifact;
@@ -56,11 +59,19 @@ import org.openspotlight.federation.domain.DbArtifactSource;
 public class DatabaseCustomArtifactFinderBySourceProvider implements
 		ArtifactFinderBySourceProvider {
 
-	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
+	private final Map<ArtifactSource, DatabaseCustomArtifactFinder> cache = new HashMap<ArtifactSource, DatabaseCustomArtifactFinder>();
+
+	public synchronized <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
 		if (DatabaseCustomArtifact.class.isAssignableFrom(artifactType)
 				&& source instanceof DbArtifactSource) {
-			return new DatabaseCustomArtifactFinder((DbArtifactSource) source);
+			DatabaseCustomArtifactFinder finder = cache.get(source);
+			if (finder == null) {
+				finder = new DatabaseCustomArtifactFinder(
+						(DbArtifactSource) source);
+			}
+			cache.put(source, finder);
+			return finder;
 
 		}
 		return null;

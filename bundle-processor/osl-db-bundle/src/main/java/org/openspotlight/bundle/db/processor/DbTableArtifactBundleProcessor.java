@@ -7,6 +7,7 @@ import org.openspotlight.bundle.db.DBConstants;
 import org.openspotlight.bundle.db.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.metamodel.link.CatalogTableView;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
+import org.openspotlight.bundle.db.metamodel.link.ConstraintDatabaseColumn;
 import org.openspotlight.bundle.db.metamodel.link.DatabaseSchema;
 import org.openspotlight.bundle.db.metamodel.link.ForeignKey;
 import org.openspotlight.bundle.db.metamodel.link.GroupDatabase;
@@ -17,6 +18,8 @@ import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DataType;
 import org.openspotlight.bundle.db.metamodel.node.Database;
+import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
+import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
 import org.openspotlight.bundle.db.metamodel.node.Schema;
 import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
@@ -120,8 +123,13 @@ public class DbTableArtifactBundleProcessor implements
 			context.getGraphSession().addLink(ColumnDataType.class, column,
 					dataType, false);
 			column.setDataType(dataType.getName());
-			if (c.getPkName() != null) {
-				column.setPk(c.getPkName());
+			if (c.getPks() != null) {
+				for (final String pkName : c.getPks()) {
+					final DatabaseConstraintPrimaryKey pk = column.addNode(
+							DatabaseConstraintPrimaryKey.class, pkName);
+					context.getGraphSession().addLink(
+							ConstraintDatabaseColumn.class, column, pk, false);
+				}
 			}
 			for (final ExportedFk fk : c.getExportedFks()) {
 				final Schema thatSchema = database.addNode(Schema.class, fk
@@ -140,6 +148,14 @@ public class DbTableArtifactBundleProcessor implements
 						.getColumnName());
 				context.getGraphSession().addLink(ForeignKey.class, column,
 						thatColumn, false);
+				final DatabaseConstraintForeignKey fkNode = thatColumn.addNode(
+						DatabaseConstraintForeignKey.class, fk.getFkName());
+				context.getGraphSession().addLink(
+						ConstraintDatabaseColumn.class, column, fkNode, false);
+				context.getGraphSession().addLink(
+						ConstraintDatabaseColumn.class, thatColumn, fkNode,
+						false);
+
 			}
 			addedColumns.add(c.getName());
 		}

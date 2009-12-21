@@ -49,6 +49,15 @@
 			<nodeData parentTypeName="DataType" typeName="UserDefinedType">
 				<validParent>Column</validParent>
 			</nodeData>
+			<nodeData parentTypeName="" typeName="Database Constraint">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="Database Constraint" typeName="Primary Key">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="Database Constraint" typeName="Foreign Key">
+				<validParent>Column</validParent>
+			</nodeData>
 		</nodes>
 	</package>
 </root>

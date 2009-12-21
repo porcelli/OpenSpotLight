@@ -1,3 +1,4 @@
+
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -46,29 +47,22 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.db.metamodel.node;
+package org.openspotlight.bundle.db.metamodel.link;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
- * The Interface for node Column Meta Model.
+ * The Interface for a link between Contraint - Database Column .
  * 
- * {@link TableView} should be used as parent.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ *
+ * Database Constraint A2B Column
+ *
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-@SLDescription("Column")
-public interface Column extends SLNode {
-
-	@SLProperty
-	public String getDataType();
-
-	@SLProperty
-	public Integer getOrder();
-
-	public void setDataType(String dataType);
-
-	public void setOrder(Integer order);
+@SLDescription("Contraint - Database Column ")
+public interface ConstraintDatabaseColumn extends SLLink {
 }
+
+
+        

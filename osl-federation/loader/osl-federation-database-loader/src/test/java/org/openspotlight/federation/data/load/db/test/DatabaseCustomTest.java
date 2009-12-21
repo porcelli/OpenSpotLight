@@ -57,6 +57,7 @@ import static org.openspotlight.federation.data.processing.test.ConfigurationExa
 
 import java.sql.Connection;
 
+import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -166,7 +167,7 @@ public class DatabaseCustomTest {
 				.execute();
 		connection
 				.prepareStatement(
-						"create table anotherTable(i int not null primary key, i_fk int,)")
+						"create table anotherTable(i int not null primary key, i_fk int)")
 				.execute();
 
 		connection
@@ -190,7 +191,8 @@ public class DatabaseCustomTest {
 		boolean foundPk = false;
 		for (final Column c : exampleTable.getColumns()) {
 			if (c.getName().equalsIgnoreCase("i")) {
-				assertThat(c.getPkName(), is(notNullValue()));
+				assertThat(c.getPks(), is(notNullValue()));
+				assertThat(c.getPks().size(), is(IsNot.not(0)));
 				assertThat(c.getExportedFks().size(), is(1));
 				final ExportedFk fk = c.getExportedFks().iterator().next();
 				assertThat(fk.getColumnName(), is("I_FK"));

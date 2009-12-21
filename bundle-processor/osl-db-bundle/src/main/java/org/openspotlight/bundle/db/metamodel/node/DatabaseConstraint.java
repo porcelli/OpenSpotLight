@@ -1,3 +1,4 @@
+
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -50,25 +51,18 @@ package org.openspotlight.bundle.db.metamodel.node;
 
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
- * The Interface for node Column Meta Model.
- * 
- * {@link TableView} should be used as parent.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * The Interface for node Database Constraint Meta Model.
+ *
+ * {@link Column} should be used as parent.
+ *
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
  */
-@SLDescription("Column")
-public interface Column extends SLNode {
+@SLDescription("Database Constraint")
+public interface DatabaseConstraint extends SLNode {
 
-	@SLProperty
-	public String getDataType();
-
-	@SLProperty
-	public Integer getOrder();
-
-	public void setDataType(String dataType);
-
-	public void setOrder(Integer order);
+    
 }
+
+        

@@ -221,7 +221,7 @@ public class ArtifactLoaderFactory {
 			}
 			if (sourcesToLoad.size() == 0) {
 				logger
-						.info("didn' find any artifact finder for artifact sources "
+						.info("didn't find any artifact finder for artifact sources "
 								+ Arrays.toString(sources));
 				return Collections.emptySet();
 			}
