@@ -16,7 +16,6 @@ public class ExportedFk implements SimpleNodeType, Serializable {
 	private static final long serialVersionUID = 1892651847613896234L;
 	private Column column;
 	private String fkName;
-	private String pkName;
 
 	private String tableName;
 
@@ -33,10 +32,10 @@ public class ExportedFk implements SimpleNodeType, Serializable {
 			return false;
 		}
 		final ExportedFk that = (ExportedFk) o;
-		return Equals.eachEquality(Arrays.of(fkName, pkName, column,
-				columnName, tableCatalog, tableName, tableSchema), Arrays
-				.andOf(that.fkName, that.pkName, that.column, that.columnName,
-						that.tableCatalog, that.tableName, that.tableSchema));
+		return Equals.eachEquality(Arrays.of(fkName, column, columnName,
+				tableCatalog, tableName, tableSchema), Arrays.andOf(
+				that.fkName, that.column, that.columnName, that.tableCatalog,
+				that.tableName, that.tableSchema));
 	}
 
 	@ParentProperty
@@ -49,12 +48,9 @@ public class ExportedFk implements SimpleNodeType, Serializable {
 		return columnName;
 	}
 
+	@KeyProperty
 	public String getFkName() {
 		return fkName;
-	}
-
-	public String getPkName() {
-		return pkName;
 	}
 
 	@KeyProperty
@@ -75,8 +71,8 @@ public class ExportedFk implements SimpleNodeType, Serializable {
 	public int hashCode() {
 		int result = hashCode;
 		if (result == 0) {
-			result = HashCodes.hashOf(fkName, pkName, column, columnName,
-					tableCatalog, tableName, tableSchema);
+			result = HashCodes.hashOf(fkName, column, columnName, tableCatalog,
+					tableName, tableSchema);
 			hashCode = result;
 		}
 		return result;
@@ -92,10 +88,6 @@ public class ExportedFk implements SimpleNodeType, Serializable {
 
 	public void setFkName(final String fkName) {
 		this.fkName = fkName;
-	}
-
-	public void setPkName(final String pkName) {
-		this.pkName = pkName;
 	}
 
 	public void setTableCatalog(final String tableCatalog) {

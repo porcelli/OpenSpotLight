@@ -61,8 +61,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.Column;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.ExportedFk;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.RoutineArtifact;
 import org.openspotlight.federation.domain.RoutineType;
@@ -157,12 +158,22 @@ public class DatabaseCustomTest {
 				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 		connection
 				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection
 				.prepareStatement(
 						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
 				.execute();
+		connection
+				.prepareStatement(
+						"create table anotherTable(i int not null primary key, i_fk int,)")
+				.execute();
+
+		connection
+				.prepareStatement(
+						"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
+				.execute();
+
 		connection.commit();
 		connection.close();
 
@@ -171,11 +182,27 @@ public class DatabaseCustomTest {
 		assertThat(loadedArtifacts, is(notNullValue()));
 		assertThat(loadedArtifacts.iterator().hasNext(), is(true));
 
-		final DatabaseCustomArtifact exampleTable = finder
+		final TableArtifact exampleTable = (TableArtifact) finder
 				.findByPath("PUBLIC/TABLE/DB/EXAMPLETABLE");
-		final DatabaseCustomArtifact exampleView = finder
+		final TableArtifact exampleView = (TableArtifact) finder
 				.findByPath("PUBLIC/VIEW/DB/EXAMPLEVIEW");
 		assertThat(exampleTable, is(TableArtifact.class));
+		boolean foundPk = false;
+		for (final Column c : exampleTable.getColumns()) {
+			if (c.getName().equalsIgnoreCase("i")) {
+				assertThat(c.getPkName(), is(notNullValue()));
+				assertThat(c.getExportedFks().size(), is(1));
+				final ExportedFk fk = c.getExportedFks().iterator().next();
+				assertThat(fk.getColumnName(), is("I_FK"));
+				assertThat(fk.getFkName(), is(notNullValue()));
+				assertThat(fk.getTableCatalog(), is("DB"));
+				assertThat(fk.getTableSchema(), is("PUBLIC"));
+				assertThat(fk.getTableName(), is("ANOTHERTABLE"));
+				foundPk = true;
+				break;
+			}
+		}
+		assertThat(foundPk, is(true));
 		assertThat(exampleView, is(ViewArtifact.class));
 	}
 }

@@ -208,7 +208,6 @@ public class DatabaseCustomArtifactFinder extends
 				final ResultSet fkRs = metadata.getExportedKeys(catalog,
 						schema, tableName);
 				while (fkRs.next()) {
-					final String pkName = fkRs.getString("PK_NAME");
 					final String fkName = fkRs.getString("FK_NAME");
 					final String thisColumnName = fkRs
 							.getString("PKCOLUMN_NAME");
@@ -225,7 +224,6 @@ public class DatabaseCustomArtifactFinder extends
 					final ExportedFk fk = new ExportedFk();
 					fk.setColumnName(thatColumn);
 					fk.setFkName(fkName);
-					fk.setPkName(pkName);
 					fk.setTableCatalog(thatCatalog);
 					fk.setTableName(thatTable);
 					fk.setTableSchema(thatSchema);
@@ -257,10 +255,12 @@ public class DatabaseCustomArtifactFinder extends
 					column.setDecimalSize(decimalSize);
 					desc.getColumns().add(column);
 					final Set<ExportedFk> fks = exportedFks.get(columnName);
-					for (final ExportedFk fk : fks) {
-						fk.setColumn(column);
+					if (fks != null) {
+						for (final ExportedFk fk : fks) {
+							fk.setColumn(column);
+						}
+						column.getExportedFks().addAll(fks);
 					}
-					column.getExportedFks().addAll(fks);
 				}
 				tableMetadata.put(description, desc);
 
