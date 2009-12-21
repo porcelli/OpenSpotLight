@@ -93,7 +93,7 @@ public class DatabaseCustomTest {
 		configuration
 				.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		configuration.setNumberOfParallelThreads(4);
+		configuration.setNumberOfParallelThreads(1);
 
 		artifactLoader = ArtifactLoaderFactory.createNewLoader(configuration);
 		bundle = (DbArtifactSource) createH2DbConfiguration(

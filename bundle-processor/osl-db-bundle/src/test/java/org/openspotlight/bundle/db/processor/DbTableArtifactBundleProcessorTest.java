@@ -9,7 +9,6 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Database;
@@ -41,8 +40,26 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-@Ignore
 public class DbTableArtifactBundleProcessorTest {
+
+	// FIXME All tests should remove all garbage by using the DeleteLinks and
+	// DeleteLinkedObjects
+
+	private static class RepositoryData {
+		public final GlobalSettings settings;
+		public final Repository repository;
+		public final Group group;
+		public final DbArtifactSource artifactSource;
+
+		public RepositoryData(final GlobalSettings settings,
+				final Repository repository, final Group group,
+				final DbArtifactSource artifactSource) {
+			this.settings = settings;
+			this.repository = repository;
+			this.group = group;
+			this.artifactSource = artifactSource;
+		}
+	}
 
 	public static class SampleDbArtifactRegistry implements
 			ArtifactFinderRegistry {
@@ -61,13 +78,10 @@ public class DbTableArtifactBundleProcessorTest {
 				.closeRepositoryAndCleanResources();
 	}
 
-	@Test
-	public void shouldExecuteBundleProcessor() throws Exception {
-		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
-
+	private RepositoryData createRepositoryData() {
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(8);
+		settings.setNumberOfParallelThreads(1);
 		settings.setArtifactFinderRegistryClass(SampleDbArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		final Repository repository = new Repository();
@@ -112,48 +126,66 @@ public class DbTableArtifactBundleProcessorTest {
 		bundleSource.setRelative("/databaseArtifacts");
 		bundleSource.getIncludeds().add("*");
 
-		final DbArtifactSource dbSource = (DbArtifactSource) repository
-				.getArtifactSources().iterator().next();
+		return new RepositoryData(settings, repository, group, artifactSource);
+	}
 
-		final Connection conn = DatabaseSupport.createConnection(dbSource);
+	@Test
+	public void shouldExecuteBundleProcessor() throws Exception {
+		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
 
-		conn
+		final RepositoryData data = createRepositoryData();
+
+		final Connection connection = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection
 				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
-		conn
+		connection
 				.prepareStatement(
-						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable") //$NON-NLS-1$
+						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
+				.execute();
+		connection
+				.prepareStatement(
+						"create table anotherTable(i int not null primary key, i_fk int,)")
 				.execute();
 
-		conn.close();
+		connection
+				.prepareStatement(
+						"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
+				.execute();
+		connection.close();
 
 		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
 				.createFactory();
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				repository.getName());
+				data.repository.getName());
 
-		context.getDefaultConfigurationManager().saveGlobalSettings(settings);
-		context.getDefaultConfigurationManager().saveRepository(repository);
+		context.getDefaultConfigurationManager().saveGlobalSettings(
+				data.settings);
+		context.getDefaultConfigurationManager()
+				.saveRepository(data.repository);
 		context.closeResources();
 
 		final DefaultScheduler scheduler = DefaultScheduler.INSTANCE;
 		scheduler.initializeSettings(contextFactory, "user", "password",
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		scheduler.refreshJobs(settings, Collections.setOf(repository));
+		scheduler
+				.refreshJobs(data.settings, Collections.setOf(data.repository));
 		scheduler.startScheduler();
-		scheduler.fireSchedulable("username", "password", artifactSource);
-		scheduler.fireSchedulable("username", "password", group);
+		scheduler.fireSchedulable("username", "password", data.artifactSource);
+		scheduler.fireSchedulable("username", "password", data.group);
 
 		final ExecutionContext executionContext = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
 								.getName());
 		final SLContext groupContext = executionContext.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode = groupContext.getRootNode().getNode(
-				group.getUniqueName());
+				data.group.getUniqueName());
 		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
 		final SLNode exampleServerNode = groupNode.getNode("h2");
 		Assert.assertThat(exampleServerNode, Is.is(IsNull.notNullValue()));
@@ -178,6 +210,36 @@ public class DbTableArtifactBundleProcessorTest {
 
 		scheduler.stopScheduler();
 
+	}
+
+	@Test
+	public void shouldIncludeNewColumnOnChangedTable() throws Exception {
+		Assert.fail();
+	}
+
+	@Test
+	public void shouldRemoveDeletedColumns() throws Exception {
+		Assert.fail();
+	}
+
+	@Test
+	public void shouldRemoveDeletedTables() throws Exception {
+		Assert.fail();
+	}
+
+	@Test
+	public void shouldUpdateChangedDatatypesAndRemoveUnused() throws Exception {
+		Assert.fail();
+	}
+
+	@Test
+	public void shouldUpdateChangedFkInformation() throws Exception {
+		Assert.fail();
+	}
+
+	@Test
+	public void shouldUpdateChangedPkInformation() throws Exception {
+		Assert.fail();
 	}
 
 }
