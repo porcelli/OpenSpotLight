@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *  
@@ -51,18 +50,30 @@ package org.openspotlight.bundle.db.metamodel.node;
 
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface for node Column Meta Model.
- *
+ * 
  * {@link TableView} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription("Column")
 public interface Column extends SLNode {
 
-    
-}
+	@SLProperty
+	public String getDataType();
 
-        
+	@SLProperty
+	public Integer getOrder();
+
+	@SLProperty
+	public String getPk();
+
+	public void setDataType(String dataType);
+
+	public void setOrder(Integer order);
+
+	public void setPk(String pk);
+}

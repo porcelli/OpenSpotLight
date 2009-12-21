@@ -51,87 +51,70 @@ package org.openspotlight.federation.domain;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "database" )
-public class RoutineArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
-    private static final long     serialVersionUID = 3060861243165317562L;
+@Name("database")
+public class RoutineArtifact extends DatabaseCustomArtifact implements
+		SimpleNodeType, Serializable {
+	private static final long serialVersionUID = 3060861243165317562L;
 
-    private String                tableName;
-    private String                catalogName;
-    private RoutineType           type;
-    private String                schemaName;
+	private String tableName;
+	private String catalogName;
+	private RoutineType type;
+	private String schemaName;
 
-    private Set<RoutineParameter> parameters       = new HashSet<RoutineParameter>();
+	private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
 
-    @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!(other instanceof RoutineArtifact)) {
-            return false;
-        }
-        final RoutineArtifact that = (RoutineArtifact)other;
-        return Equals.eachEquality(this.getParameters(), that.getParameters());
-    }
+	@Override
+	public boolean contentEquals(final Artifact other) {
+		if (!(other instanceof RoutineArtifact)) {
+			return false;
+		}
+		final RoutineArtifact that = (RoutineArtifact) other;
+		return Equals.eachEquality(getParameters(), that.getParameters());
+	}
 
-    public String getCatalogName() {
-        return this.catalogName;
-    }
+	public String getCatalogName() {
+		return catalogName;
+	}
 
-    public Set<RoutineParameter> getParameters() {
-        return this.parameters;
-    }
+	public Set<RoutineParameter> getParameters() {
+		return parameters;
+	}
 
-    public String getSchemaName() {
-        return this.schemaName;
-    }
+	public String getSchemaName() {
+		return schemaName;
+	}
 
-    public String getTableName() {
-        return this.tableName;
-    }
+	public String getTableName() {
+		return tableName;
+	}
 
-    public RoutineType getType() {
-        return this.type;
-    }
+	public RoutineType getType() {
+		return type;
+	}
 
-    public void loadProperties() {
-        final StringTokenizer tok = new StringTokenizer(this.getArtifactCompleteName(), "/"); //$NON-NLS-1$
-        if (tok.countTokens() == 4) {
-            this.setSchemaName(tok.nextToken());
-            final String type = tok.nextToken();
-            this.setType(RoutineType.valueOf(type));
-            this.setCatalogName(tok.nextToken());
-            this.setTableName(tok.nextToken());
-        } else {
-            this.setSchemaName(tok.nextToken());
-            final String type = tok.nextToken();
-            this.setType(RoutineType.valueOf(type));
+	public void setCatalogName(final String catalogName) {
+		this.catalogName = catalogName;
+	}
 
-            this.setTableName(tok.nextToken());
-        }
-    }
+	public void setParameters(final Set<RoutineParameter> parameters) {
+		this.parameters = parameters;
+	}
 
-    public void setCatalogName( final String catalogName ) {
-        this.catalogName = catalogName;
-    }
+	public void setSchemaName(final String schemaName) {
+		this.schemaName = schemaName;
+	}
 
-    public void setParameters( final Set<RoutineParameter> parameters ) {
-        this.parameters = parameters;
-    }
+	public void setTableName(final String tableName) {
+		this.tableName = tableName;
+	}
 
-    public void setSchemaName( final String schemaName ) {
-        this.schemaName = schemaName;
-    }
-
-    public void setTableName( final String tableName ) {
-        this.tableName = tableName;
-    }
-
-    public void setType( final RoutineType type ) {
-        this.type = type;
-    }
+	public void setType(final RoutineType type) {
+		this.type = type;
+	}
 
 }

@@ -51,7 +51,6 @@ package org.openspotlight.federation.domain;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
@@ -90,22 +89,6 @@ public class TableArtifact extends DatabaseCustomArtifact implements
 
 	public String getTableName() {
 		return tableName;
-	}
-
-	public void loadProperties() {
-		final StringTokenizer tok = new StringTokenizer(
-				getArtifactCompleteName(), "/"); //$NON-NLS-1$
-		if (tok.countTokens() == 4) {
-			setSchemaName(tok.nextToken());
-			tok.nextToken();// puts away its table type
-			setCatalogName(tok.nextToken());
-			setTableName(tok.nextToken());
-		} else {
-
-			setSchemaName(tok.nextToken());
-			tok.nextToken();// puts away its table type
-			setTableName(tok.nextToken());
-		}
 	}
 
 	public void setCatalogName(final String catalogName) {

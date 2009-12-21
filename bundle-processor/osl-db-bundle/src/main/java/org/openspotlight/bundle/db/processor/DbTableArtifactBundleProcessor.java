@@ -117,8 +117,7 @@ public class DbTableArtifactBundleProcessor implements
 					DataType.class, c.getType().name());
 			context.getGraphSession().addLink(ColumnDataType.class, column,
 					dataType, false);
-			// FIXME set data type string as a property on column
-
+			column.setDataType(dataType.getName());
 			addedColumns.add(c.getName());
 		}
 		for (final SLNode n : new HashSet<SLNode>(table.getNodes())) {

@@ -124,7 +124,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	private volatile String artifactCompleteName;
 
 	/** The change type. */
-	private ChangeType changeType;
+	private ChangeType changeType = ChangeType.INCLUDED;
 
 	/** The parent. */
 	private PathElement parent;
@@ -285,7 +285,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "StreamArtifact: " + getArtifactCompleteName() + " "
+		return getClass().getName() + getArtifactCompleteName() + " "
 				+ getChangeType();
 	}
 
