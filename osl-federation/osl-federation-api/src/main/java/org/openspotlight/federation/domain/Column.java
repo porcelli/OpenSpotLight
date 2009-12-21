@@ -49,6 +49,8 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
@@ -59,16 +61,18 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 public class Column implements SimpleNodeType, Serializable {
 	private static final long serialVersionUID = -1495010016475838851L;
 
+	private Set<ExportedFk> exportedFks = new HashSet<ExportedFk>();
+
 	private String pkName;
-	// private String fkName;
-	// private String references;
 
 	private String name;
 
 	private ColumnType type;
 
 	private NullableSqlType nullable;
+
 	private int columnSize;
+
 	private int decimalSize;
 	private TableArtifact table;
 
@@ -78,6 +82,10 @@ public class Column implements SimpleNodeType, Serializable {
 
 	public int getDecimalSize() {
 		return decimalSize;
+	}
+
+	public Set<ExportedFk> getExportedFks() {
+		return exportedFks;
 	}
 
 	@KeyProperty
@@ -108,6 +116,10 @@ public class Column implements SimpleNodeType, Serializable {
 
 	public void setDecimalSize(final int decimalSize) {
 		this.decimalSize = decimalSize;
+	}
+
+	public void setExportedFks(final Set<ExportedFk> exportedFks) {
+		this.exportedFks = exportedFks;
 	}
 
 	public void setName(final String name) {

@@ -71,6 +71,7 @@ import org.openspotlight.federation.domain.Column;
 import org.openspotlight.federation.domain.ColumnType;
 import org.openspotlight.federation.domain.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.ExportedFk;
 import org.openspotlight.federation.domain.NullableSqlType;
 import org.openspotlight.federation.domain.RoutineArtifact;
 import org.openspotlight.federation.domain.RoutineParameter;
@@ -202,6 +203,36 @@ public class DatabaseCustomArtifactFinder extends
 					final String pkName = pkRs.getString("PK_NAME");
 					pkMap.put(pkColumn, pkName);
 				}
+
+				final Map<String, Set<ExportedFk>> exportedFks = new HashMap<String, Set<ExportedFk>>();
+				final ResultSet fkRs = metadata.getExportedKeys(catalog,
+						schema, tableName);
+				while (fkRs.next()) {
+					final String pkName = fkRs.getString("PK_NAME");
+					final String fkName = fkRs.getString("FK_NAME");
+					final String thisColumnName = fkRs
+							.getString("PKCOLUMN_NAME");
+					final String thatCatalog = fkRs.getString("FKTABLE_CAT");
+					final String thatSchema = fkRs.getString("FKTABLE_SCHEM");
+					final String thatTable = fkRs.getString("FKTABLE_NAME");
+					final String thatColumn = fkRs.getString("FKCOLUMN_NAME");
+					Set<ExportedFk> fks = exportedFks.get(thisColumnName);
+					if (fks == null) {
+						fks = new HashSet<ExportedFk>();
+						exportedFks.put(thisColumnName, fks);
+					}
+
+					final ExportedFk fk = new ExportedFk();
+					fk.setColumnName(thatColumn);
+					fk.setFkName(fkName);
+					fk.setPkName(pkName);
+					fk.setTableCatalog(thatCatalog);
+					fk.setTableName(thatTable);
+					fk.setTableSchema(thatSchema);
+					fk.setColumnName(thatColumn);
+					fks.add(fk);
+				}
+
 				final ResultSet columnRs = metadata.getColumns(catalog, schema,
 						tableName, null);
 
@@ -225,6 +256,11 @@ public class DatabaseCustomArtifactFinder extends
 					column.setColumnSize(columnSize);
 					column.setDecimalSize(decimalSize);
 					desc.getColumns().add(column);
+					final Set<ExportedFk> fks = exportedFks.get(columnName);
+					for (final ExportedFk fk : fks) {
+						fk.setColumn(column);
+					}
+					column.getExportedFks().addAll(fks);
 				}
 				tableMetadata.put(description, desc);
 
