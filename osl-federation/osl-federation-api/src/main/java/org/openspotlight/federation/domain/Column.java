@@ -55,64 +55,78 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name( "column" )
+@Name("column")
 public class Column implements SimpleNodeType, Serializable {
-    private static final long serialVersionUID = -1495010016475838851L;
+	private static final long serialVersionUID = -1495010016475838851L;
 
-    private String            name;
-    private ColumnType        type;
-    private NullableSqlType   nullable;
-    private int               columnSize;
-    private int               decimalSize;
-    private TableArtifact     table;
+	private String pkName;
+	// private String fkName;
+	// private String references;
 
-    public int getColumnSize() {
-        return this.columnSize;
-    }
+	private String name;
 
-    public int getDecimalSize() {
-        return this.decimalSize;
-    }
+	private ColumnType type;
 
-    @KeyProperty
-    public String getName() {
-        return this.name;
-    }
+	private NullableSqlType nullable;
+	private int columnSize;
+	private int decimalSize;
+	private TableArtifact table;
 
-    public NullableSqlType getNullable() {
-        return this.nullable;
-    }
+	public int getColumnSize() {
+		return columnSize;
+	}
 
-    @ParentProperty
-    public TableArtifact getTable() {
-        return this.table;
-    }
+	public int getDecimalSize() {
+		return decimalSize;
+	}
 
-    public ColumnType getType() {
-        return this.type;
-    }
+	@KeyProperty
+	public String getName() {
+		return name;
+	}
 
-    public void setColumnSize( final int columnSize ) {
-        this.columnSize = columnSize;
-    }
+	public NullableSqlType getNullable() {
+		return nullable;
+	}
 
-    public void setDecimalSize( final int decimalSize ) {
-        this.decimalSize = decimalSize;
-    }
+	public String getPkName() {
+		return pkName;
+	}
 
-    public void setName( final String name ) {
-        this.name = name;
-    }
+	@ParentProperty
+	public TableArtifact getTable() {
+		return table;
+	}
 
-    public void setNullable( final NullableSqlType nullable ) {
-        this.nullable = nullable;
-    }
+	public ColumnType getType() {
+		return type;
+	}
 
-    public void setTable( final TableArtifact table ) {
-        this.table = table;
-    }
+	public void setColumnSize(final int columnSize) {
+		this.columnSize = columnSize;
+	}
 
-    public void setType( final ColumnType type ) {
-        this.type = type;
-    }
+	public void setDecimalSize(final int decimalSize) {
+		this.decimalSize = decimalSize;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void setNullable(final NullableSqlType nullable) {
+		this.nullable = nullable;
+	}
+
+	public void setPkName(final String pkName) {
+		this.pkName = pkName;
+	}
+
+	public void setTable(final TableArtifact table) {
+		this.table = table;
+	}
+
+	public void setType(final ColumnType type) {
+		this.type = type;
+	}
 }

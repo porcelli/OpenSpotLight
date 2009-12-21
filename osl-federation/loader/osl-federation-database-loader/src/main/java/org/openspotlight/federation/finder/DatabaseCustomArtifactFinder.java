@@ -194,6 +194,14 @@ public class DatabaseCustomArtifactFinder extends
 				desc.setSchemaName(schema);
 				desc.setCatalogName(catalog);
 				desc.setTableName(tableName);
+				final Map<String, String> pkMap = new HashMap<String, String>();
+				final ResultSet pkRs = metadata.getPrimaryKeys(catalog, schema,
+						tableName);
+				while (pkRs.next()) {
+					final String pkColumn = pkRs.getString("COLUMN_NAME");
+					final String pkName = pkRs.getString("PK_NAME");
+					pkMap.put(pkColumn, pkName);
+				}
 				final ResultSet columnRs = metadata.getColumns(catalog, schema,
 						tableName, null);
 
@@ -210,6 +218,7 @@ public class DatabaseCustomArtifactFinder extends
 
 					final Column column = new Column();
 					column.setTable(desc);
+					column.setPkName(pkMap.get(columnName));
 					column.setName(columnName);
 					column.setType(type);
 					column.setNullable(nullable);
