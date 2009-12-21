@@ -120,7 +120,9 @@ public class DbTableArtifactBundleProcessor implements
 			context.getGraphSession().addLink(ColumnDataType.class, column,
 					dataType, false);
 			column.setDataType(dataType.getName());
-			column.setPk(c.getPkName());
+			if (c.getPkName() != null) {
+				column.setPk(c.getPkName());
+			}
 			for (final ExportedFk fk : c.getExportedFks()) {
 				final Schema thatSchema = database.addNode(Schema.class, fk
 						.getTableSchema());

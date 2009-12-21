@@ -187,7 +187,7 @@ public class DbTableArtifactBundleProcessorTest {
 		final SLNode groupNode = groupContext.getRootNode().getNode(
 				data.group.getUniqueName());
 		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
-		final SLNode exampleServerNode = groupNode.getNode("h2");
+		final SLNode exampleServerNode = groupNode.getNode("server name");
 		Assert.assertThat(exampleServerNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleServerNode, Is.is(Server.class));
 		final SLNode exampleDatabaseNode = exampleServerNode.getNode("db");

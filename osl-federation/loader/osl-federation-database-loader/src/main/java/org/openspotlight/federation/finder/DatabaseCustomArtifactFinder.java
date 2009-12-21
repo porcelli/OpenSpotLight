@@ -64,6 +64,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ChangeType;
@@ -284,12 +285,23 @@ public class DatabaseCustomArtifactFinder extends
 
 	private synchronized Map<String, DatabaseCustomArtifact> getResultFrom(
 			final DbArtifactSource source) throws Exception {
+		Assertions.checkNotEmpty("source.databaseName", source
+				.getDatabaseName());
+		Assertions.checkNotEmpty("source.serverName", source.getServerName());
+		Assertions.checkNotEmpty("source.initialLookup", source
+				.getInitialLookup());
+
 		Map<String, DatabaseCustomArtifact> result = resultCache.get(source);
 		if (result == null) {
 			final DatabaseCustomArtifactInternalLoader loader = new DatabaseCustomArtifactInternalLoader();
 			final Connection conn = getConnectionFromSource(source);
 			synchronized (conn) {
 				result = loader.loadDatabaseMetadata(conn.getMetaData());
+				for (final DatabaseCustomArtifact artifact : result.values()) {
+					artifact.setServerName(source.getServerName());
+					artifact.setDatabaseName(source.getDatabaseName());
+					artifact.setUrl(source.getInitialLookup());
+				}
 			}
 			resultCache.put(source, result);
 		}
