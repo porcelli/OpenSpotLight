@@ -56,6 +56,7 @@ import java.util.Set;
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -555,6 +556,7 @@ public class SLLinkImpl implements SLLink {
 			try {
 				return getDirection() == SLConsts.DIRECTION_BOTH;
 			} catch (final SLPersistentTreeSessionException e) {
+				Exceptions.catchAndLog(e);
 				throw new SLGraphSessionException(
 						"Error on attempt to verify if link is bidirectional.",
 						e);

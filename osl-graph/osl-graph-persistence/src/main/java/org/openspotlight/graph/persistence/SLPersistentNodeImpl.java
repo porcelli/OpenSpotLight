@@ -341,6 +341,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 			} catch (final PathNotFoundException e) {
 				throw new SLPersistentPropertyNotFoundException(name);
 			} catch (final RepositoryException e) {
+				Exceptions.catchAndLog(e);
 				throw new SLPersistentTreeSessionException(
 						"Error on attempt to retrieve persistent property "
 								+ name, e);

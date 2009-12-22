@@ -209,6 +209,8 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 			}
 			this.queue.add(new _4_EndingToProcessArtifactsTask<T>(this.changes,
 					bundleProcessor, repository.getName()));
+			this.queue.add(new _5_SaveGraphTask<Artifact>(this.repository
+					.getName()));
 
 		} catch (final Exception e) {
 			for (final T artifactWithError : this.toBeReturned

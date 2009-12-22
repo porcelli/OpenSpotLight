@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -163,6 +164,11 @@ public class DbTableArtifactBundleProcessorTest {
 				.refreshJobs(data.settings, Collections.setOf(data.repository));
 		scheduler.startScheduler();
 
+	}
+
+	@After
+	public void closeTestResources() {
+		contextFactory.closeResources();
 	}
 
 	private void reloadArtifactsAndCallBundleProcessor() {
@@ -512,8 +518,8 @@ public class DbTableArtifactBundleProcessorTest {
 			}
 		}
 
-		Assert.assertThat(foundFkConstraint1, Is.is(true));
 		Assert.assertThat(foundPkConstraint1, Is.is(true));
+		Assert.assertThat(foundFkConstraint1, Is.is(true));
 
 		final Connection connection2 = DatabaseSupport
 				.createConnection(data.artifactSource);
