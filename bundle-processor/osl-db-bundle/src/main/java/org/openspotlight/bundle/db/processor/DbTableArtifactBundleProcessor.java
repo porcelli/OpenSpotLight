@@ -42,6 +42,24 @@ import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 public class DbTableArtifactBundleProcessor implements
 		BundleProcessor<TableArtifact>, DBConstants {
 
+	private static class TableParentVo {
+		public final Database database;
+		public final SLNode tableParent;
+		public final SLNode databaseContextNode;
+		public final Class<? extends SLLink> tableParentLink;
+
+		public TableParentVo(final SLNode tableParent,
+				final SLNode databaseContextNode,
+				final Class<? extends SLLink> tableParentLink,
+				final Database database) {
+			super();
+			this.database = database;
+			this.tableParent = tableParent;
+			this.databaseContextNode = databaseContextNode;
+			this.tableParentLink = tableParentLink;
+		}
+	}
+
 	private static class TableVo {
 		public final SLNode databaseContextNode;
 		public final Database database;
@@ -146,6 +164,43 @@ public class DbTableArtifactBundleProcessor implements
 		}
 	}
 
+	private TableParentVo createParentNodes(final TableArtifact artifact,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context)
+			throws SLContextAlreadyExistsException, SLGraphSessionException,
+			SLInvalidCredentialException, SLNodeTypeNotInExistentHierarchy {
+		final SLContext databaseContext = context.getGraphSession()
+				.createContext(DB_ABSTRACT_CONTEXT);
+
+		final SLNode databaseContextNode = databaseContext.getRootNode();
+
+		final Server server = currentContext.getCurrentNodeGroup().addNode(
+				Server.class, artifact.getServerName());
+		final Database database = server.addNode(Database.class, artifact
+				.getDatabaseName());
+		context.getGraphSession().addLink(GroupDatabase.class,
+				currentContext.getCurrentNodeGroup(), database, false);
+
+		final Schema schema = database.addNode(Schema.class, artifact
+				.getSchemaName());
+
+		context.getGraphSession().addLink(DatabaseSchema.class, database,
+				schema, false);
+
+		Catalog catalog = null;
+		if (artifact.getCatalogName() != null) {
+			catalog = schema.addNode(Catalog.class, artifact.getCatalogName());
+			context.getGraphSession().addLink(SchemaCatalog.class, schema,
+					catalog, false);
+		}
+		final Class<? extends SLLink> tableParentLink = catalog != null ? CatalogTableView.class
+				: SchemaTableView.class;
+		final SLNode tableParent = catalog != null ? catalog : schema;
+		final TableParentVo parent = new TableParentVo(tableParent,
+				databaseContextNode, tableParentLink, database);
+		return parent;
+	}
+
 	private void createPrimaryKeys(final ExecutionContext context,
 			final org.openspotlight.federation.domain.Column c,
 			final Column column) throws SLNodeTypeNotInExistentHierarchy,
@@ -166,52 +221,26 @@ public class DbTableArtifactBundleProcessor implements
 			final ExecutionContext context)
 			throws SLContextAlreadyExistsException, SLGraphSessionException,
 			SLInvalidCredentialException, SLNodeTypeNotInExistentHierarchy {
-		final SLContext databaseContext = context.getGraphSession()
-				.createContext(DB_ABSTRACT_CONTEXT);
+		final TableParentVo parent = createParentNodes(artifact,
+				currentContext, context);
 
-		final SLNode databaseContextNode = databaseContext.getRootNode();
-		final Server server = currentContext.getCurrentNodeGroup().addNode(
-				Server.class, artifact.getServerName());
-		final Database database = server.addNode(Database.class, artifact
-				.getDatabaseName(), links(GroupDatabase.class),
-				links(GroupDatabase.class));
-		context.getGraphSession().addLink(GroupDatabase.class,
-				currentContext.getCurrentNodeGroup(), database, false);
-
-		final Schema schema = database.addNode(Schema.class, artifact
-				.getSchemaName(), links(DatabaseSchema.class),
-				links(DatabaseSchema.class));
-
-		context.getGraphSession().addLink(DatabaseSchema.class, database,
-				schema, false);
-
-		Catalog catalog = null;
-		if (artifact.getCatalogName() != null) {
-			catalog = schema.addNode(Catalog.class, artifact.getCatalogName(),
-					links(SchemaCatalog.class), links(SchemaCatalog.class));
-			context.getGraphSession().addLink(SchemaCatalog.class, schema,
-					catalog, false);
-		}
 		final TableView table;
 		final boolean isView = artifact instanceof ViewArtifact;
 		final Class<? extends TableView> tableType = isView ? TableViewView.class
 				: TableViewTable.class;
-		final Class<? extends SLLink> tableParentLink = catalog != null ? CatalogTableView.class
-				: SchemaTableView.class;
 
-		final SLNode tableParent = catalog != null ? catalog : schema;
-		table = tableParent.addNode(tableType, artifact.getTableName(),
-				links(tableParentLink, TableViewColumns.class,
-						AbstractTypeBind.class), links(tableParentLink,
+		table = parent.tableParent.addNode(tableType, artifact.getTableName(),
+				links(parent.tableParentLink, TableViewColumns.class,
+						AbstractTypeBind.class), links(parent.tableParentLink,
 						TableViewColumns.class));
-		final TableView abstractTable = databaseContextNode.addNode(
+		final TableView abstractTable = parent.databaseContextNode.addNode(
 				TableView.class, artifact.getTableName());
 		context.getGraphSession().addLink(AbstractTypeBind.class, table,
 				abstractTable, false);
-		context.getGraphSession().addLink(tableParentLink, tableParent, table,
-				false);
-		final TableVo data = new TableVo(databaseContextNode, database, table,
-				abstractTable);
+		context.getGraphSession().addLink(parent.tableParentLink,
+				parent.tableParent, table, false);
+		final TableVo data = new TableVo(parent.databaseContextNode,
+				parent.database, table, abstractTable);
 		return data;
 	}
 
@@ -245,7 +274,16 @@ public class DbTableArtifactBundleProcessor implements
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context,
 			final ArtifactChanges<TableArtifact> changes,
-			final ArtifactsToBeProcessed<TableArtifact> toBeReturned) {
+			final ArtifactsToBeProcessed<TableArtifact> toBeReturned)
+			throws Exception {
+
+		for (final TableArtifact a : changes.getExcludedArtifacts()) {
+			final TableParentVo parent = createParentNodes(a, currentContext,
+					context);
+			final SLNode tableNode = parent.tableParent.getNode(a
+					.getTableName());
+			tableNode.remove();
+		}
 
 	}
 

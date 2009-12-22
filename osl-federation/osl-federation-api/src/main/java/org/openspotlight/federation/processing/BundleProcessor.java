@@ -329,6 +329,6 @@ public interface BundleProcessor<T extends Artifact> {
 			CurrentProcessorContext currentContext, ExecutionContext context,
 			ArtifactChanges<T> changes,
 
-			ArtifactsToBeProcessed<T> toBeReturned);
+			ArtifactsToBeProcessed<T> toBeReturned) throws Exception;
 
 }
