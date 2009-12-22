@@ -46,9 +46,6 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class DbTableArtifactBundleProcessorTest {
 
-	// FIXME All tests should remove all garbage by using the DeleteLinks and
-	// DeleteLinkedObjects
-
 	private static class RepositoryData {
 		public final GlobalSettings settings;
 		public final Repository repository;
@@ -163,24 +160,8 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
 				.createFactory();
-		final ExecutionContext context = contextFactory.createExecutionContext(
-				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				data.repository.getName());
-
-		context.getDefaultConfigurationManager().saveGlobalSettings(
-				data.settings);
-		context.getDefaultConfigurationManager()
-				.saveRepository(data.repository);
-		context.closeResources();
-
-		final DefaultScheduler scheduler = DefaultScheduler.INSTANCE;
-		scheduler.initializeSettings(contextFactory, "user", "password",
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		scheduler
-				.refreshJobs(data.settings, Collections.setOf(data.repository));
-		scheduler.startScheduler();
-		scheduler.fireSchedulable("username", "password", data.artifactSource);
-		scheduler.fireSchedulable("username", "password", data.group);
+		final DefaultScheduler scheduler = setupSchedulerAndReloadArtifactsAndCallBundleProcessor(
+				data, contextFactory);
 
 		final ExecutionContext executionContext = contextFactory
 				.createExecutionContext("username", "password",
@@ -239,6 +220,30 @@ public class DbTableArtifactBundleProcessorTest {
 		Assert.assertThat(foundPkConstraint, Is.is(true));
 		scheduler.stopScheduler();
 
+	}
+
+	private DefaultScheduler setupSchedulerAndReloadArtifactsAndCallBundleProcessor(
+			final RepositoryData data,
+			final ExecutionContextFactory contextFactory) {
+		final ExecutionContext context = contextFactory.createExecutionContext(
+				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				data.repository.getName());
+
+		context.getDefaultConfigurationManager().saveGlobalSettings(
+				data.settings);
+		context.getDefaultConfigurationManager()
+				.saveRepository(data.repository);
+		context.closeResources();
+
+		final DefaultScheduler scheduler = DefaultScheduler.INSTANCE;
+		scheduler.initializeSettings(contextFactory, "user", "password",
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+		scheduler
+				.refreshJobs(data.settings, Collections.setOf(data.repository));
+		scheduler.startScheduler();
+		scheduler.fireSchedulable("username", "password", data.artifactSource);
+		scheduler.fireSchedulable("username", "password", data.group);
+		return scheduler;
 	}
 
 	@Test
