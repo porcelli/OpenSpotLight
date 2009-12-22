@@ -285,7 +285,9 @@ public class DbTableArtifactBundleProcessor implements
 					context);
 			final SLNode tableNode = parent.tableParent.getNode(a
 					.getTableName());
-			tableNode.remove();
+			if (tableNode != null) {
+				tableNode.remove();
+			}
 		}
 
 	}

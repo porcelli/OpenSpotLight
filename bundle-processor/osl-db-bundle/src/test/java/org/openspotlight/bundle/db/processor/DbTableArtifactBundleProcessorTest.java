@@ -77,19 +77,6 @@ public class DbTableArtifactBundleProcessorTest {
 	private static RepositoryData data;
 	private static DefaultScheduler scheduler;
 
-	public static void cleanH2Tables() throws Exception {
-		final Connection connection = DatabaseSupport
-				.createConnection(data.artifactSource);
-		connection.prepareStatement("drop view if exists exampleView")
-				.execute();
-		connection.prepareStatement("drop table if exists exampleTable")
-				.execute();
-		connection.prepareStatement("drop table if exists anotherTable")
-				.execute();
-		connection.close();
-
-	}
-
 	@AfterClass
 	public static void closeResources() throws Exception {
 		scheduler.stopScheduler();
@@ -185,26 +172,26 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldExecuteBundleProcessor() throws Exception {
-		cleanH2Tables();
+
 		final Connection connection = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection
 				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable1(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection
 				.prepareStatement(
-						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
+						"create view exampleView1 (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable1")
 				.execute();
 		connection
 				.prepareStatement(
-						"create table anotherTable(i int not null primary key, i_fk int,)")
+						"create table anotherTable1(i int not null primary key, i_fk int,)")
 				.execute();
 
 		connection
 				.prepareStatement(
-						"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
+						"alter table anotherTable1 add constraint example_fk1 foreign key(i_fk) references exampleTable1(i)")
 				.execute();
 		connection.close();
 
@@ -232,15 +219,15 @@ public class DbTableArtifactBundleProcessorTest {
 		Assert.assertThat(exampleCatalogNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleCatalogNode, Is.is(Catalog.class));
 		final SLNode exampleTableNode = exampleCatalogNode
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE1");
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleTableNode, Is.is(TableViewTable.class));
 		final SLNode exampleViewNode = exampleCatalogNode
-				.getNode("EXAMPLEVIEW");
+				.getNode("EXAMPLEVIEW1");
 		Assert.assertThat(exampleViewNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleViewNode, Is.is(TableViewView.class));
 		final SLNode anotherTableNode = exampleCatalogNode
-				.getNode("ANOTHERTABLE");
+				.getNode("ANOTHERTABLE1");
 
 		final Column exampleColumn = exampleTableNode
 				.getNode(Column.class, "I");
@@ -270,13 +257,13 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldIncludeNewColumnOnChangedTable() throws Exception {
-		cleanH2Tables();
+
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable2(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -296,7 +283,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE2");
 		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
 				"I");
 		Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
@@ -307,7 +294,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.createConnection(data.artifactSource);
 
 		connection2.prepareStatement(
-				"alter table exampleTable add column invalid int").execute();
+				"alter table exampleTable2 add column invalid int").execute();
 		connection2.close();
 		reloadArtifactsAndCallBundleProcessor();
 
@@ -325,7 +312,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE2");
 		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
 				"I");
 		Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
@@ -337,13 +324,13 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldRemoveDeletedColumns() throws Exception {
-		cleanH2Tables();
+
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable3(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -363,7 +350,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE3");
 		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
 				"I");
 		Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
@@ -374,7 +361,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.createConnection(data.artifactSource);
 
 		connection2.prepareStatement(
-				"alter table exampleTable drop column last_i_plus_2 ")
+				"alter table exampleTable3 drop column last_i_plus_2 ")
 				.execute();
 		connection2.close();
 		reloadArtifactsAndCallBundleProcessor();
@@ -393,7 +380,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE3");
 		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
 				"I");
 		Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
@@ -404,13 +391,13 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldRemoveDeletedTables() throws Exception {
-		cleanH2Tables();
+
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable4(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -430,12 +417,12 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE4");
 		Assert.assertThat(exampleTableNode1, Is.is(IsNull.notNullValue()));
 		final Connection connection2 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
-		connection2.prepareStatement("drop table exampleTable").execute();
+		connection2.prepareStatement("drop table exampleTable4").execute();
 		connection2.close();
 		reloadArtifactsAndCallBundleProcessor();
 
@@ -453,7 +440,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE4");
 		Assert.assertThat(exampleTableNode2, Is.is(IsNull.nullValue()));
 	}
 
@@ -465,22 +452,22 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldUpdateChangedFkInformation() throws Exception {
-		cleanH2Tables();
+
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable5(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1
 				.prepareStatement(
-						"create table anotherTable(i int not null primary key, i_fk int)")
+						"create table anotherTable5(i int not null primary key, i_fk int)")
 				.execute();
 
 		connection1
 				.prepareStatement(
-						"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
+						"alter table anotherTable5 add constraint example_fk5 foreign key(i_fk) references exampleTable5(i)")
 				.execute();
 		connection1.close();
 
@@ -500,9 +487,9 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE5");
 		final SLNode anotherTableNode1 = exampleCatalogNode1
-				.getNode("ANOTHERTABLE");
+				.getNode("ANOTHERTABLE5");
 
 		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
 				"I");
@@ -532,7 +519,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.createConnection(data.artifactSource);
 
 		connection2.prepareStatement(
-				"alter table anotherTable drop constraint example_fk ")
+				"alter table anotherTable5 drop constraint example_fk5 ")
 				.execute();
 		connection2.close();
 
@@ -552,9 +539,9 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE5");
 		final SLNode anotherTableNode2 = exampleCatalogNode2
-				.getNode("ANOTHERTABLE");
+				.getNode("ANOTHERTABLE5");
 
 		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
 				"I");
@@ -584,13 +571,13 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldUpdateChangedPkInformation() throws Exception {
-		cleanH2Tables();
+
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -610,7 +597,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE6");
 
 		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
 				"I");
@@ -629,10 +616,10 @@ public class DbTableArtifactBundleProcessorTest {
 		final Connection connection2 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
-		connection2.prepareStatement("drop table exampleTable ").execute();
+		connection2.prepareStatement("drop table exampleTable6 ").execute();
 		connection2
 				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection2.close();
 
@@ -652,7 +639,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE");
+				.getNode("EXAMPLETABLE6");
 
 		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
 				"I");
