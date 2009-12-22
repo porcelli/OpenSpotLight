@@ -256,8 +256,8 @@ public class DbTableArtifactBundleProcessorTest {
 			}
 		}
 
+        Assert.assertThat(foundPkConstraint, Is.is(true));
 		Assert.assertThat(foundFkConstraint, Is.is(true));
-		Assert.assertThat(foundPkConstraint, Is.is(true));
 
 	}
 
