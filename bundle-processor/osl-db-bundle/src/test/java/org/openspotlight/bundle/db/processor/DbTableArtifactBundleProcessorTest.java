@@ -9,6 +9,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -163,14 +164,18 @@ public class DbTableArtifactBundleProcessorTest {
 
 	}
 
-	private void setupSchedulerAndReloadArtifactsAndCallBundleProcessor() {
+	@Before
+	public void cleanH2Files() throws Exception {
+		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
+	}
+
+	private void reloadArtifactsAndCallBundleProcessor() {
 		scheduler.fireSchedulable("username", "password", data.artifactSource);
 		scheduler.fireSchedulable("username", "password", data.group);
 	}
 
 	@Test
 	public void shouldExecuteBundleProcessor() throws Exception {
-		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
 
 		final Connection connection = DatabaseSupport
 				.createConnection(data.artifactSource);
@@ -194,7 +199,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.execute();
 		connection.close();
 
-		setupSchedulerAndReloadArtifactsAndCallBundleProcessor();
+		reloadArtifactsAndCallBundleProcessor();
 
 		final ExecutionContext executionContext = contextFactory
 				.createExecutionContext("username", "password",
@@ -255,9 +260,69 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldIncludeNewColumnOnChangedTable() throws Exception {
-		Assert.fail();
+		final Connection connection1 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection1
+				.prepareStatement(
+						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection1.close();
+
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext1 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext1 = executionContext1.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
+		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
+		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
+		final SLNode exampleTableNode1 = exampleCatalogNode1
+				.getNode("EXAMPLETABLE");
+		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
+				"I");
+		Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
+		final Column invalidColumn1 = exampleTableNode1.getNode(Column.class,
+				"INVALID");
+		Assert.assertThat(invalidColumn1, Is.is(IsNull.nullValue()));
+		final Connection connection2 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection2.prepareStatement(
+				"alter table exampleTable add column invalid int").execute();
+		connection2.close();
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext2 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext2 = executionContext2.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
+		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
+		final SLNode exampleTableNode2 = exampleCatalogNode2
+				.getNode("EXAMPLETABLE");
+		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
+				"I");
+		Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
+		final Column invalidColumn2 = exampleTableNode2.getNode(Column.class,
+				"INVALID");
+		Assert.assertThat(invalidColumn2, Is.is(IsNull.notNullValue()));
+
 	}
 
 	@Test
