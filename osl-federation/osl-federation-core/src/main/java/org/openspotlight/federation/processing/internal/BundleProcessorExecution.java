@@ -84,6 +84,8 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -117,6 +119,8 @@ public class BundleProcessorExecution {
 			1000, new ArtifactTaskPriorityComparator());
 
 	private final Set<String> activeReposities = new HashSet<String>();
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Instantiates a new bundle processor execution.
@@ -178,6 +182,7 @@ public class BundleProcessorExecution {
 		fillTaskQueue(groupsWithBundles);
 
 		final List<ArtifactWorker> workers = setupWorkers();
+		logger.info("creating " + workers.size() + " thread workers");
 
 		monitorThreadActivity(workers);
 		contextFactory.closeResources();

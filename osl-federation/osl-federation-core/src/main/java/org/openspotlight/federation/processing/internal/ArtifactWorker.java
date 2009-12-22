@@ -104,8 +104,9 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 					}
 					try {
 						working.set(true);
-						logger.info("starting " + task.getClass() + " "
-								+ task.toString());
+						logger.info("starting "
+								+ task.getClass().getSimpleName()
+								+ " on repository " + task.getRepositoryName());
 						task.setQueue(queue);
 						final String repositoryName = task.getRepositoryName();
 						final ExecutionContext context = contextMap
@@ -130,8 +131,8 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 				}
 			} finally {
 				if (task != null) {
-					logger.info("stopping " + task.getClass() + " "
-							+ task.toString());
+					logger.info("stopping " + task.getClass().getSimpleName()
+							+ " on repository " + task.getRepositoryName());
 				}
 				working.set(false);
 			}
