@@ -261,7 +261,7 @@ public class DbTableArtifactBundleProcessor implements
 	}
 
 	public SaveBehavior getSaveBehavior() {
-		return SaveBehavior.PER_ARTIFACT;
+		return SaveBehavior.PER_PROCESSING;
 	}
 
 	public LastProcessStatus processArtifact(final TableArtifact artifact,

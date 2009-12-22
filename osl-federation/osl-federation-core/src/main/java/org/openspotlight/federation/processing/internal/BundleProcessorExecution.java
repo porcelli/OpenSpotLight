@@ -73,6 +73,7 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
+import org.openspotlight.federation.processing.internal.task._5_SaveGraphTask;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
@@ -115,6 +116,8 @@ public class BundleProcessorExecution {
 	private final PriorityBlockingQueue<ArtifactTask> queue = new PriorityBlockingQueue<ArtifactTask>(
 			1000, new ArtifactTaskPriorityComparator());
 
+	private final Set<String> activeReposities = new HashSet<String>();
+
 	/**
 	 * Instantiates a new bundle processor execution.
 	 * 
@@ -138,6 +141,7 @@ public class BundleProcessorExecution {
 		final String[] repositoryNames = new String[groups.length];
 		for (int i = 0, size = groups.length; i < size; i++) {
 			repositoryNames[i] = groups[i].getRepository().getName();
+			activeReposities.add(repositoryNames[i]);
 		}
 
 		this.groups = groups;
@@ -194,9 +198,14 @@ public class BundleProcessorExecution {
 							currentContextImpl, repository, artifactType,
 							processor);
 					queue.add(task);
+
 				}
 			}
 		}
+		for (final String repository : activeReposities) {
+			queue.add(new _5_SaveGraphTask<Artifact>(repository));
+		}
+
 	}
 
 	private Set<Group> findGroupsWithBundles() {
