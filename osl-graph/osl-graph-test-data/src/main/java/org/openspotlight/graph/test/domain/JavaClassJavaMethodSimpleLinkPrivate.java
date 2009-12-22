@@ -46,136 +46,82 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.test.domain;
 
-import java.util.Collection;
+import java.text.Collator;
+import java.util.Date;
 
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.annotation.SLCollator;
+import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
 
 /**
- * The Interface SLMetaNodeType.
+ * The Interface JavaClassJavaMethodSimpleLink.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaNodeType extends SLMetaElement {
+@SLVisibility(VisibilityLevels.PRIVATE)
+public interface JavaClassJavaMethodSimpleLinkPrivate extends SLLink {
 	
 	/**
-	 * Gets the type.
+	 * Gets the link name.
 	 * 
-	 * @return the type
+	 * @return the link name
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public Class<? extends SLNode> getType() throws SLGraphSessionException;
-	
+	@SLProperty
+	public String getLinkName() throws SLGraphSessionException;
 	
 	/**
-	 * Gets the type name.
+	 * Sets the link name.
 	 * 
-	 * @return the type name
+	 * @param linkName the new link name
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public String getTypeName() throws SLGraphSessionException;
+	public void setLinkName(String linkName) throws SLGraphSessionException;
 
 	/**
-	 * Gets the meta properties.
+	 * Gets the creation time.
 	 * 
-	 * @return the meta properties
+	 * @return the creation time
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public Collection<SLMetaNodeProperty> getMetaProperties() throws SLGraphSessionException;
+	@SLProperty
+	public Date getCreationTime() throws SLGraphSessionException;
 	
 	/**
-	 * Gets the meta property.
+	 * Sets the creation time.
 	 * 
-	 * @param name the name
-	 * 
-	 * @return the meta property
+	 * @param creationTime the new creation time
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNodeProperty getMetaProperty(String name) throws SLGraphSessionException;
+	public void setCreationTime(Date creationTime) throws SLGraphSessionException;
 	
 	/**
-	 * Gets the sub meta node type.
+	 * Gets the selecao.
 	 * 
-	 * @param nodeClass the node class
-	 * 
-	 * @return the sub meta node type
+	 * @return the selecao
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNodeType getSubMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
+	@SLProperty
+	@SLCollator(strength=Collator.PRIMARY)
+	public String getSelecao() throws SLGraphSessionException;
 	
 	/**
-	 * Gets the sub meta node type.
+	 * Sets the selecao.
 	 * 
-	 * @param name the name
-	 * 
-	 * @return the sub meta node type
+	 * @param selecao the new selecao
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNodeType getSubMetaNodeType(String name) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the sub meta node types.
-	 * 
-	 * @return the sub meta node types
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLMetaNodeType> getSubMetaNodeTypes() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the meta render hint.
-	 * 
-	 * @param name the name
-	 * 
-	 * @return the meta render hint
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaRenderHint getMetaRenderHint(String name) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the meta render hints.
-	 * 
-	 * @return the meta render hints
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLMetaRenderHint> getMetaRenderHints() throws SLGraphSessionException;
-	
-	
-	/**
-	 * Gets the description.
-	 * 
-	 * @return the description
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getDescription() throws SLGraphSessionException;
-	
-	
-	/**
-	 * Gets the visibility.
-	 * 
-	 * @return the visibility
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public VisibilityLevels getVisibility() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaNodeType getParent() throws SLGraphSessionException;
+	public void setSelecao(String selecao) throws SLGraphSessionException;
+
 }
-

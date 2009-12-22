@@ -46,136 +46,105 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.test.domain;
 
-import java.util.Collection;
+import java.util.Date;
 
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.annotation.SLRenderHint;
+import org.openspotlight.graph.annotation.SLRenderHints;
+import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
 
+//@SLTransient
+//@CollatorLevel(IDENTICAL)
+//@RenderHint(key="format", value="cube");
+//@RenderHint(key="foreGroundColor" value="back");
+
 /**
- * The Interface SLMetaNodeType.
+ * The Interface JavaClassNode.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaNodeType extends SLMetaElement {
-	
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Class<? extends SLNode> getType() throws SLGraphSessionException;
-	
-	
-	/**
-	 * Gets the type name.
-	 * 
-	 * @return the type name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getTypeName() throws SLGraphSessionException;
 
+@SLDescription("Java Class")
+@SLRenderHints({
+	@SLRenderHint(name="format", value="cube"),
+	@SLRenderHint(name="foreground", value="gold")
+})
+@SLVisibility(VisibilityLevels.INTERNAL)
+public interface JavaClassNodeInternal extends JavaElementNode {
+	
+	/** The Constant MODIFIER_PUBLIC. */
+	public static final Integer MODIFIER_PUBLIC = 1;
+	
+	/** The Constant MODIFIER_PRIVATE. */
+	public static final Integer MODIFIER_PRIVATE = 2;
+	
+	/** The Constant MODIFIER_PROTECTED. */
+	public static final Integer MODIFIER_PROTECTED = 3;
+	
+	/** The Constant MODIFIER_DEFAULT. */
+	public static final Integer MODIFIER_DEFAULT = 4;
+	
+	//@SLProperty(collatorLevel=IDENTICAL)
 	/**
-	 * Gets the meta properties.
+	 * Gets the class name.
 	 * 
-	 * @return the meta properties
+	 * @return the class name
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public Collection<SLMetaNodeProperty> getMetaProperties() throws SLGraphSessionException;
+	@SLProperty
+	public String getClassName() throws SLGraphSessionException;
 	
 	/**
-	 * Gets the meta property.
+	 * Sets the class name.
 	 * 
-	 * @param name the name
-	 * 
-	 * @return the meta property
+	 * @param className the new class name
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNodeProperty getMetaProperty(String name) throws SLGraphSessionException;
+	public void setClassName(String className) throws SLGraphSessionException;
 	
 	/**
-	 * Gets the sub meta node type.
+	 * Gets the modifier.
 	 * 
-	 * @param nodeClass the node class
-	 * 
-	 * @return the sub meta node type
+	 * @return the modifier
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNodeType getSubMetaNodeType(Class<? extends SLNode> nodeClass) throws SLGraphSessionException;
+	@SLProperty
+	public Integer getModifier() throws SLGraphSessionException;
 	
 	/**
-	 * Gets the sub meta node type.
+	 * Sets the modifier.
 	 * 
-	 * @param name the name
-	 * 
-	 * @return the sub meta node type
+	 * @param modifier the new modifier
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaNodeType getSubMetaNodeType(String name) throws SLGraphSessionException;
+	public void setModifier(Integer modifier) throws SLGraphSessionException;
 	
 	/**
-	 * Gets the sub meta node types.
+	 * Gets the creation time.
 	 * 
-	 * @return the sub meta node types
+	 * @return the creation time
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public Collection<SLMetaNodeType> getSubMetaNodeTypes() throws SLGraphSessionException;
+	@SLProperty
+	public Date getCreationTime() throws SLGraphSessionException;
 	
 	/**
-	 * Gets the meta render hint.
+	 * Sets the creation time.
 	 * 
-	 * @param name the name
-	 * 
-	 * @return the meta render hint
+	 * @param creationTime the new creation time
 	 * 
 	 * @throws SLGraphSessionException the SL graph session exception
 	 */
-	public SLMetaRenderHint getMetaRenderHint(String name) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the meta render hints.
-	 * 
-	 * @return the meta render hints
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Collection<SLMetaRenderHint> getMetaRenderHints() throws SLGraphSessionException;
-	
-	
-	/**
-	 * Gets the description.
-	 * 
-	 * @return the description
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getDescription() throws SLGraphSessionException;
-	
-	
-	/**
-	 * Gets the visibility.
-	 * 
-	 * @return the visibility
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public VisibilityLevels getVisibility() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaNodeType getParent() throws SLGraphSessionException;
+	public void setCreationTime(Date creationTime) throws SLGraphSessionException;
 }
 

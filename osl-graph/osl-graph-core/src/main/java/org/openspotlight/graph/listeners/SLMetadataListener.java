@@ -77,6 +77,8 @@ import org.openspotlight.graph.SLNodePropertyEvent;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
+import org.openspotlight.graph.annotation.SLVisibility;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
@@ -86,105 +88,106 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
 class LinkKey implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String linkTypeName;
-	private String typePairKey;
-	private int direction;
+    private String            linkTypeName;
+    private String            typePairKey;
+    private int               direction;
 
-	public LinkKey(final String linkTypeName, final String typePairKey,
-			final int direction) {
-		this.linkTypeName = linkTypeName;
-		this.typePairKey = typePairKey;
-		this.direction = direction;
-	}
+    public LinkKey(
+                    final String linkTypeName, final String typePairKey,
+                    final int direction ) {
+        this.linkTypeName = linkTypeName;
+        this.typePairKey = typePairKey;
+        this.direction = direction;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		final LinkKey key = (LinkKey) obj;
-		return Equals.eachEquality(new Object[] { linkTypeName, typePairKey,
-				direction }, new Object[] { key.linkTypeName, key.typePairKey,
-				key.direction });
-	}
+    @Override
+    public boolean equals( final Object obj ) {
+        final LinkKey key = (LinkKey)obj;
+        return Equals.eachEquality(new Object[] {linkTypeName, typePairKey,
+            direction}, new Object[] {key.linkTypeName, key.typePairKey,
+            key.direction});
+    }
 
-	public int getDirection() {
-		return direction;
-	}
+    public int getDirection() {
+        return direction;
+    }
 
-	public String getLinkType() {
-		return linkTypeName;
-	}
+    public String getLinkType() {
+        return linkTypeName;
+    }
 
-	public String getTypePairKey() {
-		return typePairKey;
-	}
+    public String getTypePairKey() {
+        return typePairKey;
+    }
 
-	@Override
-	public int hashCode() {
-		return HashCodes.hashOf(linkTypeName, typePairKey, direction);
-	}
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(linkTypeName, typePairKey, direction);
+    }
 
-	public void setDirection(final int direction) {
-		this.direction = direction;
-	}
+    public void setDirection( final int direction ) {
+        this.direction = direction;
+    }
 
-	public void setLinkType(final String linkTypeName) {
-		this.linkTypeName = linkTypeName;
-	}
+    public void setLinkType( final String linkTypeName ) {
+        this.linkTypeName = linkTypeName;
+    }
 
-	public void setTypePairKey(final String typePairKey) {
-		this.typePairKey = typePairKey;
-	}
+    public void setTypePairKey( final String typePairKey ) {
+        this.typePairKey = typePairKey;
+    }
 }
 
 class LinkPropertyKey implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private LinkKey linkKey;
-	private String name;
+    private LinkKey           linkKey;
+    private String            name;
 
-	public LinkPropertyKey(final LinkKey linkKey, final String name) {
-		this.linkKey = linkKey;
-		this.name = name;
-	}
+    public LinkPropertyKey(
+                            final LinkKey linkKey, final String name ) {
+        this.linkKey = linkKey;
+        this.name = name;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		final LinkPropertyKey key = (LinkPropertyKey) obj;
-		return Equals.eachEquality(new Object[] { linkKey, name },
-				new Object[] { key.linkKey, key.name });
-	}
+    @Override
+    public boolean equals( final Object obj ) {
+        final LinkPropertyKey key = (LinkPropertyKey)obj;
+        return Equals.eachEquality(new Object[] {linkKey, name},
+                                   new Object[] {key.linkKey, key.name});
+    }
 
-	public LinkKey getLinkKey() {
-		return linkKey;
-	}
+    public LinkKey getLinkKey() {
+        return linkKey;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public int hashCode() {
-		return HashCodes.hashOf(linkKey.getLinkType(),
-				linkKey.getTypePairKey(), linkKey.getDirection(), name);
-	}
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(linkKey.getLinkType(),
+                                linkKey.getTypePairKey(), linkKey.getDirection(), name);
+    }
 
-	public void setLinkKey(final LinkKey linkKey) {
-		this.linkKey = linkKey;
-	}
+    public void setLinkKey( final LinkKey linkKey ) {
+        this.linkKey = linkKey;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 }
 
 // TODO: Auto-generated Javadoc
 /**
- * The listener interface for receiving SLMetadata events. The class that is
- * interested in processing a SLMetadata event implements this interface, and
- * the object created with that class is registered with a component using the
- * component's <code>addSLMetadataListener<code> method. When
+ * The listener interface for receiving SLMetadata events. The class that is interested in processing a SLMetadata event
+ * implements this interface, and the object created with that class is registered with a component using the component's
+ * <code>addSLMetadataListener<code> method. When
  * the SLMetadata event occurs, that object's appropriate
  * method is invoked.
  * 
@@ -193,609 +196,582 @@ class LinkPropertyKey implements Serializable {
  */
 public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
-	/** The meta link node cache. */
-	private final Map<LinkKey, SLPersistentNode> metaLinkNodeCache = new HashMap<LinkKey, SLPersistentNode>();
+    /** The meta link node cache. */
+    private final Map<LinkKey, SLPersistentNode> metaLinkNodeCache     = new HashMap<LinkKey, SLPersistentNode>();
 
-	/** The type pair node cache. */
-	private final Map<String, SLPersistentNode> typePairNodeCache = new HashMap<String, SLPersistentNode>();
+    /** The type pair node cache. */
+    private final Map<String, SLPersistentNode>  typePairNodeCache     = new HashMap<String, SLPersistentNode>();
 
-	/** The session node type cache. */
-	private final Map<String, SLPersistentNode> metaNodeTypeCache = new HashMap<String, SLPersistentNode>();
+    /** The session node type cache. */
+    private final Map<String, SLPersistentNode>  metaNodeTypeCache     = new HashMap<String, SLPersistentNode>();
 
-	/** The node property name cache. */
-	private final Set<String> nodePropertyNameCache = new HashSet<String>();
+    /** The node property name cache. */
+    private final Set<String>                    nodePropertyNameCache = new HashSet<String>();
 
-	/** The link property key cache. */
-	private final Set<LinkPropertyKey> linkPropertyKeyCache = new HashSet<LinkPropertyKey>();
+    /** The link property key cache. */
+    private final Set<LinkPropertyKey>           linkPropertyKeyCache  = new HashSet<LinkPropertyKey>();
 
-	public SLMetadataListener(final LockContainer parent) {
-		super(parent);
-	}
+    public SLMetadataListener(
+                               final LockContainer parent ) {
+        super(parent);
+    }
 
-	/**
-	 * Adds the description.
-	 * 
-	 * @param type
-	 *            the type
-	 * @param pNode
-	 *            the node
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	private void addDescription(final Class<?> type,
-			final SLPersistentNode pNode)
-			throws SLPersistentTreeSessionException {
-		synchronized (lock) {
-			final SLDescription description = type
-					.getAnnotation(SLDescription.class);
-			if (description != null) {
-				final String propName = SLCommonSupport
-						.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
-				final SLPersistentProperty<String> prop = SLCommonSupport
-						.getProperty(pNode, String.class, propName);
-				if (prop == null) {
-					pNode.setProperty(String.class, propName, description
-							.value());
-				}
-			}
-		}
-	}
+    /**
+     * Adds the description.
+     * 
+     * @param type the type
+     * @param pNode the node
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private void addDescription( final Class<?> type,
+                                 final SLPersistentNode pNode )
+        throws SLPersistentTreeSessionException {
+        synchronized (lock) {
+            final SLDescription description = type
+                                                  .getAnnotation(SLDescription.class);
+            if (description != null) {
+                final String propName = SLCommonSupport
+                                                       .toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+                final SLPersistentProperty<String> prop = SLCommonSupport
+                                                                         .getProperty(pNode, String.class, propName);
+                if (prop == null) {
+                    pNode.setProperty(String.class, propName, description
+                                                                         .value());
+                }
+            }
+        }
+    }
 
-	/**
-	 * Adds the link node.
-	 * 
-	 * @param pairKeyNode
-	 *            the pair key node
-	 * @param direction
-	 *            the direction
-	 * 
-	 * @return the sL persistent node
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	private SLPersistentNode addLinkNode(final SLPersistentNode pairKeyNode,
-			final int direction) throws SLPersistentTreeSessionException {
-		synchronized (lock) {
-			final long linkCount = incLinkCount(pairKeyNode);
-			final String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
-			final SLPersistentNode linkNode = pairKeyNode.addNode(name);
-			linkNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT,
-					linkCount);
-			linkNode.setProperty(Integer.class,
-					SLConsts.PROPERTY_NAME_DIRECTION, direction);
-			return linkNode;
-		}
-	}
+    private void addVisibility( final Class<?> type,
+                                final SLPersistentNode pNode )
+        throws SLPersistentTreeSessionException {
+        synchronized (lock) {
+            final String propName = SLCommonSupport
+                                                   .toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
+            final SLPersistentProperty<String> prop = SLCommonSupport
+                                                                     .getProperty(pNode, String.class, propName);
+            if (prop == null) {
+                final SLVisibility visibility = type
+                                                    .getAnnotation(SLVisibility.class);
+                if (visibility != null) {
+                    pNode.setProperty(String.class, propName, visibility
+                                                                        .value().toString());
+                } else {
+                    pNode.setProperty(String.class, propName, VisibilityLevels.PUBLIC.toString());
+                }
+            }
+        }
+    }
 
-	/**
-	 * Adds the node type in hierarchy.
-	 * 
-	 * @param nodeTypes
-	 *            the node types
-	 * @param nodeType
-	 *            the node type
-	 */
-	@SuppressWarnings("unchecked")
-	private void addNodeTypeInHierarchy(
-			final List<Class<? extends SLNode>> nodeTypes,
-			final Class<? extends SLNode> nodeType) {
-		nodeTypes.add(0, nodeType);
-		final Class<? extends SLNode> superNodeType = (Class<? extends SLNode>) nodeType
-				.getInterfaces()[0];
-		if (superNodeType != null && !superNodeType.equals(SLNode.class)) {
-			addNodeTypeInHierarchy(nodeTypes, superNodeType);
-		}
-	}
+    /**
+     * Adds the link node.
+     * 
+     * @param pairKeyNode the pair key node
+     * @param direction the direction
+     * @return the sL persistent node
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private SLPersistentNode addLinkNode( final SLPersistentNode pairKeyNode,
+                                          final int direction ) throws SLPersistentTreeSessionException {
+        synchronized (lock) {
+            final long linkCount = incLinkCount(pairKeyNode);
+            final String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
+            final SLPersistentNode linkNode = pairKeyNode.addNode(name);
+            linkNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT,
+                                 linkCount);
+            linkNode.setProperty(Integer.class,
+                                 SLConsts.PROPERTY_NAME_DIRECTION, direction);
+            return linkNode;
+        }
+    }
 
-	/**
-	 * Adds the render hints.
-	 * 
-	 * @param nodeType
-	 *            the node type
-	 * @param pMetaNode
-	 *            the meta node
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	private void addRenderHints(final Class<? extends SLNode> nodeType,
-			final SLPersistentNode pMetaNode)
-			throws SLPersistentTreeSessionException {
-		synchronized (lock) {
-			final SLRenderHints renderHints = nodeType
-					.getAnnotation(SLRenderHints.class);
-			if (renderHints != null) {
-				final SLRenderHint[] renderHintArr = renderHints.value();
-				for (final SLRenderHint renderHint : renderHintArr) {
-					final String propName = SLCommonSupport
-							.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT
-									+ "." + renderHint.name());
-					final SLPersistentProperty<String> prop = SLCommonSupport
-							.getProperty(pMetaNode, String.class, propName);
-					if (prop == null) {
-						pMetaNode.setProperty(String.class, propName,
-								renderHint.value());
-					}
-				}
-			}
-		}
-	}
+    /**
+     * Adds the node type in hierarchy.
+     * 
+     * @param nodeTypes the node types
+     * @param nodeType the node type
+     */
+    @SuppressWarnings( "unchecked" )
+    private void addNodeTypeInHierarchy(
+                                         final List<Class<? extends SLNode>> nodeTypes,
+                                         final Class<? extends SLNode> nodeType ) {
+        nodeTypes.add(0, nodeType);
+        final Class<? extends SLNode> superNodeType = (Class<? extends SLNode>)nodeType
+                                                                                       .getInterfaces()[0];
+        if (superNodeType != null && !superNodeType.equals(SLNode.class)) {
+            addNodeTypeInHierarchy(nodeTypes, superNodeType);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void beforeSave(final SLGraphSessionEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
-			sessionCleaned();
-		}
-	}
+    /**
+     * Adds the render hints.
+     * 
+     * @param nodeType the node type
+     * @param pMetaNode the meta node
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private void addRenderHints( final Class<? extends SLNode> nodeType,
+                                 final SLPersistentNode pMetaNode )
+        throws SLPersistentTreeSessionException {
+        synchronized (lock) {
+            final SLRenderHints renderHints = nodeType
+                                                      .getAnnotation(SLRenderHints.class);
+            if (renderHints != null) {
+                final SLRenderHint[] renderHintArr = renderHints.value();
+                for (final SLRenderHint renderHint : renderHintArr) {
+                    final String propName = SLCommonSupport
+                                                           .toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT
+                                                                                   + "." + renderHint.name());
+                    final SLPersistentProperty<String> prop = SLCommonSupport
+                                                                             .getProperty(pMetaNode, String.class, propName);
+                    if (prop == null) {
+                        pMetaNode.setProperty(String.class, propName,
+                                              renderHint.value());
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 * Gets the a class.
-	 * 
-	 * @param sourceClass
-	 *            the source class
-	 * @param targetClass
-	 *            the target class
-	 * 
-	 * @return the a class
-	 * 
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	private Class<?> getAClass(final Class<?> sourceClass,
-			final Class<?> targetClass) throws SLException {
-		return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? sourceClass
-				: targetClass;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void beforeSave( final SLGraphSessionEvent event )
+        throws SLGraphSessionException {
+        synchronized (lock) {
+            sessionCleaned();
+        }
+    }
 
-	/**
-	 * Gets the b class.
-	 * 
-	 * @param sourceClass
-	 *            the source class
-	 * @param targetClass
-	 *            the target class
-	 * 
-	 * @return the b class
-	 * 
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	private Class<?> getBClass(final Class<?> sourceClass,
-			final Class<?> targetClass) throws SLException {
-		return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? targetClass
-				: sourceClass;
-	}
+    /**
+     * Gets the a class.
+     * 
+     * @param sourceClass the source class
+     * @param targetClass the target class
+     * @return the a class
+     * @throws SLException the SL exception
+     */
+    private Class<?> getAClass( final Class<?> sourceClass,
+                                final Class<?> targetClass ) throws SLException {
+        return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? sourceClass
+            : targetClass;
+    }
 
-	/**
-	 * Gets the meta link direction.
-	 * 
-	 * @param sourceClass
-	 *            the source class
-	 * @param targetClass
-	 *            the target class
-	 * @param bidirecional
-	 *            the bidirecional
-	 * 
-	 * @return the meta link direction
-	 * 
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	private int getMetaLinkDirection(final Class<?> sourceClass,
-			final Class<?> targetClass, final boolean bidirecional)
-			throws SLException {
-		if (bidirecional) {
-			return SLConsts.DIRECTION_BOTH;
-		} else {
-			return getAClass(sourceClass, targetClass).equals(sourceClass) ? SLConsts.DIRECTION_AB
-					: SLConsts.DIRECTION_BA;
-		}
-	}
+    /**
+     * Gets the b class.
+     * 
+     * @param sourceClass the source class
+     * @param targetClass the target class
+     * @return the b class
+     * @throws SLException the SL exception
+     */
+    private Class<?> getBClass( final Class<?> sourceClass,
+                                final Class<?> targetClass ) throws SLException {
+        return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? targetClass
+            : sourceClass;
+    }
 
-	/**
-	 * Gets the meta node type.
-	 * 
-	 * @param typeName
-	 *            the type name
-	 * @param treeSession
-	 *            the tree session
-	 * 
-	 * @return the meta node type
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	private SLPersistentNode getMetaNodeType(
-			final SLPersistentTreeSession treeSession, final String typeName)
-			throws SLPersistentTreeSessionException {
-		SLPersistentNode metaNodeType = metaNodeTypeCache.get(typeName);
-		if (metaNodeType == null) {
-			final StringBuilder statement = new StringBuilder(treeSession
-					.getXPathRootPath()
-					+ "/metadata/types//*");
-			StringBuilderUtil.append(statement, '[',
-					SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
-			final SLPersistentQuery query = treeSession.createQuery(statement
-					.toString(), SLPersistentQuery.TYPE_XPATH);
-			final SLPersistentQueryResult result = query.execute();
-			if (result.getRowCount() == 1) {
-				metaNodeType = result.getNodes().iterator().next();
-			}
-		}
-		return metaNodeType;
-	}
+    /**
+     * Gets the meta link direction.
+     * 
+     * @param sourceClass the source class
+     * @param targetClass the target class
+     * @param bidirecional the bidirecional
+     * @return the meta link direction
+     * @throws SLException the SL exception
+     */
+    private int getMetaLinkDirection( final Class<?> sourceClass,
+                                      final Class<?> targetClass,
+                                      final boolean bidirecional )
+        throws SLException {
+        if (bidirecional) {
+            return SLConsts.DIRECTION_BOTH;
+        } else {
+            return getAClass(sourceClass, targetClass).equals(sourceClass) ? SLConsts.DIRECTION_AB
+                : SLConsts.DIRECTION_BA;
+        }
+    }
 
-	/**
-	 * Gets the node type hierarchy.
-	 * 
-	 * @param nodeType
-	 *            the node type
-	 * 
-	 * @return the node type hierarchy
-	 */
-	private Collection<Class<? extends SLNode>> getNodeTypeHierarchy(
-			final Class<? extends SLNode> nodeType) {
-		final List<Class<? extends SLNode>> nodeTypes = new ArrayList<Class<? extends SLNode>>();
-		addNodeTypeInHierarchy(nodeTypes, nodeType);
-		return nodeTypes;
-	}
+    /**
+     * Gets the meta node type.
+     * 
+     * @param typeName the type name
+     * @param treeSession the tree session
+     * @return the meta node type
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private SLPersistentNode getMetaNodeType(
+                                              final SLPersistentTreeSession treeSession,
+                                              final String typeName )
+        throws SLPersistentTreeSessionException {
+        SLPersistentNode metaNodeType = metaNodeTypeCache.get(typeName);
+        if (metaNodeType == null) {
+            final StringBuilder statement = new StringBuilder(treeSession
+                                                                         .getXPathRootPath()
+                                                              + "/metadata/types//*");
+            StringBuilderUtil.append(statement, '[',
+                                     SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
+            final SLPersistentQuery query = treeSession.createQuery(statement
+                                                                             .toString(), SLPersistentQuery.TYPE_XPATH);
+            final SLPersistentQueryResult result = query.execute();
+            if (result.getRowCount() == 1) {
+                metaNodeType = result.getNodes().iterator().next();
+            }
+        }
+        return metaNodeType;
+    }
 
-	/**
-	 * Gets the type pair key.
-	 * 
-	 * @param sourceClass
-	 *            the source class
-	 * @param targetClass
-	 *            the target class
-	 * 
-	 * @return the type pair key
-	 * 
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	private String getTypePairKey(final Class<?> sourceClass,
-			final Class<?> targetClass) throws SLException {
-		final Class<?> aClass = getAClass(sourceClass, targetClass);
-		final Class<?> bClass = getBClass(sourceClass, targetClass);
-		final StringBuilder pairKey = new StringBuilder();
-		pairKey.append(aClass.getName()).append('.').append(bClass.getName());
-		return pairKey.toString();
-	}
+    /**
+     * Gets the node type hierarchy.
+     * 
+     * @param nodeType the node type
+     * @return the node type hierarchy
+     */
+    private Collection<Class<? extends SLNode>> getNodeTypeHierarchy(
+                                                                      final Class<? extends SLNode> nodeType ) {
+        final List<Class<? extends SLNode>> nodeTypes = new ArrayList<Class<? extends SLNode>>();
+        addNodeTypeInHierarchy(nodeTypes, nodeType);
+        return nodeTypes;
+    }
 
-	/**
-	 * Gets the class pair key node.
-	 * 
-	 * @param treeSession
-	 *            the tree session
-	 * @param linkClass
-	 *            the link class
-	 * @param sourceClass
-	 *            the source class
-	 * @param targetClass
-	 *            the target class
-	 * @param typePairKey
-	 *            the type pair key
-	 * 
-	 * @return the class pair key node
-	 * 
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	private SLPersistentNode getTypePairKeyNode(
-			final SLPersistentTreeSession treeSession,
-			final Class<? extends SLLink> linkClass,
-			final Class<?> sourceClass, final Class<?> targetClass,
-			final String typePairKey) throws SLException {
-		synchronized (lock) {
+    /**
+     * Gets the type pair key.
+     * 
+     * @param sourceClass the source class
+     * @param targetClass the target class
+     * @return the type pair key
+     * @throws SLException the SL exception
+     */
+    private String getTypePairKey( final Class<?> sourceClass,
+                                   final Class<?> targetClass ) throws SLException {
+        final Class<?> aClass = getAClass(sourceClass, targetClass);
+        final Class<?> bClass = getBClass(sourceClass, targetClass);
+        final StringBuilder pairKey = new StringBuilder();
+        pairKey.append(aClass.getName()).append('.').append(bClass.getName());
+        return pairKey.toString();
+    }
 
-			SLPersistentNode pairKeyNode = typePairNodeCache.get(typePairKey);
+    /**
+     * Gets the class pair key node.
+     * 
+     * @param treeSession the tree session
+     * @param linkClass the link class
+     * @param sourceClass the source class
+     * @param targetClass the target class
+     * @param typePairKey the type pair key
+     * @return the class pair key node
+     * @throws SLException the SL exception
+     */
+    private SLPersistentNode getTypePairKeyNode(
+                                                 final SLPersistentTreeSession treeSession,
+                                                 final Class<? extends SLLink> linkClass,
+                                                 final Class<?> sourceClass,
+                                                 final Class<?> targetClass,
+                                                 final String typePairKey ) throws SLException {
+        synchronized (lock) {
 
-			if (pairKeyNode == null) {
+            SLPersistentNode pairKeyNode = typePairNodeCache.get(typePairKey);
 
-				final Class<?> aClass = getAClass(sourceClass, targetClass);
-				final Class<?> bClass = getBClass(sourceClass, targetClass);
+            if (pairKeyNode == null) {
 
-				final SLPersistentNode linkClassNode = SLCommonSupport
-						.getMetaLinkClassNode(treeSession, linkClass);
-				pairKeyNode = linkClassNode.getNode(typePairKey);
+                final Class<?> aClass = getAClass(sourceClass, targetClass);
+                final Class<?> bClass = getBClass(sourceClass, targetClass);
 
-				if (pairKeyNode == null) {
-					pairKeyNode = linkClassNode.addNode(typePairKey);
-					pairKeyNode.setProperty(String.class,
-							SLConsts.PROPERTY_NAME_A_CLASS_NAME, aClass
-									.getName());
-					pairKeyNode.setProperty(String.class,
-							SLConsts.PROPERTY_NAME_B_CLASS_NAME, bClass
-									.getName());
-					pairKeyNode.setProperty(Long.class,
-							SLConsts.PROPERTY_NAME_LINK_COUNT, 0L);
-				}
+                final SLPersistentNode linkClassNode = SLCommonSupport
+                                                                      .getMetaLinkClassNode(treeSession, linkClass);
+                pairKeyNode = linkClassNode.getNode(typePairKey);
 
-				typePairNodeCache.put(typePairKey, pairKeyNode);
-			}
-			return pairKeyNode;
-		}
-	}
+                if (pairKeyNode == null) {
+                    pairKeyNode = linkClassNode.addNode(typePairKey);
+                    pairKeyNode.setProperty(String.class,
+                                            SLConsts.PROPERTY_NAME_A_CLASS_NAME, aClass
+                                                                                       .getName());
+                    pairKeyNode.setProperty(String.class,
+                                            SLConsts.PROPERTY_NAME_B_CLASS_NAME, bClass
+                                                                                       .getName());
+                    pairKeyNode.setProperty(Long.class,
+                                            SLConsts.PROPERTY_NAME_LINK_COUNT, 0L);
+                }
 
-	/**
-	 * Inc link count.
-	 * 
-	 * @param linkKeyPairNode
-	 *            the link key pair node
-	 * 
-	 * @return the long
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	private long incLinkCount(final SLPersistentNode linkKeyPairNode)
-			throws SLPersistentTreeSessionException {
-		synchronized (lock) {
-			final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode
-					.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
-			final long linkCount = linkCountProp.getValue() + 1;
-			linkCountProp.setValue(linkCount);
-			return linkCount;
-		}
-	}
+                typePairNodeCache.put(typePairKey, pairKeyNode);
+            }
+            return pairKeyNode;
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
-	 * (org.openspotlight.graph.SLLinkEvent)
-	 */
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void linkAdded(final SLLinkEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
-			try {
-				final SLLink link = event.getLink();
-				final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link
-						.getClass().getInterfaces()[0];
+    /**
+     * Inc link count.
+     * 
+     * @param linkKeyPairNode the link key pair node
+     * @return the long
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private long incLinkCount( final SLPersistentNode linkKeyPairNode )
+        throws SLPersistentTreeSessionException {
+        synchronized (lock) {
+            final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode
+                                                                            .getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
+            final long linkCount = linkCountProp.getValue() + 1;
+            linkCountProp.setValue(linkCount);
+            return linkCount;
+        }
+    }
 
-				final SLNode[] sides = link.getSides();
-				final SLNode source = sides[0];
-				final SLNode target = sides[1];
-				final SLPersistentNode linkNode = event.getLinkNode();
-				final SLPersistentTreeSession treeSession = linkNode
-						.getSession();
-				final Class<?> sourceClass = source.getClass().getInterfaces()[0];
-				final Class<?> targetClass = target.getClass().getInterfaces()[0];
-				final String typePairKey = getTypePairKey(sourceClass,
-						targetClass);
-				final int direction = getMetaLinkDirection(sourceClass,
-						targetClass, link.isBidirectional());
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
+     * (org.openspotlight.graph.SLLinkEvent)
+     */
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings( "unchecked" )
+    @Override
+    public void linkAdded( final SLLinkEvent event )
+        throws SLGraphSessionException {
+        synchronized (lock) {
+            try {
+                final SLLink link = event.getLink();
+                final Class<? extends SLLink> linkType = (Class<? extends SLLink>)link
+                                                                                      .getClass().getInterfaces()[0];
 
-				final LinkKey linkKey = new LinkKey(linkType.getName(),
-						typePairKey, direction);
+                final SLNode[] sides = link.getSides();
+                final SLNode source = sides[0];
+                final SLNode target = sides[1];
+                final SLPersistentNode linkNode = event.getLinkNode();
+                final SLPersistentTreeSession treeSession = linkNode
+                                                                    .getSession();
+                final Class<?> sourceClass = source.getClass().getInterfaces()[0];
+                final Class<?> targetClass = target.getClass().getInterfaces()[0];
+                final String typePairKey = getTypePairKey(sourceClass,
+                                                          targetClass);
+                final int direction = getMetaLinkDirection(sourceClass,
+                                                           targetClass, link.isBidirectional());
 
-				if (metaLinkNodeCache.get(linkKey) == null) {
+                final LinkKey linkKey = new LinkKey(linkType.getName(),
+                                                    typePairKey, direction);
 
-					final SLPersistentNode classPairKeyNode = getTypePairKeyNode(
-							treeSession, linkType, sourceClass, targetClass,
-							typePairKey);
+                if (metaLinkNodeCache.get(linkKey) == null) {
 
-					final StringBuilder statement = new StringBuilder();
-					statement.append(classPairKeyNode.getPath()).append("/*[")
-							.append(SLConsts.PROPERTY_NAME_DIRECTION).append(
-									"=").append(direction).append(']');
+                    final SLPersistentNode classPairKeyNode = getTypePairKeyNode(
+                                                                                 treeSession, linkType, sourceClass, targetClass,
+                                                                                 typePairKey);
 
-					SLPersistentNode metaLinkNode = null;
-					final SLPersistentQuery query = treeSession.createQuery(
-							statement.toString(), SLPersistentQuery.TYPE_XPATH);
-					final SLPersistentQueryResult result = query.execute();
-					if (result.getRowCount() == 0) {
-						metaLinkNode = addLinkNode(classPairKeyNode, direction);
-						addDescription(linkType, metaLinkNode);
-						metaLinkNodeCache.put(linkKey, metaLinkNode);
-					}
+                    final StringBuilder statement = new StringBuilder();
+                    statement.append(classPairKeyNode.getPath()).append("/*[")
+                             .append(SLConsts.PROPERTY_NAME_DIRECTION).append(
+                                                                              "=").append(direction).append(']');
 
-				}
-			} catch (final SLException e) {
-				throw new SLGraphSessionException(
-						"Error on attempt to add meta link node.", e);
-			}
-		}
-	}
+                    SLPersistentNode metaLinkNode = null;
+                    final SLPersistentQuery query = treeSession.createQuery(
+                                                                            statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                    final SLPersistentQueryResult result = query.execute();
+                    if (result.getRowCount() == 0) {
+                        metaLinkNode = addLinkNode(classPairKeyNode, direction);
+                        addDescription(linkType, metaLinkNode);
+                        addVisibility(linkType, metaLinkNode);
+                        metaLinkNodeCache.put(linkKey, metaLinkNode);
+                    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkPropertySet
-	 * (org.openspotlight.graph.SLLinkPropertyEvent)
-	 */
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void linkPropertySet(final SLLinkPropertyEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
+                }
+            } catch (final SLException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to add meta link node.", e);
+            }
+        }
+    }
 
-			try {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkPropertySet
+     * (org.openspotlight.graph.SLLinkPropertyEvent)
+     */
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings( "unchecked" )
+    @Override
+    public void linkPropertySet( final SLLinkPropertyEvent event )
+        throws SLGraphSessionException {
+        synchronized (lock) {
 
-				final SLLinkProperty<? extends Serializable> linkProperty = event
-						.getProperty();
+            try {
 
-				final SLLink link = linkProperty.getLink();
-				final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link
-						.getClass().getInterfaces()[0];
-				final SLNode[] sides = link.getSides();
-				final SLNode source = sides[0];
-				final SLNode target = sides[1];
-				final SLPersistentNode linkNode = event.getPersistentProperty()
-						.getNode();
-				final SLPersistentTreeSession treeSession = linkNode
-						.getSession();
-				final Class<?> sourceClass = source.getClass().getInterfaces()[0];
-				final Class<?> targetClass = target.getClass().getInterfaces()[0];
-				final String typePairKey = getTypePairKey(sourceClass,
-						targetClass);
-				final int direction = getMetaLinkDirection(sourceClass,
-						targetClass, link.isBidirectional());
+                final SLLinkProperty<? extends Serializable> linkProperty = event
+                                                                                 .getProperty();
 
-				final LinkKey linkKey = new LinkKey(linkType.getName(),
-						typePairKey, direction);
-				final LinkPropertyKey propertyKey = new LinkPropertyKey(
-						linkKey, event.getProperty().getName());
+                final SLLink link = linkProperty.getLink();
+                final Class<? extends SLLink> linkType = (Class<? extends SLLink>)link
+                                                                                      .getClass().getInterfaces()[0];
+                final SLNode[] sides = link.getSides();
+                final SLNode source = sides[0];
+                final SLNode target = sides[1];
+                final SLPersistentNode linkNode = event.getPersistentProperty()
+                                                       .getNode();
+                final SLPersistentTreeSession treeSession = linkNode
+                                                                    .getSession();
+                final Class<?> sourceClass = source.getClass().getInterfaces()[0];
+                final Class<?> targetClass = target.getClass().getInterfaces()[0];
+                final String typePairKey = getTypePairKey(sourceClass,
+                                                          targetClass);
+                final int direction = getMetaLinkDirection(sourceClass,
+                                                           targetClass, link.isBidirectional());
 
-				if (!linkPropertyKeyCache.contains(propertyKey)) {
+                final LinkKey linkKey = new LinkKey(linkType.getName(),
+                                                    typePairKey, direction);
+                final LinkPropertyKey propertyKey = new LinkPropertyKey(
+                                                                        linkKey, event.getProperty().getName());
 
-					SLPersistentNode metaLinkNode = metaLinkNodeCache
-							.get(linkKey);
-					if (metaLinkNode == null) {
+                if (!linkPropertyKeyCache.contains(propertyKey)) {
 
-						final SLPersistentNode classPairKeyNode = getTypePairKeyNode(
-								treeSession, linkType, sourceClass,
-								targetClass, typePairKey);
+                    SLPersistentNode metaLinkNode = metaLinkNodeCache
+                                                                     .get(linkKey);
+                    if (metaLinkNode == null) {
 
-						final StringBuilder statement = new StringBuilder();
-						statement.append(classPairKeyNode.getPath()).append(
-								"/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
-								.append("=").append(direction).append(']');
+                        final SLPersistentNode classPairKeyNode = getTypePairKeyNode(
+                                                                                     treeSession, linkType, sourceClass,
+                                                                                     targetClass, typePairKey);
 
-						final SLPersistentQuery query = treeSession
-								.createQuery(statement.toString(),
-										SLPersistentQuery.TYPE_XPATH);
-						final SLPersistentQueryResult result = query.execute();
-						if (result.getRowCount() == 1) {
-							metaLinkNode = result.getNodes().iterator().next();
-						}
-					}
+                        final StringBuilder statement = new StringBuilder();
+                        statement.append(classPairKeyNode.getPath()).append(
+                                                                            "/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
+                                 .append("=").append(direction).append(']');
 
-					final String propName = SLCommonSupport
-							.toUserPropertyName(linkProperty.getName());
-					metaLinkNode.setProperty(String.class, propName,
-							linkProperty.getValue().getClass().getName());
-					linkPropertyKeyCache.add(propertyKey);
-				}
-			} catch (final SLException e) {
-				throw new SLGraphSessionException(
-						"Error on attempt to set meta link property.", e);
-			}
-		}
-	}
+                        final SLPersistentQuery query = treeSession
+                                                                   .createQuery(statement.toString(),
+                                                                                SLPersistentQuery.TYPE_XPATH);
+                        final SLPersistentQueryResult result = query.execute();
+                        if (result.getRowCount() == 1) {
+                            metaLinkNode = result.getNodes().iterator().next();
+                        }
+                    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
-	 * (org.openspotlight.graph.SLNodeEvent)
-	 */
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public void nodeAdded(final SLNodeEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
+                    final String propName = SLCommonSupport
+                                                           .toUserPropertyName(linkProperty.getName());
+                    metaLinkNode.setProperty(String.class, propName,
+                                             linkProperty.getValue().getClass().getName());
+                    linkPropertyKeyCache.add(propertyKey);
+                }
+            } catch (final SLException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to set meta link property.", e);
+            }
+        }
+    }
 
-			try {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
+     * (org.openspotlight.graph.SLNodeEvent)
+     */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public void nodeAdded( final SLNodeEvent event )
+        throws SLGraphSessionException {
+        synchronized (lock) {
 
-				final SLPersistentNode pNode = event.getPersistentNode();
-				final String typeName = SLCommonSupport.getNodeTypeName(pNode);
+            try {
 
-				final Class<? extends SLNode> nodeType = (Class<? extends SLNode>) event
-						.getNode().getClass().getInterfaces()[0];
-				if (nodeType.equals(SLNode.class)
-						|| metaNodeTypeCache.get(typeName) != null) {
-					return;
-				}
+                final SLPersistentNode pNode = event.getPersistentNode();
+                final String typeName = SLCommonSupport.getNodeTypeName(pNode);
 
-				final SLPersistentTreeSession treeSession = pNode.getSession();
-				SLPersistentNode pMetaNodeTypeParent = SLCommonSupport
-						.getMetaTypesNode(treeSession);
+                final Class<? extends SLNode> nodeType = (Class<? extends SLNode>)event
+                                                                                       .getNode().getClass().getInterfaces()[0];
+                if (nodeType.equals(SLNode.class)
+                    || metaNodeTypeCache.get(typeName) != null) {
+                    return;
+                }
 
-				final Collection<Class<? extends SLNode>> nodeTypeHierarchy = getNodeTypeHierarchy(nodeType);
-				for (final Class<? extends SLNode> currentNodeType : nodeTypeHierarchy) {
-					final SLPersistentNode pMetaNodeType = pMetaNodeTypeParent
-							.getNode(currentNodeType.getName());
-					if (pMetaNodeType == null) {
-						pMetaNodeTypeParent = pMetaNodeTypeParent
-								.addNode(currentNodeType.getName());
-						pMetaNodeTypeParent.setProperty(String.class,
-								SLConsts.PROPERTY_NAME_NODE_TYPE,
-								currentNodeType.getName());
-						addRenderHints(nodeType, pMetaNodeTypeParent);
-						addDescription(nodeType, pMetaNodeTypeParent);
-					} else {
-						pMetaNodeTypeParent = pMetaNodeType;
-					}
-					metaNodeTypeCache.put(currentNodeType.getName(),
-							pMetaNodeTypeParent);
-				}
-			} catch (final SLPersistentTreeSessionException e) {
-				throw new SLGraphSessionException(
-						"Error on attempt to add node metadata.", e);
-			}
-		}
-	}
+                final SLPersistentTreeSession treeSession = pNode.getSession();
+                SLPersistentNode pMetaNodeTypeParent = SLCommonSupport
+                                                                      .getMetaTypesNode(treeSession);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet
-	 * (org.openspotlight.graph.SLNodePropertyEvent)
-	 */
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void nodePropertySet(final SLNodePropertyEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
+                final Collection<Class<? extends SLNode>> nodeTypeHierarchy = getNodeTypeHierarchy(nodeType);
+                for (final Class<? extends SLNode> currentNodeType : nodeTypeHierarchy) {
+                    final SLPersistentNode pMetaNodeType = pMetaNodeTypeParent
+                                                                              .getNode(currentNodeType.getName());
+                    if (pMetaNodeType == null) {
+                        pMetaNodeTypeParent = pMetaNodeTypeParent
+                                                                 .addNode(currentNodeType.getName());
+                        pMetaNodeTypeParent.setProperty(String.class,
+                                                        SLConsts.PROPERTY_NAME_NODE_TYPE,
+                                                        currentNodeType.getName());
+                        addRenderHints(nodeType, pMetaNodeTypeParent);
+                        addDescription(nodeType, pMetaNodeTypeParent);
+                        addVisibility(nodeType, pMetaNodeTypeParent);
+                    } else {
+                        pMetaNodeTypeParent = pMetaNodeType;
+                    }
+                    metaNodeTypeCache.put(currentNodeType.getName(),
+                                          pMetaNodeTypeParent);
+                }
+            } catch (final SLPersistentTreeSessionException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to add node metadata.", e);
+            }
+        }
+    }
 
-			try {
-				final SLPersistentProperty<? extends Serializable> pProperty = event
-						.getPersistentProperty();
-				final SLPersistentNode pNode = pProperty.getNode();
-				final String typeName = SLCommonSupport.getNodeTypeName(pNode);
-				final String propertyName = pProperty.getName();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet
+     * (org.openspotlight.graph.SLNodePropertyEvent)
+     */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void nodePropertySet( final SLNodePropertyEvent event )
+        throws SLGraphSessionException {
+        synchronized (lock) {
 
-				final String fullPropertyName = typeName + "." + propertyName;
-				if (!nodePropertyNameCache.contains(fullPropertyName)) {
-					final SLPersistentNode metaNodeType = getMetaNodeType(pNode
-							.getSession(), typeName);
-					if (metaNodeType != null) {
-						metaNodeType.setProperty(String.class, propertyName,
-								pProperty.getValue().getClass().getName());
-						nodePropertyNameCache.add(fullPropertyName);
-					}
-				}
-			} catch (final SLPersistentTreeSessionException e) {
-				throw new SLGraphSessionException(
-						"Error on attempt to set meta node property.", e);
-			}
-		}
-	}
+            try {
+                final SLPersistentProperty<? extends Serializable> pProperty = event
+                                                                                    .getPersistentProperty();
+                final SLPersistentNode pNode = pProperty.getNode();
+                final String typeName = SLCommonSupport.getNodeTypeName(pNode);
+                final String propertyName = pProperty.getName();
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void sessionCleaned() {
-		synchronized (lock) {
-			typePairNodeCache.clear();
-			metaNodeTypeCache.clear();
-			metaLinkNodeCache.clear();
-			nodePropertyNameCache.clear();
-			linkPropertyKeyCache.clear();
-		}
-	}
+                final String fullPropertyName = typeName + "." + propertyName;
+                if (!nodePropertyNameCache.contains(fullPropertyName)) {
+                    final SLPersistentNode metaNodeType = getMetaNodeType(pNode
+                                                                               .getSession(), typeName);
+                    if (metaNodeType != null) {
+                        //TODO here check property visibility
+                        metaNodeType.setProperty(String.class, propertyName,
+                                                 pProperty.getValue().getClass().getName());
+                        nodePropertyNameCache.add(fullPropertyName);
+                    }
+                }
+            } catch (final SLPersistentTreeSessionException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to set meta node property.", e);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void sessionCleaned() {
+        synchronized (lock) {
+            typePairNodeCache.clear();
+            metaNodeTypeCache.clear();
+            metaLinkNodeCache.clear();
+            nodePropertyNameCache.clear();
+            linkPropertyKeyCache.clear();
+        }
+    }
 }
