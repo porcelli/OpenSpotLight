@@ -9,7 +9,6 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -78,6 +77,19 @@ public class DbTableArtifactBundleProcessorTest {
 	private static RepositoryData data;
 	private static DefaultScheduler scheduler;
 
+	public static void cleanH2Tables() throws Exception {
+		final Connection connection = DatabaseSupport
+				.createConnection(data.artifactSource);
+		connection.prepareStatement("drop view if exists exampleView")
+				.execute();
+		connection.prepareStatement("drop table if exists exampleTable")
+				.execute();
+		connection.prepareStatement("drop table if exists anotherTable")
+				.execute();
+		connection.close();
+
+	}
+
 	@AfterClass
 	public static void closeResources() throws Exception {
 		scheduler.stopScheduler();
@@ -137,6 +149,8 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@BeforeClass
 	public static void setupResources() throws Exception {
+		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
+
 		JcrConnectionProvider.createFromData(
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
 				.closeRepositoryAndCleanResources();
@@ -164,11 +178,6 @@ public class DbTableArtifactBundleProcessorTest {
 
 	}
 
-	@Before
-	public void cleanH2Files() throws Exception {
-		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
-	}
-
 	private void reloadArtifactsAndCallBundleProcessor() {
 		scheduler.fireSchedulable("username", "password", data.artifactSource);
 		scheduler.fireSchedulable("username", "password", data.group);
@@ -176,7 +185,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldExecuteBundleProcessor() throws Exception {
-
+		cleanH2Tables();
 		final Connection connection = DatabaseSupport
 				.createConnection(data.artifactSource);
 
@@ -261,6 +270,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldIncludeNewColumnOnChangedTable() throws Exception {
+		cleanH2Tables();
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
@@ -327,6 +337,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldRemoveDeletedColumns() throws Exception {
+		cleanH2Tables();
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
 
@@ -392,27 +403,269 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldRemoveDeletedTables() throws Exception {
-		Assert.fail();
+		cleanH2Tables();
+		final Connection connection1 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection1
+				.prepareStatement(
+						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection1.close();
+
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext1 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext1 = executionContext1.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
+		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
+		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
+		final SLNode exampleTableNode1 = exampleCatalogNode1
+				.getNode("EXAMPLETABLE");
+		Assert.assertThat(exampleTableNode1, Is.is(IsNull.notNullValue()));
+		final Connection connection2 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection2.prepareStatement("drop table exampleTable").execute();
+		connection2.close();
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext2 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext2 = executionContext2.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
+		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
+		final SLNode exampleTableNode2 = exampleCatalogNode2
+				.getNode("EXAMPLETABLE");
+		Assert.assertThat(exampleTableNode2, Is.is(IsNull.nullValue()));
 	}
 
-	@Test
 	@Ignore
+	@Test
 	public void shouldUpdateChangedDatatypesAndRemoveUnused() throws Exception {
 		Assert.fail();
 	}
 
 	@Test
-	@Ignore
 	public void shouldUpdateChangedFkInformation() throws Exception {
-		Assert.fail();
+		cleanH2Tables();
+		final Connection connection1 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection1
+				.prepareStatement(
+						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection1
+				.prepareStatement(
+						"create table anotherTable(i int not null primary key, i_fk int)")
+				.execute();
+
+		connection1
+				.prepareStatement(
+						"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
+				.execute();
+		connection1.close();
+
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext1 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext1 = executionContext1.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
+		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
+		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
+		final SLNode exampleTableNode1 = exampleCatalogNode1
+				.getNode("EXAMPLETABLE");
+		final SLNode anotherTableNode1 = exampleCatalogNode1
+				.getNode("ANOTHERTABLE");
+
+		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
+				"I");
+		final Column anotherExampleColumn = anotherTableNode1.getNode(
+				Column.class, "I_FK");
+		final Set<SLNode> pkNodes1 = exampleColumn1.getNodes();
+		final Set<SLNode> fkNodes1 = anotherExampleColumn.getNodes();
+
+		boolean foundPkConstraint1 = false;
+		boolean foundFkConstraint1 = false;
+
+		for (final SLNode node : pkNodes1) {
+			if (node instanceof DatabaseConstraintPrimaryKey) {
+				foundPkConstraint1 = true;
+			}
+		}
+		for (final SLNode node : fkNodes1) {
+			if (node instanceof DatabaseConstraintForeignKey) {
+				foundFkConstraint1 = true;
+			}
+		}
+
+		Assert.assertThat(foundFkConstraint1, Is.is(true));
+		Assert.assertThat(foundPkConstraint1, Is.is(true));
+
+		final Connection connection2 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection2.prepareStatement(
+				"alter table anotherTable drop constraint example_fk ")
+				.execute();
+		connection2.close();
+
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext2 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext2 = executionContext2.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
+		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
+		final SLNode exampleTableNode2 = exampleCatalogNode2
+				.getNode("EXAMPLETABLE");
+		final SLNode anotherTableNode2 = exampleCatalogNode2
+				.getNode("ANOTHERTABLE");
+
+		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
+				"I");
+		final Column anotherExampleColumn2 = anotherTableNode2.getNode(
+				Column.class, "I_FK");
+		final Set<SLNode> pkNodes2 = exampleColumn2.getNodes();
+		final Set<SLNode> fkNodes2 = anotherExampleColumn2.getNodes();
+
+		boolean foundPkConstraint2 = false;
+		boolean foundFkConstraint2 = false;
+
+		for (final SLNode node : pkNodes2) {
+			if (node instanceof DatabaseConstraintPrimaryKey) {
+				foundPkConstraint2 = true;
+			}
+		}
+		for (final SLNode node : fkNodes2) {
+			if (node instanceof DatabaseConstraintForeignKey) {
+				foundFkConstraint2 = true;
+			}
+		}
+
+		Assert.assertThat(foundFkConstraint2, Is.is(false));
+		Assert.assertThat(foundPkConstraint2, Is.is(true));
+
 	}
 
 	@Test
-	@Ignore
 	public void shouldUpdateChangedPkInformation() throws Exception {
-		Assert.fail();
+		cleanH2Tables();
+		final Connection connection1 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection1
+				.prepareStatement(
+						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection1.close();
+
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext1 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext1 = executionContext1.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
+		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
+		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
+		final SLNode exampleTableNode1 = exampleCatalogNode1
+				.getNode("EXAMPLETABLE");
+
+		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
+				"I");
+		final Set<SLNode> pkNodes1 = exampleColumn1.getNodes();
+
+		boolean foundPkConstraint1 = false;
+
+		for (final SLNode node : pkNodes1) {
+			if (node instanceof DatabaseConstraintPrimaryKey) {
+				foundPkConstraint1 = true;
+			}
+		}
+
+		Assert.assertThat(foundPkConstraint1, Is.is(true));
+
+		final Connection connection2 = DatabaseSupport
+				.createConnection(data.artifactSource);
+
+		connection2.prepareStatement("drop table exampleTable ").execute();
+		connection2
+				.prepareStatement(
+						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection2.close();
+
+		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext executionContext2 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+								.getName());
+		final SLContext groupContext2 = executionContext2.getGraphSession()
+				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
+		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
+		final SLNode exampleTableNode2 = exampleCatalogNode2
+				.getNode("EXAMPLETABLE");
+
+		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
+				"I");
+		final Set<SLNode> pkNodes2 = exampleColumn2.getNodes();
+
+		boolean foundPkConstraint2 = false;
+
+		for (final SLNode node : pkNodes2) {
+			if (node instanceof DatabaseConstraintPrimaryKey) {
+				foundPkConstraint2 = true;
+			}
+		}
+		Assert.assertThat(foundPkConstraint2, Is.is(false));
 	}
 
 }

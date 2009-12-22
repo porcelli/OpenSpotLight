@@ -96,13 +96,14 @@ public class DbTableArtifactBundleProcessor implements
 			final org.openspotlight.federation.domain.Column c)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		final Column column = table.addNode(Column.class, c.getName());
+		final Column column = table.addNode(Column.class, c.getName(), links(
+				TableViewColumns.class, AbstractTypeBind.class,
+				ColumnDataType.class, ConstraintDatabaseColumn.class,
+				ForeignKey.class), links(TableViewColumns.class,
+				ColumnDataType.class, ConstraintDatabaseColumn.class,
+				ForeignKey.class));
 		final Column abstractColumn = abstractTable.addNode(Column.class, c
-				.getName(), links(TableViewColumns.class,
-				AbstractTypeBind.class, ColumnDataType.class,
-				ConstraintDatabaseColumn.class, ForeignKey.class), links(
-				TableViewColumns.class, ColumnDataType.class,
-				ConstraintDatabaseColumn.class, ForeignKey.class));
+				.getName());
 		context.getGraphSession().addLink(AbstractTypeBind.class, column,
 				abstractColumn, false);
 		context.getGraphSession().addLink(TableViewColumns.class, table,
@@ -151,7 +152,9 @@ public class DbTableArtifactBundleProcessor implements
 			final TableView thatTable = thatTableParent.addNode(
 					TableView.class, fk.getTableName());
 			final Column thatColumn = thatTable.addNode(Column.class, fk
-					.getColumnName());
+					.getColumnName(), links(ForeignKey.class,
+					ConstraintDatabaseColumn.class), links(ForeignKey.class,
+					ConstraintDatabaseColumn.class));
 			context.getGraphSession().addLink(ForeignKey.class, column,
 					thatColumn, false);
 			final DatabaseConstraintForeignKey fkNode = thatColumn.addNode(
