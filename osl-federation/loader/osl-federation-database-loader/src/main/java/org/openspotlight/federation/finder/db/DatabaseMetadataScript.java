@@ -58,9 +58,6 @@ import java.util.Map;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.openspotlight.federation.domain.DatabaseType;
-import org.openspotlight.federation.domain.StreamArtifact;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * Pojo class to store the script to get database metadata for a database type. This class should be getted by
