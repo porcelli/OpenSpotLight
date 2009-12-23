@@ -59,6 +59,7 @@ import java.util.Collection;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Files;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -247,7 +248,7 @@ public class ExampleRemoteServerWithData {
 
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            final SLGraphSession session = graph.openSession(user);
+            final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");

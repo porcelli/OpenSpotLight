@@ -70,6 +70,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimiti
 import org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.dap.language.java.resolver.TypeResolver.ResultOrder;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -195,7 +196,7 @@ public class JavaTypeResolverTest {
 
         final SLGraphFactory factory = new SLGraphFactoryImpl();
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        session = graph.openSession(user);
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");
         SLContext jre15ctx = session.createContext("JRE-util-1.5");
@@ -218,7 +219,7 @@ public class JavaTypeResolverTest {
         createCrudNodes(crudFrameworkLegacySupport);
         session.save();
         session.close();
-        session = graph.openSession(user);
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
         jre15ctx = session.getContext("JRE-util-1.5");
         jre14ctx = session.getContext("JRE-util-1.4");

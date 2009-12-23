@@ -138,7 +138,7 @@ public class MultithreadGraphSessionTest {
 	@Test
 	public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
 		MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph
-				.openSession(MultithreadGraphSessionTest.user);
+				.openSession(MultithreadGraphSessionTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session
 				.createContext("new context").getRootNode();
 		MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode

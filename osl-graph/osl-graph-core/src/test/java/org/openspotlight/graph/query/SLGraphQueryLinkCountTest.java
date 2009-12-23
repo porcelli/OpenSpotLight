@@ -59,6 +59,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -140,7 +141,7 @@ public class SLGraphQueryLinkCountTest {
 			final SLGraphFactory factory = AbstractFactory
 					.getDefaultInstance(SLGraphFactory.class);
 			graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-			session = graph.openSession(user);
+			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 			final SLContext context = session.createContext("linkCountTest");
 			final SLNode root = context.getRootNode();
 			final Set<Class<?>> types = getIFaceTypeSet();
@@ -175,7 +176,7 @@ public class SLGraphQueryLinkCountTest {
 			}
 			session.save();
 			session.close();
-			session = graph.openSession(user);
+			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		} catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}

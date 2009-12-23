@@ -113,7 +113,7 @@ public class SLGraphNodeByIDTest {
 			final SLGraphFactory factory = AbstractFactory
 					.getDefaultInstance(SLGraphFactory.class);
 			graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-			session = graph.openSession(user);
+			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		} catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}

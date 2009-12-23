@@ -482,7 +482,7 @@ public class SLGraphTest {
     public void beforeTest() throws SLGraphException,
         SLInvalidCredentialException {
         if (session == null) {
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         }
     }
 
@@ -2767,7 +2767,7 @@ public class SLGraphTest {
 
             session.save();
             session.close();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -2815,7 +2815,7 @@ public class SLGraphTest {
                           linkTypesForLinkDeletion, null);
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -2870,7 +2870,7 @@ public class SLGraphTest {
                                                      "javaMethodNode1");
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -2919,7 +2919,7 @@ public class SLGraphTest {
                           linkTypesForLinkedNodesDeletion);
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3264,7 +3264,7 @@ public class SLGraphTest {
                             javaMethodNode2, false);
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3312,7 +3312,7 @@ public class SLGraphTest {
                             javaClassNode1, javaMethodNode2, false, NORMAL);
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3354,7 +3354,7 @@ public class SLGraphTest {
             javaMethodNode1.addNode(TransientNode.class, "transNode2");
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,
@@ -3402,7 +3402,7 @@ public class SLGraphTest {
             javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
 
             session.save();
-            session = graph.openSession(user);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             root1 = session.getContext("1L").getRootNode();
             javaClassNode1 = root1.getNode(JavaClassNode.class,

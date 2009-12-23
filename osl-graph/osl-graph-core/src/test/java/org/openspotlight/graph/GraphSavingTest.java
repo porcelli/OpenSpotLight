@@ -111,13 +111,13 @@ public class GraphSavingTest {
 	@Test
 	public void shouldDoNotSaveChanges() throws Exception {
 		final SLGraphSession session = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		session.createContext("new context not saved").getRootNode().addNode(
 				"node 1 not saved").addNode("node 2 not saved");
 		session.close();
 
 		final SLGraphSession session1 = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		final SLContext createdCtx = session1
 				.getContext("new context not saved");
 		Assert.assertThat(createdCtx, Is.is(IsNull.nullValue()));
@@ -129,14 +129,14 @@ public class GraphSavingTest {
 	public void shouldSaveChanges() throws Exception {
 
 		final SLGraphSession session = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		session.createContext("new context").getRootNode().addNode("node 1")
 				.addNode("node 2");
 		session.save();
 		session.close();
 
 		final SLGraphSession session1 = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		final SLContext createdCtx = session1.getContext("new context");
 		Assert.assertThat(createdCtx, Is.is(IsNull.notNullValue()));
 		final SLNode createdNode1 = createdCtx.getRootNode().getNode("node 1");
@@ -151,19 +151,19 @@ public class GraphSavingTest {
 			throws Exception {
 
 		final SLGraphSession sessionToSave = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		sessionToSave.createContext("new saved context").getRootNode().addNode(
 				"node 1 saved").addNode("node 2 saved");
 		sessionToSave.save();
 		sessionToSave.close();
 		final SLGraphSession sessionToDismiss = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		sessionToDismiss.createContext("new context not saved").getRootNode()
 				.addNode("node 1 not saved").addNode("node 2 not saved");
 		sessionToDismiss.close();
 
 		final SLGraphSession session1 = GraphSavingTest.graph
-				.openSession(GraphSavingTest.user);
+				.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		final SLContext createdCtx = session1.getContext("new saved context");
 		Assert.assertThat(createdCtx, Is.is(IsNull.notNullValue()));
 		final SLNode createdNode1 = createdCtx.getRootNode().getNode(
