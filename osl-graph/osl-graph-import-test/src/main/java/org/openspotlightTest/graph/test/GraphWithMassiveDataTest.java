@@ -61,6 +61,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import org.junit.Test;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -109,7 +110,7 @@ public class GraphWithMassiveDataTest {
 
         final SLGraphFactory factory = new SLGraphFactoryImpl();
         final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        this.session = graph.openSession(this.user);
+        this.session = graph.openSession(this.user, SharedConstants.DEFAULT_REPOSITORY_NAME);
         this.rootNode = this.session.createContext("sample").getRootNode();
 
     }
