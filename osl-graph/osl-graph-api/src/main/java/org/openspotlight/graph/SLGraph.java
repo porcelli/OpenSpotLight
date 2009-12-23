@@ -116,22 +116,6 @@ public interface SLGraph {
 	public User getUser();
 
 	/**
-	 * Open default repository session.
-	 * 
-	 * @deprecated use the openSession with repository name instead
-	 * @param user
-	 *            the user
-	 * @return the sL graph session
-	 * @throws SLGraphException
-	 *             the SL graph exception
-	 * @throws SLInvalidCredentialsException
-	 *             the SL invalid credentials exception
-	 */
-	@Deprecated
-	public SLGraphSession openSession(AuthenticatedUser user)
-			throws SLGraphException, SLInvalidCredentialException;
-
-	/**
 	 * Open repository session.
 	 * 
 	 * @param user

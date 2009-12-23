@@ -198,13 +198,6 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialException {
-        return this.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void shutdown() {
         this.tree.shutdown();
         this.graphState = GraphState.SHUTDOWN;
