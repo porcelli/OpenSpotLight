@@ -64,6 +64,8 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 /**
  * During a column changing, its table needs to be marked as changed also. This
@@ -76,6 +78,9 @@ public class ColumnChangingFiresTableChangeTest {
 
 	@Before
 	public void cleanDatabaseFiles() throws Exception {
+		JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
 		delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
 	}
 
@@ -89,7 +94,7 @@ public class ColumnChangingFiresTableChangeTest {
 
 		conn
 				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+						"create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
 				.execute();
 		conn.close();
 		final GlobalSettings configuration = new GlobalSettings();
@@ -106,11 +111,11 @@ public class ColumnChangingFiresTableChangeTest {
 		loader.closeResources();
 		conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn.prepareStatement("drop table exampleTable") //$NON-NLS-1$
+		conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
 				.execute();
 
 		conn.prepareStatement(
-				"create table exampleTable(changed_columns int not null)") //$NON-NLS-1$
+				"create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
 				.execute();
 		conn.close();
 
@@ -121,11 +126,11 @@ public class ColumnChangingFiresTableChangeTest {
 		loader.closeResources();
 		boolean found = false;
 		all: for (final Artifact first : firstLoadedItems) {
-			if (first.getArtifactName().equals("EXAMPLETABLE")) {
+			if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
 				assertThat(first.equals(first), is(true));
 				assertThat(first.contentEquals(first), is(true));
 				for (final Artifact last : lastLoadedItems) {
-					if (last.getArtifactName().equals("EXAMPLETABLE")) {
+					if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
 						assertThat(last.equals(first), is(true));
 						assertThat(last.contentEquals(first), is(false));
 						found = true;

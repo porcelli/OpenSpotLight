@@ -313,9 +313,15 @@ public class ArtifactLoaderFactory {
 										.removeBegginingFrom(toRemove,
 												currentPathString);
 							}
-							final String newPathString = sourceToProcess.mapping
-									.getTo()
-									+ currentPathString;
+							String newPathString = null;
+							if (!currentPathString
+									.startsWith(sourceToProcess.mapping.getTo())) {
+								newPathString = sourceToProcess.mapping.getTo()
+										+ currentPathString;
+							} else {
+								newPathString = currentPathString;
+							}
+
 							final PathElement newPath = PathElement
 									.createFromPathString(newPathString);
 							loaded.setParent(newPath);
