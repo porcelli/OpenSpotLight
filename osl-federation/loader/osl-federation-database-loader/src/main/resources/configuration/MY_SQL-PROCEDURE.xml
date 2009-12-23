@@ -1,6 +1,6 @@
 <script>
 	<scriptType>PROCEDURE</scriptType>
-	<database>MYSQL</database>
+	<database>MY_SQL</database>
 	<preferedType>TEMPLATE</preferedType>
 	<template>
 		create procedure $name$($parameters$) as 

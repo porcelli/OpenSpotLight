@@ -1,6 +1,6 @@
 <script>
 	<scriptType>TABLE</scriptType>
-	<database>MYSQL</database>
+	<database>MY_SQL</database>
 	<preferedType>SQL</preferedType>
 	<contentSelect><![CDATA[show create table $schema_name$.$name$]]></contentSelect>
 	<contentColumnToUse>2</contentColumnToUse>

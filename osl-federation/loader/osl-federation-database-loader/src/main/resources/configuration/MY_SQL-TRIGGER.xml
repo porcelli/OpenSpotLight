@@ -1,6 +1,6 @@
 <script>
 	<scriptType>TRIGGER</scriptType>
-	<database>MYSQL</database>
+	<database>MY_SQL</database>
 	<preferedType>TEMPLATE</preferedType>
 	<template><![CDATA[
 	create trigger $name$ 

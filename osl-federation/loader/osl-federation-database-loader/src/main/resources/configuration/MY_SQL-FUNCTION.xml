@@ -1,6 +1,6 @@
 <script>
 	<scriptType>FUNCTION</scriptType>
-	<database>MYSQL</database>
+	<database>MY_SQL</database>
 	<preferedType>TEMPLATE</preferedType>
 	<template>
 		create function $name$($parameters$) returning $return_type$ as 

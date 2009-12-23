@@ -1,6 +1,6 @@
 <script>
 	<scriptType>VIEW</scriptType>
-	<database>MYSQL</database>
+	<database>MY_SQL</database>
 	<preferedType>SQL</preferedType>
 	<dataSelect><![CDATA[
         select 
