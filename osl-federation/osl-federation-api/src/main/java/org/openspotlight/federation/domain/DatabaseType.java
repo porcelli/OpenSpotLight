@@ -67,7 +67,7 @@ public enum DatabaseType {
     /**
      * MySQL Database.
      */
-    MYSQL,
+    MY_SQL,
     /**
      * Postgre Sql Database.
      */

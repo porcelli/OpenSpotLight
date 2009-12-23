@@ -125,7 +125,7 @@ public class ConfigurationExamples {
 
 	public static Repository createMySqlDbConfiguration() {
 		return createDatabaseRepository("mysql Repository", "mysql Group",
-				"mysql Connection", "root", null, DatabaseType.MYSQL,
+				"mysql Connection", "root", null, DatabaseType.MY_SQL,
 				"jdbc:mysql://localhost:3306/test", "com.mysql.jdbc.Driver");
 	}
 

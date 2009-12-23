@@ -119,7 +119,7 @@ public class DatabaseMetadataScriptManagerTest {
 	@Test
 	public void shouldReplaceTemplateInACorrectWay() throws Exception {
 		final DatabaseMetadataScript tableScript = DatabaseMetadataScriptManager.INSTANCE
-				.getScript(DatabaseType.MYSQL, ScriptType.TABLE);
+				.getScript(DatabaseType.MY_SQL, ScriptType.TABLE);
 		final StringTemplate template = new StringTemplate(tableScript
 				.getTemplate(), DefaultTemplateLexer.class);
 		template.setAttribute("name", "example_table");
