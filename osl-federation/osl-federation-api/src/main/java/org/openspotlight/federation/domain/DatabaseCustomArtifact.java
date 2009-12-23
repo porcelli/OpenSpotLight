@@ -55,13 +55,17 @@ public abstract class DatabaseCustomArtifact extends Artifact {
 
 	private String serverName;
 	private String databaseName;
-
 	private String url;
+	private DatabaseType databaseType;
 
 	private static final long serialVersionUID = -1600651697651996477L;
 
 	public String getDatabaseName() {
 		return databaseName;
+	}
+
+	public DatabaseType getDatabaseType() {
+		return databaseType;
 	}
 
 	public String getServerName() {
@@ -74,6 +78,10 @@ public abstract class DatabaseCustomArtifact extends Artifact {
 
 	public void setDatabaseName(final String databaseName) {
 		this.databaseName = databaseName;
+	}
+
+	public void setDatabaseType(final DatabaseType databaseType) {
+		this.databaseType = databaseType;
 	}
 
 	public void setServerName(final String serverName) {

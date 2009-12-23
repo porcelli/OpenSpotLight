@@ -319,6 +319,7 @@ public class DatabaseCustomArtifactFinder extends
 				for (final DatabaseCustomArtifact artifact : result.values()) {
 					artifact.setServerName(source.getServerName());
 					artifact.setDatabaseName(source.getDatabaseName());
+					artifact.setDatabaseType(source.getType());
 					artifact.setUrl(source.getInitialLookup());
 				}
 			}
