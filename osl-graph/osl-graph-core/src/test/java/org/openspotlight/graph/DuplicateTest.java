@@ -92,7 +92,7 @@ public class DuplicateTest {
 
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         this.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        this.session = this.graph.openSession(this.user);
+        this.session = this.graph.openSession(this.user, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class DuplicateTest {
         n3_.setCaption("someName");
         this.session.save();
         this.session.close();
-        this.session = this.graph.openSession(this.user);
+        this.session = this.graph.openSession(this.user, SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLQueryApi query = this.session.createQueryApi();
         query
 
@@ -172,7 +172,7 @@ public class DuplicateTest {
         n3_.setCaption("someName");
         this.session.save();
         this.session.close();
-        this.session = this.graph.openSession(this.user);
+        this.session = this.graph.openSession(this.user, SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLQueryApi query = this.session.createQueryApi();
         query
 

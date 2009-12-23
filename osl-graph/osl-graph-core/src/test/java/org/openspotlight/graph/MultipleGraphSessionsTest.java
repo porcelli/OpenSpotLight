@@ -94,9 +94,9 @@ public class MultipleGraphSessionsTest {
 	public void testMultipleSessions() throws AbstractFactoryException,
 			Exception {
 		final SLGraphSession session = MultipleGraphSessionsTest.graph
-				.openSession(MultipleGraphSessionsTest.user);
+				.openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		final SLGraphSession session2 = MultipleGraphSessionsTest.graph
-				.openSession(MultipleGraphSessionsTest.user);
+				.openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
 		final SLNode abstractTestNode = session.createContext("abstractTest")
 				.getRootNode();
@@ -136,7 +136,7 @@ public class MultipleGraphSessionsTest {
 	public void testOpenCloseSessions() throws AbstractFactoryException,
 			SLGraphException, SLInvalidCredentialException {
 		MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph
-				.openSession(MultipleGraphSessionsTest.user);
+				.openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
 		SLNode abstractTestNode = MultipleGraphSessionsTest.session
 				.createContext("abstractTest").getRootNode();
@@ -148,7 +148,7 @@ public class MultipleGraphSessionsTest {
 		Assert.assertEquals(false, node1.getID().equals(node2.getID()));
 		MultipleGraphSessionsTest.session.close();
 		MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph
-				.openSession(MultipleGraphSessionsTest.user);
+				.openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
 		abstractTestNode = MultipleGraphSessionsTest.session.createContext(
 				"abstractTest").getRootNode();

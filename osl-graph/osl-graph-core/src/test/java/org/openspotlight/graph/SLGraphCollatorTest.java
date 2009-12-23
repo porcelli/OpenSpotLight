@@ -116,7 +116,7 @@ public class SLGraphCollatorTest {
 	public void beforeTest() throws SLGraphException,
 			SLInvalidCredentialException {
 		if (session == null) {
-			session = graph.openSession(user);
+			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		}
 	}
 

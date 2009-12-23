@@ -70,6 +70,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimiti
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -274,7 +275,7 @@ public abstract class AbstractMethodResolutionTest {
 		// FIXME this == null should be removed -> NOT I CAN'T OPEN ONE SESSION
 		// PER METHOD EXECUTION!!
 		if (graphSession == null) {
-			graphSession = graph.openSession(user);
+			graphSession = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		}
 
 		abstractContex = graphSession.getContext(Constants.ABSTRACT_CONTEXT);

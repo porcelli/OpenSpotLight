@@ -149,7 +149,7 @@ public class SLGraphQueryCacheTest {
 			final SLGraphFactory factory = AbstractFactory
 					.getDefaultInstance(SLGraphFactory.class);
 			graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-			session = graph.openSession(user);
+			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 			final SLContext context = session.createContext("cacheTest");
 			final SLNode root = context.getRootNode();
 			final Set<Class<?>> types = getIFaceTypeSet();
@@ -184,7 +184,7 @@ public class SLGraphQueryCacheTest {
 			}
 			session.save();
 			session.close();
-			session = graph.openSession(user);
+			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
 			final SLPersistentTreeFactory pFactory = AbstractFactory
 					.getDefaultInstance(SLPersistentTreeFactory.class);
