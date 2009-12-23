@@ -34,15 +34,25 @@ public class NodeInheritanceTemplateGeneration {
 	public void shouldCreateNodeInheritanceFiles() throws Exception {
 		final String dir = "target/test-data/NodeInheritanceTemplateGeneration/generated";
 		new File(dir).mkdirs();
+		new File(dir + "/wrapped").mkdirs();
 
 		final StringTemplateGroup group = new StringTemplateGroup("myGroup",
 				"src/test/resources/template/sourcecode",
 				DefaultTemplateLexer.class);
-
 		final StringTool t = new StringTool();
 		for (final DatabaseType dbType : DatabaseType.values()) {
+			final String prefix = t.camelCase(dbType.name().toLowerCase());
+
+			final StringTemplate wrapTemplate = group
+					.getInstanceOf("WrappedType");
+			wrapTemplate.setAttribute("dbName", prefix);
+			final FileWriter wrapWriter = new FileWriter(dir + "/wrapped/"
+					+ prefix + "WrappedType.java");
+			wrapWriter.write(wrapTemplate.toString());
+			wrapWriter.flush();
+			wrapWriter.close();
+
 			for (final Class<?> nodeType : databaseNodeTypes) {
-				final String prefix = t.camelCase(dbType.name().toLowerCase());
 				final StringTemplate template = group
 						.getInstanceOf("DatabaseNode");
 				template.setAttribute("dbName", prefix);
