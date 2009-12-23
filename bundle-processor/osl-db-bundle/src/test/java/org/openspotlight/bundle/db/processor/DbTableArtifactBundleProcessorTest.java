@@ -51,16 +51,19 @@ package org.openspotlight.bundle.db.processor;
 import static org.openspotlight.common.util.Files.delete;
 
 import java.sql.Connection;
+import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
 
 import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.Database;
@@ -90,6 +93,7 @@ import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -226,27 +230,33 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@Test
 	public void shouldExecuteBundleProcessor() throws Exception {
-
+		final Random r = new Random();
+		final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_"
+				+ r.nextInt(50);
 		final Connection connection = DatabaseSupport
 				.createConnection(data.artifactSource);
 
 		connection
 				.prepareStatement(
-						"create table exampleTable1(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable"
+								+ tableSufix
+								+ "(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection
 				.prepareStatement(
-						"create view exampleView1 (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable1")
-				.execute();
-		connection
-				.prepareStatement(
-						"create table anotherTable1(i int not null primary key, i_fk int,)")
-				.execute();
+						"create view exampleView"
+								+ tableSufix
+								+ " (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable"
+								+ tableSufix).execute();
+		connection.prepareStatement(
+				"create table anotherTable" + tableSufix
+						+ "(i int not null primary key, i_fk int)").execute();
 
-		connection
-				.prepareStatement(
-						"alter table anotherTable1 add constraint example_fk1 foreign key(i_fk) references exampleTable1(i)")
-				.execute();
+		connection.prepareStatement(
+				"alter table anotherTable" + tableSufix
+						+ " add constraint example_fk" + tableSufix
+						+ " foreign key(i_fk) references exampleTable"
+						+ tableSufix + "(i)").execute();
 		connection.close();
 
 		reloadArtifactsAndCallBundleProcessor();
@@ -273,15 +283,15 @@ public class DbTableArtifactBundleProcessorTest {
 		Assert.assertThat(exampleCatalogNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleCatalogNode, Is.is(Catalog.class));
 		final SLNode exampleTableNode = exampleCatalogNode
-				.getNode("EXAMPLETABLE1");
+				.getNode("EXAMPLETABLE" + tableSufix);
 		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleTableNode, Is.is(TableViewTable.class));
-		final SLNode exampleViewNode = exampleCatalogNode
-				.getNode("EXAMPLEVIEW1");
+		final SLNode exampleViewNode = exampleCatalogNode.getNode("EXAMPLEVIEW"
+				+ tableSufix);
 		Assert.assertThat(exampleViewNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(exampleViewNode, Is.is(TableViewView.class));
 		final SLNode anotherTableNode = exampleCatalogNode
-				.getNode("ANOTHERTABLE1");
+				.getNode("ANOTHERTABLE" + tableSufix);
 
 		final Column exampleColumn = exampleTableNode
 				.getNode(Column.class, "I");
@@ -304,7 +314,7 @@ public class DbTableArtifactBundleProcessorTest {
 			}
 		}
 
-        Assert.assertThat(foundPkConstraint, Is.is(true));
+		Assert.assertThat(foundPkConstraint, Is.is(true));
 		Assert.assertThat(foundFkConstraint, Is.is(true));
 
 	}
@@ -498,7 +508,6 @@ public class DbTableArtifactBundleProcessorTest {
 		Assert.assertThat(exampleTableNode2, Is.is(IsNull.nullValue()));
 	}
 
-	@Ignore
 	@Test
 	public void shouldUpdateChangedDatatypesAndRemoveUnused() throws Exception {
 		final Connection connection1 = DatabaseSupport
@@ -530,17 +539,17 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
 				"I");
-		final Set<SLNode> pkNodes1 = exampleColumn1.getNodes();
 
-		boolean foundPkConstraint1 = false;
-
-		for (final SLNode node : pkNodes1) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint1 = true;
+		final Collection<SLLink> links1 = executionContext1.getGraphSession()
+				.getUnidirectionalLinksBySource(exampleColumn1);
+		String dataType1 = null;
+		for (final SLLink link : links1) {
+			if (link instanceof ColumnDataType) {
+				dataType1 = link.getTarget().getName();
 			}
 		}
 
-		Assert.assertThat(foundPkConstraint1, Is.is(true));
+		Assert.assertThat(dataType1, Is.is(IsNull.notNullValue()));
 
 		final Connection connection2 = DatabaseSupport
 				.createConnection(data.artifactSource);
@@ -572,16 +581,19 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
 				"I");
-		final Set<SLNode> pkNodes2 = exampleColumn2.getNodes();
 
-		boolean foundPkConstraint2 = false;
-
-		for (final SLNode node : pkNodes2) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint2 = true;
+		final Collection<SLLink> links2 = executionContext1.getGraphSession()
+				.getUnidirectionalLinksBySource(exampleColumn2);
+		String dataType2 = null;
+		for (final SLLink link : links2) {
+			if (link instanceof ColumnDataType) {
+				dataType2 = link.getTarget().getName();
 			}
 		}
-		Assert.assertThat(foundPkConstraint2, Is.is(false));
+
+		Assert.assertThat(dataType2, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(dataType2, Is.is(IsNot.not(dataType1)));
+
 	}
 
 	@Test
@@ -589,20 +601,24 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
+		final Random r = new Random();
+		final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_"
+				+ r.nextInt(50);
+		connection1
+				.prepareStatement(
+						"create table exampleTable"
+								+ tableSufix
+								+ "(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+				.execute();
+		connection1.prepareStatement(
+				"create table anotherTable" + tableSufix
+						+ "(i int not null primary key, i_fk int)").execute();
 
-		connection1
-				.prepareStatement(
-						"create table exampleTable5(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
-		connection1
-				.prepareStatement(
-						"create table anotherTable5(i int not null primary key, i_fk int)")
-				.execute();
-
-		connection1
-				.prepareStatement(
-						"alter table anotherTable5 add constraint example_fk5 foreign key(i_fk) references exampleTable5(i)")
-				.execute();
+		connection1.prepareStatement(
+				"alter table anotherTable" + tableSufix
+						+ " add constraint example_fk" + tableSufix
+						+ " foreign key(i_fk) references exampleTable"
+						+ tableSufix + "(i)").execute();
 		connection1.close();
 
 		reloadArtifactsAndCallBundleProcessor();
@@ -621,9 +637,9 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE5");
+				.getNode("EXAMPLETABLE" + tableSufix);
 		final SLNode anotherTableNode1 = exampleCatalogNode1
-				.getNode("ANOTHERTABLE5");
+				.getNode("ANOTHERTABLE" + tableSufix);
 
 		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
 				"I");
@@ -653,8 +669,8 @@ public class DbTableArtifactBundleProcessorTest {
 				.createConnection(data.artifactSource);
 
 		connection2.prepareStatement(
-				"alter table anotherTable5 drop constraint example_fk5 ")
-				.execute();
+				"alter table anotherTable" + tableSufix
+						+ " drop constraint example_fk" + tableSufix).execute();
 		connection2.close();
 
 		reloadArtifactsAndCallBundleProcessor();
@@ -673,9 +689,9 @@ public class DbTableArtifactBundleProcessorTest {
 				.getNode("PUBLIC");
 		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE5");
+				.getNode("EXAMPLETABLE" + tableSufix);
 		final SLNode anotherTableNode2 = exampleCatalogNode2
-				.getNode("ANOTHERTABLE5");
+				.getNode("ANOTHERTABLE" + tableSufix);
 
 		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
 				"I");
