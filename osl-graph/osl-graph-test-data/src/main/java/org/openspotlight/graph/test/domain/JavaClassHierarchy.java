@@ -49,6 +49,9 @@
 package org.openspotlight.graph.test.domain;
 
 import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.annotation.SLVisibility;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 /**
  * The Interface JavaClassHierarchy.
@@ -57,4 +60,9 @@ import org.openspotlight.graph.SLLink;
  */
 public interface JavaClassHierarchy extends SLLink {
 
+    @SLProperty
+    @SLVisibility( VisibilityLevel.INTERNAL )
+    public String getName();
+
+    public void setName( String name );
 }

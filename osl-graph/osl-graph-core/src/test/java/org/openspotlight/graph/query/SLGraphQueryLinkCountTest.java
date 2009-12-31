@@ -66,6 +66,7 @@ import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.test.domain.JavaInterface;
 import org.openspotlight.graph.test.domain.JavaTypeMethod;
 import org.openspotlight.graph.test.domain.MethodContainsParam;
@@ -85,179 +86,177 @@ import org.openspotlight.security.idm.User;
 
 public class SLGraphQueryLinkCountTest {
 
-	/** The Constant LOGGER. */
-	static final Logger LOGGER = Logger
-			.getLogger(SLGraphQueryLinkCountTest.class);
+    /** The Constant LOGGER. */
+    static final Logger              LOGGER = Logger
+                                                    .getLogger(SLGraphQueryLinkCountTest.class);
 
-	/** The graph. */
-	private static SLGraph graph;
+    /** The graph. */
+    private static SLGraph           graph;
 
-	/** The session. */
-	private static SLGraphSession session;
+    /** The session. */
+    private static SLGraphSession    session;
 
-	private static AuthenticatedUser user;
+    private static AuthenticatedUser user;
 
-	/**
-	 * Finish.
-	 */
-	@AfterClass
-	public static void finish() {
-		session.close();
-		graph.shutdown();
-	}
+    /**
+     * Finish.
+     */
+    @AfterClass
+    public static void finish() {
+        session.close();
+        graph.shutdown();
+    }
 
-	/**
-	 * Gets the i face type set.
-	 * 
-	 * @return the i face type set
-	 */
-	private static Set<Class<?>> getIFaceTypeSet() {
-		final Set<Class<?>> set = new HashSet<Class<?>>();
-		set.add(java.util.Collection.class);
-		set.add(java.util.Map.class);
-		set.add(java.util.List.class);
-		set.add(java.util.Set.class);
-		set.add(java.util.SortedSet.class);
-		return set;
-	}
+    /**
+     * Gets the i face type set.
+     * 
+     * @return the i face type set
+     */
+    private static Set<Class<?>> getIFaceTypeSet() {
+        final Set<Class<?>> set = new HashSet<Class<?>>();
+        set.add(java.util.Collection.class);
+        set.add(java.util.Map.class);
+        set.add(java.util.List.class);
+        set.add(java.util.Set.class);
+        set.add(java.util.SortedSet.class);
+        return set;
+    }
 
-	/**
-	 * Quick graph population.
-	 */
-	@BeforeClass
-	public static void quickGraphPopulation() {
-		try {
+    /**
+     * Quick graph population.
+     */
+    @BeforeClass
+    public static void quickGraphPopulation() {
+        try {
 
-			JcrConnectionProvider.createFromData(
-					DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+            JcrConnectionProvider.createFromData(
+                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-			final SecurityFactory securityFactory = AbstractFactory
-					.getDefaultInstance(SecurityFactory.class);
-			final User simpleUser = securityFactory.createUser("testUser");
-			user = securityFactory.createIdentityManager(
-					DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-					simpleUser, "password");
+            final SecurityFactory securityFactory = AbstractFactory
+                                                                   .getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            user = securityFactory.createIdentityManager(
+                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                            simpleUser, "password");
 
-			final SLGraphFactory factory = AbstractFactory
-					.getDefaultInstance(SLGraphFactory.class);
-			graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-			final SLContext context = session.createContext("linkCountTest");
-			final SLNode root = context.getRootNode();
-			final Set<Class<?>> types = getIFaceTypeSet();
-			for (final Class<?> type : types) {
-				final Method[] methods = type.getDeclaredMethods();
-				LOGGER
-						.info(type.getName() + ": " + methods.length
-								+ " methods");
-				final JavaInterface javaInteface = root.addNode(
-						JavaInterface.class, type.getName());
-				javaInteface.setProperty(String.class, "caption", type
-						.getName());
-				for (final Method method : methods) {
-					final JavaTypeMethod javaMethod = javaInteface.addNode(
-							JavaTypeMethod.class, method.getName());
-					javaMethod.setProperty(String.class, "caption", method
-							.getName());
-					session.addLink(TypeContainsMethod.class, javaInteface,
-							javaMethod, false);
-					final Class<?>[] paramTypes = method.getParameterTypes();
-					LOGGER.info("\t\t" + method.getName() + ": "
-							+ paramTypes.length + " params");
-					for (final Class<?> paramType : paramTypes) {
-						final MethodParam methodParam = javaMethod.addNode(
-								MethodParam.class, paramType.getName());
-						methodParam.setProperty(String.class, "caption",
-								paramType.getName());
-						session.addLink(MethodContainsParam.class, javaMethod,
-								methodParam, false);
-					}
-				}
-			}
-			session.save();
-			session.close();
-			session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-		} catch (final Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
+            final SLGraphFactory factory = AbstractFactory
+                                                          .getDefaultInstance(SLGraphFactory.class);
+            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+            final SLContext context = session.createContext("linkCountTest");
+            final SLNode root = context.getRootNode();
+            final Set<Class<?>> types = getIFaceTypeSet();
+            for (final Class<?> type : types) {
+                final Method[] methods = type.getDeclaredMethods();
+                LOGGER
+                      .info(type.getName() + ": " + methods.length
+                            + " methods");
+                final JavaInterface javaInteface = root.addNode(
+                                                                JavaInterface.class, type.getName());
+                javaInteface.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", type
+                                                                                              .getName());
+                for (final Method method : methods) {
+                    final JavaTypeMethod javaMethod = javaInteface.addNode(
+                                                                           JavaTypeMethod.class, method.getName());
+                    javaMethod.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", method
+                                                                                                  .getName());
+                    session.addLink(TypeContainsMethod.class, javaInteface,
+                                    javaMethod, false);
+                    final Class<?>[] paramTypes = method.getParameterTypes();
+                    LOGGER.info("\t\t" + method.getName() + ": "
+                                + paramTypes.length + " params");
+                    for (final Class<?> paramType : paramTypes) {
+                        final MethodParam methodParam = javaMethod.addNode(
+                                                                           MethodParam.class, paramType.getName());
+                        methodParam.setProperty(String.class, VisibilityLevel.PUBLIC, "caption",
+                                                paramType.getName());
+                        session.addLink(MethodContainsParam.class, javaMethod,
+                                        methodParam, false);
+                    }
+                }
+            }
+            session.save();
+            session.close();
+            session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * Find i face id.
-	 * 
-	 * @param type
-	 *            the type
-	 * @return the string
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 * @throws SLInvalidQuerySyntaxException
-	 */
-	private String findIFaceID(final Class<?> type)
-			throws SLGraphSessionException, SLInvalidQuerySyntaxException {
-		final SLQueryApi query = session.createQueryApi();
-		query.select().allTypes().onWhere().selectEnd().where().type(
-				JavaInterface.class.getName()).each().property("caption")
-				.equalsTo().value(type.getName()).typeEnd().whereEnd();
-		final SLQueryResult result = query.execute();
-		final Collection<SLNode> nodes = result.getNodes();
-		return nodes.size() > 0 ? result.getNodes().iterator().next().getID()
-				: null;
-	}
+    /**
+     * Find i face id.
+     * 
+     * @param type the type
+     * @return the string
+     * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidQuerySyntaxException
+     */
+    private String findIFaceID( final Class<?> type )
+        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+        final SLQueryApi query = session.createQueryApi();
+        query.select().allTypes().onWhere().selectEnd().where().type(
+                                                                     JavaInterface.class.getName()).each().property("caption")
+             .equalsTo().value(type.getName()).typeEnd().whereEnd();
+        final SLQueryResult result = query.execute();
+        final Collection<SLNode> nodes = result.getNodes();
+        return nodes.size() > 0 ? result.getNodes().iterator().next().getID()
+            : null;
+    }
 
-	/**
-	 * Select collection methods with all in caption and with one param.
-	 */
-	@Test
-	public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
+    /**
+     * Select collection methods with all in caption and with one param.
+     */
+    @Test
+    public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
 
-		try {
+        try {
 
-			final String id = findIFaceID(java.util.Collection.class);
-			final SLNode node = session.getNodeByID(id);
-			final Collection<SLNode> inputNodes = new ArrayList<SLNode>();
-			inputNodes.add(node);
+            final String id = findIFaceID(java.util.Collection.class);
+            final SLNode node = session.getNodeByID(id);
+            final Collection<SLNode> inputNodes = new ArrayList<SLNode>();
+            inputNodes.add(node);
 
-			final SLQueryApi query = session.createQueryApi();
+            final SLQueryApi query = session.createQueryApi();
 
-			query.select().type(JavaTypeMethod.class.getName()).byLink(
-					TypeContainsMethod.class.getName()).b().selectEnd()
-					.select().type(JavaTypeMethod.class.getName()).selectEnd()
-					.where().type(JavaTypeMethod.class.getName()).each()
-					.property("caption").contains().value("All").and().each()
-					.link(MethodContainsParam.class.getName()).a().count()
-					.equalsTo().value(1).typeEnd().whereEnd();
+            query.select().type(JavaTypeMethod.class.getName()).byLink(
+                                                                       TypeContainsMethod.class.getName()).b().selectEnd()
+                 .select().type(JavaTypeMethod.class.getName()).selectEnd()
+                 .where().type(JavaTypeMethod.class.getName()).each()
+                 .property("caption").contains().value("All").and().each()
+                 .link(MethodContainsParam.class.getName()).a().count()
+                 .equalsTo().value(1).typeEnd().whereEnd();
 
-			final SLQueryResult result = query.execute(new String[] { id });
-			final Collection<SLNode> nodes = result.getNodes();
-			QueryUtil.printResult(nodes);
-		} catch (final Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
+            final SLQueryResult result = query.execute(new String[] {id});
+            final Collection<SLNode> nodes = result.getNodes();
+            QueryUtil.printResult(nodes);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * Select map zero param methods.
-	 */
-	@Test
-	public void selectMapZeroParamMethods() {
+    /**
+     * Select map zero param methods.
+     */
+    @Test
+    public void selectMapZeroParamMethods() {
 
-		try {
+        try {
 
-			final String id = findIFaceID(java.util.Map.class);
-			final SLQueryApi query = session.createQueryApi();
+            final String id = findIFaceID(java.util.Map.class);
+            final SLQueryApi query = session.createQueryApi();
 
-			query.select().type(JavaTypeMethod.class.getName()).byLink(
-					TypeContainsMethod.class.getName()).b().selectEnd()
-					.select().type(JavaTypeMethod.class.getName()).selectEnd()
-					.where().type(JavaTypeMethod.class.getName()).each().link(
-							MethodContainsParam.class.getName()).a().count()
-					.equalsTo().value(0).typeEnd().whereEnd();
+            query.select().type(JavaTypeMethod.class.getName()).byLink(
+                                                                       TypeContainsMethod.class.getName()).b().selectEnd()
+                 .select().type(JavaTypeMethod.class.getName()).selectEnd()
+                 .where().type(JavaTypeMethod.class.getName()).each().link(
+                                                                           MethodContainsParam.class.getName()).a().count()
+                 .equalsTo().value(0).typeEnd().whereEnd();
 
-			final SLQueryResult result = query.execute(new String[] { id });
-			final Collection<SLNode> nodes = result.getNodes();
-			QueryUtil.printResult(nodes);
-		} catch (final Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
+            final SLQueryResult result = query.execute(new String[] {id});
+            final Collection<SLNode> nodes = result.getNodes();
+            QueryUtil.printResult(nodes);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 }

@@ -79,6 +79,7 @@ import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.ClassImplementsInterface;
 import org.openspotlight.graph.test.domain.JavaClass;
@@ -454,10 +455,10 @@ public class AbstractGeneralQueryTest {
                 session.addLink(PackageContainsType.class, utilJavaPackage,
                                 javaInterface, false);
                 //javaInterface.setCaption(iFace.getName());
-                javaInterface.setProperty(Integer.class, "intValue", count);
-                javaInterface.setProperty(Float.class, "decValue", new Float(
-                                                                             count + floatValue));
-                javaInterface.setProperty(Boolean.class, "boolValue",
+                javaInterface.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
+                javaInterface.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(
+                                                                                                     count + floatValue));
+                javaInterface.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue",
                                           new Boolean(true));
                 addJavaInterfaceHirarchyLinks(root, iFace, javaInterface);
                 addJavaInterfaceContainsJavaMethod(iFace, javaInterface);
@@ -473,11 +474,11 @@ public class AbstractGeneralQueryTest {
                 session.addLink(PackageContainsType.class, utilJavaPackage,
                                 javaClass, false);
                 //javaClass.setCaption(clazz.getName());
-                javaClass.setProperty(Integer.class, "intValue", count);
-                javaClass.setProperty(Float.class, "decValue", new Float(count
-                                                                         + floatValue));
-                javaClass.setProperty(Boolean.class, "boolValue", new Boolean(
-                                                                              false));
+                javaClass.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
+                javaClass.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count
+                                                                                                 + floatValue));
+                javaClass.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(
+                                                                                                      false));
                 addJavaClassHirarchyLinks(root, clazz, javaClass);
                 addClassImplementsInterfaceLinks(root, clazz, javaClass);
                 addJavaClassContainsJavaClassMethod(clazz, javaClass);

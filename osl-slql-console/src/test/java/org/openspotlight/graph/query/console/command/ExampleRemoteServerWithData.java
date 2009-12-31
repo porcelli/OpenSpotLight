@@ -68,6 +68,7 @@ import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.query.console.GraphConnection;
 import org.openspotlight.graph.query.console.test.domain.ClassImplementsInterface;
 import org.openspotlight.graph.query.console.test.domain.JavaClass;
@@ -241,7 +242,8 @@ public class ExampleRemoteServerWithData {
          * @throws IOException Signals that an I/O exception has occurred.
          * @throws ClassNotFoundException the class not found exception
          */
-        public void populateGraph() throws SLException, IOException, ClassNotFoundException, SLInvalidCredentialException, IdentityException {
+        public void populateGraph()
+            throws SLException, IOException, ClassNotFoundException, SLInvalidCredentialException, IdentityException {
             final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
             AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
@@ -268,9 +270,9 @@ public class ExampleRemoteServerWithData {
                     final JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
                     javaInterface.setCaption(iFace.getName());
-                    javaInterface.setProperty(Integer.class, "intValue", count);
-                    javaInterface.setProperty(Float.class, "decValue", new Float(count + floatValue));
-                    javaInterface.setProperty(Boolean.class, "boolValue", new Boolean(true));
+                    javaInterface.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
+                    javaInterface.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count + floatValue));
+                    javaInterface.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(true));
                     this.addJavaInterfaceHirarchyLinks(session, root, iFace, javaInterface);
                     this.addJavaInterfaceContainsJavaMethod(session, iFace, javaInterface);
                     count++;
@@ -283,9 +285,9 @@ public class ExampleRemoteServerWithData {
                     final JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
                     javaClass.setCaption(clazz.getName());
-                    javaClass.setProperty(Integer.class, "intValue", count);
-                    javaClass.setProperty(Float.class, "decValue", new Float(count + floatValue));
-                    javaClass.setProperty(Boolean.class, "boolValue", new Boolean(false));
+                    javaClass.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
+                    javaClass.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count + floatValue));
+                    javaClass.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(false));
                     this.addJavaClassHirarchyLinks(session, root, clazz, javaClass);
                     this.addClassImplementsInterfaceLinks(session, root, clazz, javaClass);
                     this.addJavaClassContainsJavaClassMethod(session, clazz, javaClass);

@@ -55,7 +55,7 @@ import java.util.List;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
@@ -140,14 +140,14 @@ public class SLMetaLinkImpl implements SLMetaLink {
     * 
     * @see org.openspotlight.graph.SLMetaLink#getDescription()
     */
-    public VisibilityLevels getVisibility() throws SLGraphSessionException {
+    public VisibilityLevel getVisibility() throws SLGraphSessionException {
         synchronized (lock) {
             try {
                 final String propName = SLCommonSupport
                                                        .toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
                 final SLPersistentProperty<String> prop = SLCommonSupport
                                                                          .getProperty(metaLinkNode, String.class, propName);
-                return prop == null ? null : VisibilityLevels.valueOf(prop.getValue());
+                return prop == null ? null : VisibilityLevel.valueOf(prop.getValue());
             } catch (final SLPersistentTreeSessionException e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to retrieve meta node visibility.",
@@ -316,4 +316,10 @@ public class SLMetaLinkImpl implements SLMetaLink {
         return bidirectional;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public SLPersistentNode getNode() throws SLGraphSessionException {
+        return metaLinkNode;
+    }
 }

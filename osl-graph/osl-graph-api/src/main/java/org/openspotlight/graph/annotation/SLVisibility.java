@@ -56,11 +56,11 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.RUNTIME )
 @Target( {ElementType.TYPE, ElementType.METHOD} )
 public @interface SLVisibility {
-    public enum VisibilityLevels {
+    public enum VisibilityLevel {
         PUBLIC,
         INTERNAL,
         PRIVATE
     }
 
-    VisibilityLevels value();
+    VisibilityLevel value();
 }

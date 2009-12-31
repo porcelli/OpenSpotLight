@@ -50,11 +50,17 @@ package org.openspotlight.graph;
 
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.query.SLGraphQueryTest;
+import org.openspotlight.graph.test.domain.JavaClassHierarchy;
+import org.openspotlight.graph.test.domain.JavaClassHierarchyWithoutProperties;
 import org.openspotlight.graph.test.domain.JavaClassNode;
+import org.openspotlight.graph.test.domain.JavaClassNodeWithoutProperties;
+import org.openspotlight.graph.test.domain.JavaElementNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
@@ -62,11 +68,10 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 
 /**
- * The Class SLGraphTest.
+ * The Class SLGraphMetadataPropertiesTest.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
  */
-
 public class SLGraphMetadataPropertiesTest {
 
     /** The Constant LOGGER. */
@@ -78,6 +83,7 @@ public class SLGraphMetadataPropertiesTest {
     /** The session. */
     private static SLGraphSession    session;
 
+    /** The user. */
     private static AuthenticatedUser user;
 
     /**
@@ -117,18 +123,68 @@ public class SLGraphMetadataPropertiesTest {
     }
 
     /**
-     * Adds the add multiple link empty case.
+     * Test node property visibility.
+     * 
+     * @throws SLContextAlreadyExistsException the SL context already exists exception
+     * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialException the SL invalid credential exception
      */
     @Test
-    public void testAddProperty() throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+    public void testNodePropertyVisibility()
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
         SLNode rootNode = session.createContext("Test1").getRootNode();
-        SLNode testNode = rootNode.addNode(JavaClassNode.class, "testNode");
-        testNode.setProperty(String.class, "somePropName", "value");
+        SLNode testNode = rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
+        testNode.setProperty(String.class, VisibilityLevel.PRIVATE, "somePropName", "value");
 
         for (SLMetaNodeType metaType : session.getMetadata().getMetaNodesTypes()) {
-            for (SLMetaNodeProperty metaProperty : metaType.getMetaProperties()) {
-                System.out.println(metaProperty.getName() + ":" + metaProperty.getType());
+            if (metaType.getTypeName().equals(JavaClassNodeWithoutProperties.class.getName())) {
+                SLMetaNodeProperty property = metaType.getMetaProperty("somePropName");
+                Assert.assertEquals(VisibilityLevel.PRIVATE, property.getVisibility());
+            }
+        }
+
+        JavaClassNode testNodeWithProperty = rootNode.addNode(JavaClassNode.class, "testNode2");
+        testNodeWithProperty.setClassName("someClassNAme");
+        testNodeWithProperty.setProperty(String.class, VisibilityLevel.PUBLIC, "somePropName", "value2");
+        testNodeWithProperty.setProperty(String.class, VisibilityLevel.PRIVATE, "somePropName2", "value2");
+
+        for (SLMetaNodeType metaType : session.getMetadata().getMetaNodesTypes()) {
+            if (metaType.getTypeName().equals(JavaClassNodeWithoutProperties.class.getName())) {
+                SLMetaNodeProperty property = metaType.getMetaProperty("somePropName");
+                Assert.assertEquals(VisibilityLevel.PRIVATE, property.getVisibility());
+            } else if (metaType.getTypeName().equals(JavaElementNode.class.getName())) {
+                SLMetaNodeType subType = metaType.getSubMetaNodeType(JavaClassNode.class.getName());
+                Assert.assertEquals(VisibilityLevel.PUBLIC, subType.getMetaProperty("somePropName").getVisibility());
+                Assert.assertEquals(VisibilityLevel.PRIVATE, subType.getMetaProperty("somePropName2").getVisibility());
+                Assert.assertEquals(VisibilityLevel.INTERNAL, subType.getMetaProperty("className").getVisibility());
             }
         }
     }
+
+    @Test
+    public void testLinkPropertyVisibility() throws SLGraphSessionException, SLInvalidCredentialException {
+        SLNode rootNode = session.createContext("Test1").getRootNode();
+        SLNode testNode1 = rootNode.addNode(JavaClassNode.class, "testNode");
+        SLNode testNode2 = rootNode.addNode(JavaClassNode.class, "testNode2");
+
+        JavaClassHierarchy link1 = session.addLink(JavaClassHierarchy.class, testNode1, testNode2, false);
+        link1.setName("someName");
+        link1.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp", "something");
+
+        SLMetaLinkType metaLinkType = session.getMetadata().getMetaLinkType(JavaClassHierarchy.class);
+        SLMetaLink metaLink = metaLinkType.getMetaLinks(JavaClassNode.class, JavaClassNode.class, false).iterator().next();
+        Assert.assertEquals(VisibilityLevel.INTERNAL, metaLink.getMetaProperty("name").getVisibility());
+        Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink.getMetaProperty("otherProp").getVisibility());
+
+        JavaClassHierarchyWithoutProperties link2 = session.addLink(JavaClassHierarchyWithoutProperties.class, testNode1, testNode2, false);
+        link2.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp", "something");
+        link2.setProperty(String.class, VisibilityLevel.PRIVATE, "otherProp2", "something");
+
+        SLMetaLinkType metaLinkType2 = session.getMetadata().getMetaLinkType(JavaClassHierarchyWithoutProperties.class);
+        SLMetaLink metaLink2 = metaLinkType2.getMetaLinks(JavaClassNode.class, JavaClassNode.class, false).iterator().next();
+        Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink2.getMetaProperty("otherProp").getVisibility());
+        Assert.assertEquals(VisibilityLevel.PRIVATE, metaLink2.getMetaProperty("otherProp2").getVisibility());
+
+    }
+
 }

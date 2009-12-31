@@ -55,6 +55,8 @@ import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
+import org.openspotlight.graph.annotation.SLVisibility;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 //@SLTransient
 //@CollatorLevel(IDENTICAL)
@@ -67,81 +69,72 @@ import org.openspotlight.graph.annotation.SLRenderHints;
  * @author Vitor Hugo Chagas
  */
 
-@SLDescription("Java Class")
-@SLRenderHints({
-	@SLRenderHint(name="format", value="cube"),
-	@SLRenderHint(name="foreground", value="gold")
-})
+@SLDescription( "Java Class" )
+@SLRenderHints( {@SLRenderHint( name = "format", value = "cube" ), @SLRenderHint( name = "foreground", value = "gold" )} )
 public interface JavaClassNode extends JavaElementNode {
-	
-	/** The Constant MODIFIER_PUBLIC. */
-	public static final Integer MODIFIER_PUBLIC = 1;
-	
-	/** The Constant MODIFIER_PRIVATE. */
-	public static final Integer MODIFIER_PRIVATE = 2;
-	
-	/** The Constant MODIFIER_PROTECTED. */
-	public static final Integer MODIFIER_PROTECTED = 3;
-	
-	/** The Constant MODIFIER_DEFAULT. */
-	public static final Integer MODIFIER_DEFAULT = 4;
-	
-	//@SLProperty(collatorLevel=IDENTICAL)
-	/**
-	 * Gets the class name.
-	 * 
-	 * @return the class name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getClassName() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the class name.
-	 * 
-	 * @param className the new class name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setClassName(String className) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the modifier.
-	 * 
-	 * @return the modifier
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getModifier() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the modifier.
-	 * 
-	 * @param modifier the new modifier
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setModifier(Integer modifier) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the creation time.
-	 * 
-	 * @return the creation time
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Date getCreationTime() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the creation time.
-	 * 
-	 * @param creationTime the new creation time
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setCreationTime(Date creationTime) throws SLGraphSessionException;
-}
 
+    /** The Constant MODIFIER_PUBLIC. */
+    public static final Integer MODIFIER_PUBLIC    = 1;
+
+    /** The Constant MODIFIER_PRIVATE. */
+    public static final Integer MODIFIER_PRIVATE   = 2;
+
+    /** The Constant MODIFIER_PROTECTED. */
+    public static final Integer MODIFIER_PROTECTED = 3;
+
+    /** The Constant MODIFIER_DEFAULT. */
+    public static final Integer MODIFIER_DEFAULT   = 4;
+
+    //@SLProperty(collatorLevel=IDENTICAL)
+    /**
+     * Gets the class name.
+     * 
+     * @return the class name
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    @SLVisibility( VisibilityLevel.INTERNAL )
+    public String getClassName() throws SLGraphSessionException;
+
+    /**
+     * Sets the class name.
+     * 
+     * @param className the new class name
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setClassName( String className ) throws SLGraphSessionException;
+
+    /**
+     * Gets the modifier.
+     * 
+     * @return the modifier
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public Integer getModifier() throws SLGraphSessionException;
+
+    /**
+     * Sets the modifier.
+     * 
+     * @param modifier the new modifier
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setModifier( Integer modifier ) throws SLGraphSessionException;
+
+    /**
+     * Gets the creation time.
+     * 
+     * @return the creation time
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public Date getCreationTime() throws SLGraphSessionException;
+
+    /**
+     * Sets the creation time.
+     * 
+     * @param creationTime the new creation time
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setCreationTime( Date creationTime ) throws SLGraphSessionException;
+}

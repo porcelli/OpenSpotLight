@@ -48,16 +48,13 @@
  */
 package org.openspotlight.graph.test.domain;
 
-import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-
+import org.openspotlight.graph.SLLink;
 
 /**
- * The Interface JavaPackageNode.
+ * The Interface JavaClassHierarchy.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLVisibility(VisibilityLevel.PRIVATE)
-public interface JavaPackageNodePrivate extends JavaElementNode {
+public interface JavaClassHierarchyWithoutProperties extends SLLink {
 
 }

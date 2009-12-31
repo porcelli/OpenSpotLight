@@ -78,7 +78,7 @@ import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
 import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
@@ -183,7 +183,6 @@ class LinkPropertyKey implements Serializable {
     }
 }
 
-// TODO: Auto-generated Javadoc
 /**
  * The listener interface for receiving SLMetadata events. The class that is interested in processing a SLMetadata event
  * implements this interface, and the object created with that class is registered with a component using the component's
@@ -257,7 +256,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                     pNode.setProperty(String.class, propName, visibility
                                                                         .value().toString());
                 } else {
-                    pNode.setProperty(String.class, propName, VisibilityLevels.PUBLIC.toString());
+                    pNode.setProperty(String.class, propName, VisibilityLevel.PUBLIC.toString());
                 }
             }
         }
@@ -443,12 +442,13 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @return the type pair key
      * @throws SLException the SL exception
      */
-    private String getTypePairKey( final Class<?> sourceClass,
+    private String getTypePairKey( final Class<?> linkType,
+                                   final Class<?> sourceClass,
                                    final Class<?> targetClass ) throws SLException {
         final Class<?> aClass = getAClass(sourceClass, targetClass);
         final Class<?> bClass = getBClass(sourceClass, targetClass);
         final StringBuilder pairKey = new StringBuilder();
-        pairKey.append(aClass.getName()).append('.').append(bClass.getName());
+        pairKey.append(linkType.getName()).append(aClass.getName()).append('.').append(bClass.getName());
         return pairKey.toString();
     }
 
@@ -546,7 +546,8 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                                                                     .getSession();
                 final Class<?> sourceClass = source.getClass().getInterfaces()[0];
                 final Class<?> targetClass = target.getClass().getInterfaces()[0];
-                final String typePairKey = getTypePairKey(sourceClass,
+                final String typePairKey = getTypePairKey(linkType,
+                                                          sourceClass,
                                                           targetClass);
                 final int direction = getMetaLinkDirection(sourceClass,
                                                            targetClass, link.isBidirectional());
@@ -601,7 +602,6 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
         synchronized (lock) {
 
             try {
-
                 final SLLinkProperty<? extends Serializable> linkProperty = event
                                                                                  .getProperty();
 
@@ -617,7 +617,8 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                                                                     .getSession();
                 final Class<?> sourceClass = source.getClass().getInterfaces()[0];
                 final Class<?> targetClass = target.getClass().getInterfaces()[0];
-                final String typePairKey = getTypePairKey(sourceClass,
+                final String typePairKey = getTypePairKey(linkType,
+                                                          sourceClass,
                                                           targetClass);
                 final int direction = getMetaLinkDirection(sourceClass,
                                                            targetClass, link.isBidirectional());
@@ -653,8 +654,15 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
                     final String propName = SLCommonSupport
                                                            .toUserPropertyName(linkProperty.getName());
+
                     metaLinkNode.setProperty(String.class, propName,
                                              linkProperty.getValue().getClass().getName());
+
+                    final String propVisibilityName = SLCommonSupport
+                                                                     .toInternalPropertyName(propName + "." + SLConsts.PROPERTY_NAME_VISIBILITY);
+
+                    metaLinkNode.setProperty(String.class, propVisibilityName, event.getVisibility().toString());
+
                     linkPropertyKeyCache.add(propertyKey);
                 }
             } catch (final SLException e) {
@@ -736,7 +744,6 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
     public void nodePropertySet( final SLNodePropertyEvent event )
         throws SLGraphSessionException {
         synchronized (lock) {
-
             try {
                 final SLPersistentProperty<? extends Serializable> pProperty = event
                                                                                     .getPersistentProperty();
@@ -749,9 +756,13 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                     final SLPersistentNode metaNodeType = getMetaNodeType(pNode
                                                                                .getSession(), typeName);
                     if (metaNodeType != null) {
-                        //TODO here check property visibility
                         metaNodeType.setProperty(String.class, propertyName,
                                                  pProperty.getValue().getClass().getName());
+
+                        final String propVisibilityName = SLCommonSupport
+                                                                         .toInternalPropertyName(propertyName + "." + SLConsts.PROPERTY_NAME_VISIBILITY);
+
+                        metaNodeType.setProperty(String.class, propVisibilityName, event.getVisibility().toString());
                         nodePropertyNameCache.add(fullPropertyName);
                     }
                 }

@@ -56,7 +56,7 @@ import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
 import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 //@SLTransient
 //@CollatorLevel(IDENTICAL)
@@ -74,7 +74,7 @@ import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
 	@SLRenderHint(name="format", value="cube"),
 	@SLRenderHint(name="foreground", value="gold")
 })
-@SLVisibility(VisibilityLevels.INTERNAL)
+@SLVisibility(VisibilityLevel.INTERNAL)
 public interface JavaClassNodeInternal extends JavaElementNode {
 	
 	/** The Constant MODIFIER_PUBLIC. */

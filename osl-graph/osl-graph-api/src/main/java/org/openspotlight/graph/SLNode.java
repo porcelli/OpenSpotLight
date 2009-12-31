@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.remote.annotation.DisposeMethod;
 
@@ -460,6 +461,24 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      */
     public <V extends Serializable> SLNodeProperty<V> setProperty(
                                                                    Class<V> clazz,
+                                                                   String name,
+                                                                   V value )
+        throws SLGraphSessionException, SLInvalidCredentialException;
+
+    /**
+     * Sets the property.
+     * 
+     * @param clazz the clazz
+     * @param visibility the visibility
+     * @param name the name
+     * @param value the value
+     * @return the sL node property< v>
+     * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLInvalidCredentialException the SL invalid credential exception
+     */
+    public <V extends Serializable> SLNodeProperty<V> setProperty(
+                                                                   Class<V> clazz,
+                                                                   VisibilityLevel visibility,
                                                                    String name,
                                                                    V value )
         throws SLGraphSessionException, SLInvalidCredentialException;

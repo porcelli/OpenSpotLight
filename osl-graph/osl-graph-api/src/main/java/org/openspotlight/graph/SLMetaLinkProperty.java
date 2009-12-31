@@ -50,39 +50,45 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
+// TODO: Auto-generated Javadoc
 /**
  * The Interface SLMetaLinkProperty.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLMetaLinkProperty extends SLMetaElement {
-	
-	/**
-	 * Gets the meta link.
-	 * 
-	 * @return the meta link
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaLink getMetaLink() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getName() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public Class<? extends Serializable> getType() throws SLGraphSessionException;
 
+    /**
+     * Gets the meta link.
+     * 
+     * @return the meta link
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLMetaLink getMetaLink() throws SLGraphSessionException;
 
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public String getName() throws SLGraphSessionException;
+
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Class<? extends Serializable> getType() throws SLGraphSessionException;
+
+    /**
+     * Gets the visibility.
+     * 
+     * @return the visibility
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public VisibilityLevel getVisibility() throws SLGraphSessionException;
 }

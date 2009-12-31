@@ -50,6 +50,8 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
 /**
  * The Interface SLMetaNodeProperty.
  * 
@@ -81,4 +83,11 @@ public interface SLMetaNodeProperty extends SLMetaElement {
      */
     public Class<? extends Serializable> getType() throws SLGraphSessionException;
 
+    /**
+     * Gets the visibility.
+     * 
+     * @return the visibility
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public VisibilityLevel getVisibility() throws SLGraphSessionException;
 }

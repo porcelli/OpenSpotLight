@@ -51,7 +51,8 @@ package org.openspotlight.graph;
 import java.util.Collection;
 import java.util.List;
 
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 
 /**
  * The Interface SLMetaLink.
@@ -140,9 +141,16 @@ public interface SLMetaLink extends SLMetaElement {
      * Gets the visibility.
      * 
      * @return the visibility
-     * 
      * @throws SLGraphSessionException the SL graph session exception
      */
-    public VisibilityLevels getVisibility() throws SLGraphSessionException;
+    public VisibilityLevel getVisibility() throws SLGraphSessionException;
+
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLPersistentNode getNode() throws SLGraphSessionException;
 
 }

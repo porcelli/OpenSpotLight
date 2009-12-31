@@ -64,6 +64,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -165,7 +166,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
                 final T nodeProxy = this.createNodeProxy(type, pChildNode);
                 if (typeName == null) {
-                    nodeProxy.setProperty(String.class,
+                    nodeProxy.setProperty(String.class, VisibilityLevel.PUBLIC,
                                           SLConsts.PROPERTY_CAPTION_NAME, name);
                 }
 
@@ -1152,6 +1153,20 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                                                    final V value )
         throws SLGraphSessionException, SLInvalidCredentialException {
         synchronized (lock) {
+            return this.setProperty(clazz, VisibilityLevel.PUBLIC, name, value);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <V extends Serializable> SLNodeProperty<V> setProperty(
+                                                                   Class<V> clazz,
+                                                                   VisibilityLevel visibility,
+                                                                   String name,
+                                                                   V value )
+        throws SLGraphSessionException, SLInvalidCredentialException {
+        synchronized (lock) {
             try {
                 final String propName = SLCommonSupport
                                                        .toUserPropertyName(name);
@@ -1167,6 +1182,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 final SLNodePropertyEvent event = new SLNodePropertyEvent(
                                                                           SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property,
                                                                           pProperty);
+                event.setVisibility(visibility);
                 eventPoster.post(event);
                 return property;
             } catch (final SLException e) {

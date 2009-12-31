@@ -116,6 +116,9 @@ public class SLConsts implements SharedConstants {
 	   /** The Constant PROPERTY_NAME_VISIBILITY. */
     public static final String PROPERTY_NAME_VISIBILITY = "visibility";
 
+    /** The Constant PROPERTY_NAME_VISIBILITY. */
+    public static final String PROPERTY_NAME_META_VISIBILITY = "meta-visibility";
+
 	/** The Constant PROPERTY_NAME_META_NODE_ID. */
 	public static final String PROPERTY_NAME_META_NODE_ID = "metaNodeID";
 

@@ -77,7 +77,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLTreeLineReference.SLArtifactLineReference;
 import org.openspotlight.graph.SLTreeLineReference.SLStatementLineReference;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.test.domain.CobolElementNode;
 import org.openspotlight.graph.test.domain.JavaClassJavaMethodMultipleLink;
 import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLink;
@@ -1066,7 +1066,7 @@ public class SLGraphTest {
 
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
-            final SLNodeProperty<Date> prop1 = root.setProperty(Date.class,
+            final SLNodeProperty<Date> prop1 = root.setProperty(Date.class, VisibilityLevel.PUBLIC,
                                                                 "prop", now);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -1113,7 +1113,7 @@ public class SLGraphTest {
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
             final SLNodeProperty<Boolean> prop1 = root.setProperty(
-                                                                   Boolean.class, "prop", true);
+                                                                   Boolean.class, VisibilityLevel.PUBLIC, "prop", true);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
             Assert.assertEquals(prop1.getValue(), new Boolean(true));
@@ -1208,7 +1208,7 @@ public class SLGraphTest {
         try {
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
-            final SLNodeProperty<Double> prop1 = root.setProperty(Double.class,
+            final SLNodeProperty<Double> prop1 = root.setProperty(Double.class, VisibilityLevel.PUBLIC,
                                                                   "prop", 8.0);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -1268,7 +1268,7 @@ public class SLGraphTest {
         try {
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
-            final SLNodeProperty<Float> prop1 = root.setProperty(Float.class,
+            final SLNodeProperty<Float> prop1 = root.setProperty(Float.class, VisibilityLevel.PUBLIC,
                                                                  "prop", 8.0F);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
@@ -1759,13 +1759,13 @@ public class SLGraphTest {
                                                      .findMetaNodeType(JavaPackageNode.class);
             Assert.assertNotNull(metaNode1);
             Assert.assertEquals(metaNode1.getType(), JavaPackageNode.class);
-            Assert.assertEquals(metaNode1.getVisibility(), VisibilityLevels.PUBLIC);
+            Assert.assertEquals(metaNode1.getVisibility(), VisibilityLevel.PUBLIC);
 
             final SLMetaNodeType metaNode2 = metadata
                                                      .findMetaNodeType(JavaClassNode.class);
             Assert.assertNotNull(metaNode2);
             Assert.assertEquals(metaNode2.getType(), JavaClassNode.class);
-            Assert.assertEquals(metaNode2.getVisibility(), VisibilityLevels.PUBLIC);
+            Assert.assertEquals(metaNode2.getVisibility(), VisibilityLevel.PUBLIC);
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
@@ -1797,13 +1797,13 @@ public class SLGraphTest {
                                                      .findMetaNodeType(JavaPackageNodePrivate.class);
             Assert.assertNotNull(metaNode1);
             Assert.assertEquals(metaNode1.getType(), JavaPackageNodePrivate.class);
-            Assert.assertEquals(metaNode1.getVisibility(), VisibilityLevels.PRIVATE);
+            Assert.assertEquals(metaNode1.getVisibility(), VisibilityLevel.PRIVATE);
 
             final SLMetaNodeType metaNode2 = metadata
                                                      .findMetaNodeType(JavaClassNodeInternal.class);
             Assert.assertNotNull(metaNode2);
             Assert.assertEquals(metaNode2.getType(), JavaClassNodeInternal.class);
-            Assert.assertEquals(metaNode2.getVisibility(), VisibilityLevels.INTERNAL);
+            Assert.assertEquals(metaNode2.getVisibility(), VisibilityLevel.INTERNAL);
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
@@ -2200,7 +2200,7 @@ public class SLGraphTest {
             final SLNode root = session.createContext("1L").getRootNode();
             final SLNode node = root.addNode("node");
             final SLNodeProperty<Integer> property = node.setProperty(
-                                                                      Integer.class, "number", new Integer(8));
+                                                                      Integer.class, VisibilityLevel.PUBLIC, "number", new Integer(8));
             String value = node.getPropertyValueAsString("number");
             Assert.assertNotNull(value);
             Assert.assertEquals(value, "8");
@@ -2494,7 +2494,7 @@ public class SLGraphTest {
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
             final SLNodeProperty<Integer> prop1 = root.setProperty(
-                                                                   Integer.class, "prop", 8);
+                                                                   Integer.class, VisibilityLevel.PUBLIC, "prop", 8);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
             Assert.assertEquals(prop1.getValue().intValue(), 8);
@@ -2945,7 +2945,7 @@ public class SLGraphTest {
         try {
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
-            final SLNodeProperty<Long> prop1 = root.setProperty(Long.class,
+            final SLNodeProperty<Long> prop1 = root.setProperty(Long.class, VisibilityLevel.PUBLIC,
                                                                 "prop", 8L);
 
             Assert.assertNotNull(prop1);
@@ -3012,7 +3012,7 @@ public class SLGraphTest {
             final SLMetaLink metaLink = metadata.getMetaLinkType(
                                                                  JavaClassJavaMethodSimpleLinkPrivate.class).getMetalinks()
                                                 .iterator().next();
-            Assert.assertEquals(metaLink.getVisibility(), VisibilityLevels.PRIVATE);
+            Assert.assertEquals(metaLink.getVisibility(), VisibilityLevel.PRIVATE);
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -3042,7 +3042,7 @@ public class SLGraphTest {
             final String description = metaLink.getDescription();
             Assert.assertNotNull(description);
             Assert.assertEquals(description, "Java Class to Java Method Link");
-            Assert.assertEquals(metaLink.getVisibility(), VisibilityLevels.PUBLIC);
+            Assert.assertEquals(metaLink.getVisibility(), VisibilityLevel.PUBLIC);
 
         } catch (final SLException e) {
             LOGGER.error(e.getMessage(), e);
@@ -3099,7 +3099,7 @@ public class SLGraphTest {
 
             // set property on node1 ...
             final SLNodeProperty<Integer> prop1 = node1.setProperty(
-                                                                    Integer.class, "prop", 8);
+                                                                    Integer.class, VisibilityLevel.PUBLIC, "prop", 8);
             Assert.assertNotNull(prop1);
             Assert.assertEquals(prop1.getValue(), new Integer(8));
 
@@ -3125,8 +3125,8 @@ public class SLGraphTest {
     public void testPropertiesRetrieval() {
         try {
             final SLNode root = session.createContext("1L").getRootNode();
-            root.setProperty(Integer.class, "integerProp", 8);
-            root.setProperty(String.class, "stringProp", "Hello World!");
+            root.setProperty(Integer.class, VisibilityLevel.PUBLIC, "integerProp", 8);
+            root.setProperty(String.class, VisibilityLevel.PUBLIC, "stringProp", "Hello World!");
             final Set<SLNodeProperty<Serializable>> properties = root
                                                                      .getProperties();
             for (final SLNodeProperty<Serializable> property : properties) {
@@ -3154,7 +3154,7 @@ public class SLGraphTest {
         try {
             final SLNode root = session.createContext("1L").getRootNode();
             final SLNodeProperty<Integer> prop1 = root.setProperty(
-                                                                   Integer.class, "property", 8);
+                                                                   Integer.class, VisibilityLevel.PUBLIC, "property", 8);
             prop1.remove();
             try {
                 root.getProperty(Integer.class, "property");
@@ -3180,7 +3180,7 @@ public class SLGraphTest {
         try {
             final SLNode root = session.createContext("1L").getRootNode();
             final SLNodeProperty<Integer> prop1 = root.setProperty(
-                                                                   Integer.class, "prop", 8);
+                                                                   Integer.class, VisibilityLevel.PUBLIC, "prop", 8);
             final SLNodeProperty<Integer> prop2 = root.getProperty(
                                                                    Integer.class, "prop");
             prop2.setValue(71);
@@ -3205,7 +3205,7 @@ public class SLGraphTest {
         try {
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
-            final SLNodeProperty<String> prop1 = root.setProperty(String.class,
+            final SLNodeProperty<String> prop1 = root.setProperty(String.class, VisibilityLevel.PUBLIC,
                                                                   "prop", "Hello");
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());

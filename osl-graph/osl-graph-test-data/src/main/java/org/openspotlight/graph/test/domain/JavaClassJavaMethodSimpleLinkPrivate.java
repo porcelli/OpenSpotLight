@@ -56,14 +56,14 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLCollator;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevels;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLink.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLVisibility(VisibilityLevels.PRIVATE)
+@SLVisibility(VisibilityLevel.PRIVATE)
 public interface JavaClassJavaMethodSimpleLinkPrivate extends SLLink {
 	
 	/**
