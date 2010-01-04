@@ -284,7 +284,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
 				return query.getTarget().execute(session, null, null, sortMode,
 						showSLQL, null, null);
 			}
-			return new SLQueryResultImpl((SLNode[]) null, null);
+			return new SLQueryResultImpl(this, (SLNode[]) null, null);
 		}
 	}
 

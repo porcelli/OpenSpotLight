@@ -48,9 +48,8 @@
  */
 package org.openspotlight.graph;
 
-import java.util.Collection;
-
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 
 /**
  * The Interface SLMetadata.
@@ -151,7 +150,7 @@ public interface SLMetadata extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public Collection<SLMetaLinkType> getMetaLinkTypes()
+	public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes()
 			throws SLGraphSessionException;
 
 	/**
@@ -162,7 +161,7 @@ public interface SLMetadata extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public Collection<SLMetaNodeType> getMetaNodesTypes()
+	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes()
 			throws SLGraphSessionException;
 
 	/**
@@ -176,6 +175,6 @@ public interface SLMetadata extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public Collection<SLMetaNodeType> getMetaNodesTypes(
+	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
 			SLRecursiveMode recursiveMode) throws SLGraphSessionException;
 }

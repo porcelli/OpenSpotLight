@@ -65,6 +65,7 @@ import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.util.ProxyUtil;
 
 // TODO: Auto-generated Javadoc
+//FIXME maybe it needs some synchronization
 /**
  * The Class SLQueryCacheImpl. Default Implementations of {@link SLQueryCache}.
  * 
@@ -72,99 +73,106 @@ import org.openspotlight.graph.util.ProxyUtil;
  */
 public class SLQueryCacheImpl implements SLQueryCache {
 
-    /** The tree session. */
-    private final SLPersistentTreeSession treeSession;
+	/** The tree session. */
+	private final SLPersistentTreeSession treeSession;
 
-    /** The session. */
-    private final SLGraphSession          session;
+	/** The session. */
+	private final SLGraphSession session;
 
-    /**
-     * Instantiates a new query cache impl.
-     * 
-     * @param treeSession the tree session
-     * @param session the session
-     */
-    public SLQueryCacheImpl(
-                             SLPersistentTreeSession treeSession, SLGraphSession session ) {
-        this.treeSession = treeSession;
-        this.session = session;
-    }
+	/**
+	 * Instantiates a new query cache impl.
+	 * 
+	 * @param treeSession
+	 *            the tree session
+	 * @param session
+	 *            the session
+	 */
+	public SLQueryCacheImpl(final SLPersistentTreeSession treeSession,
+			final SLGraphSession session) {
+		this.treeSession = treeSession;
+		this.session = session;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public String buildQueryId( final List<SLSelect> selects,
-                                final Integer collatorStrength,
-                                final String[] inputNodesIDs,
-                                final SortMode sortMode,
-                                final Integer limit,
-                                final Integer offset ) throws SLException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select:[");
-        for (SLSelect activeSelect : selects) {
-            sb.append(activeSelect.toString());
-        }
-        sb.append("]|\ninput:[");
-        if (inputNodesIDs != null) {
-            for (String nodeId : inputNodesIDs) {
-                sb.append(nodeId);
-            }
-        }
-        sb.append("]|\ncolator:[").append(collatorStrength).append("]");
-        sb.append("]|\nsort:[").append(sortMode).append("]");
-        sb.append("]|\nlimit:[");
-        if (limit != null) {
-            sb.append(limit);
-            sb.append("]|\noffset:[");
-            if (offset != null) {
-                sb.append(offset);
-                sb.append("]");
-            } else {
-                sb.append("]");
-            }
-        } else {
-            sb.append("]");
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void add2Cache(final String queryId,
+			final Collection<PNodeWrapper> nodes)
+			throws SLPersistentTreeSessionException, SLNodeNotFoundException,
+			SLGraphSessionException {
+		final SLPersistentNode pcacheRootNode = SLCommonSupport
+				.getQueryCacheNode(treeSession);
+		final SLPersistentNode queryCache = pcacheRootNode.addNode(queryId);
+		int i = 0;
+		for (final PNodeWrapper pNodeWrapper : nodes) {
+			final SLPersistentNode refNode = queryCache.addNode(pNodeWrapper
+					.getID());
+			refNode.setProperty(Integer.class, "order", i);
+			i++;
+		}
+	}
 
-        return Sha1.getSha1SignatureEncodedAsHexa(sb.toString());
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public String buildQueryId(final List<SLSelect> selects,
+			final Integer collatorStrength, final String[] inputNodesIDs,
+			final SortMode sortMode, final Integer limit, final Integer offset)
+			throws SLException {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("select:[");
+		for (final SLSelect activeSelect : selects) {
+			sb.append(activeSelect.toString());
+		}
+		sb.append("]|\ninput:[");
+		if (inputNodesIDs != null) {
+			for (final String nodeId : inputNodesIDs) {
+				sb.append(nodeId);
+			}
+		}
+		sb.append("]|\ncolator:[").append(collatorStrength).append("]");
+		sb.append("]|\nsort:[").append(sortMode).append("]");
+		sb.append("]|\nlimit:[");
+		if (limit != null) {
+			sb.append(limit);
+			sb.append("]|\noffset:[");
+			if (offset != null) {
+				sb.append(offset);
+				sb.append("]");
+			} else {
+				sb.append("]");
+			}
+		} else {
+			sb.append("]");
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    public SLQueryResultImpl getCache( final String queryId )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException, SLGraphSessionException {
-        SLPersistentNode pcacheRootNode = SLCommonSupport.getQueryCacheNode(treeSession);
-        SLPersistentNode queryCache;
-        try {
-            queryCache = pcacheRootNode.getNode(queryId);
-            if (queryCache != null) {
-                SLNode[] nodes = new SLNode[queryCache.getNodes().size()];
-                for (SLPersistentNode activeId : queryCache.getNodes()) {
-                    SLNode node = session.getNodeByID(activeId.getName());
-                    SLNode nodeProxy = ProxyUtil.createNodeProxy(SLNode.class, node);
-                    nodes[activeId.getProperty(Integer.class, "order").getValue()] = nodeProxy;
-                }
-                return new SLQueryResultImpl(nodes, queryId);
-            }
-        } catch (Exception e) {
-        }
-        return null;
-    }
+		return Sha1.getSha1SignatureEncodedAsHexa(sb.toString());
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void add2Cache( final String queryId,
-                           final Collection<PNodeWrapper> nodes )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException, SLGraphSessionException {
-        SLPersistentNode pcacheRootNode = SLCommonSupport.getQueryCacheNode(treeSession);
-        SLPersistentNode queryCache = pcacheRootNode.addNode(queryId);
-        int i = 0;
-        for (PNodeWrapper pNodeWrapper : nodes) {
-            SLPersistentNode refNode = queryCache.addNode(pNodeWrapper.getID());
-            refNode.setProperty(Integer.class, "order", i);
-            i++;
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLQueryResultImpl getCache(final String queryId)
+			throws SLPersistentTreeSessionException, SLNodeNotFoundException,
+			SLGraphSessionException {
+		final SLPersistentNode pcacheRootNode = SLCommonSupport
+				.getQueryCacheNode(treeSession);
+		SLPersistentNode queryCache;
+		try {
+			queryCache = pcacheRootNode.getNode(queryId);
+			if (queryCache != null) {
+				final SLNode[] nodes = new SLNode[queryCache.getNodes().size()];
+				for (final SLPersistentNode activeId : queryCache.getNodes()) {
+					final SLNode node = session.getNodeByID(activeId.getName());
+					final SLNode nodeProxy = ProxyUtil.createNodeProxy(
+							SLNode.class, node);
+					nodes[activeId.getProperty(Integer.class, "order")
+							.getValue()] = nodeProxy;
+				}
+				return new SLQueryResultImpl(treeSession, nodes, queryId);
+			}
+		} catch (final Exception e) {
+		}
+		return null;
+	}
 }

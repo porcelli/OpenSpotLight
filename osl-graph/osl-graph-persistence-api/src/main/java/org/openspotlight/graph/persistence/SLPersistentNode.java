@@ -49,10 +49,10 @@
 package org.openspotlight.graph.persistence;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Set;
 
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 
 /**
  * The Interface SLPersistentNode.
@@ -117,7 +117,7 @@ public interface SLPersistentNode extends LockContainer {
 	 * @throws SLPersistentTreeSessionException
 	 *             the SL persistent tree session exception
 	 */
-	public Set<SLPersistentNode> getNodes()
+	public NeedsSyncronizationSet<SLPersistentNode> getNodes()
 			throws SLPersistentTreeSessionException;
 
 	/**
@@ -131,7 +131,7 @@ public interface SLPersistentNode extends LockContainer {
 	 * @throws SLPersistentTreeSessionException
 	 *             the SL persistent tree session exception
 	 */
-	public Collection<SLPersistentNode> getNodes(String name)
+	public NeedsSyncronizationCollection<SLPersistentNode> getNodes(String name)
 			throws SLPersistentTreeSessionException;
 
 	/**
@@ -165,8 +165,8 @@ public interface SLPersistentNode extends LockContainer {
 	 * @throws SLPersistentTreeSessionException
 	 *             the SL persistent tree session exception
 	 */
-	public Set<SLPersistentProperty<Serializable>> getProperties(String pattern)
-			throws SLPersistentTreeSessionException;
+	public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
+			String pattern) throws SLPersistentTreeSessionException;
 
 	/**
 	 * Gets the property.

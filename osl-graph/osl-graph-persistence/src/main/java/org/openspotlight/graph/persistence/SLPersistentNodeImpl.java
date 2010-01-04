@@ -50,9 +50,7 @@ package org.openspotlight.graph.persistence;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -64,6 +62,9 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.common.concurrent.LockedCollections;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.util.JCRUtil;
 
@@ -214,11 +215,13 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * 
 	 * @see org.openspotlight.graph.persistence.SLPersistentNode#getNodes()
 	 */
-	public Set<SLPersistentNode> getNodes()
+	public NeedsSyncronizationSet<SLPersistentNode> getNodes()
 			throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			try {
-				final Set<SLPersistentNode> persistentNodes = new HashSet<SLPersistentNode>();
+				final NeedsSyncronizationSet<SLPersistentNode> persistentNodes = LockedCollections
+						.createSetWithLock(this,
+								new HashSet<SLPersistentNode>());
 				final NodeIterator iter = jcrNode.getNodes();
 				while (iter.hasNext()) {
 					final Node childNode = iter.nextNode();
@@ -243,10 +246,12 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * org.openspotlight.graph.persistence.SLPersistentNode#getNodes(java.lang
 	 * .String)
 	 */
-	public Collection<SLPersistentNode> getNodes(final String name)
-			throws SLPersistentTreeSessionException {
-		final Collection<SLPersistentNode> pNodes = new ArrayList<SLPersistentNode>();
+	public NeedsSyncronizationCollection<SLPersistentNode> getNodes(
+			final String name) throws SLPersistentTreeSessionException {
 		synchronized (lock) {
+			final NeedsSyncronizationCollection<SLPersistentNode> pNodes = LockedCollections
+					.createCollectionWithLock(this,
+							new ArrayList<SLPersistentNode>());
 			try {
 				final NodeIterator nodeIter = jcrNode.getNodes(name);
 				while (nodeIter.hasNext()) {
@@ -298,11 +303,14 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	 * org.openspotlight.graph.persistence.SLPersistentNode#getProperties(java
 	 * .lang.String)
 	 */
-	public Set<SLPersistentProperty<Serializable>> getProperties(
+	public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
 			final String pattern) throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			try {
-				final Set<SLPersistentProperty<Serializable>> persistentProperties = new HashSet<SLPersistentProperty<Serializable>>();
+				final NeedsSyncronizationSet<SLPersistentProperty<Serializable>> persistentProperties = LockedCollections
+						.createSetWithLock(
+								this,
+								new HashSet<SLPersistentProperty<Serializable>>());
 				final PropertyIterator iter = jcrNode.getProperties(pattern);
 				while (iter.hasNext()) {
 					final Property jcrProperty = iter.nextProperty();

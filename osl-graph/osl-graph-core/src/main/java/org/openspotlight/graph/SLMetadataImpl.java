@@ -52,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.common.concurrent.LockedCollections;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -246,11 +248,13 @@ public class SLMetadataImpl implements SLMetadata {
 	 * 
 	 * @see org.openspotlight.graph.SLMetadata#getMetaLinkTypes()
 	 */
-	public Collection<SLMetaLinkType> getMetaLinkTypes()
+	public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes()
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
-				final Collection<SLMetaLinkType> metaLinkTypes = new ArrayList<SLMetaLinkType>();
+				final NeedsSyncronizationCollection<SLMetaLinkType> metaLinkTypes = LockedCollections
+						.createCollectionWithLock(this,
+								new ArrayList<SLMetaLinkType>());
 				final StringBuilder statement = new StringBuilder(treeSession
 						.getXPathRootPath()
 						+ "/metadata/links/*");
@@ -277,7 +281,7 @@ public class SLMetadataImpl implements SLMetadata {
 	 * 
 	 * @see org.openspotlight.graph.SLMetadata#getMetaNodesTypes()
 	 */
-	public Collection<SLMetaNodeType> getMetaNodesTypes()
+	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes()
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			return this.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE);
@@ -290,11 +294,13 @@ public class SLMetadataImpl implements SLMetadata {
 	 * 
 	 * @see org.openspotlight.graph.SLMetadata#getMetaNodes()
 	 */
-	public Collection<SLMetaNodeType> getMetaNodesTypes(
+	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
 			final SLRecursiveMode recursiveMode) throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
-				final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
+				final NeedsSyncronizationCollection<SLMetaNodeType> metaNodes = LockedCollections
+						.createCollectionWithLock(this,
+								new ArrayList<SLMetaNodeType>());
 				final StringBuilder statement = new StringBuilder(treeSession
 						.getXPathRootPath()
 						+ "/metadata/types");

@@ -1231,4 +1231,5 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
 			}
 		}
 	}
+
 }

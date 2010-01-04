@@ -302,15 +302,16 @@ public class DbTableArtifactBundleProcessorTest {
 
 		boolean foundPkConstraint = false;
 		boolean foundFkConstraint = false;
-
-		for (final SLNode node : pkNodes) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint = true;
+		synchronized (exampleColumn.getLockObject()) {
+			for (final SLNode node : pkNodes) {
+				if (node instanceof DatabaseConstraintPrimaryKey) {
+					foundPkConstraint = true;
+				}
 			}
-		}
-		for (final SLNode node : fkNodes) {
-			if (node instanceof DatabaseConstraintForeignKey) {
-				foundFkConstraint = true;
+			for (final SLNode node : fkNodes) {
+				if (node instanceof DatabaseConstraintForeignKey) {
+					foundFkConstraint = true;
+				}
 			}
 		}
 
@@ -543,9 +544,11 @@ public class DbTableArtifactBundleProcessorTest {
 		final Collection<SLLink> links1 = executionContext1.getGraphSession()
 				.getUnidirectionalLinksBySource(exampleColumn1);
 		String dataType1 = null;
-		for (final SLLink link : links1) {
-			if (link instanceof ColumnDataType) {
-				dataType1 = link.getTarget().getName();
+		synchronized (exampleTableNode1.getLockObject()) {
+			for (final SLLink link : links1) {
+				if (link instanceof ColumnDataType) {
+					dataType1 = link.getTarget().getName();
+				}
 			}
 		}
 
@@ -585,9 +588,11 @@ public class DbTableArtifactBundleProcessorTest {
 		final Collection<SLLink> links2 = executionContext1.getGraphSession()
 				.getUnidirectionalLinksBySource(exampleColumn2);
 		String dataType2 = null;
-		for (final SLLink link : links2) {
-			if (link instanceof ColumnDataType) {
-				dataType2 = link.getTarget().getName();
+		synchronized (exampleTableNode2.getLockObject()) {
+			for (final SLLink link : links2) {
+				if (link instanceof ColumnDataType) {
+					dataType2 = link.getTarget().getName();
+				}
 			}
 		}
 
@@ -651,14 +656,16 @@ public class DbTableArtifactBundleProcessorTest {
 		boolean foundPkConstraint1 = false;
 		boolean foundFkConstraint1 = false;
 
-		for (final SLNode node : pkNodes1) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint1 = true;
+		synchronized (exampleColumn1.getLockObject()) {
+			for (final SLNode node : pkNodes1) {
+				if (node instanceof DatabaseConstraintPrimaryKey) {
+					foundPkConstraint1 = true;
+				}
 			}
-		}
-		for (final SLNode node : fkNodes1) {
-			if (node instanceof DatabaseConstraintForeignKey) {
-				foundFkConstraint1 = true;
+			for (final SLNode node : fkNodes1) {
+				if (node instanceof DatabaseConstraintForeignKey) {
+					foundFkConstraint1 = true;
+				}
 			}
 		}
 
@@ -703,14 +710,16 @@ public class DbTableArtifactBundleProcessorTest {
 		boolean foundPkConstraint2 = false;
 		boolean foundFkConstraint2 = false;
 
-		for (final SLNode node : pkNodes2) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint2 = true;
+		synchronized (exampleColumn2.getLockObject()) {
+			for (final SLNode node : pkNodes2) {
+				if (node instanceof DatabaseConstraintPrimaryKey) {
+					foundPkConstraint2 = true;
+				}
 			}
-		}
-		for (final SLNode node : fkNodes2) {
-			if (node instanceof DatabaseConstraintForeignKey) {
-				foundFkConstraint2 = true;
+			for (final SLNode node : fkNodes2) {
+				if (node instanceof DatabaseConstraintForeignKey) {
+					foundFkConstraint2 = true;
+				}
 			}
 		}
 
@@ -755,9 +764,11 @@ public class DbTableArtifactBundleProcessorTest {
 
 		boolean foundPkConstraint1 = false;
 
-		for (final SLNode node : pkNodes1) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint1 = true;
+		synchronized (exampleTableNode1.getLockObject()) {
+			for (final SLNode node : pkNodes1) {
+				if (node instanceof DatabaseConstraintPrimaryKey) {
+					foundPkConstraint1 = true;
+				}
 			}
 		}
 
@@ -797,11 +808,14 @@ public class DbTableArtifactBundleProcessorTest {
 
 		boolean foundPkConstraint2 = false;
 
-		for (final SLNode node : pkNodes2) {
-			if (node instanceof DatabaseConstraintPrimaryKey) {
-				foundPkConstraint2 = true;
+		synchronized (exampleColumn2.getLockObject()) {
+			for (final SLNode node : pkNodes2) {
+				if (node instanceof DatabaseConstraintPrimaryKey) {
+					foundPkConstraint2 = true;
+				}
 			}
 		}
+
 		Assert.assertThat(foundPkConstraint2, Is.is(false));
 	}
 
