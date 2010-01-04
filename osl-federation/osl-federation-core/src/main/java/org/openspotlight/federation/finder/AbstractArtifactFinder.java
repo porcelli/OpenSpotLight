@@ -50,6 +50,7 @@ package org.openspotlight.federation.finder;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
@@ -149,7 +150,8 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 	}
 
 	public final Set<String> retrieveAllArtifactNames(final String initialPath) {
-		final Set<String> result = internalRetrieveAllArtifactNames(initialPath);
+		final Set<String> result = new TreeSet<String>(
+				internalRetrieveAllArtifactNames(initialPath));
 		logger.info("retrieved names for path " + initialPath + ": " + result);
 
 		return result;

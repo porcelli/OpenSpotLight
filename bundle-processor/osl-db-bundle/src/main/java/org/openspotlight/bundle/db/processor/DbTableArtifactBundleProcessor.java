@@ -123,10 +123,6 @@ public class DbTableArtifactBundleProcessor implements
 		}
 	}
 
-	public static class UpdateCommand {
-
-	}
-
 	public <A extends Artifact> boolean acceptKindOfArtifact(
 			final Class<A> kindOfArtifact) {
 		return TableArtifact.class.isAssignableFrom(kindOfArtifact);
@@ -171,12 +167,14 @@ public class DbTableArtifactBundleProcessor implements
 				.getColumns()) {
 			final Column column = createColumn(wrappedType, context,
 					databaseContextNode, table, abstractTable, c);
+
 			createPrimaryKeys(wrappedType, context, c, column);
 			createForeignKeys(wrappedType, context, database, c, column);
 		}
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void createForeignKeys(final DbWrappedType wrappedType,
 			final ExecutionContext context, final Database database,
 			final org.openspotlight.federation.domain.Column c,
@@ -197,7 +195,9 @@ public class DbTableArtifactBundleProcessor implements
 					.getTableViewType(), fk.getTableName());
 			// TODO check it here
 			final Column thatColumn = thatTable.addNode(wrappedType
-					.getColumnType(), fk.getColumnName());
+					.getColumnType(), fk.getColumnName(), links(
+					AbstractTypeBind.class, ColumnDataType.class,
+					ForeignKey.class), links(ConstraintDatabaseColumn.class));
 			context.getGraphSession().addLink(ForeignKey.class, column,
 					thatColumn, false);
 			final DatabaseConstraintForeignKey fkNode = thatColumn.addNode(
@@ -207,7 +207,6 @@ public class DbTableArtifactBundleProcessor implements
 					column, fkNode, false);
 			context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
 					thatColumn, fkNode, false);
-
 		}
 	}
 

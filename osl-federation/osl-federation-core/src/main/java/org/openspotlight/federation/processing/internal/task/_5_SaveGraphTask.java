@@ -98,7 +98,7 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	}
 
 	public int getPriority() {
-		return 4;
+		return 5;
 	}
 
 	public String getRepositoryName() {

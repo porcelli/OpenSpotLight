@@ -48,10 +48,12 @@
  */
 package org.openspotlight.graph.listeners;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.concurrent.LockedCollections;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLGraphSessionEvent;
 import org.openspotlight.graph.SLGraphSessionException;
@@ -62,10 +64,14 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeEvent;
 import org.openspotlight.graph.SLPersistenceMode;
 import org.openspotlight.graph.annotation.SLTransient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The listener interface for receiving SLTransientObject events. The class that is interested in processing a SLTransientObject
- * event implements this interface, and the object created with that class is registered with a component using the component's
+ * The listener interface for receiving SLTransientObject events. The class that
+ * is interested in processing a SLTransientObject event implements this
+ * interface, and the object created with that class is registered with a
+ * component using the component's
  * <code>addSLTransientObjectListener<code> method. When
  * the SLTransientObject event occurs, that object's appropriate
  * method is invoked.
@@ -73,126 +79,141 @@ import org.openspotlight.graph.annotation.SLTransient;
  * @see SLTransientObjectEvent
  * @author Vitor Hugo Chagas
  */
-public class SLTransientObjectListener extends SLAbstractGraphSessionEventListener {
+public class SLTransientObjectListener extends
+		SLAbstractGraphSessionEventListener {
 
-    /** The transient links. */
-    private final Set<SLLink> transientLinks;
+	/** The transient links. */
+	private final NeedsSyncronizationSet<SLLink> transientLinks;
 
-    /** The transient nodes. */
-    private final Set<SLNode> transientNodes;
+	/** The transient nodes. */
+	private final NeedsSyncronizationSet<SLNode> transientNodes;
 
-    /**
-     * Instantiates a new sL transient object listener.
-     */
-    public SLTransientObjectListener(
-                                      final LockContainer parent ) {
-        super(parent);
-        transientLinks = new HashSet<SLLink>();
-        transientNodes = new HashSet<SLNode>();
-    }
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#beforeSave
-     * (org.openspotlight.graph.SLGraphSessionEvent)
-     */
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void beforeSave( final SLGraphSessionEvent event )
-        throws SLGraphSessionException, SLInvalidCredentialException {
-        synchronized (lock) {
-            for (final SLLink link : transientLinks) {
-                link.remove();
-            }
-            transientLinks.clear();
-            for (final SLNode node : transientNodes) {
-                node.remove();
-            }
-            transientNodes.clear();
-        }
-    }
+	/**
+	 * Instantiates a new sL transient object listener.
+	 */
+	public SLTransientObjectListener(final LockContainer parent) {
+		super(parent);
+		transientLinks = LockedCollections.createSetWithLock(parent,
+				new HashSet<SLLink>());
+		transientNodes = LockedCollections.createSetWithLock(parent,
+				new HashSet<SLNode>());
+	}
 
-    /**
-     * Checks for transient annotation.
-     * 
-     * @param object the object
-     * @return true, if successful
-     */
-    @SuppressWarnings( "unchecked" )
-    private boolean hasTransientAnnotation( final Object object ) {
-        synchronized (lock) {
-            return object.getClass().getInterfaces()[0]
-                                                       .getAnnotation(SLTransient.class) != null;
-        }
-    }
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#beforeSave
+	 * (org.openspotlight.graph.SLGraphSessionEvent)
+	 */
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void beforeSave(final SLGraphSessionEvent event)
+			throws SLGraphSessionException, SLInvalidCredentialException {
+		synchronized (lock) {
+			for (final SLLink link : transientLinks) {
+				link.remove();
+				if (logger.isDebugEnabled()) {
+					logger.debug(" about to remove "
+							+ Arrays.toString(link.getClass().getInterfaces())
+							+ " " + link.getID());
+				}
+			}
+			transientLinks.clear();
+			for (final SLNode node : transientNodes) {
+				node.remove();
+				if (logger.isDebugEnabled()) {
+					logger.debug(" about to remove "
+							+ Arrays.toString(node.getClass().getInterfaces())
+							+ " " + node.getName() + " " + node.getID());
+				}
+			}
+			transientNodes.clear();
+		}
+	}
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
-     * (org.openspotlight.graph.SLLinkEvent)
-     */
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void linkAdded( final SLLinkEvent event )
-        throws SLGraphSessionException {
-        synchronized (lock) {
-            final SLLink link = event.getLink();
-            if (hasTransientAnnotation(link)) {
-                transientLinks.add(link);
-            } else {
-                final SLPersistenceMode mode = event.getPersistenceMode();
-                if (mode.equals(SLPersistenceMode.TRANSIENT)) {
-                    transientLinks.add(link);
-                } else if (mode.equals(SLPersistenceMode.NORMAL)) {
-                    transientLinks.remove(link);
-                }
-            }
-        }
-    }
+	/**
+	 * Checks for transient annotation.
+	 * 
+	 * @param object
+	 *            the object
+	 * @return true, if successful
+	 */
+	@SuppressWarnings("unchecked")
+	private boolean hasTransientAnnotation(final Object object) {
+		synchronized (lock) {
+			return object.getClass().getInterfaces()[0]
+					.getAnnotation(SLTransient.class) != null;
+		}
+	}
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
-     * (org.openspotlight.graph.SLNodeEvent)
-     */
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void nodeAdded( final SLNodeEvent event )
-        throws SLGraphSessionException {
-        synchronized (lock) {
-            final SLNode node = event.getNode();
-            if (hasTransientAnnotation(node)) {
-                transientNodes.add(node);
-            } else {
-                final SLPersistenceMode mode = event.getPersistenceMode();
-                if (mode.equals(SLPersistenceMode.TRANSIENT)) {
-                    transientNodes.add(node);
-                } else if (mode.equals(SLPersistenceMode.NORMAL)) {
-                    transientNodes.remove(node);
-                }
-            }
-        }
-    }
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
+	 * (org.openspotlight.graph.SLLinkEvent)
+	 */
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void linkAdded(final SLLinkEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			final SLLink link = event.getLink();
+			if (hasTransientAnnotation(link)) {
+				transientLinks.add(link);
+			} else {
+				final SLPersistenceMode mode = event.getPersistenceMode();
+				if (mode.equals(SLPersistenceMode.TRANSIENT)) {
+					transientLinks.add(link);
+				} else if (mode.equals(SLPersistenceMode.NORMAL)) {
+					transientLinks.remove(link);
+				}
+			}
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void sessionCleaned() {
-        // 
-    }
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
+	 * (org.openspotlight.graph.SLNodeEvent)
+	 */
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void nodeAdded(final SLNodeEvent event)
+			throws SLGraphSessionException {
+		synchronized (lock) {
+			final SLNode node = event.getNode();
+			if (hasTransientAnnotation(node)) {
+				transientNodes.add(node);
+			} else {
+				final SLPersistenceMode mode = event.getPersistenceMode();
+				if (mode.equals(SLPersistenceMode.TRANSIENT)) {
+					transientNodes.add(node);
+				} else if (mode.equals(SLPersistenceMode.NORMAL)) {
+					transientNodes.remove(node);
+				}
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void sessionCleaned() {
+		// 
+	}
 }
