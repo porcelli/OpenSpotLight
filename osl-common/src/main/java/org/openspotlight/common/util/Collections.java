@@ -65,92 +65,116 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
+import org.openspotlight.common.concurrent.LockedCollections;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
+import org.openspotlight.common.concurrent.NeedsSyncronizationList;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
+import org.openspotlight.common.concurrent.UnsafeDummyLockContainer;
+
 /**
  * Helper class to deal with collections
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Collections {
 
-    /**
-     * Creates an immutable map in a null pointer safe way
-     *
-     * @param <K>
-     * @param <V>
-     * @param base
-     * @return an immutable map
-     */
-    public static <K, V> Map<K, V> createImmutableMap( final Map<K, V> base ) {
-        Map<K, V> temp = base;
-        if (temp == null) {
-            temp = emptyMap();
-        } else {
-            temp = unmodifiableMap(new HashMap<K, V>(temp));
-        }
-        return temp;
-    }
+	/**
+	 * Creates an immutable map in a null pointer safe way
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @param base
+	 * @return an immutable map
+	 */
+	public static <K, V> Map<K, V> createImmutableMap(final Map<K, V> base) {
+		Map<K, V> temp = base;
+		if (temp == null) {
+			temp = emptyMap();
+		} else {
+			temp = unmodifiableMap(new HashMap<K, V>(temp));
+		}
+		return temp;
+	}
 
-    /**
-     * Creates an immutable set in a null pointer safe way
-     *
-     * @param <E>
-     * @param base
-     * @return an immutable set
-     */
-    public static <E> Set<E> createImmutableSet( final Set<E> base ) {
-        Set<E> temp = base;
-        if (temp == null) {
-            temp = emptySet();
-        } else {
-            temp = unmodifiableSet(new HashSet<E>(temp));
-        }
-        return temp;
-    }
+	/**
+	 * Creates an immutable set in a null pointer safe way
+	 * 
+	 * @param <E>
+	 * @param base
+	 * @return an immutable set
+	 */
+	public static <E> Set<E> createImmutableSet(final Set<E> base) {
+		Set<E> temp = base;
+		if (temp == null) {
+			temp = emptySet();
+		} else {
+			temp = unmodifiableSet(new HashSet<E>(temp));
+		}
+		return temp;
+	}
 
-    /**
-     * Creates the new collection.
-     *
-     * @param <I>
-     * @param <C>
-     * @param collectionType the collection type
-     * @param initialSize the initial size
-     * @return the c
-     */
-    @SuppressWarnings( "unchecked" )
-    public static <I> Collection<I> createNewCollection( final Class<? extends Collection> collectionType,
-                                                         final int initialSize ) {
-        if (Set.class.isAssignableFrom(collectionType)) {
-            return new HashSet<I>(initialSize);
-        } else if (Queue.class.isAssignableFrom(collectionType)) {
-            return new PriorityQueue<I>(initialSize);
-        } else if (List.class.isAssignableFrom(collectionType)) {
-            return new ArrayList<I>(initialSize);
-        } else {
-            return new ArrayList<I>(initialSize);
-        }
-    }
+	/**
+	 * Creates the new collection.
+	 * 
+	 * @param <I>
+	 * @param <C>
+	 * @param collectionType
+	 *            the collection type
+	 * @param initialSize
+	 *            the initial size
+	 * @return the c
+	 */
+	@SuppressWarnings("unchecked")
+	public static <I> Collection<I> createNewCollection(
+			final Class<? extends Collection> collectionType,
+			final int initialSize) {
+		if (NeedsSyncronizationSet.class.isAssignableFrom(collectionType)) {
+			return LockedCollections
+					.createSetWithLock(new UnsafeDummyLockContainer(),
+							new HashSet<I>(initialSize));
+		} else if (NeedsSyncronizationList.class
+				.isAssignableFrom(collectionType)) {
+			return LockedCollections.createListWithLock(
+					new UnsafeDummyLockContainer(), new ArrayList<I>(
+							initialSize));
+		} else if (NeedsSyncronizationCollection.class
+				.isAssignableFrom(collectionType)) {
+			return LockedCollections.createCollectionWithLock(
+					new UnsafeDummyLockContainer(), new ArrayList<I>(
+							initialSize));
+		} else if (Set.class.isAssignableFrom(collectionType)) {
+			return new HashSet<I>(initialSize);
+		} else if (Queue.class.isAssignableFrom(collectionType)) {
+			return new PriorityQueue<I>(initialSize);
+		} else if (List.class.isAssignableFrom(collectionType)) {
+			return new ArrayList<I>(initialSize);
+		} else {
+			return new ArrayList<I>(initialSize);
+		}
+	}
 
-    /**
-     * Convenient method to create a typed set using varargs.
-     *
-     * @param <T>
-     * @param elements
-     * @return a new set with the elements
-     */
-    public static <T> Set<T> setOf( final T... elements ) {
-        final HashSet<T> set = new HashSet<T>();
-        if(elements!=null){
-	        for (final T e : elements) {
-	            set.add(e);
-	        }
-        }
-        return set;
-    }
+	/**
+	 * Convenient method to create a typed set using varargs.
+	 * 
+	 * @param <T>
+	 * @param elements
+	 * @return a new set with the elements
+	 */
+	public static <T> Set<T> setOf(final T... elements) {
+		final HashSet<T> set = new HashSet<T>();
+		if (elements != null) {
+			for (final T e : elements) {
+				set.add(e);
+			}
+		}
+		return set;
+	}
 
-    /**
-     * Should not be instantiated
-     */
-    private Collections() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
-    }
+	/**
+	 * Should not be instantiated
+	 */
+	private Collections() {
+		logAndThrow(new IllegalStateException(Messages
+				.getString("invalidConstructor"))); //$NON-NLS-1$
+	}
 }

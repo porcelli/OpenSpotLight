@@ -1,5 +1,6 @@
 package org.openspotlight.common.concurrent;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -35,7 +36,12 @@ import java.util.Set;
 public class LockedCollections {
 
 	private static class SynchronizedCollectionWithLock<E> implements
-			NeedsSyncronizationCollection<E> {
+			NeedsSyncronizationCollection<E>, Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 808585769657149974L;
+
 		private final Lock lockObject;
 
 		private final Collection<E> items;
@@ -140,7 +146,12 @@ public class LockedCollections {
 	}
 
 	private static class SynchronizedListWithLock<E> implements
-			NeedsSyncronizationList<E> {
+			NeedsSyncronizationList<E>, Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -1064228945823322345L;
+
 		private final Lock lockObject;
 
 		private final List<E> items;
@@ -308,7 +319,12 @@ public class LockedCollections {
 	}
 
 	private static class SynchronizedMapWithLock<K, V> implements
-			NeedsSyncronizationMap<K, V> {
+			NeedsSyncronizationMap<K, V>, Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2271400793890257912L;
+
 		private final Lock lockObject;
 
 		private final Map<K, V> items;
@@ -409,7 +425,12 @@ public class LockedCollections {
 	}
 
 	private static class SynchronizedSetWithLock<E> implements
-			NeedsSyncronizationSet<E> {
+			NeedsSyncronizationSet<E>, Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4896655667202821253L;
 
 		private final Lock lockObject;
 
