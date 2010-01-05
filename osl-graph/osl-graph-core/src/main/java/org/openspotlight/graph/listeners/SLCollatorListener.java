@@ -56,7 +56,8 @@ import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLCollatorSupport;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNodePropertyEvent;
+import org.openspotlight.graph.SLNodePropertyRemovedEvent;
+import org.openspotlight.graph.SLNodePropertySetEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
@@ -88,7 +89,7 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodePropertyRemoved(final SLNodePropertyEvent event)
+	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
@@ -143,7 +144,7 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodePropertySet(final SLNodePropertyEvent event)
+	public void nodePropertySet(final SLNodePropertySetEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			try {

@@ -77,7 +77,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#beforeSave(org.
 	 * openspotlight.graph.SLGraphSessionEvent)
 	 */
-	public void beforeSave(final SLGraphSessionEvent event)
+	public void beforeSave(final SLGraphSessionSaveEvent event)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 	}
 
@@ -91,7 +91,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#linkAdded(org.
 	 * openspotlight.graph.SLLinkEvent)
 	 */
-	public void linkAdded(final SLLinkEvent event)
+	public void linkAdded(final SLLinkAddedEvent event)
 			throws SLGraphSessionException {
 	}
 
@@ -102,7 +102,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * org.openspotlight.graph.SLGraphSessionEventListener#linkPropertySet(org
 	 * .openspotlight.graph.SLLinkPropertyEvent)
 	 */
-	public void linkPropertySet(final SLLinkPropertyEvent event)
+	public void linkPropertySet(final SLLinkPropertySetEvent event)
 			throws SLGraphSessionException {
 	}
 
@@ -112,7 +112,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#linkRemoved(org.
 	 * openspotlight.graph.SLLinkEvent)
 	 */
-	public void linkRemoved(final SLLinkEvent event)
+	public void linkRemoved(final SLLinkRemovedEvent event)
 			throws SLGraphSessionException {
 	}
 
@@ -122,7 +122,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#nodeAdded(org.
 	 * openspotlight.graph.SLNodeEvent)
 	 */
-	public void nodeAdded(final SLNodeEvent event)
+	public void nodeAdded(final SLNodeAddedEvent event)
 			throws SLGraphSessionException {
 	}
 
@@ -133,7 +133,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * org.openspotlight.graph.SLGraphSessionEventListener#nodePropertyRemoved
 	 * (org.openspotlight.graph.SLNodePropertyEvent)
 	 */
-	public void nodePropertyRemoved(final SLNodePropertyEvent event)
+	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event)
 			throws SLGraphSessionException {
 	}
 
@@ -144,7 +144,7 @@ public abstract class SLAbstractGraphSessionEventListener implements
 	 * org.openspotlight.graph.SLGraphSessionEventListener#nodePropertySet(org
 	 * .openspotlight.graph.SLNodePropertyEvent)
 	 */
-	public void nodePropertySet(final SLNodePropertyEvent event)
+	public void nodePropertySet(final SLNodePropertySetEvent event)
 			throws SLGraphSessionException {
 	}
 

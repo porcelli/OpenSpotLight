@@ -64,7 +64,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Catalog;
@@ -367,7 +366,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldIncludeNewColumnOnChangedTable() throws Exception {
 
 		final Connection connection1 = DatabaseSupport
@@ -435,7 +433,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldMaintainInformationOnExtendedNode() throws Exception {
 		final CountDownLatch latch = new CountDownLatch(1);
 
@@ -475,7 +472,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldRemoveDeletedColumns() throws Exception {
 
 		final Connection connection1 = DatabaseSupport
@@ -543,7 +539,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldRemoveDeletedTables() throws Exception {
 
 		final Connection connection1 = DatabaseSupport
@@ -599,7 +594,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldUpdateChangedDatatypesAndRemoveUnused() throws Exception {
 		final Connection connection1 = DatabaseSupport
 				.createConnection(data.artifactSource);
@@ -817,7 +811,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldUpdateChangedPkInformation() throws Exception {
 
 		final Connection connection1 = DatabaseSupport

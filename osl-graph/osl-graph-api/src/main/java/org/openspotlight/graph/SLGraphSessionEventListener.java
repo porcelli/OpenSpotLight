@@ -71,7 +71,7 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void beforeSave(SLGraphSessionEvent event)
+	public void beforeSave(SLGraphSessionSaveEvent event)
 			throws SLGraphSessionException, SLInvalidCredentialException;
 
 	/**
@@ -82,7 +82,8 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void linkAdded(SLLinkEvent event) throws SLGraphSessionException;
+	public void linkAdded(SLLinkAddedEvent event)
+			throws SLGraphSessionException;
 
 	/**
 	 * Link property set.
@@ -92,7 +93,7 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void linkPropertySet(SLLinkPropertyEvent event)
+	public void linkPropertySet(SLLinkPropertySetEvent event)
 			throws SLGraphSessionException;
 
 	/**
@@ -103,7 +104,8 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void linkRemoved(SLLinkEvent event) throws SLGraphSessionException;
+	public void linkRemoved(SLLinkRemovedEvent event)
+			throws SLGraphSessionException;
 
 	/**
 	 * Node added.
@@ -113,7 +115,8 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void nodeAdded(SLNodeEvent event) throws SLGraphSessionException;
+	public void nodeAdded(SLNodeAddedEvent event)
+			throws SLGraphSessionException;
 
 	/**
 	 * Node property removed.
@@ -123,7 +126,7 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void nodePropertyRemoved(SLNodePropertyEvent event)
+	public void nodePropertyRemoved(SLNodePropertyRemovedEvent event)
 			throws SLGraphSessionException;
 
 	/**
@@ -134,7 +137,7 @@ public interface SLGraphSessionEventListener extends LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public void nodePropertySet(SLNodePropertyEvent event)
+	public void nodePropertySet(SLNodePropertySetEvent event)
 			throws SLGraphSessionException;
 
 	/**

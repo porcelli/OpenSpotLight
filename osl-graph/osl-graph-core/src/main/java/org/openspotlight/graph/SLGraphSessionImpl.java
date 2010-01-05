@@ -257,9 +257,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
 				final SLLink link = new SLLinkImpl(this, linkNode, eventPoster);
 				final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
-				final SLLinkEvent event = new SLLinkEvent(
-						SLLinkEvent.TYPE_LINK_ADDED, linkProxy, linkNode,
-						persistenceMode);
+				final SLLinkEvent event = new SLLinkAddedEvent(linkProxy,
+						linkNode, persistenceMode);
 				event.setSource(source);
 				event.setTarget(target);
 				event.setNewLink(newLink);
@@ -1564,8 +1563,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 							"User does not have privilegies to save session.");
 				}
 
-				eventPoster.post(new SLGraphSessionEvent(
-						SLGraphSessionEvent.TYPE_BEFORE_SAVE, this));
+				eventPoster.post(new SLGraphSessionSaveEvent(this));
 				treeSession.save();
 			} catch (final SLException e) {
 				Exceptions.catchAndLog(e);

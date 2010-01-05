@@ -527,8 +527,7 @@ public class SLLinkImpl implements SLLink {
 	public void remove() throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
-				final SLLinkEvent event = new SLLinkEvent(
-						SLLinkEvent.TYPE_LINK_REMOVED, this);
+				final SLLinkEvent event = new SLLinkRemovedEvent(this);
 				event.setBidirectional(isBidirectional());
 				if (event.isBidirectional()) {
 					event.setSides(getSides());
@@ -538,7 +537,7 @@ public class SLLinkImpl implements SLLink {
 				}
 				linkNode.remove();
 				eventPoster.post(event);
-			} catch (final SLException e) {
+			} catch (final Exception e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to remove link.", e);
 			}
@@ -572,9 +571,8 @@ public class SLLinkImpl implements SLLink {
 						getLinkType(), this);
 				final SLLinkProperty<V> property = new SLLinkPropertyImpl<V>(
 						linkProxy, pProperty);
-				final SLLinkPropertyEvent event = new SLLinkPropertyEvent(
-						SLLinkPropertyEvent.TYPE_LINK_PROPERTY_SET, property,
-						pProperty);
+				final SLLinkPropertyEvent event = new SLLinkPropertySetEvent(
+						property, pProperty);
 				event.setVisibility(visibility);
 				eventPoster.post(event);
 				return property;

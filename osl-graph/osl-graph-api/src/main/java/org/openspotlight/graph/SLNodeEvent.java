@@ -57,10 +57,7 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLNodeEvent extends SLGraphSessionEvent {
-
-	/** The Constant TYPE_NODE_ADDED. */
-	public static final int TYPE_NODE_ADDED = 1;
+public abstract class SLNodeEvent extends SLGraphSessionEvent {
 
 	/** The node. */
 	private final SLNode node;
@@ -94,13 +91,12 @@ public class SLNodeEvent extends SLGraphSessionEvent {
 	 *            the link types for linked node deletion
 	 */
 	public SLNodeEvent(
-			final int type,
 			final SLNode node,
 			final SLPersistentNode pNode,
 			final SLPersistenceMode persistentMode,
 			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
 			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		super(type, node.getSession());
+		super(node.getSession());
 		this.node = node;
 		this.pNode = pNode;
 		this.persistentMode = persistentMode;

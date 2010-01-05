@@ -55,64 +55,63 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLLinkEvent extends SLGraphSessionEvent {
-	
-	/** The Constant TYPE_LINK_ADDED. */
-	public static final int TYPE_LINK_ADDED = 1;
-	
-	/** The Constant TYPE_LINK_REMOVED. */
-	public static final int TYPE_LINK_REMOVED = 2;
-	
+public abstract class SLLinkEvent extends SLGraphSessionEvent {
+
 	/** The link. */
-	private SLLink link;
-	
+	private final SLLink link;
+
 	/** The link node. */
 	private SLPersistentNode linkNode;
-	
+
 	/** The persistence mode. */
 	private SLPersistenceMode persistenceMode;
-	
+
 	/** The new link. */
 	private boolean newLink;
-	
+
 	/** The changed to bidirectional. */
 	private boolean changedToBidirectional;
-	
+
 	/** The bidirectional. */
 	private boolean bidirectional;
-	
+
 	/** The source. */
 	private SLNode source;
-	
+
 	/** The target. */
 	private SLNode target;
-	
+
 	/** The sides. */
 	private SLNode[] sides;
-	
+
 	/**
 	 * Instantiates a new sL link event.
 	 */
-	public SLLinkEvent(int type, SLLink link) {
-		super(type, link.getSession());
+	public SLLinkEvent(final SLLink link) {
+		super(link.getSession());
 		this.link = link;
 	}
-	
+
 	/**
 	 * Instantiates a new sL link event.
 	 * 
-	 * @param type the type
-	 * @param link the link
-	 * @param linkNode the link node
-	 * @param persistenceMode the persistence mode
+	 * @param type
+	 *            the type
+	 * @param link
+	 *            the link
+	 * @param linkNode
+	 *            the link node
+	 * @param persistenceMode
+	 *            the persistence mode
 	 */
-	public SLLinkEvent(int type, SLLink link, SLPersistentNode linkNode, SLPersistenceMode persistenceMode) {
-		super(type, link.getSession());
+	public SLLinkEvent(final SLLink link, final SLPersistentNode linkNode,
+			final SLPersistenceMode persistenceMode) {
+		super(link.getSession());
 		this.link = link;
 		this.linkNode = linkNode;
 		this.persistenceMode = persistenceMode;
 	}
-	
+
 	/**
 	 * Gets the link.
 	 * 
@@ -121,7 +120,7 @@ public class SLLinkEvent extends SLGraphSessionEvent {
 	public SLLink getLink() {
 		return link;
 	}
-	
+
 	/**
 	 * Gets the link node.
 	 * 
@@ -130,7 +129,7 @@ public class SLLinkEvent extends SLGraphSessionEvent {
 	public SLPersistentNode getLinkNode() {
 		return linkNode;
 	}
-	
+
 	/**
 	 * Gets the persistence mode.
 	 * 
@@ -138,96 +137,6 @@ public class SLLinkEvent extends SLGraphSessionEvent {
 	 */
 	public SLPersistenceMode getPersistenceMode() {
 		return persistenceMode;
-	}
-
-	/**
-	 * Checks if is new link.
-	 * 
-	 * @return true, if is new link
-	 */
-	public boolean isNewLink() {
-		return newLink;
-	}
-
-	/**
-	 * Sets the new link.
-	 * 
-	 * @param newLink the new new link
-	 */
-	public void setNewLink(boolean newLink) {
-		this.newLink = newLink;
-	}
-
-	/**
-	 * Checks if is changed to bidirectional.
-	 * 
-	 * @return true, if is changed to bidirectional
-	 */
-	public boolean isChangedToBidirectional() {
-		return changedToBidirectional;
-	}
-
-	/**
-	 * Sets the changed to bidirectional.
-	 * 
-	 * @param allowsMultiple the new changed to bidirectional
-	 */
-	public void setChangedToBidirectional(boolean allowsMultiple) {
-		this.changedToBidirectional = allowsMultiple;
-	}
-
-	/**
-	 * Gets the source.
-	 * 
-	 * @return the source
-	 */
-	public SLNode getSource() {
-		return source;
-	}
-
-	/**
-	 * Sets the source.
-	 * 
-	 * @param source the new source
-	 */
-	public void setSource(SLNode source) {
-		this.source = source;
-	}
-
-	/**
-	 * Gets the target.
-	 * 
-	 * @return the target
-	 */
-	public SLNode getTarget() {
-		return target;
-	}
-
-	/**
-	 * Sets the target.
-	 * 
-	 * @param target the new target
-	 */
-	public void setTarget(SLNode target) {
-		this.target = target;
-	}
-
-	/**
-	 * Checks if is bidirectional.
-	 * 
-	 * @return true, if is bidirectional
-	 */
-	public boolean isBidirectional() {
-		return bidirectional;
-	}
-
-	/**
-	 * Sets the bidirectional.
-	 * 
-	 * @param bidirectional the new bidirectional
-	 */
-	public void setBidirectional(boolean bidirectional) {
-		this.bidirectional = bidirectional;
 	}
 
 	/**
@@ -240,11 +149,107 @@ public class SLLinkEvent extends SLGraphSessionEvent {
 	}
 
 	/**
+	 * Gets the source.
+	 * 
+	 * @return the source
+	 */
+	public SLNode getSource() {
+		return source;
+	}
+
+	/**
+	 * Gets the target.
+	 * 
+	 * @return the target
+	 */
+	public SLNode getTarget() {
+		return target;
+	}
+
+	/**
+	 * Checks if is bidirectional.
+	 * 
+	 * @return true, if is bidirectional
+	 */
+	public boolean isBidirectional() {
+		return bidirectional;
+	}
+
+	/**
+	 * Checks if is changed to bidirectional.
+	 * 
+	 * @return true, if is changed to bidirectional
+	 */
+	public boolean isChangedToBidirectional() {
+		return changedToBidirectional;
+	}
+
+	/**
+	 * Checks if is new link.
+	 * 
+	 * @return true, if is new link
+	 */
+	public boolean isNewLink() {
+		return newLink;
+	}
+
+	/**
+	 * Sets the bidirectional.
+	 * 
+	 * @param bidirectional
+	 *            the new bidirectional
+	 */
+	public void setBidirectional(final boolean bidirectional) {
+		this.bidirectional = bidirectional;
+	}
+
+	/**
+	 * Sets the changed to bidirectional.
+	 * 
+	 * @param allowsMultiple
+	 *            the new changed to bidirectional
+	 */
+	public void setChangedToBidirectional(final boolean allowsMultiple) {
+		changedToBidirectional = allowsMultiple;
+	}
+
+	/**
+	 * Sets the new link.
+	 * 
+	 * @param newLink
+	 *            the new new link
+	 */
+	public void setNewLink(final boolean newLink) {
+		this.newLink = newLink;
+	}
+
+	/**
 	 * Sets the sides.
 	 * 
-	 * @param sides the new sides
+	 * @param sides
+	 *            the new sides
 	 */
-	public void setSides(SLNode[] sides) {
+	public void setSides(final SLNode[] sides) {
 		this.sides = sides;
+	}
+
+	/**
+	 * Sets the source.
+	 * 
+	 * @param source
+	 *            the new source
+	 */
+	public void setSource(final SLNode source) {
+		this.source = source;
+	}
+
+	/**
+	 * Sets the target.
+	 * 
+	 * @param target
+	 *            the new target
+	 */
+	public void setTarget(final SLNode target) {
+		this.target = target;
 	}
 }

@@ -94,85 +94,22 @@ public class SLGraphSessionEventPosterImpl implements
 	public void post(final SLGraphSessionEvent event)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
-			if (event.getType() == SLGraphSessionEvent.TYPE_BEFORE_SAVE) {
-				for (final SLGraphSessionEventListener listener : listeners) {
-					listener.beforeSave(event);
-				}
-			}
-		}
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-	 * .graph.SLLinkEvent)
-	 */
-	public void post(final SLLinkEvent event) throws SLGraphSessionException {
-		synchronized (lock) {
 			for (final SLGraphSessionEventListener listener : listeners) {
-				if (event.getType() == SLLinkEvent.TYPE_LINK_ADDED) {
-					listener.linkAdded(event);
-				} else if (event.getType() == SLLinkEvent.TYPE_LINK_REMOVED) {
-					listener.linkRemoved(event);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-	 * .graph.SLLinkPropertyEvent)
-	 */
-	public void post(final SLLinkPropertyEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
-			for (final SLGraphSessionEventListener listener : listeners) {
-				if (event.getType() == SLLinkPropertyEvent.TYPE_LINK_PROPERTY_SET) {
-					listener.linkPropertySet(event);
-				}
-			}
-		}
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-	 * .graph.SLNodeEvent)
-	 */
-	public void post(final SLNodeEvent event) throws SLGraphSessionException {
-		synchronized (lock) {
-			for (final SLGraphSessionEventListener listener : listeners) {
-				if (event.getType() == SLNodeEvent.TYPE_NODE_ADDED) {
-					listener.nodeAdded(event);
-				}
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-	 * .graph.SLNodePropertyEvent)
-	 */
-	public void post(final SLNodePropertyEvent event)
-			throws SLGraphSessionException {
-		synchronized (lock) {
-			for (final SLGraphSessionEventListener listener : listeners) {
-				if (event.getType() == SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET) {
-					listener.nodePropertySet(event);
-				} else if (event.getType() == SLNodePropertyEvent.TYPE_NODE_PROPERTY_REMOVED) {
-					listener.nodePropertyRemoved(event);
+				if (event instanceof SLGraphSessionSaveEvent) {
+					listener.beforeSave((SLGraphSessionSaveEvent) event);
+				} else if (event instanceof SLLinkAddedEvent) {
+					listener.linkAdded((SLLinkAddedEvent) event);
+				} else if (event instanceof SLLinkRemovedEvent) {
+					listener.linkRemoved((SLLinkRemovedEvent) event);
+				} else if (event instanceof SLLinkPropertySetEvent) {
+					listener.linkPropertySet((SLLinkPropertySetEvent) event);
+				} else if (event instanceof SLNodeAddedEvent) {
+					listener.nodeAdded((SLNodeAddedEvent) event);
+				} else if (event instanceof SLNodePropertySetEvent) {
+					listener.nodePropertySet((SLNodePropertySetEvent) event);
+				} else if (event instanceof SLNodePropertyRemovedEvent) {
+					listener
+							.nodePropertyRemoved((SLNodePropertyRemovedEvent) event);
 				}
 			}
 		}

@@ -183,9 +183,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 							SLConsts.PROPERTY_CAPTION_NAME, name);
 				}
 
-				eventPoster.post(new SLNodeEvent(SLNodeEvent.TYPE_NODE_ADDED,
-						nodeProxy, pChildNode, persistenceMode,
-						linkTypesForLinkDeletion,
+				eventPoster.post(new SLNodeAddedEvent(nodeProxy, pChildNode,
+						persistenceMode, linkTypesForLinkDeletion,
 						linkTypesForLinkedNodeDeletion));
 
 				return nodeProxy;
@@ -1204,9 +1203,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 						this);
 				final SLNodeProperty<V> property = factory.createProperty(
 						nodeProxy, pProperty, eventPoster);
-				final SLNodePropertyEvent event = new SLNodePropertyEvent(
-						SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET, property,
-						pProperty);
+				final SLNodePropertyEvent event = new SLNodePropertySetEvent(
+						property, pProperty);
 				event.setVisibility(visibility);
 				eventPoster.post(event);
 				return property;

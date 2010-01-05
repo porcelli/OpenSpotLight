@@ -54,6 +54,7 @@ import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLLinkAddedEvent;
 import org.openspotlight.graph.SLLinkEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -153,7 +154,7 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void linkAdded(final SLLinkEvent event)
+	public void linkAdded(final SLLinkAddedEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			try {

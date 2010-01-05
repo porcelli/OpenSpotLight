@@ -213,14 +213,13 @@ public class SLNodePropertyImpl<V extends Serializable> implements
 						.toSimplePropertyName(getName());
 				final boolean string = pProperty.getValue() instanceof String;
 				pProperty.remove();
-				final SLNodePropertyEvent event = new SLNodePropertyEvent(
-						SLNodePropertyEvent.TYPE_NODE_PROPERTY_REMOVED, this,
-						pProperty);
+				final SLNodePropertyEvent event = new SLNodePropertyRemovedEvent(
+						this, pProperty);
 				event.setPropertyName(name);
 				event.setString(string);
 				event.setPNode(pNode);
 				eventPoster.post(event);
-			} catch (final SLPersistentTreeSessionException e) {
+			} catch (final Exception e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to remove property.", e);
 			}

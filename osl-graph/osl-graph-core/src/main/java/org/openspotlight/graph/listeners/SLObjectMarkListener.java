@@ -50,6 +50,7 @@ package org.openspotlight.graph.listeners;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,13 +58,13 @@ import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionEvent;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLGraphSessionSaveEvent;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkEvent;
+import org.openspotlight.graph.SLLinkAddedEvent;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeEvent;
+import org.openspotlight.graph.SLNodeAddedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +95,8 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 	 */
 	public SLObjectMarkListener(final LockContainer parent) {
 		super(parent);
-		linksForDeletion = new HashSet<SLLink>();
-		nodesForDeletion = new HashSet<SLNode>();
+		linksForDeletion = Collections.synchronizedSet(new HashSet<SLLink>());
+		nodesForDeletion = Collections.synchronizedSet(new HashSet<SLNode>());
 	}
 
 	// @Override
@@ -110,7 +111,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void beforeSave(final SLGraphSessionEvent event)
+	public void beforeSave(final SLGraphSessionSaveEvent event)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
 
@@ -142,7 +143,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void linkAdded(final SLLinkEvent event)
+	public void linkAdded(final SLLinkAddedEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			// unmark link and its sides ...
@@ -174,7 +175,6 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 	private void logNodeRemoval(final SLNode node) {
 		try {
 			if (node != null && logger.isDebugEnabled()) {
-				new Exception().printStackTrace();
 				logger.debug(" about to remove node "
 						+ Arrays.toString(node.getClass().getInterfaces())
 						+ " " + node.getName() + " " + node.getID());
@@ -196,7 +196,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodeAdded(final SLNodeEvent event)
+	public void nodeAdded(final SLNodeAddedEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 

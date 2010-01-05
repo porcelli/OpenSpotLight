@@ -55,13 +55,13 @@ import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
-import org.openspotlight.graph.SLGraphSessionEvent;
 import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLGraphSessionSaveEvent;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkEvent;
+import org.openspotlight.graph.SLLinkAddedEvent;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeEvent;
+import org.openspotlight.graph.SLNodeAddedEvent;
 import org.openspotlight.graph.SLPersistenceMode;
 import org.openspotlight.graph.annotation.SLTransient;
 import org.slf4j.Logger;
@@ -113,7 +113,7 @@ public class SLTransientObjectListener extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void beforeSave(final SLGraphSessionEvent event)
+	public void beforeSave(final SLGraphSessionSaveEvent event)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
 			for (final SLLink link : transientLinks) {
@@ -164,7 +164,7 @@ public class SLTransientObjectListener extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void linkAdded(final SLLinkEvent event)
+	public void linkAdded(final SLLinkAddedEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			final SLLink link = event.getLink();
@@ -193,7 +193,7 @@ public class SLTransientObjectListener extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodeAdded(final SLNodeEvent event)
+	public void nodeAdded(final SLNodeAddedEvent event)
 			throws SLGraphSessionException {
 		synchronized (lock) {
 			final SLNode node = event.getNode();
