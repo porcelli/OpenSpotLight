@@ -52,6 +52,7 @@ import java.util.Collection;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.util.Exceptions;
 
 /**
  * The Class SLGraphSessionEventPosterImpl.
@@ -110,6 +111,9 @@ public class SLGraphSessionEventPosterImpl implements
 				} else if (event instanceof SLNodePropertyRemovedEvent) {
 					listener
 							.nodePropertyRemoved((SLNodePropertyRemovedEvent) event);
+				} else {
+					throw Exceptions.logAndReturn(new IllegalArgumentException(
+							"Unhandled event class"));
 				}
 			}
 		}
