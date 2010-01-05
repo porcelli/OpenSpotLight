@@ -64,7 +64,6 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLLinkImpl.
  * 
@@ -80,6 +79,8 @@ public class SLLinkImpl implements SLLink {
 
     /** The link node. */
     private final SLPersistentNode          linkNode;
+
+    private SLMetaLink                      metaLink = null;
 
     /** The event poster. */
     private final SLGraphSessionEventPoster eventPoster;
@@ -250,6 +251,25 @@ public class SLLinkImpl implements SLLink {
             } catch (final Exception e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to retrieve link type.", e);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLMetaLink getMetaLink() throws SLGraphSessionException {
+        synchronized (lock) {
+            try {
+                if (metaLink == null) {
+                    metaLink =
+                        getSession().getMetadata().getMetaLinkType(this.getLinkType()).getMetaLinks(getANode().getTypeName(), getBNode().getTypeName(), isBidirectional()).iterator().next();
+                }
+                return metaLink;
+            } catch (SLException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to retrieve meta link type.", e);
+
             }
         }
     }
@@ -589,5 +609,4 @@ public class SLLinkImpl implements SLLink {
             return linkNode.toString();
         }
     }
-
 }

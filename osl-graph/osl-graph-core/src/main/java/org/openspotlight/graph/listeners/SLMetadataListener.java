@@ -226,17 +226,18 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                                  final SLPersistentNode pNode )
         throws SLPersistentTreeSessionException {
         synchronized (lock) {
+            String descriptionValue = type.getName();
             final SLDescription description = type
                                                   .getAnnotation(SLDescription.class);
             if (description != null) {
-                final String propName = SLCommonSupport
-                                                       .toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
-                final SLPersistentProperty<String> prop = SLCommonSupport
-                                                                         .getProperty(pNode, String.class, propName);
-                if (prop == null) {
-                    pNode.setProperty(String.class, propName, description
-                                                                         .value());
-                }
+                descriptionValue = description.value();
+            }
+            final String propName = SLCommonSupport
+                                                   .toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+            final SLPersistentProperty<String> prop = SLCommonSupport
+                                                                     .getProperty(pNode, String.class, propName);
+            if (prop == null) {
+                pNode.setProperty(String.class, propName, descriptionValue);
             }
         }
     }
@@ -714,9 +715,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                         pMetaNodeTypeParent.setProperty(String.class,
                                                         SLConsts.PROPERTY_NAME_NODE_TYPE,
                                                         currentNodeType.getName());
-                        addRenderHints(nodeType, pMetaNodeTypeParent);
-                        addDescription(nodeType, pMetaNodeTypeParent);
-                        addVisibility(nodeType, pMetaNodeTypeParent);
+                        addRenderHints(currentNodeType, pMetaNodeTypeParent);
+                        addDescription(currentNodeType, pMetaNodeTypeParent);
+                        addVisibility(currentNodeType, pMetaNodeTypeParent);
                     } else {
                         pMetaNodeTypeParent = pMetaNodeType;
                     }

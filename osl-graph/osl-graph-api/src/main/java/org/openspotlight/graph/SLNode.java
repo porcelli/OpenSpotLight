@@ -440,6 +440,14 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
     public String getTypeName() throws SLGraphSessionException;
 
     /**
+     * Gets the meta type.
+     * 
+     * @return the meta type or null if its a simple node
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public SLMetaNodeType getMetaType() throws SLGraphSessionException;
+
+    /**
      * Removes the.
      * 
      * @throws SLGraphSessionException the SL graph session exception

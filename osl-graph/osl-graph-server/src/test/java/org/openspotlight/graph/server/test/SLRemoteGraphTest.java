@@ -1641,8 +1641,8 @@ public class SLRemoteGraphTest {
             final SLLink link = session.addLink(
                                                 JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                 javaMethodNode1, false);
-            link.setProperty(String.class, "author", "Zé Café");
-            link.setProperty(Integer.class, "age", 270);
+            link.setProperty(String.class, VisibilityLevel.PUBLIC,  "author", "Zé Café");
+            link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "age", 270);
 
             final SLMetadata metadata = session.getMetadata();
             final SLMetaLinkType metaLinkType = metadata
@@ -1689,8 +1689,8 @@ public class SLRemoteGraphTest {
             final SLLink link = session.addLink(
                                                 JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                 javaMethodNode1, false);
-            link.setProperty(String.class, "author", "Zé Café");
-            link.setProperty(Integer.class, "age", 270);
+            link.setProperty(String.class, VisibilityLevel.PUBLIC, "author", "Zé Café");
+            link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "age", 270);
 
             final SLMetadata metadata = session.getMetadata();
             final SLMetaLinkType metaLinkType = metadata
@@ -2567,7 +2567,7 @@ public class SLRemoteGraphTest {
             // test set property ...
             link = session.addLink(JavaPackageJavaClass.class,
                                    javaPackageNode1, javaClassNode1, false);
-            property = link.setProperty(Integer.class, "integerProperty", 8);
+            property = link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "integerProperty", 8);
             Assert.assertNotNull(property);
             name = property.getName();
             Assert.assertEquals(name, "integerProperty");
