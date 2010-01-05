@@ -64,190 +64,195 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
  */
 public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 
-	private final Lock lock;
+    private final Lock              lock;
 
-	/** The metadata. */
-	private final SLMetadata metadata;
+    /** The metadata. */
+    private final SLMetadata        metadata;
 
-	/** The p node. */
-	private final SLPersistentNode pNode;
+    /** The p node. */
+    private final SLPersistentNode  pNode;
 
-	/** The link type. */
-	private Class<? extends SLLink> linkType;
+    /** The link type. */
+    private Class<? extends SLLink> linkType;
 
-	/**
-	 * Instantiates a new sL meta link type impl.
-	 * 
-	 * @param metadata
-	 *            the metadata
-	 * @param pNode
-	 *            the node
-	 */
-	SLMetaLinkTypeImpl(final SLMetadata metadata, final SLPersistentNode pNode) {
-		this.metadata = metadata;
-		this.pNode = pNode;
-		lock = pNode.getLockObject();
-	}
+    /**
+     * Instantiates a new sL meta link type impl.
+     * 
+     * @param metadata the metadata
+     * @param pNode the node
+     */
+    SLMetaLinkTypeImpl(
+                        final SLMetadata metadata, final SLPersistentNode pNode ) {
+        this.metadata = metadata;
+        this.pNode = pNode;
+        lock = pNode.getLockObject();
+    }
 
-	public Lock getLockObject() {
-		return lock;
-	}
+    public Lock getLockObject() {
+        return lock;
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaElement#getMetadata()
-	 */
-	public SLMetadata getMetadata() throws SLGraphSessionException {
-		return metadata;
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.SLMetaElement#getMetadata()
+     */
+    public SLMetadata getMetadata() throws SLGraphSessionException {
+        return metadata;
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaLinkType#getMetalinks()
-	 */
-	@SuppressWarnings("unchecked")
-	public Collection<SLMetaLink> getMetalinks() throws SLGraphSessionException {
-		synchronized (lock) {
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.SLMetaLinkType#getMetalinks()
+     */
+    @SuppressWarnings( "unchecked" )
+    public Collection<SLMetaLink> getMetalinks() throws SLGraphSessionException {
+        synchronized (lock) {
 
-			try {
-				final Collection<SLMetaLink> metaLinks = new ArrayList<SLMetaLink>();
-				final Collection<SLPersistentNode> typePairNodes = pNode
-						.getNodes();
+            try {
+                final Collection<SLMetaLink> metaLinks = new ArrayList<SLMetaLink>();
+                final Collection<SLPersistentNode> typePairNodes = pNode
+                                                                        .getNodes();
 
-				for (final SLPersistentNode typePairNode : typePairNodes) {
+                for (final SLPersistentNode typePairNode : typePairNodes) {
 
-					final SLPersistentProperty<String> aClassNameProp = typePairNode
-							.getProperty(String.class,
-									SLConsts.PROPERTY_NAME_A_CLASS_NAME);
-					final SLPersistentProperty<String> bClassNameProp = typePairNode
-							.getProperty(String.class,
-									SLConsts.PROPERTY_NAME_B_CLASS_NAME);
+                    final SLPersistentProperty<String> aClassNameProp = typePairNode
+                                                                                    .getProperty(String.class,
+                                                                                                 SLConsts.PROPERTY_NAME_A_CLASS_NAME);
+                    final SLPersistentProperty<String> bClassNameProp = typePairNode
+                                                                                    .getProperty(String.class,
+                                                                                                 SLConsts.PROPERTY_NAME_B_CLASS_NAME);
 
-					final Class<? extends SLNode> aType = (Class<? extends SLNode>) Class
-							.forName(aClassNameProp.getValue());
-					final Class<? extends SLNode> bType = (Class<? extends SLNode>) Class
-							.forName(bClassNameProp.getValue());
+                    final Class<? extends SLNode> aType = (Class<? extends SLNode>)Class
+                                                                                        .forName(aClassNameProp.getValue());
+                    final Class<? extends SLNode> bType = (Class<? extends SLNode>)Class
+                                                                                        .forName(bClassNameProp.getValue());
 
-					final Collection<SLPersistentNode> linkNodes = typePairNode
-							.getNodes();
+                    final Collection<SLPersistentNode> linkNodes = typePairNode
+                                                                               .getNodes();
 
-					for (final SLPersistentNode linkNode : linkNodes) {
+                    for (final SLPersistentNode linkNode : linkNodes) {
 
-						final int direction = linkNode
-								.getProperty(Integer.class,
-										SLConsts.PROPERTY_NAME_DIRECTION)
-								.getValue();
+                        final int direction = linkNode
+                                                      .getProperty(Integer.class,
+                                                                   SLConsts.PROPERTY_NAME_DIRECTION)
+                                                      .getValue();
 
-						boolean bidirectional = false;
-						Class<? extends SLNode> sourceType = null;
-						Class<? extends SLNode> targetType = null;
-						List<Class<? extends SLNode>> sideTypes = new ArrayList<Class<? extends SLNode>>();
+                        boolean bidirectional = false;
+                        Class<? extends SLNode> sourceType = null;
+                        Class<? extends SLNode> targetType = null;
+                        List<Class<? extends SLNode>> sideTypes = new ArrayList<Class<? extends SLNode>>();
 
-						if (direction == SLConsts.DIRECTION_AB) {
-							sourceType = aType;
-							targetType = bType;
-						} else if (direction == SLConsts.DIRECTION_BA) {
-							sourceType = bType;
-							targetType = aType;
-						} else {
-							bidirectional = true;
-							sideTypes.add(aType);
-							sideTypes.add(bType);
-						}
+                        if (direction == SLConsts.DIRECTION_AB) {
+                            sourceType = aType;
+                            targetType = bType;
+                        } else if (direction == SLConsts.DIRECTION_BA) {
+                            sourceType = bType;
+                            targetType = aType;
+                        } else {
+                            bidirectional = true;
+                            sideTypes.add(aType);
+                            sideTypes.add(bType);
+                        }
 
-						if (sourceType != null && targetType != null) {
-							sideTypes = new ArrayList<Class<? extends SLNode>>();
-							sideTypes.add(sourceType);
-							sideTypes.add(targetType);
-						}
+                        if (sourceType != null && targetType != null) {
+                            sideTypes = new ArrayList<Class<? extends SLNode>>();
+                            sideTypes.add(sourceType);
+                            sideTypes.add(targetType);
+                        }
 
-						final SLMetaLink metaLink = new SLMetaLinkImpl(
-								linkNode, this, sourceType, targetType,
-								sideTypes, bidirectional, this);
-						metaLinks.add(metaLink);
-					}
-				}
+                        final SLMetaLink metaLink = new SLMetaLinkImpl(
+                                                                       linkNode, this, sourceType, targetType,
+                                                                       sideTypes, bidirectional, this);
+                        metaLinks.add(metaLink);
+                    }
+                }
 
-				return metaLinks;
-			} catch (final Exception e) {
-				throw new SLGraphSessionException(
-						"Error on attempt to retrieve meta links.", e);
-			}
-		}
-	}
+                return metaLinks;
+            } catch (final Exception e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to retrieve meta links.", e);
+            }
+        }
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaLinkType#getMetaLinks(java.lang.Class,
-	 * java.lang.Class, java.lang.Boolean)
-	 */
-	public Collection<SLMetaLink> getMetaLinks(
-			final Class<? extends SLNode> sourceType,
-			final Class<? extends SLNode> targetType,
-			final Boolean bidirectional) throws SLGraphSessionException {
-		synchronized (lock) {
-			final Collection<SLMetaLink> metaLinks = getMetalinks();
-			final Iterator<SLMetaLink> iter = metaLinks.iterator();
-			while (iter.hasNext()) {
-				boolean remove = false;
-				final SLMetaLink metaLink = iter.next();
-				if (bidirectional != null && !bidirectional) {
-					if (sourceType != null
-							&& !sourceType.equals(metaLink.getSourceType())) {
-						remove = true;
-					}
-					if (!remove && targetType != null
-							&& !targetType.equals(metaLink.getTargetType())) {
-						remove = true;
-					}
-				} else {
-					if (sourceType != null) {
-						remove = sourceType.equals(metaLink.getSideTypes().get(
-								0))
-								|| sourceType.equals(metaLink.getSideTypes()
-										.get(1));
-					}
-					if (!remove && targetType != null) {
-						remove = targetType.equals(metaLink.getSideTypes().get(
-								0))
-								|| targetType.equals(metaLink.getSideTypes()
-										.get(1));
-					}
-				}
-				if (remove) {
-					iter.remove();
-				}
-			}
-			return metaLinks;
-		}
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.SLMetaLinkType#getMetaLinks(java.lang.Class,
+     * java.lang.Class, java.lang.Boolean)
+     */
+    public Collection<SLMetaLink> getMetaLinks(
+                                                final Class<? extends SLNode> sourceType,
+                                                final Class<? extends SLNode> targetType,
+                                                final Boolean bidirectional ) throws SLGraphSessionException {
+        synchronized (lock) {
+            return getMetaLinks(sourceType.getName(), targetType.getName(), bidirectional);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaLinkType#getType()
-	 */
-	@SuppressWarnings("unchecked")
-	// @Override
-	public Class<? extends SLLink> getType() throws SLGraphSessionException {
-		synchronized (lock) {
+    public Collection<SLMetaLink> getMetaLinks( String sourceType,
+                                                String targetType,
+                                                Boolean bidirectional ) throws SLGraphSessionException {
+        final Collection<SLMetaLink> metaLinks = getMetalinks();
+        final Iterator<SLMetaLink> iter = metaLinks.iterator();
+        while (iter.hasNext()) {
+            boolean remove = false;
+            final SLMetaLink metaLink = iter.next();
+            if (bidirectional != null && !bidirectional) {
+                if (sourceType != null
+                    && !sourceType.equals(metaLink.getSourceType().getName())) {
+                    remove = true;
+                }
+                if (!remove && targetType != null
+                    && !targetType.equals(metaLink.getTargetType().getName())) {
+                    remove = true;
+                }
+            } else {
+                if (sourceType != null) {
+                    remove = sourceType.equals(metaLink.getSideTypes().get(
+                                                                           0).getName())
+                             || sourceType.equals(metaLink.getSideTypes()
+                                                          .get(1).getName());
+                }
+                if (!remove && targetType != null) {
+                    remove = targetType.equals(metaLink.getSideTypes().get(
+                                                                           0).getName())
+                             || targetType.equals(metaLink.getSideTypes()
+                                                          .get(1).getName());
+                }
+            }
+            if (remove) {
+                iter.remove();
+            }
+        }
+        return metaLinks;
+    }
 
-			if (linkType == null) {
-				try {
-					linkType = (Class<? extends SLLink>) Class.forName(pNode
-							.getName());
-				} catch (final Exception e) {
-					throw new SLGraphSessionException(
-							"Error on attempt to retrieve link type.", e);
-				}
-			}
-			return linkType;
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.SLMetaLinkType#getType()
+     */
+    @SuppressWarnings( "unchecked" )
+    // @Override
+    public Class<? extends SLLink> getType() throws SLGraphSessionException {
+        synchronized (lock) {
+
+            if (linkType == null) {
+                try {
+                    linkType = (Class<? extends SLLink>)Class.forName(pNode
+                                                                           .getName());
+                } catch (final Exception e) {
+                    throw new SLGraphSessionException(
+                                                      "Error on attempt to retrieve link type.", e);
+                }
+            }
+            return linkType;
+        }
+    }
 }

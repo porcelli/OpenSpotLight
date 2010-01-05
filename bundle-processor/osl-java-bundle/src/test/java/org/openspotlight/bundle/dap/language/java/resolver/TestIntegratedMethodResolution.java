@@ -67,6 +67,7 @@ import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.dap.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 @SuppressWarnings("unused")
 public class TestIntegratedMethodResolution extends
@@ -678,13 +679,13 @@ public class TestIntegratedMethodResolution extends
 
 		SLLink link = graphSession.addLink(MethodParameterDefinition.class,
 				method, parameterizedType, false);
-		link.setProperty(Integer.class, "Order", 0);
+		link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "Order", 0);
 		link = graphSession.addLink(MethodParameterDefinition.class, method,
 				stringType, false);
-		link.setProperty(Integer.class, "Order", 1);
+		link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "Order", 1);
 		link = graphSession.addLink(MethodParameterDefinition.class, method,
 				longType, false);
-		link.setProperty(Integer.class, "Order", 2);
+		link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "Order", 2);
 
 		final Pair<JavaType, JavaMethod> correctTypeAndMethod = new Pair<JavaType, JavaMethod>(
 				numberType, method);

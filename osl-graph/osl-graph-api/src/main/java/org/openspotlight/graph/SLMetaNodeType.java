@@ -49,11 +49,14 @@
 package org.openspotlight.graph;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.openspotlight.graph.SLMetadata.BooleanOperator;
+import org.openspotlight.graph.SLMetadata.LogicOperator;
+import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface SLMetaNodeType.
  * 
@@ -168,5 +171,24 @@ public interface SLMetaNodeType extends SLMetaElement {
      * @throws SLGraphSessionException the SL graph session exception
      */
     public SLPersistentNode getNode() throws SLGraphSessionException;
+
+    /**
+     * Search sub meta node types.
+     * 
+     * @param recursiveMode the recursive mode
+     * @param visibility the visibility
+     * @param property2Find the property2 find
+     * @param logicOp the logic op
+     * @param booleanOp the boolean op
+     * @param values the values
+     * @return the collection< sl meta node type>
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public Collection<SLMetaNodeType> searchSubMetaNodeTypes( final SLRecursiveMode recursiveMode,
+                                                              final VisibilityLevel visibility,
+                                                              final MetaNodeTypeProperty property2Find,
+                                                              final LogicOperator logicOp,
+                                                              final BooleanOperator booleanOp,
+                                                              final List<String> values ) throws SLGraphSessionException;
 
 }

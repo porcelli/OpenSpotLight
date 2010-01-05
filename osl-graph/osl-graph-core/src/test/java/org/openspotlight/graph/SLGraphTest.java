@@ -85,6 +85,7 @@ import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLinkACTB;
 import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLinkPrivate;
 import org.openspotlight.graph.test.domain.JavaClassNode;
 import org.openspotlight.graph.test.domain.JavaClassNodeInternal;
+import org.openspotlight.graph.test.domain.JavaClassNodePublic;
 import org.openspotlight.graph.test.domain.JavaElementNode;
 import org.openspotlight.graph.test.domain.JavaInnerClassNode;
 import org.openspotlight.graph.test.domain.JavaLink;
@@ -1659,8 +1660,8 @@ public class SLGraphTest {
             final SLLink link = session.addLink(
                                                 JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                 javaMethodNode1, false);
-            link.setProperty(String.class, "author", "Zé Café");
-            link.setProperty(Integer.class, "age", 270);
+            link.setProperty(String.class, VisibilityLevel.PUBLIC, "author", "Zé Café");
+            link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "age", 270);
 
             final SLMetadata metadata = session.getMetadata();
             final SLMetaLinkType metaLinkType = metadata
@@ -1707,8 +1708,8 @@ public class SLGraphTest {
             final SLLink link = session.addLink(
                                                 JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                 javaMethodNode1, false);
-            link.setProperty(String.class, "author", "Zé Café");
-            link.setProperty(Integer.class, "age", 270);
+            link.setProperty(String.class, VisibilityLevel.PUBLIC, "author", "Zé Café");
+            link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "age", 270);
 
             final SLMetadata metadata = session.getMetadata();
             final SLMetaLinkType metaLinkType = metadata
@@ -1766,6 +1767,41 @@ public class SLGraphTest {
             Assert.assertNotNull(metaNode2);
             Assert.assertEquals(metaNode2.getType(), JavaClassNode.class);
             Assert.assertEquals(metaNode2.getVisibility(), VisibilityLevel.PUBLIC);
+
+        } catch (final SLGraphSessionException e) {
+            LOGGER.error(e.getMessage(), e);
+            Assert.fail();
+        } catch (final SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        }
+    }
+
+    @Test
+    // ( dependsOnMethods = "testGetMetaLinkProperty" )
+    public void testGetMetaNodeByVisibility() {
+
+        try {
+            final SLNode root1 = session.createContext("1L").getRootNode();
+            root1.addNode(JavaPackageNode.class, "javaPackageNode1");
+            root1.addNode(JavaPackageNode.class, "javaPackageNode2");
+            root1.addNode(JavaClassNode.class, "javaClassNode1");
+            root1.addNode(JavaClassNodePublic.class, "javaClassNode2");
+            root1.addNode(JavaPackageNodePrivate.class, "javaPackageNode1X");
+            root1.addNode(JavaPackageNodePrivate.class, "javaPackageNode2X");
+            root1.addNode(JavaClassNodeInternal.class, "javaClassNode1X");
+            root1.addNode(JavaClassNodeInternal.class, "javaClassNode2X");
+
+            final SLMetadata metadata = session.getMetadata();
+
+            Collection<SLMetaNodeType> publicMetaNodes = metadata.getMetaNodesTypes(SLRecursiveMode.RECURSIVE, VisibilityLevel.PUBLIC);
+            Assert.assertEquals(4, publicMetaNodes.size());
+            Collection<SLMetaNodeType> publicNotRecursiveMetaNodes = metadata.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE, VisibilityLevel.PUBLIC);
+            Assert.assertEquals(2, publicNotRecursiveMetaNodes.size());
+            Collection<SLMetaNodeType> privateMetaNodes = metadata.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE, VisibilityLevel.PRIVATE);
+            Assert.assertEquals(1, privateMetaNodes.size());
+            Collection<SLMetaNodeType> internalMetaNodes = metadata.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE, VisibilityLevel.INTERNAL);
+            Assert.assertEquals(1, internalMetaNodes.size());
 
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
@@ -1913,10 +1949,18 @@ public class SLGraphTest {
 
         try {
             final SLNode root1 = session.createContext("1L").getRootNode();
+            SLNode nonTypedNode = root1.addNode("XX");
+
+            Assert.assertNull(nonTypedNode.getMetaType());
+
             root1.addNode(JavaPackageNode.class, "javaPackageNode1");
             root1.addNode(JavaPackageNode.class, "javaPackageNode2");
             root1.addNode(JavaClassNode.class, "javaClassNode1");
-            root1.addNode(JavaClassNode.class, "javaClassNode2");
+            JavaClassNode createdNode = root1.addNode(JavaClassNode.class, "javaClassNode2");
+            Assert.assertNotNull(createdNode.getMetaType());
+
+            Assert.assertEquals("Java Class",
+                                createdNode.getMetaType().getDescription());
 
             final SLMetadata metadata = session.getMetadata();
             final Collection<SLMetaNodeType> metaNodes = metadata
@@ -2608,7 +2652,7 @@ public class SLGraphTest {
             // test set property ...
             link = session.addLink(JavaPackageJavaClass.class,
                                    javaPackageNode1, javaClassNode1, false);
-            property = link.setProperty(Integer.class, "integerProperty", 8);
+            property = link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "integerProperty", 8);
             Assert.assertNotNull(property);
             name = property.getName();
             Assert.assertEquals(name, "integerProperty");
@@ -3005,8 +3049,11 @@ public class SLGraphTest {
                                                               JavaClassNode.class, "javaClassNode");
             final JavaMethodNode javaMethodNode = root1.addNode(
                                                                 JavaMethodNode.class, "javaMethodNode");
-            session.addLink(JavaClassJavaMethodSimpleLinkPrivate.class, javaClassNode,
-                            javaMethodNode, false);
+            final JavaClassJavaMethodSimpleLinkPrivate link = session.addLink(JavaClassJavaMethodSimpleLinkPrivate.class, javaClassNode,
+                                                                              javaMethodNode, false);
+
+            Assert.assertNotNull(link.getMetaLink());
+            Assert.assertEquals(link.getMetaLink().getVisibility(), VisibilityLevel.PRIVATE);
 
             final SLMetadata metadata = session.getMetadata();
             final SLMetaLink metaLink = metadata.getMetaLinkType(

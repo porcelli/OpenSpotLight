@@ -136,7 +136,7 @@ public class SLGraphCollatorTest {
                                                                        JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                        javaMethodNode1, false);
 
-            final SLLinkProperty<String> prop1 = link.setProperty(String.class,
+            final SLLinkProperty<String> prop1 = link.setProperty(String.class, VisibilityLevel.PUBLIC,
                                                                   "selecao", "great");
             final SLLinkProperty<String> prop2 = link.getProperty(String.class,
                                                                   "sele\u00E7\u00E3o");

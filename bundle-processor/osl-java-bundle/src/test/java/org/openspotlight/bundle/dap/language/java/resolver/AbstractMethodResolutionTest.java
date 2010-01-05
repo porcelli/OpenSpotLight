@@ -80,6 +80,7 @@ import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLInvalidNodeTypeException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
@@ -153,7 +154,7 @@ public abstract class AbstractMethodResolutionTest {
 				final SLLink link = graphSession.addLink(
 						MethodParameterDefinition.class, method,
 						activeParameterType, false);
-				link.setProperty(Integer.class, "Order", position);
+				link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "Order", position);
 			}
 		}
 

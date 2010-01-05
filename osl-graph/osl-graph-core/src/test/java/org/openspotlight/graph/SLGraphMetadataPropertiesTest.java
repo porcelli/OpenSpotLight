@@ -184,7 +184,5 @@ public class SLGraphMetadataPropertiesTest {
         SLMetaLink metaLink2 = metaLinkType2.getMetaLinks(JavaClassNode.class, JavaClassNode.class, false).iterator().next();
         Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink2.getMetaProperty("otherProp").getVisibility());
         Assert.assertEquals(VisibilityLevel.PRIVATE, metaLink2.getMetaProperty("otherProp2").getVisibility());
-
     }
-
 }

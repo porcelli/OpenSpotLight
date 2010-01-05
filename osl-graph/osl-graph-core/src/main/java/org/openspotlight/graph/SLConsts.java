@@ -57,135 +57,138 @@ import org.openspotlight.common.SharedConstants;
  */
 public class SLConsts implements SharedConstants {
 
-	public static final String SYSTEM_USER = "osl";
-	public static final String SYSTEM_PASSWORD = "osl";
+    public static final String SYSTEM_USER                                 = "osl";
+    public static final String SYSTEM_PASSWORD                             = "osl";
 
-	public static final String DEFAULT_GROUP_CONTEXT = "groupContext";
+    public static final String DEFAULT_GROUP_CONTEXT                       = "groupContext";
 
-	/** The Constant NODE_NAME_LINK. */
-	public static final String NODE_NAME_LINK = "link";
+    /** The Constant NODE_NAME_LINK. */
+    public static final String NODE_NAME_LINK                              = "link";
 
-	/** The Constant DIRECTION_AB. */
-	public static final int DIRECTION_AB = 1;
+    /** The Constant DIRECTION_AB. */
+    public static final int    DIRECTION_AB                                = 1;
 
-	/** The Constant DIRECTION_BA. */
-	public static final int DIRECTION_BA = 2;
+    /** The Constant DIRECTION_BA. */
+    public static final int    DIRECTION_BA                                = 2;
 
-	/** The Constant DIRECTION_BOTH. */
-	public static final int DIRECTION_BOTH = 3;
+    /** The Constant DIRECTION_BOTH. */
+    public static final int    DIRECTION_BOTH                              = 3;
 
-	/** The Constant NODE_NAME_CONTEXTS. */
-	public static final String NODE_NAME_CONTEXTS = "contexts";
+    /** The Constant NODE_NAME_CONTEXTS. */
+    public static final String NODE_NAME_CONTEXTS                          = "contexts";
 
-	/** The Constant NODE_NAME_QUERY_CACHE. */
-	public static final String NODE_NAME_QUERY_CACHE = "queryCache";
+    /** The Constant NODE_NAME_QUERY_CACHE. */
+    public static final String NODE_NAME_QUERY_CACHE                       = "queryCache";
 
-	/** The Constant NODE_NAME_LINKS. */
-	public static final String NODE_NAME_LINKS = "links";
+    /** The Constant NODE_NAME_LINKS. */
+    public static final String NODE_NAME_LINKS                             = "links";
 
-	/** The Constant NODE_NAME_METADATA. */
-	public static final String NODE_NAME_METADATA = "metadata";
+    /** The Constant NODE_NAME_METADATA. */
+    public static final String NODE_NAME_METADATA                          = "metadata";
 
-	/** The Constant NODE_NAME_TYPES. */
-	public static final String NODE_NAME_TYPES = "types";
+    /** The Constant INTERNAL NODE NAME. */
+    public static final String INTERNAL_NODE_NAME                          = "fn:name()";
 
-	/** The Constant PROPERTY_NAME_PRIMARY_KEY. */
-	public static final String PROPERTY_NAME_PRIMARY_KEY = "primaryKey";
+    /** The Constant NODE_NAME_TYPES. */
+    public static final String NODE_NAME_TYPES                             = "types";
 
-	/** The Constant PROPERTY_NAME_SECONDARY_KEY. */
-	public static final String PROPERTY_NAME_SECONDARY_KEY = "secondaryKey";
+    /** The Constant PROPERTY_NAME_PRIMARY_KEY. */
+    public static final String PROPERTY_NAME_PRIMARY_KEY                   = "primaryKey";
 
-	/** The Constant PROPERTY_NAME_TERTIARY_KEY. */
-	public static final String PROPERTY_NAME_TERTIARY_KEY = "tertiaryKey";
+    /** The Constant PROPERTY_NAME_SECONDARY_KEY. */
+    public static final String PROPERTY_NAME_SECONDARY_KEY                 = "secondaryKey";
 
-	/** The Constant PROPERTY_NAME_PRIMARY_DESCRIPTION. */
-	public static final String PROPERTY_NAME_PRIMARY_DESCRIPTION = "primaryDescription";
+    /** The Constant PROPERTY_NAME_TERTIARY_KEY. */
+    public static final String PROPERTY_NAME_TERTIARY_KEY                  = "tertiaryKey";
 
-	/** The Constant PROPERTY_NAME_SECONDARY_DESCRIPTION. */
-	public static final String PROPERTY_NAME_SECONDARY_DESCRIPTION = "secondaryDescription";
+    /** The Constant PROPERTY_NAME_PRIMARY_DESCRIPTION. */
+    public static final String PROPERTY_NAME_PRIMARY_DESCRIPTION           = "primaryDescription";
 
-	/** The Constant PROPERTY_NAME_TERTIARY_DESCRIPTION. */
-	public static final String PROPERTY_NAME_TERTIARY_DESCRIPTION = "tertiaryDescription";
+    /** The Constant PROPERTY_NAME_SECONDARY_DESCRIPTION. */
+    public static final String PROPERTY_NAME_SECONDARY_DESCRIPTION         = "secondaryDescription";
 
-	/** The Constant PROPERTY_NAME_RENDER_HINT. */
-	public static final String PROPERTY_NAME_RENDER_HINT = "renderHint";
+    /** The Constant PROPERTY_NAME_TERTIARY_DESCRIPTION. */
+    public static final String PROPERTY_NAME_TERTIARY_DESCRIPTION          = "tertiaryDescription";
 
-	/** The Constant PROPERTY_NAME_DESCRIPTION. */
-	public static final String PROPERTY_NAME_DESCRIPTION = "description";
+    /** The Constant PROPERTY_NAME_RENDER_HINT. */
+    public static final String PROPERTY_NAME_RENDER_HINT                   = "renderHint";
 
-	   /** The Constant PROPERTY_NAME_VISIBILITY. */
-    public static final String PROPERTY_NAME_VISIBILITY = "visibility";
+    /** The Constant PROPERTY_NAME_DESCRIPTION. */
+    public static final String PROPERTY_NAME_DESCRIPTION                   = "description";
 
     /** The Constant PROPERTY_NAME_VISIBILITY. */
-    public static final String PROPERTY_NAME_META_VISIBILITY = "meta-visibility";
+    public static final String PROPERTY_NAME_VISIBILITY                    = "visibility";
 
-	/** The Constant PROPERTY_NAME_META_NODE_ID. */
-	public static final String PROPERTY_NAME_META_NODE_ID = "metaNodeID";
+    /** The Constant PROPERTY_NAME_VISIBILITY. */
+    public static final String PROPERTY_NAME_META_VISIBILITY               = "meta-visibility";
 
-	/** The Constant PROPERTY_NAME_UNIDIRECTIONAL. */
-	public static final String PROPERTY_NAME_UNIDIRECTIONAL = "unidirectional";
+    /** The Constant PROPERTY_NAME_META_NODE_ID. */
+    public static final String PROPERTY_NAME_META_NODE_ID                  = "metaNodeID";
 
-	/** The Constant PROPERTY_NAME_BIDIRECTIONAL. */
-	public static final String PROPERTY_NAME_BIDIRECTIONAL = "bidirectional";
+    /** The Constant PROPERTY_NAME_UNIDIRECTIONAL. */
+    public static final String PROPERTY_NAME_UNIDIRECTIONAL                = "unidirectional";
 
-	/** The Constant PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL. */
-	public static final String PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL = "allowsChangeToBidirecional";
+    /** The Constant PROPERTY_NAME_BIDIRECTIONAL. */
+    public static final String PROPERTY_NAME_BIDIRECTIONAL                 = "bidirectional";
 
-	/** The Constant PROPERTY_NAME_TYPE. */
-	public static final String PROPERTY_NAME_TYPE = "node.type";
+    /** The Constant PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL. */
+    public static final String PROPERTY_NAME_ALLOWS_CHANGE_TO_BIDIRECIONAL = "allowsChangeToBidirecional";
 
-	/** The Constant PROPERTY_NAME_DECODED_NAME. */
-	public static final String PROPERTY_NAME_DECODED_NAME = "decodedName";
+    /** The Constant PROPERTY_NAME_TYPE. */
+    public static final String PROPERTY_NAME_TYPE                          = "node.type";
 
-	   /** The Constant PROPERTY_NAME_DECODED_NAME. */
-    public static final String PROPERTY_CAPTION_NAME = "caption";
+    /** The Constant PROPERTY_NAME_DECODED_NAME. */
+    public static final String PROPERTY_NAME_DECODED_NAME                  = "decodedName";
 
-	/** The Constant PROPERTY_NAME_A_NODE_ID. */
-	public static final String PROPERTY_NAME_A_NODE_ID = "aNodeID";
+    /** The Constant PROPERTY_NAME_DECODED_NAME. */
+    public static final String PROPERTY_CAPTION_NAME                       = "caption";
 
-	/** The Constant PROPERTY_NAME_B_NODE_ID. */
-	public static final String PROPERTY_NAME_B_NODE_ID = "bNodeID";
+    /** The Constant PROPERTY_NAME_A_NODE_ID. */
+    public static final String PROPERTY_NAME_A_NODE_ID                     = "aNodeID";
 
-	/** The Constant PROPERTY_NAME_DIRECTION. */
-	public static final String PROPERTY_NAME_DIRECTION = "direction";
+    /** The Constant PROPERTY_NAME_B_NODE_ID. */
+    public static final String PROPERTY_NAME_B_NODE_ID                     = "bNodeID";
 
-	/** The Constant PROPERTY_NAME_LINK_COUNT. */
-	public static final String PROPERTY_NAME_LINK_COUNT = "linkCount";
+    /** The Constant PROPERTY_NAME_DIRECTION. */
+    public static final String PROPERTY_NAME_DIRECTION                     = "direction";
 
-	/** The Constant PROPERTY_NAME_NODE_TYPE. */
-	public static final String PROPERTY_NAME_NODE_TYPE = "nodeType";
+    /** The Constant PROPERTY_NAME_LINK_COUNT. */
+    public static final String PROPERTY_NAME_LINK_COUNT                    = "linkCount";
 
-	/** The Constant PROPERTY_NAME_A_CLASS_NAME. */
-	public static final String PROPERTY_NAME_A_CLASS_NAME = "aClassName";
+    /** The Constant PROPERTY_NAME_NODE_TYPE. */
+    public static final String PROPERTY_NAME_NODE_TYPE                     = "nodeType";
 
-	/** The Constant PROPERTY_NAME_B_CLASS_NAME. */
-	public static final String PROPERTY_NAME_B_CLASS_NAME = "bClassName";
+    /** The Constant PROPERTY_NAME_A_CLASS_NAME. */
+    public static final String PROPERTY_NAME_A_CLASS_NAME                  = "aClassName";
 
-	/** The Constant PROPERTY_NAME_SOURCE_ID. */
-	public static final String PROPERTY_NAME_SOURCE_ID = "sourceID";
+    /** The Constant PROPERTY_NAME_B_CLASS_NAME. */
+    public static final String PROPERTY_NAME_B_CLASS_NAME                  = "bClassName";
 
-	/** The Constant PROPERTY_NAME_TARGET_ID. */
-	public static final String PROPERTY_NAME_TARGET_ID = "targetID";
+    /** The Constant PROPERTY_NAME_SOURCE_ID. */
+    public static final String PROPERTY_NAME_SOURCE_ID                     = "sourceID";
 
-	/** The Constant PROPERTY_NAME_SOURCE_TYPE_HASH. */
-	public static final String PROPERTY_NAME_SOURCE_TYPE_HASH = "sourceTypeHash";
+    /** The Constant PROPERTY_NAME_TARGET_ID. */
+    public static final String PROPERTY_NAME_TARGET_ID                     = "targetID";
 
-	/** The Constant PROPERTY_NAME_TARGET_TYPE_HASH. */
-	public static final String PROPERTY_NAME_TARGET_TYPE_HASH = "targetTypeHash";
+    /** The Constant PROPERTY_NAME_SOURCE_TYPE_HASH. */
+    public static final String PROPERTY_NAME_SOURCE_TYPE_HASH              = "sourceTypeHash";
 
-	/** The Constant PROPERTY_NAME_LINK_TYPE_HASH. */
-	public static final String PROPERTY_NAME_LINK_TYPE_HASH = "linkTypeHash";
+    /** The Constant PROPERTY_NAME_TARGET_TYPE_HASH. */
+    public static final String PROPERTY_NAME_TARGET_TYPE_HASH              = "targetTypeHash";
 
-	/** The Constant PROPERTY_NAME_SOURCE_COUNT. */
-	public static final String PROPERTY_NAME_SOURCE_COUNT = "sourceCount";
+    /** The Constant PROPERTY_NAME_LINK_TYPE_HASH. */
+    public static final String PROPERTY_NAME_LINK_TYPE_HASH                = "linkTypeHash";
 
-	/** The Constant PROPERTY_NAME_TARGET_COUNT. */
-	public static final String PROPERTY_NAME_TARGET_COUNT = "targetCount";
+    /** The Constant PROPERTY_NAME_SOURCE_COUNT. */
+    public static final String PROPERTY_NAME_SOURCE_COUNT                  = "sourceCount";
 
-	/** The Constant PROPERTY_PREFIX_INTERNAL. */
-	public static final String PROPERTY_PREFIX_INTERNAL = "internal";
+    /** The Constant PROPERTY_NAME_TARGET_COUNT. */
+    public static final String PROPERTY_NAME_TARGET_COUNT                  = "targetCount";
 
-	/** The Constant PROPERTY_PREFIX_USER. */
-	public static final String PROPERTY_PREFIX_USER = "user";
+    /** The Constant PROPERTY_PREFIX_INTERNAL. */
+    public static final String PROPERTY_PREFIX_INTERNAL                    = "internal";
+
+    /** The Constant PROPERTY_PREFIX_USER. */
+    public static final String PROPERTY_PREFIX_USER                        = "user";
 
 }
