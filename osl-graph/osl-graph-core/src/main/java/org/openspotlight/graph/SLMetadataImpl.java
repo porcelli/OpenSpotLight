@@ -50,12 +50,14 @@ package org.openspotlight.graph;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
@@ -288,19 +290,25 @@ public class SLMetadataImpl implements SLMetadata {
 		}
 	}
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetadata#getMetaNodes()
+	/**
+	 * {@inheritDoc}
 	 */
 	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
 			final SLRecursiveMode recursiveMode) throws SLGraphSessionException {
 		synchronized (lock) {
+			return getMetaNodesTypes(recursiveMode, null);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
+			final SLRecursiveMode recursiveMode,
+			final VisibilityLevel visibility) throws SLGraphSessionException {
+		synchronized (lock) {
 			try {
-				final NeedsSyncronizationCollection<SLMetaNodeType> metaNodes = LockedCollections
-						.createCollectionWithLock(this,
-								new ArrayList<SLMetaNodeType>());
+				final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
 				final StringBuilder statement = new StringBuilder(treeSession
 						.getXPathRootPath()
 						+ "/metadata/types");
@@ -309,6 +317,14 @@ public class SLMetadataImpl implements SLMetadata {
 				} else {
 					statement.append("/*");
 				}
+				if (visibility != null) {
+					final String propName = SLCommonSupport
+							.toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
+
+					StringBuilderUtil.append(statement, '[', propName, "='",
+							visibility.toString(), "']");
+				}
+
 				final SLPersistentQuery query = treeSession.createQuery(
 						statement.toString(), SLPersistentQuery.TYPE_XPATH);
 				final SLPersistentQueryResult result = query.execute();
@@ -318,11 +334,51 @@ public class SLMetadataImpl implements SLMetadata {
 							this, pNode);
 					metaNodes.add(metaNode);
 				}
-				return metaNodes;
+				return LockedCollections.createCollectionWithLock(this,
+						metaNodes);
+
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve node metadata.", e);
 			}
 		}
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType(
+			final SLRecursiveMode recursiveMode,
+			final VisibilityLevel visibility,
+			final MetaNodeTypeProperty property2Find,
+			final LogicOperator logicOp, final BooleanOperator booleanOp,
+			final List<String> values) throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				final String statement = SLMetadataXPathSupporter
+						.buildXpathForMetaNodeType(treeSession
+								.getXPathRootPath()
+								+ "/metadata/types", recursiveMode, visibility,
+								property2Find, logicOp, booleanOp, values);
+
+				final SLPersistentQuery query = treeSession.createQuery(
+						statement, SLPersistentQuery.TYPE_XPATH);
+				final SLPersistentQueryResult result = query.execute();
+				final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
+				final Collection<SLPersistentNode> pNodes = result.getNodes();
+				for (final SLPersistentNode pNode : pNodes) {
+					final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(
+							this, pNode);
+					metaNodes.add(metaNode);
+				}
+				return LockedCollections.createCollectionWithLock(this,
+						metaNodes);
+
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node metadata.", e);
+			}
+		}
+	}
+
 }

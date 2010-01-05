@@ -48,8 +48,11 @@
  */
 package org.openspotlight.graph;
 
+import java.util.List;
+
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 /**
  * The Interface SLMetadata.
@@ -57,6 +60,54 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
  * @author Vitor Hugo Chagas
  */
 public interface SLMetadata extends LockContainer {
+
+	/**
+	 * The Enum BooleanOperator.
+	 * 
+	 * @author porcelli
+	 */
+	public enum BooleanOperator {
+
+		/** The OR. */
+		OR,
+
+		/** The AND. */
+		AND
+	}
+
+	/**
+	 * The Enum LogicOperator.
+	 * 
+	 * @author porcelli
+	 */
+	public enum LogicOperator {
+
+		/** The EQUALS. */
+		EQUALS,
+
+		/** The LIKE begins with. */
+		LIKE_BEGINS_WITH,
+
+		/** The LIKE ends with. */
+		LIKE_ENDS_WITH,
+
+		/** The LIKE contains. */
+		LIKE_CONTAINS
+	}
+
+	/**
+	 * The Enum MetaNodeTypeProperty.
+	 * 
+	 * @author porcelli
+	 */
+	public enum MetaNodeTypeProperty {
+
+		/** The NAME. */
+		NAME,
+
+		/** The DESCRIPTION. */
+		DESCRIPTION
+	}
 
 	/**
 	 * Find meta node type.
@@ -177,4 +228,34 @@ public interface SLMetadata extends LockContainer {
 	 */
 	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
 			SLRecursiveMode recursiveMode) throws SLGraphSessionException;
+
+	public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
+			SLRecursiveMode recursiveMode, final VisibilityLevel visibility)
+			throws SLGraphSessionException;
+
+	/**
+	 * Search meta node type.
+	 * 
+	 * @param recursiveMode
+	 *            the recursive mode
+	 * @param visibility
+	 *            the visibility
+	 * @param property2Find
+	 *            the property2 find
+	 * @param logicOp
+	 *            the logic op
+	 * @param booleanOp
+	 *            the boolean op
+	 * @param values
+	 *            the values
+	 * @return the collection< sl meta node type>
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType(
+			final SLRecursiveMode recursiveMode,
+			final VisibilityLevel visibility,
+			final MetaNodeTypeProperty property2Find,
+			final LogicOperator logicOp, final BooleanOperator booleanOp,
+			final List<String> values) throws SLGraphSessionException;
 }

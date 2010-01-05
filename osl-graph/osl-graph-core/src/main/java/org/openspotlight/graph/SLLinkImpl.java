@@ -77,6 +77,7 @@ public class SLLinkImpl implements SLLink {
 	/** The session. */
 	private final SLGraphSession session;
 
+	private SLMetaLink metaLink = null;
 	/** The lock. */
 	private final Lock lock;
 
@@ -267,6 +268,27 @@ public class SLLinkImpl implements SLLink {
 	 */
 	public Lock getLockObject() {
 		return lock;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLMetaLink getMetaLink() throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				if (metaLink == null) {
+					metaLink = getSession().getMetadata().getMetaLinkType(
+							getLinkType()).getMetaLinks(
+							getANode().getTypeName(), getBNode().getTypeName(),
+							isBidirectional()).iterator().next();
+				}
+				return metaLink;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve meta link type.", e);
+
+			}
+		}
 	}
 
 	/**

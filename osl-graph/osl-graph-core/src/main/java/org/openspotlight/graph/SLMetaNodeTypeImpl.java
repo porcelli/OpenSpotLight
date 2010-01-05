@@ -52,15 +52,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.graph.SLMetadata.BooleanOperator;
+import org.openspotlight.graph.SLMetadata.LogicOperator;
+import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
+import org.openspotlight.graph.persistence.SLPersistentQuery;
+import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
@@ -347,6 +353,38 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
             } catch (final SLPersistentTreeSessionException e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to retrieve meta nodes.", e);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Collection<SLMetaNodeType> searchSubMetaNodeTypes( SLRecursiveMode recursiveMode,
+                                                              VisibilityLevel visibility,
+                                                              MetaNodeTypeProperty property2Find,
+                                                              LogicOperator logicOp,
+                                                              BooleanOperator booleanOp,
+                                                              List<String> values ) throws SLGraphSessionException {
+        synchronized (lock) {
+            try {
+                final String statement = SLMetadataXPathSupporter.buildXpathForMetaNodeType("/" + pMetaNode.getPath(), recursiveMode, visibility, property2Find, logicOp, booleanOp, values);
+
+                final SLPersistentQuery query = pMetaNode.getSession().createQuery(
+                                                                                   statement, SLPersistentQuery.TYPE_XPATH);
+                final SLPersistentQueryResult result = query.execute();
+                final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
+                final Collection<SLPersistentNode> pNodes = result.getNodes();
+                for (final SLPersistentNode pNode : pNodes) {
+                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(
+                                                                           metadata, pNode);
+                    metaNodes.add(metaNode);
+                }
+                return metaNodes;
+
+            } catch (final SLException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to retrieve node metadata.", e);
             }
         }
     }

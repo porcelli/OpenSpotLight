@@ -103,6 +103,15 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	public Class<? extends SLLink> getLinkType() throws SLGraphSessionException;
 
 	/**
+	 * Gets the meta link.
+	 * 
+	 * @return the meta link
+	 * @throws SLGraphSessionException
+	 *             the SL graph session exception
+	 */
+	public SLMetaLink getMetaLink() throws SLGraphSessionException;
+
+	/**
 	 * Gets the other side.
 	 * 
 	 * @param side

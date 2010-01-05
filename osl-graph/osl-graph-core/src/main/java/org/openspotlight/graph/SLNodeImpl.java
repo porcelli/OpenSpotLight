@@ -85,10 +85,11 @@ import org.openspotlight.security.authz.graph.GraphElement;
  * @author Vitor Hugo Chagas
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
+	private SLMetaNodeType metaType = null;
 	private final Lock lock;
+
 	/** The context. */
 	private final SLContext context;
-
 	/** The parent. */
 	private final SLNode parent;
 
@@ -774,6 +775,24 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
 	public Lock getLockObject() {
 		return lock;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public SLMetaNodeType getMetaType() throws SLGraphSessionException {
+		synchronized (lock) {
+			try {
+				if (metaType == null) {
+					metaType = getSession().getMetadata().findMetaNodeType(
+							getTypeName());
+				}
+				return metaType;
+			} catch (final Exception e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve node meta type.", e);
+			}
+		}
 	}
 
 	// @Override
