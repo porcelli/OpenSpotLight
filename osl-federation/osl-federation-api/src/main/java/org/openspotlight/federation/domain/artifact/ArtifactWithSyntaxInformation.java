@@ -46,10 +46,11 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact;
 
 import java.util.HashSet;
 import java.util.Set;
+
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 

@@ -46,67 +46,62 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL nullable type. The int values came from {@link DatabaseMetaData}
- * javadoc. Theres some constant fields to describe nullability, but it
- * wasn't exported.
+ * Enum to describe routine types. Its int values was taken from {@link DatabaseMetaData}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("boxing")
-public enum NullableSqlType {
-    
+@SuppressWarnings( "boxing" )
+public enum RoutineType {
     /**
-     * Can not be null.
+     * Type to describe a routine without return values from the routine itself. But it should have multiple out parameters.
      */
-    NOT_NULL(0),
+    PROCEDURE(1),
     /**
-     * Can be null.
+     * Type to descibe a routine with return value, but without out parameters.
      */
-    NULL(1),
+    FUNCTION(2),
     /**
-     * Wasn't possible to find if it is nullable or not
+     * Type to describe a routine on a situation that wasn't possible to retrieve the routine type.
      */
-    DONT_KNOW(2);
-    
+    DONT_KNOW(0);
+
     /**
      * Internal cache
      */
-    private static final Map<Integer, NullableSqlType> nullableCache = new HashMap<Integer, NullableSqlType>();
+    private static final Map<Integer, RoutineType> cache = new HashMap<Integer, RoutineType>();
     static {
-        for (final NullableSqlType n : values()) {
-            nullableCache.put(n.getSqlTypeValue(), n);
+        for (final RoutineType n : values()) {
+            cache.put(n.getSqlTypeValue(), n);
         }
     }
-    
+
     /**
      * Static factory method
      * 
      * @param sqlType
-     * @return the correct column type by sql int constant
+     * @return the correct RoutineParameter type by sql int constant
      */
-    public static NullableSqlType getNullableByInt(final int sqlType) {
-        return nullableCache.get(sqlType);
+    public static RoutineType getTypeByInt( final int sqlType ) {
+        return cache.get(sqlType);
     }
-    
+
     private final int sqlTypeValue;
-    
-    private NullableSqlType(final int sqlTypeValue) {
+
+    private RoutineType(
+                         final int sqlTypeValue ) {
         this.sqlTypeValue = sqlTypeValue;
     }
-    
+
     /**
-     * 
      * @return the int value equivalent to {@link Types} constants
      */
     public int getSqlTypeValue() {
         return this.sqlTypeValue;
     }
-    
 }

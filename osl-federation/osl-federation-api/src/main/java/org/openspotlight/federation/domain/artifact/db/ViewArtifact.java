@@ -46,66 +46,24 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
-/**
- * All the database valid types should have an entry on file
- * <b>/osl-federation
- * /src/main/resources/configuration/dbMetadataScripts.xml</b> and also on
- * this enum.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
- */
-public enum DatabaseType {
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.persist.annotation.Name;
 
-    /**
-     * The first type supported, just to be possible to do tests on a pure
-     * java way.
-     */
-    H2,
-    /**
-     * MySQL Database.
-     */
-    MY_SQL,
-    /**
-     * Postgre Sql Database.
-     */
-    POSTGRES,
-    /**
-     * Oracle version before 9i
-     */
-    ORACLE,
-    /**
-     * Oracle version 9i and after
-     */
-    ORACLE9(ORACLE),
-    /**
-     * SQL Server
-     */
-    SQL_SERVER,
-    /**
-     * DB2
-     */
-    DB2;
-    
-    private final DatabaseType parent;
-    
-    private DatabaseType(){
-    	this.parent=null;
+@Name( "database" )
+public class ViewArtifact extends TableArtifact {
+
+    private static final long serialVersionUID = -3337935385738334416L;
+
+    @Override
+    public boolean contentEquals( final Artifact other ) {
+        if (!(other instanceof ViewArtifact)) {
+            return false;
+        }
+        final ViewArtifact that = (ViewArtifact)other;
+        return Equals.eachEquality(this.getColumns(), that.getColumns());
     }
-    
-    private DatabaseType(DatabaseType parent){
-    	this.parent = parent;
-    }
-    
-    /**
-     * 
-     * @return the parent type
-     */
-    public DatabaseType getParent(){
-    	return this.parent;
-    }
-    
-    
+
 }

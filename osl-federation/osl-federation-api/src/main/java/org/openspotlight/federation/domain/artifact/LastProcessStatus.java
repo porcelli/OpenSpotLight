@@ -46,75 +46,12 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.persist.annotation.Name;
-import org.openspotlight.persist.annotation.SimpleNodeType;
-
-@Name("database")
-public class RoutineArtifact extends DatabaseCustomArtifact implements
-		SimpleNodeType, Serializable {
-	private static final long serialVersionUID = 3060861243165317562L;
-
-	private String tableName;
-	private String catalogName;
-	private RoutineType type;
-	private String schemaName;
-
-	private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
-
-	@Override
-	public boolean contentEquals(final Artifact other) {
-		if (!(other instanceof RoutineArtifact)) {
-			return false;
-		}
-		final RoutineArtifact that = (RoutineArtifact) other;
-		return Equals.eachEquality(getParameters(), that.getParameters());
-	}
-
-	public String getCatalogName() {
-		return catalogName;
-	}
-
-	public Set<RoutineParameter> getParameters() {
-		return parameters;
-	}
-
-	public String getSchemaName() {
-		return schemaName;
-	}
-
-	public String getTableName() {
-		return tableName;
-	}
-
-	public RoutineType getType() {
-		return type;
-	}
-
-	public void setCatalogName(final String catalogName) {
-		this.catalogName = catalogName;
-	}
-
-	public void setParameters(final Set<RoutineParameter> parameters) {
-		this.parameters = parameters;
-	}
-
-	public void setSchemaName(final String schemaName) {
-		this.schemaName = schemaName;
-	}
-
-	public void setTableName(final String tableName) {
-		this.tableName = tableName;
-	}
-
-	public void setType(final RoutineType type) {
-		this.type = type;
-	}
-
+public enum LastProcessStatus {
+    NOT_PROCESSED_YET,
+    IGNORED,
+    PROCESSED,
+    ERROR,
+    EXCEPTION_DURRING_PROCESS
 }

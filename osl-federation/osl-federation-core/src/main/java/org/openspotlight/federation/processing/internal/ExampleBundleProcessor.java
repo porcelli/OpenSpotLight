@@ -52,10 +52,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.LastProcessStatus;
-import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.domain.SyntaxInformationType;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger.LogEventType;

@@ -48,7 +48,7 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
 
 // TODO: Auto-generated Javadoc
 /**

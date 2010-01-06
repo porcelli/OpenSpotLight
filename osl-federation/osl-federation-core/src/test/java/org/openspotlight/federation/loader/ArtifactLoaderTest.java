@@ -59,12 +59,12 @@ import java.util.Set;
 import org.junit.Test;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.ArtifactFinderRegistry;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 

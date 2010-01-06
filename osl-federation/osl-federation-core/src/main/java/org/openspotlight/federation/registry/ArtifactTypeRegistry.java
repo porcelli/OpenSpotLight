@@ -53,11 +53,11 @@ import static org.openspotlight.common.util.Collections.setOf;
 
 import java.util.Set;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.RoutineArtifact;
-import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.domain.ViewArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
 public enum ArtifactTypeRegistry {
 

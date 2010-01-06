@@ -52,10 +52,10 @@ package org.openspotlight.federation.processing;
 import java.util.Set;
 
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;

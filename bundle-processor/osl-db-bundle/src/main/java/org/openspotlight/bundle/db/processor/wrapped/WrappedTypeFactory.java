@@ -51,7 +51,7 @@ package org.openspotlight.bundle.db.processor.wrapped;
 import org.openspotlight.bundle.db.processor.DbWrappedType;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 public enum WrappedTypeFactory {
 

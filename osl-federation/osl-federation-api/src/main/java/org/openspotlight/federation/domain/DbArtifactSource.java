@@ -48,6 +48,9 @@
  */
 package org.openspotlight.federation.domain;
 
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
+
 public class DbArtifactSource extends ArtifactSource {
 	private static final long serialVersionUID = -430683831296857466L;
 	private String serverName;

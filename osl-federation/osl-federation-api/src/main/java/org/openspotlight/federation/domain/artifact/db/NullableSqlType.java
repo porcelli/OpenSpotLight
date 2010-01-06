@@ -46,149 +46,42 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
-import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Enum for column types from {@link Types} constants.
+ * SQL nullable type. The int values came from {@link DatabaseMetaData}
+ * javadoc. Theres some constant fields to describe nullability, but it
+ * wasn't exported.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * 
  */
 @SuppressWarnings("boxing")
-public enum ColumnType {
+public enum NullableSqlType {
     
     /**
-     * Enum for sql type BIT.
+     * Can not be null.
      */
-    BIT(Types.BIT),
+    NOT_NULL(0),
     /**
-     * Enum for sql type TINYINT.
+     * Can be null.
      */
-    TINYINT(Types.TINYINT),
+    NULL(1),
     /**
-     * Enum for sql type SMALLINT.
+     * Wasn't possible to find if it is nullable or not
      */
-    SMALLINT(Types.SMALLINT),
-    /**
-     * Enum for sql type INTEGER.
-     */
-    INTEGER(Types.INTEGER),
-    /**
-     * Enum for sql type BIGINT.
-     */
-    BIGINT(Types.BIGINT),
-    /**
-     * Enum for sql type FLOAT.
-     */
-    FLOAT(Types.FLOAT),
-    /**
-     * Enum for sql type REAL.
-     */
-    REAL(Types.REAL),
-    /**
-     * Enum for sql type DOUBLE.
-     */
-    DOUBLE(Types.DOUBLE),
-    /**
-     * Enum for sql type NUMERIC.
-     */
-    NUMERIC(Types.NUMERIC),
-    /**
-     * Enum for sql type DECIMAL.
-     */
-    DECIMAL(Types.DECIMAL),
-    /**
-     * Enum for sql type CHAR.
-     */
-    CHAR(Types.CHAR),
-    /**
-     * Enum for sql type VARCHAR.
-     */
-    VARCHAR(Types.VARCHAR),
-    /**
-     * Enum for sql type LONGVARCHAR.
-     */
-    LONGVARCHAR(Types.LONGVARCHAR),
-    /**
-     * Enum for sql type DATE.
-     */
-    DATE(Types.DATE),
-    /**
-     * Enum for sql type TIME.
-     */
-    TIME(Types.TIME),
-    /**
-     * Enum for sql type TIMESTAMP.
-     */
-    TIMESTAMP(Types.TIMESTAMP),
-    /**
-     * Enum for sql type BINARY.
-     */
-    BINARY(Types.BINARY),
-    /**
-     * Enum for sql type VARBINARY.
-     */
-    VARBINARY(Types.VARBINARY),
-    /**
-     * Enum for sql type LONGVARBINARY.
-     */
-    LONGVARBINARY(Types.LONGVARBINARY),
-    /**
-     * Enum for sql type NULL.
-     */
-    NULL(Types.NULL),
-    /**
-     * Enum for sql type OTHER.
-     */
-    OTHER(Types.OTHER),
-    /**
-     * Enum for sql type JAVA_OBJECT.
-     */
-    JAVA_OBJECT(Types.JAVA_OBJECT),
-    /**
-     * Enum for sql type DISTINCT.
-     */
-    DISTINCT(Types.DISTINCT),
-    /**
-     * Enum for sql type STRUCT.
-     */
-    STRUCT(Types.STRUCT),
-    /**
-     * Enum for sql type ARRAY.
-     */
-    ARRAY(Types.ARRAY),
-    /**
-     * Enum for sql type BLOB.
-     */
-    BLOB(Types.BLOB),
-    /**
-     * Enum for sql type CLOB.
-     */
-    CLOB(Types.CLOB),
-    /**
-     * Enum for sql type REF.
-     */
-    REF(Types.REF),
-    /**
-     * Enum for sql type DATALINK.
-     */
-    DATALINK(Types.DATALINK),
-    /**
-     * Enum for sql type BOOLEAN.
-     */
-    BOOLEAN(Types.BOOLEAN);
+    DONT_KNOW(2);
     
     /**
      * Internal cache
      */
-    private static final Map<Integer, ColumnType> typesCache = new HashMap<Integer, ColumnType>();
+    private static final Map<Integer, NullableSqlType> nullableCache = new HashMap<Integer, NullableSqlType>();
     static {
-        for (final ColumnType t : values()) {
-            typesCache.put(t.getSqlTypeValue(), t);
+        for (final NullableSqlType n : values()) {
+            nullableCache.put(n.getSqlTypeValue(), n);
         }
     }
     
@@ -198,13 +91,13 @@ public enum ColumnType {
      * @param sqlType
      * @return the correct column type by sql int constant
      */
-    public static ColumnType getTypeByInt(final int sqlType) {
-        return typesCache.get(sqlType);
+    public static NullableSqlType getNullableByInt(final int sqlType) {
+        return nullableCache.get(sqlType);
     }
     
     private final int sqlTypeValue;
     
-    private ColumnType(final int sqlTypeValue) {
+    private NullableSqlType(final int sqlTypeValue) {
         this.sqlTypeValue = sqlTypeValue;
     }
     

@@ -46,107 +46,49 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact;
 
-import java.io.Serializable;
-
-import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.Name;
 
-public class ExportedFk implements SimpleNodeType, Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1892651847613896234L;
-	private Column column;
-	private String fkName;
+// TODO: Auto-generated Javadoc
+/**
+ * This is the {@link StreamArtifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
+ * {@link StreamArtifact} based on another one.
+ */
+@Name( "stream_artifact" )
+public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
-	private String tableName;
+    private static final long serialVersionUID = -8912205023568005794L;
 
-	private String tableSchema;
+    /** The content. */
+    private String            content;
 
-	private String tableCatalog;
+    @Override
+    public boolean contentEquals( final Artifact other ) {
+        if (other instanceof StreamArtifact) {
+            final StreamArtifact that = (StreamArtifact)other;
+            return Equals.eachEquality(this.content, that.content);
+        }
+        return false;
+    }
 
-	private String columnName;
+    /**
+     * Gets the content.
+     * 
+     * @return the content
+     */
+    public String getContent() {
+        return this.content;
+    }
 
-	private volatile int hashCode;
+    /**
+     * Sets the content.
+     * 
+     * @param content the new content
+     */
+    public void setContent( final String content ) {
+        this.content = content;
+    }
 
-	public boolean equals(final Object o) {
-		if (!(o instanceof ExportedFk)) {
-			return false;
-		}
-		final ExportedFk that = (ExportedFk) o;
-		return Equals.eachEquality(Arrays.of(fkName, column, columnName,
-				tableCatalog, tableName, tableSchema), Arrays.andOf(
-				that.fkName, that.column, that.columnName, that.tableCatalog,
-				that.tableName, that.tableSchema));
-	}
-
-	@ParentProperty
-	public Column getColumn() {
-		return column;
-	}
-
-	@KeyProperty
-	public String getColumnName() {
-		return columnName;
-	}
-
-	@KeyProperty
-	public String getFkName() {
-		return fkName;
-	}
-
-	@KeyProperty
-	public String getTableCatalog() {
-		return tableCatalog;
-	}
-
-	@KeyProperty
-	public String getTableName() {
-		return tableName;
-	}
-
-	@KeyProperty
-	public String getTableSchema() {
-		return tableSchema;
-	}
-
-	public int hashCode() {
-		int result = hashCode;
-		if (result == 0) {
-			result = HashCodes.hashOf(fkName, column, columnName, tableCatalog,
-					tableName, tableSchema);
-			hashCode = result;
-		}
-		return result;
-	}
-
-	public void setColumn(final Column column) {
-		this.column = column;
-	}
-
-	public void setColumnName(final String columnName) {
-		this.columnName = columnName;
-	}
-
-	public void setFkName(final String fkName) {
-		this.fkName = fkName;
-	}
-
-	public void setTableCatalog(final String tableCatalog) {
-		this.tableCatalog = tableCatalog;
-	}
-
-	public void setTableName(final String tableName) {
-		this.tableName = tableName;
-	}
-
-	public void setTableSchema(final String tableSchema) {
-		this.tableSchema = tableSchema;
-	}
 }

@@ -56,8 +56,8 @@ import net.sf.json.JSONObject;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.federation.util.AggregateVisitor;

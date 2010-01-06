@@ -56,9 +56,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.finder.ArtifactFinderSupport;
 
 public class ArtifactFinderSupportTest {

@@ -84,13 +84,13 @@ import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.ExportedFk;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.ExportedFk;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinderBySourceProvider;
@@ -282,7 +282,7 @@ public class DbTableArtifactBundleProcessorTest {
 				.findByPath("/databaseArtifacts/PUBLIC/TABLE/DB/EXAMPLETABLE"
 						+ tableSufix);
 		boolean foundFkInsideArtifact = false;
-		for (final org.openspotlight.federation.domain.Column c : table
+		for (final org.openspotlight.federation.domain.artifact.db.Column c : table
 				.getColumns()) {
 			if (c.getName().equalsIgnoreCase("i")) {
 				Assert.assertThat(c.getExportedFks().size() > 0, Is.is(true));

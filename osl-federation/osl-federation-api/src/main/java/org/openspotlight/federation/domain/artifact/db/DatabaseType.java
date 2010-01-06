@@ -46,22 +46,66 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
 /**
- * The Enum ChangeType.
+ * All the database valid types should have an entry on file
+ * <b>/osl-federation
+ * /src/main/resources/configuration/dbMetadataScripts.xml</b> and also on
+ * this enum.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ * 
  */
-public enum ChangeType {
+public enum DatabaseType {
 
-    /** The N o_ change. */
-    NOT_CHANGED,
-
-    /** The INCLUDED. */
-    INCLUDED,
-
-    /** The EXCLUDED. */
-    EXCLUDED,
-
-    /** The CHANGED. */
-    CHANGED
+    /**
+     * The first type supported, just to be possible to do tests on a pure
+     * java way.
+     */
+    H2,
+    /**
+     * MySQL Database.
+     */
+    MY_SQL,
+    /**
+     * Postgre Sql Database.
+     */
+    POSTGRES,
+    /**
+     * Oracle version before 9i
+     */
+    ORACLE,
+    /**
+     * Oracle version 9i and after
+     */
+    ORACLE9(ORACLE),
+    /**
+     * SQL Server
+     */
+    SQL_SERVER,
+    /**
+     * DB2
+     */
+    DB2;
+    
+    private final DatabaseType parent;
+    
+    private DatabaseType(){
+    	this.parent=null;
+    }
+    
+    private DatabaseType(DatabaseType parent){
+    	this.parent = parent;
+    }
+    
+    /**
+     * 
+     * @return the parent type
+     */
+    public DatabaseType getParent(){
+    	return this.parent;
+    }
+    
+    
 }

@@ -51,10 +51,10 @@ package org.openspotlight.federation.finder;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
 
 public class DatabaseCustomArtifactFinderBySourceProvider implements
 		ArtifactFinderBySourceProvider {

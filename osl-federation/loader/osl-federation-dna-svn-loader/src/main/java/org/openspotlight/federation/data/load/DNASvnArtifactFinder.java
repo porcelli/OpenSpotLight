@@ -52,8 +52,8 @@ package org.openspotlight.federation.data.load;
 import org.jboss.dna.connector.svn.SVNRepositorySource;
 import org.jboss.dna.jcr.JcrConfiguration;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System Connector.

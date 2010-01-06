@@ -61,11 +61,11 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.PathElement;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.PathElement;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 
 public class LocalSourceStreamArtifactFinder extends
 		AbstractArtifactFinder<StreamArtifact> {

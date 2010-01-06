@@ -46,23 +46,33 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact;
 
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.persist.annotation.Name;
+/**
+ * Enum to guard syntax information type.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ */
+public enum SyntaxInformationType {
 
-@Name( "database" )
-public class ViewArtifact extends TableArtifact {
+    /** Comment or multi line comment. */
+    COMMENT,
 
-    private static final long serialVersionUID = -3337935385738334416L;
+    /** Reserved keyword. */
+    RESERVED,
 
-    @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (!(other instanceof ViewArtifact)) {
-            return false;
-        }
-        final ViewArtifact that = (ViewArtifact)other;
-        return Equals.eachEquality(this.getColumns(), that.getColumns());
-    }
+    /** Number literal. */
+    NUMBER_LITERAL,
 
+    /** String literal. */
+    STRING_LITERAL,
+
+    /** Variable identifier. */
+    IDENTIFIER,
+
+    /** Symbol, such as +, -, /, ... */
+    SYMBOL,
+
+    /** Hidden information on source code, such as form information on VB code. */
+    HIDDEN
 }

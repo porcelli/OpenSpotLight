@@ -46,119 +46,86 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact;
 
 import java.io.Serializable;
-import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.common.util.Strings;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.Schedulable;
+import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.annotation.TransientProperty;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class PathElement.
+ * The Class ArtifactSource.
  */
-@Name("path_element")
-public class PathElement implements Comparable<PathElement>, SimpleNodeType,
-		Serializable {
+@Name("artifact_source")
+public class ArtifactSource implements SimpleNodeType, Serializable,
+		LogableObject, Schedulable {
 
-	private static final long serialVersionUID = -6520096568789344933L;
+	private static final long serialVersionUID = -2430120111043500137L;
 
-	/**
-	 * Creates the from path string.
-	 * 
-	 * @param pathString
-	 *            the path string
-	 * @return the path element
-	 */
-	public static PathElement createFromPathString(final String pathString) {
-		Assertions.checkNotEmpty("pathString", pathString);
-		final StringTokenizer tok = new StringTokenizer(pathString, "/");
+	private List<String> cronInformation = new ArrayList<String>();
 
-		if (!tok.hasMoreTokens()) {
-			return null;
-		}
+	/** The repository. */
+	private Repository repository;
 
-		PathElement lastPath = new PathElement();
-		lastPath.setName(tok.nextToken());
-		while (tok.hasMoreTokens()) {
-			final String nextToken = tok.nextToken();
-			if (nextToken.equals(".")) {
-				continue;
-			}
-			if (nextToken.equals("..")) {
-				lastPath = lastPath.getParent();
-				continue;
-			}
-			final PathElement newPath = new PathElement();
-			newPath.setParent(lastPath);
-			newPath.setName(nextToken);
-			lastPath = newPath;
-		}
-		return lastPath;
+	/** The active. */
+	private boolean active;
 
-	}
-
-	public static PathElement createRelativePath(
-			final PathElement initialPathElement, final String pathString) {
-		final String newPathString = pathString.startsWith("/") ? Strings
-				.removeBegginingFrom("/", pathString) : pathString;
-
-		return createFromPathString(initialPathElement.getCompletePath()
-				+ Artifact.SEPARATOR + newPathString);
-
-	}
+	/** The initial lookup. */
+	private String initialLookup;
 
 	/** The name. */
 	private String name;
 
-	/** The parent. */
-	private PathElement parent;
+	/** The mappings. */
+	private Set<ArtifactSourceMapping> mappings = new HashSet<ArtifactSourceMapping>();
 
-	/** The hashcode. */
-	private volatile int hashcode;
+	private volatile int hashCode;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(final PathElement o) {
-		return getCompletePath().compareTo(o.getCompletePath());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
 	public boolean equals(final Object o) {
-		if (!(o instanceof PathElement)) {
+		if (!(o instanceof ArtifactSource)) {
 			return false;
 		}
-		final PathElement that = (PathElement) o;
-		final boolean response = Equals.eachEquality(getCompletePath(), that
-				.getCompletePath());
-		return response;
+		final ArtifactSource that = (ArtifactSource) o;
+		final boolean result = Equals.eachEquality(Arrays.of(this.getClass(),
+				name, repository), Arrays.andOf(that.getClass(), that.name,
+				that.repository));
+		return result;
+	}
+
+	public List<String> getCronInformation() {
+		return cronInformation;
 	}
 
 	/**
-	 * Gets the complete path.
+	 * Gets the initial lookup.
 	 * 
-	 * @return the complete path
+	 * @return the initial lookup
 	 */
-	public String getCompletePath() {
-		if (isRootElement()) {
-			return "/" + getName();
-		}
-		return getParent().getCompletePath() + Artifact.SEPARATOR + getName();
+	public String getInitialLookup() {
+		return initialLookup;
+	}
+
+	/**
+	 * Gets the mappings.
+	 * 
+	 * @return the mappings
+	 */
+	public Set<ArtifactSourceMapping> getMappings() {
+		return mappings;
 	}
 
 	/**
@@ -172,54 +139,90 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 	}
 
 	/**
-	 * Gets the parent.
+	 * Gets the repository.
 	 * 
-	 * @return the parent
+	 * @return the repository
 	 */
 	@ParentProperty
-	public PathElement getParent() {
-		return parent;
+	public Repository getRepository() {
+		return repository;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
 	public int hashCode() {
-		int result = hashcode;
+		int result = hashCode;
 		if (result == 0) {
-			result = HashCodes.hashOf(getCompletePath());
-			hashcode = result;
+			result = HashCodes.hashOf(this.getClass(), name, repository);
+			hashCode = result;
 		}
 		return result;
 	}
 
 	/**
-	 * Checks if is root element.
+	 * Checks if is active.
 	 * 
-	 * @return true, if is root element
+	 * @return true, if is active
 	 */
-	@TransientProperty
-	public boolean isRootElement() {
-		return parent == null;
+	public boolean isActive() {
+		return active;
 	}
 
-	public void setCompletePath(final String s) {
-
+	/**
+	 * Sets the active.
+	 * 
+	 * @param active
+	 *            the new active
+	 */
+	public void setActive(final boolean active) {
+		this.active = active;
 	}
 
+	public void setCronInformation(final List<String> cronInformation) {
+		this.cronInformation = cronInformation;
+	}
+
+	/**
+	 * Sets the initial lookup.
+	 * 
+	 * @param initialLookup
+	 *            the new initial lookup
+	 */
+	public void setInitialLookup(final String initialLookup) {
+		this.initialLookup = initialLookup;
+	}
+
+	/**
+	 * Sets the mappings.
+	 * 
+	 * @param mappings
+	 *            the new mappings
+	 */
+	public void setMappings(final Set<ArtifactSourceMapping> mappings) {
+		this.mappings = mappings;
+	}
+
+	/**
+	 * Sets the name.
+	 * 
+	 * @param name
+	 *            the new name
+	 */
 	public void setName(final String name) {
 		this.name = name;
 	}
 
-	public void setParent(final PathElement parent) {
-		this.parent = parent;
+	/**
+	 * Sets the repository.
+	 * 
+	 * @param repository
+	 *            the new repository
+	 */
+	public void setRepository(final Repository repository) {
+		this.repository = repository;
 	}
 
-	public String toString() {
-		return "PathElement: " + getCompletePath();
+	public String toUniqueJobString() {
+		return getRepository().getName() + ":" + getName() + ":"
+				+ getInitialLookup();
 	}
 
 }

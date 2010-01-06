@@ -60,7 +60,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DnaFileSystemArtifactFinder;
 import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 
 /**
  * Test for class {@link DnaFileSystemArtifactLoader}

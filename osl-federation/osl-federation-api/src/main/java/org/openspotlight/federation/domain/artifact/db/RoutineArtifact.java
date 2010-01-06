@@ -46,50 +46,76 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name("database")
-public abstract class DatabaseCustomArtifact extends Artifact {
+public class RoutineArtifact extends DatabaseCustomArtifact implements
+		SimpleNodeType, Serializable {
+	private static final long serialVersionUID = 3060861243165317562L;
 
-	private String serverName;
-	private String databaseName;
-	private String url;
-	private DatabaseType databaseType;
+	private String tableName;
+	private String catalogName;
+	private RoutineType type;
+	private String schemaName;
 
-	private static final long serialVersionUID = -1600651697651996477L;
+	private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
 
-	public String getDatabaseName() {
-		return databaseName;
+	@Override
+	public boolean contentEquals(final Artifact other) {
+		if (!(other instanceof RoutineArtifact)) {
+			return false;
+		}
+		final RoutineArtifact that = (RoutineArtifact) other;
+		return Equals.eachEquality(getParameters(), that.getParameters());
 	}
 
-	public DatabaseType getDatabaseType() {
-		return databaseType;
+	public String getCatalogName() {
+		return catalogName;
 	}
 
-	public String getServerName() {
-		return serverName;
+	public Set<RoutineParameter> getParameters() {
+		return parameters;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getSchemaName() {
+		return schemaName;
 	}
 
-	public void setDatabaseName(final String databaseName) {
-		this.databaseName = databaseName;
+	public String getTableName() {
+		return tableName;
 	}
 
-	public void setDatabaseType(final DatabaseType databaseType) {
-		this.databaseType = databaseType;
+	public RoutineType getType() {
+		return type;
 	}
 
-	public void setServerName(final String serverName) {
-		this.serverName = serverName;
+	public void setCatalogName(final String catalogName) {
+		this.catalogName = catalogName;
 	}
 
-	public void setUrl(final String url) {
-		this.url = url;
+	public void setParameters(final Set<RoutineParameter> parameters) {
+		this.parameters = parameters;
+	}
+
+	public void setSchemaName(final String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	public void setTableName(final String tableName) {
+		this.tableName = tableName;
+	}
+
+	public void setType(final RoutineType type) {
+		this.type = type;
 	}
 
 }

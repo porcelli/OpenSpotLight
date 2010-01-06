@@ -66,7 +66,7 @@ import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
 import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
 import org.openspotlight.bundle.db.metamodel.node.TableViewView;
-import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 import dynamo.string.StringTool;
 

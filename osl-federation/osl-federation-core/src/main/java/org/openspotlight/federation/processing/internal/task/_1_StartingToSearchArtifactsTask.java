@@ -57,11 +57,11 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;

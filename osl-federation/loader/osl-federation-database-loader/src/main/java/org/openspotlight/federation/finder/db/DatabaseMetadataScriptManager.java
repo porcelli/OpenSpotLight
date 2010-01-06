@@ -65,7 +65,7 @@ import java.util.Map;
 import net.jcip.annotations.ThreadSafe;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.PreferedType;
 
 import com.thoughtworks.xstream.XStream;

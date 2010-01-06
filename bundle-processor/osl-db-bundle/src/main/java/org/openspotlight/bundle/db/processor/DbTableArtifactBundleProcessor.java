@@ -72,11 +72,11 @@ import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ExportedFk;
-import org.openspotlight.federation.domain.LastProcessStatus;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.domain.ViewArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
+import org.openspotlight.federation.domain.artifact.db.ExportedFk;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLContextAlreadyExistsException;
@@ -136,7 +136,7 @@ public class DbTableArtifactBundleProcessor implements
 	private Column createColumn(final DbWrappedType wrappedType,
 			final ExecutionContext context, final SLNode databaseContextNode,
 			final TableView table, final TableView abstractTable,
-			final org.openspotlight.federation.domain.Column c)
+			final org.openspotlight.federation.domain.artifact.db.Column c)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
 		final Column column = table.addNode(wrappedType.getColumnType(), c
@@ -163,7 +163,7 @@ public class DbTableArtifactBundleProcessor implements
 			final TableView table, final TableView abstractTable)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
-		for (final org.openspotlight.federation.domain.Column c : artifact
+		for (final org.openspotlight.federation.domain.artifact.db.Column c : artifact
 				.getColumns()) {
 			final Column column = createColumn(wrappedType, context,
 					databaseContextNode, table, abstractTable, c);
@@ -177,7 +177,7 @@ public class DbTableArtifactBundleProcessor implements
 	@SuppressWarnings("unchecked")
 	private void createForeignKeys(final DbWrappedType wrappedType,
 			final ExecutionContext context, final Database database,
-			final org.openspotlight.federation.domain.Column c,
+			final org.openspotlight.federation.domain.artifact.db.Column c,
 			final Column column) throws SLNodeTypeNotInExistentHierarchy,
 			SLGraphSessionException, SLInvalidCredentialException {
 		for (final ExportedFk fk : c.getExportedFks()) {
@@ -251,7 +251,7 @@ public class DbTableArtifactBundleProcessor implements
 
 	private void createPrimaryKeys(final DbWrappedType wrappedType,
 			final ExecutionContext context,
-			final org.openspotlight.federation.domain.Column c,
+			final org.openspotlight.federation.domain.artifact.db.Column c,
 			final Column column) throws SLNodeTypeNotInExistentHierarchy,
 			SLGraphSessionException, SLInvalidCredentialException {
 		if (c.getPks() != null) {

@@ -46,33 +46,66 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
-/**
- * Enum to guard syntax information type.
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- */
-public enum SyntaxInformationType {
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-    /** Comment or multi line comment. */
-    COMMENT,
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
-    /** Reserved keyword. */
-    RESERVED,
+@Name("database")
+public class TableArtifact extends DatabaseCustomArtifact implements
+		SimpleNodeType, Serializable {
+	private static final long serialVersionUID = -4527063248944852023L;
 
-    /** Number literal. */
-    NUMBER_LITERAL,
+	private String tableName;
+	private String catalogName;
+	private String schemaName;
+	private Set<Column> columns = new HashSet<Column>();
 
-    /** String literal. */
-    STRING_LITERAL,
+	@Override
+	public boolean contentEquals(final Artifact other) {
+		if (!(other instanceof TableArtifact)) {
+			return false;
+		}
+		final TableArtifact that = (TableArtifact) other;
+		return Equals.eachEquality(getColumns(), that.getColumns());
+	}
 
-    /** Variable identifier. */
-    IDENTIFIER,
+	public String getCatalogName() {
+		return catalogName;
+	}
 
-    /** Symbol, such as +, -, /, ... */
-    SYMBOL,
+	public Set<Column> getColumns() {
+		return columns;
+	}
 
-    /** Hidden information on source code, such as form information on VB code. */
-    HIDDEN
+	public String getSchemaName() {
+		return schemaName;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setCatalogName(final String catalogName) {
+		this.catalogName = catalogName;
+	}
+
+	public void setColumns(final Set<Column> columns) {
+		this.columns = columns;
+	}
+
+	public void setSchemaName(final String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	public void setTableName(final String tableName) {
+		this.tableName = tableName;
+	}
+
 }

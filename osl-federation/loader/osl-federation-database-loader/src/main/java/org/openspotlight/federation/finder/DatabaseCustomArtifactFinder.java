@@ -65,21 +65,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.Column;
-import org.openspotlight.federation.domain.ColumnType;
-import org.openspotlight.federation.domain.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.ExportedFk;
-import org.openspotlight.federation.domain.NullableSqlType;
-import org.openspotlight.federation.domain.RoutineArtifact;
-import org.openspotlight.federation.domain.RoutineParameter;
-import org.openspotlight.federation.domain.RoutineParameterType;
-import org.openspotlight.federation.domain.RoutineType;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.domain.ViewArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.db.Column;
+import org.openspotlight.federation.domain.artifact.db.ColumnType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.artifact.db.ExportedFk;
+import org.openspotlight.federation.domain.artifact.db.NullableSqlType;
+import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineParameter;
+import org.openspotlight.federation.domain.artifact.db.RoutineParameterType;
+import org.openspotlight.federation.domain.artifact.db.RoutineType;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
 public class DatabaseCustomArtifactFinder extends
 		AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {

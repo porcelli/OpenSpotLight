@@ -46,49 +46,82 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.federation.domain.artifact.db;
 
-import org.openspotlight.common.util.Equals;
+import java.io.Serializable;
+
+import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
-// TODO: Auto-generated Javadoc
-/**
- * This is the {@link StreamArtifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
- * {@link StreamArtifact} based on another one.
- */
-@Name( "stream_artifact" )
-public class StreamArtifact extends ArtifactWithSyntaxInformation {
+@Name( "routine_parameter" )
+public class RoutineParameter implements SimpleNodeType, Serializable {
+    private static final long    serialVersionUID = -4738878595542581888L;
 
-    private static final long serialVersionUID = -8912205023568005794L;
+    private String               name;
+    private ColumnType           type;
+    private NullableSqlType      nullable;
+    private int                  columnSize;
+    private int                  decimalSize;
+    private RoutineArtifact      routine;
+    private RoutineParameterType parameterType;
 
-    /** The content. */
-    private String            content;
-
-    @Override
-    public boolean contentEquals( final Artifact other ) {
-        if (other instanceof StreamArtifact) {
-            final StreamArtifact that = (StreamArtifact)other;
-            return Equals.eachEquality(this.content, that.content);
-        }
-        return false;
+    public int getColumnSize() {
+        return this.columnSize;
     }
 
-    /**
-     * Gets the content.
-     * 
-     * @return the content
-     */
-    public String getContent() {
-        return this.content;
+    public int getDecimalSize() {
+        return this.decimalSize;
     }
 
-    /**
-     * Sets the content.
-     * 
-     * @param content the new content
-     */
-    public void setContent( final String content ) {
-        this.content = content;
+    @KeyProperty
+    public String getName() {
+        return this.name;
     }
 
+    public NullableSqlType getNullable() {
+        return this.nullable;
+    }
+
+    public RoutineParameterType getParameterType() {
+        return this.parameterType;
+    }
+
+    @ParentProperty
+    public RoutineArtifact getRoutine() {
+        return this.routine;
+    }
+
+    public ColumnType getType() {
+        return this.type;
+    }
+
+    public void setColumnSize( final int columnSize ) {
+        this.columnSize = columnSize;
+    }
+
+    public void setDecimalSize( final int decimalSize ) {
+        this.decimalSize = decimalSize;
+    }
+
+    public void setName( final String name ) {
+        this.name = name;
+    }
+
+    public void setNullable( final NullableSqlType nullable ) {
+        this.nullable = nullable;
+    }
+
+    public void setParameterType( final RoutineParameterType parameterType ) {
+        this.parameterType = parameterType;
+    }
+
+    public void setRoutine( final RoutineArtifact routine ) {
+        this.routine = routine;
+    }
+
+    public void setType( final ColumnType type ) {
+        this.type = type;
+    }
 }
