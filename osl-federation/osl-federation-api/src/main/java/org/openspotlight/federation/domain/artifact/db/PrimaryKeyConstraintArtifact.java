@@ -6,7 +6,9 @@ import static org.openspotlight.common.util.Equals.eachEquality;
 
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.persist.annotation.Name;
 
+@Name("database")
 public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 
 	/**

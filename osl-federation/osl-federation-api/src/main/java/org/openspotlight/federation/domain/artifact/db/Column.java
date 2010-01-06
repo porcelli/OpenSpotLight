@@ -49,8 +49,6 @@
 package org.openspotlight.federation.domain.artifact.db;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
@@ -63,8 +61,6 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name("column")
 public class Column implements SimpleNodeType, Serializable {
 	private static final long serialVersionUID = -1495010016475838851L;
-
-	private Set<String> pks = new HashSet<String>();
 
 	private String name;
 
@@ -108,10 +104,6 @@ public class Column implements SimpleNodeType, Serializable {
 		return nullable;
 	}
 
-	public Set<String> getPks() {
-		return pks;
-	}
-
 	@ParentProperty
 	public TableArtifact getTable() {
 		return table;
@@ -144,10 +136,6 @@ public class Column implements SimpleNodeType, Serializable {
 
 	public void setNullable(final NullableSqlType nullable) {
 		this.nullable = nullable;
-	}
-
-	public void setPks(final Set<String> pks) {
-		this.pks = pks;
 	}
 
 	public void setTable(final TableArtifact table) {

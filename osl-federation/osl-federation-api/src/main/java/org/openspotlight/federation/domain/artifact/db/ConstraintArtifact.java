@@ -1,5 +1,8 @@
 package org.openspotlight.federation.domain.artifact.db;
 
+import org.openspotlight.persist.annotation.Name;
+
+@Name("database")
 public abstract class ConstraintArtifact extends DatabaseCustomArtifact {
 
 	/**
