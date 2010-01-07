@@ -16,6 +16,16 @@ import org.openspotlight.common.util.HashCodes;
  */
 public final class Priority implements Comparable<Priority> {
 
+	public static Priority createPriority(final int... priorities) {
+		Assertions.checkNotNull("priorities", priorities);
+		Assertions.checkCondition("prioritiesNotEmpty", priorities.length > 0);
+		Priority parent = null;
+		for (int i = priorities.length; i != 0; i--) {
+			parent = new Priority(priorities[i - 1], parent);
+		}
+		return parent;
+	}
+
 	private final int priorityNumber;
 
 	private final int hashcode;
@@ -26,7 +36,8 @@ public final class Priority implements Comparable<Priority> {
 		Assertions.checkCondition("positiveValue", priorityNumber > 0);
 		this.priorityNumber = priorityNumber;
 		this.subPriority = subPriority;
-		hashcode = HashCodes.hashOf(priorityNumber, subPriority.hashcode);
+		hashcode = HashCodes.hashOf(priorityNumber,
+				subPriority != null ? subPriority.hashcode : 0);
 	}
 
 	private int compareIntValues(final int thisVal, final int thatVal) {
@@ -58,16 +69,6 @@ public final class Priority implements Comparable<Priority> {
 				return compareIntValues(0, 1);
 			}
 		}
-	}
-
-	public Priority createPriority(final int... priorities) {
-		Assertions.checkNotNull("priorities", priorities);
-		Assertions.checkCondition("prioritiesNotEmpty", priorities.length > 0);
-		Priority parent = null;
-		for (int i = priorities.length - 1; i != 0; i--) {
-			parent = new Priority(i, parent);
-		}
-		return parent;
 	}
 
 	public boolean equals(final Object o) {
