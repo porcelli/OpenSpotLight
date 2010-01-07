@@ -2,7 +2,7 @@ package org.openspotlight.federation.processing;
 
 import java.util.Set;
 
-import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
  * The Interface ArtifactProcessingResults.

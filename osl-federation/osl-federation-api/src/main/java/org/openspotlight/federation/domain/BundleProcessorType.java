@@ -57,6 +57,7 @@ import java.util.Set;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.persist.annotation.KeyProperty;

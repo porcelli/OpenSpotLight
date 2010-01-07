@@ -51,11 +51,11 @@ package org.openspotlight.federation.processing;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
 import org.openspotlight.federation.registry.ArtifactTypeRegistry;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
