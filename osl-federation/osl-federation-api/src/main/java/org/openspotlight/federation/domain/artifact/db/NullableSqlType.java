@@ -48,6 +48,7 @@
  */
 package org.openspotlight.federation.domain.artifact.db;
 
+import java.sql.DatabaseMetaData;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -48,8 +48,11 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
+import static org.openspotlight.common.concurrent.Priority.createPriority;
+
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
@@ -62,6 +65,8 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 
 	private final String repositoryName;
 	private ExecutionContext context;
+
+	private final Priority priority = createPriority(5);
 
 	/**
 	 * Instantiates a new _6_ ending to process artifacts task.
@@ -97,8 +102,8 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 		return null;
 	}
 
-	public int getPriority() {
-		return 5;
+	public Priority getPriority() {
+		return priority;
 	}
 
 	public String getRepositoryName() {

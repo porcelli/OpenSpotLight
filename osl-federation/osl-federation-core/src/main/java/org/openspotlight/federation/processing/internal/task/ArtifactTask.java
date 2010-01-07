@@ -50,6 +50,7 @@ package org.openspotlight.federation.processing.internal.task;
 
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
@@ -59,7 +60,7 @@ public interface ArtifactTask {
 
 	public CurrentProcessorContextImpl getCurrentContext();
 
-	public int getPriority();
+	public Priority getPriority();
 
 	public String getRepositoryName();
 

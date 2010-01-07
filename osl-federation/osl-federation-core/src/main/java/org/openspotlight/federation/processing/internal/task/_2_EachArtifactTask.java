@@ -48,9 +48,12 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
+import static org.openspotlight.common.concurrent.Priority.createPriority;
+
 import java.util.Date;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -58,12 +61,16 @@ import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformatio
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
-import org.openspotlight.federation.processing.BundleProcessor;
-import org.openspotlight.federation.processing.BundleProcessor.SaveBehavior;
+import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
+	private final Priority priority;
+
 	/** The bundle processor context. */
 	private ExecutionContext bundleProcessorContext;
 
@@ -74,12 +81,14 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 
 	/** The artifact. */
 	private final T artifact;
-
+	private final SaveBehavior saveBehavior;
 	/** The bundle processor. */
-	private final BundleProcessor<T> bundleProcessor;
+	private final BundleProcessorArtifactPhase<T> bundleProcessor;
 
 	/** The current context impl. */
 	private final CurrentProcessorContextImpl currentContextImpl;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Instantiates a new artifact processing runnable.
@@ -96,12 +105,16 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	 *            the artifact type
 	 */
 	public _2_EachArtifactTask(final CurrentProcessorContextImpl currentCtx,
-			final T artifact, final BundleProcessor<T> bundleProcessor,
-			final Class<T> artifactType) {
+			final T artifact,
+			final BundleProcessorArtifactPhase<T> bundleProcessor,
+			final Class<T> artifactType, final SaveBehavior saveBehavior,
+			final int subpriority) {
 		this.artifactType = artifactType;
 		this.artifact = artifact;
 		this.bundleProcessor = bundleProcessor;
 		this.currentContextImpl = currentCtx;
+		this.saveBehavior = saveBehavior;
+		this.priority = createPriority(2, subpriority);
 	}
 
 	/*
@@ -111,6 +124,15 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	 */
 	@SuppressWarnings("unchecked")
 	public void doTask() throws Exception {
+		if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
+				.getLastProcessStatus())
+				|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
+						.equals(this.artifact.getLastProcessStatus())) {
+			logger.info("ignoring " + this.artifact
+					+ " due to its last process status: "
+					+ this.artifact.getLastProcessStatus());
+			return;
+		}
 		this.bundleProcessor.beforeProcessArtifact(this.artifact);
 		LastProcessStatus result = null;
 		try {
@@ -120,8 +142,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 			}
 			result = this.bundleProcessor.processArtifact(this.artifact,
 					this.currentContextImpl, this.bundleProcessorContext);
-			if (SaveBehavior.PER_ARTIFACT.equals(this.bundleProcessor
-					.getSaveBehavior())) {
+			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
 				this.bundleProcessorContext.getGraphSession().save();
 			}
 		} catch (final Exception e) {
@@ -154,8 +175,8 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 		return this.currentContextImpl;
 	}
 
-	public int getPriority() {
-		return 2;
+	public Priority getPriority() {
+		return priority;
 	}
 
 	public String getRepositoryName() {

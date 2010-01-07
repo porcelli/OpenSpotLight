@@ -48,11 +48,14 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
+import static org.openspotlight.common.concurrent.Priority.createPriority;
+
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.processing.BundleProcessor;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
@@ -67,9 +70,11 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 	private final ArtifactChangesImpl<T> changes;
 
 	/** The processor. */
-	private final BundleProcessor<T> processor;
+	private final BundleProcessorGlobalPhase<T> processor;
 
 	private final String repositoryName;
+
+	private final Priority priority = createPriority(4);
 
 	/**
 	 * Instantiates a new _6_ ending to process artifacts task.
@@ -81,7 +86,8 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 	 */
 	public _4_EndingToProcessArtifactsTask(
 			final ArtifactChangesImpl<T> changes,
-			final BundleProcessor<T> processor, final String repositoryName) {
+			final BundleProcessorGlobalPhase<T> processor,
+			final String repositoryName) {
 		super();
 		this.changes = changes;
 		this.processor = processor;
@@ -109,8 +115,8 @@ public class _4_EndingToProcessArtifactsTask<T extends Artifact> implements
 		return null;
 	}
 
-	public int getPriority() {
-		return 4;
+	public Priority getPriority() {
+		return priority;
 	}
 
 	public String getRepositoryName() {

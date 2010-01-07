@@ -50,6 +50,7 @@ package org.openspotlight.common.concurrent;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;

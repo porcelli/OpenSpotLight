@@ -57,7 +57,14 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.antlr.stringtemplate.StringTemplate;
+<<<<<<< HEAD
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
+=======
+import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.StreamArtifact;
+
+import com.thoughtworks.xstream.XStream;
+>>>>>>> bundle-splitted
 
 /**
  * Pojo class to store the script to get database metadata for a database type. This class should be getted by

@@ -49,20 +49,27 @@
 package org.openspotlight.federation.processing.internal;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.LastProcessStatus;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
-import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
-import org.openspotlight.federation.processing.BundleProcessor;
+import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.LastProcessStatus;
+import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.SyntaxInformationType;
+import org.openspotlight.federation.processing.ArtifactChanges;
+import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
+import org.openspotlight.federation.processing.BundleProcessorSinglePhase;
+import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
+public class ExampleBundleProcessor implements
+		BundleProcessorSinglePhase<StreamArtifact> {
 
 	public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
 
@@ -91,6 +98,12 @@ public class ExampleBundleProcessor implements BundleProcessor<StreamArtifact> {
 
 	public Class<StreamArtifact> getArtifactType() {
 		return StreamArtifact.class;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<Class<? extends StreamArtifact>> getArtifactTypes() {
+		return Collections
+				.<Class<? extends StreamArtifact>> setOf(StreamArtifact.class);
 	}
 
 	public SaveBehavior getSaveBehavior() {

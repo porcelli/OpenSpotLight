@@ -48,6 +48,7 @@
  */
 package org.openspotlight.common.concurrent;
 
+import java.util.ConcurrentModificationException;
 import java.util.Set;
 
 /**
