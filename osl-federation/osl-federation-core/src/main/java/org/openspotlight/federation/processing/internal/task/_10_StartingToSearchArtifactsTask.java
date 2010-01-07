@@ -68,7 +68,7 @@ import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProc
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 
-public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
+public class _10_StartingToSearchArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
 
 	/** The artifact type. */
@@ -109,7 +109,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 	 *            the artifact queue
 	 */
 	@SuppressWarnings("unchecked")
-	public _1_StartingToSearchArtifactsTask(
+	public _10_StartingToSearchArtifactsTask(
 			final CurrentProcessorContextImpl currentContext,
 			final Repository repository,
 			final Class<? extends Artifact> artifactType,
