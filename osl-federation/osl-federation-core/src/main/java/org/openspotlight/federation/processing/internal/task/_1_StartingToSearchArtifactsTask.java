@@ -232,6 +232,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 
 			}
 			for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
+
 				for (final T artifactToProcess : this.toBeReturned
 						.getArtifactsToBeProcessed()) {
 					final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
@@ -241,8 +242,9 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 							.getCurrentRepository());
 					this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
 							artifactToProcess, artifactPhase,
-							this.artifactType, behavior, subpriority++));
+							this.artifactType, behavior, subpriority));
 				}
+				subpriority++;
 			}
 			this.queue.add(new _4_EndingToProcessArtifactsTask<T>(this.changes,
 					bundleProcessor, repository.getName()));

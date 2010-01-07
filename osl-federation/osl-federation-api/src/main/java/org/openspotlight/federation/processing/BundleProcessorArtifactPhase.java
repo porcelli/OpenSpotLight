@@ -5,15 +5,6 @@ import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.LastProcessStatus;
 
 public interface BundleProcessorArtifactPhase<T extends Artifact> {
-	/**
-	 * Accept kind of artifact.
-	 * 
-	 * @param kindOfArtifact
-	 *            the kind of artifact
-	 * @return true, if successful
-	 */
-	public <A extends Artifact> boolean acceptKindOfArtifact(
-			Class<A> kindOfArtifact);
 
 	/**
 	 * Before process artifact.
