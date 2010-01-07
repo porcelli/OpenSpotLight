@@ -181,6 +181,7 @@ public class DbTableArtifactBundleProcessorTest {
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(DbArtifactGlobalProcessor.class);
+		commonProcessor.getArtifactPhases().add(DbTableArtifactProcessor.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();

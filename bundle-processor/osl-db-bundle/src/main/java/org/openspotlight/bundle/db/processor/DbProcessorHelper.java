@@ -100,11 +100,9 @@ public class DbProcessorHelper implements DBConstants {
 			SLInvalidCredentialException {
 		for (final org.openspotlight.federation.domain.artifact.db.Column c : artifact
 				.getColumns()) {
-			final Column column = createColumn(wrappedType, context,
-					databaseContextNode, table, abstractTable, c);
-
+			createColumn(wrappedType, context, databaseContextNode, table,
+					abstractTable, c);
 		}
-
 	}
 
 	public static TableParentVo createParentNodes(
