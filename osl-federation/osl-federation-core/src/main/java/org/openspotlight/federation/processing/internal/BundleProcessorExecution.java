@@ -364,8 +364,7 @@ public class BundleProcessorExecution {
 				threads);
 
 		for (int i = 0; i < threads; i++) {
-			final ArtifactWorker worker = new ArtifactWorker(
-					defaultSleepIntervalInMillis, queue);
+			final ArtifactWorker worker = new ArtifactWorker(queue);
 			workers.add(worker);
 			executor.execute(worker);
 		}

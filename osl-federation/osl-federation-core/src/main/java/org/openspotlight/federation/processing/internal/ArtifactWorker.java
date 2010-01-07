@@ -67,16 +67,13 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 	private final AtomicBoolean error = new AtomicBoolean(false);
 	private final AtomicBoolean stopped = new AtomicBoolean(false);
 	private Map<String, ExecutionContext> contextMap;
-	private final long timeoutInMilli;
 
 	private final PriorityBlockingQueue<ArtifactTask> queue;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public ArtifactWorker(final long timeoutInMilli,
-			final PriorityBlockingQueue<ArtifactTask> queue) {
+	public ArtifactWorker(final PriorityBlockingQueue<ArtifactTask> queue) {
 		this.queue = queue;
-		this.timeoutInMilli = timeoutInMilli;
 	}
 
 	public boolean hasError() {

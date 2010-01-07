@@ -89,9 +89,6 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
-import org.openspotlight.federation.domain.artifact.db.ExportedFk;
-import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
@@ -183,7 +180,7 @@ public class DbTableArtifactBundleProcessorTest {
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
-		commonProcessor.setType(DbTableArtifactBundleProcessor.class);
+		commonProcessor.setGlobalPhase(DbArtifactGlobalProcessor.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();
@@ -275,34 +272,6 @@ public class DbTableArtifactBundleProcessorTest {
 				.createExecutionContext("username", "password",
 						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
 								.getName());
-
-		final ArtifactFinder<TableArtifact> tableFinder = executionContext
-				.getArtifactFinder(TableArtifact.class);
-		final TableArtifact table = tableFinder
-				.findByPath("/databaseArtifacts/PUBLIC/TABLE/DB/EXAMPLETABLE"
-						+ tableSufix);
-		boolean foundFkInsideArtifact = false;
-		for (final org.openspotlight.federation.domain.artifact.db.Column c : table
-				.getColumns()) {
-			if (c.getName().equalsIgnoreCase("i")) {
-				Assert.assertThat(c.getExportedFks().size() > 0, Is.is(true));
-				for (final ExportedFk fk : c.getExportedFks()) {
-					logger.info("        >>> getTableSchema   "
-							+ fk.getTableSchema());
-					logger.info("        >>> getTableCatalog  "
-							+ fk.getTableCatalog());
-					logger.info("        >>> getTableName     "
-							+ fk.getTableName());
-					logger.info("        >>> getColumnName    "
-							+ fk.getColumnName());
-					logger.info("        >>> getFkName        "
-							+ fk.getFkName());
-				}
-
-				foundFkInsideArtifact = true;
-			}
-		}
-		Assert.assertThat(foundFkInsideArtifact, Is.is(true));
 
 		final SLContext groupContext = executionContext.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);

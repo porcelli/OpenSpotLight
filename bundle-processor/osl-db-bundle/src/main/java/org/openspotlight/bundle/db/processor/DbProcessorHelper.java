@@ -1,51 +1,3 @@
-/*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- */
 package org.openspotlight.bundle.db.processor;
 
 import static org.openspotlight.federation.processing.BundleProcessorSupport.links;
@@ -65,19 +17,13 @@ import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DataType;
 import org.openspotlight.bundle.db.metamodel.node.Database;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
 import org.openspotlight.bundle.db.metamodel.node.Schema;
 import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
-import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.LastProcessStatus;
-import org.openspotlight.federation.domain.artifact.db.ExportedFk;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
-import org.openspotlight.federation.processing.BundleProcessor;
+import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLContextAlreadyExistsException;
 import org.openspotlight.graph.SLGraphSessionException;
@@ -86,10 +32,8 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 
-public class DbTableArtifactBundleProcessor implements
-		BundleProcessor<TableArtifact>, DBConstants {
-
-	private static class TableParentVo {
+public class DbProcessorHelper implements DBConstants {
+	public static class TableParentVo {
 		public final Database database;
 		public final SLNode tableParent;
 		public final SLNode databaseContextNode;
@@ -107,7 +51,7 @@ public class DbTableArtifactBundleProcessor implements
 		}
 	}
 
-	private static class TableVo {
+	public static class TableVo {
 		public final SLNode databaseContextNode;
 		public final Database database;
 		public final TableView table;
@@ -123,17 +67,8 @@ public class DbTableArtifactBundleProcessor implements
 		}
 	}
 
-	public <A extends Artifact> boolean acceptKindOfArtifact(
-			final Class<A> kindOfArtifact) {
-		return TableArtifact.class.isAssignableFrom(kindOfArtifact);
-	}
-
-	public void beforeProcessArtifact(final TableArtifact artifact) {
-
-	}
-
 	@SuppressWarnings("unchecked")
-	private Column createColumn(final DbWrappedType wrappedType,
+	public static Column createColumn(final DbWrappedType wrappedType,
 			final ExecutionContext context, final SLNode databaseContextNode,
 			final TableView table, final TableView abstractTable,
 			final org.openspotlight.federation.domain.artifact.db.Column c)
@@ -157,7 +92,7 @@ public class DbTableArtifactBundleProcessor implements
 		return column;
 	}
 
-	private void createColumns(final DbWrappedType wrappedType,
+	public static void createColumns(final DbWrappedType wrappedType,
 			final TableArtifact artifact, final ExecutionContext context,
 			final SLNode databaseContextNode, final Database database,
 			final TableView table, final TableView abstractTable)
@@ -168,50 +103,12 @@ public class DbTableArtifactBundleProcessor implements
 			final Column column = createColumn(wrappedType, context,
 					databaseContextNode, table, abstractTable, c);
 
-			createPrimaryKeys(wrappedType, context, c, column);
-			createForeignKeys(wrappedType, context, database, c, column);
 		}
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private void createForeignKeys(final DbWrappedType wrappedType,
-			final ExecutionContext context, final Database database,
-			final org.openspotlight.federation.domain.artifact.db.Column c,
-			final Column column) throws SLNodeTypeNotInExistentHierarchy,
-			SLGraphSessionException, SLInvalidCredentialException {
-		for (final ExportedFk fk : c.getExportedFks()) {
-			final Schema thatSchema = database.addNode(wrappedType
-					.getSchemaType(), fk.getTableSchema());
-			final String thatCatalogName = fk.getTableCatalog();
-			Catalog thatCatalog = null;
-			if (thatCatalogName != null) {
-				thatCatalog = thatSchema.addNode(wrappedType.getCatalogType(),
-						thatCatalogName);
-			}
-			final SLNode thatTableParent = thatCatalog != null ? thatCatalog
-					: thatSchema;
-			final TableView thatTable = thatTableParent.addNode(wrappedType
-					.getTableViewType(), fk.getTableName());
-			// TODO check it here
-			final Column thatColumn = thatTable.addNode(wrappedType
-					.getColumnType(), fk.getColumnName(), links(
-					AbstractTypeBind.class, ColumnDataType.class,
-					ForeignKey.class), links(ConstraintDatabaseColumn.class));
-			context.getGraphSession().addLink(ForeignKey.class, column,
-					thatColumn, false);
-			final DatabaseConstraintForeignKey fkNode = thatColumn.addNode(
-					wrappedType.getDatabaseConstraintForeignKeyType(), fk
-							.getFkName());
-			context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
-					column, fkNode, false);
-			context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
-					thatColumn, fkNode, false);
-		}
-	}
-
-	private TableParentVo createParentNodes(final DbWrappedType wrappedType,
-			final TableArtifact artifact,
+	public static TableParentVo createParentNodes(
+			final DbWrappedType wrappedType, final TableArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context)
 			throws SLContextAlreadyExistsException, SLGraphSessionException,
@@ -249,24 +146,16 @@ public class DbTableArtifactBundleProcessor implements
 		return parent;
 	}
 
-	private void createPrimaryKeys(final DbWrappedType wrappedType,
+	public static void createPrimaryKeys(final DbWrappedType wrappedType,
 			final ExecutionContext context,
 			final org.openspotlight.federation.domain.artifact.db.Column c,
 			final Column column) throws SLNodeTypeNotInExistentHierarchy,
 			SLGraphSessionException, SLInvalidCredentialException {
-		if (c.getPks() != null) {
-			for (final String pkName : c.getPks()) {
-				final DatabaseConstraintPrimaryKey pk = column.addNode(
-						wrappedType.getDatabaseConstraintPrimaryKeyType(),
-						pkName);
-				context.getGraphSession().addLink(
-						ConstraintDatabaseColumn.class, column, pk, false);
-			}
-		}
+
 	}
 
 	@SuppressWarnings("unchecked")
-	private TableVo createTableData(final DbWrappedType wrappedType,
+	public static TableVo createTableData(final DbWrappedType wrappedType,
 			final TableArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context)
@@ -292,56 +181,6 @@ public class DbTableArtifactBundleProcessor implements
 		final TableVo data = new TableVo(parent.databaseContextNode,
 				parent.database, table, abstractTable);
 		return data;
-	}
-
-	public void didFinishProcessing(final ArtifactChanges<TableArtifact> changes) {
-
-	}
-
-	public void didFinishToProcessArtifact(final TableArtifact artifact,
-			final LastProcessStatus status) {
-
-	}
-
-	public Class<TableArtifact> getArtifactType() {
-		return TableArtifact.class;
-	}
-
-	public SaveBehavior getSaveBehavior() {
-		return SaveBehavior.PER_PROCESSING;
-	}
-
-	public LastProcessStatus processArtifact(final TableArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) throws Exception {
-		final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-				.createByType(artifact.getDatabaseType());
-		final TableVo data = createTableData(wrappedType, artifact,
-				currentContext, context);
-		createColumns(wrappedType, artifact, context, data.databaseContextNode,
-				data.database, data.table, data.abstractTable);
-		return LastProcessStatus.PROCESSED;
-	}
-
-	public void selectArtifactsToBeProcessed(
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context,
-			final ArtifactChanges<TableArtifact> changes,
-			final ArtifactsToBeProcessed<TableArtifact> toBeReturned)
-			throws Exception {
-
-		for (final TableArtifact a : changes.getExcludedArtifacts()) {
-			final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-					.createByType(a.getDatabaseType());
-			final TableParentVo parent = createParentNodes(wrappedType, a,
-					currentContext, context);
-			final SLNode tableNode = parent.tableParent.getNode(a
-					.getTableName());
-			if (tableNode != null) {
-				tableNode.remove();
-			}
-		}
-
 	}
 
 }
