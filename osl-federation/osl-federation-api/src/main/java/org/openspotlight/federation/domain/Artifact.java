@@ -51,6 +51,7 @@ package org.openspotlight.federation.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.openspotlight.common.collection.AddOnlyConcurrentMap;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
@@ -60,6 +61,7 @@ import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -71,6 +73,9 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 public abstract class Artifact implements SimpleNodeType, Serializable,
 		LogableObject {
+
+	/** The Constant SEPARATOR. */
+	final static String SEPARATOR = "/";
 
 	/**
 	 * Creates the new artifact.
@@ -106,6 +111,8 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 		}
 	}
 
+	private AddOnlyConcurrentMap<String, Object> transientMap;
+
 	private String repositoryName;
 
 	private static final long serialVersionUID = 372692540369995072L;
@@ -113,9 +120,6 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	private LastProcessStatus lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
 
 	private Date lastProcessedDate;
-
-	/** The Constant SEPARATOR. */
-	final static String SEPARATOR = "/";
 
 	/** The artifact name. */
 	private String artifactName;
@@ -131,6 +135,10 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 
 	/** The hashcode. */
 	private volatile int hashcode;
+
+	public Artifact() {
+		transientMap = AddOnlyConcurrentMap.newMap();
+	}
 
 	/**
 	 * Content equals.
@@ -216,6 +224,11 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 		return repositoryName;
 	}
 
+	@TransientProperty
+	public AddOnlyConcurrentMap<String, Object> getTransientMap() {
+		return transientMap;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -277,6 +290,11 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 
 	public void setRepositoryName(final String repositoryName) {
 		this.repositoryName = repositoryName;
+	}
+
+	public void setTransientMap(
+			final AddOnlyConcurrentMap<String, Object> transientMap) {
+		this.transientMap = transientMap;
 	}
 
 	/*
