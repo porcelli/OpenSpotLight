@@ -52,7 +52,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults;
+import org.openspotlight.federation.processing.ArtifactProcessingResults;
 
 /**
  * The Class ArtifactProcessingResultsImpl.

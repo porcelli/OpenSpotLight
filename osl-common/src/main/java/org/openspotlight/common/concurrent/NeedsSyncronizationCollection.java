@@ -49,6 +49,7 @@
 package org.openspotlight.common.concurrent;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 
 /**
  * This is a {@link Collection} with a {@link LockContainer} used to

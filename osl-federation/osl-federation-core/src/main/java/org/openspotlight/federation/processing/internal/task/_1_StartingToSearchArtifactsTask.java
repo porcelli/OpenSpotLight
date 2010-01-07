@@ -63,7 +63,6 @@ import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;

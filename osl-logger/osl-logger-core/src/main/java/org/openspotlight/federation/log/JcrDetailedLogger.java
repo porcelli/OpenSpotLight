@@ -59,6 +59,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LogEntry;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInformation;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;

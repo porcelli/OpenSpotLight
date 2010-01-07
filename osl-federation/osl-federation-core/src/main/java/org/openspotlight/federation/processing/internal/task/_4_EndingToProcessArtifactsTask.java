@@ -52,7 +52,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.processing.BundleProcessor;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 

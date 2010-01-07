@@ -58,8 +58,7 @@ import org.openspotlight.federation.domain.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
-import org.openspotlight.federation.processing.BundleProcessor;
-import org.openspotlight.federation.processing.BundleProcessor.SaveBehavior;
+import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 

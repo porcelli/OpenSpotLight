@@ -50,7 +50,7 @@ package org.openspotlight.federation.processing.internal.domain;
 
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.processing.BundleProcessor.CurrentProcessorContext;
+import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
