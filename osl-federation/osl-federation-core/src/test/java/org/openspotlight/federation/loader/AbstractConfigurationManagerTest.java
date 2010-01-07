@@ -124,7 +124,7 @@ public abstract class AbstractConfigurationManagerTest {
 		final BundleProcessorType newBundle = new BundleProcessorType();
 		newBundle.setActive(true);
 		newBundle.setGroup(group);
-		newBundle.setType(ExampleBundleProcessor.class);
+		newBundle.setGlobalPhase(ExampleBundleProcessor.class);
 		group.getBundleTypes().add(newBundle);
 
 		final BundleSource bundleSource = new BundleSource();

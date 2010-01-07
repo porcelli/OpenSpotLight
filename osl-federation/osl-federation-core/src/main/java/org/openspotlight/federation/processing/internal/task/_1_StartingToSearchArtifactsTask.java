@@ -48,13 +48,17 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
+import static org.openspotlight.common.concurrent.Priority.createPriority;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Artifact;
@@ -63,13 +67,17 @@ import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.LastProcessStatus;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
+import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 
-public class _10_StartingToSearchArtifactsTask<T extends Artifact> implements
+public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
+	private final Priority priority = createPriority(1);
 
 	/** The artifact type. */
 	private final Class<T> artifactType;
@@ -109,7 +117,7 @@ public class _10_StartingToSearchArtifactsTask<T extends Artifact> implements
 	 *            the artifact queue
 	 */
 	@SuppressWarnings("unchecked")
-	public _10_StartingToSearchArtifactsTask(
+	public _1_StartingToSearchArtifactsTask(
 			final CurrentProcessorContextImpl currentContext,
 			final Repository repository,
 			final Class<? extends Artifact> artifactType,
@@ -129,16 +137,24 @@ public class _10_StartingToSearchArtifactsTask<T extends Artifact> implements
 	 */
 	@SuppressWarnings("unchecked")
 	public void doTask() throws Exception {
-		final BundleProcessor<?> rawBundleProcessor = this.bundleProcessorType
-				.getType().newInstance();
-		if (!rawBundleProcessor.acceptKindOfArtifact(this.artifactType)) {
+		final BundleProcessorGlobalPhase<?> rawBundleProcessor = this.bundleProcessorType
+				.getGlobalPhase().newInstance();
+		boolean hasAnyType = false;
+		for (final Class<?> artifactType : rawBundleProcessor
+				.getArtifactTypes()) {
+			if (artifactType.isAssignableFrom(this.artifactType)) {
+				hasAnyType = true;
+				break;
+			}
+		}
+		if (!hasAnyType) {
 			return;
 		}
 		final Set<T> changedArtifacts = new HashSet<T>();
 		final Set<T> excludedArtifacts = new HashSet<T>();
 		final Set<T> includedArtifacts = new HashSet<T>();
 		final Set<T> notChangedArtifacts = new HashSet<T>();
-		final BundleProcessor<T> bundleProcessor = (BundleProcessor<T>) rawBundleProcessor;
+		final BundleProcessorGlobalPhase<T> bundleProcessor = (BundleProcessorGlobalPhase<T>) rawBundleProcessor;
 
 		final ArtifactFinder<T> finder = this.context
 				.getArtifactFinder(this.artifactType);
@@ -197,14 +213,36 @@ public class _10_StartingToSearchArtifactsTask<T extends Artifact> implements
 								+ bundleProcessor.getClass().getName(),
 						artifactAlreadyProcessed);
 			}
-			for (final T artifactToProcess : this.toBeReturned
-					.getArtifactsToBeProcessed()) {
-				final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
-				taskCtx.setCurrentGroup(this.currentContext.getCurrentGroup());
-				taskCtx.setCurrentRepository(this.currentContext
-						.getCurrentRepository());
-				this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
-						artifactToProcess, bundleProcessor, this.artifactType));
+			final List<BundleProcessorArtifactPhase<T>> artifactPhases = new ArrayList<BundleProcessorArtifactPhase<T>>();
+			int subpriority = 1;
+			final SaveBehavior behavior = bundleProcessor.getSaveBehavior();
+			if (bundleProcessor instanceof BundleProcessorArtifactPhase) {
+				artifactPhases
+						.add((BundleProcessorArtifactPhase<T>) bundleProcessor);
+			}
+			for (final Class<? extends BundleProcessorArtifactPhase<?>> bundleProcessorArtifactPhaseTypes : bundleProcessorType
+					.getArtifactPhases()) {
+				final BundleProcessorArtifactPhase<?> artifactPhase = bundleProcessorArtifactPhaseTypes
+						.newInstance();
+				if (artifactPhase.getArtifactType().isAssignableFrom(
+						artifactType)) {
+					artifactPhases
+							.add((BundleProcessorArtifactPhase<T>) artifactPhase);
+				}
+
+			}
+			for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
+				for (final T artifactToProcess : this.toBeReturned
+						.getArtifactsToBeProcessed()) {
+					final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
+					taskCtx.setCurrentGroup(this.currentContext
+							.getCurrentGroup());
+					taskCtx.setCurrentRepository(this.currentContext
+							.getCurrentRepository());
+					this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
+							artifactToProcess, artifactPhase,
+							this.artifactType, behavior, subpriority++));
+				}
 			}
 			this.queue.add(new _4_EndingToProcessArtifactsTask<T>(this.changes,
 					bundleProcessor, repository.getName()));
@@ -231,8 +269,8 @@ public class _10_StartingToSearchArtifactsTask<T extends Artifact> implements
 		return this.currentContext;
 	}
 
-	public int getPriority() {
-		return 1;
+	public Priority getPriority() {
+		return priority;
 	}
 
 	public String getRepositoryName() {

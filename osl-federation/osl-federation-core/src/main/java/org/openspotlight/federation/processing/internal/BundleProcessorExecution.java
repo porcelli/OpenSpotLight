@@ -72,7 +72,7 @@ import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExec
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
-import org.openspotlight.federation.processing.internal.task._10_StartingToSearchArtifactsTask;
+import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
 import org.openspotlight.federation.processing.internal.task._5_SaveGraphTask;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.GroupDifferences;
@@ -199,7 +199,7 @@ public class BundleProcessorExecution {
 					final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
 					currentContextImpl.setCurrentGroup(group);
 					currentContextImpl.setCurrentRepository(repository);
-					final ArtifactTask task = new _10_StartingToSearchArtifactsTask<Artifact>(
+					final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(
 							currentContextImpl, repository, artifactType,
 							processor);
 					queue.add(task);

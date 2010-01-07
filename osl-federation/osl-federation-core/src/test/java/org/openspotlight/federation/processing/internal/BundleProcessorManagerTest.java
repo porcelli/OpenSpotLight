@@ -175,7 +175,7 @@ public class BundleProcessorManagerTest {
 		final BundleProcessorType bundleType = new BundleProcessorType();
 		bundleType.setActive(true);
 		bundleType.setGroup(group);
-		bundleType.setType(ExampleBundleProcessor.class);
+		bundleType.setGlobalPhase(ExampleBundleProcessor.class);
 		group.getBundleTypes().add(bundleType);
 		final BundleSource bundleSource = new BundleSource();
 		bundleType.getSources().add(bundleSource);
@@ -252,7 +252,7 @@ public class BundleProcessorManagerTest {
 		final BundleProcessorType bundleType = new BundleProcessorType();
 		bundleType.setActive(true);
 		bundleType.setGroup(group);
-		bundleType.setType(ExampleBundleProcessor.class);
+		bundleType.setGlobalPhase(ExampleBundleProcessor.class);
 		group.getBundleTypes().add(bundleType);
 		final BundleSource bundleSource = new BundleSource();
 		bundleType.getSources().add(bundleSource);
