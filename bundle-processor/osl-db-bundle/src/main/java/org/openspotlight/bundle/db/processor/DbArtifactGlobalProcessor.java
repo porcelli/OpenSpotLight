@@ -58,6 +58,8 @@ import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.db.ConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
+import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
@@ -97,10 +99,43 @@ public class DbArtifactGlobalProcessor implements
 						.createByType(tableArtifact.getDatabaseType());
 				final ParentVo parent = createTableParentNodes(wrappedType,
 						tableArtifact, currentContext, context);
-				final SLNode tableNode = parent.parent
-						.getNode(tableArtifact.getTableName());
+				final SLNode tableNode = parent.parent.getNode(tableArtifact
+						.getTableName());
 				if (tableNode != null) {
 					tableNode.remove();
+				}
+			} else if (artifact instanceof PrimaryKeyConstraintArtifact) {
+				final PrimaryKeyConstraintArtifact constraintArtifact = (PrimaryKeyConstraintArtifact) artifact;
+				final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
+						.createByType(constraintArtifact.getDatabaseType());
+				final ParentVo parent = createTableParentNodes(wrappedType,
+						currentContext, context, constraintArtifact
+								.getServerName(), constraintArtifact
+								.getDatabaseName(), constraintArtifact
+								.getSchemaName(), constraintArtifact
+								.getCatalogName());
+
+				final SLNode constraintNode = parent.parent
+						.getNode(constraintArtifact.getConstraintName());
+				if (constraintNode != null) {
+					constraintNode.remove();
+				}
+
+			} else if (artifact instanceof ForeignKeyConstraintArtifact) {
+				final ForeignKeyConstraintArtifact constraintArtifact = (ForeignKeyConstraintArtifact) artifact;
+				final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
+						.createByType(constraintArtifact.getDatabaseType());
+				final ParentVo parent = createTableParentNodes(wrappedType,
+						currentContext, context, constraintArtifact
+								.getServerName(), constraintArtifact
+								.getDatabaseName(), constraintArtifact
+								.getFromSchemaName(), constraintArtifact
+								.getFromCatalogName());
+
+				final SLNode constraintNode = parent.database
+						.getNode(constraintArtifact.getConstraintName());
+				if (constraintNode != null) {
+					constraintNode.remove();
 				}
 			}
 		}

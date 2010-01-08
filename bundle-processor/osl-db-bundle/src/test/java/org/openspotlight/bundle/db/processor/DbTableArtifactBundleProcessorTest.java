@@ -64,6 +64,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Catalog;
@@ -240,6 +241,7 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
+	@Ignore
 	public void shouldExecuteBundleProcessor() throws Exception {
 		final Random r = new Random();
 		final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_"
