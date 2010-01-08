@@ -51,7 +51,6 @@ package org.openspotlight.bundle.db.processor;
 import static org.openspotlight.common.util.Files.delete;
 
 import java.sql.Connection;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
@@ -64,19 +63,13 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
-import org.openspotlight.bundle.db.metamodel.node.Catalog;
 import org.openspotlight.bundle.db.metamodel.node.Column;
-import org.openspotlight.bundle.db.metamodel.node.Database;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
-import org.openspotlight.bundle.db.metamodel.node.Schema;
-import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
 import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
-import org.openspotlight.bundle.db.metamodel.node.TableViewView;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -102,8 +95,6 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DbTableArtifactBundleProcessorTest {
 
@@ -228,8 +219,6 @@ public class DbTableArtifactBundleProcessorTest {
 
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	@After
 	public void closeTestResources() {
 		contextFactory.closeResources();
@@ -241,106 +230,6 @@ public class DbTableArtifactBundleProcessorTest {
 	}
 
 	@Test
-	@Ignore
-	public void shouldExecuteBundleProcessor() throws Exception {
-		final Random r = new Random();
-		final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_"
-				+ r.nextInt(50);
-		final Connection connection = DatabaseSupport
-				.createConnection(data.artifactSource);
-
-		connection
-				.prepareStatement(
-						"create table exampleTable"
-								+ tableSufix
-								+ "(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
-		connection
-				.prepareStatement(
-						"create view exampleView"
-								+ tableSufix
-								+ " (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable"
-								+ tableSufix).execute();
-		connection.prepareStatement(
-				"create table anotherTable" + tableSufix
-						+ "(i int not null primary key, i_fk int)").execute();
-
-		connection.prepareStatement(
-				"alter table anotherTable" + tableSufix
-						+ " add constraint example_fk" + tableSufix
-						+ " foreign key(i_fk) references exampleTable"
-						+ tableSufix + "(i)").execute();
-		connection.close();
-
-		reloadArtifactsAndCallBundleProcessor();
-
-		final ExecutionContext executionContext = contextFactory
-				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
-
-		final SLContext groupContext = executionContext.getGraphSession()
-				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-		final SLNode groupNode = groupContext.getRootNode().getNode(
-				data.group.getUniqueName());
-		Assert.assertThat(groupNode, Is.is(IsNull.notNullValue()));
-		final SLNode exampleServerNode = groupNode.getNode("server name");
-		Assert.assertThat(exampleServerNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleServerNode, Is.is(Server.class));
-		final SLNode exampleDatabaseNode = exampleServerNode.getNode("db");
-		Assert.assertThat(exampleDatabaseNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleDatabaseNode, Is.is(Database.class));
-		final SLNode exampleSchemaNode = exampleDatabaseNode.getNode("PUBLIC");
-		Assert.assertThat(exampleSchemaNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleSchemaNode, Is.is(Schema.class));
-		final SLNode exampleCatalogNode = exampleSchemaNode.getNode("DB");
-		Assert.assertThat(exampleCatalogNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleCatalogNode, Is.is(Catalog.class));
-		final SLNode exampleTableNode = exampleCatalogNode
-				.getNode("EXAMPLETABLE" + tableSufix);
-		Assert.assertThat(exampleTableNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleTableNode, Is.is(TableViewTable.class));
-		final SLNode exampleViewNode = exampleCatalogNode.getNode("EXAMPLEVIEW"
-				+ tableSufix);
-		Assert.assertThat(exampleViewNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(exampleViewNode, Is.is(TableViewView.class));
-		final SLNode anotherTableNode = exampleCatalogNode
-				.getNode("ANOTHERTABLE" + tableSufix);
-
-		final Column exampleColumn = exampleTableNode
-				.getNode(Column.class, "I");
-		final Column anotherExampleColumn = anotherTableNode.getNode(
-				Column.class, "I_FK");
-		final Set<SLNode> pkNodes = exampleColumn.getNodes();
-		final SLNode fk = anotherExampleColumn.getNode("EXAMPLE_FK"
-				+ tableSufix);
-
-		boolean foundPkConstraint = false;
-		logger.info("     >>> column with fk: "
-				+ anotherExampleColumn.getName()
-				+ " "
-				+ anotherExampleColumn.getID()
-				+ " "
-				+ Arrays.toString(anotherExampleColumn.getClass()
-						.getInterfaces()));
-
-		Assert.assertThat(exampleColumn.getLockObject() == anotherExampleColumn
-				.getLockObject(), Is.is(true));
-
-		synchronized (exampleColumn.getLockObject()) {
-			for (final SLNode node : pkNodes) {
-				if (node instanceof DatabaseConstraintPrimaryKey) {
-					foundPkConstraint = true;
-				}
-			}
-		}
-
-		Assert.assertThat(foundPkConstraint, Is.is(true));
-		Assert.assertThat(fk, Is.is(IsNull.notNullValue()));
-
-	}
-
-	@Test
 	public void shouldIncludeNewColumnOnChangedTable() throws Exception {
 
 		final Connection connection1 = DatabaseSupport
@@ -348,7 +237,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable2(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -454,7 +343,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable3(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -521,7 +410,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		connection1
 				.prepareStatement(
-						"create table exampleTable4(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+						"create table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.close();
 
@@ -672,11 +561,11 @@ public class DbTableArtifactBundleProcessorTest {
 				.prepareStatement(
 						"create table exampleTable"
 								+ tableSufix
-								+ "(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+								+ "(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection1.prepareStatement(
 				"create table anotherTable" + tableSufix
-						+ "(i int not null primary key, i_fk int)").execute();
+						+ "(i int not null , i_fk int)").execute();
 
 		connection1.prepareStatement(
 				"alter table anotherTable" + tableSufix
@@ -703,8 +592,6 @@ public class DbTableArtifactBundleProcessorTest {
 			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1
 					.getNodes();
 			for (final SLNode node : nodes) {
-				System.err.println("   >>> " + node.getName() + " "
-						+ Arrays.toString(node.getClass().getInterfaces()));
 				if (node instanceof DatabaseConstraintForeignKey) {
 					foundFkConstraint1 = true;
 				}
@@ -812,9 +699,9 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
 		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-		final SLNode exampleSchemaNode2 = exampleDatabaseNode1
+		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
 				.getNode("PUBLIC");
-		final SLNode exampleCatalogNode2 = exampleSchemaNode1.getNode("DB");
+		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 
 		boolean foundPk2 = false;
 		synchronized (exampleCatalogNode2.getLockObject()) {
