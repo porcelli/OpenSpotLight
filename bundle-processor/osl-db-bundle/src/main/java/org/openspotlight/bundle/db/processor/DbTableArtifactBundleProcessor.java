@@ -48,7 +48,7 @@
  */
 package org.openspotlight.bundle.db.processor;
 
-import static org.openspotlight.federation.processing.BundleProcessorSupport.links;
+import static org.openspotlight.graph.util.GraphManipulationSupport.links;
 
 import org.openspotlight.bundle.db.DBConstants;
 import org.openspotlight.bundle.db.metamodel.link.AbstractTypeBind;

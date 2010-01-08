@@ -639,7 +639,6 @@ public class TestIntegratedMethodResolution extends
 				.getMethod(integerType, "wait", parameterList);
 
 		assertThat(foundMethod, is(notNullValue()));
-		System.out.println("found method: " + foundMethod);
 		assertThat(foundMethod.getID(),
 				is(correctTypeAndMethod.getK2().getID()));
 		assertThat(foundMethod.getContext(), is(not(abstractContex)));
