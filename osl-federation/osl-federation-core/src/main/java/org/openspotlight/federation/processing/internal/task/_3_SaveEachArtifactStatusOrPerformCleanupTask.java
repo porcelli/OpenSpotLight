@@ -50,6 +50,7 @@ package org.openspotlight.federation.processing.internal.task;
 
 import static org.openspotlight.common.concurrent.Priority.createPriority;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.concurrent.Priority;
@@ -71,15 +72,19 @@ public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 
 	private final T artifact;
 	private final ArtifactFinderWithSaveCapabilitie<T> finder;
+	private final CountDownLatch secondPhaseCountDownLatch;
 
 	public _3_SaveEachArtifactStatusOrPerformCleanupTask(final T artifact,
-			final ArtifactFinderWithSaveCapabilitie<T> finder) {
+			final ArtifactFinderWithSaveCapabilitie<T> finder,
+			final CountDownLatch latch) {
 		this.artifact = artifact;
 		this.finder = finder;
+		this.secondPhaseCountDownLatch = latch;
 	}
 
 	public void doTask() {
 		try {
+			secondPhaseCountDownLatch.await();
 			if (LastProcessStatus.PROCESSED.equals(artifact
 					.getLastProcessStatus())
 					|| LastProcessStatus.IGNORED.equals(artifact

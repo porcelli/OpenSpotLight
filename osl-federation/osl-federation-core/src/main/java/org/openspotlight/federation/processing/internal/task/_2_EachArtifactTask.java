@@ -51,6 +51,7 @@ package org.openspotlight.federation.processing.internal.task;
 import static org.openspotlight.common.concurrent.Priority.createPriority;
 
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.concurrent.Priority;
@@ -73,6 +74,8 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 
 	/** The bundle processor context. */
 	private ExecutionContext bundleProcessorContext;
+
+	private final CountDownLatch firstPhaseLatch;
 
 	/** The artifact type. */
 	private final Class<T> artifactType;
@@ -108,13 +111,14 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 			final T artifact,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
 			final Class<T> artifactType, final SaveBehavior saveBehavior,
-			final int subpriority) {
+			final int subpriority, final CountDownLatch firstPhaseLatch) {
 		this.artifactType = artifactType;
 		this.artifact = artifact;
 		this.bundleProcessor = bundleProcessor;
 		this.currentContextImpl = currentCtx;
 		this.saveBehavior = saveBehavior;
 		this.priority = createPriority(2, subpriority);
+		this.firstPhaseLatch = firstPhaseLatch;
 	}
 
 	/*
@@ -124,50 +128,58 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	 */
 	@SuppressWarnings("unchecked")
 	public void doTask() throws Exception {
-		if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
-				.getLastProcessStatus())
-				|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
-						.equals(this.artifact.getLastProcessStatus())) {
-			logger.info("ignoring " + this.artifact
-					+ " due to its last process status: "
-					+ this.artifact.getLastProcessStatus());
-			return;
-		}
-		this.bundleProcessor.beforeProcessArtifact(this.artifact);
-		LastProcessStatus result = null;
+		firstPhaseLatch.await();
+
+		final CountDownLatch secondPhaseLatch = new CountDownLatch(1);
 		try {
-			if (this.artifact instanceof ArtifactWithSyntaxInformation) {
-				final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation) this.artifact;
-				artifactWithInfo.clearSyntaxInformationSet();
+			if (LastProcessStatus.EXCEPTION_DURRING_PROCESS
+					.equals(this.artifact.getLastProcessStatus())
+					|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
+							.equals(this.artifact.getLastProcessStatus())) {
+				logger.info("ignoring " + this.artifact
+						+ " due to its last process status: "
+						+ this.artifact.getLastProcessStatus());
+				return;
 			}
-			result = this.bundleProcessor.processArtifact(this.artifact,
-					this.currentContextImpl, this.bundleProcessorContext);
-			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
-				this.bundleProcessorContext.getGraphSession().save();
+			this.bundleProcessor.beforeProcessArtifact(this.artifact);
+			LastProcessStatus result = null;
+			try {
+				if (this.artifact instanceof ArtifactWithSyntaxInformation) {
+					final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation) this.artifact;
+					artifactWithInfo.clearSyntaxInformationSet();
+				}
+				result = this.bundleProcessor.processArtifact(this.artifact,
+						this.currentContextImpl, this.bundleProcessorContext);
+				if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
+					this.bundleProcessorContext.getGraphSession().save();
+				}
+			} catch (final Exception e) {
+				result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
+				Exceptions.catchAndLog(e);
+				this.bundleProcessorContext.getLogger().log(
+						this.bundleProcessorContext.getUser(),
+						LogEventType.ERROR,
+						"Error during artifact processing on bundle processor "
+								+ this.bundleProcessor.getClass().getName(),
+						this.artifact);
+				throw e;
+			} finally {
+				this.artifact.setLastProcessStatus(result);
+				this.artifact.setLastProcessedDate(new Date());
+				final ArtifactFinder<T> finder = this.bundleProcessorContext
+						.getArtifactFinder(this.artifactType);
+				if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
+					final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
+					this.queue
+							.offer(new _3_SaveEachArtifactStatusOrPerformCleanupTask(
+									this.artifact, finderWithSaveCapabilitie,
+									secondPhaseLatch));
+				}
+				this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
+						result);
 			}
-		} catch (final Exception e) {
-			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
-			Exceptions.catchAndLog(e);
-			this.bundleProcessorContext.getLogger().log(
-					this.bundleProcessorContext.getUser(),
-					LogEventType.ERROR,
-					"Error during artifact processing on bundle processor "
-							+ this.bundleProcessor.getClass().getName(),
-					this.artifact);
-			throw e;
 		} finally {
-			this.artifact.setLastProcessStatus(result);
-			this.artifact.setLastProcessedDate(new Date());
-			final ArtifactFinder<T> finder = this.bundleProcessorContext
-					.getArtifactFinder(this.artifactType);
-			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
-				final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
-				this.queue
-						.offer(new _3_SaveEachArtifactStatusOrPerformCleanupTask(
-								this.artifact, finderWithSaveCapabilitie));
-			}
-			this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
-					result);
+			secondPhaseLatch.countDown();
 		}
 	}
 

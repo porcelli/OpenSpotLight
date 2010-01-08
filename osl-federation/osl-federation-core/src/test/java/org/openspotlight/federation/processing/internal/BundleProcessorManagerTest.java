@@ -147,6 +147,7 @@ public class BundleProcessorManagerTest {
 				.lastIndexOf('/'));
 		final String finalStr = initialRawPath.substring(initial.length());
 		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+		mapping.setSource(source);
 		mapping.setFrom(finalStr);
 		mapping.setTo("/sources/java/myProject");
 		mapping.setIncludeds(new HashSet<String>());

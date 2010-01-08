@@ -68,6 +68,8 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 
 	private final Priority priority = createPriority(5);
 
+	private PriorityBlockingQueue<ArtifactTask> queue;
+
 	/**
 	 * Instantiates a new _6_ ending to process artifacts task.
 	 * 
@@ -89,6 +91,12 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	 * ()
 	 */
 	public void doTask() throws Exception {
+		while (this.queue.size() != 0) {
+			try {
+				Thread.sleep(1000);
+			} catch (final InterruptedException e) {
+			}
+		}
 		this.context.getGraphSession().save();
 	}
 
@@ -130,6 +138,6 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	 * (java.util.concurrent.PriorityBlockingQueue)
 	 */
 	public void setQueue(final PriorityBlockingQueue<ArtifactTask> queue) {
-
+		this.queue = queue;
 	}
 }

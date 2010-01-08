@@ -50,8 +50,10 @@ package org.openspotlight.federation.processing.internal;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.SharedConstants;
@@ -93,12 +95,31 @@ import org.slf4j.LoggerFactory;
  */
 public class BundleProcessorExecution {
 
+	private static class StartingSearchArtifactsDto {
+		public final CurrentProcessorContextImpl currentContext;
+		public final Repository repository;
+		public final Class<? extends Artifact> artifactType;
+		public final BundleProcessorType bundleProcessorType;
+
+		public StartingSearchArtifactsDto(
+				final CurrentProcessorContextImpl currentContext,
+				final Repository repository,
+				final Class<? extends Artifact> artifactType,
+				final BundleProcessorType bundleProcessorType) {
+			this.currentContext = currentContext;
+			this.repository = repository;
+			this.artifactType = artifactType;
+			this.bundleProcessorType = bundleProcessorType;
+		}
+	}
+
 	private GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
 	/** The executor. */
 	private final GossipExecutor executor;
 	private final String username;
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
+
 	/** The repositories. */
 	private final Group[] groups;
 
@@ -191,6 +212,7 @@ public class BundleProcessorExecution {
 	}
 
 	private void fillTaskQueue(final Set<Group> groupsWithBundles) {
+		final List<StartingSearchArtifactsDto> newTaskData = new LinkedList<StartingSearchArtifactsDto>();
 		for (final Class<? extends Artifact> artifactType : artifactTypes) {
 			for (final Group group : groupsWithBundles) {
 				for (final BundleProcessorType processor : group
@@ -199,14 +221,22 @@ public class BundleProcessorExecution {
 					final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
 					currentContextImpl.setCurrentGroup(group);
 					currentContextImpl.setCurrentRepository(repository);
-					final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(
+					newTaskData.add(new StartingSearchArtifactsDto(
 							currentContextImpl, repository, artifactType,
-							processor);
-					queue.add(task);
-
+							processor));
 				}
 			}
 		}
+		final CountDownLatch firstPhaseLatch = new CountDownLatch(newTaskData
+				.size() - 1);
+		for (final StartingSearchArtifactsDto dto : newTaskData) {
+			final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(
+					dto.currentContext, dto.repository, dto.artifactType,
+					dto.bundleProcessorType, firstPhaseLatch);
+
+			queue.add(task);
+		}
+
 		for (final String repository : activeReposities) {
 			queue.add(new _5_SaveGraphTask<Artifact>(repository));
 		}

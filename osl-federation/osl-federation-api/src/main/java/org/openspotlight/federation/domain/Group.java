@@ -73,7 +73,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
 	private static final long serialVersionUID = -722058711327567623L;
 
-	private Set<Group> groups = new HashSet<Group>();
+	private List<Group> groups = new ArrayList<Group>();
 
 	/** The repository. */
 	private Repository repository;
@@ -133,7 +133,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 		return group;
 	}
 
-	public Set<Group> getGroups() {
+	public List<Group> getGroups() {
 		return groups;
 	}
 
@@ -228,7 +228,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 		this.group = group;
 	}
 
-	public void setGroups(final Set<Group> groups) {
+	public void setGroups(final List<Group> groups) {
 		this.groups = groups;
 	}
 
