@@ -74,6 +74,8 @@ import org.openspotlight.federation.processing.internal.domain.ArtifactChangesIm
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
@@ -97,6 +99,8 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 	private final BundleProcessorType bundleProcessorType;
 
 	private PriorityBlockingQueue<ArtifactTask> queue;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final Repository repository;
 
@@ -210,7 +214,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 						this.context.getUser(),
 						LogEventType.TRACE,
 						"Artifact processed on starting for bundle Processor "
-								+ bundleProcessor.getClass().getName(),
+								+ bundleProcessor.getClass().getSimpleName(),
 						artifactAlreadyProcessed);
 			}
 			final List<BundleProcessorArtifactPhase<T>> artifactPhases = new ArrayList<BundleProcessorArtifactPhase<T>>();
@@ -226,8 +230,27 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 						.newInstance();
 				if (artifactPhase.getArtifactType().isAssignableFrom(
 						artifactType)) {
+					logger
+							.info(" selecting processor artifact phase for bundle type "
+									+ artifactPhase.getClass().getSimpleName()
+									+ " for artifact type "
+									+ this.artifactType.getSimpleName()
+									+ " due to its acceptable type "
+									+ artifactPhase.getArtifactType()
+											.getSimpleName());
+
 					artifactPhases
 							.add((BundleProcessorArtifactPhase<T>) artifactPhase);
+				} else {
+					logger
+							.info(" ignoring processor artifact phase for bundle type "
+									+ artifactPhase.getClass().getSimpleName()
+									+ " for artifact type "
+									+ this.artifactType.getSimpleName()
+									+ " due to its acceptable type "
+									+ artifactPhase.getArtifactType()
+											.getSimpleName());
+
 				}
 
 			}
@@ -240,6 +263,11 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 							.getCurrentGroup());
 					taskCtx.setCurrentRepository(this.currentContext
 							.getCurrentRepository());
+					logger
+							.info(" Adding processor artifact phase for bundle type "
+									+ artifactPhase.getClass().getSimpleName()
+									+ " and artifact type "
+									+ this.artifactType.getSimpleName());
 					this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
 							artifactToProcess, artifactPhase,
 							this.artifactType, behavior, subpriority));
@@ -259,7 +287,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 						this.context.getUser(),
 						LogEventType.ERROR,
 						"Error on trying to process artifact on starting for bundle Processor "
-								+ bundleProcessor.getClass().getName(),
+								+ bundleProcessor.getClass().getSimpleName(),
 						artifactWithError);
 			}
 			throw e;

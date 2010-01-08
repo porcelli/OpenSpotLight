@@ -2,6 +2,8 @@ package org.openspotlight.bundle.db.processor;
 
 import static org.openspotlight.federation.processing.BundleProcessorSupport.links;
 
+import java.util.Arrays;
+
 import org.openspotlight.bundle.db.DBConstants;
 import org.openspotlight.bundle.db.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.metamodel.link.CatalogTableView;
@@ -164,10 +166,8 @@ public class DbProcessorHelper implements DBConstants {
 				tableParentLink, database);
 		final TableView table = parent.parent.addNode(TableView.class,
 				tableName);
-		final Column column = table.addNode(Column.class, columnName,
-				links(AbstractTypeBind.class, ColumnDataType.class,
-						ForeignKey.class),
-				links(ConstraintDatabaseColumn.class));
+		final Column column = table.addNode(Column.class, columnName, links(
+				AbstractTypeBind.class, ColumnDataType.class), links());
 		final ConstraintVo constraintVo = new ConstraintVo(parent, table,
 				column);
 		return constraintVo;
@@ -194,11 +194,14 @@ public class DbProcessorHelper implements DBConstants {
 				artifact.getToColumnName());
 		final DatabaseConstraintForeignKey fk = fromParent.parent.database
 				.addNode(wrappedType.getDatabaseConstraintForeignKeyType(),
-						artifact.getConstraintName(), links(
-								ConstraintDatabaseColumn.class,
-								ForeignKey.class), links(
-								ConstraintDatabaseColumn.class,
-								ForeignKey.class));
+						artifact.getConstraintName());
+		System.err.println(" >>> "
+				+ fk.getName()
+				+ " inside "
+				+ fromParent.parent.database.getName()
+				+ " "
+				+ Arrays.toString(fromParent.parent.database.getClass()
+						.getInterfaces()));
 		context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
 				fromParent.column, fk, false);
 		context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
@@ -223,9 +226,7 @@ public class DbProcessorHelper implements DBConstants {
 						.getColumnName());
 		final DatabaseConstraintPrimaryKey pk = parent.parent.database.addNode(
 				wrappedType.getDatabaseConstraintPrimaryKeyType(), artifact
-						.getConstraintName(),
-				links(ConstraintDatabaseColumn.class),
-				links(ConstraintDatabaseColumn.class));
+						.getConstraintName());
 		context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
 				parent.column, pk, false);
 
