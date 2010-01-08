@@ -48,11 +48,11 @@
  */
 package org.openspotlight.bundle.db.processor;
 
-import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createParentNodes;
+import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createTableParentNodes;
 
 import java.util.Set;
 
-import org.openspotlight.bundle.db.processor.DbProcessorHelper.TableParentVo;
+import org.openspotlight.bundle.db.processor.DbProcessorHelper.ParentVo;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -95,9 +95,9 @@ public class DbArtifactGlobalProcessor implements
 				final TableArtifact tableArtifact = (TableArtifact) artifact;
 				final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
 						.createByType(tableArtifact.getDatabaseType());
-				final TableParentVo parent = createParentNodes(wrappedType,
+				final ParentVo parent = createTableParentNodes(wrappedType,
 						tableArtifact, currentContext, context);
-				final SLNode tableNode = parent.tableParent
+				final SLNode tableNode = parent.parent
 						.getNode(tableArtifact.getTableName());
 				if (tableNode != null) {
 					tableNode.remove();

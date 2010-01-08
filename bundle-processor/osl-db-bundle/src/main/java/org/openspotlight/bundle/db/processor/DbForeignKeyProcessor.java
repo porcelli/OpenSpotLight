@@ -1,7 +1,8 @@
 package org.openspotlight.bundle.db.processor;
 
-import org.openspotlight.bundle.db.metamodel.link.ConstraintDatabaseColumn;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
+import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createForeignKey;
+
+import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
@@ -25,24 +26,14 @@ public class DbForeignKeyProcessor implements
 	public Class<ForeignKeyConstraintArtifact> getArtifactType() {
 		return ForeignKeyConstraintArtifact.class;
 	}
-	
-	
 
 	public LastProcessStatus processArtifact(
 			final ForeignKeyConstraintArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
-
-		if (c.getPks() != null) {
-			for (final String pkName : c.getPks()) {
-				final DatabaseConstraintPrimaryKey pk = column.addNode(
-						wrappedType.getDatabaseConstraintPrimaryKeyType(),
-						pkName);
-				context.getGraphSession().addLink(
-						ConstraintDatabaseColumn.class, column, pk, false);
-			}
-		}
-
+		final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
+				.createByType(artifact.getDatabaseType());
+		createForeignKey(wrappedType, context, currentContext, artifact);
 		return LastProcessStatus.PROCESSED;
 	}
 
