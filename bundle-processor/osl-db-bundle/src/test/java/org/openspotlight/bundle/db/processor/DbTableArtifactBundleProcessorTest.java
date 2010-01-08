@@ -698,7 +698,6 @@ public class DbTableArtifactBundleProcessorTest {
 		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
 		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
 		boolean foundFkConstraint1 = false;
-		boolean foundPkConstraint1 = false;
 		synchronized (exampleDatabaseNode1.getLockObject()) {
 
 			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1
@@ -708,9 +707,6 @@ public class DbTableArtifactBundleProcessorTest {
 						+ Arrays.toString(node.getClass().getInterfaces()));
 				if (node instanceof DatabaseConstraintForeignKey) {
 					foundFkConstraint1 = true;
-				}
-				if (node instanceof DatabaseConstraintPrimaryKey) {
-					foundPkConstraint1 = true;
 				}
 			}
 		}
@@ -735,7 +731,6 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
 		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-		boolean foundPkConstraint2 = false;
 		boolean foundFkConstraint2 = false;
 		synchronized (exampleDatabaseNode2.getLockObject()) {
 
@@ -745,16 +740,11 @@ public class DbTableArtifactBundleProcessorTest {
 				if (node instanceof DatabaseConstraintForeignKey) {
 					foundFkConstraint2 = true;
 				}
-				if (node instanceof DatabaseConstraintPrimaryKey) {
-					foundPkConstraint2 = true;
-				}
 			}
 		}
 		Assert.assertThat(foundFkConstraint1, Is.is(true));
-		Assert.assertThat(foundPkConstraint1, Is.is(true));
 
 		Assert.assertThat(foundFkConstraint2, Is.is(false));
-		Assert.assertThat(foundPkConstraint2, Is.is(true));
 
 	}
 
@@ -782,11 +772,14 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
 		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
+		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 
 		boolean foundPk = false;
-		synchronized (exampleDatabaseNode1.getLockObject()) {
+		synchronized (exampleCatalogNode1.getLockObject()) {
 
-			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1
+			final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode1
 					.getNodes();
 			for (final SLNode node : nodes) {
 				if (node instanceof DatabaseConstraintPrimaryKey) {
@@ -819,11 +812,14 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
 		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+		final SLNode exampleSchemaNode2 = exampleDatabaseNode1
+				.getNode("PUBLIC");
+		final SLNode exampleCatalogNode2 = exampleSchemaNode1.getNode("DB");
 
 		boolean foundPk2 = false;
-		synchronized (exampleDatabaseNode2.getLockObject()) {
+		synchronized (exampleCatalogNode2.getLockObject()) {
 
-			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode2
+			final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode2
 					.getNodes();
 			for (final SLNode node : nodes) {
 				if (node instanceof DatabaseConstraintPrimaryKey) {

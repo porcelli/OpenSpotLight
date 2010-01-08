@@ -222,7 +222,7 @@ public class DbProcessorHelper implements DBConstants {
 						.getDatabaseName(), artifact.getSchemaName(), artifact
 						.getCatalogName(), artifact.getTableName(), artifact
 						.getColumnName());
-		final DatabaseConstraintPrimaryKey pk = parent.parent.database.addNode(
+		final DatabaseConstraintPrimaryKey pk = parent.parent.parent.addNode(
 				wrappedType.getDatabaseConstraintPrimaryKeyType(), artifact
 						.getConstraintName());
 		context.getGraphSession().addLink(ConstraintDatabaseColumn.class,
