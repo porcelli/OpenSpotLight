@@ -49,13 +49,17 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.processing.BundleProcessor;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -64,122 +68,133 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Class BundleProcessorType.
  */
-@Name( "bundle_processor_type" )
+@Name("bundle_processor_type")
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
-    private static final long                                    serialVersionUID = -8305990807194729295L;
+	private static final long serialVersionUID = -8305990807194729295L;
 
-    /** The type. */
-    private Class<? extends BundleProcessor<? extends Artifact>> type;
+	/** The type. */
+	private Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase;
 
-    /** The active. */
-    private boolean                                              active;
+	private List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases = new ArrayList<Class<? extends BundleProcessorArtifactPhase<?>>>();
 
-    /** The group. */
-    private Group                                                group;
+	/** The active. */
+	private boolean active;
 
-    /** The sources. */
-    private Set<BundleSource>                                    sources          = new HashSet<BundleSource>();
+	/** The group. */
+	private Group group;
 
-    /** The hash code. */
-    private volatile int                                         hashCode;
+	/** The sources. */
+	private Set<BundleSource> sources = new HashSet<BundleSource>();
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals( final Object o ) {
-        if (!(o instanceof BundleProcessorType)) {
-            return false;
-        }
-        final BundleProcessorType that = (BundleProcessorType)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.group, this.type), Arrays.andOf(that.group, that.type));
-        return result;
-    }
+	/** The hash code. */
+	private volatile int hashCode;
 
-    /**
-     * Gets the artifact source.
-     * 
-     * @return the artifact source
-     */
-    @ParentProperty
-    public Group getGroup() {
-        return this.group;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(final Object o) {
+		if (!(o instanceof BundleProcessorType)) {
+			return false;
+		}
+		final BundleProcessorType that = (BundleProcessorType) o;
+		final boolean result = Equals.eachEquality(Arrays
+				.of(group, globalPhase), Arrays.andOf(that.group,
+				that.globalPhase));
+		return result;
+	}
 
-    /**
-     * Gets the sources.
-     * 
-     * @return the sources
-     */
-    public Set<BundleSource> getSources() {
-        return this.sources;
-    }
+	public List<Class<? extends BundleProcessorArtifactPhase<?>>> getArtifactPhases() {
+		return artifactPhases;
+	}
 
-    /**
-     * Gets the type.
-     * 
-     * @return the type
-     */
-    @KeyProperty
-    public Class<? extends BundleProcessor<? extends Artifact>> getType() {
-        return this.type;
-    }
+	@KeyProperty
+	public Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> getGlobalPhase() {
+		return globalPhase;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode() {
-        int result = this.hashCode;
-        if (result == 0) {
-            result = HashCodes.hashOf(this.group, this.type);
-            this.hashCode = result;
-        }
-        return result;
-    }
+	/**
+	 * Gets the artifact source.
+	 * 
+	 * @return the artifact source
+	 */
+	@ParentProperty
+	public Group getGroup() {
+		return group;
+	}
 
-    /**
-     * Checks if is active.
-     * 
-     * @return true, if is active
-     */
-    public boolean isActive() {
-        return this.active;
-    }
+	/**
+	 * Gets the sources.
+	 * 
+	 * @return the sources
+	 */
+	public Set<BundleSource> getSources() {
+		return sources;
+	}
 
-    /**
-     * Sets the active.
-     * 
-     * @param active the new active
-     */
-    public void setActive( final boolean active ) {
-        this.active = active;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		int result = hashCode;
+		if (result == 0) {
+			result = HashCodes.hashOf(group, globalPhase);
+			hashCode = result;
+		}
+		return result;
+	}
 
-    /**
-     * Sets the group.
-     * 
-     * @param group the new group
-     */
-    public void setGroup( final Group group ) {
-        this.group = group;
-    }
+	/**
+	 * Checks if is active.
+	 * 
+	 * @return true, if is active
+	 */
+	public boolean isActive() {
+		return active;
+	}
 
-    /**
-     * Sets the sources.
-     * 
-     * @param sources the new sources
-     */
-    public void setSources( final Set<BundleSource> sources ) {
-        this.sources = sources;
-    }
+	/**
+	 * Sets the active.
+	 * 
+	 * @param active
+	 *            the new active
+	 */
+	public void setActive(final boolean active) {
+		this.active = active;
+	}
 
-    /**
-     * Sets the type.
-     * 
-     * @param type the new type
-     */
-    public void setType( final Class<? extends BundleProcessor<? extends Artifact>> type ) {
-        this.type = type;
-    }
+	public void setArtifactPhases(
+			final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases) {
+		this.artifactPhases = artifactPhases;
+	}
+
+	public void setGlobalPhase(
+			final Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase) {
+		this.globalPhase = globalPhase;
+	}
+
+	/**
+	 * Sets the group.
+	 * 
+	 * @param group
+	 *            the new group
+	 */
+	public void setGroup(final Group group) {
+		this.group = group;
+	}
+
+	/**
+	 * Sets the sources.
+	 * 
+	 * @param sources
+	 *            the new sources
+	 */
+	public void setSources(final Set<BundleSource> sources) {
+		this.sources = sources;
+	}
 
 }

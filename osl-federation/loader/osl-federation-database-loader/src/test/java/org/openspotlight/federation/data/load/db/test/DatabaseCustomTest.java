@@ -50,27 +50,28 @@ package org.openspotlight.federation.data.load.db.test;
 
 import static java.sql.DriverManager.getConnection;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 import java.sql.Connection;
+import java.util.Set;
 
-import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.Column;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.ExportedFk;
 import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.RoutineArtifact;
-import org.openspotlight.federation.domain.RoutineType;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.domain.ViewArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineType;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.Constraints;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 
@@ -180,31 +181,23 @@ public class DatabaseCustomTest {
 
 		final Iterable<Artifact> loadedArtifacts = artifactLoader
 				.loadArtifactsFromSource(bundle);
+		final TableArtifact exampleTable = (TableArtifact) finder
+				.findByPath("PUBLIC/DB/TABLE/EXAMPLETABLE");
+		final TableArtifact exampleView = (TableArtifact) finder
+				.findByPath("PUBLIC/DB/VIEW/EXAMPLEVIEW");
+		assertThat(exampleTable, is(TableArtifact.class));
+		final Set<DatabaseCustomArtifact> pks = finder
+				.listByPath(Constraints.PRIMARY_KEY.toString());
+		final Set<DatabaseCustomArtifact> fks = finder
+				.listByPath(Constraints.FOREIGN_KEY.toString());
+
 		assertThat(loadedArtifacts, is(notNullValue()));
 		assertThat(loadedArtifacts.iterator().hasNext(), is(true));
 
-		final TableArtifact exampleTable = (TableArtifact) finder
-				.findByPath("PUBLIC/TABLE/DB/EXAMPLETABLE");
-		final TableArtifact exampleView = (TableArtifact) finder
-				.findByPath("PUBLIC/VIEW/DB/EXAMPLEVIEW");
-		assertThat(exampleTable, is(TableArtifact.class));
-		boolean foundPk = false;
-		for (final Column c : exampleTable.getColumns()) {
-			if (c.getName().equalsIgnoreCase("i")) {
-				assertThat(c.getPks(), is(notNullValue()));
-				assertThat(c.getPks().size(), is(IsNot.not(0)));
-				assertThat(c.getExportedFks().size(), is(1));
-				final ExportedFk fk = c.getExportedFks().iterator().next();
-				assertThat(fk.getColumnName(), is("I_FK"));
-				assertThat(fk.getFkName(), is(notNullValue()));
-				assertThat(fk.getTableCatalog(), is("DB"));
-				assertThat(fk.getTableSchema(), is("PUBLIC"));
-				assertThat(fk.getTableName(), is("ANOTHERTABLE"));
-				foundPk = true;
-				break;
-			}
-		}
-		assertThat(foundPk, is(true));
+		assertThat(fks, is(notNullValue()));
+		assertThat(fks.size(), is(not(0)));
+		assertThat(pks, is(notNullValue()));
+		assertThat(pks.size(), is(not(0)));
 		assertThat(exampleView, is(ViewArtifact.class));
 	}
 }

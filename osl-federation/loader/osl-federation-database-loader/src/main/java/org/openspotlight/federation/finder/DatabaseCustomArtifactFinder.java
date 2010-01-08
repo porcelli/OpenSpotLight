@@ -65,31 +65,36 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.Column;
-import org.openspotlight.federation.domain.ColumnType;
-import org.openspotlight.federation.domain.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.ExportedFk;
-import org.openspotlight.federation.domain.NullableSqlType;
-import org.openspotlight.federation.domain.RoutineArtifact;
-import org.openspotlight.federation.domain.RoutineParameter;
-import org.openspotlight.federation.domain.RoutineParameterType;
-import org.openspotlight.federation.domain.RoutineType;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.domain.ViewArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.db.Column;
+import org.openspotlight.federation.domain.artifact.db.ColumnType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
+import org.openspotlight.federation.domain.artifact.db.NullableSqlType;
+import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineParameter;
+import org.openspotlight.federation.domain.artifact.db.RoutineParameterType;
+import org.openspotlight.federation.domain.artifact.db.RoutineType;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
 public class DatabaseCustomArtifactFinder extends
 		AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
+
+	public static enum Constraints {
+		FOREIGN_KEY, PRIMARY_KEY
+	}
 
 	protected static class DatabaseCustomArtifactInternalLoader {
 
 		public Map<String, DatabaseCustomArtifact> loadDatabaseMetadata(
 				final DatabaseMetaData metadata) throws ConfigurationException {
 			try {
-				final Map<String, TableArtifact> tableMetadata = loadTableMetadata(metadata);
+				final Map<String, DatabaseCustomArtifact> tableMetadata = loadTableMetadata(metadata);
 				final Map<String, RoutineArtifact> routineMetadata = loadRoutineMetadata(metadata);
 				final Map<String, DatabaseCustomArtifact> result = new HashMap<String, DatabaseCustomArtifact>(
 						tableMetadata.size() + routineMetadata.size());
@@ -161,12 +166,12 @@ public class DatabaseCustomArtifactFinder extends
 		}
 
 		@SuppressWarnings("boxing")
-		private Map<String, TableArtifact> loadTableMetadata(
+		private Map<String, DatabaseCustomArtifact> loadTableMetadata(
 				final DatabaseMetaData metadata) throws SQLException {
 			final ResultSet tableRs = metadata.getTables(null, null, null, of(
 					"TABLE", "VIEW")); //$NON-NLS-1$//$NON-NLS-2$
 
-			final Map<String, TableArtifact> tableMetadata = new HashMap<String, TableArtifact>();
+			final Map<String, DatabaseCustomArtifact> tableMetadata = new HashMap<String, DatabaseCustomArtifact>();
 			while (tableRs.next()) {
 				final String catalog = tableRs.getString("TABLE_CAT"); //$NON-NLS-1$
 				final String schema = tableRs.getString("TABLE_SCHEM"); //$NON-NLS-1$
@@ -176,7 +181,7 @@ public class DatabaseCustomArtifactFinder extends
 				String description;
 				if (catalog != null) {
 					description = MessageFormat.format("{0}/{1}/{2}/{3}", //$NON-NLS-1$
-							schema, tableType, catalog, tableName);
+							schema, catalog, tableType, tableName);
 				} else {
 					description = MessageFormat.format("{0}/{1}/{2}", //$NON-NLS-1$
 							schema, tableType, tableName);
@@ -185,8 +190,12 @@ public class DatabaseCustomArtifactFinder extends
 
 				TableArtifact desc = null;
 
-				if (tableMetadata.containsKey(description)) {
-					desc = tableMetadata.get(description);
+				if (tableMetadata.containsKey(description)
+						&& !description.startsWith(Constraints.FOREIGN_KEY
+								.toString())
+						&& !description.startsWith(Constraints.PRIMARY_KEY
+								.toString())) {
+					desc = (TableArtifact) tableMetadata.get(description);
 				} else {
 					if ("VIEW".equals(tableType)) { //$NON-NLS-1$
 						desc = Artifact.createArtifact(ViewArtifact.class,
@@ -213,31 +222,34 @@ public class DatabaseCustomArtifactFinder extends
 					set.add(pkName);
 				}
 
-				final Map<String, Set<ExportedFk>> exportedFks = new HashMap<String, Set<ExportedFk>>();
 				final ResultSet fkRs = metadata.getExportedKeys(catalog,
 						schema, tableName);
 				while (fkRs.next()) {
 					final String fkName = fkRs.getString("FK_NAME");
-					final String thisColumnName = fkRs
-							.getString("PKCOLUMN_NAME");
 					final String thatCatalog = fkRs.getString("FKTABLE_CAT");
 					final String thatSchema = fkRs.getString("FKTABLE_SCHEM");
 					final String thatTable = fkRs.getString("FKTABLE_NAME");
 					final String thatColumn = fkRs.getString("FKCOLUMN_NAME");
-					Set<ExportedFk> fks = exportedFks.get(thisColumnName);
-					if (fks == null) {
-						fks = new HashSet<ExportedFk>();
-						exportedFks.put(thisColumnName, fks);
-					}
+					final String fromCatalog = fkRs.getString("PKTABLE_CAT");
+					final String fromSchema = fkRs.getString("PKTABLE_SCHEM");
+					final String fromTable = fkRs.getString("PKTABLE_NAME");
+					final String fromColumn = fkRs.getString("PKCOLUMN_NAME");
 
-					final ExportedFk fk = new ExportedFk();
-					fk.setColumnName(thatColumn);
-					fk.setFkName(fkName);
-					fk.setTableCatalog(thatCatalog);
-					fk.setTableName(thatTable);
-					fk.setTableSchema(thatSchema);
-					fk.setColumnName(thatColumn);
-					fks.add(fk);
+					final String keyArtifactName = MessageFormat.format(
+							"{0}/{1}", Constraints.FOREIGN_KEY, fkName);
+					final ForeignKeyConstraintArtifact fk = Artifact
+							.createArtifact(ForeignKeyConstraintArtifact.class,
+									keyArtifactName, ChangeType.INCLUDED);
+					fk.setToCatalogName(thatCatalog);
+					fk.setToColumnName(thatColumn);
+					fk.setToSchemaName(thatSchema);
+					fk.setToTableName(thatTable);
+					fk.setFromCatalogName(fromCatalog);
+					fk.setFromColumnName(fromColumn);
+					fk.setFromSchemaName(fromSchema);
+					fk.setFromTableName(fromTable);
+					fk.setConstraintName(fkName);
+					tableMetadata.put(keyArtifactName, fk);
 				}
 
 				final ResultSet columnRs = metadata.getColumns(catalog, schema,
@@ -267,20 +279,27 @@ public class DatabaseCustomArtifactFinder extends
 					}
 					final Set<String> pks = pkMap.get(columnName);
 					if (pks != null) {
-						column.getPks().addAll(pks);
+						for (final String pkName : pks) {
+							final String pkArtifactName = MessageFormat.format(
+									"{0}/{1}", Constraints.PRIMARY_KEY, pkName);
+							final PrimaryKeyConstraintArtifact pk = Artifact
+									.createArtifact(
+											PrimaryKeyConstraintArtifact.class,
+											pkArtifactName, ChangeType.INCLUDED);
+							pk.setConstraintName(pkName);
+							pk.setColumnName(column.getName());
+							pk.setTableName(column.getTable().getTableName());
+							pk.setCatalogName(column.getTable()
+									.getCatalogName());
+							pk.setSchemaName(column.getTable().getSchemaName());
+							tableMetadata.put(pkArtifactName, pk);
+						}
 					}
 					column.setType(type);
 					column.setNullable(nullable);
 					column.setColumnSize(columnSize);
 					column.setDecimalSize(decimalSize);
 					desc.getColumns().add(column);
-					final Set<ExportedFk> fks = exportedFks.get(columnName);
-					if (fks != null) {
-						for (final ExportedFk fk : fks) {
-							fk.setColumn(column);
-						}
-						column.getExportedFks().addAll(fks);
-					}
 				}
 				tableMetadata.put(description, desc);
 

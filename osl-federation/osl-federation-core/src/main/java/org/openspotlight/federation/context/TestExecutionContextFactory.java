@@ -55,7 +55,7 @@ import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;

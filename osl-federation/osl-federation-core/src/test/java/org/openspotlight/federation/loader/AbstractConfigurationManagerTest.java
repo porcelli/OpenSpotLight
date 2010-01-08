@@ -53,13 +53,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.processing.internal.ExampleBundleProcessor;
 
 /**
@@ -124,7 +124,7 @@ public abstract class AbstractConfigurationManagerTest {
 		final BundleProcessorType newBundle = new BundleProcessorType();
 		newBundle.setActive(true);
 		newBundle.setGroup(group);
-		newBundle.setType(ExampleBundleProcessor.class);
+		newBundle.setGlobalPhase(ExampleBundleProcessor.class);
 		group.getBundleTypes().add(newBundle);
 
 		final BundleSource bundleSource = new BundleSource();

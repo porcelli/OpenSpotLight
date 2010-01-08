@@ -48,8 +48,8 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
 
 /**
  * The Interface ArtifactFinderProvider.

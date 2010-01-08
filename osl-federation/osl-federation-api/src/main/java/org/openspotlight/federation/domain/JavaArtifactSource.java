@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.domain;
 
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+
 public class JavaArtifactSource extends ArtifactSource {
     private static final long serialVersionUID = 5899043044379454212L;
 

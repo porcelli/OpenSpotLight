@@ -50,7 +50,6 @@ package org.openspotlight.federation.processing.internal;
 
 import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openspotlight.common.util.Exceptions;
@@ -68,16 +67,13 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 	private final AtomicBoolean error = new AtomicBoolean(false);
 	private final AtomicBoolean stopped = new AtomicBoolean(false);
 	private Map<String, ExecutionContext> contextMap;
-	private final long timeoutInMilli;
 
 	private final PriorityBlockingQueue<ArtifactTask> queue;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public ArtifactWorker(final long timeoutInMilli,
-			final PriorityBlockingQueue<ArtifactTask> queue) {
+	public ArtifactWorker(final PriorityBlockingQueue<ArtifactTask> queue) {
 		this.queue = queue;
-		this.timeoutInMilli = timeoutInMilli;
 	}
 
 	public boolean hasError() {
@@ -93,42 +89,37 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 		ArtifactTask task = null;
 		infiniteLoop: while (true) {
 			try {
+				task = queue.poll();
+				if (task == null) {
+					if (!stopped.get()) {
+						continue infiniteLoop;
+					} else {
+						break infiniteLoop;
+					}
+				}
 				try {
-					task = queue.poll(timeoutInMilli, TimeUnit.MILLISECONDS);
-					if (task == null) {
-						if (!stopped.get()) {
-							continue infiniteLoop;
-						} else {
-							break infiniteLoop;
-						}
+					working.set(true);
+					logger.info("starting " + task.getClass().getSimpleName()
+							+ " on repository " + task.getRepositoryName());
+					task.setQueue(queue);
+					final String repositoryName = task.getRepositoryName();
+					final ExecutionContext context = contextMap
+							.get(repositoryName);
+					task.setBundleContext(context);
+					final CurrentProcessorContextImpl currentCtx = task
+							.getCurrentContext();
+					if (currentCtx != null) {
+						final SLContext groupContext = context
+								.getGraphSession().createContext(
+										SLConsts.DEFAULT_GROUP_CONTEXT);
+						currentCtx.setGroupContext(groupContext);
 					}
-					try {
-						working.set(true);
-						logger.info("starting "
-								+ task.getClass().getSimpleName()
-								+ " on repository " + task.getRepositoryName());
-						task.setQueue(queue);
-						final String repositoryName = task.getRepositoryName();
-						final ExecutionContext context = contextMap
-								.get(repositoryName);
-						task.setBundleContext(context);
-						final CurrentProcessorContextImpl currentCtx = task
-								.getCurrentContext();
-						if (currentCtx != null) {
-							final SLContext groupContext = context
-									.getGraphSession().createContext(
-											SLConsts.DEFAULT_GROUP_CONTEXT);
-							currentCtx.setGroupContext(groupContext);
-						}
-						task.doTask();
-					} catch (final Exception e) {
-						Exceptions.catchAndLog(e);
-						error.set(true);
-					}
-				} catch (final InterruptedException e) {
+					task.doTask();
+				} catch (final Exception e) {
 					Exceptions.catchAndLog(e);
 					error.set(true);
 				}
+
 			} finally {
 				if (task != null) {
 					logger.info("stopping " + task.getClass().getSimpleName()

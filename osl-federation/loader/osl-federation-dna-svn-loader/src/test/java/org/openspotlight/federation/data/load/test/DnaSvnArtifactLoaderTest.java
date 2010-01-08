@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 
 /**
  * Test for class {@link DNASvnArtifactFinder}

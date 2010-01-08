@@ -76,6 +76,7 @@ import org.openspotlight.bundle.db.metamodel.node.Server;
 import org.openspotlight.bundle.db.metamodel.node.TableView;
 import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
 import org.openspotlight.bundle.db.metamodel.node.TableViewView;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -84,14 +85,11 @@ import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.ExportedFk;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
@@ -183,7 +181,10 @@ public class DbTableArtifactBundleProcessorTest {
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
-		commonProcessor.setType(DbTableArtifactBundleProcessor.class);
+		commonProcessor.setGlobalPhase(DbArtifactGlobalProcessor.class);
+		commonProcessor.getArtifactPhases().add(DbTableArtifactProcessor.class);
+		commonProcessor.getArtifactPhases().add(DbPrimaryKeyProcessor.class);
+		commonProcessor.getArtifactPhases().add(DbForeignKeyProcessor.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();
@@ -275,34 +276,6 @@ public class DbTableArtifactBundleProcessorTest {
 				.createExecutionContext("username", "password",
 						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
 								.getName());
-
-		final ArtifactFinder<TableArtifact> tableFinder = executionContext
-				.getArtifactFinder(TableArtifact.class);
-		final TableArtifact table = tableFinder
-				.findByPath("/databaseArtifacts/PUBLIC/TABLE/DB/EXAMPLETABLE"
-						+ tableSufix);
-		boolean foundFkInsideArtifact = false;
-		for (final org.openspotlight.federation.domain.Column c : table
-				.getColumns()) {
-			if (c.getName().equalsIgnoreCase("i")) {
-				Assert.assertThat(c.getExportedFks().size() > 0, Is.is(true));
-				for (final ExportedFk fk : c.getExportedFks()) {
-					logger.info("        >>> getTableSchema   "
-							+ fk.getTableSchema());
-					logger.info("        >>> getTableCatalog  "
-							+ fk.getTableCatalog());
-					logger.info("        >>> getTableName     "
-							+ fk.getTableName());
-					logger.info("        >>> getColumnName    "
-							+ fk.getColumnName());
-					logger.info("        >>> getFkName        "
-							+ fk.getFkName());
-				}
-
-				foundFkInsideArtifact = true;
-			}
-		}
-		Assert.assertThat(foundFkInsideArtifact, Is.is(true));
 
 		final SLContext groupContext = executionContext.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
@@ -722,29 +695,18 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
 		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-				.getNode("PUBLIC");
-		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE" + tableSufix);
-		final SLNode anotherTableNode1 = exampleCatalogNode1
-				.getNode("ANOTHERTABLE" + tableSufix);
-
-		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
-				"I");
-		final Column anotherExampleColumn = anotherTableNode1.getNode(
-				Column.class, "I_FK");
-		final Set<SLNode> pkNodes1 = exampleColumn1.getNodes();
-		final SLNode fkNode = anotherExampleColumn.getNode("EXAMPLE_FK"
-				+ tableSufix);
-
+		boolean foundFkConstraint1 = false;
 		boolean foundPkConstraint1 = false;
-		Assert.assertThat(
-				exampleColumn1.getLockObject() == anotherExampleColumn
-						.getLockObject(), Is.is(true));
+		synchronized (exampleDatabaseNode1.getLockObject()) {
 
-		synchronized (exampleColumn1.getLockObject()) {
-			for (final SLNode node : pkNodes1) {
+			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1
+					.getNodes();
+			for (final SLNode node : nodes) {
+				System.err.println("   >>> " + node.getName() + " "
+						+ Arrays.toString(node.getClass().getInterfaces()));
+				if (node instanceof DatabaseConstraintForeignKey) {
+					foundFkConstraint1 = true;
+				}
 				if (node instanceof DatabaseConstraintPrimaryKey) {
 					foundPkConstraint1 = true;
 				}
@@ -771,39 +733,23 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
 		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-				.getNode("PUBLIC");
-		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE" + tableSufix);
-		final SLNode anotherTableNode2 = exampleCatalogNode2
-				.getNode("ANOTHERTABLE" + tableSufix);
-
-		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
-				"I");
-		final Column anotherExampleColumn2 = anotherTableNode2.getNode(
-				Column.class, "I_FK");
-		final Set<SLNode> pkNodes2 = exampleColumn2.getNodes();
-		final Set<SLNode> fkNodes2 = anotherExampleColumn2.getNodes();
-
 		boolean foundPkConstraint2 = false;
 		boolean foundFkConstraint2 = false;
+		synchronized (exampleDatabaseNode2.getLockObject()) {
 
-		synchronized (exampleColumn2.getLockObject()) {
-			for (final SLNode node : pkNodes2) {
+			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode2
+					.getNodes();
+			for (final SLNode node : nodes) {
+				if (node instanceof DatabaseConstraintForeignKey) {
+					foundFkConstraint2 = true;
+				}
 				if (node instanceof DatabaseConstraintPrimaryKey) {
 					foundPkConstraint2 = true;
 				}
 			}
-			for (final SLNode node : fkNodes2) {
-				if (node instanceof DatabaseConstraintForeignKey) {
-					foundFkConstraint2 = true;
-				}
-			}
 		}
-
+		Assert.assertThat(foundFkConstraint1, Is.is(true));
 		Assert.assertThat(foundPkConstraint1, Is.is(true));
-		Assert.assertThat(fkNode, Is.is(IsNull.notNullValue()));
 
 		Assert.assertThat(foundFkConstraint2, Is.is(false));
 		Assert.assertThat(foundPkConstraint2, Is.is(true));
@@ -834,27 +780,20 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode1 = groupNode1.getNode("server name");
 		final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-		final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-				.getNode("PUBLIC");
-		final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-		final SLNode exampleTableNode1 = exampleCatalogNode1
-				.getNode("EXAMPLETABLE6");
 
-		final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
-				"I");
-		final Set<SLNode> pkNodes1 = exampleColumn1.getNodes();
+		boolean foundPk = false;
+		synchronized (exampleDatabaseNode1.getLockObject()) {
 
-		boolean foundPkConstraint1 = false;
-
-		synchronized (exampleTableNode1.getLockObject()) {
-			for (final SLNode node : pkNodes1) {
+			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1
+					.getNodes();
+			for (final SLNode node : nodes) {
 				if (node instanceof DatabaseConstraintPrimaryKey) {
-					foundPkConstraint1 = true;
+					foundPk = true;
+					break;
 				}
 			}
 		}
-
-		Assert.assertThat(foundPkConstraint1, Is.is(true));
+		Assert.assertThat(foundPk, Is.is(true));
 
 		final Connection connection2 = DatabaseSupport
 				.createConnection(data.artifactSource);
@@ -878,27 +817,20 @@ public class DbTableArtifactBundleProcessorTest {
 				data.group.getUniqueName());
 		final SLNode exampleServerNode2 = groupNode2.getNode("server name");
 		final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-		final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-				.getNode("PUBLIC");
-		final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-		final SLNode exampleTableNode2 = exampleCatalogNode2
-				.getNode("EXAMPLETABLE6");
 
-		final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
-				"I");
-		final Set<SLNode> pkNodes2 = exampleColumn2.getNodes();
+		boolean foundPk2 = false;
+		synchronized (exampleDatabaseNode2.getLockObject()) {
 
-		boolean foundPkConstraint2 = false;
-
-		synchronized (exampleColumn2.getLockObject()) {
-			for (final SLNode node : pkNodes2) {
+			final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode2
+					.getNodes();
+			for (final SLNode node : nodes) {
 				if (node instanceof DatabaseConstraintPrimaryKey) {
-					foundPkConstraint2 = true;
+					foundPk2 = true;
+					break;
 				}
 			}
 		}
-
-		Assert.assertThat(foundPkConstraint2, Is.is(false));
+		Assert.assertThat(foundPk2, Is.is(false));
 	}
 
 }

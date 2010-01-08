@@ -55,10 +55,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderSupport;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;

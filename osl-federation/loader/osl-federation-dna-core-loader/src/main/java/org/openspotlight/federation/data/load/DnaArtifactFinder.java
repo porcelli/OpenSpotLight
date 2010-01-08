@@ -69,10 +69,10 @@ import org.jboss.dna.jcr.JcrEngine;
 import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.finder.AbstractArtifactFinder;
 import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 

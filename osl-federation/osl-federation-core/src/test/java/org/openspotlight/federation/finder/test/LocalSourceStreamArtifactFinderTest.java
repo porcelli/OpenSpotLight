@@ -56,11 +56,11 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
-import org.openspotlight.federation.domain.ChangeType;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
 
 // TODO: Auto-generated Javadoc

@@ -49,7 +49,7 @@
 package org.openspotlight.federation.context;
 
 import org.openspotlight.common.Disposable;
-import org.openspotlight.federation.domain.Artifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;

@@ -48,8 +48,8 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 /**
  * This class will serve as a factory to create {@link ArtifactFinder Artifact

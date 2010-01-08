@@ -54,8 +54,8 @@ import java.util.TreeSet;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.PathElement;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.PathElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

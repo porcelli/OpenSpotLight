@@ -57,10 +57,10 @@ import java.sql.Connection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.domain.Artifact;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;

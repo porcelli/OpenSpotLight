@@ -50,8 +50,8 @@
 package org.openspotlight.federation.loader;
 
 import org.openspotlight.common.Disposable;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 public interface ArtifactLoader extends Disposable {
 

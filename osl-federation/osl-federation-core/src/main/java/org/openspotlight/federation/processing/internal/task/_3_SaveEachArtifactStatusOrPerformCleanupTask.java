@@ -48,21 +48,27 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
+import static org.openspotlight.common.concurrent.Priority.createPriority;
+
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ChangeType;
-import org.openspotlight.federation.domain.LastProcessStatus;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
 public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 		implements ArtifactTask {
+	private final Priority priority = createPriority(3);
+
 	// FIXME find out what is firing the parent changing or remove this after
 	// issue from jackrabbit is fixed
 	private static final Object SAVE_LOCK = new Object();
+
 	private final T artifact;
 	private final ArtifactFinderWithSaveCapabilitie<T> finder;
 
@@ -97,8 +103,8 @@ public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 		return null;
 	}
 
-	public int getPriority() {
-		return 3;
+	public Priority getPriority() {
+		return priority;
 	}
 
 	public String getRepositoryName() {

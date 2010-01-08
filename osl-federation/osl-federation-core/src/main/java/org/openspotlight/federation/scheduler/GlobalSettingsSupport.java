@@ -48,9 +48,9 @@
  */
 package org.openspotlight.federation.scheduler;
 
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 public class GlobalSettingsSupport {
 

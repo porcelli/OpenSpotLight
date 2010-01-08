@@ -48,10 +48,10 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 
 public class DatabaseStreamArtifactFinderBySourceProvider implements
 		ArtifactFinderBySourceProvider {

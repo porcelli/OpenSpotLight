@@ -54,9 +54,9 @@ import java.util.Map;
 import javax.jcr.Session;
 
 import org.openspotlight.common.Pair;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 public class JcrSessionArtifactBySourceProvider implements
 		ArtifactFinderBySourceProvider {

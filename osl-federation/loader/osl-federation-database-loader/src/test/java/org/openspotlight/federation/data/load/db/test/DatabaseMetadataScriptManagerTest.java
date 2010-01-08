@@ -58,7 +58,7 @@ import java.util.EnumMap;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
-import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;

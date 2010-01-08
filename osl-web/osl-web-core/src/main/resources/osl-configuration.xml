@@ -2,7 +2,7 @@
   <settings>
     <schedulableCommandMap>
       <entry>
-        <java-class>org.openspotlight.federation.domain.ArtifactSource</java-class>
+        <java-class>org.openspotlight.federation.domain.artifact.ArtifactSource</java-class>
         <java-class>org.openspotlight.federation.scheduler.ArtifactSourceSchedulable</java-class>
       </entry>
       <entry>
@@ -27,7 +27,7 @@
           <hashCode>-731590671</hashCode>
           <bundleTypes>
             <osl.BundleProcessorType>
-              <type>org.openspotlight.federation.processing.internal.ExampleBundleProcessor</type>
+              <globalPhase>org.openspotlight.federation.processing.internal.ExampleBundleProcessor</globalPhase>
               <active>true</active>
               <group reference="../../.."/>
               <sources>

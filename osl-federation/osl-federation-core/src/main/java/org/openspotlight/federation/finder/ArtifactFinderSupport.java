@@ -51,8 +51,8 @@ package org.openspotlight.federation.finder;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.ChangeType;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ChangeType;
 
 /**
  * The Class ArtifactFinderSupport.
