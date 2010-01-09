@@ -80,6 +80,30 @@ import org.slf4j.LoggerFactory;
 
 public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
+	private class SecondPhaseDto {
+
+		public final CurrentProcessorContextImpl currentCtx;
+		public final T artifact;
+		public final BundleProcessorArtifactPhase<T> bundleProcessor;
+		public final Class<T> artifactType;
+		public final SaveBehavior saveBehavior;
+		public final int subpriority;
+
+		public SecondPhaseDto(final CurrentProcessorContextImpl currentCtx,
+				final T artifact,
+				final BundleProcessorArtifactPhase<T> bundleProcessor,
+				final Class<T> artifactType, final SaveBehavior saveBehavior,
+				final int subpriority) {
+			super();
+			this.currentCtx = currentCtx;
+			this.artifact = artifact;
+			this.bundleProcessor = bundleProcessor;
+			this.artifactType = artifactType;
+			this.saveBehavior = saveBehavior;
+			this.subpriority = subpriority;
+		}
+	}
+
 	private final Priority priority = createPriority(1);
 
 	/** The artifact type. */
@@ -226,7 +250,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 							artifactAlreadyProcessed);
 				}
 				final List<BundleProcessorArtifactPhase<T>> artifactPhases = new ArrayList<BundleProcessorArtifactPhase<T>>();
-				int subpriority = 1;
+				int subpriority = 0;
 				final SaveBehavior behavior = bundleProcessor.getSaveBehavior();
 				if (bundleProcessor instanceof BundleProcessorArtifactPhase) {
 					artifactPhases
@@ -264,8 +288,9 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 					}
 
 				}
+				final List<SecondPhaseDto> phaseTwoData = new ArrayList<SecondPhaseDto>();
 				for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
-
+					subpriority++;
 					for (final T artifactToProcess : this.toBeReturned
 							.getArtifactsToBeProcessed()) {
 						final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
@@ -279,15 +304,33 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 												.getSimpleName()
 										+ " and artifact type "
 										+ this.artifactType.getSimpleName());
-						this.queue.add(new _2_EachArtifactTask<T>(taskCtx,
-								artifactToProcess, artifactPhase,
-								this.artifactType, behavior, subpriority,
-								firstPhaseLatch));
+
+						phaseTwoData.add(new SecondPhaseDto(taskCtx,
+								artifactToProcess, artifactPhase, artifactType,
+								behavior, subpriority));
 					}
-					subpriority++;
 				}
-				this.queue.add(new _4_EndingToProcessArtifactsTask<T>(
-						this.changes, bundleProcessor, repository.getName()));
+
+				final CountDownLatch allPhaseTwoLatch = new CountDownLatch(
+						subpriority - 1);
+				CountDownLatch parentLatch = firstPhaseLatch;
+
+				final int lastSubPriority = 1;
+				for (final SecondPhaseDto dto : phaseTwoData) {
+					final CountDownLatch thisArtifactLatch = new CountDownLatch(
+							1);
+					this.queue.add(new _2_EachArtifactTask<T>(dto.currentCtx,
+							dto.artifact, dto.bundleProcessor,
+							dto.artifactType, dto.saveBehavior,
+							dto.subpriority, parentLatch, allPhaseTwoLatch,
+							thisArtifactLatch));
+					if (lastSubPriority != dto.subpriority) {
+						parentLatch = thisArtifactLatch;
+					}
+				}
+				this.queue.add(new _3_EndingToProcessArtifactsTask<T>(
+						this.changes, bundleProcessor, repository.getName(),
+						allPhaseTwoLatch));
 
 			} catch (final Exception e) {
 				for (final T artifactWithError : this.toBeReturned

@@ -75,7 +75,7 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
 import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
 import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
-import org.openspotlight.federation.processing.internal.task._5_SaveGraphTask;
+import org.openspotlight.federation.processing.internal.task._4_SaveGraphTask;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
@@ -198,7 +198,7 @@ public class BundleProcessorExecution {
 	 */
 	public GlobalExecutionStatus execute() throws BundleExecutionException {
 		setupParentNodesAndCallGroupListeners();
-		final Set<Group> groupsWithBundles = findGroupsWithBundles();
+		final List<Group> groupsWithBundles = findGroupsWithBundles();
 
 		fillTaskQueue(groupsWithBundles);
 
@@ -211,7 +211,7 @@ public class BundleProcessorExecution {
 		return status;
 	}
 
-	private void fillTaskQueue(final Set<Group> groupsWithBundles) {
+	private void fillTaskQueue(final List<Group> groupsWithBundles) {
 		final List<StartingSearchArtifactsDto> newTaskData = new LinkedList<StartingSearchArtifactsDto>();
 		for (final Class<? extends Artifact> artifactType : artifactTypes) {
 			for (final Group group : groupsWithBundles) {
@@ -238,13 +238,13 @@ public class BundleProcessorExecution {
 		}
 
 		for (final String repository : activeReposities) {
-			queue.add(new _5_SaveGraphTask<Artifact>(repository));
+			queue.add(new _4_SaveGraphTask<Artifact>(repository));
 		}
 
 	}
 
-	private Set<Group> findGroupsWithBundles() {
-		final Set<Group> groupsWithBundles = new HashSet<Group>();
+	private List<Group> findGroupsWithBundles() {
+		final List<Group> groupsWithBundles = new ArrayList<Group>();
 		final GroupVisitor visitor = new GroupVisitor() {
 			public void visitGroup(final Group group) {
 				if (group.isActive()) {

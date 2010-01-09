@@ -50,25 +50,33 @@ package org.openspotlight.federation.processing.internal.task;
 
 import static org.openspotlight.common.concurrent.Priority.createPriority;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
+import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class _6_EndingToProcessArtifactsTask.
  */
-public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
+public class _3_EndingToProcessArtifactsTask<T extends Artifact> implements
+		ArtifactTask {
+
+	/** The changes. */
+	private final ArtifactChangesImpl<T> changes;
+	private final CountDownLatch allPhaseTwoLatch;
+
+	/** The processor. */
+	private final BundleProcessorGlobalPhase<T> processor;
 
 	private final String repositoryName;
-	private ExecutionContext context;
 
-	private final Priority priority = createPriority(5);
-
-	private PriorityBlockingQueue<ArtifactTask> queue;
+	private final Priority priority = createPriority(3);
 
 	/**
 	 * Instantiates a new _6_ ending to process artifacts task.
@@ -78,9 +86,15 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	 * @param processor
 	 *            the processor
 	 */
-	public _5_SaveGraphTask(final String repositoryName) {
+	public _3_EndingToProcessArtifactsTask(
+			final ArtifactChangesImpl<T> changes,
+			final BundleProcessorGlobalPhase<T> processor,
+			final String repositoryName, final CountDownLatch allPhaseTwoLatch) {
 		super();
+		this.changes = changes;
+		this.processor = processor;
 		this.repositoryName = repositoryName;
+		this.allPhaseTwoLatch = allPhaseTwoLatch;
 	}
 
 	/*
@@ -91,13 +105,8 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	 * ()
 	 */
 	public void doTask() throws Exception {
-		while (this.queue.size() != 0) {
-			try {
-				Thread.sleep(1000);
-			} catch (final InterruptedException e) {
-			}
-		}
-		this.context.getGraphSession().save();
+		allPhaseTwoLatch.await();
+		this.processor.didFinishProcessing(this.changes);
 	}
 
 	/*
@@ -127,7 +136,7 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	 * )
 	 */
 	public void setBundleContext(final ExecutionContext context) {
-		this.context = context;
+
 	}
 
 	/*
@@ -138,6 +147,6 @@ public class _5_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 	 * (java.util.concurrent.PriorityBlockingQueue)
 	 */
 	public void setQueue(final PriorityBlockingQueue<ArtifactTask> queue) {
-		this.queue = queue;
+
 	}
 }

@@ -50,60 +50,62 @@ package org.openspotlight.federation.processing.internal.task;
 
 import static org.openspotlight.common.concurrent.Priority.createPriority;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.concurrent.Priority;
-import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.LastProcessStatus;
-import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
-public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
-		implements ArtifactTask {
-	private final Priority priority = createPriority(3);
+// TODO: Auto-generated Javadoc
+/**
+ * The Class _6_EndingToProcessArtifactsTask.
+ */
+public class _4_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 
-	// FIXME find out what is firing the parent changing or remove this after
-	// issue from jackrabbit is fixed
-	private static final Object SAVE_LOCK = new Object();
+	private final String repositoryName;
+	private ExecutionContext context;
 
-	private final T artifact;
-	private final ArtifactFinderWithSaveCapabilitie<T> finder;
-	private final CountDownLatch secondPhaseCountDownLatch;
+	private final Priority priority = createPriority(4);
 
-	public _3_SaveEachArtifactStatusOrPerformCleanupTask(final T artifact,
-			final ArtifactFinderWithSaveCapabilitie<T> finder,
-			final CountDownLatch latch) {
-		this.artifact = artifact;
-		this.finder = finder;
-		this.secondPhaseCountDownLatch = latch;
+	private PriorityBlockingQueue<ArtifactTask> queue;
+
+	/**
+	 * Instantiates a new _6_ ending to process artifacts task.
+	 * 
+	 * @param changes
+	 *            the changes
+	 * @param processor
+	 *            the processor
+	 */
+	public _4_SaveGraphTask(final String repositoryName) {
+		super();
+		this.repositoryName = repositoryName;
 	}
 
-	public void doTask() {
-		try {
-			secondPhaseCountDownLatch.await();
-			if (LastProcessStatus.PROCESSED.equals(artifact
-					.getLastProcessStatus())
-					|| LastProcessStatus.IGNORED.equals(artifact
-							.getLastProcessStatus())) {
-				synchronized (SAVE_LOCK) {
-					if (ChangeType.EXCLUDED.equals(this.artifact
-							.getChangeType())) {
-						this.finder.markAsRemoved(this.artifact);
-					} else {
-						this.finder.addTransientArtifact(this.artifact);
-					}
-					this.finder.save();
-				}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.federation.processing.internal.task.ArtifactTask#doTask
+	 * ()
+	 */
+	public void doTask() throws Exception {
+		while (this.queue.size() != 0) {
+			try {
+				Thread.sleep(1000);
+			} catch (final InterruptedException e) {
 			}
-		} catch (final Exception e) {
-			Exceptions.catchAndLog(e);
 		}
+		this.context.getGraphSession().save();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.openspotlight.federation.processing.internal.task.ArtifactTask#
+	 * getCurrentContext()
+	 */
 	public CurrentProcessorContextImpl getCurrentContext() {
 		return null;
 	}
@@ -113,14 +115,29 @@ public class _3_SaveEachArtifactStatusOrPerformCleanupTask<T extends Artifact>
 	}
 
 	public String getRepositoryName() {
-		return this.artifact.getRepositoryName();
+		return this.repositoryName;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.openspotlight.federation.processing.internal.task.ArtifactTask#
+	 * setBundleContext
+	 * (org.openspotlight.federation.processing.internal.domain.ExecutionContext
+	 * )
+	 */
 	public void setBundleContext(final ExecutionContext context) {
-
+		this.context = context;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.openspotlight.federation.processing.internal.task.ArtifactTask#setQueue
+	 * (java.util.concurrent.PriorityBlockingQueue)
+	 */
 	public void setQueue(final PriorityBlockingQueue<ArtifactTask> queue) {
-
+		this.queue = queue;
 	}
 }

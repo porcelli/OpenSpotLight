@@ -59,6 +59,7 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
+import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
@@ -70,24 +71,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
+
+	private static final Object SAVE_LOCK = new Object();
 	private final Priority priority;
 
 	/** The bundle processor context. */
 	private ExecutionContext bundleProcessorContext;
 
-	private final CountDownLatch firstPhaseLatch;
+	private final CountDownLatch parentPhaseLatch;
 
 	/** The artifact type. */
 	private final Class<T> artifactType;
-
-	private PriorityBlockingQueue<ArtifactTask> queue;
 
 	/** The artifact. */
 	private final T artifact;
 	private final SaveBehavior saveBehavior;
 	/** The bundle processor. */
 	private final BundleProcessorArtifactPhase<T> bundleProcessor;
-
+	private final CountDownLatch allPhaseTwoLatch;
+	private final CountDownLatch thisArtifactLatch;
 	/** The current context impl. */
 	private final CurrentProcessorContextImpl currentContextImpl;
 
@@ -111,14 +113,18 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 			final T artifact,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
 			final Class<T> artifactType, final SaveBehavior saveBehavior,
-			final int subpriority, final CountDownLatch firstPhaseLatch) {
+			final int subpriority, final CountDownLatch parentPhaseLatch,
+			final CountDownLatch allPhaseTwoLatch,
+			final CountDownLatch thisArtifactLatch) {
 		this.artifactType = artifactType;
 		this.artifact = artifact;
 		this.bundleProcessor = bundleProcessor;
 		this.currentContextImpl = currentCtx;
 		this.saveBehavior = saveBehavior;
 		this.priority = createPriority(2, subpriority);
-		this.firstPhaseLatch = firstPhaseLatch;
+		this.parentPhaseLatch = parentPhaseLatch;
+		this.allPhaseTwoLatch = allPhaseTwoLatch;
+		this.thisArtifactLatch = thisArtifactLatch;
 	}
 
 	/*
@@ -128,9 +134,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	 */
 	@SuppressWarnings("unchecked")
 	public void doTask() throws Exception {
-		firstPhaseLatch.await();
-
-		final CountDownLatch secondPhaseLatch = new CountDownLatch(1);
+		parentPhaseLatch.await();
 		try {
 			if (LastProcessStatus.EXCEPTION_DURRING_PROCESS
 					.equals(this.artifact.getLastProcessStatus())
@@ -168,18 +172,42 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 				this.artifact.setLastProcessedDate(new Date());
 				final ArtifactFinder<T> finder = this.bundleProcessorContext
 						.getArtifactFinder(this.artifactType);
+				Exception ex = null;
 				if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
 					final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
-					this.queue
-							.offer(new _3_SaveEachArtifactStatusOrPerformCleanupTask(
-									this.artifact, finderWithSaveCapabilitie,
-									secondPhaseLatch));
+					try {
+						if (LastProcessStatus.PROCESSED.equals(artifact
+								.getLastProcessStatus())
+								|| LastProcessStatus.IGNORED.equals(artifact
+										.getLastProcessStatus())) {
+							synchronized (SAVE_LOCK) {
+								if (ChangeType.EXCLUDED.equals(this.artifact
+										.getChangeType())) {
+									finderWithSaveCapabilitie
+											.markAsRemoved(this.artifact);
+								} else {
+									finderWithSaveCapabilitie
+											.addTransientArtifact(this.artifact);
+								}
+								finderWithSaveCapabilitie.save();
+							}
+						}
+
+					} catch (final Exception e) {
+						Exceptions.catchAndLog(e);
+						ex = e;
+					}
+
 				}
 				this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
 						result);
+				if (ex != null) {
+					throw ex;
+				}
 			}
 		} finally {
-			secondPhaseLatch.countDown();
+			thisArtifactLatch.countDown();
+			allPhaseTwoLatch.countDown();
 		}
 	}
 
@@ -201,6 +229,5 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	}
 
 	public void setQueue(final PriorityBlockingQueue<ArtifactTask> queue) {
-		this.queue = queue;
 	}
 }
