@@ -48,6 +48,8 @@
  */
 package org.openspotlight.persist.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -727,6 +729,24 @@ public class SimplePersistSupportTest {
 		SimplePersistSupport.findNodesByProperties("a/b/c", session,
 				RootObj.class, LazyType.EAGER,
 				new String[] { "invalidProperty" }, new Object[] { null });
+	}
+
+	@Test
+	public void shouldPersistAndReadStreamProperty() throws Exception {
+		final ObjectWithInputStream pojo = new ObjectWithInputStream();
+		final String contentAsString = "content";
+		final InputStream content = new ByteArrayInputStream(contentAsString
+				.getBytes());
+		pojo.setStream(content);
+		final Node jcrNode = SimplePersistSupport.convertBeanToJcr("a/b/c",
+				session, pojo);
+		final ObjectWithInputStream convertedPojo = SimplePersistSupport
+				.convertJcrToBean(session, jcrNode, LazyType.EAGER);
+		final byte[] contentAsBytes = new byte[convertedPojo.getStream()
+				.available()];
+		convertedPojo.getStream().read(contentAsBytes);
+		final String newContentAsString = new String(contentAsBytes);
+		Assert.assertThat(contentAsString, Is.is(newContentAsString));
 	}
 
 	@Test

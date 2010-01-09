@@ -49,6 +49,7 @@
 package org.openspotlight.persist.support;
 
 import java.beans.PropertyDescriptor;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -127,6 +129,8 @@ public class SimplePersistSupport {
 
 		/** The properties. */
 		final Map<String, String> properties = new HashMap<String, String>();
+
+		final Map<String, InputStream> streamProperties = new HashMap<String, InputStream>();
 
 		@Override
 		public String toString() {
@@ -197,6 +201,8 @@ public class SimplePersistSupport {
 	/** The Constant defaultPrefix. */
 	private static final String DEFAULT_NODE_PREFIX = "node.";
 
+	private static final String DEFAULT_STREAM_PREFIX = "stream.property.";
+
 	/** The Constant defaultPrefix. */
 	public static final String DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple.property.";
 
@@ -208,6 +214,8 @@ public class SimplePersistSupport {
 
 	/** The Constant MULTIPLE_PROPERTY_VALUES. */
 	public static final String MULTIPLE_PROPERTY_VALUES = "multiple.property.{0}.values";
+
+	public static final String STREAM_PROPERTY_VALUE = "stream.property.{0}.value";
 
 	/** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE. */
 	public static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE = "multiple.property.{0}.multiple.type";
@@ -301,6 +309,12 @@ public class SimplePersistSupport {
 			for (final Map.Entry<String, String> entry : descriptor.properties
 					.entrySet()) {
 				result.setProperty(entry.getKey(), entry.getValue());
+			}
+			// Stream properties are handled here
+			for (final Map.Entry<String, InputStream> entry : descriptor.streamProperties
+					.entrySet()) {
+				result.setProperty(MessageFormat.format(STREAM_PROPERTY_VALUE,
+						entry.getKey()), entry.getValue());
 			}
 			SimplePersistSupport.saveSimplePropertiesOnJcr(descriptor, result);
 			SimplePersistSupport.saveComplexMultiplePropertiesOnJcr(session,
@@ -711,6 +725,12 @@ public class SimplePersistSupport {
 
 				continue;
 			}
+			if (InputStream.class.isAssignableFrom(desc.getPropertyType())) {
+				final InputStream streamValue = beanDescriptor.streamProperties
+						.get(desc.getName());
+				desc.getWriteMethod().invoke(newObject, streamValue);
+				continue;
+			}
 			SimplePersistSupport.setPropertyFromDescriptorToBean(
 					beanDescriptor, newObject, desc, propertyName,
 					SimplePersistSupport.PROPERTY_TYPE,
@@ -797,6 +817,11 @@ public class SimplePersistSupport {
 				}
 				continue;
 			}
+			if (InputStream.class.isAssignableFrom(desc.getPropertyType())) {
+				final Object propertyVal = desc.getReadMethod().invoke(bean);
+				descriptor.streamProperties.put(desc.getName(),
+						(InputStream) propertyVal);
+			}
 			if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
 				SimplePersistSupport.setPropertyFromBeanToDescriptor(bean,
 						descriptor, desc, SimplePersistSupport.KEY_TYPE,
@@ -853,6 +878,15 @@ public class SimplePersistSupport {
 				SimplePersistSupport.setMultiplePropertyFromJcrToDescriptor(
 						jcrNode, descriptor, multiplePropertiesAlreadyLoaded,
 						rawName);
+				continue;
+			}
+			if (rawName.startsWith(DEFAULT_STREAM_PREFIX)) {
+				final InputStream value = property.getValue().getStream();
+				String propertyName = Strings.removeBegginingFrom(
+						DEFAULT_STREAM_PREFIX, rawName);
+				propertyName = propertyName.substring(0, propertyName
+						.indexOf('.'));
+				descriptor.streamProperties.put(propertyName, value);
 				continue;
 			}
 		}
