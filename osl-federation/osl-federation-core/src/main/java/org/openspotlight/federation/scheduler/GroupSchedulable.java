@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.scheduler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import org.openspotlight.federation.context.ExecutionContext;
@@ -57,9 +59,27 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
+import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 
 public class GroupSchedulable implements
 		SchedulableCommandWithContextFactory<Group> {
+
+	private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
+
+		private final List<Group> groupsWithBundles = new ArrayList<Group>();
+
+		public List<Group> getGroupsWithBundles() {
+			return groupsWithBundles;
+		}
+
+		public <X extends Group> void visitBean(final X bean) {
+			if (bean.getBundleTypes().size() != 0) {
+				groupsWithBundles.add(bean);
+			}
+		}
+
+	}
 
 	private static final Semaphore GROUP_MUTEX = new Semaphore(1);
 
@@ -75,8 +95,13 @@ public class GroupSchedulable implements
 			throws Exception {
 		try {
 			GROUP_MUTEX.acquire();
+			final GroupVisitor visitor = new GroupVisitor();
+			SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
+					schedulable, visitor);
+			final Group[] groupsToExecute = visitor.getGroupsWithBundles()
+					.toArray(new Group[0]);
 			DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
-					password, descriptor, factory, settings, schedulable);
+					password, descriptor, factory, settings, groupsToExecute);
 		} finally {
 			GROUP_MUTEX.release();
 		}
