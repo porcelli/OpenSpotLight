@@ -67,6 +67,7 @@ import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMetho
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
  * Class with static method to accept visitor of beans of type
@@ -92,10 +93,14 @@ public class SimpleNodeTypeVisitorSupport {
 	 * @param rootNode
 	 * @param visitor
 	 */
+	@SuppressWarnings("unchecked")
 	public static <S extends SimpleNodeType> void acceptVisitorOn(
 			final Class<S> targetType, final SimpleNodeType rootNode,
 			final SimpleNodeTypeVisitor<S> visitor) {
 		try {
+			if (targetType.isAssignableFrom(rootNode.getClass())) {
+				visitor.visitBean((S) rootNode);
+			}
 			final List<S> allNodes = SimpleNodeTypeVisitorSupport.fillItems(
 					targetType, rootNode);
 			for (final S s : allNodes) {

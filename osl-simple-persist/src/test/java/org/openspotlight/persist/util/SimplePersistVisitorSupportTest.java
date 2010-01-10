@@ -49,6 +49,7 @@
 package org.openspotlight.persist.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,56 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @SuppressWarnings("unused")
 public class SimplePersistVisitorSupportTest {
+
+	private static class NodeNameVisitor implements
+			SimpleNodeTypeVisitor<NodeObject> {
+		private final List<String> names = new ArrayList<String>();
+
+		public List<String> getNames() {
+			return names;
+		}
+
+		public <X extends NodeObject> void visitBean(final X bean) {
+			bean.getName().toString();
+			names.add(bean.getName());
+		}
+	}
+
+	private static class NodeObject implements SimpleNodeType {
+
+		private String name;
+
+		private NodeObject parent;
+
+		private List<NodeObject> children = new ArrayList<NodeObject>();
+
+		public List<NodeObject> getChildren() {
+			return children;
+		}
+
+		@KeyProperty
+		public String getName() {
+			return name;
+		}
+
+		@ParentProperty
+		public NodeObject getParent() {
+			return parent;
+		}
+
+		public void setChildren(final List<NodeObject> children) {
+			this.children = children;
+		}
+
+		public void setName(final String name) {
+			this.name = name;
+		}
+
+		public void setParent(final NodeObject parent) {
+			this.parent = parent;
+		}
+
+	}
 
 	private static class SimpleObject1 implements SimpleNodeType {
 
@@ -303,6 +354,64 @@ public class SimplePersistVisitorSupportTest {
 					}
 				});
 		Assert.assertThat(count.get(), Is.is(2));
+	}
+
+	@Test
+	public void shouldVisitInCorrectOrder() throws Exception {
+		final NodeObject root = new NodeObject();
+		root.setName("0");
+		final NodeObject child1 = new NodeObject();
+		child1.setName("1");
+		final NodeObject child2 = new NodeObject();
+		child2.setName("2");
+		final NodeObject child3 = new NodeObject();
+		child3.setName("3");
+		final NodeObject child4 = new NodeObject();
+		child4.setName("4");
+		final NodeObject child2_1 = new NodeObject();
+		child2_1.setName("2-1");
+		final NodeObject child2_2 = new NodeObject();
+		child2_2.setName("2-2");
+		final NodeObject child2_3 = new NodeObject();
+		child2_3.setName("2-3");
+		final NodeObject child3_1 = new NodeObject();
+		child3_1.setName("3-1");
+		final NodeObject child3_2 = new NodeObject();
+		child3_2.setName("3-2");
+		final NodeObject child3_3 = new NodeObject();
+		child3_3.setName("3-3");
+
+		child1.setParent(root);
+		child2.setParent(root);
+		child3.setParent(root);
+		child4.setParent(root);
+		child2_1.setParent(child2);
+		child2_2.setParent(child2);
+		child2_3.setParent(child2);
+		child3_1.setParent(child3);
+		child3_2.setParent(child3);
+		child3_3.setParent(child3);
+		root.getChildren().add(child1);
+		root.getChildren().add(child2);
+		root.getChildren().add(child3);
+		root.getChildren().add(child4);
+		child2.getChildren().add(child2_1);
+		child2.getChildren().add(child2_2);
+		child2.getChildren().add(child2_3);
+		child3.getChildren().add(child3_1);
+		child3.getChildren().add(child3_2);
+		child3.getChildren().add(child3_3);
+
+		final NodeNameVisitor visitor = new NodeNameVisitor();
+		SimpleNodeTypeVisitorSupport.acceptVisitorOn(NodeObject.class, root,
+				visitor);
+
+		final List<String> foundNames = visitor.getNames();
+		final List<String> expectedNames = Arrays.asList("0", "1", "2", "3",
+				"4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3");
+		Assert.assertThat(foundNames.toString(), Is
+				.is(expectedNames.toString()));
+
 	}
 
 	@Test
