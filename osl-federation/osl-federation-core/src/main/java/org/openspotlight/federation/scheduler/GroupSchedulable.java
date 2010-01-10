@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.scheduler;
 
+import java.util.concurrent.Semaphore;
+
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -59,6 +61,8 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 public class GroupSchedulable implements
 		SchedulableCommandWithContextFactory<Group> {
 
+	private static final Semaphore GROUP_MUTEX = new Semaphore(1);
+
 	private ExecutionContextFactory factory;
 
 	private JcrConnectionDescriptor descriptor;
@@ -66,10 +70,16 @@ public class GroupSchedulable implements
 	private String password;
 	private GlobalSettings settings;
 
-	public void execute(GlobalSettings settigns,final ExecutionContext ctx, final Group schedulable)
+	public void execute(final GlobalSettings settigns,
+			final ExecutionContext ctx, final Group schedulable)
 			throws Exception {
-		BundleProcessorManagerImpl.INSTANCE.executeBundles(username, password,
-				descriptor, factory, settings, schedulable);
+		try {
+			GROUP_MUTEX.acquire();
+			BundleProcessorManagerImpl.INSTANCE.executeBundles(username,
+					password, descriptor, factory, settings, schedulable);
+		} finally {
+			GROUP_MUTEX.release();
+		}
 	}
 
 	public String getRepositoryNameBeforeExecution(final Group schedulable) {
