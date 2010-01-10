@@ -76,7 +76,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
@@ -198,11 +198,11 @@ public class BundleProcessorManagerTest {
 		context.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		context.getDefaultConfigurationManager().saveRepository(repository);
 
-		final ArtifactFinderWithSaveCapabilitie<StreamArtifact> finder = (ArtifactFinderWithSaveCapabilitie<StreamArtifact>) context
-				.getArtifactFinder(StreamArtifact.class);
+		final ArtifactFinderWithSaveCapabilitie<StringArtifact> finder = (ArtifactFinderWithSaveCapabilitie<StringArtifact>) context
+				.getArtifactFinder(StringArtifact.class);
 
 		for (final Artifact a : artifacts) {
-			finder.addTransientArtifact((StreamArtifact) a);
+			finder.addTransientArtifact((StringArtifact) a);
 			finder.save();
 		}
 		contextFactory.closeResources();

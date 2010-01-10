@@ -51,14 +51,14 @@ package org.openspotlight.federation.finder;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class DatabaseStreamArtifactFinderBySourceProvider implements
 		ArtifactFinderBySourceProvider {
 
 	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
-		if (StreamArtifact.class.isAssignableFrom(artifactType)
+		if (StringArtifact.class.isAssignableFrom(artifactType)
 				&& source instanceof DbArtifactSource) {
 			return new DatabaseStreamArtifactFinder((DbArtifactSource) source);
 

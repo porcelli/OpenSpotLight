@@ -60,7 +60,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
 
 // TODO: Auto-generated Javadoc
@@ -102,11 +102,11 @@ public class LocalSourceStreamArtifactFinderTest {
 	 */
 	@Test
 	public void shouldFindByRelativePath() throws Exception {
-		final StreamArtifact streamArtifact1 = streamArtifactFinder
+		final StringArtifact streamArtifact1 = streamArtifactFinder
 				.findByPath("folder/subfolder/file_included1");
 		assertThat(streamArtifact1, is(notNullValue()));
 
-		final StreamArtifact streamArtifact2 = streamArtifactFinder
+		final StringArtifact streamArtifact2 = streamArtifactFinder
 				.findByRelativePath(streamArtifact1, "../file_included1");
 		assertThat(streamArtifact2, is(notNullValue()));
 		assertThat(streamArtifact2.getArtifactCompleteName(),
@@ -121,11 +121,11 @@ public class LocalSourceStreamArtifactFinderTest {
 	 */
 	@Test
 	public void shouldLoadAddedArtifact() throws Exception {
-		final StreamArtifact streamArtifact1 = streamArtifactFinder
+		final StringArtifact streamArtifact1 = streamArtifactFinder
 				.findByPath("folder/file_included1");
-		final StreamArtifact streamArtifact2 = streamArtifactFinder
+		final StringArtifact streamArtifact2 = streamArtifactFinder
 				.findByPath("folder/subfolder/file_included1");
-		final StreamArtifact streamArtifact3 = streamArtifactFinder
+		final StringArtifact streamArtifact3 = streamArtifactFinder
 				.findByPath("folder/subfolder/anothersubfolder/file_included1");
 		assertThat(streamArtifact1, is(notNullValue()));
 		assertThat(streamArtifact2, is(notNullValue()));
@@ -140,11 +140,11 @@ public class LocalSourceStreamArtifactFinderTest {
 	 */
 	@Test
 	public void shouldLoadChangedArtifact() throws Exception {
-		final StreamArtifact streamArtifact1 = streamArtifactFinder
+		final StringArtifact streamArtifact1 = streamArtifactFinder
 				.findByPath("folder/file_changed1");
-		final StreamArtifact streamArtifact2 = streamArtifactFinder
+		final StringArtifact streamArtifact2 = streamArtifactFinder
 				.findByPath("folder/subfolder/file_changed1");
-		final StreamArtifact streamArtifact3 = streamArtifactFinder
+		final StringArtifact streamArtifact3 = streamArtifactFinder
 				.findByPath("folder/subfolder/anothersubfolder/file_changed1");
 		assertThat(streamArtifact1, is(notNullValue()));
 		assertThat(streamArtifact2, is(notNullValue()));
@@ -159,11 +159,11 @@ public class LocalSourceStreamArtifactFinderTest {
 	 */
 	@Test
 	public void shouldLoadExcludedArtifact() throws Exception {
-		final StreamArtifact streamArtifact1 = streamArtifactFinder
+		final StringArtifact streamArtifact1 = streamArtifactFinder
 				.findByPath("folder/file_excluded1");
-		final StreamArtifact streamArtifact2 = streamArtifactFinder
+		final StringArtifact streamArtifact2 = streamArtifactFinder
 				.findByPath("folder/subfolder/file_excluded1");
-		final StreamArtifact streamArtifact3 = streamArtifactFinder
+		final StringArtifact streamArtifact3 = streamArtifactFinder
 				.findByPath("folder/subfolder/anothersubfolder/file_excluded1");
 		assertThat(streamArtifact1, is(notNullValue()));
 		assertThat(streamArtifact2, is(notNullValue()));
@@ -178,11 +178,11 @@ public class LocalSourceStreamArtifactFinderTest {
 	 */
 	@Test
 	public void shouldLoadNotChangedArtifact() throws Exception {
-		final StreamArtifact streamArtifact1 = streamArtifactFinder
+		final StringArtifact streamArtifact1 = streamArtifactFinder
 				.findByPath("folder/file_not_changed1");
-		final StreamArtifact streamArtifact2 = streamArtifactFinder
+		final StringArtifact streamArtifact2 = streamArtifactFinder
 				.findByPath("folder/subfolder/file_not_changed1");
-		final StreamArtifact streamArtifact3 = streamArtifactFinder
+		final StringArtifact streamArtifact3 = streamArtifactFinder
 				.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
 		assertThat(streamArtifact1, is(notNullValue()));
 		assertThat(streamArtifact2, is(notNullValue()));
@@ -197,140 +197,140 @@ public class LocalSourceStreamArtifactFinderTest {
 	 */
 	@Test
 	public void souldListAllKindsOfFiles() throws Exception {
-		final Set<StreamArtifact> listedFiles = streamArtifactFinder
+		final Set<StringArtifact> listedFiles = streamArtifactFinder
 				.listByPath("/folder");
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_included1",
+				StringArtifact.class, "/folder/file_included1",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_included2",
+				StringArtifact.class, "/folder/file_included2",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_included3",
+				StringArtifact.class, "/folder/file_included3",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_included1",
+				StringArtifact.class, "/folder/subfolder/file_included1",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_included2",
+				StringArtifact.class, "/folder/subfolder/file_included2",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_included3",
+				StringArtifact.class, "/folder/subfolder/file_included3",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_included1",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_included2",
 				ChangeType.INCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_included3",
 				ChangeType.INCLUDED)), is(true));
 
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_changed1",
+				StringArtifact.class, "/folder/file_changed1",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_changed2",
+				StringArtifact.class, "/folder/file_changed2",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_changed3",
+				StringArtifact.class, "/folder/file_changed3",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_changed1",
+				StringArtifact.class, "/folder/subfolder/file_changed1",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_changed2",
+				StringArtifact.class, "/folder/subfolder/file_changed2",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_changed3",
+				StringArtifact.class, "/folder/subfolder/file_changed3",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_changed1",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_changed2",
 				ChangeType.CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_changed3",
 				ChangeType.CHANGED)), is(true));
 
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_not_changed1",
+				StringArtifact.class, "/folder/file_not_changed1",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_not_changed2",
+				StringArtifact.class, "/folder/file_not_changed2",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_not_changed3",
+				StringArtifact.class, "/folder/file_not_changed3",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_not_changed1",
+				StringArtifact.class, "/folder/subfolder/file_not_changed1",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_not_changed2",
+				StringArtifact.class, "/folder/subfolder/file_not_changed2",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_not_changed3",
+				StringArtifact.class, "/folder/subfolder/file_not_changed3",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_not_changed1",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_not_changed2",
 				ChangeType.NOT_CHANGED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_not_changed3",
 				ChangeType.NOT_CHANGED)), is(true));
 
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_excluded1",
+				StringArtifact.class, "/folder/file_excluded1",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_excluded2",
+				StringArtifact.class, "/folder/file_excluded2",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/file_excluded3",
+				StringArtifact.class, "/folder/file_excluded3",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_excluded1",
+				StringArtifact.class, "/folder/subfolder/file_excluded1",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_excluded2",
+				StringArtifact.class, "/folder/subfolder/file_excluded2",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class, "/folder/subfolder/file_excluded3",
+				StringArtifact.class, "/folder/subfolder/file_excluded3",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_excluded1",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_excluded2",
 				ChangeType.EXCLUDED)), is(true));
 		assertThat(listedFiles.contains(Artifact.createArtifact(
-				StreamArtifact.class,
+				StringArtifact.class,
 
 				"/folder/subfolder/anothersubfolder/file_excluded3",
 				ChangeType.EXCLUDED)), is(true));

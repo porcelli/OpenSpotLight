@@ -55,7 +55,7 @@ import org.openspotlight.federation.context.TestExecutionContextFactory.Artifact
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
@@ -91,7 +91,7 @@ public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 	@Override
 	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
 			final Class<A> artifactType, final Repository typedRepository) {
-		Assertions.checkCondition("artifactTypeAsStream", StreamArtifact.class
+		Assertions.checkCondition("artifactTypeAsStream", StringArtifact.class
 				.equals(artifactType));
 		ArtifactFinder<A> finder;
 		switch (type) {

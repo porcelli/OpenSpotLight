@@ -64,9 +64,9 @@ import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
-public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<StreamArtifact> {
+public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<StringArtifact> {
 
     private final ArtifactSource artifactSource;
 
@@ -83,15 +83,15 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
 
     }
 
-    public Class<StreamArtifact> getArtifactType() {
-        return StreamArtifact.class;
+    public Class<StringArtifact> getArtifactType() {
+        return StringArtifact.class;
     }
 
     public Class<? extends ArtifactSource> getSourceType() {
         return ArtifactSource.class;
     }
 
-    protected StreamArtifact internalFindByPath( final String rawPath ) {
+    protected StringArtifact internalFindByPath( final String rawPath ) {
         Assertions.checkNotEmpty("rawPath", rawPath);
         final String path = rawPath.startsWith("/") ? Strings
                                                              .removeBegginingFrom("/", rawPath) : rawPath;
@@ -117,8 +117,8 @@ public class FileSystemStreamArtifactFinder extends AbstractArtifactFinder<Strea
                 buffer.append('\n');
             }
             final String content = buffer.toString();
-            final StreamArtifact streamArtifact = Artifact.createArtifact(
-                                                                          StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
+            final StringArtifact streamArtifact = Artifact.createArtifact(
+                                                                          StringArtifact.class, "/" + path, ChangeType.INCLUDED);
             streamArtifact.setContent(content);
             return streamArtifact;
         } catch (final Exception e) {

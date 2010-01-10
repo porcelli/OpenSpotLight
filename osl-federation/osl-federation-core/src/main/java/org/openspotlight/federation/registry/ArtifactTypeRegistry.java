@@ -54,7 +54,7 @@ import static org.openspotlight.common.util.Collections.setOf;
 import java.util.Set;
 
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
@@ -67,7 +67,7 @@ public enum ArtifactTypeRegistry {
 
 	@SuppressWarnings("unchecked")
 	private final Set<Class<? extends Artifact>> artifactTypes = unmodifiableSet(setOf(
-			StreamArtifact.class, RoutineArtifact.class, TableArtifact.class,
+			StringArtifact.class, RoutineArtifact.class, TableArtifact.class,
 			ViewArtifact.class, ForeignKeyConstraintArtifact.class,
 			PrimaryKeyConstraintArtifact.class));
 

@@ -63,7 +63,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.finder.JcrSessionArtifactFinder;
@@ -99,14 +99,14 @@ public class JcrSessionArtifactFinderTest {
 		artifactSource.setRepository(repository);
 		final FileSystemStreamArtifactFinder fileSystemFinder = new FileSystemStreamArtifactFinder(
 				artifactSource);
-		final Set<StreamArtifact> artifacts = fileSystemFinder.listByPath(null);
+		final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(null);
 		SimplePersistSupport.convertBeansToJcrs(JcrSessionArtifactFinder
 				.getArtifactRootPathFor(repository), session, artifacts);
 		session.save();
 		session.logout();
 	}
 
-	private ArtifactFinder<StreamArtifact> streamArtifactFinder;
+	private ArtifactFinder<StringArtifact> streamArtifactFinder;
 
 	/** The session. */
 	private Session session = null;
@@ -130,12 +130,12 @@ public class JcrSessionArtifactFinderTest {
 	public void setupSession() {
 		session = provider.openSession();
 		streamArtifactFinder = JcrSessionArtifactFinder.createArtifactFinder(
-				StreamArtifact.class, repository, session);
+				StringArtifact.class, repository, session);
 	}
 
 	@Test
 	public void shouldFindArtifacts() throws Exception {
-		final StreamArtifact sa = streamArtifactFinder
+		final StringArtifact sa = streamArtifactFinder
 				.findByPath("/test/java/org/openspotlight/federation/finder/test/JcrSessionArtifactFinderTest.java");
 		assertThat(sa, is(notNullValue()));
 		assertThat(sa.getContent(), is(notNullValue()));
@@ -156,12 +156,12 @@ public class JcrSessionArtifactFinderTest {
 
 	@Test
 	public void shouldListArtifacts() throws Exception {
-		final Set<StreamArtifact> artifacts = streamArtifactFinder
+		final Set<StringArtifact> artifacts = streamArtifactFinder
 				.listByPath("/main/java/org/openspotlight/federation");
 
 		assertThat(artifacts, is(notNullValue()));
 		assertThat(artifacts.size(), is(not(0)));
-		for (final StreamArtifact sa : artifacts) {
+		for (final StringArtifact sa : artifacts) {
 			assertThat(sa, is(notNullValue()));
 			assertThat(sa.getContent(), is(notNullValue()));
 		}

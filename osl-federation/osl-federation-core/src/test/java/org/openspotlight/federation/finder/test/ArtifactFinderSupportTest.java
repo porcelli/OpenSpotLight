@@ -58,19 +58,19 @@ import java.util.Set;
 import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.ArtifactFinderSupport;
 
 public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldCleanAllArtifactsMarkedWithExcluded() {
-		final Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final StreamArtifact existent1 = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final StringArtifact existent1 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent1.setContent("abc");
-		final StreamArtifact existent2 = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/d", ChangeType.CHANGED);
+		final StringArtifact existent2 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/d", ChangeType.CHANGED);
 		existent2.setContent("def");
 		existents.add(existent1);
 		existents.add(existent2);
@@ -81,13 +81,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindChangedArtifactsWhenTheExistentExcluded() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("def");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -102,13 +102,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindChangedArtifactsWhenTheExistentIsChanged() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("def");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -123,13 +123,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindChangedArtifactsWhenTheExistentIsNotChanged() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("def");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -144,13 +144,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindExcludedArtifactsWhenTheExistentIsExcludedWithOtherContent() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("def");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -164,13 +164,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindExcludedArtifactsWhenTheExistentIsExcludedWithSameContent() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("abc");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -184,10 +184,10 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindExcludedArtifactsWhenTheresNoOther() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("def");
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
@@ -200,10 +200,10 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindIncludedArtifacts() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
 		newOnes.add(newOne);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
@@ -216,13 +216,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindIncludedArtifactsWhenTheExistentIsIncluded() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		existent.setContent("def");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -238,13 +238,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindNotChangedArtifactsWhenTheExistentIsExcluded() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent.setContent("abc");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -258,13 +258,13 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldFindNotChangedArtifactsWhenTheExistentIsNotChanged() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> newOnes = new HashSet<StreamArtifact>();
-		final StreamArtifact newOne = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
+		final StringArtifact newOne = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		newOne.setContent("abc");
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.NOT_CHANGED);
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.NOT_CHANGED);
 		existent.setContent("abc");
 		newOnes.add(newOne);
 		existents.add(existent);
@@ -278,14 +278,14 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldIgnoreArtifactsIncludedAndExcluded() {
-		Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final Set<StreamArtifact> excludeds = new HashSet<StreamArtifact>();
-		final StreamArtifact existent = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final Set<StringArtifact> excludeds = new HashSet<StringArtifact>();
+		final StringArtifact existent = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		existent.setContent("willBeExcluded");
 		existents.add(existent);
-		final StreamArtifact excluded = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact excluded = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		excluded.setContent("willBeExcluded");
 		excludeds.add(excluded);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
@@ -295,12 +295,12 @@ public class ArtifactFinderSupportTest {
 
 	@Test
 	public void shouldMarkAllArtifactsWithNotChanged() {
-		final Set<StreamArtifact> existents = new HashSet<StreamArtifact>();
-		final StreamArtifact existent1 = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.INCLUDED);
+		final Set<StringArtifact> existents = new HashSet<StringArtifact>();
+		final StringArtifact existent1 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
 		existent1.setContent("def");
-		final StreamArtifact existent2 = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c", ChangeType.EXCLUDED);
+		final StringArtifact existent2 = Artifact.createArtifact(
+				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
 		existent2.setContent("abc");
 		existents.add(existent1);
 		existents.add(existent2);

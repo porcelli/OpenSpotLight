@@ -65,10 +65,10 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.PathElement;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class LocalSourceStreamArtifactFinder extends
-		AbstractArtifactFinder<StreamArtifact> {
+		AbstractArtifactFinder<StringArtifact> {
 
 	private final ArtifactSource artifactSource;
 
@@ -86,15 +86,15 @@ public class LocalSourceStreamArtifactFinder extends
 
 	}
 
-	public Class<StreamArtifact> getArtifactType() {
-		return StreamArtifact.class;
+	public Class<StringArtifact> getArtifactType() {
+		return StringArtifact.class;
 	}
 
 	public Class<? extends ArtifactSource> getSourceType() {
 		return null;
 	}
 
-	protected StreamArtifact internalFindByPath(final String rawPath) {
+	protected StringArtifact internalFindByPath(final String rawPath) {
 		Assertions.checkNotEmpty("rawPath", rawPath);
 		for (final ChangeType t : ChangeType.values()) {
 			try {
@@ -118,8 +118,8 @@ public class LocalSourceStreamArtifactFinder extends
 					buffer.append('\n');
 				}
 				final String content = buffer.toString();
-				final StreamArtifact streamArtifact = Artifact.createArtifact(
-						StreamArtifact.class, rawPath, t);
+				final StringArtifact streamArtifact = Artifact.createArtifact(
+						StringArtifact.class, rawPath, t);
 				streamArtifact.setContent(content);
 				return streamArtifact;
 			} catch (final Exception e) {
@@ -131,8 +131,8 @@ public class LocalSourceStreamArtifactFinder extends
 
 	}
 
-	protected StreamArtifact internalFindByRelativePath(
-			final StreamArtifact relativeTo, final String path) {
+	protected StringArtifact internalFindByRelativePath(
+			final StringArtifact relativeTo, final String path) {
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkNotNull("relativeTo", relativeTo);
 		Assertions.checkNotEmpty("path", path);
@@ -142,12 +142,12 @@ public class LocalSourceStreamArtifactFinder extends
 		return findByPath(newPath);
 	}
 
-	protected Set<StreamArtifact> internalListByPath(final String rawPath) {
+	protected Set<StringArtifact> internalListByPath(final String rawPath) {
 		try {
-			final Set<StreamArtifact> result = new HashSet<StreamArtifact>();
+			final Set<StringArtifact> result = new HashSet<StringArtifact>();
 			final Set<String> allFilePaths = retrieveAllArtifactNames(rawPath);
 			for (final String path : allFilePaths) {
-				final StreamArtifact sa = findByPath(path);
+				final StringArtifact sa = findByPath(path);
 				result.add(sa);
 			}
 			return result;

@@ -72,7 +72,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.DatabaseStreamArtifactFinder;
 import org.openspotlight.federation.finder.db.ScriptType;
@@ -189,7 +189,7 @@ public abstract class DatabaseStreamTest {
 		final Set<String> failMessages = new HashSet<String>();
 		lookingTypes: for (final ScriptType typeToAssert : typesToAssert()) {
 			for (final Artifact artifact : loadedArtifacts) {
-				final StreamArtifact streamArtifact = (StreamArtifact) artifact;
+				final StringArtifact streamArtifact = (StringArtifact) artifact;
 				final String relativeName = streamArtifact
 						.getArtifactCompleteName();
 				if (relativeName.contains(typeToAssert.name())) {
@@ -205,7 +205,7 @@ public abstract class DatabaseStreamTest {
 			fail(failMessages.toString());
 		}
 		for (final Artifact artifact : loadedArtifacts) {
-			final StreamArtifact streamArtifact = (StreamArtifact) artifact;
+			final StringArtifact streamArtifact = (StringArtifact) artifact;
 			final String name = "./target/test-data/"
 					+ this.getClass().getSimpleName()
 					+ "/"

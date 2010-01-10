@@ -60,7 +60,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DnaFileSystemArtifactFinder;
 import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 /**
  * Test for class {@link DnaFileSystemArtifactLoader}
@@ -82,7 +82,7 @@ public class DnaFileSystemArtifactFinderTest {
 		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder(
 				artifactSource);
 
-		final StreamArtifact sa = finder
+		final StringArtifact sa = finder
 				.findByPath("osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
 
 		assertThat(sa, is(notNullValue()));

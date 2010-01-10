@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 /**
  * Test for class {@link DNASvnArtifactFinder}
@@ -86,7 +86,7 @@ public class DnaSvnArtifactLoaderTest {
 		bundle.setRepository(repository);
 
 		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
-		final StreamArtifact sa = finder.findByPath("source/osl/pom.xml");
+		final StringArtifact sa = finder.findByPath("source/osl/pom.xml");
 
 		assertThat(sa, is(notNullValue()));
 		assertThat(sa.getContent(), is(notNullValue()));

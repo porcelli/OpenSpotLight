@@ -50,14 +50,14 @@ package org.openspotlight.federation.finder;
 
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class FileSystemArtifactBySourceProvider implements
 		ArtifactFinderBySourceProvider {
 
 	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
-		if (artifactType.equals(StreamArtifact.class)) {
+		if (artifactType.equals(StringArtifact.class)) {
 			return new FileSystemStreamArtifactFinder(source);
 		}
 		return null;

@@ -64,7 +64,7 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LogEntry;
 import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInformation;
@@ -167,7 +167,7 @@ public class DetailedLoggerTest {
 	public void shouldLogSomeStuff() throws Exception {
 
 		final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
-				StreamArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
+				StringArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
 		final SLNode node = graphSession.createContext("ctx").getRootNode()
 				.addNode("node1");
 		final SLNode node2 = node.addNode("node2");

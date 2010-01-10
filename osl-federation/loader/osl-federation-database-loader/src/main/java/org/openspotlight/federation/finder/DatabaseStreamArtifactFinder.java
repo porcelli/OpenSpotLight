@@ -59,7 +59,7 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
@@ -67,14 +67,14 @@ import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
 public class DatabaseStreamArtifactFinder extends
-		AbstractDatabaseArtifactFinder<StreamArtifact> implements
-		ArtifactFinder<StreamArtifact> {
+		AbstractDatabaseArtifactFinder<StringArtifact> implements
+		ArtifactFinder<StringArtifact> {
 
 	public DatabaseStreamArtifactFinder(final DbArtifactSource artifactSource) {
 		super(artifactSource);
 	}
 
-	protected StreamArtifact internalFindByPath(final String path) {
+	protected StringArtifact internalFindByPath(final String path) {
 		try {
 
 			final Connection conn = getConnectionFromSource(artifactSource);
@@ -146,8 +146,8 @@ public class DatabaseStreamArtifactFinder extends
 							scriptType, catalog, name, content, conn);
 				}
 				final String contentAsString = new String(content);
-				final StreamArtifact sa = Artifact.createArtifact(
-						StreamArtifact.class, path, ChangeType.INCLUDED);
+				final StringArtifact sa = Artifact.createArtifact(
+						StringArtifact.class, path, ChangeType.INCLUDED);
 				sa.setContent(contentAsString);
 
 				return sa;

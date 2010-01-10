@@ -72,7 +72,7 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.AbstractArtifactFinder;
 import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
@@ -83,7 +83,7 @@ import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public abstract class DnaArtifactFinder extends
-		AbstractArtifactFinder<StreamArtifact> {
+		AbstractArtifactFinder<StringArtifact> {
 
 	/**
 	 * JCR visitor to fill all valid artifact names
@@ -166,7 +166,7 @@ public abstract class DnaArtifactFinder extends
 		return session;
 	}
 
-	protected StreamArtifact internalFindByPath(final String rawPath) {
+	protected StringArtifact internalFindByPath(final String rawPath) {
 		try {
 			String path;
 			if (rawPath.startsWith("/")) {
@@ -187,8 +187,8 @@ public abstract class DnaArtifactFinder extends
 			while ((available = is.read()) != -1) {
 				baos.write(available);
 			}
-			final StreamArtifact artifact = Artifact.createArtifact(
-					StreamArtifact.class, path, ChangeType.INCLUDED);
+			final StringArtifact artifact = Artifact.createArtifact(
+					StringArtifact.class, path, ChangeType.INCLUDED);
 			artifact.setContent(new String(baos.toByteArray()));
 			return artifact;
 		} catch (final Exception e) {

@@ -48,23 +48,27 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import java.io.InputStream;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 
-@Name("stream_artifact")
-public class StreamArtifact extends ArtifactWithSyntaxInformation {
+// TODO: Auto-generated Javadoc
+/**
+ * This is the {@link StringArtifact} class 'on steroids'. It has a lot of
+ * {@link PathElement path elements} used to locate a new {@link StringArtifact}
+ * based on another one.
+ */
+@Name("string_artifact")
+public class StringArtifact extends ArtifactWithSyntaxInformation {
 
 	private static final long serialVersionUID = -8912205023568005794L;
 
 	/** The content. */
-	private InputStream content;
+	private String content;
 
 	@Override
 	public boolean contentEquals(final Artifact other) {
-		if (other instanceof StreamArtifact) {
-			final StreamArtifact that = (StreamArtifact) other;
+		if (other instanceof StringArtifact) {
+			final StringArtifact that = (StringArtifact) other;
 			return Equals.eachEquality(content, that.content);
 		}
 		return false;
@@ -75,7 +79,7 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
 	 * 
 	 * @return the content
 	 */
-	public InputStream getContent() {
+	public String getContent() {
 		return content;
 	}
 
@@ -85,7 +89,7 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
 	 * @param content
 	 *            the new content
 	 */
-	public void setContent(final InputStream content) {
+	public void setContent(final String content) {
 		this.content = content;
 	}
 
