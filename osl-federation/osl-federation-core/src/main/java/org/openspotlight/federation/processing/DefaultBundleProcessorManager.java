@@ -59,20 +59,20 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 // TODO: Auto-generated Javadoc
 /**
- * The {@link BundleProcessorManagerImpl} is the class reposable to get an
+ * The {@link DefaultBundleProcessorManager} is the class reposable to get an
  * {@link GlobalSettings} and to process all {@link Artifact artifacts} on this
- * {@link GlobalSettings}. The {@link BundleProcessorManagerImpl} should get the
+ * {@link GlobalSettings}. The {@link DefaultBundleProcessorManager} should get the
  * {@link ArtifactSource bundle's} {@link BundleProcessorType types} and find
  * all the {@link BundleProcessor processors} for each
  * {@link BundleProcessorType type} . After all {@link BundleProcessor
- * processors} was found, the {@link BundleProcessorManagerImpl} should
+ * processors} was found, the {@link DefaultBundleProcessorManager} should
  * distribute the processing job in some threads obeying the
  * {@link GlobalSettings#getNumberOfParallelThreads() number of threads}
  * configured for this {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public enum BundleProcessorManagerImpl implements BundleProcessorManager {
+public enum DefaultBundleProcessorManager implements BundleProcessorManager {
 
 	INSTANCE;
 

@@ -55,7 +55,7 @@ import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
-import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
+import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public class GroupSchedulable implements
@@ -75,7 +75,7 @@ public class GroupSchedulable implements
 			throws Exception {
 		try {
 			GROUP_MUTEX.acquire();
-			BundleProcessorManagerImpl.INSTANCE.executeBundles(username,
+			DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
 					password, descriptor, factory, settings, schedulable);
 		} finally {
 			GROUP_MUTEX.release();

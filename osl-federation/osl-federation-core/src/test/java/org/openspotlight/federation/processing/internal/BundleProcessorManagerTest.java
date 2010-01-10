@@ -84,7 +84,7 @@ import org.openspotlight.federation.loader.ArtifactLoader;
 import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
-import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
+import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLNode;
@@ -207,7 +207,7 @@ public class BundleProcessorManagerTest {
 		}
 		contextFactory.closeResources();
 
-		final GlobalExecutionStatus result = BundleProcessorManagerImpl.INSTANCE
+		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
 				.executeBundles("username", "password",
 						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 						SingleGraphSessionExecutionContextFactory
@@ -270,7 +270,7 @@ public class BundleProcessorManagerTest {
 		context.getDefaultConfigurationManager().saveRepository(repository);
 		context.closeResources();
 
-		final GlobalExecutionStatus result = BundleProcessorManagerImpl.INSTANCE
+		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
 				.executeBundles("username", "password",
 						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 						TestExecutionContextFactory.createFactory(
