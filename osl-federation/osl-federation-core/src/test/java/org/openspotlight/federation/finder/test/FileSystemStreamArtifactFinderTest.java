@@ -57,7 +57,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 
 /**
@@ -98,9 +98,9 @@ public class FileSystemStreamArtifactFinderTest {
 	 */
 	@Test
 	public void shouldFindByRelativePath() throws Exception {
-		final StringArtifact streamArtifact1 = streamArtifactFinder
+		final StreamArtifact streamArtifact1 = streamArtifactFinder
 				.findByPath("/folder/subfolder/file_not_changed1");
-		final StringArtifact streamArtifact2 = streamArtifactFinder
+		final StreamArtifact streamArtifact2 = streamArtifactFinder
 				.findByRelativePath(streamArtifact1, "../file_not_changed1");
 		assertThat(streamArtifact2, is(notNullValue()));
 		assertThat(streamArtifact2.getArtifactCompleteName(),

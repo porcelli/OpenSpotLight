@@ -56,7 +56,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
+import org.openspotlight.federation.finder.FileSystemStringArtifactFinder;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -113,7 +113,7 @@ public class FSArtifactFinderAndSimplePersistStressTest {
 
 	@Test
 	public void shouldFindSourceAndStoreItOnJcr() throws Exception {
-		final FileSystemStreamArtifactFinder finder = new FileSystemStreamArtifactFinder(
+		final FileSystemStringArtifactFinder finder = new FileSystemStringArtifactFinder(
 				artifactSource);
 		finder.listByPath(null);
 	}

@@ -65,7 +65,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
+import org.openspotlight.federation.finder.FileSystemStringArtifactFinder;
 import org.openspotlight.federation.finder.JcrSessionArtifactFinder;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -97,7 +97,7 @@ public class JcrSessionArtifactFinderTest {
 		repository = new Repository();
 		repository.setName("name");
 		artifactSource.setRepository(repository);
-		final FileSystemStreamArtifactFinder fileSystemFinder = new FileSystemStreamArtifactFinder(
+		final FileSystemStringArtifactFinder fileSystemFinder = new FileSystemStringArtifactFinder(
 				artifactSource);
 		final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(null);
 		SimplePersistSupport.convertBeansToJcrs(JcrSessionArtifactFinder

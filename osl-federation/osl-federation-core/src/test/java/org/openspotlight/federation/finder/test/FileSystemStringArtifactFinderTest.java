@@ -46,70 +46,84 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.context;
+package org.openspotlight.federation.finder.test;
 
-import org.openspotlight.common.DisposingListener;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.FileSystemStringArtifactFinder;
-import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * This class is an {@link ExecutionContext} which initialize all resources in a
- * lazy way, and also close it in a lazy way also.
- * 
- * @author feu
- * 
+ * The Class LocalSourceStreamArtifactFinderTest.
  */
-public class TestExecutionContext extends SingleGraphSessionExecutionContext {
-	private final ArtifactFinderType type;
-	private final ArtifactSource source;
+public class FileSystemStringArtifactFinderTest {
 
-	TestExecutionContext(final String username, final String password,
-			final JcrConnectionDescriptor descriptor,
-			final String repositoryName,
-			final DisposingListener<DefaultExecutionContext> listener,
-			final AuthenticatedUser user,
-			final SLGraphSession uniqueGraphSession,
-			final ArtifactSource source, final ArtifactFinderType type) {
-		super(username, password, descriptor, repositoryName, listener, user,
-				uniqueGraphSession);
-		this.source = source;
-		this.type = type;
+	/** The stream artifact finder. */
+	private FileSystemStringArtifactFinder streamArtifactFinder;
+
+	/** The artifact source. */
+	private ArtifactSource artifactSource;
+
+	/**
+	 * Prepare artifact source.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Before
+	public void prepareArtifactSource() throws Exception {
+		final Repository repository = new Repository();
+		repository.setName("repositoryName");
+		artifactSource = new ArtifactSource();
+		artifactSource.setRepository(repository);
+		artifactSource.setName("classpath");
+		artifactSource
+				.setInitialLookup("./src/test/resources/artifacts/not_changed");
+		streamArtifactFinder = new FileSystemStringArtifactFinder(
+				artifactSource);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
-			final Class<A> artifactType, final Repository typedRepository) {
-		Assertions.checkCondition("artifactTypeAsStream", StringArtifact.class
-				.equals(artifactType));
-		ArtifactFinder<A> finder;
-		switch (type) {
-		case LOCAL_SOURCE:
-			finder = (ArtifactFinder<A>) new LocalSourceStreamArtifactFinder(
-					source);
+	/**
+	 * Should find by relative path.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void shouldFindByRelativePath() throws Exception {
+		final StringArtifact streamArtifact1 = streamArtifactFinder
+				.findByPath("/folder/subfolder/file_not_changed1");
+		final StringArtifact streamArtifact2 = streamArtifactFinder
+				.findByRelativePath(streamArtifact1, "../file_not_changed1");
+		assertThat(streamArtifact2, is(notNullValue()));
+		assertThat(streamArtifact2.getArtifactCompleteName(),
+				is("/folder/file_not_changed1"));
+	}
 
-			break;
-		case FILESYSTEM:
-			finder = (ArtifactFinder<A>) new FileSystemStringArtifactFinder(
-					source);
-
-			break;
-		default:
-			throw Exceptions.logAndReturn(new IllegalStateException(
-					"invalid enum type"));
-		}
-		return finder;
+	/**
+	 * Should load not changed artifact.
+	 * 
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void shouldLoadNotChangedArtifact() throws Exception {
+		final ArtifactWithSyntaxInformation streamArtifact1 = streamArtifactFinder
+				.findByPath("folder/file_not_changed1");
+		final ArtifactWithSyntaxInformation streamArtifact2 = streamArtifactFinder
+				.findByPath("folder/subfolder/file_not_changed1");
+		final ArtifactWithSyntaxInformation streamArtifact3 = streamArtifactFinder
+				.findByPath("folder/subfolder/anothersubfolder/file_not_changed1");
+		assertThat(streamArtifact1, is(notNullValue()));
+		assertThat(streamArtifact2, is(notNullValue()));
+		assertThat(streamArtifact3, is(notNullValue()));
 	}
 
 }
