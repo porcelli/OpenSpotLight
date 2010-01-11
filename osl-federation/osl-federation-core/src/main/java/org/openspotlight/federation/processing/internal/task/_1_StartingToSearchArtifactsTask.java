@@ -314,7 +314,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 				}
 
 				final CountDownLatch allPhaseTwoLatch = new CountDownLatch(
-						subpriority - 1);
+						subpriority == 0 ? 0 : subpriority - 1);
 				CountDownLatch parentLatch = firstPhaseLatch;
 
 				final int lastSubPriority = 1;
