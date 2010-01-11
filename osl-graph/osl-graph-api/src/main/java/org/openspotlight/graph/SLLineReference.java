@@ -49,7 +49,8 @@
 package org.openspotlight.graph;
 
 import org.openspotlight.graph.annotation.SLProperty;
-
+import org.openspotlight.graph.annotation.SLVisibility;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 /**
  * The Interface SLLineReference.
@@ -58,140 +59,126 @@ import org.openspotlight.graph.annotation.SLProperty;
  */
 /**
  * @author vitorchagas
- *
  */
+@SLVisibility( VisibilityLevel.INTERNAL )
 public interface SLLineReference extends SLNode {
-	
-	/**
-	 * Gets the start line.
-	 * 
-	 * @return the start line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getStartLine() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the start line.
-	 * 
-	 * @param startLine the new start line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setStartLine(Integer startLine) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the end line.
-	 * 
-	 * @return the end line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getEndLine() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the end line.
-	 * 
-	 * @param endLine the new end line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setEndLine(Integer endLine) throws SLGraphSessionException;
 
-	/**
-	 * Gets the start column.
-	 * 
-	 * @return the start column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getStartColumn() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the start column.
-	 * 
-	 * @param startColumn the new start column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setStartColumn(Integer startColumn) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the end column.
-	 * 
-	 * @return the end column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getEndColumn() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the end column.
-	 * 
-	 * @param endColumn the new end column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setEndColumn(Integer endColumn) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the statement.
-	 * 
-	 * @return the statement
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getStatement() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the statement.
-	 * 
-	 * @param statement the new statement
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setStatement(String statement) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the artifact id.
-	 * 
-	 * @return the artifact id
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getArtifactId() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the artifact id.
-	 * 
-	 * @param artifactId the new artifact id
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setArtifactId(String artifactId) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the artifact version.
-	 * 
-	 * @return the artifact version
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getArtifactVersion() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the artifact version.
-	 * 
-	 * @param artifactVersion the new artifact version
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setArtifactVersion(String artifactVersion) throws SLGraphSessionException;
+    /**
+     * Gets the start line.
+     * 
+     * @return the start line
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public Integer getStartLine() throws SLGraphSessionException;
+
+    /**
+     * Sets the start line.
+     * 
+     * @param startLine the new start line
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setStartLine( Integer startLine ) throws SLGraphSessionException;
+
+    /**
+     * Gets the end line.
+     * 
+     * @return the end line
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public Integer getEndLine() throws SLGraphSessionException;
+
+    /**
+     * Sets the end line.
+     * 
+     * @param endLine the new end line
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setEndLine( Integer endLine ) throws SLGraphSessionException;
+
+    /**
+     * Gets the start column.
+     * 
+     * @return the start column
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public Integer getStartColumn() throws SLGraphSessionException;
+
+    /**
+     * Sets the start column.
+     * 
+     * @param startColumn the new start column
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setStartColumn( Integer startColumn ) throws SLGraphSessionException;
+
+    /**
+     * Gets the end column.
+     * 
+     * @return the end column
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public Integer getEndColumn() throws SLGraphSessionException;
+
+    /**
+     * Sets the end column.
+     * 
+     * @param endColumn the new end column
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setEndColumn( Integer endColumn ) throws SLGraphSessionException;
+
+    /**
+     * Gets the statement.
+     * 
+     * @return the statement
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public String getStatement() throws SLGraphSessionException;
+
+    /**
+     * Sets the statement.
+     * 
+     * @param statement the new statement
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setStatement( String statement ) throws SLGraphSessionException;
+
+    /**
+     * Gets the artifact id.
+     * 
+     * @return the artifact id
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public String getArtifactId() throws SLGraphSessionException;
+
+    /**
+     * Sets the artifact id.
+     * 
+     * @param artifactId the new artifact id
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setArtifactId( String artifactId ) throws SLGraphSessionException;
+
+    /**
+     * Gets the artifact version.
+     * 
+     * @return the artifact version
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    @SLProperty
+    public String getArtifactVersion() throws SLGraphSessionException;
+
+    /**
+     * Sets the artifact version.
+     * 
+     * @param artifactVersion the new artifact version
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public void setArtifactVersion( String artifactVersion ) throws SLGraphSessionException;
 }
