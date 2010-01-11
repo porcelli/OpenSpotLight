@@ -82,8 +82,8 @@
 		<module>osl-federation</module>
 		<module>osl-web</module>
 		<module>bundle-processor/osl-bundle-common</module>
-		<module>bundle-processor/osl-java-bundle</module>
-		<module>bundle-processor/osl-db-bundle</module>
+		<module>bundle-processor/osl-bundle-java</module>
+		<module>bundle-processor/osl-bundle-db</module>
 	</modules>
 	<build>
 		<plugins>
@@ -222,17 +222,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-db-bundle</artifactId>
+				<artifactId>osl-bundle-db</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-java-bundle</artifactId>
-				<version>${pom.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-java-bundle-initial-import</artifactId>
+				<artifactId>osl-bundle-java</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
