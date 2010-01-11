@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
+import java.util.Map;
+
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
@@ -59,55 +61,67 @@ import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 
 public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 
-    private Group      currentGroup;
+	private Map<String, String> bundleProperties;
 
-    private SLNode     currentNodeGroup;
+	private Group currentGroup;
 
-    private Repository currentRepository;
+	private SLNode currentNodeGroup;
 
-    private SLContext  groupContext;
+	private Repository currentRepository;
 
-    public Group getCurrentGroup() {
-        return this.currentGroup;
-    }
+	private SLContext groupContext;
 
-    public SLNode getCurrentNodeGroup()
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        if (this.currentNodeGroup == null) {
-            if (this.currentGroup != null && this.groupContext != null) {
-                this.currentNodeGroup = this.getNodeForGroup(this.currentGroup);
-            }
-        }
-        return this.currentNodeGroup;
-    }
+	public Map<String, String> getBundleProperties() {
+		return bundleProperties;
+	}
 
-    public Repository getCurrentRepository() {
-        return this.currentRepository;
-    }
+	public Group getCurrentGroup() {
+		return currentGroup;
+	}
 
-    public SLContext getGroupContext() {
-        return this.groupContext;
-    }
+	public SLNode getCurrentNodeGroup()
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		if (currentNodeGroup == null) {
+			if (currentGroup != null && groupContext != null) {
+				currentNodeGroup = getNodeForGroup(currentGroup);
+			}
+		}
+		return currentNodeGroup;
+	}
 
-    public SLNode getNodeForGroup( final Group group )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return this.groupContext.getRootNode().addNode(group.getUniqueName());
-    }
+	public Repository getCurrentRepository() {
+		return currentRepository;
+	}
 
-    public void setCurrentGroup( final Group currentGroup ) {
-        this.currentGroup = currentGroup;
-    }
+	public SLContext getGroupContext() {
+		return groupContext;
+	}
 
-    public void setCurrentNodeGroup( final SLNode currentNodeGroup ) {
-        this.currentNodeGroup = currentNodeGroup;
-    }
+	public SLNode getNodeForGroup(final Group group)
+			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			SLInvalidCredentialException {
+		return groupContext.getRootNode().addNode(group.getUniqueName());
+	}
 
-    public void setCurrentRepository( final Repository currentRepository ) {
-        this.currentRepository = currentRepository;
-    }
+	public void setBundleProperties(final Map<String, String> bundleProperties) {
+		this.bundleProperties = bundleProperties;
+	}
 
-    public void setGroupContext( final SLContext groupContext ) {
-        this.groupContext = groupContext;
-    }
+	public void setCurrentGroup(final Group currentGroup) {
+		this.currentGroup = currentGroup;
+	}
+
+	public void setCurrentNodeGroup(final SLNode currentNodeGroup) {
+		this.currentNodeGroup = currentNodeGroup;
+	}
+
+	public void setCurrentRepository(final Repository currentRepository) {
+		this.currentRepository = currentRepository;
+	}
+
+	public void setGroupContext(final SLContext groupContext) {
+		this.groupContext = groupContext;
+	}
 
 }

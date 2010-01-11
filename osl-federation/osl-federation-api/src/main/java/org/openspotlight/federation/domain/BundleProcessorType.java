@@ -50,8 +50,10 @@ package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
@@ -70,6 +72,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 @Name("bundle_processor_type")
 public class BundleProcessorType implements SimpleNodeType, Serializable {
+
+	private Map<String, String> bundleProperties = new HashMap<String, String>();
 
 	private static final long serialVersionUID = -8305990807194729295L;
 
@@ -108,6 +112,10 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 
 	public List<Class<? extends BundleProcessorArtifactPhase<?>>> getArtifactPhases() {
 		return artifactPhases;
+	}
+
+	public Map<String, String> getBundleProperties() {
+		return bundleProperties;
 	}
 
 	@KeyProperty
@@ -170,6 +178,10 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 	public void setArtifactPhases(
 			final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases) {
 		this.artifactPhases = artifactPhases;
+	}
+
+	public void setBundleProperties(final Map<String, String> bundleProperties) {
+		this.bundleProperties = bundleProperties;
 	}
 
 	public void setGlobalPhase(

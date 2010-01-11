@@ -294,6 +294,8 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 					for (final T artifactToProcess : this.toBeReturned
 							.getArtifactsToBeProcessed()) {
 						final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
+						taskCtx.setBundleProperties(bundleProcessorType
+								.getBundleProperties());
 						taskCtx.setCurrentGroup(this.currentContext
 								.getCurrentGroup());
 						taskCtx.setCurrentRepository(this.currentContext

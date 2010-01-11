@@ -219,6 +219,8 @@ public class BundleProcessorExecution {
 						.getBundleTypes()) {
 					final Repository repository = group.getRootRepository();
 					final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
+					currentContextImpl.setBundleProperties(processor
+							.getBundleProperties());
 					currentContextImpl.setCurrentGroup(group);
 					currentContextImpl.setCurrentRepository(repository);
 					newTaskData.add(new StartingSearchArtifactsDto(
