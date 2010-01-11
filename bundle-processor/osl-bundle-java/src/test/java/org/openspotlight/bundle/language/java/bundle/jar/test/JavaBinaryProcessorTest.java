@@ -57,7 +57,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.bundle.jar.JarProcessor;
+import org.openspotlight.bundle.language.java.bundle.jar.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.jar.JavaGlobalPhase;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -78,7 +78,7 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-public class JarProcessorTest {
+public class JavaBinaryProcessorTest {
 
 	private static class RepositoryData {
 		public final GlobalSettings settings;
@@ -149,7 +149,7 @@ public class JarProcessorTest {
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		commonProcessor.getArtifactPhases().add(JarProcessor.class);
+		commonProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();

@@ -8,7 +8,7 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JarProcessor implements
+public class JavaBinaryProcessor implements
 		BundleProcessorArtifactPhase<StreamArtifact> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
