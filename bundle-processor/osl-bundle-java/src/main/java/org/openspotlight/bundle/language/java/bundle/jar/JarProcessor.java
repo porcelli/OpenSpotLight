@@ -1,4 +1,4 @@
-package org.openspotlight.bundle.dap.language.java.bundle.jar;
+package org.openspotlight.bundle.language.java.bundle.jar;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;

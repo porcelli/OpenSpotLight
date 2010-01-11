@@ -1,4 +1,4 @@
-package org.openspotlight.bundle.dap.language.java.bundle.jar;
+package org.openspotlight.bundle.language.java.bundle.jar;
 
 import java.util.Set;
 
