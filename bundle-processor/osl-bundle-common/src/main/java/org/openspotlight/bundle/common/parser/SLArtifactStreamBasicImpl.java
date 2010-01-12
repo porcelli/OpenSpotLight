@@ -48,22 +48,38 @@
  */
 package org.openspotlight.bundle.common.parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 import org.antlr.runtime.ANTLRStringStream;
 
-public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements SLArtifactStream {
+public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
+		SLArtifactStream {
 
-    private String fedaratedArtifactPath;
+	private final String fedaratedArtifactPath;
 
-    public SLArtifactStreamBasicImpl(
-                                      String fedaratedArtifactPath, String artifactContent ) throws IOException {
-        this.fedaratedArtifactPath = fedaratedArtifactPath;
-        this.data = artifactContent.toCharArray();
-        this.n = artifactContent.length();
-    }
+	private final int lineCount;
 
-    public String getFedaratedArtifactPath() {
-        return fedaratedArtifactPath;
-    }
+	public SLArtifactStreamBasicImpl(final String fedaratedArtifactPath,
+			final String artifactContent) throws IOException {
+		this.fedaratedArtifactPath = fedaratedArtifactPath;
+		data = artifactContent.toCharArray();
+		n = artifactContent.length();
+		int count = 0;
+		final BufferedReader reader = new BufferedReader(new StringReader(
+				artifactContent));
+		while (reader.readLine() != null) {
+			count++;
+		}
+		lineCount = count;
+	}
+
+	public String getFedaratedArtifactPath() {
+		return fedaratedArtifactPath;
+	}
+
+	public int getPhysicalLineCount() {
+		return lineCount;
+	}
 }

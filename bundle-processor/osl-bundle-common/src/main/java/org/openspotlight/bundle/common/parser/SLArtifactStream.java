@@ -48,7 +48,11 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-public interface SLArtifactStream {
+import org.antlr.runtime.CharStream;
 
-    public String getSourceName();
+public interface SLArtifactStream extends CharStream {
+
+	public int getPhysicalLineCount();
+
+	public String getSourceName();
 }

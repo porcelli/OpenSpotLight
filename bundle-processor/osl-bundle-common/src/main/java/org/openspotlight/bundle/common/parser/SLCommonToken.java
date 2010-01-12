@@ -54,64 +54,69 @@ import org.antlr.runtime.Token;
 
 public class SLCommonToken extends CommonToken {
 
-    private static final long serialVersionUID      = -7832734839073755630L;
+	private static final long serialVersionUID = -7832734839073755630L;
 
-    private int               endCharPositionInLine = -1;
-    private int               endLine               = -1;
+	private int endCharPositionInLine = -1;
+	private int endLine = -1;
 
-    public SLCommonToken(
-                          int type ) {
-        super(type);
-    }
+	public SLCommonToken(final CharStream input, final int type,
+			final int channel, final int start, final int stop) {
+		super(type);
+		this.input = input;
+		this.channel = channel;
+		this.start = start;
+		this.stop = stop;
+	}
 
-    public SLCommonToken(
-                          CharStream input, int type, int channel, int start, int stop ) {
-        super(type);
-        this.input = input;
-        this.channel = channel;
-        this.start = start;
-        this.stop = stop;
-    }
+	public SLCommonToken(final int type) {
+		super(type);
+	}
 
-    public SLCommonToken(
-                          int type, String text ) {
-        super(type);
-        this.channel = DEFAULT_CHANNEL;
-        this.text = text;
-    }
+	public SLCommonToken(final int type, final String text) {
+		super(type);
+		channel = DEFAULT_CHANNEL;
+		this.text = text;
+	}
 
-    public SLCommonToken(
-                          Token oldToken ) {
-        super(oldToken.getType());
-        text = oldToken.getText();
-        line = oldToken.getLine();
-        index = oldToken.getTokenIndex();
-        charPositionInLine = oldToken.getCharPositionInLine();
-        channel = oldToken.getChannel();
-        if (oldToken instanceof CommonToken) {
-            start = ((CommonToken)oldToken).getStartIndex();
-            stop = ((CommonToken)oldToken).getStopIndex();
-        }
-        if (oldToken instanceof SLCommonToken) {
-            endLine = ((SLCommonToken)oldToken).getEndLine();
-            endCharPositionInLine = ((SLCommonToken)oldToken).getEndCharPositionInLine();
-        }
-    }
+	public SLCommonToken(final Token oldToken) {
+		super(oldToken.getType());
+		text = oldToken.getText();
+		line = oldToken.getLine();
+		index = oldToken.getTokenIndex();
+		charPositionInLine = oldToken.getCharPositionInLine();
+		channel = oldToken.getChannel();
+		if (oldToken instanceof CommonToken) {
+			start = ((CommonToken) oldToken).getStartIndex();
+			stop = ((CommonToken) oldToken).getStopIndex();
+		}
+		if (oldToken instanceof SLCommonToken) {
+			endLine = ((SLCommonToken) oldToken).getEndLine();
+			endCharPositionInLine = ((SLCommonToken) oldToken)
+					.getEndCharPositionInLine();
+		}
+	}
 
-    public int getEndCharPositionInLine() {
-        return endCharPositionInLine;
-    }
+	public SLArtifactStream getArtifactStream() {
+		if (input instanceof SLArtifactStream) {
+			return (SLArtifactStream) input;
+		}
+		return null;
+	}
 
-    public void setEndCharPositionInLine( int endCharPositionInLine ) {
-        this.endCharPositionInLine = endCharPositionInLine;
-    }
+	public int getEndCharPositionInLine() {
+		return endCharPositionInLine;
+	}
 
-    public int getEndLine() {
-        return endLine;
-    }
+	public int getEndLine() {
+		return endLine;
+	}
 
-    public void setEndLine( int endLine ) {
-        this.endLine = endLine;
-    }
+	public void setEndCharPositionInLine(final int endCharPositionInLine) {
+		this.endCharPositionInLine = endCharPositionInLine;
+	}
+
+	public void setEndLine(final int endLine) {
+		this.endLine = endLine;
+	}
 
 }
