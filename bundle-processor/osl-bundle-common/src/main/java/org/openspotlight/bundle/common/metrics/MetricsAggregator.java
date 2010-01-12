@@ -1,12 +1,19 @@
 package org.openspotlight.bundle.common.metrics;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.openspotlight.graph.SLGraphException;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.SLInvalidCredentialException;
+import org.openspotlight.graph.SLNode;
 
 public class MetricsAggregator {
+
+	private final Map<String, SLNode> currentNodes = new HashMap<String, SLNode>();
 
 	private boolean methodsAreBlocks = false;
 	// <SLNode#id, Count>
@@ -113,13 +120,15 @@ public class MetricsAggregator {
 
 	public MetricsAggregator(final boolean useBlocksInstedOfMethods,
 			final SourceLineInfoBuilder sourceLineInfo,
-			final int functionPointPerLogicalLines) {
+			final int functionPointPerLogicalLines) throws SLGraphException,
+			SLInvalidCredentialException {
 		this(sourceLineInfo, functionPointPerLogicalLines);
 		methodsAreBlocks = useBlocksInstedOfMethods;
 	}
 
 	public MetricsAggregator(final SourceLineInfoBuilder sourceLineInfo,
-			final int functionPointPerLogicalLines) {
+			final int functionPointPerLogicalLines) throws SLGraphException,
+			SLInvalidCredentialException {
 		this.sourceLineInfo = sourceLineInfo;
 		conditionalNesting = new TreeMap<String, Integer>();
 		maxConditionalNesting = new TreeMap<String, Integer>();
@@ -151,135 +160,192 @@ public class MetricsAggregator {
 		this.functionPointPerLogicalLines = functionPointPerLogicalLines;
 	}
 
-	public void addConditionalNesting(final String nodeId) {
-		generalAcumulate(conditionalNesting, nodeId);
-		final Integer contConditionalNesting = conditionalNesting.get(nodeId);
-		Integer maxConditional = maxConditionalNesting.get(nodeId);
+	public void addConditionalNesting(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+
+		generalAcumulate(conditionalNesting, node);
+		final Integer contConditionalNesting = conditionalNesting.get(node
+				.getID());
+		Integer maxConditional = maxConditionalNesting.get(node.getID());
 		if (maxConditional == null) {
-			maxConditionalNesting.put(nodeId, contConditionalNesting);
+			maxConditionalNesting.put(node.getID(), contConditionalNesting);
 			maxConditional = 1;
 		} else {
 			if (contConditionalNesting > maxConditional) {
-				maxConditionalNesting.put(nodeId, contConditionalNesting);
+				maxConditionalNesting.put(node.getID(), contConditionalNesting);
 			}
 		}
 	}
 
-	public void addConstructor(final String nodeId) {
-		generalAcumulate(constructor, nodeId);
+	public void addConstructor(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(constructor, node);
 	}
 
-	public void addControlStatement(final String nodeId) {
-		addControlStatement(nodeId, 1);
+	public void addControlStatement(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		addControlStatement(node, 1);
 	}
 
-	public void addControlStatement(final String nodeId, final int size) {
-		generalAcumulate(controlStatement, nodeId, size);
+	public void addControlStatement(final SLNode node, final int size)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(controlStatement, node, size);
 	}
 
-	public void addCyclomatic1(final String nodeId) {
-		generalAcumulate(cyclomatic1, nodeId);
+	public void addCyclomatic1(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(cyclomatic1, node);
 	}
 
-	public void addCyclomatic2(final String nodeId) {
-		generalAcumulate(cyclomatic2, nodeId);
+	public void addCyclomatic2(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(cyclomatic2, node);
 	}
 
-	public void addCyclomatic3(final String nodeId) {
-		generalAcumulate(cyclomatic3, nodeId);
+	public void addCyclomatic3(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(cyclomatic3, node);
 	}
 
-	public void addCyclomatic4(final String nodeId) {
-		generalAcumulate(cyclomatic4, nodeId);
+	public void addCyclomatic4(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(cyclomatic4, node);
 	}
 
-	public void addDeclarativeStatement(final String nodeId) {
-		addDeclarativeStatement(nodeId, 1);
+	public void addDeclarativeStatement(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		addDeclarativeStatement(node, 1);
 	}
 
-	public void addDeclarativeStatement(final String nodeId, final int qty) {
-		generalAcumulate(declarativeStatement, nodeId, qty);
+	public void addDeclarativeStatement(final SLNode node, final int qty)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(declarativeStatement, node, qty);
 	}
 
-	public void addDepthLooping(final String nodeId) {
-		generalAcumulate(depthLooping, nodeId);
-		final Integer contDepthLooping = depthLooping.get(nodeId);
-		Integer maxDepth = maxDepthLooping.get(nodeId);
+	public void addDepthLooping(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(depthLooping, node);
+		final Integer contDepthLooping = depthLooping.get(node.getID());
+		Integer maxDepth = maxDepthLooping.get(node.getID());
 		if (maxDepth == null) {
-			maxDepthLooping.put(nodeId, contDepthLooping);
+			maxDepthLooping.put(node.getID(), contDepthLooping);
 			maxDepth = 1;
 		} else {
 			if (contDepthLooping > maxDepth) {
-				maxDepthLooping.put(nodeId, contDepthLooping);
+				maxDepthLooping.put(node.getID(), contDepthLooping);
 			}
 		}
 	}
 
-	public void addEvents(final String nodeId) {
-		generalAcumulate(event, nodeId);
+	public void addEvents(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(event, node);
 	}
 
-	public void addExecutableStatement(final String nodeId) {
-		addExecutableStatement(nodeId, 1);
+	public void addExecutableStatement(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		addExecutableStatement(node, 1);
 	}
 
-	public void addExecutableStatement(final String nodeId, final int size) {
-		generalAcumulate(executableStatement, nodeId, size);
+	public void addExecutableStatement(final SLNode node, final int size)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(executableStatement, node, size);
 	}
 
-	public void addExtendedClass(final String nodeId) {
-		generalAcumulate(extendedClasses, nodeId);
+	public void addExtendedClass(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(extendedClasses, node);
 	}
 
-	public void addExtendedInterface(final String nodeId) {
-		generalAcumulate(extendedInterfaces, nodeId);
+	public void addExtendedInterface(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(extendedInterfaces, node);
 	}
 
-	public void addImplementedInterface(final String nodeId) {
-		generalAcumulate(implementedInterfaces, nodeId);
+	public void addImplementedInterface(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(implementedInterfaces, node);
 	}
 
-	public void addNonPrivateMethod(final String nodeId) {
-		generalAcumulate(nonPrivateMethod, nodeId);
+	public void addNonPrivateMethod(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(nonPrivateMethod, node);
 	}
 
-	public void addNonPrivateVariable(final String nodeId) {
-		generalAcumulate(nonPrivateVariable, nodeId);
+	public void addNonPrivateVariable(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(nonPrivateVariable, node);
 	}
 
-	public void addParameter(final String nodeId) {
-		generalAcumulate(parameters, nodeId);
+	public void addParameter(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(parameters, node);
 	}
 
-	public void addParentCyclomatic1(final String nodeId) {
-		generalAcumulate(parentCyclomatic1, nodeId);
+	public void addParentCyclomatic1(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(parentCyclomatic1, node);
 	}
 
-	public void addParentCyclomatic2(final String nodeId) {
-		generalAcumulate(parentCyclomatic2, nodeId);
+	public void addParentCyclomatic2(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(parentCyclomatic2, node);
 	}
 
-	public void addParentCyclomatic3(final String nodeId) {
-		generalAcumulate(parentCyclomatic3, nodeId);
+	public void addParentCyclomatic3(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(parentCyclomatic3, node);
 	}
 
-	public void addParentCyclomatic4(final String nodeId) {
-		generalAcumulate(parentCyclomatic4, nodeId);
+	public void addParentCyclomatic4(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(parentCyclomatic4, node);
 	}
 
-	public void addPrivateMethod(final String nodeId) {
-		generalAcumulate(privateMethod, nodeId);
+	public void addPrivateMethod(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(privateMethod, node);
 	}
 
-	public void addPrivateVariable(final String nodeId) {
-		generalAcumulate(privateVariable, nodeId);
+	public void addPrivateVariable(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(privateVariable, node);
 	}
 
-	public void addReturnPoint(final String nodeId) {
-		generalAcumulate(returnPoint, nodeId);
+	public void addReturnPoint(final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(returnPoint, node);
 	}
 
-	public void buildPropertyValues(final SLGraphSession session) {
+	public void buildPropertyValues(final SLGraphSession session)
+			throws SLGraphException, SLInvalidCredentialException {
 		setProperties(session, SystemMetaModel.propMaxConditionalNesting,
 				maxConditionalNesting);
 		setProperties(session, SystemMetaModel.propMaxLoopingDepth,
@@ -377,7 +443,7 @@ public class MetricsAggregator {
 				final double functionPoint = info.getLogicalLinesOfCode()
 						.doubleValue()
 						/ functionPointPerLogicalLines;
-				setPropertyOnNode(session, activeCodeArea.getKey(),
+				setPropertyOnNode(activeCodeArea.getKey(),
 						SystemMetaModel.propFunctionPointLOCBased,
 						functionPoint);
 			}
@@ -388,7 +454,8 @@ public class MetricsAggregator {
 	}
 
 	private Map<String, Double> divMaps(final Map<String, Integer> mainMap,
-			final Map<String, Integer> secondMap) {
+			final Map<String, Integer> secondMap) throws SLGraphException,
+			SLInvalidCredentialException {
 		final Map<String, Double> resultMap = new TreeMap<String, Double>();
 		for (final Entry<String, Integer> entry : mainMap.entrySet()) {
 			resultMap.put(entry.getKey(), entry.getValue().doubleValue());
@@ -411,7 +478,8 @@ public class MetricsAggregator {
 
 	private Map<String, Double> divMaps(final SLGraphSession session,
 			final Map<String, Integer> mainMap,
-			final Map<String, Integer> secondMap, final String propertyName) {
+			final Map<String, Integer> secondMap, final String propertyName)
+			throws SLGraphException, SLInvalidCredentialException {
 		final Map<String, Double> resultMap = divMaps(mainMap, secondMap);
 		setDoubleProperties(session, propertyName, resultMap);
 
@@ -419,150 +487,192 @@ public class MetricsAggregator {
 	}
 
 	private void generalAcumulate(final Map<String, Integer> map2Accumulate,
-			final String nodeId) {
-		generalAcumulate(map2Accumulate, nodeId, 1);
+			final SLNode node) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		generalAcumulate(map2Accumulate, node, 1);
 	}
 
 	private void generalAcumulate(final Map<String, Integer> map2Accumulate,
-			final String nodeId, final int size) {
-		final Integer count = map2Accumulate.get(nodeId);
+			final SLNode node, final int size) throws SLGraphException,
+			SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		final Integer count = map2Accumulate.get(node.getID());
 		if (count == null) {
-			map2Accumulate.put(nodeId, size);
+			map2Accumulate.put(node.getID(), size);
 		} else {
-			map2Accumulate.put(nodeId, count + size);
+			map2Accumulate.put(node.getID(), count + size);
 		}
 	}
 
-	public Map<String, Integer> getCodeAreas() {
+	public Map<String, Integer> getCodeAreas() throws SLGraphException,
+			SLInvalidCredentialException {
 		return codeAreas;
 	}
 
-	public Map<String, Integer> getConditionalNesting() {
+	public Map<String, Integer> getConditionalNesting()
+			throws SLGraphException, SLInvalidCredentialException {
 		return conditionalNesting;
 	}
 
-	public Map<String, Integer> getConstructor() {
+	public Map<String, Integer> getConstructor() throws SLGraphException,
+			SLInvalidCredentialException {
 		return constructor;
 	}
 
-	public Map<String, Integer> getControlStatement() {
+	public Map<String, Integer> getControlStatement() throws SLGraphException,
+			SLInvalidCredentialException {
 		return controlStatement;
 	}
 
-	public Map<String, Integer> getCyclomatic1() {
+	public Map<String, Integer> getCyclomatic1() throws SLGraphException,
+			SLInvalidCredentialException {
 		return cyclomatic1;
 	}
 
-	public Map<String, Integer> getCyclomatic2() {
+	public Map<String, Integer> getCyclomatic2() throws SLGraphException,
+			SLInvalidCredentialException {
 		return cyclomatic2;
 	}
 
-	public Map<String, Integer> getCyclomatic3() {
+	public Map<String, Integer> getCyclomatic3() throws SLGraphException,
+			SLInvalidCredentialException {
 		return cyclomatic3;
 	}
 
-	public Map<String, Integer> getCyclomatic4() {
+	public Map<String, Integer> getCyclomatic4() throws SLGraphException,
+			SLInvalidCredentialException {
 		return cyclomatic4;
 	}
 
-	public Map<String, Integer> getDeclarativeStatement() {
+	public Map<String, Integer> getDeclarativeStatement()
+			throws SLGraphException, SLInvalidCredentialException {
 		return declarativeStatement;
 	}
 
-	public Map<String, Integer> getDepthLooping() {
+	public Map<String, Integer> getDepthLooping() throws SLGraphException,
+			SLInvalidCredentialException {
 		return depthLooping;
 	}
 
-	public Map<String, Integer> getEvent() {
+	public Map<String, Integer> getEvent() throws SLGraphException,
+			SLInvalidCredentialException {
 		return event;
 	}
 
-	public Map<String, Integer> getExecutableStatement() {
+	public Map<String, Integer> getExecutableStatement()
+			throws SLGraphException, SLInvalidCredentialException {
 		return executableStatement;
 	}
 
-	public Map<String, Integer> getExtendedClasses() {
+	public Map<String, Integer> getExtendedClasses() throws SLGraphException,
+			SLInvalidCredentialException {
 		return extendedClasses;
 	}
 
-	public Map<String, Integer> getExtendedInterfaces() {
+	public Map<String, Integer> getExtendedInterfaces()
+			throws SLGraphException, SLInvalidCredentialException {
 		return extendedInterfaces;
 	}
 
-	public int getFunctionPointPerLogicalLines() {
+	public int getFunctionPointPerLogicalLines() throws SLGraphException,
+			SLInvalidCredentialException {
 		return functionPointPerLogicalLines;
 	}
 
-	public Map<String, Integer> getImplementedInterfaces() {
+	public Map<String, Integer> getImplementedInterfaces()
+			throws SLGraphException, SLInvalidCredentialException {
 		return implementedInterfaces;
 	}
 
-	public Map<String, Integer> getInterfaceComplexity() {
+	public Map<String, Integer> getInterfaceComplexity()
+			throws SLGraphException, SLInvalidCredentialException {
 		return interfaceComplexity;
 	}
 
-	public Map<String, Integer> getMaxConditionalNesting() {
+	public Map<String, Integer> getMaxConditionalNesting()
+			throws SLGraphException, SLInvalidCredentialException {
 		return maxConditionalNesting;
 	}
 
-	public Map<String, Integer> getMaxDepthLooping() {
+	public Map<String, Integer> getMaxDepthLooping() throws SLGraphException,
+			SLInvalidCredentialException {
 		return maxDepthLooping;
 	}
 
-	public Map<String, Integer> getNonPrivateMethod() {
+	public Map<String, Integer> getNonPrivateMethod() throws SLGraphException,
+			SLInvalidCredentialException {
 		return nonPrivateMethod;
 	}
 
-	public Map<String, Integer> getNonPrivateVariable() {
+	public Map<String, Integer> getNonPrivateVariable()
+			throws SLGraphException, SLInvalidCredentialException {
 		return nonPrivateVariable;
 	}
 
-	public Map<String, Integer> getParameters() {
+	public Map<String, Integer> getParameters() throws SLGraphException,
+			SLInvalidCredentialException {
 		return parameters;
 	}
 
-	public Map<String, Integer> getParentCyclomatic1() {
+	public Map<String, Integer> getParentCyclomatic1() throws SLGraphException,
+			SLInvalidCredentialException {
 		return parentCyclomatic1;
 	}
 
-	public Map<String, Integer> getParentCyclomatic2() {
+	public Map<String, Integer> getParentCyclomatic2() throws SLGraphException,
+			SLInvalidCredentialException {
 		return parentCyclomatic2;
 	}
 
-	public Map<String, Integer> getParentCyclomatic3() {
+	public Map<String, Integer> getParentCyclomatic3() throws SLGraphException,
+			SLInvalidCredentialException {
 		return parentCyclomatic3;
 	}
 
-	public Map<String, Integer> getParentCyclomatic4() {
+	public Map<String, Integer> getParentCyclomatic4() throws SLGraphException,
+			SLInvalidCredentialException {
 		return parentCyclomatic4;
 	}
 
-	public Map<String, Integer> getPrivateMethod() {
+	public Map<String, Integer> getPrivateMethod() throws SLGraphException,
+			SLInvalidCredentialException {
 		return privateMethod;
 	}
 
-	public Map<String, Integer> getPrivateVariable() {
+	public Map<String, Integer> getPrivateVariable() throws SLGraphException,
+			SLInvalidCredentialException {
 		return privateVariable;
 	}
 
-	public Map<String, Integer> getReturnPoint() {
+	public Map<String, Integer> getReturnPoint() throws SLGraphException,
+			SLInvalidCredentialException {
 		return returnPoint;
 	}
 
-	public SourceLineInfoBuilder getSourceLineInfo() {
+	public SourceLineInfoBuilder getSourceLineInfo() throws SLGraphException,
+			SLInvalidCredentialException {
 		return sourceLineInfo;
 	}
 
-	public Map<String, Integer> getStatementCount() {
+	public Map<String, Integer> getStatementCount() throws SLGraphException,
+			SLInvalidCredentialException {
 		return statementCount;
 	}
 
-	public boolean isMethodsAreBlocks() {
+	public boolean isMethodsAreBlocks() throws SLGraphException,
+			SLInvalidCredentialException {
 		return methodsAreBlocks;
 	}
 
+	private void refreshNodeInformation(final SLNode node)
+			throws SLGraphSessionException {
+		currentNodes.put(node.getID(), node);
+	}
+
 	private void setDecisionDensity(final SLGraphSession session,
-			final Map<String, Integer> cyclomatic, final String propertyName) {
+			final Map<String, Integer> cyclomatic, final String propertyName)
+			throws SLGraphException, SLInvalidCredentialException {
 		for (final Entry<String, Integer> activeCyclomatic : cyclomatic
 				.entrySet()) {
 			final Integer activeCodeArea = codeAreas.get(activeCyclomatic
@@ -574,79 +684,81 @@ public class MetricsAggregator {
 					final double decisionDensity = activeCyclomatic.getValue()
 							.doubleValue()
 							/ info.getLogicalLinesOfCode().doubleValue();
-					setPropertyOnNode(session, activeCyclomatic.getKey(),
-							propertyName, decisionDensity);
+					setPropertyOnNode(activeCyclomatic.getKey(), propertyName,
+							decisionDensity);
 				}
 			}
 		}
 	}
 
 	private void setDoubleProperties(final SLGraphSession session,
-			final String propertyName, final Map<String, Double> counter) {
+			final String propertyName, final Map<String, Double> counter)
+			throws SLGraphException, SLInvalidCredentialException {
 		for (final Entry<String, Double> activeElement : counter.entrySet()) {
-			setPropertyOnNode(session, activeElement.getKey(), propertyName,
+			setPropertyOnNode(activeElement.getKey(), propertyName,
 					activeElement.getValue());
 		}
 	}
 
-	public void setLineInfo(final int codeArea, final String nodeId) {
-		codeAreas.put(nodeId, codeArea);
+	public void setLineInfo(final int codeArea, final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		codeAreas.put(node.getID(), codeArea);
 	}
 
 	private void setLineMetrics(final SLGraphSession session,
-			final String nodeId, final CompleteSourceLineInfo lineInfo) {
-		setPropertyOnNode(session, nodeId, SystemMetaModel.propPhysicalLines,
-				lineInfo.getPhysicalLines());
-		setPropertyOnNode(session, nodeId, SystemMetaModel.propEfectiveLines,
-				lineInfo.getEfectiveLines());
-		setPropertyOnNode(session, nodeId, SystemMetaModel.propLogicalLines,
-				lineInfo.getLogicalLines());
-		setPropertyOnNode(session, nodeId,
-				SystemMetaModel.propLogicalLinesOfCode, lineInfo
-						.getLogicalLinesOfCode());
-		setPropertyOnNode(session, nodeId,
-				SystemMetaModel.propLogicalLinesOfWhitespace, lineInfo
-						.getLogicalLinesOfWhitespace());
-		setPropertyOnNode(session, nodeId, SystemMetaModel.propCommentedLines,
-				lineInfo.getCommentedLines());
-		setPropertyOnNode(session, nodeId,
-				SystemMetaModel.propFullCommentLines, lineInfo
-						.getFullCommentLines());
-		setPropertyOnNode(session, nodeId,
-				SystemMetaModel.propMeaningfulCommentLines, lineInfo
-						.getMeaningfulCommentLines());
-		setPropertyOnNode(session, nodeId, SystemMetaModel.propCommentDensity,
-				lineInfo.getCommentDensity());
-		setPropertyOnNode(session, nodeId, SystemMetaModel.propCodePercentage,
-				lineInfo.getCodePercentage());
-		setPropertyOnNode(session, nodeId,
-				SystemMetaModel.propWhitespacePercentage, lineInfo
-						.getWhitespacePercentage());
+			final String nodeId, final CompleteSourceLineInfo lineInfo)
+			throws SLGraphException, SLInvalidCredentialException {
+		setPropertyOnNode(nodeId, SystemMetaModel.propPhysicalLines, lineInfo
+				.getPhysicalLines());
+		setPropertyOnNode(nodeId, SystemMetaModel.propEfectiveLines, lineInfo
+				.getEfectiveLines());
+		setPropertyOnNode(nodeId, SystemMetaModel.propLogicalLines, lineInfo
+				.getLogicalLines());
+		setPropertyOnNode(nodeId, SystemMetaModel.propLogicalLinesOfCode,
+				lineInfo.getLogicalLinesOfCode());
+		setPropertyOnNode(nodeId, SystemMetaModel.propLogicalLinesOfWhitespace,
+				lineInfo.getLogicalLinesOfWhitespace());
+		setPropertyOnNode(nodeId, SystemMetaModel.propCommentedLines, lineInfo
+				.getCommentedLines());
+		setPropertyOnNode(nodeId, SystemMetaModel.propFullCommentLines,
+				lineInfo.getFullCommentLines());
+		setPropertyOnNode(nodeId, SystemMetaModel.propMeaningfulCommentLines,
+				lineInfo.getMeaningfulCommentLines());
+		setPropertyOnNode(nodeId, SystemMetaModel.propCommentDensity, lineInfo
+				.getCommentDensity());
+		setPropertyOnNode(nodeId, SystemMetaModel.propCodePercentage, lineInfo
+				.getCodePercentage());
+		setPropertyOnNode(nodeId, SystemMetaModel.propWhitespacePercentage,
+				lineInfo.getWhitespacePercentage());
 	}
 
 	private void setProperties(final SLGraphSession session,
-			final String propertyName, final Map<String, Integer> counter) {
+			final String propertyName, final Map<String, Integer> counter)
+			throws SLGraphException, SLInvalidCredentialException {
 		for (final Entry<String, Integer> activeElement : counter.entrySet()) {
-			setPropertyOnNode(session, activeElement.getKey(), propertyName,
+			setPropertyOnNode(activeElement.getKey(), propertyName,
 					activeElement.getValue());
 		}
 	}
 
-	private void setPropertyOnNode(final SLGraphSession session,
-			final String key, final String propertyName, final Double string) {
-		// TODO Auto-generated method stub
-
+	private void setPropertyOnNode(final String key, final String propertyName,
+			final Double value) throws SLGraphException,
+			SLInvalidCredentialException, SLInvalidCredentialException {
+		final SLNode node = currentNodes.get(key);
+		node.setProperty(Double.class, propertyName, value);
 	}
 
-	private void setPropertyOnNode(final SLGraphSession session,
-			final String key, final String propertyName, final Integer string) {
-		// TODO Auto-generated method stub
-
+	private void setPropertyOnNode(final String key, final String propertyName,
+			final Integer value) throws SLGraphException,
+			SLInvalidCredentialException, SLInvalidCredentialException {
+		final SLNode node = currentNodes.get(key);
+		node.setProperty(Integer.class, propertyName, value);
 	}
 
 	private void setTotalCyclomaticComplexity(final SLGraphSession session,
 			final Map<String, Integer> parentCyclomatic,
-			final Map<String, Integer> totalMethods, final String propertyName) {
+			final Map<String, Integer> totalMethods, final String propertyName)
+			throws SLGraphException, SLInvalidCredentialException {
 		for (final Entry<String, Integer> activeMethodCount : totalMethods
 				.entrySet()) {
 			Integer cyclomaticCount = parentCyclomatic.get(activeMethodCount
@@ -654,24 +766,29 @@ public class MetricsAggregator {
 			if (cyclomaticCount != null) {
 				cyclomaticCount = cyclomaticCount
 						- activeMethodCount.getValue() + 1;
-				setPropertyOnNode(session, activeMethodCount.getKey(),
-						propertyName, cyclomaticCount);
+				setPropertyOnNode(activeMethodCount.getKey(), propertyName,
+						cyclomaticCount);
 			}
 		}
 	}
 
-	public void subtractConditionalNesting(final String nodeId) {
-		Integer counter = conditionalNesting.get(nodeId);
-		conditionalNesting.put(nodeId, --counter);
+	public void subtractConditionalNesting(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		Integer counter = conditionalNesting.get(node.getID());
+		conditionalNesting.put(node.getID(), --counter);
 	}
 
-	public void subtractDepthLooping(final String nodeId) {
-		Integer counter = depthLooping.get(nodeId);
-		depthLooping.put(nodeId, --counter);
+	public void subtractDepthLooping(final SLNode node)
+			throws SLGraphException, SLInvalidCredentialException {
+		refreshNodeInformation(node);
+		Integer counter = depthLooping.get(node.getID());
+		depthLooping.put(node.getID(), --counter);
 	}
 
 	private Map<String, Integer> sumMaps(final Map<String, Integer> mainMap,
-			final Map<String, Integer> secondMap) {
+			final Map<String, Integer> secondMap) throws SLGraphException,
+			SLInvalidCredentialException {
 		final Map<String, Integer> resultMap = new TreeMap<String, Integer>(
 				mainMap);
 
@@ -691,7 +808,8 @@ public class MetricsAggregator {
 
 	private Map<String, Integer> sumMaps(final SLGraphSession session,
 			final Map<String, Integer> mainMap,
-			final Map<String, Integer> secondMap, final String propertyName) {
+			final Map<String, Integer> secondMap, final String propertyName)
+			throws SLGraphException, SLInvalidCredentialException {
 		final Map<String, Integer> resultMap = sumMaps(mainMap, secondMap);
 		setProperties(session, propertyName, resultMap);
 
