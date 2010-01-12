@@ -119,7 +119,7 @@ public class JavaBinaryProcessorTest {
 	private static RepositoryData createRepositoryData() {
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
+		settings.setNumberOfParallelThreads(8);
 		settings
 				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
@@ -155,8 +155,8 @@ public class JavaBinaryProcessorTest {
 		final BundleSource bundleSource = new BundleSource();
 		commonProcessor.getSources().add(bundleSource);
 		bundleSource.setBundleProcessorType(commonProcessor);
-		bundleSource.setRelative("/jars");
-		bundleSource.getIncludeds().add("*");
+		bundleSource.setRelative("/jars/");
+		bundleSource.getIncludeds().add("**/dynamo-file-gen-1.0.1.jar");
 
 		return new RepositoryData(settings, repository, group, artifactSource);
 	}

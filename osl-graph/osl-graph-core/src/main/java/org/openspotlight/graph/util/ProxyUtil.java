@@ -77,9 +77,11 @@ public class ProxyUtil {
 	 */
 	public static <T extends SLLink> T createLinkProxy(final Class<T> linkType,
 			final SLLink link) {
-		final InvocationHandler handler = new SLLinkInvocationHandler(link);
-		return linkType.cast(Proxy.newProxyInstance(linkType.getClassLoader(),
-				new Class<?>[] { linkType }, handler));
+		synchronized (link.getLockObject()) {
+			final InvocationHandler handler = new SLLinkInvocationHandler(link);
+			return linkType.cast(Proxy.newProxyInstance(linkType
+					.getClassLoader(), new Class<?>[] { linkType }, handler));
+		}
 	}
 
 	/**
@@ -94,17 +96,21 @@ public class ProxyUtil {
 	 */
 	public static <T extends SLNode> T createNodeProxy(final Class<T> nodeType,
 			final SLNode node) {
-		Assertions.checkNotNull("nodeType", nodeType);
-		Assertions.checkNotNull("node", node);
-		T proxyNode = null;
-		if (node instanceof Proxy) {
-			proxyNode = nodeType.cast(node);
-		} else {
-			final InvocationHandler handler = new SLNodeInvocationHandler(node);
-			proxyNode = nodeType.cast(Proxy.newProxyInstance(nodeType
-					.getClassLoader(), new Class<?>[] { nodeType }, handler));
+		synchronized (node.getLockObject()) {
+			Assertions.checkNotNull("nodeType", nodeType);
+			Assertions.checkNotNull("node", node);
+			T proxyNode = null;
+			if (node instanceof Proxy) {
+				proxyNode = nodeType.cast(node);
+			} else {
+				final InvocationHandler handler = new SLNodeInvocationHandler(
+						node);
+				proxyNode = nodeType.cast(Proxy
+						.newProxyInstance(nodeType.getClassLoader(),
+								new Class<?>[] { nodeType }, handler));
+			}
+			return proxyNode;
 		}
-		return proxyNode;
 	}
 
 	/**
@@ -116,9 +122,11 @@ public class ProxyUtil {
 	 * @return the sL node
 	 */
 	public static SLNode createNodeProxy(final SLNode node) {
-		final Class<? extends SLNode> nodeType = SLCommonSupport
-				.getNodeType(node);
-		return createNodeProxy(nodeType, node);
+		synchronized (node.getLockObject()) {
+			final Class<? extends SLNode> nodeType = SLCommonSupport
+					.getNodeType(node);
+			return createNodeProxy(nodeType, node);
+		}
 	}
 
 	/**

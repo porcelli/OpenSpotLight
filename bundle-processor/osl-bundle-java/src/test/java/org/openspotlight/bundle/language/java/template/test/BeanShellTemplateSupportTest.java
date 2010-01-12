@@ -11,11 +11,19 @@ import org.openspotlight.bundle.language.java.asm.CompiledTypesExtractor;
 import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
 import org.openspotlight.bundle.language.java.template.BeanShellTemplateSupport;
 import org.openspotlight.common.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+
+import bsh.Interpreter;
 
 public class BeanShellTemplateSupportTest {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	public static void main(final String... args) {
+		Interpreter.main(args);
+	}
 
 	@Test
 	public void shouldCreateScriptFromJarInformation() throws Exception {
@@ -25,13 +33,23 @@ public class BeanShellTemplateSupportTest {
 						"src/test/resources/dynamo-file-gen-1.0.1.jar"),
 				"/lalala/dynamo-file-gen-1.0.1.jar");
 		final String beanShellScript = BeanShellTemplateSupport
-				.createBeanShellScriptToImpotJar("contextName",
-						"contextVersion", javaTypes);
+				.createBeanShellScriptToImpotJar(javaTypes);
 		Assert.assertThat(beanShellScript, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(Strings.isEmpty(beanShellScript), Is.is(false));
-		logger.info("script:");
-		logger.info(beanShellScript);
-
+		final Interpreter interpreter = new Interpreter();
+		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
+				.createFactory();
+		final ExecutionContext context = contextFactory
+				.createExecutionContext("user", "pass",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, "example");
+		interpreter.set("session", context.getGraphSession());
+		interpreter.set("currentContextName", "exampleContext");
+		SLContext exampleContext = context.getGraphSession().getContext(
+				"exampleContext");
+		Assert.assertThat(exampleContext, Is.is(IsNull.nullValue()));
+		interpreter.eval(beanShellScript);
+		exampleContext = context.getGraphSession().getContext("exampleContext");
+		Assert.assertThat(exampleContext, Is.is(IsNull.notNullValue()));
 	}
 
 }

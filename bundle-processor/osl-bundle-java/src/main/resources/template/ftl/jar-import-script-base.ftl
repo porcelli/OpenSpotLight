@@ -1,27 +1,18 @@
-// global variables to be reused for each type
-import org.junit.Before;
-import org.junit.Test;
-import org.objectweb.asm.Opcodes;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.bundle.dap.language.java.metamodel.link.*;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.*;
-import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
-import org.openspotlight.bundle.dap.language.java.Constants;
+
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
+import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
+import org.openspotlight.bundle.language.java.Constants;
 import java.util.Map;
 import java.util.TreeMap;
 
-SLGraphFactory factory = new SLGraphFactoryImpl();
-SLGraph graph = factory.createTempGraph(true);
-SLGraphSession session = graph.openSession();
-SLNode currentContextRootNode = session.createContext("${doc.TypeDefinitionSet.name}-${doc.TypeDefinitionSet.version}").getRootNode();
+SLNode currentContextRootNode = session.createContext(currentContextName).getRootNode();
 SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
 JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode,abstractContextRootNode);
-JavaType newType;
-JavaMethod method;
+JavaType newType=null;
+JavaMethod method=null;
 
 <#list doc.TypeDefinitionSet.types.TypeDefinition as javaType>
 <#if javaType.isPrivate=="false">
@@ -85,9 +76,5 @@ newType = helper.addTypeOnCurrentContext(JavaType${t.upperFirst(javaType.type?lo
 <#else>
 </#if>
 </#list>
-// #########################################################
 </#if>
 </#list>
-session.save();
-session.close();
-graph.shutdown();

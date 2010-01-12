@@ -49,6 +49,7 @@
 package org.openspotlight.persist.support;
 
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
@@ -65,6 +66,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -817,9 +819,16 @@ public class SimplePersistSupport {
 				continue;
 			}
 			if (InputStream.class.isAssignableFrom(desc.getPropertyType())) {
-				final Object propertyVal = desc.getReadMethod().invoke(bean);
-				descriptor.streamProperties.put(desc.getName(),
-						(InputStream) propertyVal);
+				InputStream propertyVal = (InputStream) desc.getReadMethod()
+						.invoke(bean);
+				if (!(propertyVal instanceof ByteArrayInputStream)) {
+					final byte[] contentAsBytes = new byte[propertyVal
+							.available()];
+					propertyVal.read(contentAsBytes);
+					propertyVal = new ByteArrayInputStream(contentAsBytes);
+
+				}
+				descriptor.streamProperties.put(desc.getName(), propertyVal);
 			}
 			if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
 				SimplePersistSupport.setPropertyFromBeanToDescriptor(bean,
@@ -880,7 +889,14 @@ public class SimplePersistSupport {
 				continue;
 			}
 			if (rawName.startsWith(DEFAULT_STREAM_PREFIX)) {
-				final InputStream value = property.getValue().getStream();
+				InputStream value = property.getValue().getStream();
+				if (!(value instanceof ByteArrayInputStream)) {
+					final byte[] contentAsBytes = new byte[value.available()];
+					value.read(contentAsBytes);
+					value = new ByteArrayInputStream(contentAsBytes);
+
+				}
+
 				String propertyName = Strings.removeBegginingFrom(
 						DEFAULT_STREAM_PREFIX, rawName);
 				propertyName = propertyName.substring(0, propertyName

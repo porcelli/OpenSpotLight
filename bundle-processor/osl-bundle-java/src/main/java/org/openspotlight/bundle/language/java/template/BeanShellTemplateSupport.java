@@ -55,11 +55,9 @@ public class BeanShellTemplateSupport {
 	 * @return
 	 */
 	public static String createBeanShellScriptToImpotJar(
-			final String contextName, final String contextVersion,
 			final List<TypeDefinition> scannedTypes) {
 		try {
-			final InputSource source = createXml(contextName, contextVersion,
-					scannedTypes);
+			final InputSource source = createXml(scannedTypes);
 			final Template temp = cfg.getTemplate("jar-import-script-base.ftl");
 			final Map<String, Object> root = new HashMap<String, Object>();
 			root.put("t", new StringTool());
@@ -85,13 +83,10 @@ public class BeanShellTemplateSupport {
 	 * @return
 	 * @throws IOException
 	 */
-	private static InputSource createXml(final String contextName,
-			final String contextVersion, final List<TypeDefinition> scannedTypes)
+	private static InputSource createXml(final List<TypeDefinition> scannedTypes)
 			throws IOException {
 		final TypeDefinitionSet wrapper = new TypeDefinitionSet();
 		wrapper.setTypes(scannedTypes);
-		wrapper.setName(contextName);
-		wrapper.setVersion(contextVersion);
 		final XStream xstream = new XStream();
 		xstream.aliasPackage("",
 				"org.openspotlight.bundle.language.java.asm.model");
