@@ -10,9 +10,9 @@ public enum JavaLiteralType {
 
 	CHAR("char", "^['](.*)[']$"),
 
-	INT("int", "[+-]?((0x[01234567890ABCDEF]+)|\\d+)"),
+	INT("int", "[+-]?((0x[0123456789ABCDEFabcdef]+)|\\d+)"),
 
-	LONG("long", "[+-]?((0x[01234567890ABCDEF]+)|\\d+)[lL]"),
+	LONG("long", "[+-]?((0x[0123456789ABCDEFabcdef]+)|\\d+)[lL]"),
 
 	FLOAT("float", "[+-]?(\\d+)?([.])?(\\d+)?((e|E)\\d+)?[fF]"),
 
