@@ -202,8 +202,10 @@ public class BundleProcessorManagerTest {
 				.getArtifactFinder(StringArtifact.class);
 
 		for (final Artifact a : artifacts) {
-			finder.addTransientArtifact((StringArtifact) a);
-			finder.save();
+			if (a instanceof StringArtifact) {
+				finder.addTransientArtifact((StringArtifact) a);
+				finder.save();
+			}
 		}
 		contextFactory.closeResources();
 
