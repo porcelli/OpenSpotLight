@@ -12,10 +12,11 @@ import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.bundle.dap.language.java.metamodel.link.*;
-import org.openspotlight.bundle.dap.language.java.metamodel.node.*;
-import org.openspotlight.bundle.dap.language.java.support.JavaGraphNodeSupport;
-import org.openspotlight.bundle.dap.language.java.Constants;
+
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
+import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
+import org.openspotlight.bundle.language.java.Constants;
 import java.util.Map;
 import java.util.TreeMap;
 
