@@ -50,6 +50,7 @@ package org.openspotlight.persist.support;
 
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
@@ -83,6 +84,7 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionException;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLException;
@@ -822,10 +824,9 @@ public class SimplePersistSupport {
 				InputStream propertyVal = (InputStream) desc.getReadMethod()
 						.invoke(bean);
 				if (!(propertyVal instanceof ByteArrayInputStream)) {
-					final byte[] contentAsBytes = new byte[propertyVal
-							.available()];
-					propertyVal.read(contentAsBytes);
-					propertyVal = new ByteArrayInputStream(contentAsBytes);
+					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					IOUtils.copy(propertyVal, baos);
+					propertyVal = new ByteArrayInputStream(baos.toByteArray());
 
 				}
 				descriptor.streamProperties.put(desc.getName(), propertyVal);
@@ -891,10 +892,9 @@ public class SimplePersistSupport {
 			if (rawName.startsWith(DEFAULT_STREAM_PREFIX)) {
 				InputStream value = property.getValue().getStream();
 				if (!(value instanceof ByteArrayInputStream)) {
-					final byte[] contentAsBytes = new byte[value.available()];
-					value.read(contentAsBytes);
-					value = new ByteArrayInputStream(contentAsBytes);
-
+					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					IOUtils.copy(value, baos);
+					value = new ByteArrayInputStream(baos.toByteArray());
 				}
 
 				String propertyName = Strings.removeBegginingFrom(

@@ -74,9 +74,6 @@ import org.openspotlight.persist.annotation.TransientProperty;
 public abstract class Artifact implements SimpleNodeType, Serializable,
 		LogableObject {
 
-	/** The Constant SEPARATOR. */
-	final static String SEPARATOR = "/";
-
 	/**
 	 * Creates the new artifact.
 	 * 
@@ -110,6 +107,11 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
+
+	private String uniqueContextName;
+
+	/** The Constant SEPARATOR. */
+	final static String SEPARATOR = "/";
 
 	private AddOnlyConcurrentMap<String, Object> transientMap;
 
@@ -229,6 +231,10 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 		return transientMap;
 	}
 
+	public String getUniqueContextName() {
+		return uniqueContextName;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -295,6 +301,10 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	public void setTransientMap(
 			final AddOnlyConcurrentMap<String, Object> transientMap) {
 		this.transientMap = transientMap;
+	}
+
+	public void setUniqueContextName(final String uniqueContextName) {
+		this.uniqueContextName = uniqueContextName;
 	}
 
 	/*

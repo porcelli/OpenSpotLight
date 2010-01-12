@@ -53,8 +53,11 @@ import static org.openspotlight.common.util.Files.delete;
 
 import java.util.Set;
 
+import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.bundle.jar.JavaBinaryProcessor;
@@ -71,6 +74,8 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
@@ -119,7 +124,7 @@ public class JavaBinaryProcessorTest {
 	private static RepositoryData createRepositoryData() {
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(8);
+		settings.setNumberOfParallelThreads(1);
 		settings
 				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
@@ -203,8 +208,19 @@ public class JavaBinaryProcessorTest {
 	}
 
 	@Test
-	public void shouldDoStuff() throws Exception {
+	public void shouldProcessJarFile() throws Exception {
 		reloadArtifactsAndCallBundleProcessor();
+
+		final ExecutionContext context = contextFactory.createExecutionContext(
+				"", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
+						.getName());
+		final StreamArtifact jarArtifact = context.getArtifactFinder(
+				StreamArtifact.class).findByPath(
+				"/jars/resources/dynamo-file-gen-1.0.1.jar");
+		Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
+				.is(LastProcessStatus.PROCESSED));
+		Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull
+				.notNullValue()));
 	}
 
 }
