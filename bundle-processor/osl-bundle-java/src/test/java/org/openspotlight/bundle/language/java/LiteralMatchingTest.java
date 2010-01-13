@@ -783,7 +783,6 @@ public class LiteralMatchingTest {
 				is(JavaLiteralType.FLOAT));
 		assertThat(JavaLiteralType.findLiteralType("+123.123E10101f"),
 				is(JavaLiteralType.FLOAT));
-
 		assertThat(JavaLiteralType.findLiteralType("+0F"),
 				is(JavaLiteralType.FLOAT));
 		assertThat(JavaLiteralType.findLiteralType("+10F"),

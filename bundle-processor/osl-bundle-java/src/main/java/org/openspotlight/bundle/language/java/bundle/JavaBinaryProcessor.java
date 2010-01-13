@@ -1,4 +1,4 @@
-package org.openspotlight.bundle.language.java.bundle.jar;
+package org.openspotlight.bundle.language.java.bundle;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

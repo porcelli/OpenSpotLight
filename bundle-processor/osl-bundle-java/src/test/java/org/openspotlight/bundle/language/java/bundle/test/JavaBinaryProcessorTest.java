@@ -47,7 +47,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.bundle.language.java.bundle.jar.test;
+package org.openspotlight.bundle.language.java.bundle.test;
 
 import static org.openspotlight.common.util.Files.delete;
 
@@ -60,8 +60,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.bundle.jar.JavaBinaryProcessor;
-import org.openspotlight.bundle.language.java.bundle.jar.JavaGlobalPhase;
+import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
+import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
