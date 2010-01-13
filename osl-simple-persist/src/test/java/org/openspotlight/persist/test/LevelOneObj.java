@@ -52,7 +52,7 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelOneObj implements SimpleNodeType {
@@ -90,7 +90,7 @@ public class LevelOneObj implements SimpleNodeType {
 		return rootObj;
 	}
 
-	@SetsUniqueIdOnThisProperty
+	@SetUniqueIdOnThisProperty
 	public String getUuid() {
 		return uuid;
 	}

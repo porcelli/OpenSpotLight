@@ -51,7 +51,7 @@ package org.openspotlight.persist.test;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class ListItemObj implements SimpleNodeType {
@@ -76,7 +76,7 @@ public class ListItemObj implements SimpleNodeType {
 		return name;
 	}
 
-	@SetsUniqueIdOnThisProperty
+	@SetUniqueIdOnThisProperty
 	public String getUuid() {
 		return uuid;
 	}

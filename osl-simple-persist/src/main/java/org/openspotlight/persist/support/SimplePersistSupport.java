@@ -103,7 +103,7 @@ import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
@@ -745,7 +745,7 @@ public class SimplePersistSupport {
 				continue;
 			}
 			if (desc.getReadMethod().isAnnotationPresent(
-					SetsUniqueIdOnThisProperty.class)) {
+					SetUniqueIdOnThisProperty.class)) {
 				desc.getWriteMethod().invoke(newObject, beanDescriptor.uuid);
 				continue;
 			}
@@ -834,7 +834,7 @@ public class SimplePersistSupport {
 				continue;
 			}
 			if (desc.getReadMethod().isAnnotationPresent(
-					SetsUniqueIdOnThisProperty.class)) {
+					SetUniqueIdOnThisProperty.class)) {
 				descriptor.uuid = (String) desc.getReadMethod().invoke(bean);
 				continue;
 			}

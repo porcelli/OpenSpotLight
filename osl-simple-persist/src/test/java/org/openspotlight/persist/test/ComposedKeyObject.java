@@ -49,7 +49,7 @@
 package org.openspotlight.persist.test;
 
 import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class ComposedKeyObject implements SimpleNodeType {
@@ -70,7 +70,7 @@ public class ComposedKeyObject implements SimpleNodeType {
 		return key2;
 	}
 
-	@SetsUniqueIdOnThisProperty
+	@SetUniqueIdOnThisProperty
 	public String getUuid() {
 		return uuid;
 	}
