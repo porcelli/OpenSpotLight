@@ -56,8 +56,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.Session;
 
 import org.hamcrest.core.Is;
@@ -487,6 +485,41 @@ public class SimplePersistSupportTest {
 	}
 
 	@Test
+	public void shouldFindCollectionItems() throws Exception {
+		final RootObj root = new RootObj();
+		final LevelOneObj levelOne = new LevelOneObj();
+		levelOne.setRootObj(root);
+		final LevelTwoObj levelTwo = new LevelTwoObj();
+		levelTwo.setLevelOneObj(levelOne);
+		final LevelThreeObj levelThree = new LevelThreeObj();
+		levelThree.setLevelTwoObj(levelTwo);
+		levelThree.setObjList(new ArrayList<ListItemObj>());
+		final ListItemObj obj1 = new ListItemObj();
+		obj1.setName("obj 1");
+		obj1.setValue(5);
+		levelThree.getObjList().add(obj1);
+		final Node asJcr = SimplePersistSupport.convertBeanToJcr("d/b/c",
+				session, levelThree);
+		final LevelThreeObj anotherLevelThree = SimplePersistSupport
+				.convertJcrToBean(session, asJcr, LazyType.LAZY);
+		Assert.assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
+		Assert.assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is
+				.is(obj1.getValue()));
+		Assert.assertThat(anotherLevelThree.getObjList().get(0).getName(), Is
+				.is(obj1.getName()));
+		session.save();
+		final Set<ListItemObj> result = SimplePersistSupport
+				.findNodesByProperties("d/b/c", session, ListItemObj.class,
+						LazyType.LAZY, new String[] { "name" },
+						new Object[] { "obj 1" });
+		Assert.assertThat(result.size(), Is.is(1));
+		final ListItemObj item = result.iterator().next();
+		Assert.assertThat(item.getName(), Is.is("obj 1"));
+		Assert.assertThat(item.getValue(), Is.is(5));
+
+	}
+
+	@Test
 	public void shouldFindJcrNodeByItsKey() throws Exception {
 		final RootObj root = new RootObj();
 		final LevelOneObj obj1 = new LevelOneObj();
@@ -706,22 +739,35 @@ public class SimplePersistSupportTest {
 		obj2.setProperty(null);
 
 		SimplePersistSupport.convertBeanToJcr("a/b/c", session, obj1);
-		final Node node = SimplePersistSupport.convertBeanToJcr("a/b/c",
-				session, obj2);
-		final PropertyIterator propIt = node.getProperties();
-		Property prop;
-		while (propIt.hasNext()) {
-			prop = propIt.nextProperty();
-			System.out.print(prop.getName());
-			System.out.print("=");
-			System.out.println(prop.getValue().getString());
-		}
+		SimplePersistSupport.convertBeanToJcr("a/b/c", session, obj2);
 		session.save();
 		final Set<LevelOneObj> result = SimplePersistSupport
 				.findNodesByProperties("a/b/c", session, LevelOneObj.class,
 						LazyType.EAGER, new String[] { "property" },
 						new Object[] { null });
 		Assert.assertThat(result.size(), Is.is(1));
+	}
+
+	@Test
+	public void shouldFindPropertyItems() throws Exception {
+
+		final LevelTwoObj levelTwo = new LevelTwoObj();
+		final PropertyObj propertyObj = new PropertyObj();
+		propertyObj.setName("obj 1");
+		propertyObj.setValue(5);
+		levelTwo.setPropertyObj(propertyObj);
+		SimplePersistSupport.convertBeanToJcr("d/b/c", session, levelTwo);
+
+		session.save();
+
+		final Set<PropertyObj> result = SimplePersistSupport
+				.findNodesByProperties("d/b/c", session, PropertyObj.class,
+						LazyType.LAZY, new String[] { "name" },
+						new Object[] { "obj 1" });
+		Assert.assertThat(result.size(), Is.is(1));
+		final PropertyObj item = result.iterator().next();
+		Assert.assertThat(item.getName(), Is.is("obj 1"));
+		Assert.assertThat(item.getValue(), Is.is(5));
 	}
 
 	@Test(expected = SLRuntimeException.class)

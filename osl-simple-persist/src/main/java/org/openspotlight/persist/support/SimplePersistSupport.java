@@ -79,6 +79,7 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 import javax.jcr.version.VersionException;
@@ -383,6 +384,50 @@ public class SimplePersistSupport {
 		return result;
 	}
 
+	private static <T> String buildPropertyString(final Class<T> nodeType,
+			final String[] propertyNames, final Object[] propertyValues,
+			final String basePropertyName) throws InstantiationException,
+			IllegalAccessException, SLException {
+		final StringBuilder propertyWhereXpath = new StringBuilder();
+		final T dummyInstance = nodeType.newInstance();
+		propertyWhereXpath.append('@');
+		propertyWhereXpath.append("node.typeName");
+		propertyWhereXpath.append('=');
+		propertyWhereXpath.append("'");
+		propertyWhereXpath.append(nodeType.getName());
+		propertyWhereXpath.append("'");
+
+		for (int i = 0, size = propertyNames.length; i < size; i++) {
+			propertyWhereXpath.append(" and ");
+			try {
+				PropertyUtils.getProperty(dummyInstance, propertyNames[i]);
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew("No property named "
+						+ nodeType.getName() + "#" + propertyNames[i], e,
+						SLRuntimeException.class);
+			}
+			final String keyString = MessageFormat.format(basePropertyName,
+					propertyNames[i]);
+
+			if (propertyValues[i] != null) {
+				final String propertyValye = Conversion.convert(
+						propertyValues[i], String.class);
+				propertyWhereXpath.append('@');
+				propertyWhereXpath.append(keyString);
+				propertyWhereXpath.append('=');
+				propertyWhereXpath.append("'");
+				propertyWhereXpath.append(propertyValye);
+				propertyWhereXpath.append("'");
+			} else {
+				propertyWhereXpath.append(" not(@");
+				propertyWhereXpath.append(keyString);
+				propertyWhereXpath.append(") ");
+
+			}
+		}
+		return propertyWhereXpath.toString();
+	}
+
 	/**
 	 * Convert beans to jcrs.
 	 * 
@@ -600,16 +645,13 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 		Assertions.checkNotNull("jcrNode", jcrNode);
-		Assertions.checkCondition("correctJcrNode", jcrNode.getName()
-				.startsWith(JcrNodeType.NODE.toString()));
+		Assertions.checkCondition("correctJcrNode", isCorrectNode(jcrNode));
 
 		try {
 
 			final LinkedList<Node> list = new LinkedList<Node>();
 			Node parentNode = jcrNode;
-			while (parentNode != null
-					&& parentNode.getName().startsWith(
-							JcrNodeType.NODE.toString())) {
+			while (parentNode != null && isCorrectNode(parentNode)) {
 				list.addFirst(parentNode);
 				parentNode = parentNode.getParent();
 			}
@@ -985,6 +1027,28 @@ public class SimplePersistSupport {
 		return hash;
 	}
 
+	private static <T> void executeXpathAndFillSet(final String rootPath,
+			final Session session, final LazyType multipleLoadingStrategy,
+			final String propertyWhereXpath, final Set<T> resultNodes)
+			throws InvalidQueryException, RepositoryException, Exception {
+		String xpath = MessageFormat.format("{0}//*[{1}]", rootPath,
+				propertyWhereXpath);
+		if (xpath.endsWith("[]")) {
+			xpath = xpath.substring(0, xpath.length() - 2);
+		}
+		final Query query = session.getWorkspace().getQueryManager()
+				.createQuery(xpath, Query.XPATH);
+		final QueryResult result = query.execute();
+		final NodeIterator nodes = result.getNodes();
+		while (nodes.hasNext()) {
+			final Node jcrNode = nodes.nextNode();
+			final T bean = SimplePersistSupport.<T> convertJcrToBean(session,
+					jcrNode, multipleLoadingStrategy);
+			resultNodes.add(bean);
+		}
+
+	}
+
 	/**
 	 * Find children.
 	 * 
@@ -1016,60 +1080,14 @@ public class SimplePersistSupport {
 			Assertions.checkNotNull("propertyValues", propertyValues);
 			Assertions.checkCondition("sameSize",
 					propertyNames.length == propertyValues.length);
-			final BeanDescriptor fakeBeanDescriptor = new BeanDescriptor();
-			fakeBeanDescriptor.nodeName = SimplePersistSupport
-					.getNodeName(nodeType);
-			final String jcrNodeName = SimplePersistSupport.getNodeName(
-					JcrNodeType.NODE, fakeBeanDescriptor, null);
 
-			final StringBuilder propertyWhereXpath = new StringBuilder();
-			final T dummyInstance = nodeType.newInstance();
-			for (int i = 0, size = propertyNames.length; i < size; i++) {
-				try {
-					PropertyUtils.getProperty(dummyInstance, propertyNames[i]);
-				} catch (final Exception e) {
-					throw Exceptions.logAndReturnNew("No property named "
-							+ nodeType.getName() + "#" + propertyNames[i], e,
-							SLRuntimeException.class);
-				}
-				final String keyString = MessageFormat.format(
-						SimplePersistSupport.PROPERTY_VALUE, propertyNames[i]);
-
-				if (propertyValues[i] != null) {
-					final String propertyValye = Conversion.convert(
-							propertyValues[i], String.class);
-					propertyWhereXpath.append('@');
-					propertyWhereXpath.append(keyString);
-					propertyWhereXpath.append('=');
-					propertyWhereXpath.append("'");
-					propertyWhereXpath.append(propertyValye);
-					propertyWhereXpath.append("'");
-				} else {
-					propertyWhereXpath.append(" not(@");
-					propertyWhereXpath.append(keyString);
-					propertyWhereXpath.append(") ");
-
-				}
-				if (i != size - 1) {
-					propertyWhereXpath.append(" and ");
-				}
-			}
-			String xpath = MessageFormat.format("{0}//{1}[{2}]", rootPath,
-					jcrNodeName, propertyWhereXpath.toString());
-			if (xpath.endsWith("[]")) {
-				xpath = xpath.substring(0, xpath.length() - 2);
-			}
-			final Query query = session.getWorkspace().getQueryManager()
-					.createQuery(xpath, Query.XPATH);
-			final QueryResult result = query.execute();
-			final NodeIterator nodes = result.getNodes();
+			final String propertyNodeWhereXpath = buildPropertyString(nodeType,
+					propertyNames, propertyValues,
+					SimplePersistSupport.PROPERTY_VALUE);
 			final Set<T> resultNodes = new HashSet<T>();
-			while (nodes.hasNext()) {
-				final Node jcrNode = nodes.nextNode();
-				final T bean = SimplePersistSupport.<T> convertJcrToBean(
-						session, jcrNode, multipleLoadingStrategy);
-				resultNodes.add(bean);
-			}
+
+			executeXpathAndFillSet(rootPath, session, multipleLoadingStrategy,
+					propertyNodeWhereXpath, resultNodes);
 			return resultNodes;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -1339,6 +1357,14 @@ public class SimplePersistSupport {
 		}
 		descriptor.multipleSimpleProperties.put(desc.getName(),
 				multiplePropertyDescriptor);
+	}
+
+	private static boolean isCorrectNode(final Node jcrNode) throws Exception {
+		return jcrNode.getName().startsWith(JcrNodeType.NODE.toString())
+				|| jcrNode.getName().startsWith(
+						JcrNodeType.MULTIPLE_NODE_PROPERTY.toString())
+				|| jcrNode.getName().startsWith(
+						JcrNodeType.NODE_PROPERTY.toString());
 	}
 
 	/**
