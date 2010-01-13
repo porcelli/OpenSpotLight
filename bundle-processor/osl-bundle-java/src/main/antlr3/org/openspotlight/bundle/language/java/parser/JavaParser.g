@@ -262,12 +262,19 @@ tokens {
 
 @header {
 package org.openspotlight.bundle.language.java.parser;
-
+import org.openspotlight.bundle.language.java.parser.executor.JavaParserExecutor;
 import java.util.LinkedList;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
 }
 
 @members {
+
+	private JavaParserExecutor 	executor 		= null;
+
+	public void setParserExecutor(final JavaParserExecutor executor){
+		this.executor = executor;
+	}
+
 	private Object buildModifiersAST(List<?> listElements,
 			Object annotationsTree) {
 		LinkedList<Tree> modifiers = new LinkedList<Tree>();
@@ -1139,14 +1146,16 @@ compilationUnit
         )
         -> {mode == 1}? ^(COMPILATION_UNIT classOrInterfaceDeclaration typeDeclaration*)
         -> ^(COMPILATION_UNIT ^(PACKAGE_DECLARATION annotations packageDeclaration) importDeclaration* typeDeclaration*)
-    |   packageDeclaration[true]? importDeclaration* typeDeclaration*
+    |   packageDeclaration[true] importDeclaration* typeDeclaration*
         -> ^(COMPILATION_UNIT packageDeclaration? importDeclaration* typeDeclaration*)
     ;
 
 packageDeclaration[boolean buildPackageDeclaration]
     :   PACKAGE qualifiedName SEMI_COLON
+    	{	executor.createPackageNode($qualifiedName.tree);	}
         ->{$buildPackageDeclaration}? ^(PACKAGE_DECLARATION PACKAGE ^(QUALIFIED_NAME qualifiedName))
         -> PACKAGE ^(QUALIFIED_NAME qualifiedName)
+    |	{	executor.createDefaultPackage();	}
     ;
 
 importDeclaration
@@ -1193,8 +1202,10 @@ classDeclaration[Object complementTree]
     ;
 
 normalClassDeclaration[Object complementTree]
-    :   CLASS Identifier typeParameters?
-        (EXTENDS type)?
+    :   CLASS Identifier
+        {	executor.createJavaTypeClass($Identifier);	}
+        typeParameters?    
+        (EXTENDS type )?
         (IMPLEMENTS typeList)?
         classBody
         -> {buildClassDeclarationAST($CLASS, $Identifier, $EXTENDS, $IMPLEMENTS, $complementTree, $typeParameters.tree, $type.tree, $typeList.tree, $classBody.tree )}
@@ -1216,7 +1227,9 @@ typeBound
     ;
 
 enumDeclaration[Object complementTree]
-    :   ENUM Identifier (IMPLEMENTS typeList)? enumBody
+    :   ENUM Identifier
+        {	executor.createJavaTypeEnum($Identifier);	}    
+     (IMPLEMENTS typeList)? enumBody
         -> {buildEnumDeclarationAST($ENUM, $Identifier, $IMPLEMENTS, $complementTree, $typeList.tree, $enumBody.tree )}
     ;
 
@@ -1244,7 +1257,11 @@ interfaceDeclaration[Object complementTree]
     ;
     
 normalInterfaceDeclaration[Object complementTree]
-    :   INTERFACE Identifier typeParameters? (EXTENDS typeList)? interfaceBody
+@after	{	executor.popContext();	}
+    :   INTERFACE Identifier 
+        {	executor.createJavaTypeInterface($Identifier);	}    
+    
+    typeParameters? (EXTENDS typeList)? interfaceBody
         -> { buildInterfaceDeclarationAST($INTERFACE, $Identifier, $EXTENDS, $complementTree, $typeParameters.tree, $typeList.tree, $interfaceBody.tree) }
     ;
     
@@ -1431,7 +1448,7 @@ modifier
     ;
 
 type
-    :    classOrInterfaceTypeQualifed arrayDimensionDeclaration?
+    :    classOrInterfaceTypeQualifed {} arrayDimensionDeclaration?
         -> {$arrayDimensionDeclaration.tree != null}? ^(ARRAY_TYPE classOrInterfaceTypeQualifed arrayDimensionDeclaration)
         -> classOrInterfaceTypeQualifed
     |    primitiveType arrayDimensionDeclaration?
@@ -1608,7 +1625,9 @@ elementValueArrayInitializer
     ;
 
 annotationTypeDeclaration[Object complementTree]
-    :   AT INTERFACE Identifier annotationTypeBody
+    :   AT INTERFACE Identifier 
+        {	executor.createJavaTypeAnnotation($Identifier);	}        
+    	annotationTypeBody
         -> { buildAnnotationDeclarationAST($AT, $INTERFACE, $Identifier, $complementTree, $annotationTypeBody.tree )}
     ;
     

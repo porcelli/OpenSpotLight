@@ -235,6 +235,11 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 		return uniqueContextName;
 	}
 
+	@TransientProperty
+	public String getVersion() {
+		return "1";
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

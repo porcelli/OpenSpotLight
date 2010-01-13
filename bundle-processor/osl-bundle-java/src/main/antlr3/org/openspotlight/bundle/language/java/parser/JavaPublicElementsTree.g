@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor 
  * Boston, MA  02110-1301  USA
  */
-tree grammar JavaTree;
+tree grammar JavaPublicElementsTree;
 options{
     tokenVocab=JavaParser;
     ASTLabelType=CommonTree;
@@ -58,17 +58,15 @@ package org.openspotlight.bundle.language.java.parser;
 
 // starting point for parsing a java file
 compilationUnit
-    :   ^(COMPILATION_UNIT packageDeclaration importDeclaration* typeDeclaration*)
+    :   ^(COMPILATION_UNIT packageDeclaration? importDeclaration* typeDeclaration*)
     ;
 
 packageDeclaration
     :   ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-    |	{}
     ;
 
 importDeclaration
     :   ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
-    	{		}
     ;
     
 typeDeclaration
