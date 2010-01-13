@@ -50,8 +50,6 @@ package org.openspotlight.federation.domain.artifact;
 
 import java.io.Serializable;
 
-import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Compare;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
@@ -62,10 +60,13 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Class SyntaxInformation.
  */
 @Name("syntax_information")
-public class SyntaxInformation implements Comparable<SyntaxInformation>,
-		SimpleNodeType, Serializable {
-
+public class SyntaxInformation implements SimpleNodeType, Serializable,
+		Comparable<SyntaxInformation> {
 	private static final long serialVersionUID = 9056717121341748618L;
+
+	private static int compare(final int anotherVal, final int thisVal) {
+		return thisVal < anotherVal ? -1 : thisVal == anotherVal ? 0 : 1;
+	}
 
 	/** The hashcode. */
 	private volatile int hashcode;
@@ -88,33 +89,34 @@ public class SyntaxInformation implements Comparable<SyntaxInformation>,
 	/** The type. */
 	private SyntaxInformationType type;
 
-	/**
-	 * Instantiates a new syntax information.
-	 * 
-	 * @param streamArtifact
-	 *            the stream artifact
-	 * @param lineStart
-	 *            the line start
-	 * @param lineEnd
-	 *            the line end
-	 * @param columnStart
-	 *            the column start
-	 * @param columnEnd
-	 *            the column end
-	 * @param type
-	 *            the type
-	 */
+	public SyntaxInformation() {
+	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@SuppressWarnings("boxing")
+	public SyntaxInformation(final Artifact streamArtifact,
+			final int lineStart, final int lineEnd, final int columnStart,
+			final int columnEnd, final SyntaxInformationType type) {
+		this.streamArtifact = streamArtifact;
+		this.lineStart = lineStart;
+		this.lineEnd = lineEnd;
+		this.columnStart = columnStart;
+		this.columnEnd = columnEnd;
+		this.type = type;
+	}
+
 	public int compareTo(final SyntaxInformation o) {
-		Compare.compareAll(Arrays.of(streamArtifact, lineStart, lineEnd,
-				columnStart, columnEnd, type), Arrays.andOf(o.streamArtifact,
-				o.lineStart, o.lineEnd, o.columnStart, o.columnEnd, o.type));
+		int compare = 0;
+		if ((compare = compare(lineStart, o.lineStart)) != 0) {
+			return compare;
+		}
+		if ((compare = compare(lineEnd, o.lineEnd)) != 0) {
+			return compare;
+		}
+		if ((compare = compare(columnStart, o.columnStart)) != 0) {
+			return compare;
+		}
+		if ((compare = compare(columnEnd, o.columnEnd)) != 0) {
+			return compare;
+		}
 		return 0;
 	}
 
@@ -130,11 +132,25 @@ public class SyntaxInformation implements Comparable<SyntaxInformation>,
 			return false;
 		}
 		final SyntaxInformation that = (SyntaxInformation) o;
-		final boolean result = Equals.eachEquality(Arrays.of(streamArtifact,
-				lineStart, lineEnd, columnStart, columnEnd, type), Arrays
-				.andOf(that.streamArtifact, that.lineStart, that.lineEnd,
-						that.columnStart, that.columnEnd, that.type));
-		return result;
+		if (!Equals.eachEquality(streamArtifact, that.streamArtifact)) {
+			return false;
+		}
+		if (!Equals.eachEquality(type, that.type)) {
+			return false;
+		}
+		if (!Equals.eachEquality(lineStart, that.lineStart)) {
+			return false;
+		}
+		if (!Equals.eachEquality(lineEnd, that.lineEnd)) {
+			return false;
+		}
+		if (!Equals.eachEquality(columnStart, that.columnStart)) {
+			return false;
+		}
+		if (!Equals.eachEquality(columnEnd, that.columnEnd)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -204,7 +220,19 @@ public class SyntaxInformation implements Comparable<SyntaxInformation>,
 	 */
 	@Override
 	public int hashCode() {
-		return hashcode;
+		int result = hashcode;
+		if (result == 0) {
+			result = 17;
+			result = 31 * result
+					+ (streamArtifact != null ? streamArtifact.hashCode() : 0);
+			result = 31 * result + lineStart;
+			result = 31 * result + lineEnd;
+			result = 31 * result + columnStart;
+			result = 31 * result + columnEnd;
+			result = 31 * result + (type != null ? type.hashCode() : 0);
+			hashcode = result;
+		}
+		return result;
 	}
 
 	public void setColumnEnd(final int columnEnd) {

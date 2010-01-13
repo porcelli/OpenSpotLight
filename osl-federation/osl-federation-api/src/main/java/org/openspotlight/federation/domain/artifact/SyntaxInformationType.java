@@ -67,8 +67,6 @@ public enum SyntaxInformationType {
 	/** String literal. */
 	STRING_LITERAL,
 
-	BOOLEAN_LITERAL,
-
 	/** Variable identifier. */
 	IDENTIFIER,
 

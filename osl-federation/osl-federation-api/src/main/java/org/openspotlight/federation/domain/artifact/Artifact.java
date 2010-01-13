@@ -53,10 +53,8 @@ import java.util.Date;
 
 import org.openspotlight.common.collection.AddOnlyConcurrentMap;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -161,12 +159,13 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 		if (!(o instanceof Artifact)) {
 			return false;
 		}
+		if (o.getClass() != this.getClass()) {
+			return false;
+		}
+
 		final Artifact that = (Artifact) o;
-		final boolean result = Equals.eachEquality(Arrays.of(this.getClass(),
-				parent, artifactName, changeType), Arrays.andOf(
-				that.getClass(), that.parent, that.artifactName,
-				that.changeType));
-		return result;
+		return Equals.eachEquality(parent, that.parent)
+				&& Equals.eachEquality(artifactName, that.artifactName);
 	}
 
 	/**
@@ -249,8 +248,15 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	public int hashCode() {
 		int result = hashcode;
 		if (result == 0) {
-			result = HashCodes.hashOf(this.getClass(), parent, artifactName,
-					changeType);
+			result = 17;
+			result = 31 * result + this.getClass().hashCode();
+			result = 31 * result + (parent != null ? parent.hashCode() : 0);
+			result = 31 * result
+					+ (artifactName != null ? artifactName.hashCode() : 0);
+			result = 31 * result
+					+ (artifactName != null ? artifactName.hashCode() : 0);
+			result = 31 * result
+					+ (changeType != null ? changeType.hashCode() : 0);
 			hashcode = result;
 		}
 		return result;

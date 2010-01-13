@@ -1,5 +1,6 @@
 # .gitignore for OpenSpotLight
-
+jrat.output
+jrat.xml
 # IDE support files
 .classpath
 .project

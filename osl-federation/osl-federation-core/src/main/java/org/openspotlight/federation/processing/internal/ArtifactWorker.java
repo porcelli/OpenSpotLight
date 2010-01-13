@@ -56,6 +56,7 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.task.ArtifactTask;
+import org.openspotlight.federation.processing.internal.task._2_EachArtifactTask;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.slf4j.Logger;
@@ -99,8 +100,16 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 				}
 				try {
 					working.set(true);
+
 					logger.info("starting " + task.getClass().getSimpleName()
 							+ " on repository " + task.getRepositoryName());
+					if (task instanceof _2_EachArtifactTask<?>) {
+						final _2_EachArtifactTask<?> phaseTwo = (_2_EachArtifactTask<?>) task;
+						logger.info("processing source "
+								+ phaseTwo.getArtifactName());
+
+					}
+
 					task.setQueue(queue);
 					final String repositoryName = task.getRepositoryName();
 					final ExecutionContext context = contextMap

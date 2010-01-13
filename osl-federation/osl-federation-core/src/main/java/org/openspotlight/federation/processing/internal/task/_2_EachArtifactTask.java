@@ -85,6 +85,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 
 	/** The artifact. */
 	private final T artifact;
+
 	private final SaveBehavior saveBehavior;
 	/** The bundle processor. */
 	private final BundleProcessorArtifactPhase<T> bundleProcessor;
@@ -92,7 +93,6 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	private final CountDownLatch thisArtifactLatch;
 	/** The current context impl. */
 	private final CurrentProcessorContextImpl currentContextImpl;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
@@ -209,6 +209,12 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 			thisArtifactLatch.countDown();
 			allPhaseTwoLatch.countDown();
 		}
+	}
+
+	public String getArtifactName() {
+		return artifact.getRepositoryName() + ":"
+				+ artifact.getClass().getSimpleName() + " "
+				+ artifact.getArtifactCompleteName();
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {

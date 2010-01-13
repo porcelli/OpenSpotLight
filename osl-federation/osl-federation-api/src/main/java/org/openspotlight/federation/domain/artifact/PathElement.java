@@ -53,7 +53,6 @@ import java.util.StringTokenizer;
 
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
@@ -96,9 +95,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 				lastPath = lastPath.getParent();
 				continue;
 			}
-			final PathElement newPath = new PathElement();
-			newPath.setParent(lastPath);
-			newPath.setName(nextToken);
+			final PathElement newPath = new PathElement(nextToken, lastPath);
 			lastPath = newPath;
 		}
 		return lastPath;
@@ -124,6 +121,17 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 	/** The hashcode. */
 	private volatile int hashcode;
 
+	private volatile String completePathCache = null;
+
+	public PathElement() {
+
+	}
+
+	public PathElement(final String name, final PathElement parent) {
+		this.name = name;
+		this.parent = parent;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -144,9 +152,9 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 			return false;
 		}
 		final PathElement that = (PathElement) o;
-		final boolean response = Equals.eachEquality(getCompletePath(), that
-				.getCompletePath());
-		return response;
+		return Equals.eachEquality(name, that.name)
+				&& Equals.eachEquality(parent, that.parent);
+
 	}
 
 	/**
@@ -155,10 +163,17 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 	 * @return the complete path
 	 */
 	public String getCompletePath() {
-		if (isRootElement()) {
-			return "/" + getName();
+		String path = completePathCache;
+		if (path == null) {
+			if (isRootElement()) {
+				path = "/" + name;
+			} else {
+				path = getParent().getCompletePath() + Artifact.SEPARATOR
+						+ getName();
+			}
+			completePathCache = path;
 		}
-		return getParent().getCompletePath() + Artifact.SEPARATOR + getName();
+		return path;
 	}
 
 	/**
@@ -190,7 +205,9 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 	public int hashCode() {
 		int result = hashcode;
 		if (result == 0) {
-			result = HashCodes.hashOf(getCompletePath());
+			result = 17;
+			result = 31 * result + (parent != null ? parent.hashCode() : 0);
+			result = 31 * result + (name != null ? name.hashCode() : 0);
 			hashcode = result;
 		}
 		return result;

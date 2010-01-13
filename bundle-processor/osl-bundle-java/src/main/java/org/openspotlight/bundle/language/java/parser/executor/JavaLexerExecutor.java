@@ -59,14 +59,6 @@ public final class JavaLexerExecutor {
 		this.artifact = artifact;
 	}
 
-	public void addSyntaxHighlightBooleanLiteral(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.BOOLEAN_LITERAL);
-	}
-
 	public void addSyntaxHighlightHidden(final int tokenLine,
 			final int tokenStartCharPositionInLine,
 			final int tokenEndCharPositionInLine) {

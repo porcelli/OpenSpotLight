@@ -54,6 +54,7 @@ import static org.openspotlight.common.util.Files.delete;
 import java.util.Set;
 
 import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNot;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -153,7 +154,8 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaLexerExcecutionAndTreeCreationPhase.class);
+		commonProcessor.getArtifactPhases().add(
+				JavaLexerExcecutionAndTreeCreationPhase.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();
@@ -219,6 +221,9 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 						"/tests/org/openspotlight/bundle/language/java/bundle/test/JavaPhase1Test.java");
 		Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
 				.is(LastProcessStatus.PROCESSED));
+		Assert.assertThat(jarArtifact.getSyntaxInformationSet().size(), Is
+				.is(IsNot.not(0)));
+
 	}
 
 }
