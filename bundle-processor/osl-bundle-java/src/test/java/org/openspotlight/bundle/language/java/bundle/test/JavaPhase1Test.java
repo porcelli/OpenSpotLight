@@ -207,7 +207,7 @@ public class JavaPhase1Test {
 	}
 
 	@Test
-	public void shouldProcessJarFile() throws Exception {
+	public void shouldProcessSourceFile() throws Exception {
 		reloadArtifactsAndCallBundleProcessor();
 
 		final ExecutionContext context = contextFactory.createExecutionContext(
