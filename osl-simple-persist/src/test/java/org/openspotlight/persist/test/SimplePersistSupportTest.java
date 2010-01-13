@@ -516,6 +516,7 @@ public class SimplePersistSupportTest {
 		final ListItemObj item = result.iterator().next();
 		Assert.assertThat(item.getName(), Is.is("obj 1"));
 		Assert.assertThat(item.getValue(), Is.is(5));
+		Assert.assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
 
 	}
 
@@ -597,11 +598,11 @@ public class SimplePersistSupportTest {
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("3"));
-
+		final LevelTwoObj result1Item = result1.iterator().next();
 		Assert.assertThat(result1.size(), Is.is(1));
 		Assert.assertThat(result3.size(), Is.is(1));
 		Assert.assertThat(result2.size(), Is.is(1));
-		Assert.assertThat(result1.iterator().next().getKey(), Is.is("1"));
+		Assert.assertThat(result1Item.getKey(), Is.is("1"));
 		Assert.assertThat(result2.iterator().next().getKey(), Is.is("2"));
 		Assert.assertThat(result3.iterator().next().getKey(), Is.is("3"));
 		Assert.assertThat(result1.iterator().next().getLevelOneObj()
@@ -610,6 +611,7 @@ public class SimplePersistSupportTest {
 				.is(IsNull.nullValue()));
 		Assert.assertThat(result3.iterator().next().getLevelOneObj(), Is
 				.is(IsNull.nullValue()));
+		Assert.assertThat(result1Item.getUuid(), Is.is(IsNull.notNullValue()));
 
 	}
 
@@ -691,11 +693,11 @@ public class SimplePersistSupportTest {
 						LazyType.LAZY, org.openspotlight.common.util.Arrays
 								.of("key"),
 						org.openspotlight.common.util.Arrays.of("3"));
-
+		final LevelTwoObj item = result1.iterator().next();
 		Assert.assertThat(result1.size(), Is.is(1));
 		Assert.assertThat(result3.size(), Is.is(1));
 		Assert.assertThat(result2.size(), Is.is(1));
-		Assert.assertThat(result1.iterator().next().getKey(), Is.is("1"));
+		Assert.assertThat(item.getKey(), Is.is("1"));
 		Assert.assertThat(result2.iterator().next().getKey(), Is.is("2"));
 		Assert.assertThat(result3.iterator().next().getKey(), Is.is("3"));
 		Assert.assertThat(result1.iterator().next().getLevelOneObj()
@@ -704,6 +706,7 @@ public class SimplePersistSupportTest {
 				.is(IsNull.nullValue()));
 		Assert.assertThat(result3.iterator().next().getLevelOneObj(), Is
 				.is(IsNull.nullValue()));
+		Assert.assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
 
 	}
 
@@ -768,6 +771,7 @@ public class SimplePersistSupportTest {
 		final PropertyObj item = result.iterator().next();
 		Assert.assertThat(item.getName(), Is.is("obj 1"));
 		Assert.assertThat(item.getValue(), Is.is(5));
+		Assert.assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
 	}
 
 	@Test(expected = SLRuntimeException.class)

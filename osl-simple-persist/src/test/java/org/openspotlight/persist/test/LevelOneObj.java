@@ -52,51 +52,63 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelOneObj implements SimpleNodeType {
+	private String uuid;
 
-    private String  key;
+	private String key;
 
-    private String  property;
+	private String property;
 
-    private RootObj rootObj;
+	private RootObj rootObj;
 
-    public boolean equals( final Object o ) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof LevelOneObj)) {
-            return false;
-        }
-        final LevelOneObj that = (LevelOneObj)o;
-        return Equals.eachEquality(Arrays.of(this.rootObj, this.key), Arrays.andOf(that.rootObj, that.key));
-    }
+	public boolean equals(final Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof LevelOneObj)) {
+			return false;
+		}
+		final LevelOneObj that = (LevelOneObj) o;
+		return Equals.eachEquality(Arrays.of(rootObj, key), Arrays.andOf(
+				that.rootObj, that.key));
+	}
 
-    @KeyProperty
-    public String getKey() {
-        return this.key;
-    }
+	@KeyProperty
+	public String getKey() {
+		return key;
+	}
 
-    public String getProperty() {
-        return this.property;
-    }
+	public String getProperty() {
+		return property;
+	}
 
-    @ParentProperty
-    public RootObj getRootObj() {
-        return this.rootObj;
-    }
+	@ParentProperty
+	public RootObj getRootObj() {
+		return rootObj;
+	}
 
-    public void setKey( final String key ) {
-        this.key = key;
-    }
+	@SetsUniqueIdOnThisProperty
+	public String getUuid() {
+		return uuid;
+	}
 
-    public void setProperty( final String property ) {
-        this.property = property;
-    }
+	public void setKey(final String key) {
+		this.key = key;
+	}
 
-    public void setRootObj( final RootObj rootObj ) {
-        this.rootObj = rootObj;
-    }
+	public void setProperty(final String property) {
+		this.property = property;
+	}
+
+	public void setRootObj(final RootObj rootObj) {
+		this.rootObj = rootObj;
+	}
+
+	public void setUuid(final String uuid) {
+		this.uuid = uuid;
+	}
 
 }

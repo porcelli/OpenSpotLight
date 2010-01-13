@@ -51,39 +51,51 @@ package org.openspotlight.persist.test;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class MapValueObj implements SimpleNodeType {
-    private String name;
+	private String uuid;
 
-    private int    value;
+	private String name;
 
-    public boolean equals( final Object o ) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof MapValueObj)) {
-            return false;
-        }
-        final MapValueObj that = (MapValueObj)o;
-        return Equals.eachEquality(Arrays.of(this.name), Arrays.andOf(that.name));
-    }
+	private int value;
 
-    @KeyProperty
-    public String getName() {
-        return this.name;
-    }
+	public boolean equals(final Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof MapValueObj)) {
+			return false;
+		}
+		final MapValueObj that = (MapValueObj) o;
+		return Equals.eachEquality(Arrays.of(name), Arrays.andOf(that.name));
+	}
 
-    public int getValue() {
-        return this.value;
-    }
+	@KeyProperty
+	public String getName() {
+		return name;
+	}
 
-    public void setName( final String name ) {
-        this.name = name;
-    }
+	@SetsUniqueIdOnThisProperty
+	public String getUuid() {
+		return uuid;
+	}
 
-    public void setValue( final int value ) {
-        this.value = value;
-    }
+	public int getValue() {
+		return value;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void setUuid(final String uuid) {
+		this.uuid = uuid;
+	}
+
+	public void setValue(final int value) {
+		this.value = value;
+	}
 
 }

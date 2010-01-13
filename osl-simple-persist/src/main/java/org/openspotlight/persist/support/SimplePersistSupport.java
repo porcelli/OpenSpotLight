@@ -99,9 +99,11 @@ import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
+import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
@@ -117,7 +119,9 @@ public class SimplePersistSupport {
 	private static class BeanDescriptor {
 
 		/** The node name. */
-		String nodeName;
+		String nodeName;;
+
+		String uuid;
 
 		/** The parent. */
 		BeanDescriptor parent;
@@ -135,6 +139,9 @@ public class SimplePersistSupport {
 		final Map<String, String> properties = new HashMap<String, String>();
 
 		final Map<String, InputStream> streamProperties = new HashMap<String, InputStream>();
+
+		private BeanDescriptor() {
+		}
 
 		@Override
 		public String toString() {
@@ -302,6 +309,7 @@ public class SimplePersistSupport {
 			}
 			if (result == null && descriptor != null) {
 				final Node newNode = parentNode.addNode(nodeName);
+				JCRUtil.makeReferenceable(newNode);
 				result = newNode;
 			}
 		}
@@ -374,6 +382,7 @@ public class SimplePersistSupport {
 		}
 		if (result == null) {
 			final Node newNode = parentNode.addNode(nodeName);
+			JCRUtil.makeReferenceable(newNode);
 			result = newNode;
 		}
 		if (result != null) {
@@ -559,6 +568,7 @@ public class SimplePersistSupport {
 					parentNode = parentNode.getNode(currentToken);
 				} catch (final PathNotFoundException e) {
 					parentNode = parentNode.addNode(currentToken);
+					JCRUtil.makeReferenceable(parentNode);
 				}
 			}
 			return SimplePersistSupport.convertBeanToJcr(parentNode, session,
@@ -734,6 +744,11 @@ public class SimplePersistSupport {
 						SimplePersistSupport.KEY_VALUE);
 				continue;
 			}
+			if (desc.getReadMethod().isAnnotationPresent(
+					SetsUniqueIdOnThisProperty.class)) {
+				desc.getWriteMethod().invoke(newObject, beanDescriptor.uuid);
+				continue;
+			}
 			if (SimpleNodeType.class.isAssignableFrom(desc.getPropertyType())) {
 				SimplePersistSupport.setNodePropertyFromJcrToBean(
 						beanDescriptor, parent, newObject, desc, propertyName);
@@ -816,6 +831,11 @@ public class SimplePersistSupport {
 			if (desc.getReadMethod().isAnnotationPresent(
 					TransientProperty.class)) {
 
+				continue;
+			}
+			if (desc.getReadMethod().isAnnotationPresent(
+					SetsUniqueIdOnThisProperty.class)) {
+				descriptor.uuid = (String) desc.getReadMethod().invoke(bean);
 				continue;
 			}
 			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
@@ -912,6 +932,7 @@ public class SimplePersistSupport {
 			final LazyType multipleLoadingStrategy, final Session session)
 			throws Exception {
 		final BeanDescriptor descriptor = new BeanDescriptor();
+		descriptor.uuid = jcrNode.isNew() ? null : jcrNode.getUUID();
 		descriptor.parent = parent;
 		descriptor.nodeName = jcrNode.getName();
 		final PropertyIterator properties = jcrNode.getProperties();

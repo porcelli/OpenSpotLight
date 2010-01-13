@@ -48,12 +48,24 @@
  */
 package org.openspotlight.persist.test;
 
+import org.openspotlight.persist.annotation.SetsUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class RootObj implements SimpleNodeType {
 
-    public boolean equals( final Object o ) {
-        return o instanceof RootObj;
-    }
+	private String uuid;
+
+	public boolean equals(final Object o) {
+		return o instanceof RootObj;
+	}
+
+	@SetsUniqueIdOnThisProperty
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(final String uuid) {
+		this.uuid = uuid;
+	}
 
 }
