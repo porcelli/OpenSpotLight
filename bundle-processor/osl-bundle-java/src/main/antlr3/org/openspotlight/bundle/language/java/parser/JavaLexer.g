@@ -196,143 +196,179 @@ import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
 
 THREE_DOTS
     :    '...'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    
     ;
 
 AMPERSAND_ASSIGN
     :    '&='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 EQUALS
     :    '=='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 EXCLAMATION_EQUALS
     :    '!='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CIRCUMFLEX_ASSIGN
     :    '^='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE_PLUS
     :    '++'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE_MINUS
     :    '--'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PLUS_ASSIGN
     :    '+='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 MINUS_ASSIGN
     :    '-='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 STAR_ASSIGN
     :    '*='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SLASH_ASSIGN
     :    '/='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PIPE_ASSIGN
     :    '|='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PERCENT_ASSIGN
     :    '%='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUPLE_PIPE
     :    '||'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE_AMPERSAND
     :    '&&'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOT
     :    '.'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 STAR
     :    '*'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SEMI_COLON
     :    ';'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 AMPERSAND
     :    '&'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 COLON
     :    ':'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 COMMA
     :    ','
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LESS
     :    '<'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 GREATER
     :    '>'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LEFT_CURLY
     :    '{'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RIGHT_CURLY
     :    '}'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LEFT_SQUARE
     :    '['
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RIGHT_SQUARE
     :    ']'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 ASSIGN
     :    '='
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 QUESTION
     :    '?'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LEFT_PAREN
     :    '('
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RIGHT_PAREN
     :    ')'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 AT
     :    '@'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PLUS
     :    '+'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 MINUS
     :    '-'
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PERCENT
     :    '%'
-    ;
+        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+vsdfgsdfg    ;
 
 SLASH
     :    '/'

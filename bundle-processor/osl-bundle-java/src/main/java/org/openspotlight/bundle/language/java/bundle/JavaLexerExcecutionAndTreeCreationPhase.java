@@ -1,13 +1,10 @@
 package org.openspotlight.bundle.language.java.bundle;
 
 import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.common.parser.SLArtifactStreamBasicImpl;
 import org.openspotlight.bundle.language.java.parser.JavaLexer;
-import org.openspotlight.bundle.language.java.parser.JavaParser;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
-import org.openspotlight.bundle.language.java.parser.executor.JavaParserExecutor;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -40,14 +37,14 @@ public class JavaLexerExcecutionAndTreeCreationPhase implements
 		lexer.setLexerExecutor(lexerExecutor);
 		final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
 		commonTokenStream.getTokens();
-		final JavaParser parser = new JavaParser(commonTokenStream);
-		final JavaParserExecutor parserExecutor = new JavaParserExecutor(
-				context, artifact.getContent(), artifact
-						.getArtifactCompleteName(), artifact.getVersion(),
-				artifact);
-		parser.setParserExecutor(parserExecutor);
-		final Tree tree = (Tree) parser.compilationUnit().getTree();
-		artifact.getTransientMap().put("tree", tree);
+		// final JavaParser parser = new JavaParser(commonTokenStream);
+		// final JavaParserExecutor parserExecutor = new JavaParserExecutor(
+		// context, artifact.getContent(), artifact
+		// .getArtifactCompleteName(), artifact.getVersion(),
+		// artifact);
+		// parser.setParserExecutor(parserExecutor);
+		// final Tree tree = (Tree) parser.compilationUnit().getTree();
+		// artifact.getTransientMap().put("tree", tree);
 
 		// //not needed now
 		// final CommonTreeNodeStream treeNodes = new
