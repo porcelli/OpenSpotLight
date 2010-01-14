@@ -226,7 +226,7 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 		final StringArtifact jarArtifact = context
 				.getArtifactFinder(StringArtifact.class)
 				.findByPath(
-						"/tests/org/openspotlight/bundle/language/java/bundle/test/JavaPhase1Test.java");
+						"/tests/org/openspotlight/bundle/language/java/ExampleGraphImport.java");
 		Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
 				.is(LastProcessStatus.PROCESSED));
 		Assert.assertThat(jarArtifact.getSyntaxInformationSet().size(), Is

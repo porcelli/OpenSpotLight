@@ -54,13 +54,12 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
 
 /**
  * The Class SyntaxInformation.
  */
 @Name("syntax_information")
-public class SyntaxInformation implements SimpleNodeType, Serializable,
+public class SyntaxInformation implements Serializable,
 		Comparable<SyntaxInformation> {
 	private static final long serialVersionUID = 9056717121341748618L;
 

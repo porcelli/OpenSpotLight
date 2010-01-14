@@ -704,15 +704,21 @@ public class SimplePersistSupport {
 	}
 
 	private static InputStream convertSerializableToStream(
-			final Serializable obj) throws Exception {
-		nullParentProperty(obj);
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(obj);
-		oos.flush();
-		oos.close();
-		return new ByteArrayInputStream(baos.toByteArray());
-
+			final Serializable obj, final SimpleNodeType parent,
+			final String propertyName) throws Exception {
+		try {
+			nullParentProperty(obj);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(obj);
+			oos.flush();
+			oos.close();
+			return new ByteArrayInputStream(baos.toByteArray());
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturn("problem serializing property "
+					+ propertyName + " from parent object of type "
+					+ parent.getClass(), e);
+		}
 	}
 
 	private static Serializable convertStreamToSerializable(
@@ -896,7 +902,8 @@ public class SimplePersistSupport {
 					PersistPropertyAsStream.class)) {
 				final Serializable propertyValue = (Serializable) desc
 						.getReadMethod().invoke(bean);
-				final InputStream is = convertSerializableToStream(propertyValue);
+				final InputStream is = convertSerializableToStream(
+						propertyValue, (SimpleNodeType) bean, desc.getName());
 				descriptor.serializedProperties.put(desc.getName(), is);
 				continue;
 			}
@@ -1466,6 +1473,21 @@ public class SimplePersistSupport {
 		if (obj == null) {
 			return;
 		}
+		if (obj instanceof Collection<?>) {
+			final Collection<?> collection = (Collection<?>) obj;
+			for (final Object o : collection) {
+				nullParentProperty((Serializable) o);
+			}
+			return;
+		}
+		if (obj instanceof Map<?, ?>) {
+			final Map<?, ?> map = (Map<?, ?>) obj;
+			for (final Map.Entry<?, ?> entry : map.entrySet()) {
+				nullParentProperty((Serializable) entry.getValue());
+			}
+			return;
+		}
+
 		final PropertyDescriptor[] descs = PropertyUtils
 				.getPropertyDescriptors(obj.getClass());
 		for (final PropertyDescriptor desc : descs) {
@@ -1856,6 +1878,21 @@ public class SimplePersistSupport {
 		if (serializable == null) {
 			return;
 		}
+		if (serializable instanceof Collection<?>) {
+			final Collection<?> collection = (Collection<?>) serializable;
+			for (final Object o : collection) {
+				setParentProperty((Serializable) o, parent);
+			}
+			return;
+		}
+		if (serializable instanceof Map<?, ?>) {
+			final Map<?, ?> map = (Map<?, ?>) serializable;
+			for (final Map.Entry<?, ?> entry : map.entrySet()) {
+				setParentProperty((Serializable) entry.getValue(), parent);
+			}
+			return;
+		}
+
 		final PropertyDescriptor[] descs = PropertyUtils
 				.getPropertyDescriptors(serializable.getClass());
 		for (final PropertyDescriptor desc : descs) {

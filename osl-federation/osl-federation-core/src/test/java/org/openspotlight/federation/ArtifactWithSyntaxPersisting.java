@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
@@ -54,10 +55,9 @@ public class ArtifactWithSyntaxPersisting {
 		final StringArtifact sa = Artifact.createArtifact(StringArtifact.class,
 				path.toString(), ChangeType.INCLUDED);
 		sa.setContent(getContent());
-		// for (int i = 0; i < 100; i++) {
-		// sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT);
-		//
-		// }
+		for (int i = 0; i < 16000; i++) {
+			sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT);
+		}
 
 		return sa;
 	}

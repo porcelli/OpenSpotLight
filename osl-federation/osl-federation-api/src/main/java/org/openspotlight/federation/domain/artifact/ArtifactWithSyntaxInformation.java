@@ -51,6 +51,8 @@ package org.openspotlight.federation.domain.artifact;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openspotlight.persist.annotation.PersistPropertyAsStream;
+
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
 	private static final long serialVersionUID = -3359480990669655877L;
@@ -96,6 +98,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
 	 * 
 	 * @return the syntax information set
 	 */
+	@PersistPropertyAsStream
 	public Set<SyntaxInformation> getSyntaxInformationSet() {
 		return syntaxInformationSet;
 	}
