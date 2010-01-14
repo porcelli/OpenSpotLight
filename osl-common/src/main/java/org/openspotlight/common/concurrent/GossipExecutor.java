@@ -72,14 +72,18 @@ public class GossipExecutor extends ThreadPoolExecutor {
 		/** The wrapped. */
 		private final ThreadFactory wrapped;
 
+		private final String poolName;
+
 		/**
 		 * Instantiates a new delegate thread factory.
 		 * 
 		 * @param wrapped
 		 *            the wrapped
 		 */
-		public DelegateThreadFactory(final ThreadFactory wrapped) {
+		public DelegateThreadFactory(final ThreadFactory wrapped,
+				final String poolName) {
 			this.wrapped = wrapped;
+			this.poolName = poolName;
 		}
 
 		/**
@@ -99,6 +103,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
 		 */
 		public Thread newThread(final Runnable r) {
 			final Thread t = wrapped.newThread(r);
+			t.setName(poolName + "_" + t.getName());
 			for (final ThreadListener l : listeners) {
 				l.afterCreatingThread(t);
 			}
@@ -177,10 +182,12 @@ public class GossipExecutor extends ThreadPoolExecutor {
 	 *            the n threads
 	 * @return the cautious executor
 	 */
-	public static GossipExecutor newFixedThreadPool(final int nThreads) {
+	public static GossipExecutor newFixedThreadPool(final int nThreads,
+			final String poolName) {
 
 		final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L,
-				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+				poolName);
 		return ex;
 
 	}
@@ -207,9 +214,10 @@ public class GossipExecutor extends ThreadPoolExecutor {
 	 */
 	private GossipExecutor(final int corePoolSize, final int maximumPoolSize,
 			final long keepAliveTime, final TimeUnit unit,
-			final BlockingQueue<Runnable> workQueue) {
+			final BlockingQueue<Runnable> workQueue, final String poolName) {
 		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-		delegateThreadFactory = new DelegateThreadFactory(getThreadFactory());
+		delegateThreadFactory = new DelegateThreadFactory(getThreadFactory(),
+				poolName);
 		setThreadFactory(delegateThreadFactory);
 
 	}

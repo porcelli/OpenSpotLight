@@ -61,7 +61,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaLexerExcecutionAndTreeCreationPhase;
+import org.openspotlight.bundle.language.java.bundle.JavaLexerPhase;
+import org.openspotlight.bundle.language.java.bundle.JavaParserPhase;
+import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -83,7 +85,7 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-public class JavaLexerExcecutionAndTreeCreationPhaseTest {
+public class JavaStringArtifactProcessingTest {
 
 	private static class RepositoryData {
 		public final GlobalSettings settings;
@@ -154,8 +156,9 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		commonProcessor.getArtifactPhases().add(
-				JavaLexerExcecutionAndTreeCreationPhase.class);
+		commonProcessor.getArtifactPhases().add(JavaLexerPhase.class);
+		commonProcessor.getArtifactPhases().add(JavaParserPhase.class);
+		commonProcessor.getArtifactPhases().add(JavaTreePhase.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();
@@ -168,7 +171,7 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 	}
 
 	public static void main(final String... args) throws Exception {
-		final JavaLexerExcecutionAndTreeCreationPhaseTest test = new JavaLexerExcecutionAndTreeCreationPhaseTest();
+		final JavaStringArtifactProcessingTest test = new JavaStringArtifactProcessingTest();
 		setupResources();
 		test.shouldProcessSourceFile();
 		test.closeTestResources();

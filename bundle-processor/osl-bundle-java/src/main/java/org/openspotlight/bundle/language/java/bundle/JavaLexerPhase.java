@@ -12,7 +12,7 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
-public class JavaLexerExcecutionAndTreeCreationPhase implements
+public class JavaLexerPhase implements
 		BundleProcessorArtifactPhase<StringArtifact> {
 
 	public void beforeProcessArtifact(final StringArtifact artifact) {
@@ -40,20 +40,11 @@ public class JavaLexerExcecutionAndTreeCreationPhase implements
 		lexer.setLexerExecutor(lexerExecutor);
 		final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
 		commonTokenStream.getTokens();
-		// final JavaParser parser = new JavaParser(commonTokenStream);
-		// final JavaParserExecutor parserExecutor = new JavaParserExecutor(
-		// context, artifact.getContent(), artifact
-		// .getArtifactCompleteName(), artifact.getVersion(),
-		// artifact);
-		// parser.setParserExecutor(parserExecutor);
-		// final Tree tree = (Tree) parser.compilationUnit().getTree();
-		// artifact.getTransientMap().put("tree", tree);
-
-		// //not needed now
-		// final CommonTreeNodeStream treeNodes = new
-		// CommonTreeNodeStream(tree);
-		// final JavaTree walker = new JavaTree(treeNodes);
-		// walker.compilationUnit();
+		final JavaTransientDto dto = JavaTransientDto.fromLexer().withStream(
+				stream).withLexer(lexer).withSourceline(sourceLine)
+				.withLexerExecutor(lexerExecutor).withCommonTokenStream(
+						commonTokenStream).create();
+		artifact.getTransientMap().put("DTO", dto);
 
 		return LastProcessStatus.PROCESSED;
 	}

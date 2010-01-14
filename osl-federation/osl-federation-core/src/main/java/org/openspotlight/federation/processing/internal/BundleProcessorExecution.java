@@ -183,7 +183,8 @@ public class BundleProcessorExecution {
 			Exceptions.logAndThrow(new IllegalStateException(
 					"Default Thread sleep time in millis must be positive!"));
 		}
-		executor = GossipExecutor.newFixedThreadPool(threads);
+		executor = GossipExecutor.newFixedThreadPool(threads,
+				"bundle-processor");
 		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
 				contextFactory, repositoryNames, username, password, descriptor);
 		executor.addTaskListener(listener);
