@@ -8,10 +8,13 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.persist.support.SimplePersistSupport;
 
 public class ArtifactWithSyntaxPersisting {
-	public static void main(final String... args) {
+	public static void main(final String... args) throws Exception {
 		final ArtifactWithSyntaxPersisting test = new ArtifactWithSyntaxPersisting();
 		test.shouldPersistLotsOfStuff();
 	}
@@ -31,7 +34,7 @@ public class ArtifactWithSyntaxPersisting {
 
 	Set<StringArtifact> createLotsOfStuff() {
 		final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
-		for (int i = 0; i < 500; i++) {
+		for (int i = 0; i < 100; i++) {
 			final StringArtifact sa = createNewDummyArtifact();
 			stuffList.add(sa);
 		}
@@ -51,10 +54,10 @@ public class ArtifactWithSyntaxPersisting {
 		final StringArtifact sa = Artifact.createArtifact(StringArtifact.class,
 				path.toString(), ChangeType.INCLUDED);
 		sa.setContent(getContent());
-		for (int i = 0; i < 16000; i++) {
-			sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT);
-
-		}
+		// for (int i = 0; i < 100; i++) {
+		// sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT);
+		//
+		// }
 
 		return sa;
 	}
@@ -73,9 +76,16 @@ public class ArtifactWithSyntaxPersisting {
 	}
 
 	@Test
-	public void shouldPersistLotsOfStuff() {
+	public void shouldPersistLotsOfStuff() throws Exception {
 		final Set<StringArtifact> lotsOfStuff = createLotsOfStuff();
-
+		final JcrConnectionProvider provider = JcrConnectionProvider
+				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+		final SessionWithLock session = provider.openSession();
+		for (final StringArtifact a : lotsOfStuff) {
+			SimplePersistSupport.convertBeanToJcr("a/b/c", session, a);
+			// session.save();
+		}
+		session.save();
 	}
 
 }

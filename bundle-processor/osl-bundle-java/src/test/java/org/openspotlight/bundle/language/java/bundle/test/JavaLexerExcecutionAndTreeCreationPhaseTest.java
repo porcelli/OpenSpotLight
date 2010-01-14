@@ -112,6 +112,7 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 	}
 
 	private static ExecutionContextFactory contextFactory;
+
 	private static RepositoryData data;
 	private static DefaultScheduler scheduler;
 
@@ -165,6 +166,13 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 		bundleSource.getIncludeds().add("**/*.java");
 
 		return new RepositoryData(settings, repository, group, artifactSource);
+	}
+
+	public static void main(final String... args) throws Exception {
+		final JavaLexerExcecutionAndTreeCreationPhaseTest test = new JavaLexerExcecutionAndTreeCreationPhaseTest();
+		setupResources();
+		test.shouldProcessSourceFile();
+		test.closeTestResources();
 	}
 
 	@BeforeClass
