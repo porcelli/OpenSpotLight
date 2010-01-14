@@ -131,6 +131,22 @@ public class SLGraphMetadataTest {
     }
 
     @Test
+    public void testMetadataTypeByParent()
+        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+        SLNode rootNode = session.createContext("Test1").getRootNode();
+        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addNode(JavaClassNode.class, "testNode2");
+
+        SLMetaNodeType foundType = session.getMetadata().findMetaNodeType(JavaClassNode.class);
+
+        Assert.assertNotNull(foundType);
+        Assert.assertEquals(foundType.getTypeName(), JavaClassNode.class.getName());
+        Assert.assertEquals(foundType.getParent().getTypeName(), JavaElementNode.class.getName());
+        Assert.assertEquals(foundType.getParent().getParent(), null);
+    }
+
+    
+    @Test
     public void testSearchMetadataEqualsOneElementByName()
         throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
         SLNode rootNode = session.createContext("Test1").getRootNode();
