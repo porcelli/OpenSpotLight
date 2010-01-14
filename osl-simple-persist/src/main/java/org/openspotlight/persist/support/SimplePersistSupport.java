@@ -51,7 +51,11 @@ package org.openspotlight.persist.support;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -103,6 +107,7 @@ import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.PersistPropertyAsStream;
 import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
@@ -129,6 +134,9 @@ public class SimplePersistSupport {
 		/** The node properties. */
 		Map<String, BeanDescriptor> nodeProperties = new HashMap<String, BeanDescriptor>();
 
+		/** The node properties. */
+		Map<String, InputStream> serializedProperties = new HashMap<String, InputStream>();
+
 		/** The multiple simple properties. */
 		Map<String, SimpleMultiplePropertyDescriptor> multipleSimpleProperties = new HashMap<String, SimpleMultiplePropertyDescriptor>();
 
@@ -149,8 +157,6 @@ public class SimplePersistSupport {
 		}
 
 	}
-
-	// FIXME implement Lazy and DoNotLoad
 
 	/**
 	 * The Class ComplexMultiplePropertyDescriptor.
@@ -187,6 +193,8 @@ public class SimplePersistSupport {
 
 	}
 
+	// FIXME implement Lazy and DoNotLoad
+
 	/**
 	 * The Class SimpleMultiplePropertyDescriptor.
 	 */
@@ -214,6 +222,8 @@ public class SimplePersistSupport {
 
 	private static final String DEFAULT_STREAM_PREFIX = "stream.property.";
 
+	private static final String DEFAULT_SERIALIZED_PREFIX = "serialized.property.";
+
 	/** The Constant defaultPrefix. */
 	public static final String DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple.property.";
 
@@ -227,6 +237,7 @@ public class SimplePersistSupport {
 	public static final String MULTIPLE_PROPERTY_VALUES = "multiple.property.{0}.values";
 
 	public static final String STREAM_PROPERTY_VALUE = "stream.property.{0}.value";
+	public static final String SERIALIZED_PROPERTY_VALUE = "serialized.property.{0}.value";
 
 	/** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE. */
 	public static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE = "multiple.property.{0}.multiple.type";
@@ -328,6 +339,14 @@ public class SimplePersistSupport {
 				result.setProperty(MessageFormat.format(STREAM_PROPERTY_VALUE,
 						entry.getKey()), entry.getValue());
 			}
+			// Serialized properties are handled here
+			for (final Map.Entry<String, InputStream> entry : descriptor.serializedProperties
+					.entrySet()) {
+				result.setProperty(MessageFormat.format(
+						SERIALIZED_PROPERTY_VALUE, entry.getKey()), entry
+						.getValue());
+			}
+
 			SimplePersistSupport.saveSimplePropertiesOnJcr(descriptor, result);
 			SimplePersistSupport.saveComplexMultiplePropertiesOnJcr(session,
 					descriptor, result);
@@ -684,6 +703,36 @@ public class SimplePersistSupport {
 		}
 	}
 
+	private static InputStream convertSerializableToStream(
+			final Serializable obj) throws Exception {
+		nullParentProperty(obj);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(obj);
+		oos.flush();
+		oos.close();
+		return new ByteArrayInputStream(baos.toByteArray());
+
+	}
+
+	private static Serializable convertStreamToSerializable(
+			final InputStream is, final SimpleNodeType parent) throws Exception {
+		final ObjectInputStream ois = new ObjectInputStream(is);
+		final Serializable serializable = (Serializable) ois.readObject();
+		setParentProperty(serializable, parent);
+		return serializable;
+	}
+
+	private static InputStream convertToByteArrayInputStream(InputStream is)
+			throws IOException {
+		if (!(is instanceof ByteArrayInputStream)) {
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			IOUtils.copy(is, baos);
+			is = new ByteArrayInputStream(baos.toByteArray());
+		}
+		return is;
+	}
+
 	/**
 	 * Creates the bean from bean descriptor.
 	 * 
@@ -710,6 +759,17 @@ public class SimplePersistSupport {
 				.getPropertyDescriptors(newObject);
 		for (final PropertyDescriptor desc : allProperties) {
 			if (desc.getName().equals("class")) {
+				continue;
+			}
+			if (desc.getReadMethod().isAnnotationPresent(
+					PersistPropertyAsStream.class)) {
+				final InputStream is = beanDescriptor.serializedProperties
+						.get(desc.getName());
+				if (is != null) {
+					final Serializable propVal = convertStreamToSerializable(
+							is, (SimpleNodeType) newObject);
+					desc.getWriteMethod().invoke(newObject, propVal);
+				}
 				continue;
 			}
 
@@ -830,7 +890,14 @@ public class SimplePersistSupport {
 			}
 			if (desc.getReadMethod().isAnnotationPresent(
 					TransientProperty.class)) {
-
+				continue;
+			}
+			if (desc.getReadMethod().isAnnotationPresent(
+					PersistPropertyAsStream.class)) {
+				final Serializable propertyValue = (Serializable) desc
+						.getReadMethod().invoke(bean);
+				final InputStream is = convertSerializableToStream(propertyValue);
+				descriptor.serializedProperties.put(desc.getName(), is);
 				continue;
 			}
 			if (desc.getReadMethod().isAnnotationPresent(
@@ -885,12 +952,7 @@ public class SimplePersistSupport {
 			if (InputStream.class.isAssignableFrom(desc.getPropertyType())) {
 				InputStream propertyVal = (InputStream) desc.getReadMethod()
 						.invoke(bean);
-				if (!(propertyVal instanceof ByteArrayInputStream)) {
-					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					IOUtils.copy(propertyVal, baos);
-					propertyVal = new ByteArrayInputStream(baos.toByteArray());
-
-				}
+				propertyVal = convertToByteArrayInputStream(propertyVal);
 				descriptor.streamProperties.put(desc.getName(), propertyVal);
 			}
 			if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
@@ -952,19 +1014,21 @@ public class SimplePersistSupport {
 						rawName);
 				continue;
 			}
+			if (rawName.startsWith(DEFAULT_SERIALIZED_PREFIX)) {
+				InputStream is = property.getValue().getStream();
+				is = convertToByteArrayInputStream(is);
+				final String newPropertyName = extractPropertyName(rawName,
+						DEFAULT_SERIALIZED_PREFIX);
+				descriptor.serializedProperties.put(newPropertyName, is);
+				continue;
+			}
 			if (rawName.startsWith(DEFAULT_STREAM_PREFIX)) {
 				InputStream value = property.getValue().getStream();
-				if (!(value instanceof ByteArrayInputStream)) {
-					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					IOUtils.copy(value, baos);
-					value = new ByteArrayInputStream(baos.toByteArray());
-				}
+				value = convertToByteArrayInputStream(value);
 
-				String propertyName = Strings.removeBegginingFrom(
-						DEFAULT_STREAM_PREFIX, rawName);
-				propertyName = propertyName.substring(0, propertyName
-						.indexOf('.'));
-				descriptor.streamProperties.put(propertyName, value);
+				final String newPropertyName = extractPropertyName(rawName,
+						DEFAULT_STREAM_PREFIX);
+				descriptor.streamProperties.put(newPropertyName, value);
 				continue;
 			}
 		}
@@ -1068,6 +1132,15 @@ public class SimplePersistSupport {
 			resultNodes.add(bean);
 		}
 
+	}
+
+	private static String extractPropertyName(final String rawName,
+			final String prefixToRemove) {
+		final String propertyName = Strings.removeBegginingFrom(prefixToRemove,
+				rawName);
+		final String newPropertyName = propertyName.substring(0, propertyName
+				.indexOf('.'));
+		return newPropertyName;
 	}
 
 	/**
@@ -1386,6 +1459,20 @@ public class SimplePersistSupport {
 						JcrNodeType.MULTIPLE_NODE_PROPERTY.toString())
 				|| jcrNode.getName().startsWith(
 						JcrNodeType.NODE_PROPERTY.toString());
+	}
+
+	private static void nullParentProperty(final Serializable obj)
+			throws Exception {
+		if (obj == null) {
+			return;
+		}
+		final PropertyDescriptor[] descs = PropertyUtils
+				.getPropertyDescriptors(obj.getClass());
+		for (final PropertyDescriptor desc : descs) {
+			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
+				desc.getWriteMethod().invoke(obj, (Object) null);
+			}
+		}
 	}
 
 	/**
@@ -1762,6 +1849,23 @@ public class SimplePersistSupport {
 		final Object bean = SimplePersistSupport.createBeanFromDescriptor(
 				propertyDesc, parent);
 		desc.getWriteMethod().invoke(newObject, bean);
+	}
+
+	private static void setParentProperty(final Serializable serializable,
+			final SimpleNodeType parent) throws Exception {
+		if (serializable == null) {
+			return;
+		}
+		final PropertyDescriptor[] descs = PropertyUtils
+				.getPropertyDescriptors(serializable.getClass());
+		for (final PropertyDescriptor desc : descs) {
+			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
+				if (desc.getPropertyType().equals(parent.getClass())) {
+					desc.getWriteMethod().invoke(serializable, parent);
+				}
+			}
+		}
+
 	}
 
 	/**

@@ -48,20 +48,35 @@
  */
 package org.openspotlight.persist.test;
 
+import java.io.Serializable;
+
+import org.openspotlight.persist.annotation.PersistPropertyAsStream;
 import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public class RootObj implements SimpleNodeType {
+public class RootObj implements SimpleNodeType, Serializable {
 
 	private String uuid;
+
+	private ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType;
 
 	public boolean equals(final Object o) {
 		return o instanceof RootObj;
 	}
 
+	@PersistPropertyAsStream
+	public ObjectThatDoesntImplementSimpleNodeType getObjectThatDoesntImplementSimpleNodeType() {
+		return objectThatDoesntImplementSimpleNodeType;
+	}
+
 	@SetUniqueIdOnThisProperty
 	public String getUuid() {
 		return uuid;
+	}
+
+	public void setObjectThatDoesntImplementSimpleNodeType(
+			final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType) {
+		this.objectThatDoesntImplementSimpleNodeType = objectThatDoesntImplementSimpleNodeType;
 	}
 
 	public void setUuid(final String uuid) {

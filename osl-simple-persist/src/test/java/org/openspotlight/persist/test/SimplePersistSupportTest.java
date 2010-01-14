@@ -800,6 +800,29 @@ public class SimplePersistSupportTest {
 	}
 
 	@Test
+	public void shouldPersistPropertyAsStream() throws Exception {
+		final RootObj obj = new RootObj();
+		final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType = new ObjectThatDoesntImplementSimpleNodeType();
+		objectThatDoesntImplementSimpleNodeType.setName("name");
+		objectThatDoesntImplementSimpleNodeType.setNumber(3);
+		objectThatDoesntImplementSimpleNodeType.setParent(obj);
+		obj
+				.setObjectThatDoesntImplementSimpleNodeType(objectThatDoesntImplementSimpleNodeType);
+		final Node jcrNode = SimplePersistSupport.convertBeanToJcr(
+				"gaba/gaba/hey", session, obj);
+		final RootObj fromJcr = SimplePersistSupport.convertJcrToBean(session,
+				jcrNode, LazyType.EAGER);
+		Assert.assertThat(fromJcr.getObjectThatDoesntImplementSimpleNodeType()
+				.getName(), Is.is(obj
+				.getObjectThatDoesntImplementSimpleNodeType().getName()));
+		Assert.assertThat(fromJcr.getObjectThatDoesntImplementSimpleNodeType()
+				.getNumber(), Is.is(obj
+				.getObjectThatDoesntImplementSimpleNodeType().getNumber()));
+		Assert.assertThat(fromJcr.getObjectThatDoesntImplementSimpleNodeType()
+				.getParent() == fromJcr, Is.is(true));
+	}
+
+	@Test
 	public void shouldPersistTwoDifferentNodesWhenUsingComposedKeys()
 			throws Exception {
 
