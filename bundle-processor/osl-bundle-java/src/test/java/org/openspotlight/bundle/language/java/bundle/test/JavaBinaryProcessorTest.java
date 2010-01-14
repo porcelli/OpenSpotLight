@@ -117,7 +117,6 @@ public class JavaBinaryProcessorTest {
 
 	@AfterClass
 	public static void closeResources() throws Exception {
-		scheduler.stopScheduler();
 		contextFactory.closeResources();
 	}
 

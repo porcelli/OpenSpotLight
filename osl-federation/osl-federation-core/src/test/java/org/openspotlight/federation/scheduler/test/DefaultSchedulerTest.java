@@ -55,7 +55,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.number.IsCloseTo;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -151,11 +150,6 @@ public class DefaultSchedulerTest {
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		scheduler.refreshJobs(settings, repositories);
 		scheduler.startScheduler();
-	}
-
-	@AfterClass
-	public static void stopScheduler() {
-		scheduler.stopScheduler();
 	}
 
 	@Before

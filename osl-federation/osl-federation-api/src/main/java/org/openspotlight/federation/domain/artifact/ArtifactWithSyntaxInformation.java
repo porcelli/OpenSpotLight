@@ -125,7 +125,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
 		syntaxInformation.setColumnStart(columnStart);
 		syntaxInformation.setLineEnd(lineEnd);
 		syntaxInformation.setLineStart(lineStart);
-		syntaxInformation.setStreamArtifact(this);
+		syntaxInformation.setParent(this);
 		syntaxInformation.setType(type);
 		syntaxInformationSet.remove(syntaxInformation);
 	}

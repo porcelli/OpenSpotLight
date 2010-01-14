@@ -176,7 +176,7 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 			boolean hasAnyType = false;
 			for (final Class<?> artifactType : rawBundleProcessor
 					.getArtifactTypes()) {
-				if (artifactType.equals(this.artifactType)) {
+				if (artifactType.isAssignableFrom(this.artifactType)) {
 					hasAnyType = true;
 					break;
 				}

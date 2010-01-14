@@ -118,7 +118,6 @@ public class JavaLexerExcecutionAndTreeCreationPhaseTest {
 
 	@AfterClass
 	public static void closeResources() throws Exception {
-		scheduler.stopScheduler();
 		contextFactory.closeResources();
 	}
 

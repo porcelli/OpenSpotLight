@@ -110,6 +110,7 @@ import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.PersistPropertyAsStream;
 import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.StreamPropertyWithParent;
 import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
@@ -1473,28 +1474,7 @@ public class SimplePersistSupport {
 		if (obj == null) {
 			return;
 		}
-		if (obj instanceof Collection<?>) {
-			final Collection<?> collection = (Collection<?>) obj;
-			for (final Object o : collection) {
-				nullParentProperty((Serializable) o);
-			}
-			return;
-		}
-		if (obj instanceof Map<?, ?>) {
-			final Map<?, ?> map = (Map<?, ?>) obj;
-			for (final Map.Entry<?, ?> entry : map.entrySet()) {
-				nullParentProperty((Serializable) entry.getValue());
-			}
-			return;
-		}
-
-		final PropertyDescriptor[] descs = PropertyUtils
-				.getPropertyDescriptors(obj.getClass());
-		for (final PropertyDescriptor desc : descs) {
-			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
-				desc.getWriteMethod().invoke(obj, (Object) null);
-			}
-		}
+		setParentProperty(obj, null);
 	}
 
 	/**
@@ -1873,9 +1853,15 @@ public class SimplePersistSupport {
 		desc.getWriteMethod().invoke(newObject, bean);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void setParentProperty(final Serializable serializable,
 			final SimpleNodeType parent) throws Exception {
 		if (serializable == null) {
+			return;
+		}
+		if (serializable instanceof StreamPropertyWithParent<?>) {
+			final StreamPropertyWithParent<SimpleNodeType> property = (StreamPropertyWithParent<SimpleNodeType>) serializable;
+			property.setParent(parent);
 			return;
 		}
 		if (serializable instanceof Collection<?>) {
@@ -1891,16 +1877,6 @@ public class SimplePersistSupport {
 				setParentProperty((Serializable) entry.getValue(), parent);
 			}
 			return;
-		}
-
-		final PropertyDescriptor[] descs = PropertyUtils
-				.getPropertyDescriptors(serializable.getClass());
-		for (final PropertyDescriptor desc : descs) {
-			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
-				if (desc.getPropertyType().equals(parent.getClass())) {
-					desc.getWriteMethod().invoke(serializable, parent);
-				}
-			}
 		}
 
 	}

@@ -130,7 +130,6 @@ public class DbTableArtifactBundleProcessorTest {
 
 	@AfterClass
 	public static void closeResources() throws Exception {
-		scheduler.stopScheduler();
 		contextFactory.closeResources();
 	}
 

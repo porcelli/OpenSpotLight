@@ -66,7 +66,7 @@ public class ArtifactWithSyntaxPersisting {
 
 		if (content == null) {
 			final StringBuilder builder = new StringBuilder();
-			for (int i = 0; i < 8000; i++) {
+			for (int i = 0; i < 4000; i++) {
 				final String line = sampleLines[r.nextInt(sampleLines.length)];
 				builder.append(line);
 			}
@@ -81,11 +81,19 @@ public class ArtifactWithSyntaxPersisting {
 		final JcrConnectionProvider provider = JcrConnectionProvider
 				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		final SessionWithLock session = provider.openSession();
+		int count = 0;
+		final long start = System.currentTimeMillis();
 		for (final StringArtifact a : lotsOfStuff) {
+			count++;
 			SimplePersistSupport.convertBeanToJcr("a/b/c", session, a);
-			// session.save();
+			session.save();
+			if (count % 10 == 0) {
+				System.out.println(count);
+			}
 		}
-		session.save();
+		final long end = System.currentTimeMillis();
+		System.out.println("spent on jcr convert and saving: " + (end - start)
+				/ 1000 + "s");
 	}
 
 }

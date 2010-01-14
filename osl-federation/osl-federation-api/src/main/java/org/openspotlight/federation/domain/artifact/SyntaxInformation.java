@@ -48,18 +48,13 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.Name;
-import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.StreamPropertyWithParent;
 
 /**
  * The Class SyntaxInformation.
  */
-@Name("syntax_information")
-public class SyntaxInformation implements Serializable,
+public class SyntaxInformation implements StreamPropertyWithParent<Artifact>,
 		Comparable<SyntaxInformation> {
 	private static final long serialVersionUID = 9056717121341748618L;
 
@@ -71,7 +66,7 @@ public class SyntaxInformation implements Serializable,
 	private volatile int hashcode;
 
 	/** The stream artifact. */
-	private Artifact streamArtifact;
+	private Artifact parent;
 
 	/** The line start. */
 	private int lineStart;
@@ -91,10 +86,10 @@ public class SyntaxInformation implements Serializable,
 	public SyntaxInformation() {
 	}
 
-	public SyntaxInformation(final Artifact streamArtifact,
-			final int lineStart, final int lineEnd, final int columnStart,
-			final int columnEnd, final SyntaxInformationType type) {
-		this.streamArtifact = streamArtifact;
+	public SyntaxInformation(final Artifact parent, final int lineStart,
+			final int lineEnd, final int columnStart, final int columnEnd,
+			final SyntaxInformationType type) {
+		this.parent = parent;
 		this.lineStart = lineStart;
 		this.lineEnd = lineEnd;
 		this.columnStart = columnStart;
@@ -131,7 +126,7 @@ public class SyntaxInformation implements Serializable,
 			return false;
 		}
 		final SyntaxInformation that = (SyntaxInformation) o;
-		if (!Equals.eachEquality(streamArtifact, that.streamArtifact)) {
+		if (!Equals.eachEquality(parent, that.parent)) {
 			return false;
 		}
 		if (!Equals.eachEquality(type, that.type)) {
@@ -157,7 +152,6 @@ public class SyntaxInformation implements Serializable,
 	 * 
 	 * @return the column end
 	 */
-	@KeyProperty
 	public int getColumnEnd() {
 		return columnEnd;
 	}
@@ -167,7 +161,6 @@ public class SyntaxInformation implements Serializable,
 	 * 
 	 * @return the column start
 	 */
-	@KeyProperty
 	public int getColumnStart() {
 		return columnStart;
 	}
@@ -177,7 +170,6 @@ public class SyntaxInformation implements Serializable,
 	 * 
 	 * @return the line end
 	 */
-	@KeyProperty
 	public int getLineEnd() {
 		return lineEnd;
 	}
@@ -187,7 +179,7 @@ public class SyntaxInformation implements Serializable,
 	 * 
 	 * @return the line start
 	 */
-	@KeyProperty
+
 	public int getLineStart() {
 		return lineStart;
 	}
@@ -197,9 +189,8 @@ public class SyntaxInformation implements Serializable,
 	 * 
 	 * @return the stream artifact
 	 */
-	@ParentProperty
-	public Artifact getStreamArtifact() {
-		return streamArtifact;
+	public Artifact getParent() {
+		return parent;
 	}
 
 	/**
@@ -207,7 +198,6 @@ public class SyntaxInformation implements Serializable,
 	 * 
 	 * @return the type
 	 */
-	@KeyProperty
 	public SyntaxInformationType getType() {
 		return type;
 	}
@@ -222,8 +212,7 @@ public class SyntaxInformation implements Serializable,
 		int result = hashcode;
 		if (result == 0) {
 			result = 17;
-			result = 31 * result
-					+ (streamArtifact != null ? streamArtifact.hashCode() : 0);
+			result = 31 * result + (parent != null ? parent.hashCode() : 0);
 			result = 31 * result + lineStart;
 			result = 31 * result + lineEnd;
 			result = 31 * result + columnStart;
@@ -250,8 +239,8 @@ public class SyntaxInformation implements Serializable,
 		this.lineStart = lineStart;
 	}
 
-	public void setStreamArtifact(final Artifact streamArtifact) {
-		this.streamArtifact = streamArtifact;
+	public void setParent(final Artifact parent) {
+		this.parent = parent;
 	}
 
 	public void setType(final SyntaxInformationType type) {

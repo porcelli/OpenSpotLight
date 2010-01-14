@@ -1,10 +1,9 @@
 package org.openspotlight.persist.test;
 
-import java.io.Serializable;
+import org.openspotlight.persist.annotation.StreamPropertyWithParent;
 
-import org.openspotlight.persist.annotation.ParentProperty;
-
-public class ObjectThatDoesntImplementSimpleNodeType implements Serializable {
+public class ObjectThatDoesntImplementSimpleNodeType implements
+		StreamPropertyWithParent<RootObj> {
 
 	/**
 	 * 
@@ -25,7 +24,6 @@ public class ObjectThatDoesntImplementSimpleNodeType implements Serializable {
 		return number;
 	}
 
-	@ParentProperty
 	public RootObj getParent() {
 		return parent;
 	}
