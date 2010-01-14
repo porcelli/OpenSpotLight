@@ -48,79 +48,31 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
+import org.openspotlight.bundle.common.metrics.SyntaxInformationAggregator;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
-import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 
 public final class JavaLexerExecutor {
 
-	private final ArtifactWithSyntaxInformation artifact;
+	private final ArtifactWithSyntaxInformation javaArtifact;
 
-	public JavaLexerExecutor(final ArtifactWithSyntaxInformation artifact) {
-		this.artifact = artifact;
+	private final SyntaxInformationAggregator syntaxAggregator;
+
+	private final SourceLineInfoAggregator sourceLineAggregator;
+
+	public JavaLexerExecutor(final ArtifactWithSyntaxInformation javaArtifact,
+			final SourceLineInfoAggregator sourceLineAggregator) {
+		this.javaArtifact = javaArtifact;
+		syntaxAggregator = new SyntaxInformationAggregator(this.javaArtifact);
+		this.sourceLineAggregator = sourceLineAggregator;
 	}
 
-	public void addSyntaxHighlightHidden(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.HIDDEN);
+	public SourceLineInfoAggregator sourceLine() {
+		return sourceLineAggregator;
 	}
 
-	public void addSyntaxHighlightIdentifier(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.IDENTIFIER);
-	}
-
-	public void addSyntaxHighlightMultiLineComment(final int tokenStartLine,
-			final int tokenStartCharPositionInLine, final int tokenEndLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenStartLine, tokenEndLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.COMMENT);
-	}
-
-	public void addSyntaxHighlightNumberLiteral(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.NUMBER_LITERAL);
-	}
-
-	public void addSyntaxHighlightReserved(final int tokenStartLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenStartLine, tokenStartLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.RESERVED);
-	}
-
-	public void addSyntaxHighlightSingleLineComment(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.COMMENT);
-	}
-
-	public void addSyntaxHighlightStringLiteral(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.STRING_LITERAL);
-	}
-
-	public void addSyntaxHighlightSymbol(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.SYMBOL);
+	public SyntaxInformationAggregator syntax() {
+		return syntaxAggregator;
 	}
 
 }

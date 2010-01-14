@@ -1,6 +1,7 @@
 package org.openspotlight.bundle.language.java.bundle;
 
 import org.antlr.runtime.CommonTokenStream;
+import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.common.parser.SLArtifactStreamBasicImpl;
 import org.openspotlight.bundle.language.java.parser.JavaLexer;
@@ -33,7 +34,9 @@ public class JavaLexerExcecutionAndTreeCreationPhase implements
 		final SLArtifactStream stream = new SLArtifactStreamBasicImpl(artifact
 				.getArtifactCompleteName(), artifact.getContent());
 		final JavaLexer lexer = new JavaLexer(stream);
-		final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(artifact);
+		final SourceLineInfoAggregator sourceLine = new SourceLineInfoAggregator();
+		final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(artifact,
+				sourceLine);
 		lexer.setLexerExecutor(lexerExecutor);
 		final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
 		commonTokenStream.getTokens();

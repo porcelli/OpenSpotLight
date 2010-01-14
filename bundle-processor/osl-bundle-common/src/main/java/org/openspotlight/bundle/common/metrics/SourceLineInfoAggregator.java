@@ -14,7 +14,7 @@ import org.antlr.runtime.TokenStream;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
 
-public class SourceLineInfoBuilder {
+public class SourceLineInfoAggregator {
 
 	private enum CommentState {
 		SIMPLE, MEANINGFUL

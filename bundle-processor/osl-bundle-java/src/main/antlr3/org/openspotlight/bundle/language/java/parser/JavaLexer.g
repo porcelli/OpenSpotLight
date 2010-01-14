@@ -174,6 +174,9 @@ package org.openspotlight.bundle.language.java.parser;
 
 import org.openspotlight.bundle.common.parser.SLLexer;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
+import org.openspotlight.bundle.common.parser.SLArtifactStream;
+import org.openspotlight.bundle.common.parser.SLCommonToken;
+
 }
 
 @members {
@@ -192,464 +195,493 @@ import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
 	public void setLexerExecutor(final JavaLexerExecutor executor){
 		this.executor = executor;
 	}
+	
+    public Token emit(){
+        SLCommonToken t = new SLCommonToken(input, state.type, state.channel,state.tokenStartCharIndex, getCharIndex()-1);
+        t.setLine(state.tokenStartLine);
+        t.setCharPositionInLine(state.tokenStartCharPositionInLine);
+        t.setEndCharPositionInLine(input.getCharPositionInLine());
+        t.setEndLine(input.getLine());
+        //t.setTokenTree(null);
+        emit(t);
+        switch (state.type) {
+            case WS:
+                executor.sourceLine().setWhitespace((SLArtifactStream) input, t.getLine(), input.getLine());
+                break;
+            case COMMENT:
+            	executor.sourceLine().setComment((SLArtifactStream) input, t.getLine(), t.getText());
+                break;
+            case LINE_COMMENT:
+            	executor.sourceLine().setComment((SLArtifactStream) input, t.getLine(), t.getText());
+                break;
+//            case NL:
+//                break;
+            default:
+            	executor.sourceLine().setCode((SLArtifactStream) input, t.getLine());
+                break;
+        }
+        return t;
+    }
+
+	
 }
 
 THREE_DOTS
     :    '...'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     
     ;
 
 AMPERSAND_ASSIGN
     :    '&='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 EQUALS
     :    '=='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 EXCLAMATION_EQUALS
     :    '!='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CIRCUMFLEX_ASSIGN
     :    '^='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE_PLUS
     :    '++'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE_MINUS
     :    '--'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PLUS_ASSIGN
     :    '+='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 MINUS_ASSIGN
     :    '-='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 STAR_ASSIGN
     :    '*='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SLASH_ASSIGN
     :    '/='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PIPE_ASSIGN
     :    '|='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PERCENT_ASSIGN
     :    '%='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUPLE_PIPE
     :    '||'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE_AMPERSAND
     :    '&&'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOT
     :    '.'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 STAR
     :    '*'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SEMI_COLON
     :    ';'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 AMPERSAND
     :    '&'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 COLON
     :    ':'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 COMMA
     :    ','
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LESS
     :    '<'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 GREATER
     :    '>'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LEFT_CURLY
     :    '{'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RIGHT_CURLY
     :    '}'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LEFT_SQUARE
     :    '['
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RIGHT_SQUARE
     :    ']'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 ASSIGN
     :    '='
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 QUESTION
     :    '?'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LEFT_PAREN
     :    '('
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RIGHT_PAREN
     :    ')'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 AT
     :    '@'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PLUS
     :    '+'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 MINUS
     :    '-'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PERCENT
     :    '%'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SLASH
     :    '/'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PIPE
     :    '|'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 EXCLAMATION
     :    '!'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CIRCUMFLEX
     :    '^'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 TILDE
     :    '~'
-        {	executor.addSyntaxHighlightSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+        {	executor.syntax().addSymbol(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 ABSTRACT
     :    'abstract'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 BOOLEAN
     :    'boolean'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 BREAK
     :    'break'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 BYTE
     :    'byte'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CASE
     :    'case'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CATCH
     :    'catch'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CHAR
     :    'char'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CLASS
     :    'class'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 CONTINUE
     :    'continue'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DEFAULT
     :    'default'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DO
     :    'do'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 DOUBLE
     :    'double'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 ELSE
     :    'else'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 EXTENDS
     :    'extends'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 FALSE
     :    'false'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 FINALLY
     :    'finally'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 FINAL
     :    'final'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 FLOAT
     :    'float'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 FOR
     :    'for'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 IF
     :    'if'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 IMPLEMENTS
     :    'implements'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 IMPORT
     :    'import'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 INSTANCEOF
     :    'instanceof'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 INTERFACE
     :    'interface'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 INT
     :    'int'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 LONG
     :    'long'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 NATIVE
     :    'native'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 NEW
     :    'new'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 NULL
     :    'null'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PACKAGE
     :    'package'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PRIVATE
     :    'private'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PROTECTED
     :    'protected'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 PUBLIC
     :    'public'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 RETURN
     :    'return'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SHORT
     :    'short'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 STATIC
     :    'static'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 STRICTFP
     :    'strictfp'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SUPER
     :    'super'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SWITCH
     :    'switch'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 SYNCHRONIZED
     :    'synchronized'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 THIS
     :    'this'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 THROWS
     :    'throws'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 THROW
     :    'throw'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 TRANSIENT
     :    'transient'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 TRUE
     :    'true'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 TRY
     :    'try'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 VOID
     :    'void'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 VOLATILE
     :    'volatile'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 WHILE
     :    'while'
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 HexLiteral : '0' ('x'|'X') HexDigit+ IntegerTypeSuffix? 
-    {	executor.addSyntaxHighlightNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
 	;
 
 DecimalLiteral : ('0' | '1'..'9' '0'..'9'*) IntegerTypeSuffix? 
-    {	executor.addSyntaxHighlightNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
 	;
 
 OctalLiteral : '0' ('0'..'7')+ IntegerTypeSuffix? 
-    {	executor.addSyntaxHighlightNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
 	;
 
 fragment
@@ -663,7 +695,7 @@ FloatingPointLiteral
     |   DOT ('0'..'9')+ Exponent? FloatTypeSuffix?
     |   ('0'..'9')+ Exponent FloatTypeSuffix?
     |   ('0'..'9')+ FloatTypeSuffix )
-    {	executor.addSyntaxHighlightNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 fragment
@@ -674,12 +706,12 @@ FloatTypeSuffix : ('f'|'F'|'d'|'D') ;
 
 CharacterLiteral
     :   '\'' ( EscapeSequence | ~('\''|'\\') ) '\''
-    {	executor.addSyntaxHighlightNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addNumberLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 StringLiteral
     :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
-    {	executor.addSyntaxHighlightStringLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addStringLiteral(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 fragment
@@ -702,17 +734,17 @@ UnicodeEscape
     ;
 
 ENUM:   'enum' {if (!enumIsKeyword) $type=Identifier;}
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
     
 ASSERT
     :   'assert' {if (!assertIsKeyword) $type=Identifier;}
-    {	executor.addSyntaxHighlightReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+    {	executor.syntax().addReserved(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
     
 Identifier 
     :   Letter (Letter|JavaIDDigit)*
-{	executor.addSyntaxHighlightIdentifier(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
+{	executor.syntax().addIdentifier(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getCharPositionInLine());	}
     ;
 
 /**I found this char range in JavaCC's grammar, but Letter and Digit overlap.
@@ -759,10 +791,10 @@ WS  :  (' '|'\r'|'\t'|'\u000C'|'\n') {$channel=HIDDEN;}
 
 COMMENT
     :   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
-    {	executor.addSyntaxHighlightMultiLineComment(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getLine(), input.getCharPositionInLine());	}
+    {	executor.syntax().addMultiLineComment(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getLine(), input.getCharPositionInLine());	}
     ;
 
 LINE_COMMENT
     :   '//' ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
-    {	executor.addSyntaxHighlightMultiLineComment(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getLine(), input.getCharPositionInLine());	}
+    {	executor.syntax().addMultiLineComment(state.tokenStartLine, state.tokenStartCharPositionInLine, input.getLine(), input.getCharPositionInLine());	}
     ;

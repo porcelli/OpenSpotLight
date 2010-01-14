@@ -95,7 +95,7 @@ public class MetricsAggregator {
 	private final Map<String, Integer> extendedInterfaces;
 
 	// <SourcePath, SourceLineInfo>
-	private final SourceLineInfoBuilder sourceLineInfo;
+	private final SourceLineInfoAggregator sourceLineInfo;
 
 	// <SLNode#id, CodeArea>
 	private final Map<String, Integer> codeAreas;
@@ -119,14 +119,14 @@ public class MetricsAggregator {
 	private Map<String, Integer> variablesCount;
 
 	public MetricsAggregator(final boolean useBlocksInstedOfMethods,
-			final SourceLineInfoBuilder sourceLineInfo,
+			final SourceLineInfoAggregator sourceLineInfo,
 			final int functionPointPerLogicalLines) throws SLGraphException,
 			SLInvalidCredentialException {
 		this(sourceLineInfo, functionPointPerLogicalLines);
 		methodsAreBlocks = useBlocksInstedOfMethods;
 	}
 
-	public MetricsAggregator(final SourceLineInfoBuilder sourceLineInfo,
+	public MetricsAggregator(final SourceLineInfoAggregator sourceLineInfo,
 			final int functionPointPerLogicalLines) throws SLGraphException,
 			SLInvalidCredentialException {
 		this.sourceLineInfo = sourceLineInfo;
@@ -650,7 +650,7 @@ public class MetricsAggregator {
 		return returnPoint;
 	}
 
-	public SourceLineInfoBuilder getSourceLineInfo() throws SLGraphException,
+	public SourceLineInfoAggregator getSourceLineInfo() throws SLGraphException,
 			SLInvalidCredentialException {
 		return sourceLineInfo;
 	}
