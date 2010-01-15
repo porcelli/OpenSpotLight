@@ -861,14 +861,16 @@ public class SimplePersistSupportTest {
 		SimplePersistSupport.convertBeanToJcr("a/b/c/d/e/f", session, obj);
 		session.save();
 		final String propName = MessageFormat.format(
-				SimplePersistSupport.PROPERTY_VALUE, "caption");
-		final String xpath = MessageFormat
-				.format("a/b/c/d/e/f//*[jcr:contains(@{0}, ''{1}'')]",
-						propName, "very");
+				SimplePersistSupport.PROPERTY_VALUE, "key");
+		final String xpath = MessageFormat.format(
+				"{0}//*[jcr:contains(@{1},''{2}'')]", "a/b/c/d/e/f", propName,
+				"very");
 		final NodeIterator iterator = session.getWorkspace().getQueryManager()
 				.createQuery(xpath, Query.XPATH).execute().getNodes();
+		boolean found = false;
 		while (iterator.hasNext()) {
-			System.out.println(">> " + iterator.nextNode().getName());
+			found = true;
 		}
+		Assert.assertThat(found, Is.is(true));
 	}
 }

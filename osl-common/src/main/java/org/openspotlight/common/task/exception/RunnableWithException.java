@@ -1,4 +1,4 @@
-package org.openspotlight.common.task;
+package org.openspotlight.common.task.exception;
 
 public interface RunnableWithException {
 

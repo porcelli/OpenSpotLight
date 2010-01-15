@@ -1,13 +1,15 @@
 package org.openspotlight.common.task;
 
-public interface TaskPool extends Runnable {
-
-	public TaskBuilder prepareTask();
+public interface TaskPool {
 
 	public String getPoolName();
 
 	public boolean isRunningAnyTask();
 
-	public void run();
+	public TaskBuilder prepareTask();
+
+	public void startExecutorBlockingUntilFinish() throws InterruptedException;
+
+	public void startExecutorOnBackground();
 
 }

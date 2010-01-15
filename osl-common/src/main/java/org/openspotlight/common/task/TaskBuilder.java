@@ -1,5 +1,7 @@
 package org.openspotlight.common.task;
 
+import org.openspotlight.common.task.exception.RunnableWithException;
+
 public interface TaskBuilder {
 
 	public Task andPublishTask();
