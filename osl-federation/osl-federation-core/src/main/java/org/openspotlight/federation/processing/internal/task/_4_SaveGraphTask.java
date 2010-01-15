@@ -51,6 +51,7 @@ package org.openspotlight.federation.processing.internal.task;
 import static org.openspotlight.common.concurrent.Priority.createPriority;
 
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -64,8 +65,8 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
 public class _4_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 
 	private final String repositoryName;
-	private ExecutionContext context;
 
+	private ExecutionContext context;
 	private final Priority priority = createPriority(4);
 
 	private PriorityBlockingQueue<ArtifactTask> queue;
@@ -116,6 +117,12 @@ public class _4_SaveGraphTask<T extends Artifact> implements ArtifactTask {
 
 	public String getRepositoryName() {
 		return this.repositoryName;
+	}
+
+	public boolean isAwaitingParent(final long quantity, final TimeUnit unit)
+			throws InterruptedException {
+
+		return false;
 	}
 
 	/*

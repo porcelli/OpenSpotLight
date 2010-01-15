@@ -49,6 +49,7 @@
 package org.openspotlight.federation.processing.internal.task;
 
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -63,6 +64,9 @@ public interface ArtifactTask {
 	public Priority getPriority();
 
 	public String getRepositoryName();
+
+	boolean isAwaitingParent(long quantity, TimeUnit unit)
+			throws InterruptedException;
 
 	public void setBundleContext(ExecutionContext context);
 

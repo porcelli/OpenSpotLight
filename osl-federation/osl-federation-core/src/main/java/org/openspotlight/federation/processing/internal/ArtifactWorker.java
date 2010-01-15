@@ -48,8 +48,11 @@
  */
 package org.openspotlight.federation.processing.internal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.openspotlight.common.util.Exceptions;
@@ -98,15 +101,38 @@ public class ArtifactWorker implements RunnableWithBundleContext {
 						break infiniteLoop;
 					}
 				}
+				final List<ArtifactTask> rejectedTasks = new ArrayList<ArtifactTask>();
+				ArtifactTask oldTask = task;
+				boolean addAll = true;
 				try {
-					working.set(true);
+					try {
+						working.set(true);
+						while (oldTask.isAwaitingParent(2, TimeUnit.SECONDS)) {
+							final ArtifactTask anotherTask = queue.poll();
+							if (anotherTask == null) {
+								addAll = false;
+							} else {
+								rejectedTasks.add(oldTask);
+								logger.info("put task " + task.toString()
+										+ " into waiting list");
 
+							}
+							oldTask = anotherTask;
+
+						}
+					} finally {
+						if (addAll) {
+							queue.addAll(rejectedTasks);
+						}
+					}
+					task = oldTask;
 					logger.info("starting " + task.getClass().getSimpleName()
 							+ " on repository " + task.getRepositoryName());
 					if (task instanceof _2_EachArtifactTask<?>) {
 						final _2_EachArtifactTask<?> phaseTwo = (_2_EachArtifactTask<?>) task;
 						logger.info("processing source "
-								+ phaseTwo.getArtifactName());
+								+ phaseTwo.getArtifactName() + " with "
+								+ phaseTwo.getBundleName());
 
 					}
 

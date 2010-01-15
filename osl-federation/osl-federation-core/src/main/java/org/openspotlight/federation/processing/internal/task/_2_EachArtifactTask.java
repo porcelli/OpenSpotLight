@@ -53,6 +53,7 @@ import static org.openspotlight.common.concurrent.Priority.createPriority;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.util.Exceptions;
@@ -134,7 +135,7 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 	 */
 	@SuppressWarnings("unchecked")
 	public void doTask() throws Exception {
-		parentPhaseLatch.await();
+
 		try {
 			if (LastProcessStatus.EXCEPTION_DURRING_PROCESS
 					.equals(this.artifact.getLastProcessStatus())
@@ -217,6 +218,10 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 				+ artifact.getArtifactCompleteName();
 	}
 
+	public String getBundleName() {
+		return this.bundleProcessor.getClass().getName();
+	}
+
 	public CurrentProcessorContextImpl getCurrentContext() {
 		return this.currentContextImpl;
 	}
@@ -227,6 +232,12 @@ public class _2_EachArtifactTask<T extends Artifact> implements ArtifactTask {
 
 	public String getRepositoryName() {
 		return this.artifact.getRepositoryName();
+	}
+
+	public boolean isAwaitingParent(final long quantity, final TimeUnit unit)
+			throws InterruptedException {
+		parentPhaseLatch.await(2, TimeUnit.SECONDS);
+		return parentPhaseLatch.getCount() != 0l;
 	}
 
 	public void setBundleContext(final ExecutionContext context) {

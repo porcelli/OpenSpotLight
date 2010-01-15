@@ -29,7 +29,7 @@ public class JavaParserPhase implements
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
 		JavaTransientDto dto = (JavaTransientDto) artifact.getTransientMap()
-				.get("DTO");
+				.get("DTO-Lexer");
 		final JavaParser parser = new JavaParser(dto.commonTokenStream);
 		final JavaParserExecutor parserExecutor = new JavaParserExecutor(
 				context, artifact.getContent(), artifact
@@ -39,7 +39,7 @@ public class JavaParserPhase implements
 		final Tree tree = (Tree) parser.compilationUnit().getTree();
 		dto = JavaTransientDto.fromParser(dto).withParser(parser)
 				.withParserExecutor(parserExecutor).withTree(tree).create();
-		artifact.getTransientMap().put("DTO", dto);
+		artifact.getTransientMap().put("DTO-Parser", dto);
 		return LastProcessStatus.PROCESSED;
 	}
 

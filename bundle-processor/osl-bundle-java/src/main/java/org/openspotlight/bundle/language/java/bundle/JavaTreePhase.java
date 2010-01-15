@@ -28,15 +28,14 @@ public class JavaTreePhase implements
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
 		JavaTransientDto dto = (JavaTransientDto) artifact.getTransientMap()
-				.get("DTO");
+				.get("DTO-Parser");
 		final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(
 				dto.tree);
 		final JavaTree walker = new JavaTree(treeNodes);
 		walker.compilationUnit();
-		dto = (JavaTransientDto) artifact.getTransientMap().get("DTO");
 		dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)
 				.withWalker(walker).create();
-		artifact.getTransientMap().put("DTO", dto);
+		artifact.getTransientMap().put("DTO-Tree", dto);
 		return LastProcessStatus.PROCESSED;
 	}
 

@@ -52,6 +52,7 @@ import static org.openspotlight.common.concurrent.Priority.createPriority;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -66,11 +67,10 @@ import org.openspotlight.federation.processing.internal.domain.CurrentProcessorC
  */
 public class _3_EndingToProcessArtifactsTask<T extends Artifact> implements
 		ArtifactTask {
-
 	/** The changes. */
 	private final ArtifactChangesImpl<T> changes;
-	private final CountDownLatch allPhaseTwoLatch;
 
+	private final CountDownLatch allPhaseTwoLatch;
 	/** The processor. */
 	private final BundleProcessorGlobalPhase<T> processor;
 
@@ -125,6 +125,12 @@ public class _3_EndingToProcessArtifactsTask<T extends Artifact> implements
 
 	public String getRepositoryName() {
 		return this.repositoryName;
+	}
+
+	public boolean isAwaitingParent(final long quantity, final TimeUnit unit)
+			throws InterruptedException {
+		allPhaseTwoLatch.await(2, TimeUnit.SECONDS);
+		return allPhaseTwoLatch.getCount() != 0l;
 	}
 
 	/*

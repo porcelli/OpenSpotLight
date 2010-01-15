@@ -44,7 +44,7 @@ public class JavaLexerPhase implements
 				stream).withLexer(lexer).withSourceline(sourceLine)
 				.withLexerExecutor(lexerExecutor).withCommonTokenStream(
 						commonTokenStream).create();
-		artifact.getTransientMap().put("DTO", dto);
+		artifact.getTransientMap().put("DTO-Lexer", dto);
 
 		return LastProcessStatus.PROCESSED;
 	}

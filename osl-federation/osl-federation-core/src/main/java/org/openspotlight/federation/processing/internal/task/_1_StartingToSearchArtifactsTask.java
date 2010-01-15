@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
@@ -367,6 +368,11 @@ public class _1_StartingToSearchArtifactsTask<T extends Artifact> implements
 
 	public String getRepositoryName() {
 		return this.repository.getName();
+	}
+
+	public boolean isAwaitingParent(final long quantity, final TimeUnit unit)
+			throws InterruptedException {
+		return false;
 	}
 
 	public void setBundleContext(final ExecutionContext context) {
