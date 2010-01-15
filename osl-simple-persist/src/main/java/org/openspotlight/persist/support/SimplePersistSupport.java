@@ -218,60 +218,60 @@ public class SimplePersistSupport {
 
 	}
 
-	/** The Constant defaultPrefix. */
-	private static final String DEFAULT_NODE_PREFIX = "node.";
+	/** The Constant defaultPrefix_ */
+	private static final String DEFAULT_NODE_PREFIX = "node_";
 
-	private static final String DEFAULT_STREAM_PREFIX = "stream.property.";
+	private static final String DEFAULT_STREAM_PREFIX = "stream_property_";
 
-	private static final String DEFAULT_SERIALIZED_PREFIX = "serialized.property.";
+	private static final String DEFAULT_SERIALIZED_PREFIX = "serialized_property_";
 
-	/** The Constant defaultPrefix. */
-	public static final String DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple.property.";
+	/** The Constant defaultPrefix_ */
+	public static final String DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple_property_";
 
-	/** The Constant typeName. */
-	public static final String TYPE_NAME = "node.typeName";
+	/** The Constant typeName_ */
+	public static final String TYPE_NAME = "node_typeName";
 
-	/** The Constant MULTIPLE_PROPERTY_KEYS. */
-	public static final String MULTIPLE_PROPERTY_KEYS = "multiple.property.{0}.keys";
+	/** The Constant MULTIPLE_PROPERTY_KEYS_ */
+	public static final String MULTIPLE_PROPERTY_KEYS = "multiple_property_{0}_keys";
 
-	/** The Constant MULTIPLE_PROPERTY_VALUES. */
-	public static final String MULTIPLE_PROPERTY_VALUES = "multiple.property.{0}.values";
+	/** The Constant MULTIPLE_PROPERTY_VALUES_ */
+	public static final String MULTIPLE_PROPERTY_VALUES = "multiple_property_{0}_values";
 
-	public static final String STREAM_PROPERTY_VALUE = "stream.property.{0}.value";
-	public static final String SERIALIZED_PROPERTY_VALUE = "serialized.property.{0}.value";
+	public static final String STREAM_PROPERTY_VALUE = "stream_property_{0}_value";
+	public static final String SERIALIZED_PROPERTY_VALUE = "serialized_property_{0}_value";
 
-	/** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE. */
-	public static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE = "multiple.property.{0}.multiple.type";
+	/** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE_ */
+	public static final String MULTIPLE_PROPERTY_MULTIPLE_TYPE = "multiple_property_{0}_multiple_type";
 
-	/** The Constant MULTIPLE_PROPERTY_VALUE_TYPE. */
-	public static final String MULTIPLE_PROPERTY_VALUE_TYPE = "multiple.property.{0}.value.type";
+	/** The Constant MULTIPLE_PROPERTY_VALUE_TYPE_ */
+	public static final String MULTIPLE_PROPERTY_VALUE_TYPE = "multiple_property_{0}_value_type";
 
-	/** The Constant MULTIPLE_PROPERTY_KEY_TYPE. */
-	public static final String MULTIPLE_PROPERTY_KEY_TYPE = "multiple.property.{0}.key.type";
+	/** The Constant MULTIPLE_PROPERTY_KEY_TYPE_ */
+	public static final String MULTIPLE_PROPERTY_KEY_TYPE = "multiple_property_{0}_key_type";
 
-	/** The Constant MULTIPLE_PROPERTY_KEY_VALUE. */
-	public static final String MULTIPLE_PROPERTY_KEY_VALUE = "multiple.property.{0}.key.value";
+	/** The Constant MULTIPLE_PROPERTY_KEY_VALUE_ */
+	public static final String MULTIPLE_PROPERTY_KEY_VALUE = "multiple_property_{0}_key_value";
 
-	/** The Constant nodePropertyName. */
-	public static final String PROPERTY_NAME = "property.name";
+	/** The Constant nodePropertyName_ */
+	public static final String PROPERTY_NAME = "property_name";
 
-	/** The Constant hashValue. */
-	public static final String HASH_VALUE = "node.hashValue";
+	/** The Constant hashValue_ */
+	public static final String HASH_VALUE = "node_hashValue";
 
-	/** The Constant hashValue. */
-	public static final String LOCAL_HASH_VALUE = "node.pkonly.hashValue";
+	/** The Constant hashValue_ */
+	public static final String LOCAL_HASH_VALUE = "node_pkonly_hashValue";
 
-	/** The Constant propertyValue. */
-	public static final String PROPERTY_VALUE = "node.property.{0}.value";
+	/** The Constant propertyValue_ */
+	public static final String PROPERTY_VALUE = "node_property_{0}_value";
 
-	/** The Constant propertyType. */
-	public static final String PROPERTY_TYPE = "node.property.{0}.type";
+	/** The Constant propertyType_ */
+	public static final String PROPERTY_TYPE = "node_property_{0}_type";
 
-	/** The Constant keyValue. */
-	public static final String KEY_VALUE = "node.key.{0}.value";
+	/** The Constant keyValue_ */
+	public static final String KEY_VALUE = "node_key_{0}_value";
 
-	/** The Constant keyType. */
-	public static final String KEY_TYPE = "node.key.{0}.type";
+	/** The Constant keyType_ */
+	public static final String KEY_TYPE = "node_key_{0}_type";
 
 	/**
 	 * Adds the or create jcr node.
@@ -420,7 +420,7 @@ public class SimplePersistSupport {
 		final StringBuilder propertyWhereXpath = new StringBuilder();
 		final T dummyInstance = nodeType.newInstance();
 		propertyWhereXpath.append('@');
-		propertyWhereXpath.append("node.typeName");
+		propertyWhereXpath.append("node_typeName");
 		propertyWhereXpath.append('=');
 		propertyWhereXpath.append("'");
 		propertyWhereXpath.append(nodeType.getName());
@@ -1147,7 +1147,7 @@ public class SimplePersistSupport {
 		final String propertyName = Strings.removeBegginingFrom(prefixToRemove,
 				rawName);
 		final String newPropertyName = propertyName.substring(0, propertyName
-				.indexOf('.'));
+				.indexOf('_'));
 		return newPropertyName;
 	}
 
@@ -1782,7 +1782,7 @@ public class SimplePersistSupport {
 			RepositoryException {
 		String name = Strings.removeBegginingFrom(
 				SimplePersistSupport.DEFAULT_MULTIPLE_PROPERTY_PREFIX, rawName);
-		name = name.substring(0, name.indexOf('.'));
+		name = name.substring(0, name.indexOf('_'));
 		if (multiplePropertiesAlreadyLoaded.contains(name)) {
 			return;
 		}

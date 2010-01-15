@@ -50,13 +50,16 @@ package org.openspotlight.persist.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
@@ -352,44 +355,44 @@ public class SimplePersistSupportTest {
 						path,
 						Is
 								.is("/osl/NODE_org_openspotlight_persist_test_RootObj/NODE_org_openspotlight_persist_test_LevelOneObj/NODE_org_openspotlight_persist_test_LevelTwoObj/NODE_org_openspotlight_persist_test_LevelThreeObj"));
-		Assert.assertThat(node.getProperty("node.property.property.type")
+		Assert.assertThat(node.getProperty("node_property_property_type")
 				.getString(), Is.is("java.lang.String"));
-		Assert.assertThat(node.getProperty("node.typeName").getString(), Is
+		Assert.assertThat(node.getProperty("node_typeName").getString(), Is
 				.is("org.openspotlight.persist.test.LevelThreeObj"));
-		Assert.assertThat(node.getProperty("node.hashValue").getString(), Is
+		Assert.assertThat(node.getProperty("node_hashValue").getString(), Is
 				.is("401bb295-1e5a-349f-976a-47c9ab205eaa"));
-		Assert.assertThat(node.getProperty("node.key.key.type").getString(), Is
+		Assert.assertThat(node.getProperty("node_key_key_type").getString(), Is
 				.is("java.lang.String"));
 
 		final Node parentNode = node.getParent();
-		Assert.assertThat(parentNode.getProperty("node.property.property.type")
+		Assert.assertThat(parentNode.getProperty("node_property_property_type")
 				.getString(), Is.is("java.lang.String"));
-		Assert.assertThat(parentNode.getProperty("node.typeName").getString(),
+		Assert.assertThat(parentNode.getProperty("node_typeName").getString(),
 				Is.is("org.openspotlight.persist.test.LevelTwoObj"));
-		Assert.assertThat(parentNode.getProperty("node.hashValue").getString(),
+		Assert.assertThat(parentNode.getProperty("node_hashValue").getString(),
 				Is.is("026dc045-a954-333e-ab47-6b5192a09134"));
 		Assert.assertThat(parentNode
-				.getProperty("node.property.property.value").getString(), Is
+				.getProperty("node_property_property_value").getString(), Is
 				.is("propVal"));
-		Assert.assertThat(parentNode.getProperty("node.key.key.type")
+		Assert.assertThat(parentNode.getProperty("node_key_key_type")
 				.getString(), Is.is("java.lang.String"));
 		final Node nodeProperty = parentNode
 				.getNode("NODE_PROPERTY_propertyObj");
-		Assert.assertThat(nodeProperty.getProperty("node.key.value.type")
+		Assert.assertThat(nodeProperty.getProperty("node_key_value_type")
 				.getString(), Is.is("int"));
-		Assert.assertThat(nodeProperty.getProperty("node.hashValue")
+		Assert.assertThat(nodeProperty.getProperty("node_hashValue")
 				.getString(), Is.is("f9facf49-a10f-35f3-90d5-1f2babe7478f"));
-		Assert.assertThat(nodeProperty.getProperty("node.property.name.type")
+		Assert.assertThat(nodeProperty.getProperty("node_property_name_type")
 				.getString(), Is.is("java.lang.String"));
-		Assert.assertThat(nodeProperty.getProperty("node.key.value.value")
+		Assert.assertThat(nodeProperty.getProperty("node_key_value_value")
 				.getString(), Is.is("2"));
 		Assert.assertThat(
-				nodeProperty.getProperty("property.name").getString(), Is
+				nodeProperty.getProperty("property_name").getString(), Is
 						.is("propertyObj"));
-		Assert.assertThat(nodeProperty.getProperty("node.property.name.value")
+		Assert.assertThat(nodeProperty.getProperty("node_property_name_value")
 				.getString(), Is.is("name"));
 		Assert.assertThat(
-				nodeProperty.getProperty("node.typeName").getString(), Is
+				nodeProperty.getProperty("node_typeName").getString(), Is
 						.is("org.openspotlight.persist.test.PropertyObj"));
 	}
 
@@ -851,4 +854,21 @@ public class SimplePersistSupportTest {
 		Assert.assertThat(newNode1.getUUID(), Is.is(newNode3.getUUID()));
 	}
 
+	@Test
+	public void shouldWorkWithXPath() throws Exception {
+		final LevelOneObj obj = new LevelOneObj();
+		obj.setKey("my key with a very long text");
+		SimplePersistSupport.convertBeanToJcr("a/b/c/d/e/f", session, obj);
+		session.save();
+		final String propName = MessageFormat.format(
+				SimplePersistSupport.PROPERTY_VALUE, "caption");
+		final String xpath = MessageFormat
+				.format("a/b/c/d/e/f//*[jcr:contains(@{0}, ''{1}'')]",
+						propName, "very");
+		final NodeIterator iterator = session.getWorkspace().getQueryManager()
+				.createQuery(xpath, Query.XPATH).execute().getNodes();
+		while (iterator.hasNext()) {
+			System.out.println(">> " + iterator.nextNode().getName());
+		}
+	}
 }
