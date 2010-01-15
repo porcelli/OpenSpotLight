@@ -123,7 +123,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithEigth() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 8);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				8);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -134,7 +135,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithFive() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 5);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				5);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -145,7 +147,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithFour() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 4);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				4);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -156,7 +159,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithSeven() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 7);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				7);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -167,7 +171,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithSix() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 6);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				6);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -178,7 +183,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithSixteen() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 16);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				16);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -189,7 +195,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithThree() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 3);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				3);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -200,7 +207,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithTwoTasks() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 2);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				2);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -211,7 +219,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnSinglePool() throws Exception {
 
-		final TaskPool pool = TaskManager.createInstance("test-pool", 1);
+		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+				1);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();

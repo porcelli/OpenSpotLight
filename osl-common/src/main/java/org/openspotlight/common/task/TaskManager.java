@@ -236,14 +236,17 @@ public enum TaskManager {
 
 		public void startExecutorOnBackground() {
 			for (int i = 0; i < poolSize; i++) {
-				executor.execute(new Worker(poolName + "_" + i, stopped, queue,
-						alreadyRunnedTaskIds, runningTaskIds, lock));
+				executor.execute(new Worker(executor, poolName + "_" + i,
+						stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
+						lock));
 			}
 		}
 
 	}
 
 	private static class Worker implements Runnable {
+		private final GossipExecutor executor;
+
 		private final CountDownLatch stopped;
 		private final String workerId;
 		private final BlockingQueue<TaskImpl> queue;
@@ -253,7 +256,8 @@ public enum TaskManager {
 
 		private final Logger logger = LoggerFactory.getLogger(getClass());
 
-		public Worker(final String workerId, final CountDownLatch stopped,
+		public Worker(final GossipExecutor executor, final String workerId,
+				final CountDownLatch stopped,
 				final BlockingQueue<TaskImpl> queue,
 				final List<String> alreadyRunnedTaskIds,
 				final List<String> runningTaskIds, final ReentrantLock lock) {
@@ -263,6 +267,7 @@ public enum TaskManager {
 			this.runningTaskIds = runningTaskIds;
 			this.lock = lock;
 			this.workerId = workerId;
+			this.executor = executor;
 		}
 
 		public void run() {
@@ -333,13 +338,13 @@ public enum TaskManager {
 
 				}
 				stopped.countDown();
+				executor.shutdown();
 			}
 			logger.info("stopping worker " + workerId);
 		}
 	}
 
-	public static TaskPool createInstance(final String poolName,
-			final int poolSize) {
+	public TaskPool createTaskPool(final String poolName, final int poolSize) {
 		return new TaskPoolImpl(poolName, poolSize);
 	}
 
