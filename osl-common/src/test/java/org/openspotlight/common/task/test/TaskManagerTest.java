@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.hamcrest.core.Is;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.task.Task;
@@ -240,6 +241,11 @@ public class TaskManagerTest {
 		pool.startExecutorBlockingUntilFinish();
 		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
 				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	}
+
+	@After
+	public void sleep() throws Exception {
+		Thread.sleep(500);
 	}
 
 }
