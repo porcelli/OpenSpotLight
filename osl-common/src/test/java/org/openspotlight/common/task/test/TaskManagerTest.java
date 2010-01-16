@@ -35,7 +35,6 @@ public class TaskManagerTest {
 				Thread.currentThread();
 				Thread.sleep(random.nextInt(500));
 			}
-			System.err.println("  >>> " + description);
 			list.add(description);
 		}
 

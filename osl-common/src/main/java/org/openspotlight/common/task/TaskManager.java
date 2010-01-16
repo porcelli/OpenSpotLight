@@ -19,6 +19,7 @@ import org.openspotlight.common.concurrent.GossipExecutor;
 import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.task.exception.PoolAlreadyStoppedException;
 import org.openspotlight.common.task.exception.RunnableWithException;
+import org.openspotlight.common.task.exception.RunningPriorityBigger;
 import org.openspotlight.common.task.exception.TaskAlreadyOnPoolException;
 import org.openspotlight.common.task.exception.TaskAlreadyRunnedException;
 import org.openspotlight.common.task.exception.TaskRunningException;

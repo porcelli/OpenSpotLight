@@ -48,7 +48,6 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import org.openspotlight.common.task.TaskPool;
 import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.federation.context.ExecutionContext;
 
@@ -60,22 +59,14 @@ public abstract class RunnableWithBundleContext implements
 
 	private ExecutionContext bundleContext;
 
-	private final TaskPool pool;
-
-	public RunnableWithBundleContext(final String repositoryName,
-			final TaskPool pool) {
+	public RunnableWithBundleContext(final String repositoryName) {
 		this.repositoryName = repositoryName;
-		this.pool = pool;
 	}
 
 	protected abstract void doIt() throws Exception;
 
 	public ExecutionContext getBundleContext() {
 		return bundleContext;
-	}
-
-	public TaskPool getPool() {
-		return pool;
 	}
 
 	public String getRepositoryName() {

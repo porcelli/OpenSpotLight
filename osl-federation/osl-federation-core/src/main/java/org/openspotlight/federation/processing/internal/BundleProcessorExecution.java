@@ -194,10 +194,6 @@ public class BundleProcessorExecution {
 
 		fillTaskQueue(groupsWithBundles);
 
-		final List<ArtifactWorker> workers = setupWorkers();
-		logger.info("creating " + workers.size() + " thread workers");
-
-		monitorThreadActivity(workers);
 		contextFactory.closeResources();
 
 		return status;

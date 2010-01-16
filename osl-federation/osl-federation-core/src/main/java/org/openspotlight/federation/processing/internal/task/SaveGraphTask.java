@@ -48,26 +48,16 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
-import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 
-public class EndingToProcessArtifactsTask<T extends Artifact> extends
-		RunnableWithBundleContext {
-	private final ArtifactChangesImpl<T> changes;
+public class SaveGraphTask extends RunnableWithBundleContext {
 
-	private final BundleProcessorGlobalPhase<T> processor;
-
-	public EndingToProcessArtifactsTask(final ArtifactChangesImpl<T> changes,
-			final BundleProcessorGlobalPhase<T> processor,
-			final String repositoryName) {
-		super(repositoryName);
-		this.changes = changes;
-		this.processor = processor;
+	public SaveGraphTask(final String repository) {
+		super(repository);
 	}
 
 	public void doIt() throws Exception {
-		this.processor.didFinishProcessing(this.changes);
+		getBundleContext().getGraphSession().save();
 	}
+
 }

@@ -60,6 +60,8 @@ import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
+import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
+import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,23 +69,30 @@ public class EachArtifactTask<T extends Artifact> extends
 		RunnableWithBundleContext {
 
 	private static final Object SAVE_LOCK = new Object();
+
 	private final Class<T> artifactType;
 	private final T artifact;
 	private final SaveBehavior saveBehavior;
 	private final BundleProcessorArtifactPhase<T> bundleProcessor;
+	private final CurrentProcessorContextImpl currentContextImpl;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public EachArtifactTask(final T artifact,
+	public EachArtifactTask(final String repositoryName,
+			final Class<T> artifactType, final T artifact,
+			final SaveBehavior saveBehavior,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
-			final Class<T> artifactType, final SaveBehavior saveBehavior) {
+			final CurrentProcessorContextImpl currentContextImpl) {
+		super(repositoryName);
 		this.artifactType = artifactType;
 		this.artifact = artifact;
-		this.bundleProcessor = bundleProcessor;
 		this.saveBehavior = saveBehavior;
+		this.bundleProcessor = bundleProcessor;
+		this.currentContextImpl = currentContextImpl;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void doIt() throws Exception {
+
 		if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
 				.getLastProcessStatus())
 				|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
@@ -101,13 +110,19 @@ public class EachArtifactTask<T extends Artifact> extends
 				artifactWithInfo.clearSyntaxInformationSet();
 			}
 			result = this.bundleProcessor.processArtifact(this.artifact,
-					getCurrentContext(), getBundleContext());
+					this.currentContextImpl, getBundleContext());
 			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
 				getBundleContext().getGraphSession().save();
 			}
 		} catch (final Exception e) {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
 			Exceptions.catchAndLog(e);
+			getBundleContext().getLogger().log(
+					getBundleContext().getUser(),
+					LogEventType.ERROR,
+					"Error during artifact processing on bundle processor "
+							+ this.bundleProcessor.getClass().getName(),
+					this.artifact);
 			throw e;
 		} finally {
 			this.artifact.setLastProcessStatus(result);
@@ -147,6 +162,10 @@ public class EachArtifactTask<T extends Artifact> extends
 				throw ex;
 			}
 		}
+	}
+
+	public CurrentProcessorContextImpl getCurrentContext() {
+		return this.currentContextImpl;
 	}
 
 }
