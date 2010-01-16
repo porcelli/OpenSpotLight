@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.openspotlight.common.concurrent.GossipExecutor;
+import org.openspotlight.common.concurrent.Priority;
 import org.openspotlight.common.task.exception.PoolAlreadyStoppedException;
 import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.common.task.exception.TaskAlreadyOnPoolException;
@@ -28,7 +31,7 @@ public enum TaskManager {
 	INSTANCE;
 
 	private static class TaskBuilderImpl implements TaskBuilder {
-		private final TaskPoolImpl taskPool;
+		private final TaskGroupImpl taskGroup;
 		private final AtomicBoolean published = new AtomicBoolean(false);
 		private final AtomicBoolean started = new AtomicBoolean(false);
 		private String description = null;
@@ -36,15 +39,15 @@ public enum TaskManager {
 		private String taskId;
 		private final CopyOnWriteArrayList<Task> parents = new CopyOnWriteArrayList<Task>();
 
-		public TaskBuilderImpl(final TaskPoolImpl parentPool) {
-			taskPool = parentPool;
+		public TaskBuilderImpl(final TaskGroupImpl taskGroup) {
+			this.taskGroup = taskGroup;
 		}
 
 		public Task andPublishTask() {
 			checkCondition("notPublished", published.get() == false);
 			final TaskImpl task = new TaskImpl(parents, description,
 					thisRunnable, taskId);
-			taskPool.addTaskToPool(task);
+			taskGroup.addTaskToPool(task);
 			published.set(true);
 			return task;
 		}
@@ -82,6 +85,105 @@ public enum TaskManager {
 			return this;
 		}
 
+	}
+
+	private static class TaskGroupImpl implements TaskGroup {
+		private final Logger logger = LoggerFactory.getLogger(getClass());
+
+		private final Priority thisGroupPriority;
+
+		private final CountDownLatch stopped;
+
+		private final BlockingQueue<TaskImpl> queue;
+		private final List<String> alreadyRunnedTaskIds;
+		private final List<String> runningTaskIds;
+		private final ReentrantLock lock;
+		private final AtomicReference<Priority> currentPriorityRunning;
+
+		LinkedBlockingQueue<TaskImpl> tasksForThisPriority;
+
+		private final String name;
+
+		private final String poolName;
+
+		public TaskGroupImpl(final Priority thisGroupPriority,
+				final CountDownLatch stopped,
+				final BlockingQueue<TaskImpl> queue,
+				final List<String> alreadyRunnedTaskIds,
+				final List<String> runningTaskIds, final ReentrantLock lock,
+				final AtomicReference<Priority> currentPriorityRunning,
+				final LinkedBlockingQueue<TaskImpl> tasksForThisPriority,
+				final String name, final String poolName) {
+			this.thisGroupPriority = thisGroupPriority;
+			this.stopped = stopped;
+			this.queue = queue;
+			this.alreadyRunnedTaskIds = alreadyRunnedTaskIds;
+			this.runningTaskIds = runningTaskIds;
+			this.lock = lock;
+			this.currentPriorityRunning = currentPriorityRunning;
+			this.tasksForThisPriority = tasksForThisPriority;
+			this.name = name;
+			this.poolName = poolName;
+		}
+
+		public void addTaskToPool(final Task task)
+				throws TaskAlreadyOnPoolException, TaskAlreadyRunnedException,
+				TaskRunningException, PoolAlreadyStoppedException,
+				RunningPriorityBigger {
+			try {
+				lock.lock();
+				final Priority curPriority = currentPriorityRunning.get();
+				if (stopped.getCount() == 0) {
+					Exceptions.logAndThrow(new PoolAlreadyStoppedException());
+				}
+				if (alreadyRunnedTaskIds.contains(task.getUniqueId())) {
+					Exceptions.logAndThrow(new TaskAlreadyRunnedException());
+				}
+				if (runningTaskIds.contains(task.getUniqueId())) {
+					Exceptions.logAndThrow(new TaskRunningException());
+				}
+				if (curPriority != null
+						&& curPriority.compareTo(thisGroupPriority) > 0) {
+					Exceptions.logAndThrow(new RunningPriorityBigger());
+				}
+				if (curPriority != null
+						&& curPriority.compareTo(thisGroupPriority) == 0) {
+					if (queue.contains(task)) {
+						Exceptions
+								.logAndThrow(new TaskAlreadyOnPoolException());
+					}
+					queue.add((TaskImpl) task);
+					logger.info("added task " + task.getUniqueId() + " "
+							+ task.getReadableDescription()
+							+ " to the current pool " + poolName
+							+ " and group " + name);
+				} else {
+					if (tasksForThisPriority.contains(task)) {
+						Exceptions
+								.logAndThrow(new TaskAlreadyOnPoolException());
+					}
+					tasksForThisPriority.add((TaskImpl) task);
+					logger.info("added task " + task.getUniqueId() + " "
+							+ task.getReadableDescription()
+							+ " to the future pool " + poolName + " and group "
+							+ name);
+				}
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Priority getPriority() {
+			return thisGroupPriority;
+		}
+
+		public TaskBuilder prepareTask() {
+			return new TaskBuilderImpl(this);
+		}
 	}
 
 	private static class TaskImpl implements Task {
@@ -165,7 +267,6 @@ public enum TaskManager {
 
 	private static class TaskPoolImpl implements TaskPool {
 
-		private final Logger logger = LoggerFactory.getLogger(getClass());
 		private final String poolName;
 		private final int poolSize;
 		private final CountDownLatch stopped = new CountDownLatch(1);
@@ -174,6 +275,10 @@ public enum TaskManager {
 		private final List<String> runningTaskIds = new CopyOnWriteArrayList<String>();
 		private final ReentrantLock lock = new ReentrantLock(true);
 		private final GossipExecutor executor;
+
+		private final AtomicReference<Priority> currentPriorityRunning = new AtomicReference<Priority>();
+		private final BlockingQueue<Priority> existentPriorities = new PriorityBlockingQueue<Priority>();
+		private final Map<Priority, BlockingQueue<TaskImpl>> taskMap = new ConcurrentHashMap<Priority, BlockingQueue<TaskImpl>>();
 
 		private final CopyOnWriteArrayList<RunnableListener> listeners = new CopyOnWriteArrayList<RunnableListener>();
 
@@ -187,31 +292,28 @@ public enum TaskManager {
 			listeners.add(listener);
 		}
 
-		public void addTaskToPool(final Task task)
-				throws TaskAlreadyOnPoolException, TaskAlreadyRunnedException,
-				TaskRunningException, PoolAlreadyStoppedException {
-
+		public TaskGroup createTaskGroup(final String taskGroupName,
+				final int... priorities) throws RunningPriorityBigger {
 			try {
 				lock.lock();
-				if (stopped.getCount() == 0) {
-					Exceptions.logAndThrow(new PoolAlreadyStoppedException());
+				final Priority priorityAsObj = Priority
+						.createPriority(priorities);
+				final Priority currentPriority = currentPriorityRunning.get();
+				if (currentPriority != null) {
+					if (currentPriority.compareTo(priorityAsObj) < 0) {
+						Exceptions.logAndThrow(new RunningPriorityBigger());
+					}
 				}
-				if (queue.contains(task)) {
-					Exceptions.logAndThrow(new TaskAlreadyOnPoolException());
-				}
-				if (alreadyRunnedTaskIds.contains(task.getUniqueId())) {
-					Exceptions.logAndThrow(new TaskAlreadyRunnedException());
-				}
-				if (runningTaskIds.contains(task.getUniqueId())) {
-					Exceptions.logAndThrow(new TaskRunningException());
-				}
-				queue.add((TaskImpl) task);
+				existentPriorities.add(priorityAsObj);
+				final LinkedBlockingQueue<TaskImpl> tasksForThisPriority = new LinkedBlockingQueue<TaskImpl>();
+				taskMap.put(priorityAsObj, tasksForThisPriority);
+				return new TaskGroupImpl(priorityAsObj, stopped, queue,
+						alreadyRunnedTaskIds, runningTaskIds, lock,
+						currentPriorityRunning, tasksForThisPriority,
+						taskGroupName, poolName);
 			} finally {
 				lock.unlock();
 			}
-			logger.info("added task " + task.getUniqueId() + " "
-					+ task.getReadableDescription() + " to the pool "
-					+ poolName);
 		}
 
 		public String getPoolName() {
@@ -221,10 +323,6 @@ public enum TaskManager {
 		public boolean isRunningAnyTask() {
 
 			return runningTaskIds.size() > 0;
-		}
-
-		public TaskBuilder prepareTask() {
-			return new TaskBuilderImpl(this);
 		}
 
 		public void removeListener(final RunnableListener listener) {
@@ -241,13 +339,17 @@ public enum TaskManager {
 			for (int i = 0; i < poolSize; i++) {
 				executor.execute(new Worker(listeners, executor, poolName + "_"
 						+ i, stopped, queue, alreadyRunnedTaskIds,
-						runningTaskIds, lock));
+						runningTaskIds, lock, currentPriorityRunning,
+						existentPriorities, taskMap));
 			}
 		}
-
 	}
 
 	private static class Worker implements Runnable {
+		private final AtomicReference<Priority> currentPriorityRunning;
+		private final BlockingQueue<Priority> existentPriorities;
+		private final Map<Priority, BlockingQueue<TaskImpl>> taskMap;
+
 		private final GossipExecutor executor;
 		private final AtomicReference<TaskImpl> currentTask = new AtomicReference<TaskImpl>();
 		private final CountDownLatch stopped;
@@ -266,7 +368,10 @@ public enum TaskManager {
 				final CountDownLatch stopped,
 				final BlockingQueue<TaskImpl> queue,
 				final List<String> alreadyRunnedTaskIds,
-				final List<String> runningTaskIds, final ReentrantLock lock) {
+				final List<String> runningTaskIds, final ReentrantLock lock,
+				final AtomicReference<Priority> currentPriorityRunning,
+				final BlockingQueue<Priority> existentPriorities,
+				final Map<Priority, BlockingQueue<TaskImpl>> taskMap) {
 			this.stopped = stopped;
 			this.queue = queue;
 			this.alreadyRunnedTaskIds = alreadyRunnedTaskIds;
@@ -275,6 +380,10 @@ public enum TaskManager {
 			this.workerId = workerId;
 			this.executor = executor;
 			this.listeners = listeners;
+			this.currentPriorityRunning = currentPriorityRunning;
+			this.existentPriorities = existentPriorities;
+			this.taskMap = taskMap;
+
 		}
 
 		public void run() {
@@ -295,6 +404,35 @@ public enum TaskManager {
 					lock.lock();
 					if (queue.size() > 0) {
 						task = queue.take();
+					} else {
+						if (runningTaskIds.size() == 0) {
+							if (existentPriorities.size() > 0) {
+
+								final Priority priority = existentPriorities
+										.poll();
+								currentPriorityRunning.set(priority);
+								final BlockingQueue<TaskImpl> tasksForThisPriority = taskMap
+										.get(priority);
+								taskMap.remove(priority);
+								queue.addAll(tasksForThisPriority);
+								logger
+										.info("worker "
+												+ workerId
+												+ ": needs to get new tasks for another priority: from "
+												+ currentPriorityRunning
+												+ " to " + priority);
+
+								continue;
+							} else {
+								currentPriorityRunning.set(null);
+								logger
+										.info("worker "
+												+ workerId
+												+ ": no more priorities. Going to shutdown");
+								stopped.countDown();
+								executor.shutdown();
+							}
+						}
 					}
 					if (task != null) {
 						runningTaskIds.add(task.getUniqueId());
@@ -354,7 +492,8 @@ public enum TaskManager {
 					alreadyRunnedTaskIds.add(task.getUniqueId());
 					runningTaskIds.remove(task.getUniqueId());
 					try {
-						if (!(queue.size() == 0 && runningTaskIds.size() == 0)) {
+						if (!(queue.size() == 0 && runningTaskIds.size() == 0 && taskMap
+								.size() == 0)) {
 							continue;
 						}
 					} catch (final Exception e) {
@@ -371,8 +510,6 @@ public enum TaskManager {
 							+ ": unlocking to update task information ");
 
 				}
-				stopped.countDown();
-				executor.shutdown();
 			}
 			logger.info("stopping worker " + workerId);
 			try {
@@ -384,7 +521,6 @@ public enum TaskManager {
 				Exceptions.catchAndLog(e);
 			}
 		}
-
 	}
 
 	public TaskPool createTaskPool(final String poolName, final int poolSize) {

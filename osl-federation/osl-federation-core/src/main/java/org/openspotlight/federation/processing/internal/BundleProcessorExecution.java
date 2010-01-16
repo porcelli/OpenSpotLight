@@ -54,10 +54,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.PriorityBlockingQueue;
 
 import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.concurrent.GossipExecutor;
+import org.openspotlight.common.task.TaskManager;
+import org.openspotlight.common.task.TaskPool;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -73,6 +73,7 @@ import org.openspotlight.federation.processing.BundleExecutionException;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.task.SaveGraphTask;
+import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
@@ -86,10 +87,6 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class BundleProcessorExecution.
- */
 public class BundleProcessorExecution {
 
 	private static class StartingSearchArtifactsDto {
@@ -112,7 +109,7 @@ public class BundleProcessorExecution {
 
 	private GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
 	/** The executor. */
-	private final GossipExecutor executor;
+	private final TaskPool pool;
 	private final String username;
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
@@ -133,8 +130,6 @@ public class BundleProcessorExecution {
 	private final int threads;
 
 	/** The queue. */
-	private final PriorityBlockingQueue<ArtifactTask> queue = new PriorityBlockingQueue<ArtifactTask>(
-			1000, new ArtifactTaskPriorityComparator());
 
 	private final Set<String> activeReposities = new HashSet<String>();
 
@@ -180,12 +175,11 @@ public class BundleProcessorExecution {
 			Exceptions.logAndThrow(new IllegalStateException(
 					"Default Thread sleep time in millis must be positive!"));
 		}
-		executor = GossipExecutor.newFixedThreadPool(threads,
-				"bundle-processor");
+		pool = TaskManager.INSTANCE.createTaskPool("bundle-processor", threads);
 		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
 				contextFactory, repositoryNames, username, password, descriptor);
-		executor.addTaskListener(listener);
-		executor.addThreadListener(listener);
+		pool.addListener(listener);
+
 	}
 
 	/**
