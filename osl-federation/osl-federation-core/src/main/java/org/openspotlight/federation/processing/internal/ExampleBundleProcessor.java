@@ -115,10 +115,11 @@ public class ExampleBundleProcessor implements
 			final ExecutionContext context) throws Exception {
 		context.getLogger().log(context.getUser(), LogEventType.DEBUG,
 				"another test", artifact);
-		for (int i = 0; i < 100; i++) {
-			final SLNode node = currentContext.getCurrentNodeGroup().addNode(
-					artifact.getArtifactCompleteName() + "i");
-			node.addNode(artifact.getArtifactName() + "i");
+		for (int i = 0; i < 10; i++) {
+			final SLNode groupNode = currentContext.getCurrentNodeGroup();
+			final String nodeName = artifact.getArtifactCompleteName() + i;
+			final SLNode node = groupNode.addNode(nodeName);
+			node.addNode(nodeName);
 		}
 		artifact
 				.addSyntaxInformation(2, 4, 5, 6, SyntaxInformationType.COMMENT);

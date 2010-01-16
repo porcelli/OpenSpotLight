@@ -50,7 +50,9 @@ package org.openspotlight.federation.processing.internal.task;
 
 import java.util.Date;
 
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.ChangeType;
@@ -61,6 +63,8 @@ import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLContext;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +75,7 @@ public class EachArtifactTask<T extends Artifact> extends
 	private static final Object SAVE_LOCK = new Object();
 
 	private final Class<T> artifactType;
+
 	private final T artifact;
 	private final SaveBehavior saveBehavior;
 	private final BundleProcessorArtifactPhase<T> bundleProcessor;
@@ -166,6 +171,20 @@ public class EachArtifactTask<T extends Artifact> extends
 
 	public CurrentProcessorContextImpl getCurrentContext() {
 		return this.currentContextImpl;
+	}
+
+	@Override
+	public void setBundleContext(final ExecutionContext bundleContext) {
+		super.setBundleContext(bundleContext);
+		SLContext groupContext;
+		try {
+			groupContext = bundleContext.getGraphSession().createContext(
+					SLConsts.DEFAULT_GROUP_CONTEXT);
+			this.currentContextImpl.setCurrentNodeGroup(groupContext
+					.getRootNode());
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 }

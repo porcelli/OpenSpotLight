@@ -54,6 +54,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.core.Is;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -286,6 +287,12 @@ public class BundleProcessorManagerTest {
 				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
 				.is(false));
 		Assert.assertThat(SampleGroupListener.count.get(), Is.is(1));
+	}
+
+	@After
+	public void sleepAndGc() throws Exception {
+		Thread.sleep(500);
+		System.gc();
 	}
 
 }

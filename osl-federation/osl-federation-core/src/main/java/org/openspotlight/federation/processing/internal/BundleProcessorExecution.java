@@ -257,9 +257,8 @@ public class BundleProcessorExecution {
 			final String saveId = idPrefix + ":saveGraph";
 			final TaskGroup saveGraph = pool
 					.createTaskGroup(saveId, ++priority);
-			saveGraph.prepareTask().withUniqueId(saveId).withRunnable(
-					new SaveGraphTask(dto.repository.getName()))
-					.withReadableDescriptionAndUniqueId(saveId)
+			saveGraph.prepareTask().withReadableDescriptionAndUniqueId(saveId)
+					.withRunnable(new SaveGraphTask(dto.repository.getName()))
 					.andPublishTask();
 			++priority;
 		}
