@@ -48,111 +48,23 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
-import static org.openspotlight.common.concurrent.Priority.createPriority;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-import org.openspotlight.common.concurrent.Priority;
-import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
-import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class _6_EndingToProcessArtifactsTask.
- */
-public class _3_EndingToProcessArtifactsTask<T extends Artifact> implements
-		ArtifactTask {
-	/** The changes. */
+public class EndingToProcessArtifactsTask<T extends Artifact> {
 	private final ArtifactChangesImpl<T> changes;
 
-	private final CountDownLatch allPhaseTwoLatch;
-	/** The processor. */
 	private final BundleProcessorGlobalPhase<T> processor;
 
-	private final String repositoryName;
-
-	private final Priority priority = createPriority(3);
-
-	/**
-	 * Instantiates a new _6_ ending to process artifacts task.
-	 * 
-	 * @param changes
-	 *            the changes
-	 * @param processor
-	 *            the processor
-	 */
-	public _3_EndingToProcessArtifactsTask(
+	public EndingToProcessArtifactsTask(
 			final ArtifactChangesImpl<T> changes,
-			final BundleProcessorGlobalPhase<T> processor,
-			final String repositoryName, final CountDownLatch allPhaseTwoLatch) {
-		super();
+			final BundleProcessorGlobalPhase<T> processor) {
 		this.changes = changes;
 		this.processor = processor;
-		this.repositoryName = repositoryName;
-		this.allPhaseTwoLatch = allPhaseTwoLatch;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.federation.processing.internal.task.ArtifactTask#doTask
-	 * ()
-	 */
-	public void doTask() throws Exception {
-		allPhaseTwoLatch.await();
+	public void doIt() throws Exception {
 		this.processor.didFinishProcessing(this.changes);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.federation.processing.internal.task.ArtifactTask#
-	 * getCurrentContext()
-	 */
-	public CurrentProcessorContextImpl getCurrentContext() {
-		return null;
-	}
-
-	public Priority getPriority() {
-		return priority;
-	}
-
-	public String getRepositoryName() {
-		return this.repositoryName;
-	}
-
-	public boolean isAwaitingParent(final long quantity, final TimeUnit unit)
-			throws InterruptedException {
-		allPhaseTwoLatch.await(2, TimeUnit.SECONDS);
-		return allPhaseTwoLatch.getCount() != 0l;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.federation.processing.internal.task.ArtifactTask#
-	 * setBundleContext
-	 * (org.openspotlight.federation.processing.internal.domain.ExecutionContext
-	 * )
-	 */
-	public void setBundleContext(final ExecutionContext context) {
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.federation.processing.internal.task.ArtifactTask#setQueue
-	 * (java.util.concurrent.PriorityBlockingQueue)
-	 */
-	public void setQueue(final PriorityBlockingQueue<ArtifactTask> queue) {
-
 	}
 }

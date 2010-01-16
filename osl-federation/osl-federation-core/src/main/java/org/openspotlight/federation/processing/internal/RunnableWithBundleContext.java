@@ -48,12 +48,72 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import java.util.Map;
-
+import org.openspotlight.common.task.TaskPool;
+import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
-public interface RunnableWithBundleContext extends Runnable {
-	public boolean hasError();
+public abstract class RunnableWithBundleContext implements
+		RunnableWithException {
+	private CurrentProcessorContextImpl currentContext;
 
-	public void setBundleContext(Map<String, ExecutionContext> context);
+	private String repositoryName;
+
+	private boolean error;
+
+	private ExecutionContext bundleContext;
+
+	private TaskPool pool;
+
+	protected abstract void doIt() throws Exception;
+
+	public ExecutionContext getBundleContext() {
+		return bundleContext;
+	}
+
+	public CurrentProcessorContextImpl getCurrentContext() {
+		return currentContext;
+	}
+
+	public TaskPool getPool() {
+		return pool;
+	}
+
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+
+	public boolean isError() {
+		return error;
+	}
+
+	public final void run() throws Exception {
+		try {
+			doIt();
+		} catch (final Exception e) {
+			setError(true);
+			throw e;
+		}
+	}
+
+	public void setBundleContext(final ExecutionContext bundleContext) {
+		this.bundleContext = bundleContext;
+	}
+
+	public void setCurrentContext(
+			final CurrentProcessorContextImpl currentContext) {
+		this.currentContext = currentContext;
+	}
+
+	public void setError(final boolean error) {
+		this.error = error;
+	}
+
+	public void setPool(final TaskPool pool) {
+		this.pool = pool;
+	}
+
+	public void setRepositoryName(final String repositoryName) {
+		this.repositoryName = repositoryName;
+	}
 }

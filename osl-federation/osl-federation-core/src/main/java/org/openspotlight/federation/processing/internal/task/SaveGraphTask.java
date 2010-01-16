@@ -48,28 +48,15 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
 
-import org.openspotlight.common.concurrent.Priority;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
+public class SaveGraphTask extends RunnableWithBundleContext {
 
-public interface ArtifactTask {
+	public SaveGraphTask() {
+	}
 
-	public void doTask() throws Exception;
-
-	public CurrentProcessorContextImpl getCurrentContext();
-
-	public Priority getPriority();
-
-	public String getRepositoryName();
-
-	boolean isAwaitingParent(long quantity, TimeUnit unit)
-			throws InterruptedException;
-
-	public void setBundleContext(ExecutionContext context);
-
-	public void setQueue(PriorityBlockingQueue<ArtifactTask> queue);
+	public void doIt() throws Exception {
+		getBundleContext().getGraphSession().save();
+	}
 
 }

@@ -2,17 +2,18 @@ package org.openspotlight.common.task;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.openspotlight.common.concurrent.GossipExecutor;
-import org.openspotlight.common.concurrent.GossipExecutor.TaskListener;
-import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
 import org.openspotlight.common.task.exception.PoolAlreadyStoppedException;
 import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.common.task.exception.TaskAlreadyOnPoolException;
@@ -174,14 +175,16 @@ public enum TaskManager {
 		private final ReentrantLock lock = new ReentrantLock(true);
 		private final GossipExecutor executor;
 
+		private final CopyOnWriteArrayList<RunnableListener> listeners = new CopyOnWriteArrayList<RunnableListener>();
+
 		public TaskPoolImpl(final String poolName, final int poolSize) {
 			this.poolName = poolName;
 			this.poolSize = poolSize;
 			executor = GossipExecutor.newFixedThreadPool(poolSize, poolName);
 		}
 
-		public void addTaskListener(final TaskListener l) {
-			executor.addTaskListener(l);
+		public void addListener(final RunnableListener listener) {
+			listeners.add(listener);
 		}
 
 		public void addTaskToPool(final Task task)
@@ -211,10 +214,6 @@ public enum TaskManager {
 					+ poolName);
 		}
 
-		public void addThreadListener(final ThreadListener l) {
-			executor.addThreadListener(l);
-		}
-
 		public String getPoolName() {
 			return poolName;
 		}
@@ -228,6 +227,10 @@ public enum TaskManager {
 			return new TaskBuilderImpl(this);
 		}
 
+		public void removeListener(final RunnableListener listener) {
+			listeners.remove(listener);
+		}
+
 		public void startExecutorBlockingUntilFinish()
 				throws InterruptedException {
 			startExecutorOnBackground();
@@ -236,9 +239,9 @@ public enum TaskManager {
 
 		public void startExecutorOnBackground() {
 			for (int i = 0; i < poolSize; i++) {
-				executor.execute(new Worker(executor, poolName + "_" + i,
-						stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
-						lock));
+				executor.execute(new Worker(listeners, executor, poolName + "_"
+						+ i, stopped, queue, alreadyRunnedTaskIds,
+						runningTaskIds, lock));
 			}
 		}
 
@@ -246,17 +249,20 @@ public enum TaskManager {
 
 	private static class Worker implements Runnable {
 		private final GossipExecutor executor;
-
+		private final AtomicReference<TaskImpl> currentTask = new AtomicReference<TaskImpl>();
 		private final CountDownLatch stopped;
+
 		private final String workerId;
 		private final BlockingQueue<TaskImpl> queue;
 		private final List<String> alreadyRunnedTaskIds;
 		private final List<String> runningTaskIds;
 		private final ReentrantLock lock;
-
 		private final Logger logger = LoggerFactory.getLogger(getClass());
+		private final Map<String, Object> threadLocalMap = new HashMap<String, Object>();
+		private final CopyOnWriteArrayList<RunnableListener> listeners;
 
-		public Worker(final GossipExecutor executor, final String workerId,
+		public Worker(final CopyOnWriteArrayList<RunnableListener> listeners,
+				final GossipExecutor executor, final String workerId,
 				final CountDownLatch stopped,
 				final BlockingQueue<TaskImpl> queue,
 				final List<String> alreadyRunnedTaskIds,
@@ -268,9 +274,18 @@ public enum TaskManager {
 			this.lock = lock;
 			this.workerId = workerId;
 			this.executor = executor;
+			this.listeners = listeners;
 		}
 
 		public void run() {
+			try {
+				for (final RunnableListener l : listeners) {
+					l.beforeSetupWorker(threadLocalMap);
+				}
+
+			} catch (final Exception e) {
+				Exceptions.catchAndLog(e);
+			}
 			while (stopped.getCount() != 0) {
 				TaskImpl task = null;
 				try {
@@ -302,11 +317,30 @@ public enum TaskManager {
 					logger.info("worker " + workerId + ": waiting to run task "
 							+ task.getUniqueId() + " "
 							+ task.getReadableDescription());
+					currentTask.set(task);
+					try {
+						for (final RunnableListener l : listeners) {
+							l.beforeRunningTask(threadLocalMap, task
+									.getRunnable());
+						}
+					} catch (final Exception e) {
+						Exceptions.catchAndLog(e);
+					}
+
 					task.awaitToRun();
 					logger.info("worker " + workerId + ": about to run task "
 							+ task.getUniqueId() + " "
 							+ task.getReadableDescription());
 					task.run();
+					try {
+						for (final RunnableListener l : listeners) {
+							l.afterRunningTask(threadLocalMap, task
+									.getRunnable());
+						}
+					} catch (final Exception e) {
+						Exceptions.catchAndLog(e);
+					}
+					currentTask.set(null);
 				} catch (final Exception e) {
 					logger.info("worker " + workerId + ": error on task "
 							+ task.getUniqueId() + " "
@@ -341,7 +375,16 @@ public enum TaskManager {
 				executor.shutdown();
 			}
 			logger.info("stopping worker " + workerId);
+			try {
+				for (final RunnableListener l : listeners) {
+					l.beforeShutdownWorker(threadLocalMap);
+				}
+
+			} catch (final Exception e) {
+				Exceptions.catchAndLog(e);
+			}
 		}
+
 	}
 
 	public TaskPool createTaskPool(final String poolName, final int poolSize) {

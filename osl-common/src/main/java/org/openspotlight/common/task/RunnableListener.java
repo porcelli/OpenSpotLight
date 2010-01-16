@@ -1,15 +1,19 @@
 package org.openspotlight.common.task;
 
+import java.util.Map;
+
 import org.openspotlight.common.task.exception.RunnableWithException;
 
 public interface RunnableListener {
 
-	public void afterRunningTask(RunnableWithException r);
+	public void afterRunningTask(Map<String, Object> threadLocalMap,
+			RunnableWithException r);
 
-	public void beforeRunningTask(RunnableWithException r);
+	public void beforeRunningTask(Map<String, Object> threadLocalMap,
+			RunnableWithException r);
 
-	public void runnableRunnedWithSuccess(RunnableWithException r);
+	public void beforeSetupWorker(Map<String, Object> threadLocalMap);
 
-	public void taskResultedInError(RunnableWithException r, Exception e);
+	public void beforeShutdownWorker(Map<String, Object> threadLocalMap);
 
 }

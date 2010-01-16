@@ -56,6 +56,11 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class RootObj implements SimpleNodeType, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6600988707146639211L;
+
 	private String uuid;
 
 	private ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType;
