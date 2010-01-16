@@ -53,9 +53,12 @@ import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.openspotlight.common.task.Task;
+import org.openspotlight.common.task.TaskGroup;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -75,27 +78,6 @@ import org.slf4j.LoggerFactory;
 
 public class StartingToSearchArtifactsTask<T extends Artifact> extends
 		RunnableWithBundleContext {
-	private class SecondPhaseDto {
-
-		public final CurrentProcessorContextImpl currentCtx;
-		public final T artifact;
-		public final BundleProcessorArtifactPhase<T> bundleProcessor;
-		public final Class<T> artifactType;
-		public final SaveBehavior saveBehavior;
-
-		public SecondPhaseDto(final CurrentProcessorContextImpl currentCtx,
-				final T artifact,
-				final BundleProcessorArtifactPhase<T> bundleProcessor,
-				final Class<T> artifactType, final SaveBehavior saveBehavior) {
-			super();
-			this.currentCtx = currentCtx;
-			this.artifact = artifact;
-			this.bundleProcessor = bundleProcessor;
-			this.artifactType = artifactType;
-			this.saveBehavior = saveBehavior;
-		}
-	}
-
 	private final Class<T> artifactType;
 	private final ArtifactChangesImpl<T> changes;
 	private final ArtifactsToBeProcessedImpl<T> toBeReturned;
@@ -103,6 +85,8 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 	private final BundleProcessorType bundleProcessorType;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Repository repository;
+	private final Task phaseOneTask;
+	private final TaskGroup currentGroup;
 
 	public void doIt() throws Exception {
 		final BundleProcessorGlobalPhase<?> rawBundleProcessor = this.bundleProcessorType
@@ -212,10 +196,15 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 				}
 
 			}
-			final List<SecondPhaseDto> phaseTwoData = new ArrayList<SecondPhaseDto>();
+			final List<Task> parentTasks = new LinkedList<Task>();
+			final List<Task> allParentTasks = new LinkedList<Task>();
+			parentTasks.add(phaseOneTask);
+			allParentTasks.add(phaseOneTask);
 			for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
+				final List<Task> thisPhaseTasks = new LinkedList<Task>();
 				for (final T artifactToProcess : this.toBeReturned
 						.getArtifactsToBeProcessed()) {
+
 					final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
 					taskCtx.setBundleProperties(bundleProcessorType
 							.getBundleProperties());
@@ -228,20 +217,28 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 									+ artifactPhase.getClass().getSimpleName()
 									+ " and artifact type "
 									+ this.artifactType.getSimpleName());
-
-					phaseTwoData.add(new SecondPhaseDto(taskCtx,
-							artifactToProcess, artifactPhase, artifactType,
-							behavior));
+					final EachArtifactTask<T> phaseTwo = new EachArtifactTask<T>(
+							getRepositoryName(), artifactType,
+							artifactToProcess, behavior, artifactPhase, taskCtx);
+					final Task currentTask = this.currentGroup.prepareTask()
+							.withParentTasks(phaseOneTask)
+							.withReadableDescriptionAndUniqueId(
+									artifactPhase.getClass().getSimpleName()
+											+ ":"
+											+ artifactToProcess
+													.getArtifactCompleteName())
+							.withRunnable(phaseTwo).andPublishTask();
+					thisPhaseTasks.add(currentTask);
+					allParentTasks.add(currentTask);
 				}
 			}
-			for (final SecondPhaseDto dto : phaseTwoData) {
-				queue
-						.add(new EachArtifactTask<T>(dto.currentCtx,
-								dto.artifact, dto.bundleProcessor,
-								dto.artifactType, dto.saveBehavior));
-			}
-			queue.add(new EndingToProcessArtifactsTask<T>(this.changes,
-					bundleProcessor, repository.getName()));
+			final EndingToProcessArtifactsTask<T> phaseThree = new EndingToProcessArtifactsTask<T>(
+					this.changes, bundleProcessor, repository.getName());
+			this.currentGroup.prepareTask().withParentTasks(allParentTasks)
+					.withReadableDescriptionAndUniqueId(
+							bundleProcessor.getClass().getSimpleName() + ":"
+									+ getRepositoryName()).withRunnable(
+							phaseThree).andPublishTask();
 
 		} catch (final Exception e) {
 			for (final T artifactWithError : this.toBeReturned

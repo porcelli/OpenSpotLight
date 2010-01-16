@@ -53,6 +53,14 @@ public enum TaskManager {
 			return task;
 		}
 
+		public TaskBuilder withParentTasks(final Iterable<Task> parent) {
+			checkCondition("notStarted", started.get() == false);
+			for (final Task t : parent) {
+				parents.add(t);
+			}
+			return this;
+		}
+
 		public TaskBuilder withParentTasks(final Task... parent) {
 			checkCondition("notStarted", started.get() == false);
 			for (final Task t : parent) {
@@ -67,6 +75,13 @@ public enum TaskManager {
 			checkCondition("notStarded", started.get() == false);
 			checkCondition("withoutDescription", description == null);
 			description = readableDescription;
+			return this;
+		}
+
+		public TaskBuilder withReadableDescriptionAndUniqueId(
+				final String readableDescriptionAndUniqueId) {
+			withUniqueId(readableDescriptionAndUniqueId);
+			withReadableDescription(readableDescriptionAndUniqueId);
 			return this;
 		}
 
