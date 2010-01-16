@@ -239,7 +239,10 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 									artifactPhase.getClass().getSimpleName()
 											+ ":"
 											+ artifactToProcess
-													.getArtifactCompleteName())
+													.getArtifactCompleteName()
+											+ ":"
+											+ taskCtx.getCurrentGroup()
+													.getUniqueName())
 							.withRunnable(phaseTwo).andPublishTask();
 					thisPhaseTasks.add(currentTask);
 					allParentTasks.add(currentTask);
@@ -253,8 +256,9 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 			this.currentGroup.prepareTask().withParentTasks(allParentTasks)
 					.withReadableDescriptionAndUniqueId(
 							bundleProcessor.getClass().getSimpleName() + ":"
-									+ getRepositoryName()).withRunnable(
-							phaseThree).andPublishTask();
+									+ getRepositoryName()
+									+ this.artifactType.getSimpleName())
+					.withRunnable(phaseThree).andPublishTask();
 
 		} catch (final Exception e) {
 			for (final T artifactWithError : this.toBeReturned

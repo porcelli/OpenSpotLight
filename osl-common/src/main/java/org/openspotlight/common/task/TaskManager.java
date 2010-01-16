@@ -160,10 +160,12 @@ public enum TaskManager {
 					Exceptions.logAndThrow(new PoolAlreadyStoppedException());
 				}
 				if (alreadyRunnedTaskIds.contains(task.getUniqueId())) {
-					Exceptions.logAndThrow(new TaskAlreadyRunnedException());
+					Exceptions.logAndThrow(new TaskAlreadyRunnedException(
+							"task already runned: " + task.getUniqueId()));
 				}
 				if (runningTaskIds.contains(task.getUniqueId())) {
-					Exceptions.logAndThrow(new TaskRunningException());
+					Exceptions.logAndThrow(new TaskRunningException(
+							"task running: " + task.getUniqueId()));
 				}
 				if (curPriority != null
 						&& curPriority.compareTo(thisGroupPriority) > 0) {
