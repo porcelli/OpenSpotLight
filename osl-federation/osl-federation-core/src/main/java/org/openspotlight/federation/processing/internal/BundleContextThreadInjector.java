@@ -48,27 +48,18 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.openspotlight.common.concurrent.GossipExecutor.TaskListener;
-import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.task.RunnableListener;
+import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
-public class BundleContextThreadInjector implements ThreadListener,
-		TaskListener {
-
-	private final ConcurrentHashMap<Thread, Map<String, ExecutionContext>> contextsPerThread = new ConcurrentHashMap<Thread, Map<String, ExecutionContext>>();
+public class BundleContextThreadInjector implements RunnableListener {
 
 	private final ExecutionContextFactory factory;
-
 	private final String[] repositoryNames;
-
 	private final String username;
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
@@ -83,43 +74,35 @@ public class BundleContextThreadInjector implements ThreadListener,
 		this.password = password;
 	}
 
-	public void afterCreatingThread(final Thread t) {
-		try {
-			final Map<String, ExecutionContext> executionContextMap = new HashMap<String, ExecutionContext>();
-			for (final String repositoryName : repositoryNames) {
-				final ExecutionContext executionContext = factory
-						.createExecutionContext(username, password, descriptor,
-								repositoryName);
-				executionContextMap.put(repositoryName, executionContext);
-			}
-			contextsPerThread.put(t, executionContextMap);
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+	public void afterRunningTask(final Map<String, Object> threadLocalMap,
+			final RunnableWithException r) {
 	}
 
-	public void afterExecutingTask(final Runnable r, final Throwable t) {
-		// thats ok. lets see gc do its job ;-)
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.common.concurrent.CautiousExecutor.TaskListener#
-	 * beforeExecutingTask(java.lang.Thread, java.lang.Runnable)
-	 */
-	public void beforeExecutingTask(final Thread t, final Runnable r) {
+	public void beforeRunningTask(final Map<String, Object> threadLocalMap,
+			final RunnableWithException r) {
 		if (r instanceof RunnableWithBundleContext) {
-			try {
-				final RunnableWithBundleContext rwbc = (RunnableWithBundleContext) r;
-				final Map<String, ExecutionContext> ctx = contextsPerThread
-						.get(t);
-				rwbc.setBundleContext(ctx);
-			} catch (final Exception e) {
-				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-			}
+			final RunnableWithBundleContext runnable = (RunnableWithBundleContext) r;
+			final ExecutionContext ctx = (ExecutionContext) threadLocalMap
+					.get(runnable.getRepositoryName());
+			runnable.setBundleContext(ctx);
 		}
 
+	}
+
+	public void beforeSetupWorker(final Map<String, Object> threadLocalMap) {
+		for (final String repository : repositoryNames) {
+			threadLocalMap.put(repository, factory.createExecutionContext(
+					username, password, descriptor, repository));
+		}
+
+	}
+
+	public void beforeShutdownWorker(final Map<String, Object> threadLocalMap) {
+		for (final String repository : repositoryNames) {
+			final ExecutionContext execCtx = (ExecutionContext) threadLocalMap
+					.get(repository);
+			execCtx.closeResources();
+		}
 	}
 
 }

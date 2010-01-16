@@ -51,28 +51,27 @@ package org.openspotlight.federation.processing.internal;
 import org.openspotlight.common.task.TaskPool;
 import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 
 public abstract class RunnableWithBundleContext implements
 		RunnableWithException {
-	private CurrentProcessorContextImpl currentContext;
-
-	private String repositoryName;
+	private final String repositoryName;
 
 	private boolean error;
 
 	private ExecutionContext bundleContext;
 
-	private TaskPool pool;
+	private final TaskPool pool;
+
+	public RunnableWithBundleContext(final String repositoryName,
+			final TaskPool pool) {
+		this.repositoryName = repositoryName;
+		this.pool = pool;
+	}
 
 	protected abstract void doIt() throws Exception;
 
 	public ExecutionContext getBundleContext() {
 		return bundleContext;
-	}
-
-	public CurrentProcessorContextImpl getCurrentContext() {
-		return currentContext;
 	}
 
 	public TaskPool getPool() {
@@ -100,20 +99,8 @@ public abstract class RunnableWithBundleContext implements
 		this.bundleContext = bundleContext;
 	}
 
-	public void setCurrentContext(
-			final CurrentProcessorContextImpl currentContext) {
-		this.currentContext = currentContext;
-	}
-
 	public void setError(final boolean error) {
 		this.error = error;
 	}
 
-	public void setPool(final TaskPool pool) {
-		this.pool = pool;
-	}
-
-	public void setRepositoryName(final String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
 }

@@ -72,10 +72,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.BundleExecutionException;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
-import org.openspotlight.federation.processing.internal.task.ArtifactTask;
-import org.openspotlight.federation.processing.internal.task.ArtifactTaskPriorityComparator;
-import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
-import org.openspotlight.federation.processing.internal.task._4_SaveGraphTask;
+import org.openspotlight.federation.processing.internal.task.SaveGraphTask;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
@@ -241,7 +238,7 @@ public class BundleProcessorExecution {
 		}
 
 		for (final String repository : activeReposities) {
-			queue.add(new _4_SaveGraphTask<Artifact>(repository));
+			queue.add(new SaveGraphTask<Artifact>(repository));
 		}
 
 	}
