@@ -48,6 +48,9 @@
  */
 package org.openspotlight.federation.processing.internal;
 
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -58,6 +61,7 @@ import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.task.TaskGroup;
 import org.openspotlight.common.task.TaskManager;
 import org.openspotlight.common.task.TaskPool;
+import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -103,6 +107,18 @@ public class BundleProcessorExecution {
 			this.artifactType = artifactType;
 			this.bundleProcessorType = bundleProcessorType;
 		}
+
+		public boolean equals(final Object o) {
+			if (!(o instanceof StartingSearchArtifactsDto)) {
+				return false;
+			}
+			final StartingSearchArtifactsDto that = (StartingSearchArtifactsDto) o;
+			return Equals.eachEquality(of(currentContext.getCurrentGroup(),
+					repository, artifactType, bundleProcessorType), andOf(
+					that.currentContext.getCurrentGroup(), that.repository,
+					that.artifactType, that.bundleProcessorType));
+		}
+
 	}
 
 	private final GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
@@ -183,13 +199,15 @@ public class BundleProcessorExecution {
 	 * 
 	 * @throws BundleExecutionException
 	 *             the bundle execution exception
+	 * @throws InterruptedException
 	 */
-	public GlobalExecutionStatus execute() throws BundleExecutionException {
+	public GlobalExecutionStatus execute() throws BundleExecutionException,
+			InterruptedException {
 		setupParentNodesAndCallGroupListeners();
 		final List<Group> groupsWithBundles = findGroupsWithBundles();
 
 		fillTaskQueue(groupsWithBundles);
-
+		pool.startExecutorBlockingUntilFinish();
 		contextFactory.closeResources();
 
 		return status;
@@ -207,18 +225,27 @@ public class BundleProcessorExecution {
 							.getBundleProperties());
 					currentContextImpl.setCurrentGroup(group);
 					currentContextImpl.setCurrentRepository(repository);
-					newTaskData.add(new StartingSearchArtifactsDto(
+					final StartingSearchArtifactsDto dto = new StartingSearchArtifactsDto(
 							currentContextImpl, repository, artifactType,
-							processor));
+							processor);
+					if (!newTaskData.contains(dto)) {
+						newTaskData.add(dto);
+					}
 				}
 			}
 		}
 
 		int priority = 1;
 		for (final StartingSearchArtifactsDto dto : newTaskData) {
-			final String seachId = dto.bundleProcessorType.getClass()
+			final String idPrefix = dto.bundleProcessorType.getGlobalPhase()
 					.getSimpleName()
-					+ ":" + dto.repository.getName() + ":searchArtifacts";
+					+ ":"
+					+ dto.repository.getName()
+					+ ":"
+					+ dto.artifactType.getSimpleName()
+					+ ":"
+					+ dto.currentContext.getCurrentGroup().toUniqueJobString();
+			final String seachId = idPrefix + ":searchArtifacts";
 			final TaskGroup searchArtifacts = pool.createTaskGroup(seachId,
 					priority);
 
@@ -227,9 +254,7 @@ public class BundleProcessorExecution {
 					dto.bundleProcessorType, dto.repository, searchArtifacts);
 			searchArtifacts.prepareTask().withReadableDescriptionAndUniqueId(
 					seachId).withRunnable(searchTask).andPublishTask();
-			final String saveId = dto.bundleProcessorType.getClass()
-					.getSimpleName()
-					+ ":" + dto.repository.getName() + ":saveGraph";
+			final String saveId = idPrefix + ":saveGraph";
 			final TaskGroup saveGraph = pool
 					.createTaskGroup(saveId, ++priority);
 			saveGraph.prepareTask().withUniqueId(saveId).withRunnable(

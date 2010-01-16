@@ -1,6 +1,8 @@
 package org.openspotlight.common.task;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +73,7 @@ public enum TaskManager {
 
 		public TaskBuilder withReadableDescription(
 				final String readableDescription) {
+			checkNotEmpty("readableDescription", readableDescription);
 			checkCondition("notPublished", published.get() == false);
 			checkCondition("notStarded", started.get() == false);
 			checkCondition("withoutDescription", description == null);
@@ -80,23 +83,27 @@ public enum TaskManager {
 
 		public TaskBuilder withReadableDescriptionAndUniqueId(
 				final String readableDescriptionAndUniqueId) {
+			checkNotEmpty("readableDescriptionAndUniqueId",
+					readableDescriptionAndUniqueId);
 			withUniqueId(readableDescriptionAndUniqueId);
 			withReadableDescription(readableDescriptionAndUniqueId);
 			return this;
 		}
 
-		public TaskBuilder withRunnable(final RunnableWithException t) {
+		public TaskBuilder withRunnable(final RunnableWithException runnable) {
+			checkNotNull("runnable", runnable);
 			checkCondition("notPublished", published.get() == false);
 			checkCondition("notStarded", started.get() == false);
 			checkCondition("withoutRunnable", thisRunnable == null);
-			thisRunnable = t;
+			thisRunnable = runnable;
 			return this;
 		}
 
 		public TaskBuilder withUniqueId(final String uniqueId) {
+			checkNotEmpty("uniqueId", uniqueId);
 			checkCondition("notPublished", published.get() == false);
 			checkCondition("notStarded", started.get() == false);
-			checkCondition("withoutUniqueId", taskId == null);
+			checkCondition("withoutUniqueId:" + taskId, taskId == null);
 			taskId = uniqueId;
 			return this;
 		}
@@ -574,6 +581,7 @@ public enum TaskManager {
 	}
 
 	public TaskPool createTaskPool(final String poolName, final int poolSize) {
+		checkNotEmpty("poolName", poolName);
 		return new TaskPoolImpl(poolName, poolSize);
 	}
 
