@@ -53,9 +53,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.task.TaskGroup;
 import org.openspotlight.common.task.TaskManager;
 import org.openspotlight.common.task.TaskPool;
 import org.openspotlight.common.util.Exceptions;
@@ -73,7 +73,7 @@ import org.openspotlight.federation.processing.BundleExecutionException;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
 import org.openspotlight.federation.processing.internal.task.SaveGraphTask;
-import org.openspotlight.federation.processing.internal.task._1_StartingToSearchArtifactsTask;
+import org.openspotlight.federation.processing.internal.task.StartingToSearchArtifactsTask;
 import org.openspotlight.federation.util.AggregateVisitor;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
@@ -84,8 +84,6 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BundleProcessorExecution {
 
@@ -107,7 +105,7 @@ public class BundleProcessorExecution {
 		}
 	}
 
-	private GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
+	private final GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
 	/** The executor. */
 	private final TaskPool pool;
 	private final String username;
@@ -132,8 +130,6 @@ public class BundleProcessorExecution {
 	/** The queue. */
 
 	private final Set<String> activeReposities = new HashSet<String>();
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Instantiates a new bundle processor execution.
@@ -217,18 +213,30 @@ public class BundleProcessorExecution {
 				}
 			}
 		}
-		final CountDownLatch firstPhaseLatch = new CountDownLatch(newTaskData
-				.size() - 1);
+
+		int priority = 1;
 		for (final StartingSearchArtifactsDto dto : newTaskData) {
-			final ArtifactTask task = new _1_StartingToSearchArtifactsTask<Artifact>(
-					dto.currentContext, dto.repository, dto.artifactType,
-					dto.bundleProcessorType, firstPhaseLatch);
+			final String seachId = dto.bundleProcessorType.getClass()
+					.getSimpleName()
+					+ ":" + dto.repository.getName() + ":searchArtifacts";
+			final TaskGroup searchArtifacts = pool.createTaskGroup(seachId,
+					priority);
 
-			queue.add(task);
-		}
-
-		for (final String repository : activeReposities) {
-			queue.add(new SaveGraphTask<Artifact>(repository));
+			final StartingToSearchArtifactsTask<? extends Artifact> searchTask = new StartingToSearchArtifactsTask<Artifact>(
+					dto.artifactType, dto.currentContext,
+					dto.bundleProcessorType, dto.repository, searchArtifacts);
+			searchArtifacts.prepareTask().withReadableDescriptionAndUniqueId(
+					seachId).withRunnable(searchTask).andPublishTask();
+			final String saveId = dto.bundleProcessorType.getClass()
+					.getSimpleName()
+					+ ":" + dto.repository.getName() + ":saveGraph";
+			final TaskGroup saveGraph = pool
+					.createTaskGroup(saveId, ++priority);
+			saveGraph.prepareTask().withUniqueId(saveId).withRunnable(
+					new SaveGraphTask(dto.repository.getName()))
+					.withReadableDescriptionAndUniqueId(saveId)
+					.andPublishTask();
+			++priority;
 		}
 
 	}
@@ -257,33 +265,6 @@ public class BundleProcessorExecution {
 			}
 		}
 		return groupsWithBundles;
-	}
-
-	private void monitorThreadActivity(final List<ArtifactWorker> workers) {
-		monitor: while (true) {
-			try {
-				Thread.sleep(defaultSleepIntervalInMillis);
-			} catch (final InterruptedException e) {
-				Exceptions.catchAndLog(e);
-			}
-			if (queue.isEmpty()) {
-				boolean hasAnyWorker = false;
-				findingWorkers: for (final ArtifactWorker worker : workers) {
-					if (worker.hasError()) {
-						status = GlobalExecutionStatus.ERROR;
-					}
-					if (!worker.isWorking()) {
-						worker.stop();
-						continue findingWorkers;
-					} else {
-						hasAnyWorker = true;
-					}
-				}
-				if (!hasAnyWorker) {
-					break monitor;
-				}
-			}
-		}
 	}
 
 	private void setupParentNodesAndCallGroupListeners() {
@@ -377,18 +358,6 @@ public class BundleProcessorExecution {
 			throw Exceptions.logAndReturnNew(e, BundleExecutionException.class);
 		}
 
-	}
-
-	private List<ArtifactWorker> setupWorkers() {
-		final List<ArtifactWorker> workers = new ArrayList<ArtifactWorker>(
-				threads);
-
-		for (int i = 0; i < threads; i++) {
-			final ArtifactWorker worker = new ArtifactWorker(queue);
-			workers.add(worker);
-			executor.execute(worker);
-		}
-		return workers;
 	}
 
 }

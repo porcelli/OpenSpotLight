@@ -79,15 +79,30 @@ import org.slf4j.LoggerFactory;
 public class StartingToSearchArtifactsTask<T extends Artifact> extends
 		RunnableWithBundleContext {
 	private final Class<T> artifactType;
-	private final ArtifactChangesImpl<T> changes;
-	private final ArtifactsToBeProcessedImpl<T> toBeReturned;
+
+	private final ArtifactChangesImpl<T> changes = new ArtifactChangesImpl<T>();
+	private final ArtifactsToBeProcessedImpl<T> toBeReturned = new ArtifactsToBeProcessedImpl<T>();
 	private final CurrentProcessorContextImpl currentContext;
 	private final BundleProcessorType bundleProcessorType;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Repository repository;
-	private final Task phaseOneTask;
 	private final TaskGroup currentGroup;
 
+	@SuppressWarnings("unchecked")
+	public StartingToSearchArtifactsTask(
+			final Class<? extends Artifact> artifactType,
+			final CurrentProcessorContextImpl currentContext,
+			final BundleProcessorType bundleProcessorType,
+			final Repository repository, final TaskGroup currentGroup) {
+		super(repository.getName());
+		this.artifactType = (Class<T>) artifactType;
+		this.currentContext = currentContext;
+		this.bundleProcessorType = bundleProcessorType;
+		this.repository = repository;
+		this.currentGroup = currentGroup;
+	}
+
+	@SuppressWarnings("unchecked")
 	public void doIt() throws Exception {
 		final BundleProcessorGlobalPhase<?> rawBundleProcessor = this.bundleProcessorType
 				.getGlobalPhase().newInstance();
@@ -198,8 +213,6 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 			}
 			final List<Task> parentTasks = new LinkedList<Task>();
 			final List<Task> allParentTasks = new LinkedList<Task>();
-			parentTasks.add(phaseOneTask);
-			allParentTasks.add(phaseOneTask);
 			for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
 				final List<Task> thisPhaseTasks = new LinkedList<Task>();
 				for (final T artifactToProcess : this.toBeReturned
@@ -221,7 +234,7 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 							getRepositoryName(), artifactType,
 							artifactToProcess, behavior, artifactPhase, taskCtx);
 					final Task currentTask = this.currentGroup.prepareTask()
-							.withParentTasks(phaseOneTask)
+							.withParentTasks(parentTasks)
 							.withReadableDescriptionAndUniqueId(
 									artifactPhase.getClass().getSimpleName()
 											+ ":"
@@ -231,6 +244,9 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 					thisPhaseTasks.add(currentTask);
 					allParentTasks.add(currentTask);
 				}
+				parentTasks.clear();
+				parentTasks.addAll(thisPhaseTasks);
+				thisPhaseTasks.clear();
 			}
 			final EndingToProcessArtifactsTask<T> phaseThree = new EndingToProcessArtifactsTask<T>(
 					this.changes, bundleProcessor, repository.getName());
@@ -246,11 +262,9 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 				artifactWithError.setLastProcessedDate(lastProcessedDate);
 				artifactWithError
 						.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
-
 			}
 			throw e;
 		}
-
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {
