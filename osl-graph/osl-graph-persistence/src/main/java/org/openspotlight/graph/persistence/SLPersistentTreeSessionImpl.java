@@ -309,9 +309,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	public void save() throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			try {
-				if (rootNode != null) {
-					rootNode.save();
-				}
+				rootNode.save();
 				// rootNode.checkin();
 				jcrSession.save();
 				// rootNode.checkout();

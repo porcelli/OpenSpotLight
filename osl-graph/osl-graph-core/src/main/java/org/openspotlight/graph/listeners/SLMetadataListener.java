@@ -571,8 +571,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 				final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link
 						.getClass().getInterfaces()[0];
 
-				final SLNode source = event.getSource();
-				final SLNode target = event.getTarget();
+				final SLNode[] sides = link.getSides();
+				final SLNode source = sides[0];
+				final SLNode target = sides[1];
 				final SLPersistentNode linkNode = event.getLinkNode();
 				final SLPersistentTreeSession treeSession = linkNode
 						.getSession();

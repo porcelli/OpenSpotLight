@@ -197,8 +197,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final boolean bidirecional, final SLPersistenceMode persistenceMode)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
-			Assertions.checkNotNull("source", source);
-			Assertions.checkNotNull("target", target);
+
 			try {
 
 				if (!hasPrivileges(GraphElement.LINK, Action.WRITE)) {
