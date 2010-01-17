@@ -382,7 +382,7 @@ public class TaskManagerTest {
 
 	@After
 	public void sleep() throws Exception {
-		Thread.sleep(500);
+		Thread.sleep(1000);
 	}
 
 }

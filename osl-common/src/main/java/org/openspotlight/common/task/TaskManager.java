@@ -178,8 +178,8 @@ public enum TaskManager {
 								.logAndThrow(new TaskAlreadyOnPoolException());
 					}
 					queue.add((TaskImpl) task);
-					if (logger.isInfoEnabled()) {
-						logger.info("added task " + task.getUniqueId() + " "
+					if (logger.isDebugEnabled()) {
+						logger.debug("added task " + task.getUniqueId() + " "
 								+ task.getReadableDescription()
 								+ " to the current pool " + poolName
 								+ " and group " + name);
@@ -190,8 +190,8 @@ public enum TaskManager {
 								.logAndThrow(new TaskAlreadyOnPoolException());
 					}
 					tasksForThisPriority.add((TaskImpl) task);
-					if (logger.isInfoEnabled()) {
-						logger.info("added task " + task.getUniqueId() + " "
+					if (logger.isDebugEnabled()) {
+						logger.debug("added task " + task.getUniqueId() + " "
 								+ task.getReadableDescription()
 								+ " to the future pool " + poolName
 								+ " and group " + name);
@@ -239,27 +239,27 @@ public enum TaskManager {
 		}
 
 		public void awaitToRun() throws InterruptedException {
-			if (logger.isInfoEnabled()) {
-				logger.info("verifying if parents did run for task "
+			if (logger.isDebugEnabled()) {
+				logger.debug("verifying if parents did run for task "
 						+ getUniqueId() + " " + getReadableDescription());
 			}
 			for (final Task parent : parentTasks) {
-				if (logger.isInfoEnabled()) {
-					logger.info("verifying if parent " + parent.getUniqueId()
+				if (logger.isDebugEnabled()) {
+					logger.debug("verifying if parent " + parent.getUniqueId()
 							+ " " + parent.getReadableDescription()
 							+ " did run for task " + getUniqueId() + " "
 							+ getReadableDescription());
 				}
 				parent.awaitToRunChild();
-				if (logger.isInfoEnabled()) {
-					logger.info("parent " + parent.getUniqueId() + " "
+				if (logger.isDebugEnabled()) {
+					logger.debug("parent " + parent.getUniqueId() + " "
 							+ parent.getReadableDescription()
 							+ " runned for task " + getUniqueId() + " "
 							+ getReadableDescription());
 				}
 			}
-			if (logger.isInfoEnabled()) {
-				logger.info("all parents runned for task " + getUniqueId()
+			if (logger.isDebugEnabled()) {
+				logger.debug("all parents runned for task " + getUniqueId()
 						+ " " + getReadableDescription());
 			}
 		}
@@ -380,6 +380,7 @@ public enum TaskManager {
 						runningTaskIds, lock, currentPriorityRunning,
 						existentPriorities, taskMap));
 			}
+			executor.shutdown();
 		}
 	}
 
@@ -436,8 +437,8 @@ public enum TaskManager {
 			while (stopped.getCount() != 0) {
 				TaskImpl task = null;
 				try {
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId
 								+ ": locking to get a task");
 					}
 
@@ -470,19 +471,18 @@ public enum TaskManager {
 												+ workerId
 												+ ": no more priorities. Going to shutdown");
 								stopped.countDown();
-								executor.shutdown();
 							}
 						}
 					}
 					if (task != null) {
 						runningTaskIds.add(task.getUniqueId());
-						if (logger.isInfoEnabled()) {
-							logger.info("worker " + workerId
+						if (logger.isDebugEnabled()) {
+							logger.debug("worker " + workerId
 									+ ": getting task " + task.getUniqueId()
 									+ " " + task.getReadableDescription());
 						}
-						if (logger.isInfoEnabled()) {
-							logger.info("worker " + workerId
+						if (logger.isDebugEnabled()) {
+							logger.debug("worker " + workerId
 									+ ": unlocking to get a task");
 						}
 					}
@@ -496,8 +496,8 @@ public enum TaskManager {
 					continue;
 				}
 				try {
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId
 								+ ": waiting to run task " + task.getUniqueId()
 								+ " " + task.getReadableDescription());
 					}
@@ -512,8 +512,8 @@ public enum TaskManager {
 					}
 
 					task.awaitToRun();
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId
 								+ ": about to run task " + task.getUniqueId()
 								+ " " + task.getReadableDescription());
 					}
@@ -528,16 +528,16 @@ public enum TaskManager {
 					}
 					currentTask.set(null);
 				} catch (final Exception e) {
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId + ": error on task "
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId + ": error on task "
 								+ task.getUniqueId() + " "
 								+ task.getReadableDescription());
 					}
 					Exceptions.catchAndLog(e);
 				}
 				try {
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId
 								+ ": locking to update task information ");
 					}
 					lock.lock();
@@ -555,21 +555,21 @@ public enum TaskManager {
 					Exceptions.catchAndLog(e);
 				} finally {
 					lock.unlock();
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId
 								+ ": finished to run task "
 								+ task.getUniqueId() + " "
 								+ task.getReadableDescription());
 					}
-					if (logger.isInfoEnabled()) {
-						logger.info("worker " + workerId
+					if (logger.isDebugEnabled()) {
+						logger.debug("worker " + workerId
 								+ ": unlocking to update task information ");
 					}
 
 				}
 			}
-			if (logger.isInfoEnabled()) {
-				logger.info("stopping worker " + workerId);
+			if (logger.isDebugEnabled()) {
+				logger.debug("stopping worker " + workerId);
 			}
 			try {
 				for (final RunnableListener l : listeners) {

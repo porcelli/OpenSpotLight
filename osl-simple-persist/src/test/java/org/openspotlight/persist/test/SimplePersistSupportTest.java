@@ -869,6 +869,7 @@ public class SimplePersistSupportTest {
 				.createQuery(xpath, Query.XPATH).execute().getNodes();
 		boolean found = false;
 		while (iterator.hasNext()) {
+			iterator.nextNode();// ooops!
 			found = true;
 		}
 		Assert.assertThat(found, Is.is(true));
