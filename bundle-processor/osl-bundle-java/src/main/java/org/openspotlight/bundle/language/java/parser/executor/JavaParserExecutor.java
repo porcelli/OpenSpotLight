@@ -89,7 +89,7 @@ public class JavaParserExecutor {
 	}
 
 	public void popContext() {
-		typeContext.pop();
+		// typeContext.pop();
 	}
 
 	public SourceLineInfoAggregator sourceLine() {

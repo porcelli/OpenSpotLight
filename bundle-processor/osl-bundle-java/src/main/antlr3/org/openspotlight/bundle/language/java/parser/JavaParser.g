@@ -1216,6 +1216,7 @@ classDeclaration[Object complementTree]
     ;
 
 normalClassDeclaration[Object complementTree]
+   @after { executor.popContext();  }
     :   CLASS Identifier
         {	executor.createJavaTypeClass($Identifier);	}
         typeParameters?    
@@ -1241,6 +1242,7 @@ typeBound
     ;
 
 enumDeclaration[Object complementTree]
+   @after { executor.popContext();  }
     :   ENUM Identifier
         {	executor.createJavaTypeEnum($Identifier);	}    
      (IMPLEMENTS typeList)? enumBody
@@ -1658,6 +1660,7 @@ elementValueArrayInitializer
     ;
 
 annotationTypeDeclaration[Object complementTree]
+   @after { executor.popContext();  }
     :   AT INTERFACE Identifier 
         {	executor.createJavaTypeAnnotation($Identifier);	}        
     	annotationTypeBody
