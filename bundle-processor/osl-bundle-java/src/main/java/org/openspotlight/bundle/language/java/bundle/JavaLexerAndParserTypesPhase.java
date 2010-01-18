@@ -9,6 +9,7 @@ import org.openspotlight.bundle.language.java.parser.JavaLexer;
 import org.openspotlight.bundle.language.java.parser.JavaParser;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaParserExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaParserNodeHelper;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -44,10 +45,10 @@ public class JavaLexerAndParserTypesPhase implements
 		final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
 		commonTokenStream.getTokens();
 		final JavaParser parser = new JavaParser(commonTokenStream);
+		final JavaParserNodeHelper helper = new JavaParserNodeHelper(
+				currentContext.getCurrentNodeGroup(), context.getGraphSession());
 		final JavaParserExecutor parserExecutor = new JavaParserExecutor(
-				context, artifact.getContent(), artifact
-						.getArtifactCompleteName(), artifact.getVersion(),
-				artifact, sourceLine);
+				sourceLine, helper);
 		parser.setParserExecutor(parserExecutor);
 		final Tree tree = (Tree) parser.compilationUnit().getTree();
 		final JavaTransientDto dto = JavaTransientDto.fromParser().withStream(

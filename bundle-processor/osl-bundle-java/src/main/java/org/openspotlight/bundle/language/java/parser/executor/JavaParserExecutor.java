@@ -6,80 +6,22 @@ import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLNode;
 
 public class JavaParserExecutor implements JavaConstants {
-	private static class JavaParserNodeHelper {
-		private final SLNode currentContext;
-		private final SLNode abstractContext;
+	private final JavaParserNodeHelper helper;
 
-		public JavaParserNodeHelper(final SLNode currentContext,
-				final SLNode abstractContext) {
-			super();
-			this.currentContext = currentContext;
-			this.abstractContext = abstractContext;
-		}
-
-		public Pair<SLNode, SLNode> createDefaultPackage() {
-			return createPackage(DEFAULT_PACKAGE);
-		}
-
-		private Pair<SLNode, SLNode> createJavaType(
-				final Class<? extends JavaType> class1,
-				final Pair<SLNode, SLNode> parent, final String annotationName) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public Pair<SLNode, SLNode> createJavaTypeAnnotation(
-				final Pair<SLNode, SLNode> parent, final String annotationName) {
-			return createJavaType(JavaTypeAnnotation.class, parent,
-					annotationName);
-		}
-
-		public Pair<SLNode, SLNode> createJavaTypeClass(
-				final Pair<SLNode, SLNode> parent, final String className) {
-			return createJavaType(JavaTypeClass.class, parent, className);
-		}
-
-		public Pair<SLNode, SLNode> createJavaTypeEnum(
-				final Pair<SLNode, SLNode> parent, final String enumName) {
-			return createJavaType(JavaTypeEnum.class, parent, enumName);
-		}
-
-		public Pair<SLNode, SLNode> createJavaTypeInterface(
-				final Pair<SLNode, SLNode> parent, final String interfaceName) {
-			return createJavaType(JavaTypeInterface.class, parent,
-					interfaceName);
-		}
-
-		private Pair<SLNode, SLNode> createPackage(final String defaultPackage) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public Pair<SLNode, SLNode> createPackageNode(final String packageName) {
-			return createPackageNode(packageName);
-		}
-
-	}
-
-	private JavaParserNodeHelper helper;
-
-	// <SLNodeOnCurrentContext,SLNodeOnAbstractContext>
+	// <SLNodeOnAbstractContext,SLNodeOnCurrentContext>
 	private final Stack<Pair<SLNode, SLNode>> typeContext = new Stack<Pair<SLNode, SLNode>>();
 
 	private final SourceLineInfoAggregator sourceLineAggregator;
 
 	public JavaParserExecutor(
-			final SourceLineInfoAggregator sourceLineInfoAggregator) {
+			final SourceLineInfoAggregator sourceLineInfoAggregator,
+			final JavaParserNodeHelper helper) {
 		sourceLineAggregator = sourceLineInfoAggregator;
+		this.helper = helper;
 	}
 
 	public void createDefaultPackage() {
@@ -115,8 +57,12 @@ public class JavaParserExecutor implements JavaConstants {
 
 	public void createPackageNode(final Object object) {
 		final Tree qualifiedName = getTree(object);
+		final StringBuilder packageName = new StringBuilder();
+		for (int i = 0, count = qualifiedName.getChildCount(); i < count; i++) {
+			packageName.append(qualifiedName.getChild(i));
+		}
 		final Pair<SLNode, SLNode> newNode = helper
-				.createPackageNode(qualifiedName.getText());
+				.createPackageNode(packageName.toString());
 		typeContext.push(newNode);
 	}
 
