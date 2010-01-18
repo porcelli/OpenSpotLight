@@ -57,9 +57,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.task.Task;
 import org.openspotlight.common.task.TaskGroup;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
+import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.Repository;
@@ -73,6 +76,8 @@ import org.openspotlight.federation.processing.internal.RunnableWithBundleContex
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +85,8 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 		RunnableWithBundleContext {
 	private final Class<T> artifactType;
 
-	private final ArtifactChangesImpl<T> changes = new ArtifactChangesImpl<T>();
-	private final ArtifactsToBeProcessedImpl<T> toBeReturned = new ArtifactsToBeProcessedImpl<T>();
 	private final CurrentProcessorContextImpl currentContext;
+
 	private final BundleProcessorType bundleProcessorType;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Repository repository;
@@ -104,12 +108,12 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 
 	@SuppressWarnings("unchecked")
 	public void doIt() throws Exception {
-		final BundleProcessorGlobalPhase<?> rawBundleProcessor = this.bundleProcessorType
+		final BundleProcessorGlobalPhase<?> rawBundleProcessor = bundleProcessorType
 				.getGlobalPhase().newInstance();
 		boolean hasAnyType = false;
 		for (final Class<?> artifactType : rawBundleProcessor
 				.getArtifactTypes()) {
-			if (artifactType.isAssignableFrom(this.artifactType)) {
+			if (artifactType.isAssignableFrom(artifactType)) {
 				hasAnyType = true;
 				break;
 			}
@@ -124,8 +128,8 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 		final BundleProcessorGlobalPhase<T> bundleProcessor = (BundleProcessorGlobalPhase<T>) rawBundleProcessor;
 
 		final ArtifactFinder<T> finder = getBundleContext().getArtifactFinder(
-				this.artifactType);
-		for (final BundleSource src : this.bundleProcessorType.getSources()) {
+				artifactType);
+		for (final BundleSource src : bundleProcessorType.getSources()) {
 
 			final Set<String> rawNames = finder.retrieveAllArtifactNames(src
 					.getRelative());
@@ -150,24 +154,25 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 			}
 
 		}
+		final ArtifactChangesImpl<T> changes = new ArtifactChangesImpl<T>();
+		final ArtifactsToBeProcessedImpl<T> toBeReturned = new ArtifactsToBeProcessedImpl<T>();
 
-		this.changes.setChangedArtifacts(changedArtifacts);
-		this.changes.setExcludedArtifacts(excludedArtifacts);
-		this.changes.setIncludedArtifacts(includedArtifacts);
-		this.changes.setNotChangedArtifacts(notChangedArtifacts);
+		changes.setChangedArtifacts(changedArtifacts);
+		changes.setExcludedArtifacts(excludedArtifacts);
+		changes.setIncludedArtifacts(includedArtifacts);
+		changes.setNotChangedArtifacts(notChangedArtifacts);
 
 		final Set<T> artifactsAlreadyProcessed = new HashSet<T>();
-		this.toBeReturned
-				.setArtifactsAlreadyProcessed(artifactsAlreadyProcessed);
+		toBeReturned.setArtifactsAlreadyProcessed(artifactsAlreadyProcessed);
 		final Set<T> artifactsToBeProcessed = new HashSet<T>();
 		artifactsToBeProcessed.addAll(changedArtifacts);
 		artifactsToBeProcessed.addAll(includedArtifacts);
-		this.toBeReturned.setArtifactsToBeProcessed(artifactsToBeProcessed);
+		toBeReturned.setArtifactsToBeProcessed(artifactsToBeProcessed);
 		final Date lastProcessedDate = new Date();
 		try {
-			bundleProcessor.selectArtifactsToBeProcessed(this.currentContext,
-					getBundleContext(), this.changes, this.toBeReturned);
-			for (final T artifactAlreadyProcessed : this.toBeReturned
+			bundleProcessor.selectArtifactsToBeProcessed(currentContext,
+					getBundleContext(), changes, toBeReturned);
+			for (final T artifactAlreadyProcessed : toBeReturned
 					.getArtifactsAlreadyProcessed()) {
 				artifactAlreadyProcessed
 						.setLastProcessedDate(lastProcessedDate);
@@ -191,7 +196,7 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 							.info(" selecting processor artifact phase for bundle type "
 									+ artifactPhase.getClass().getSimpleName()
 									+ " for artifact type "
-									+ this.artifactType.getSimpleName()
+									+ artifactType.getSimpleName()
 									+ " due to its acceptable type "
 									+ artifactPhase.getArtifactType()
 											.getSimpleName());
@@ -203,7 +208,7 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 							.info(" ignoring processor artifact phase for bundle type "
 									+ artifactPhase.getClass().getSimpleName()
 									+ " for artifact type "
-									+ this.artifactType.getSimpleName()
+									+ artifactType.getSimpleName()
 									+ " due to its acceptable type "
 									+ artifactPhase.getArtifactType()
 											.getSimpleName());
@@ -216,25 +221,24 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 			boolean first = true;
 			for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
 				final List<Task> thisPhaseTasks = new LinkedList<Task>();
-				for (final T artifactToProcess : this.toBeReturned
+				for (final T artifactToProcess : toBeReturned
 						.getArtifactsToBeProcessed()) {
 
 					final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
 					taskCtx.setBundleProperties(bundleProcessorType
 							.getBundleProperties());
-					taskCtx.setCurrentGroup(this.currentContext
-							.getCurrentGroup());
-					taskCtx.setCurrentRepository(this.currentContext
+					taskCtx.setCurrentGroup(currentContext.getCurrentGroup());
+					taskCtx.setCurrentRepository(currentContext
 							.getCurrentRepository());
 					logger
 							.info(" Adding processor artifact phase for bundle type "
 									+ artifactPhase.getClass().getSimpleName()
 									+ " and artifact type "
-									+ this.artifactType.getSimpleName());
+									+ artifactType.getSimpleName());
 					final EachArtifactTask<T> phaseTwo = new EachArtifactTask<T>(
 							first, getRepositoryName(), artifactType,
 							artifactToProcess, behavior, artifactPhase, taskCtx);
-					final Task currentTask = this.currentGroup.prepareTask()
+					final Task currentTask = currentGroup.prepareTask()
 							.withParentTasks(parentTasks)
 							.withReadableDescriptionAndUniqueId(
 									artifactPhase.getClass().getSimpleName()
@@ -254,16 +258,16 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 				thisPhaseTasks.clear();
 			}
 			final EndingToProcessArtifactsTask<T> phaseThree = new EndingToProcessArtifactsTask<T>(
-					this.changes, bundleProcessor, repository.getName());
-			this.currentGroup.prepareTask().withParentTasks(allParentTasks)
+					changes, bundleProcessor, repository.getName());
+			currentGroup.prepareTask().withParentTasks(allParentTasks)
 					.withReadableDescriptionAndUniqueId(
 							bundleProcessor.getClass().getSimpleName() + ":"
 									+ getRepositoryName()
-									+ this.artifactType.getSimpleName())
+									+ artifactType.getSimpleName())
 					.withRunnable(phaseThree).andPublishTask();
 
 		} catch (final Exception e) {
-			for (final T artifactWithError : this.toBeReturned
+			for (final T artifactWithError : toBeReturned
 					.getArtifactsToBeProcessed()) {
 				artifactWithError.setLastProcessedDate(lastProcessedDate);
 				artifactWithError
@@ -274,7 +278,20 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 	}
 
 	public CurrentProcessorContextImpl getCurrentContext() {
-		return this.currentContext;
+		return currentContext;
+	}
+
+	@Override
+	public void setBundleContext(final ExecutionContext bundleContext) {
+		super.setBundleContext(bundleContext);
+		SLContext groupContext;
+		try {
+			groupContext = bundleContext.getGraphSession().createContext(
+					SLConsts.DEFAULT_GROUP_CONTEXT);
+			this.currentContext.setGroupContext(groupContext);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 }
