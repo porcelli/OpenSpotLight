@@ -53,8 +53,10 @@ package org.openspotlight.bundle.language.java;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public interface Constants {
+public interface JavaConstants {
 
-    /** the abstract context. */
-    String ABSTRACT_CONTEXT = "abstract-context";
+	/** the abstract context. */
+	String ABSTRACT_CONTEXT = "java-abstract-context";
+	String DEFAULT_PACKAGE = "java-default-package";
+
 }

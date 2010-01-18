@@ -55,7 +55,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.objectweb.asm.Opcodes;
-import org.openspotlight.bundle.language.java.Constants;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AutoboxedBy;
 import org.openspotlight.bundle.language.java.metamodel.link.Autoboxes;
@@ -139,7 +139,7 @@ public class JavaGraphNodeSupport {
 		checkNotNull("session", session);
 		checkNotNull("currentContextRootNode", currentContextRootNode);
 		checkNotNull("abstractContextRootNode", abstractContextRootNode);
-		checkCondition("correctAbstractContext", Constants.ABSTRACT_CONTEXT
+		checkCondition("correctAbstractContext", JavaConstants.ABSTRACT_CONTEXT
 				.equals(abstractContextRootNode.getContext().getID()));
 		this.session = session;
 		this.currentContextRootNode = currentContextRootNode;

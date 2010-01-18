@@ -62,7 +62,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.objectweb.asm.Opcodes;
-import org.openspotlight.bundle.language.java.Constants;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
@@ -202,7 +202,7 @@ public class JavaTypeResolverTest {
         final SLGraphFactory factory = new SLGraphFactoryImpl();
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        SLContext abstractContext = session.createContext(Constants.ABSTRACT_CONTEXT);
+        SLContext abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");
         SLContext jre15ctx = session.createContext("JRE-util-1.5");
         SLContext crudFrameworkCtx = session.createContext("Crud-1.2");
@@ -225,7 +225,7 @@ public class JavaTypeResolverTest {
         session.save();
         session.close();
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        abstractContext = session.getContext(Constants.ABSTRACT_CONTEXT);
+        abstractContext = session.getContext(JavaConstants.ABSTRACT_CONTEXT);
         jre15ctx = session.getContext("JRE-util-1.5");
         jre14ctx = session.getContext("JRE-util-1.4");
         crudFrameworkCtx = session.getContext("Crud-1.2");

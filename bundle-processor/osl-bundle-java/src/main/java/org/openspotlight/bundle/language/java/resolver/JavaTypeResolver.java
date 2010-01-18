@@ -54,7 +54,7 @@ package org.openspotlight.bundle.language.java.resolver;
 import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
 import static java.util.Collections.reverse;
-import static org.openspotlight.bundle.language.java.Constants.ABSTRACT_CONTEXT;
+import static org.openspotlight.bundle.language.java.JavaConstants.ABSTRACT_CONTEXT;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;

@@ -49,7 +49,7 @@
 package org.openspotlight.bundle.language.java;
 
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.Constants;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
@@ -80,7 +80,7 @@ public class ExampleGraphImport {
         final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
-        final SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
+        final SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
         final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode, abstractContextRootNode);
         JavaType newType;
         JavaMethod method;

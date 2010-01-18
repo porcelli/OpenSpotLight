@@ -56,7 +56,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.objectweb.asm.Opcodes;
-import org.openspotlight.bundle.language.java.Constants;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.ImplicitExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
@@ -282,10 +282,10 @@ public abstract class AbstractMethodResolutionTest {
 			graphSession = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		}
 
-		abstractContex = graphSession.getContext(Constants.ABSTRACT_CONTEXT);
+		abstractContex = graphSession.getContext(JavaConstants.ABSTRACT_CONTEXT);
 		if (abstractContex == null) {
 			abstractContex = graphSession
-					.createContext(Constants.ABSTRACT_CONTEXT);
+					.createContext(JavaConstants.ABSTRACT_CONTEXT);
 		}
 
 		if (graphSession.getContext("test") == null) {
