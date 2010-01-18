@@ -87,6 +87,12 @@ public class SLLinkImpl implements SLLink {
 	/** The event poster. */
 	private final SLGraphSessionEventPoster eventPoster;
 
+	private volatile SLNode targetCache = null;
+
+	private volatile SLNode sourceCache = null;
+
+	private volatile SLNode[] sidesCache = null;
+
 	/**
 	 * Instantiates a new sL link impl.
 	 * 
@@ -104,6 +110,48 @@ public class SLLinkImpl implements SLLink {
 		lock = session.getLockObject();
 		this.linkNode = linkNode;
 		this.eventPoster = eventPoster;
+	}
+
+	/**
+	 * Instantiates a new sL link impl.
+	 * 
+	 * @param session
+	 *            the session
+	 * @param linkNode
+	 *            the link node
+	 * @param eventPoster
+	 *            the event poster
+	 */
+	public SLLinkImpl(final SLGraphSession session,
+			final SLPersistentNode linkNode,
+			final SLGraphSessionEventPoster eventPoster, final SLNode source,
+			final SLNode target) {
+		this.session = session;
+		lock = session.getLockObject();
+		this.linkNode = linkNode;
+		this.eventPoster = eventPoster;
+		sourceCache = source;
+		targetCache = target;
+	}
+
+	/**
+	 * Instantiates a new sL link impl.
+	 * 
+	 * @param session
+	 *            the session
+	 * @param linkNode
+	 *            the link node
+	 * @param eventPoster
+	 *            the event poster
+	 */
+	public SLLinkImpl(final SLGraphSession session,
+			final SLPersistentNode linkNode,
+			final SLGraphSessionEventPoster eventPoster, final SLNode[] sides) {
+		this.session = session;
+		lock = session.getLockObject();
+		this.linkNode = linkNode;
+		this.eventPoster = eventPoster;
+		sidesCache = sides;
 	}
 
 	/**
@@ -458,9 +506,12 @@ public class SLLinkImpl implements SLLink {
 	public SLNode[] getSides() throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
-				final SLNode a = getANode();
-				final SLNode b = getBNode();
-				return new SLNode[] { a, b };
+				SLNode[] sides = sidesCache;
+				if (sides == null) {
+					sides = internalGetSides();
+					sidesCache = sides;
+				}
+				return sides;
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve link sides.", e);
@@ -481,8 +532,12 @@ public class SLLinkImpl implements SLLink {
 						"SLLink.getSource() cannot be used on bidirecional links.");
 			}
 			try {
-				return getDirection() == SLConsts.DIRECTION_AB ? getANode()
-						: getBNode();
+				SLNode source = sourceCache;
+				if (source == null) {
+					source = internalGetSource();
+					sourceCache = source;
+				}
+				return source;
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve link source.", e);
@@ -503,8 +558,12 @@ public class SLLinkImpl implements SLLink {
 						"SLLink.getTarget() cannot be used on bidirecional links.");
 			}
 			try {
-				return getDirection() == SLConsts.DIRECTION_AB ? getBNode()
-						: getANode();
+				SLNode target = targetCache;
+				if (target == null) {
+					target = internalGetTarget();
+					targetCache = target;
+				}
+				return target;
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(
 						"Error on attempt to retrieve link source.", e);
@@ -525,6 +584,24 @@ public class SLLinkImpl implements SLLink {
 						"Error on attempt to execute SLLinkImpl.hasCode().", e);
 			}
 		}
+	}
+
+	private SLNode[] internalGetSides() throws SLException {
+		final SLNode a = getANode();
+		final SLNode b = getBNode();
+		return new SLNode[] { a, b };
+	}
+
+	private SLNode internalGetSource() throws SLPersistentTreeSessionException,
+			SLException {
+		return getDirection() == SLConsts.DIRECTION_AB ? getANode()
+				: getBNode();
+	}
+
+	private SLNode internalGetTarget() throws SLPersistentTreeSessionException,
+			SLException {
+		return getDirection() == SLConsts.DIRECTION_AB ? getBNode()
+				: getANode();
 	}
 
 	/**

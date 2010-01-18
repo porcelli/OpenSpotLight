@@ -54,7 +54,6 @@ import java.sql.Connection;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
@@ -68,8 +67,6 @@ import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
-import org.openspotlight.bundle.db.metamodel.node.TableView;
-import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -136,7 +133,7 @@ public class DbTableArtifactBundleProcessorTest {
 	private static RepositoryData createRepositoryData() {
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
+		settings.setNumberOfParallelThreads(8);
 		settings.setArtifactFinderRegistryClass(SampleDbArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		final Repository repository = new Repository();
@@ -292,45 +289,6 @@ public class DbTableArtifactBundleProcessorTest {
 		final Column invalidColumn2 = exampleTableNode2.getNode(Column.class,
 				"INVALID");
 		Assert.assertThat(invalidColumn2, Is.is(IsNull.notNullValue()));
-
-	}
-
-	@Test
-	public void shouldMaintainInformationOnExtendedNode() throws Exception {
-		final CountDownLatch latch = new CountDownLatch(1);
-
-		final ExecutionContext context = contextFactory.createExecutionContext(
-				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				data.repository.getName());
-		final SLContext groupContext = context.getGraphSession().createContext(
-				SLConsts.DEFAULT_GROUP_CONTEXT);
-		final SLNode groupNode = groupContext.getRootNode().addNode(
-				data.group.getUniqueName());
-
-		new Thread(new Runnable() {
-
-			public void run() {
-				try {
-					final TableView tableNode = groupNode.addNode(
-							TableView.class, "table");
-					final Column columnNode = tableNode.addNode(Column.class,
-							"myColumn");
-					columnNode
-							.addNode(DatabaseConstraintForeignKey.class, "fk");
-				} catch (final Exception e) {
-					e.printStackTrace();
-				} finally {
-					latch.countDown();
-				}
-			}
-		}).start();
-		latch.await();
-		final TableViewTable theSameTable = groupNode.addNode(
-				TableViewTable.class, "table");
-		final SLNode theSameColumn = theSameTable.getNode("myColumn");
-		Assert.assertThat(theSameColumn, IsNull.notNullValue());
-		final SLNode theSameFk = theSameColumn.getNode("fk");
-		Assert.assertThat(theSameFk, IsNull.notNullValue());
 
 	}
 

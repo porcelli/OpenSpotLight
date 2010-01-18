@@ -257,7 +257,14 @@ public class SLGraphSessionImpl implements SLGraphSession {
 							target, direction);
 				}
 
-				final SLLink link = new SLLinkImpl(this, linkNode, eventPoster);
+				final SLLink link;
+				if (bidirecional) {
+					link = new SLLinkImpl(this, linkNode, eventPoster,
+							new SLNode[] { source, target });
+				} else {
+					link = new SLLinkImpl(this, linkNode, eventPoster, source,
+							target);
+				}
 				final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
 				final SLLinkEvent event = new SLLinkAddedEvent(linkProxy,
 						linkNode, persistenceMode);
