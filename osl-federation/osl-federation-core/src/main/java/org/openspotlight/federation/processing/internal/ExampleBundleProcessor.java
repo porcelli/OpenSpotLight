@@ -121,9 +121,6 @@ public class ExampleBundleProcessor implements
 			final String nodeName = artifact.getArtifactCompleteName() + i;
 			final SLNode node = groupNode.addNode(nodeName);
 			final SLNode node1 = node.addNode(nodeName);
-			System.err.println(groupNode.getContext().getID() + ":" + "/"
-					+ groupNode.getName() + "/" + node.getName() + "/"
-					+ node1.getName());
 			context.getGraphSession().addLink(SLLink.class, node, node1, false);
 		}
 		artifact

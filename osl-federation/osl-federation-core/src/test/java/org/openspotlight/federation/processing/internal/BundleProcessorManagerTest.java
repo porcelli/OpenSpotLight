@@ -157,7 +157,7 @@ public class BundleProcessorManagerTest {
 		mapping.setFrom(finalStr);
 		mapping.setTo("/sources/java/myProject");
 		mapping.setExcludeds(new HashSet<String>());
-		mapping.getIncludeds().add("ConfigurationManagerProvider.java");
+		mapping.getIncludeds().add("**/ConfigurationManagerProvider.java");
 		source.setMappings(new HashSet<ArtifactSourceMapping>());
 		source.getMappings().add(mapping);
 		source.setActive(true);
