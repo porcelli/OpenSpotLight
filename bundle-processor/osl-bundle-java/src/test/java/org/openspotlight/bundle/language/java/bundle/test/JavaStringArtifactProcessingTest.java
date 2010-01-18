@@ -61,8 +61,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaLexerPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaParserPhase;
+import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
+import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -156,8 +156,8 @@ public class JavaStringArtifactProcessingTest {
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaLexerPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaParserPhase.class);
+		commonProcessor.getArtifactPhases().add(JavaLexerAndParserTypesPhase.class);
+		commonProcessor.getArtifactPhases().add(JavaParserPublicElementsPhase.class);
 		commonProcessor.getArtifactPhases().add(JavaTreePhase.class);
 		group.getBundleTypes().add(commonProcessor);
 
