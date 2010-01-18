@@ -375,10 +375,10 @@ public enum TaskManager {
 
 		public void startExecutorOnBackground() {
 			for (int i = 0; i < poolSize; i++) {
-				executor.execute(new Worker(listeners, executor, poolName + "_"
-						+ i, stopped, queue, alreadyRunnedTaskIds,
-						runningTaskIds, lock, currentPriorityRunning,
-						existentPriorities, taskMap));
+				executor.execute(new Worker(listeners, poolName + "_" + i,
+						stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
+						lock, currentPriorityRunning, existentPriorities,
+						taskMap));
 			}
 			executor.shutdown();
 		}
@@ -389,7 +389,6 @@ public enum TaskManager {
 		private final BlockingQueue<Priority> existentPriorities;
 		private final Map<Priority, BlockingQueue<TaskImpl>> taskMap;
 
-		private final GossipExecutor executor;
 		private final AtomicReference<TaskImpl> currentTask = new AtomicReference<TaskImpl>();
 		private final CountDownLatch stopped;
 
@@ -403,8 +402,7 @@ public enum TaskManager {
 		private final CopyOnWriteArrayList<RunnableListener> listeners;
 
 		public Worker(final CopyOnWriteArrayList<RunnableListener> listeners,
-				final GossipExecutor executor, final String workerId,
-				final CountDownLatch stopped,
+				final String workerId, final CountDownLatch stopped,
 				final BlockingQueue<TaskImpl> queue,
 				final List<String> alreadyRunnedTaskIds,
 				final List<String> runningTaskIds, final ReentrantLock lock,
@@ -417,7 +415,6 @@ public enum TaskManager {
 			this.runningTaskIds = runningTaskIds;
 			this.lock = lock;
 			this.workerId = workerId;
-			this.executor = executor;
 			this.listeners = listeners;
 			this.currentPriorityRunning = currentPriorityRunning;
 			this.existentPriorities = existentPriorities;
