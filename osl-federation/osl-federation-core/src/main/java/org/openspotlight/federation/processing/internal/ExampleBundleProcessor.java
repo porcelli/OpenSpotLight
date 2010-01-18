@@ -63,6 +63,7 @@ import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorSinglePhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.federation.processing.SaveBehavior;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.slf4j.Logger;
@@ -119,7 +120,11 @@ public class ExampleBundleProcessor implements
 			final SLNode groupNode = currentContext.getCurrentNodeGroup();
 			final String nodeName = artifact.getArtifactCompleteName() + i;
 			final SLNode node = groupNode.addNode(nodeName);
-			node.addNode(nodeName);
+			final SLNode node1 = node.addNode(nodeName);
+			System.err.println(groupNode.getContext().getID() + ":" + "/"
+					+ groupNode.getName() + "/" + node.getName() + "/"
+					+ node1.getName());
+			context.getGraphSession().addLink(SLLink.class, node, node1, false);
 		}
 		artifact
 				.addSyntaxInformation(2, 4, 5, 6, SyntaxInformationType.COMMENT);

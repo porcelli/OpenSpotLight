@@ -54,10 +54,13 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNot;
+import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -88,6 +91,8 @@ import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -151,9 +156,8 @@ public class BundleProcessorManagerTest {
 		mapping.setSource(source);
 		mapping.setFrom(finalStr);
 		mapping.setTo("/sources/java/myProject");
-		mapping.setIncludeds(new HashSet<String>());
 		mapping.setExcludeds(new HashSet<String>());
-		mapping.getIncludeds().add("*.java");
+		mapping.getIncludeds().add("ConfigurationManagerProvider.java");
 		source.setMappings(new HashSet<ArtifactSourceMapping>());
 		source.getMappings().add(mapping);
 		source.setActive(true);
@@ -183,7 +187,7 @@ public class BundleProcessorManagerTest {
 		bundleType.getSources().add(bundleSource);
 		bundleSource.setBundleProcessorType(bundleType);
 		bundleSource.setRelative("/sources/java/myProject");
-		bundleSource.getIncludeds().add("**/*.java");
+		bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
 
 		final ArtifactLoader loader = ArtifactLoaderFactory
 				.createNewLoader(settings);
@@ -226,6 +230,27 @@ public class BundleProcessorManagerTest {
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		xmlManager.saveGlobalSettings(settings);
 		xmlManager.saveRepository(repository);
+		final ExecutionContext context1 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
+								.getName());
+		final String nodeName = "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java1";
+		final SLNode node = context1.getGraphSession().getContext(
+				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
+				group.getUniqueName()).getNode(nodeName);
+		Assert.assertThat(node, Is.is(IsNull.notNullValue()));
+		final SLNode node2 = node.getNode(nodeName);
+		Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
+		final NeedsSyncronizationCollection<SLLink> links = context1
+				.getGraphSession().getLinks(node, node2);
+		Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
+		final StringArtifact sourceFile = context1
+				.getArtifactFinder(StringArtifact.class)
+				.findByPath(
+						"/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
+		Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(sourceFile.getSyntaxInformationSet().size(), Is
+				.is(IsNot.not(0)));
 
 	}
 
@@ -262,7 +287,7 @@ public class BundleProcessorManagerTest {
 		bundleType.getSources().add(bundleSource);
 		bundleSource.setBundleProcessorType(bundleType);
 		bundleSource.setRelative("/osl-federation");
-		bundleSource.getIncludeds().add("**/*.java");
+		bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
 		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
 				.createFactory();
 		final ExecutionContext context = contextFactory.createExecutionContext(
@@ -287,6 +312,22 @@ public class BundleProcessorManagerTest {
 				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
 				.is(false));
 		Assert.assertThat(SampleGroupListener.count.get(), Is.is(1));
+		final ExecutionContext context1 = contextFactory
+				.createExecutionContext("username", "password",
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
+								.getName());
+		final String nodeName = "/osl-federation/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java7";
+		final SLNode groupNode = context1.getGraphSession().getContext(
+				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
+				group.getUniqueName());
+		final SLNode node = groupNode.getNode(nodeName);
+		Assert.assertThat(node, Is.is(IsNull.notNullValue()));
+		final SLNode node2 = node.getNode(nodeName);
+		Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
+		final NeedsSyncronizationCollection<SLLink> links = context1
+				.getGraphSession().getLinks(node, node2);
+		Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
+
 	}
 
 	@After

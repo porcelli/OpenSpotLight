@@ -50,6 +50,7 @@ package org.openspotlight.federation.processing.internal.domain;
 
 import java.util.Map;
 
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
@@ -85,6 +86,11 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 		if (currentNodeGroup == null) {
 			if (currentGroup != null && groupContext != null) {
 				currentNodeGroup = getNodeForGroup(currentGroup);
+			} else {
+				Exceptions.logAndReturn(new IllegalStateException(
+						"currentGroup=" + currentGroup + " / "
+								+ "groupContext=" + groupContext
+								+ " - anyone can't be null"));
 			}
 		}
 		return currentNodeGroup;
@@ -110,10 +116,6 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 
 	public void setCurrentGroup(final Group currentGroup) {
 		this.currentGroup = currentGroup;
-	}
-
-	public void setCurrentNodeGroup(final SLNode currentNodeGroup) {
-		this.currentNodeGroup = currentNodeGroup;
 	}
 
 	public void setCurrentRepository(final Repository currentRepository) {

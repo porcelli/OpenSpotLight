@@ -197,6 +197,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
 			final boolean bidirecional, final SLPersistenceMode persistenceMode)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
+			Assertions.checkNotNull("source", source);
+			Assertions.checkNotNull("target", target);
 
 			try {
 
@@ -259,8 +261,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
 				final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
 				final SLLinkEvent event = new SLLinkAddedEvent(linkProxy,
 						linkNode, persistenceMode);
-				event.setSource(source);
-				event.setTarget(target);
 				event.setNewLink(newLink);
 				event.setChangedToBidirectional(changedToBidirectional);
 				eventPoster.post(event);

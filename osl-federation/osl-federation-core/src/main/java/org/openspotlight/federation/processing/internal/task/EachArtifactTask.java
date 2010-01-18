@@ -180,8 +180,7 @@ public class EachArtifactTask<T extends Artifact> extends
 		try {
 			groupContext = bundleContext.getGraphSession().createContext(
 					SLConsts.DEFAULT_GROUP_CONTEXT);
-			this.currentContextImpl.setCurrentNodeGroup(groupContext
-					.getRootNode());
+			this.currentContextImpl.setGroupContext(groupContext);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}

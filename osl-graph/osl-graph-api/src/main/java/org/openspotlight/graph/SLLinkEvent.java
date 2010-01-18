@@ -48,6 +48,9 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 
 /**
@@ -76,20 +79,35 @@ public abstract class SLLinkEvent extends SLGraphSessionEvent {
 	private boolean bidirectional;
 
 	/** The source. */
-	private SLNode source;
+	private final SLNode source;
 
 	/** The target. */
-	private SLNode target;
+	private final SLNode target;
 
 	/** The sides. */
-	private SLNode[] sides;
+	private final SLNode[] sides;
 
 	/**
 	 * Instantiates a new sL link event.
+	 * 
+	 * @throws SLGraphSessionException
 	 */
 	public SLLinkEvent(final SLLink link) {
 		super(link.getSession());
 		this.link = link;
+		try {
+			if (link.isBidirectional()) {
+				sides = link.getSides();
+				source = null;
+				target = null;
+			} else {
+				sides = null;
+				source = link.getSource();
+				target = link.getTarget();
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	/**
@@ -110,6 +128,24 @@ public abstract class SLLinkEvent extends SLGraphSessionEvent {
 		this.link = link;
 		this.linkNode = linkNode;
 		this.persistenceMode = persistenceMode;
+		try {
+			if (link.isBidirectional()) {
+				sides = link.getSides();
+				Assertions.checkNotNull("sides", sides);
+				Assertions.checkNotNull("sides[0]", sides[0]);
+				Assertions.checkNotNull("sides[1]", sides[1]);
+				source = null;
+				target = null;
+			} else {
+				sides = null;
+				source = link.getSource();
+				target = link.getTarget();
+				Assertions.checkNotNull("source", source);
+				Assertions.checkNotNull("target", target);
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	/**
@@ -221,35 +257,5 @@ public abstract class SLLinkEvent extends SLGraphSessionEvent {
 	 */
 	public void setNewLink(final boolean newLink) {
 		this.newLink = newLink;
-	}
-
-	/**
-	 * Sets the sides.
-	 * 
-	 * @param sides
-	 *            the new sides
-	 */
-	public void setSides(final SLNode[] sides) {
-		this.sides = sides;
-	}
-
-	/**
-	 * Sets the source.
-	 * 
-	 * @param source
-	 *            the new source
-	 */
-	public void setSource(final SLNode source) {
-		this.source = source;
-	}
-
-	/**
-	 * Sets the target.
-	 * 
-	 * @param target
-	 *            the new target
-	 */
-	public void setTarget(final SLNode target) {
-		this.target = target;
 	}
 }

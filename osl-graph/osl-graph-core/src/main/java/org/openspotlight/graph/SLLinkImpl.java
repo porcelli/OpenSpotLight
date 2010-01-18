@@ -551,12 +551,6 @@ public class SLLinkImpl implements SLLink {
 			try {
 				final SLLinkEvent event = new SLLinkRemovedEvent(this);
 				event.setBidirectional(isBidirectional());
-				if (event.isBidirectional()) {
-					event.setSides(getSides());
-				} else {
-					event.setSource(getSource());
-					event.setTarget(getTarget());
-				}
 				linkNode.remove();
 				eventPoster.post(event);
 			} catch (final Exception e) {

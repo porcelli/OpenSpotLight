@@ -162,9 +162,11 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 				final Class<? extends SLLink> linkType = SLCommonSupport
 						.getLinkType(link);
 				final SLPersistentNode sourceNode = SLCommonSupport
-						.getPNode(event.getSource());
+						.getPNode(event.getLink().isBidirectional() ? event
+								.getSides()[0] : event.getSource());
 				final SLPersistentNode targetNode = SLCommonSupport
-						.getPNode(event.getTarget());
+						.getPNode(event.getLink().isBidirectional() ? event
+								.getSides()[1] : event.getTarget());
 				if (event.isNewLink()) {
 					if (link.isBidirectional()) {
 						addSourceCount(sourceNode, linkType, 1);
