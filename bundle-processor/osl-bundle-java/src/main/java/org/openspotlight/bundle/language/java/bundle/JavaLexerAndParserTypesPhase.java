@@ -47,7 +47,7 @@ public class JavaLexerAndParserTypesPhase implements
 		final JavaParserExecutor parserExecutor = new JavaParserExecutor(
 				context, artifact.getContent(), artifact
 						.getArtifactCompleteName(), artifact.getVersion(),
-				artifact);
+				artifact, sourceLine);
 		parser.setParserExecutor(parserExecutor);
 		final Tree tree = (Tree) parser.compilationUnit().getTree();
 		final JavaTransientDto dto = JavaTransientDto.fromParser().withStream(
