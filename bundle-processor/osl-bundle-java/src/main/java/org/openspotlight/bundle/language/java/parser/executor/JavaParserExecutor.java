@@ -5,19 +5,62 @@ import java.util.Stack;
 import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.Pair;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.graph.SLNode;
 
 public class JavaParserExecutor {
+	private static class JavaParserNodeHelper {
+		private final SLNode currentContext;
+		private final SLNode abstractContext;
+
+		public JavaParserNodeHelper(final SLNode currentContext,
+				final SLNode abstractContext) {
+			super();
+			this.currentContext = currentContext;
+			this.abstractContext = abstractContext;
+		}
+
+		public Pair<SLNode, SLNode> createDefaultPackage() {
+			return null;
+		}
+
+		public Pair<SLNode, SLNode> createJavaTypeAnnotation(
+				final Pair<SLNode, SLNode> parent, final String annotationName) {
+			return null;
+		}
+
+		public Pair<SLNode, SLNode> createJavaTypeClass(
+				final Pair<SLNode, SLNode> parent, final String className) {
+			return null;
+		}
+
+		public Pair<SLNode, SLNode> createJavaTypeEnum(
+				final Pair<SLNode, SLNode> parent, final String enumName) {
+			return null;
+		}
+
+		public Pair<SLNode, SLNode> createJavaTypeInterface(
+				final Pair<SLNode, SLNode> parent, final String interfaceName) {
+			return null;
+		}
+
+		public Pair<SLNode, SLNode> createPackageNode(final String packageName) {
+			return null;
+		}
+
+	}
+
+	private JavaParserNodeHelper helper;
 	private final ExecutionContext context;
 	private final String artifactContent;
 	private final ArtifactWithSyntaxInformation artifact;
 	private final String artifactName;
 	private final String artifactVersion;
-	private final Stack<SLNode> typeContext = new Stack<SLNode>();
+
+	// <SLNodeOnCurrentContext,SLNodeOnAbstractContext>
+	private final Stack<Pair<SLNode, SLNode>> typeContext = new Stack<Pair<SLNode, SLNode>>();
 
 	private final SourceLineInfoAggregator sourceLineAggregator;
 
@@ -35,53 +78,41 @@ public class JavaParserExecutor {
 	}
 
 	public void createDefaultPackage() {
-		// TODO Auto-generated method stub
-
+		final Pair<SLNode, SLNode> newNode = helper.createDefaultPackage();
+		typeContext.push(newNode);
 	}
 
 	public void createJavaTypeAnnotation(final SLCommonToken identifier292) {
-		// TODO Auto-generated method stub
+		final Pair<SLNode, SLNode> newNode = helper.createJavaTypeAnnotation(
+				typeContext.peek(), identifier292.getText());
+		typeContext.push(newNode);
 	}
 
 	public void createJavaTypeClass(final SLCommonToken identifier35) {
-		// TODO Auto-generated method stub
-		// typeContext.peek();
+		final Pair<SLNode, SLNode> newNode = helper.createJavaTypeClass(
+				typeContext.peek(), identifier35.getText());
+		typeContext.push(newNode);
 	}
 
 	public void createJavaTypeEnum(final SLCommonToken identifier54) {
-		// TODO Auto-generated method stub
+		final Pair<SLNode, SLNode> newNode = helper.createJavaTypeEnum(
+				typeContext.peek(), identifier54.getText());
+		typeContext.push(newNode);
 
 	}
 
 	public void createJavaTypeInterface(final SLCommonToken identifier75) {
-		// TODO Auto-generated method stub
+		final Pair<SLNode, SLNode> newNode = helper.createJavaTypeEnum(
+				typeContext.peek(), identifier75.getText());
+		typeContext.push(newNode);
 
 	}
 
 	public void createPackageNode(final Object object) {
-		try {
-			final Tree qualifiedName = getTree(object);
-
-			// final JavaPackage packageName = getRootNode().addNode(
-			// JavaPackage.class, qualifiedName.getText());
-			// packageName.addLineReference(qualifiedName.getLine(),
-			// qualifiedName
-			// .getLine(), qualifiedName.getCharPositionInLine(),
-			// qualifiedName.getCharPositionInLine()
-			// + qualifiedName.getText().length(),
-			// "PACKAGE DEFINITION", artifactName, artifactVersion);
-		} catch (final Exception e) {
-			Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
-
-	private SLNode getRootNode() {
-		// try {
-		// return context.getGraphSession().getContext("??").getRootNode();
-		// } catch (final SLGraphSessionException e) {
-		// TODO Auto-generated catch block
-		return null;
-		// }
+		final Tree qualifiedName = getTree(object);
+		final Pair<SLNode, SLNode> newNode = helper
+				.createPackageNode(qualifiedName.getText());
+		typeContext.push(newNode);
 	}
 
 	private Tree getTree(final Object element) {
@@ -89,7 +120,7 @@ public class JavaParserExecutor {
 	}
 
 	public void popContext() {
-		// typeContext.pop();
+		typeContext.pop();
 	}
 
 	public SourceLineInfoAggregator sourceLine() {
