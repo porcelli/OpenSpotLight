@@ -459,6 +459,15 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
     public String getTypeName() throws SLGraphSessionException;
 
     /**
+     * Do cast.
+     * 
+     * @param clazz the clazz
+     * @return the t
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public <T extends SLNode> T doCast( Class<T> clazz ) throws SLGraphSessionException;
+
+    /**
      * Removes the.
      * 
      * @throws SLGraphSessionException the SL graph session exception

@@ -86,6 +86,7 @@ import org.openspotlight.security.authz.graph.GraphElement;
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
     private SLMetaNodeType                  metaType = null;
+
     private final Lock                      lock;
 
     /** The context. */
@@ -1089,6 +1090,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getTypeName() throws SLGraphSessionException {
         synchronized (lock) {
             try {
@@ -1099,6 +1103,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                                   "Error on attempt to retrieve node type name.", e);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings( "unchecked" )
+    public <T extends SLNode> T doCast( Class<T> clazz ) throws SLGraphSessionException {
+        return (T)this;
     }
 
     // @Override
