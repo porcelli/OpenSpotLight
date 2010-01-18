@@ -51,6 +51,7 @@ package org.openspotlight.graph.query;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -194,7 +195,8 @@ public class SLGraphQueryCacheTest {
             treeSession = tree.openSession(SLConsts.DEFAULT_REPOSITORY_NAME);
 
             queryCache = new SLQueryCacheImpl(treeSession, session);
-
+            
+            
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -230,6 +232,7 @@ public class SLGraphQueryCacheTest {
         assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
     }
 
+    
     @Test
     public void selectTypes() throws SLGraphSessionException,
         SLInvalidQuerySyntaxException, SLPersistentTreeException,
@@ -302,6 +305,29 @@ public class SLGraphQueryCacheTest {
                    is(wrappers2[4]));
 
         graph.gc(user);
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+    }
+    
+    @Test
+    // ( dependsOnMethods = "selectTypes" )
+    public void testCleanCache() throws SLGraphSessionException,
+        SLInvalidQuerySyntaxException, SLPersistentTreeException,
+        SLInvalidCredentialException {
+        String queryId = null;
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
+
+        final SLQueryApi query = session.createQueryApi();
+
+        query.select().type(JavaTypeMethod.class.getName()).selectEnd();
+
+        final SLQueryResult result = query.execute();
+        queryId = result.getQueryId();
+
+        assertThat(SLCommonSupport.containsQueryCache(treeSession), is(true));
+        assertThat(queryCache.getCache(result.getQueryId()), is(notNullValue()));
+
+        session.cleanCache();
+
         assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
     }
 

@@ -64,64 +64,58 @@ import org.openspotlight.graph.query.SLQuery.SortMode;
  */
 public interface SLQueryCache {
 
-	/**
-	 * Adds content to the cache.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @param nodes
-	 *            the nodes
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 * @throws SLNodeNotFoundException
-	 *             the SL node not found exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<PNodeWrapper> nodes)
-			throws SLPersistentTreeSessionException, SLNodeNotFoundException,
-			SLGraphSessionException;
+    /**
+     * Adds content to the cache.
+     * 
+     * @param queryId the query id
+     * @param nodes the nodes
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public abstract void add2Cache( final String queryId,
+                                    final Collection<PNodeWrapper> nodes )
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException,
+        SLGraphSessionException;
 
-	/**
-	 * Builds a unique query id.
-	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	public abstract String buildQueryId(final List<SLSelect> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
+    /**
+     * Builds a unique query id.
+     * 
+     * @param selects the selects
+     * @param collatorStrength the collator strength
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param limit the limit
+     * @param offset the offset
+     * @return the string
+     * @throws SLException the SL exception
+     */
+    public abstract String buildQueryId( final List<SLSelect> selects,
+                                         final Integer collatorStrength,
+                                         final String[] inputNodesIDs,
+                                         final SortMode sortMode,
+                                         final Integer limit,
+                                         final Integer offset )
+        throws SLException;
 
-	/**
-	 * Gets the cache content. Returns null if not found.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 * @throws SLNodeNotFoundException
-	 *             the SL node not found exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public abstract SLQueryResult getCache(final String queryId)
-			throws SLPersistentTreeSessionException, SLNodeNotFoundException,
-			SLGraphSessionException;
+    /**
+     * Gets the cache content. Returns null if not found.
+     * 
+     * @param queryId the query id
+     * @return the cache
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws SLGraphSessionException the SL graph session exception
+     */
+    public abstract SLQueryResult getCache( final String queryId )
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException,
+        SLGraphSessionException;
 
+    /**
+     * Flush cache.
+     * 
+     * @throws SLGraphSessionException the SL graph session exception
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void flush() throws SLGraphSessionException, SLPersistentTreeSessionException;
 }
