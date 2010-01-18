@@ -268,6 +268,7 @@ import org.openspotlight.bundle.common.parser.SLCommonToken;
 }
 
 @members {
+  int codeArea = -1;
 
 	private JavaParserExecutor 	executor 		= null;
 
@@ -1139,7 +1140,12 @@ import org.openspotlight.bundle.common.parser.SLCommonToken;
 /* The annotations are separated out to make parsing faster, but must be associated with
    a packageDeclaration or a typeDeclaration (and not an empty one). */
 compilationUnit
-@init    {    int mode = 0;    }
+@init
+    {   int activeCodeArea = ++codeArea; 
+        int mode=0;   }
+@after {
+     executor.sourceLine().addCodeArea(input, activeCodeArea, 0, $stop.getTokenIndex());
+}
     :   annotations
         (   packageDeclaration[false] importDeclaration* typeDeclaration*
         |   classOrInterfaceDeclaration[$annotations.tree] {mode = 1;} typeDeclaration*
@@ -1169,6 +1175,13 @@ typeDeclaration
     ;
 
 classOrInterfaceDeclaration[Object annotationsTree]
+@init
+    {   int activeCodeArea = -1;
+        if (state.backtracking==0) activeCodeArea = ++codeArea;  }
+@after {
+     executor.sourceLine().addCodeArea(input, activeCodeArea, 0, $stop.getTokenIndex());
+}
+
     :   classOrInterfaceModifiers[$annotationsTree]!
     (    classDeclaration[$classOrInterfaceModifiers.tree] 
     |    interfaceDeclaration[$classOrInterfaceModifiers.tree]
@@ -1191,7 +1204,8 @@ classOrInterfaceModifier
     |   STRICTFP
     ;
 
-modifiers
+modifiers returns [int tokenStart]
+@after {   $tokenStart = $stop.getTokenIndex();  }
     :   elements+=modifier*
         -> {    buildModifiersAST($elements, null)    }
     ;
@@ -1284,30 +1298,49 @@ classBodyDeclaration
     :   SEMI_COLON!
     |   STATIC? block
         -> ^(INITIALIZER_BLOCK STATIC? block)
-    |   modifiers! memberDecl[$modifiers.tree]
+    |   modifiers! memberDecl[$modifiers.tree, $modifiers.tokenStart]
     ;
 
-memberDecl[Object modifiersTree]
-    :   genericMethodOrConstructorDecl[$modifiersTree]
-    |   memberDeclaration[$modifiersTree]
+memberDecl[Object modifiersTree, int tokenStart]
+@init{   int activeCodeArea = -1;    }
+    :   genericMethodOrConstructorDecl[$modifiersTree,$tokenStart]
+    |   memberDeclaration[$modifiersTree,$tokenStart]
+     {   activeCodeArea = ++codeArea;    }
     |   VOID Identifier voidMethodDeclaratorRest
+     {   if ($tokenStart <= 0) $tokenStart = $start.getTokenIndex();
+            executor.sourceLine().addCodeArea(input, activeCodeArea, $tokenStart, input.LT(-1).getTokenIndex());    }
         -> { buildVoidMethodDeclarationAST($VOID, $Identifier, $modifiersTree, null, $voidMethodDeclaratorRest.tree) }
-    |   Identifier constructorDeclaratorRest
+    | 
+     {   activeCodeArea = ++codeArea;    }
+      Identifier constructorDeclaratorRest
+     {   if ($tokenStart <= 0) $tokenStart = $start.getTokenIndex();
+            executor.sourceLine().addCodeArea(input, activeCodeArea, $tokenStart, input.LT(-1).getTokenIndex());    }
         -> { buildConstructorDeclarationAST($Identifier, $modifiersTree, null, $constructorDeclaratorRest.tree) }
     |   interfaceDeclaration[$modifiersTree] -> ^(INNER_DECLARATION interfaceDeclaration)
     |   classDeclaration[$modifiersTree] -> ^(INNER_DECLARATION classDeclaration)
     ;
     
-memberDeclaration[Object modifiersTree]
+memberDeclaration[Object modifiersTree, int tokenStart]
+@init
+    {   int activeCodeArea = -1;    }
     :   type
-    (    methodDeclaration
+    (    {   activeCodeArea = ++codeArea;    }
+      methodDeclaration
+       {   if ($tokenStart <= 0) $tokenStart = $start.getTokenIndex();
+            executor.sourceLine().addCodeArea(input, activeCodeArea, $tokenStart, input.LT(-1).getTokenIndex());    }
         -> { buildMethodDeclarationAST($modifiersTree, $type.tree, $methodDeclaration.tree) }
     |   fieldDeclaration
         -> { buildFieldDeclarationAST($modifiersTree, $type.tree, $fieldDeclaration.tree) }
     )
     ;
 
-genericMethodOrConstructorDecl[Object modifiersTree]
+genericMethodOrConstructorDecl[Object modifiersTree, int tokenStart]
+@init
+    {   int activeCodeArea = -1;
+        if (state.backtracking==0) activeCodeArea = ++codeArea;  }
+@after
+    {   if ($tokenStart <= 0) $tokenStart = $start.getTokenIndex();
+        executor.sourceLine().addCodeArea(input, activeCodeArea, $tokenStart, $stop.getTokenIndex());    }
     :   typeParameters
     (    (type | VOID) id1=Identifier methodDeclaratorRest
         -> {$VOID != null }? { buildVoidMethodDeclarationAST($VOID, $id1, $modifiersTree, $typeParameters.tree, $methodDeclaratorRest.tree) }
@@ -1326,11 +1359,11 @@ fieldDeclaration
     ;
         
 interfaceBodyDeclaration
-    :   modifiers! interfaceMemberDecl[$modifiers.tree]
+    :   modifiers! interfaceMemberDecl[$modifiers.tree, $modifiers.tokenStart]
     |   SEMI_COLON!
     ;
 
-interfaceMemberDecl[Object modifiersTree]
+interfaceMemberDecl[Object modifiersTree, int tokenStart]
     :   interfaceMethodOrFieldDecl[$modifiersTree]
     |   interfaceGenericMethodDecl[$modifiersTree]
     |   VOID Identifier voidInterfaceMethodDeclaratorRest
@@ -1637,10 +1670,10 @@ annotationTypeBody
     ;
     
 annotationTypeElementDeclaration
-    :   modifiers! annotationTypeElementRest[$modifiers.tree]
+    :   modifiers! annotationTypeElementRest[$modifiers.tree, $modifiers.tokenStart]
     ;
     
-annotationTypeElementRest[Object modifiersTree]
+annotationTypeElementRest[Object modifiersTree, int tokenStart]
     :   type amcr=annotationMethodOrConstantRest SEMI_COLON
     -> {$amcr.isMethod}? { buildMethodDeclarationAST($modifiersTree, $type.tree, $amcr.tree ) }
     -> { buildFieldDeclarationAST($modifiersTree, $type.tree, $amcr.tree ) }

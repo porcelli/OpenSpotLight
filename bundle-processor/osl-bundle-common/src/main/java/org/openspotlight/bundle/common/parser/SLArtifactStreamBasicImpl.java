@@ -57,13 +57,11 @@ import org.antlr.runtime.ANTLRStringStream;
 public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
 		SLArtifactStream {
 
-	private final String fedaratedArtifactPath;
-
 	private final int lineCount;
 
 	public SLArtifactStreamBasicImpl(final String fedaratedArtifactPath,
 			final String artifactContent) throws IOException {
-		this.fedaratedArtifactPath = fedaratedArtifactPath;
+		name = fedaratedArtifactPath;
 		data = artifactContent.toCharArray();
 		n = artifactContent.length();
 		int count = 0;
@@ -73,10 +71,6 @@ public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
 			count++;
 		}
 		lineCount = count;
-	}
-
-	public String getFedaratedArtifactPath() {
-		return fedaratedArtifactPath;
 	}
 
 	public int getPhysicalLineCount() {

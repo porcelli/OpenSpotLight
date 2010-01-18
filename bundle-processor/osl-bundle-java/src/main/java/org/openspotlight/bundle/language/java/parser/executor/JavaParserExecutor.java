@@ -3,6 +3,7 @@ package org.openspotlight.bundle.language.java.parser.executor;
 import java.util.Stack;
 
 import org.antlr.runtime.tree.Tree;
+import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
@@ -18,15 +19,19 @@ public class JavaParserExecutor {
 	private final String artifactVersion;
 	private final Stack<SLNode> typeContext = new Stack<SLNode>();
 
+	private final SourceLineInfoAggregator sourceLineAggregator;
+
 	public JavaParserExecutor(final ExecutionContext context,
 			final String artifactContent, final String artifactName,
 			final String artifactVersion,
-			final ArtifactWithSyntaxInformation artifact) {
+			final ArtifactWithSyntaxInformation artifact,
+			final SourceLineInfoAggregator sourceLineInfoAggregator) {
 		this.artifact = artifact;
 		this.context = context;
 		this.artifactContent = artifactContent;
 		this.artifactName = artifactName;
 		this.artifactVersion = artifactVersion;
+		sourceLineAggregator = sourceLineInfoAggregator;
 	}
 
 	public void createDefaultPackage() {
@@ -85,5 +90,9 @@ public class JavaParserExecutor {
 
 	public void popContext() {
 		typeContext.pop();
+	}
+
+	public SourceLineInfoAggregator sourceLine() {
+		return sourceLineAggregator;
 	}
 }

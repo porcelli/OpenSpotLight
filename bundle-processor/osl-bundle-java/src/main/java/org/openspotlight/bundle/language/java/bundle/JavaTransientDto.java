@@ -64,53 +64,10 @@ public class JavaTransientDto {
 
 	}
 
-	public static class LexerDtoBuilder extends BuilderParameters {
-
-		private LexerDtoBuilder() {
-		}
-
-		@Override
-		protected void validate() {
-			Assertions.checkNotNull("stream", stream);
-			Assertions.checkNotNull("lexer", lexer);
-			Assertions.checkNotNull("sourceLine", sourceLine);
-			Assertions.checkNotNull("lexerExecutor", lexerExecutor);
-			Assertions.checkNotNull("commonTokenStream", commonTokenStream);
-		}
-
-		public LexerDtoBuilder withCommonTokenStream(
-				final CommonTokenStream commonTokenStream) {
-			this.commonTokenStream = commonTokenStream;
-			return this;
-		}
-
-		public LexerDtoBuilder withLexer(final JavaLexer lexer) {
-			this.lexer = lexer;
-			return this;
-		}
-
-		public LexerDtoBuilder withLexerExecutor(
-				final JavaLexerExecutor lexerExecutor) {
-			this.lexerExecutor = lexerExecutor;
-			return this;
-		}
-
-		public LexerDtoBuilder withSourceline(
-				final SourceLineInfoAggregator sourceLine) {
-			this.sourceLine = sourceLine;
-			return this;
-		}
-
-		public LexerDtoBuilder withStream(final SLArtifactStream stream) {
-			this.stream = stream;
-			return this;
-		}
-	}
-
 	public static class ParserDtoBuilder extends BuilderParameters {
 
-		private ParserDtoBuilder(final JavaTransientDto dto) {
-			super(dto);
+		private ParserDtoBuilder() {
+			super();
 		}
 
 		@Override
@@ -126,6 +83,23 @@ public class JavaTransientDto {
 
 		}
 
+		public ParserDtoBuilder withCommonTokenStream(
+				final CommonTokenStream commonTokenStream) {
+			this.commonTokenStream = commonTokenStream;
+			return this;
+		}
+
+		public ParserDtoBuilder withLexer(final JavaLexer lexer) {
+			this.lexer = lexer;
+			return this;
+		}
+
+		public ParserDtoBuilder withLexerExecutor(
+				final JavaLexerExecutor lexerExecutor) {
+			this.lexerExecutor = lexerExecutor;
+			return this;
+		}
+
 		public ParserDtoBuilder withParser(final JavaParser parser) {
 			this.parser = parser;
 			return this;
@@ -134,6 +108,17 @@ public class JavaTransientDto {
 		public ParserDtoBuilder withParserExecutor(
 				final JavaParserExecutor parserExecutor) {
 			this.parserExecutor = parserExecutor;
+			return this;
+		}
+
+		public ParserDtoBuilder withSourceline(
+				final SourceLineInfoAggregator sourceLine) {
+			this.sourceLine = sourceLine;
+			return this;
+		}
+
+		public ParserDtoBuilder withStream(final SLArtifactStream stream) {
+			this.stream = stream;
 			return this;
 		}
 
@@ -178,12 +163,8 @@ public class JavaTransientDto {
 
 	}
 
-	public static LexerDtoBuilder fromLexer() {
-		return new LexerDtoBuilder();
-	}
-
-	public static ParserDtoBuilder fromParser(final JavaTransientDto dto) {
-		return new ParserDtoBuilder(dto);
+	public static ParserDtoBuilder fromParser() {
+		return new ParserDtoBuilder();
 	}
 
 	public static TreeDtoBuilder fromTree(final JavaTransientDto dto) {
