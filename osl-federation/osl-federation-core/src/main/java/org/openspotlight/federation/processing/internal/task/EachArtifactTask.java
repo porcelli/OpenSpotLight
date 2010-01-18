@@ -73,7 +73,7 @@ public class EachArtifactTask<T extends Artifact> extends
 		RunnableWithBundleContext {
 
 	private static final Object SAVE_LOCK = new Object();
-
+	private final boolean first;
 	private final Class<T> artifactType;
 
 	private final T artifact;
@@ -82,12 +82,13 @@ public class EachArtifactTask<T extends Artifact> extends
 	private final CurrentProcessorContextImpl currentContextImpl;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public EachArtifactTask(final String repositoryName,
+	public EachArtifactTask(final boolean first, final String repositoryName,
 			final Class<T> artifactType, final T artifact,
 			final SaveBehavior saveBehavior,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
 			final CurrentProcessorContextImpl currentContextImpl) {
 		super(repositoryName);
+		this.first = first;
 		this.artifactType = artifactType;
 		this.artifact = artifact;
 		this.saveBehavior = saveBehavior;
@@ -110,7 +111,7 @@ public class EachArtifactTask<T extends Artifact> extends
 		this.bundleProcessor.beforeProcessArtifact(this.artifact);
 		LastProcessStatus result = null;
 		try {
-			if (this.artifact instanceof ArtifactWithSyntaxInformation) {
+			if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
 				final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation) this.artifact;
 				artifactWithInfo.clearSyntaxInformationSet();
 			}

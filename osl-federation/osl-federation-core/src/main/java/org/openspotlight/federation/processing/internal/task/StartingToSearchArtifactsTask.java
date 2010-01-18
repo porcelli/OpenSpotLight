@@ -213,6 +213,7 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 			}
 			final List<Task> parentTasks = new LinkedList<Task>();
 			final List<Task> allParentTasks = new LinkedList<Task>();
+			boolean first = true;
 			for (final BundleProcessorArtifactPhase<T> artifactPhase : artifactPhases) {
 				final List<Task> thisPhaseTasks = new LinkedList<Task>();
 				for (final T artifactToProcess : this.toBeReturned
@@ -231,7 +232,7 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 									+ " and artifact type "
 									+ this.artifactType.getSimpleName());
 					final EachArtifactTask<T> phaseTwo = new EachArtifactTask<T>(
-							getRepositoryName(), artifactType,
+							first, getRepositoryName(), artifactType,
 							artifactToProcess, behavior, artifactPhase, taskCtx);
 					final Task currentTask = this.currentGroup.prepareTask()
 							.withParentTasks(parentTasks)
@@ -247,6 +248,7 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 					thisPhaseTasks.add(currentTask);
 					allParentTasks.add(currentTask);
 				}
+				first = false;
 				parentTasks.clear();
 				parentTasks.addAll(thisPhaseTasks);
 				thisPhaseTasks.clear();
