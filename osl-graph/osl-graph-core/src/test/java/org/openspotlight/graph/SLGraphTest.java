@@ -3601,4 +3601,40 @@ public class SLGraphTest {
             Assert.fail();
         }
     }
+
+    @Test
+    public void testDoCast() {
+        try {
+            final SLNode root = session.createContext("1L").getRootNode();
+            final JavaClassNode javaClassNode1 = root.addNode(
+                                                              JavaClassNode.class, "javaClassNode");
+            JavaMethodNode method = javaClassNode1.addNode(JavaMethodNode.class, "method");
+            method.getParent().doCast(JavaClassNode.class);
+        } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (final SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        }
+    }
+
+    @Test( expected = ClassCastException.class)
+    public void testDoCastException() {
+        try {
+            final SLNode root = session.createContext("1L").getRootNode();
+            final JavaClassNode javaClassNode1 = root.addNode(
+                                                              JavaClassNode.class, "javaClassNode");
+            JavaMethodNode method = javaClassNode1.addNode(JavaMethodNode.class, "method");
+            final JavaMethodNode javacastedNode = method.getParent().doCast(JavaMethodNode.class);
+            javacastedNode.getID();
+        } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (final SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        }
+    }
+
 }
