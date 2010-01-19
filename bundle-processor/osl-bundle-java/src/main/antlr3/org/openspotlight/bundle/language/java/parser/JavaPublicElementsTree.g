@@ -88,6 +88,7 @@ importDeclaration
     ;
     
 typeDeclaration
+    {    executor.typeDeclaration($typeDeclaration.tree); }
     :   normalClassDeclaration
     |   enumDeclaration
     |   normalInterfaceDeclaration
@@ -95,11 +96,7 @@ typeDeclaration
     ;
 
 modifiers
-@after{
-    executor.exitingModifiers();  
-}
     :   ^(MODIFIERS modifier*)
-    {    executor.enteringModifiers(); }
     ;
 
 modifier
@@ -114,21 +111,13 @@ modifier
     |   TRANSIENT
     |   VOLATILE
     |   STRICTFP
-    {    executor.modifier($modifier.text); }
     ;
     
 normalClassDeclaration
-@after{
-    executor.exitingDeclaration();  
-}
     :   ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements? classBody)
-    {    executor.enteringClassDeclaration($Identifier.text); }
     ;
 
 normalClassExtends
-@after{
-    executor.exitingExtends();  
-}
     :    ^(EXTENDS type)
     ;
 
@@ -153,11 +142,7 @@ typeBound
     ;
 
 enumDeclaration
-@after{
-    executor.exitingDeclaration();  
-}
     :   ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements? enumBody)
-    {    executor.enteringEnumDeclaration($Identifier.text); }
     ;
 
 enumDeclarationImplements
@@ -173,11 +158,7 @@ enumConstant
     ;
     
 normalInterfaceDeclaration
-@after{
-    executor.exitingDeclaration();  
-}
     :   ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
-    {    executor.enteringInterfaceDeclaration($Identifier.text); }
     ;
 
 normalInterfaceDeclarationExtends
@@ -227,11 +208,8 @@ arrayInitializer
 
 type
     :   ^(ARRAY_TYPE type ARRAY_DIMENSION)
-    {    executor.arrayType($type.text,$ARRAY_DIMENSION.text); }
     |   ^(QUALIFIED_TYPE type (DOT type)+)
-    {    /** TODO find what to do here */ }
     |   ^(PARAMETERIZED_TYPE type typeArguments)
-    {    executor.parameterizedType($type.text,$typeArguments.text); }
     |   ^(WILDCARD_TYPE QUESTION (^(EXTENDS type)|^(SUPER type))? )
     |   ^(SIMPLE_TYPE (Identifier|VOID))
     |   ^(PRIMITIVE_TYPE primitiveType)
@@ -295,11 +273,7 @@ elementValueArrayInitializer
     ;
 
 annotationTypeDeclaration
-@after{
-    executor.exitingDeclaration();  
-}
     :   ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody)
-    {    executor.enteringAnnotationDeclaration($Identifier.text); }
     ;
     
 annotationTypeBody
