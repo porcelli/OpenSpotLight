@@ -54,6 +54,22 @@ options{
 
 @header {
 package org.openspotlight.bundle.language.java.parser;
+
+import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
+
+}
+
+@members{
+    private JavaPublicElemetsTreeExecutor executor;
+    
+    public void setExecutor(JavaPublicElemetsTreeExecutor executor){
+        this.executor = executor;
+    }
+    
+    public JavaPublicElemetsTreeExecutor getExecutor(){
+        return this.executor;
+    }
+    
 }
 
 // starting point for parsing a java file
@@ -63,10 +79,12 @@ compilationUnit
 
 packageDeclaration
     :   ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
+    {    executor.packageDeclaration($$qualifiedName.text); }
     ;
 
 importDeclaration
     :   ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
+    {    executor.importDeclaration($STATIC,$STAR,$qualifiedName.text); }
     ;
     
 typeDeclaration
@@ -77,7 +95,11 @@ typeDeclaration
     ;
 
 modifiers
+@after{
+    executor.exitingModifiers();  
+}
     :   ^(MODIFIERS modifier*)
+    {    executor.enteringModifiers(); }
     ;
 
 modifier
@@ -92,13 +114,21 @@ modifier
     |   TRANSIENT
     |   VOLATILE
     |   STRICTFP
+    {    executor.modifier($modifier.text); }
     ;
     
 normalClassDeclaration
+@after{
+    executor.exitingDeclaration();  
+}
     :   ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements? classBody)
+    {    executor.enteringClassDeclaration($Identifier.text); }
     ;
 
 normalClassExtends
+@after{
+    executor.exitingExtends();  
+}
     :    ^(EXTENDS type)
     ;
 
@@ -123,7 +153,11 @@ typeBound
     ;
 
 enumDeclaration
+@after{
+    executor.exitingDeclaration();  
+}
     :   ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements? enumBody)
+    {    executor.enteringEnumDeclaration($Identifier.text); }
     ;
 
 enumDeclarationImplements
@@ -139,7 +173,11 @@ enumConstant
     ;
     
 normalInterfaceDeclaration
+@after{
+    executor.exitingDeclaration();  
+}
     :   ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
+    {    executor.enteringInterfaceDeclaration($Identifier.text); }
     ;
 
 normalInterfaceDeclarationExtends
@@ -189,8 +227,11 @@ arrayInitializer
 
 type
     :   ^(ARRAY_TYPE type ARRAY_DIMENSION)
+    {    executor.arrayType($type.text,$ARRAY_DIMENSION.text); }
     |   ^(QUALIFIED_TYPE type (DOT type)+)
+    {    /** TODO find what to do here */ }
     |   ^(PARAMETERIZED_TYPE type typeArguments)
+    {    executor.parameterizedType($type.text,$typeArguments.text); }
     |   ^(WILDCARD_TYPE QUESTION (^(EXTENDS type)|^(SUPER type))? )
     |   ^(SIMPLE_TYPE (Identifier|VOID))
     |   ^(PRIMITIVE_TYPE primitiveType)
@@ -254,7 +295,11 @@ elementValueArrayInitializer
     ;
 
 annotationTypeDeclaration
+@after{
+    executor.exitingDeclaration();  
+}
     :   ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody)
+    {    executor.enteringAnnotationDeclaration($Identifier.text); }
     ;
     
 annotationTypeBody
