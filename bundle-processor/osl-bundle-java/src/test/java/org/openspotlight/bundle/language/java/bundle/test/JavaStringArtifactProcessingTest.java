@@ -55,6 +55,7 @@ import java.util.Set;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
+import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -82,6 +83,8 @@ import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -156,8 +159,10 @@ public class JavaStringArtifactProcessingTest {
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaLexerAndParserTypesPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaParserPublicElementsPhase.class);
+		commonProcessor.getArtifactPhases().add(
+				JavaLexerAndParserTypesPhase.class);
+		commonProcessor.getArtifactPhases().add(
+				JavaParserPublicElementsPhase.class);
 		commonProcessor.getArtifactPhases().add(JavaTreePhase.class);
 		group.getBundleTypes().add(commonProcessor);
 
@@ -233,7 +238,16 @@ public class JavaStringArtifactProcessingTest {
 				.is(LastProcessStatus.PROCESSED));
 		Assert.assertThat(jarArtifact.getSyntaxInformationSet().size(), Is
 				.is(IsNot.not(0)));
-
+		final SLNode groupNode = context.getGraphSession().getContext(
+				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
+				data.group.getUniqueName());
+		final SLNode packageNode = groupNode.getNode(getClass().getPackage()
+				.getName());
+		final SLNode classNode = packageNode
+				.getNode(getClass().getSimpleName());
+		final SLNode innerClassNode = classNode.getNode(data.getClass()
+				.getSimpleName());
+		Assert.assertThat(innerClassNode, Is.is(IsNull.notNullValue()));
 	}
 
 }
