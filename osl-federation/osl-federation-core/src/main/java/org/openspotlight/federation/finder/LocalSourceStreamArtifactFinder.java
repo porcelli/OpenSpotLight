@@ -171,7 +171,8 @@ public class LocalSourceStreamArtifactFinder extends
 						.getNormalizedFileName(new File(artifactSource
 								.getInitialLookup()))
 						+ "/" + t.toString().toLowerCase() + "/";
-				final Set<String> pathList = Files.listFileNamesFrom(location);
+				final Set<String> pathList = Files.listFileNamesFrom(location,
+						true);
 
 				for (final String p : pathList) {
 					final String correctRelativePath = Strings

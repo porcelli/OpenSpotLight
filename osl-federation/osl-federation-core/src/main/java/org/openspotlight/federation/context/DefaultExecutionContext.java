@@ -185,6 +185,11 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		logFactory = new DetailedJcrLoggerFactory(descriptor);
 	}
 
+	public boolean artifactFinderSupportsThisType(
+			final Class<? extends Artifact> type) {
+		return true;
+	}
+
 	public void closeResources() {
 		synchronized (lock) {
 			for (final AtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference : artifactFinderReferences

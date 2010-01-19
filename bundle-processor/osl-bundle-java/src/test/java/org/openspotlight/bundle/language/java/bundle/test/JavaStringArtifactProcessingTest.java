@@ -230,13 +230,13 @@ public class JavaStringArtifactProcessingTest {
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
 						.getName());
-		final StringArtifact jarArtifact = context
+		final StringArtifact artifact = context
 				.getArtifactFinder(StringArtifact.class)
 				.findByPath(
 						"/tests/org/openspotlight/bundle/language/java/ExampleGraphImport.java");
-		Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
+		Assert.assertThat(artifact.getLastProcessStatus(), Is
 				.is(LastProcessStatus.PROCESSED));
-		Assert.assertThat(jarArtifact.getSyntaxInformationSet().size(), Is
+		Assert.assertThat(artifact.getSyntaxInformationSet().size(), Is
 				.is(IsNot.not(0)));
 		final SLNode groupNode = context.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(

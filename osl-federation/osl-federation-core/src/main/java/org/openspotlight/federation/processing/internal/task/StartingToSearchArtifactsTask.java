@@ -126,7 +126,13 @@ public class StartingToSearchArtifactsTask<T extends Artifact> extends
 		final Set<T> includedArtifacts = new HashSet<T>();
 		final Set<T> notChangedArtifacts = new HashSet<T>();
 		final BundleProcessorGlobalPhase<T> bundleProcessor = (BundleProcessorGlobalPhase<T>) rawBundleProcessor;
-
+		if (!getBundleContext().artifactFinderSupportsThisType(artifactType)) {
+			logger.info(" ignoring artifacts of type "
+					+ artifactType.getSimpleName()
+					+ " due to it's unsupported execution context of type "
+					+ getBundleContext().getClass().getSimpleName());
+			return;
+		}
 		final ArtifactFinder<T> finder = getBundleContext().getArtifactFinder(
 				artifactType);
 		for (final BundleSource src : bundleProcessorType.getSources()) {

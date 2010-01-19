@@ -72,6 +72,7 @@ import org.openspotlight.security.idm.AuthenticatedUser;
  */
 public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 	private final ArtifactFinderType type;
+
 	private final ArtifactSource source;
 
 	TestExecutionContext(final String username, final String password,
@@ -85,6 +86,11 @@ public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 				uniqueGraphSession);
 		this.source = source;
 		this.type = type;
+	}
+
+	public boolean artifactFinderSupportsThisType(
+			final Class<? extends Artifact> type) {
+		return type.equals(StringArtifact.class);
 	}
 
 	@SuppressWarnings("unchecked")
