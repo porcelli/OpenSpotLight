@@ -55,10 +55,19 @@ options{
 @header {
     package org.openspotlight.bundle.language.java.parser;
     import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
+    import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
+    import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
+    import org.openspotlight.bundle.language.java.metamodel.node.*;
+    import org.openspotlight.graph.SLNode;
+    import java.util.List;
+    import java.util.ArrayList;
+    import java.util.LinkedList;
+    import java.util.Stack;
+    
 }
 
 @members{
-    private Stack<SLNode> context = new Stack<SLNode>();
+    private Stack<SLNode> stack = new Stack<SLNode>();
     private JavaPublicElemetsTreeExecutor executor;
     
     public void setExecutor(JavaPublicElemetsTreeExecutor executor){
@@ -75,8 +84,8 @@ compilationUnit
 ;
 packageDeclaration
 : ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-{ context.push(executor.packageDeclaration($qualifiedName.text)); }
-| {context.push(executor.packageDeclaration(null)); }
+{ stack.push(executor.packageDeclaration($qualifiedName.text)); }
+| {stack.push(executor.packageDeclaration(null)); }
 ;
 importDeclaration
 : ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
@@ -91,7 +100,7 @@ typeDeclaration
 
 modifiers returns [List<JavaModifier> modifiersResultList]
 @init{$modifiersResultList=new ArrayList<JavaModifier>();}
-: ^(MODIFIERS (modifier {$modifiersResultList.add($modifier.modifierResult)})*)
+: ^(MODIFIERS (modifier {$modifiersResultList.add($modifier.modifierResult);})*)
 ;
 
 modifier returns [JavaModifier modifierResult]
@@ -111,7 +120,7 @@ modifier returns [JavaModifier modifierResult]
 normalClassDeclaration
 @after{stack.pop();}
 : ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements?
-{ stack.push(executor.createJavaClass(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $normalClassExtends.typeResult, $normalClassImplements.typeListReturn)); } 
+{ stack.push(executor.createJavaClass(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalClassExtends.typeResult, $normalClassImplements.typeListReturn)); } 
 classBody)
 ;
 normalClassExtends returns [JavaType typeResult]
@@ -135,11 +144,11 @@ typeBound
 enumDeclaration
 @after{stack.pop();}
 : ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements?
-{ stack.push(executor.createEnum(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $enumDeclarationImplements.resultList)); }
+{ stack.push(executor.createEnum(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $enumDeclarationImplements.resultList)); }
 enumBody)
 ;
-enumDeclarationImplements returns [List<JavaTypeInterface> resultList]
-@init{$resultList = new ArrayList<JavaTypeInterface>();}
+enumDeclarationImplements returns [List<JavaType> resultList]
+@init{$resultList = new ArrayList<JavaType>();}
 : ^(IMPLEMENTS typeList {$resultList = $typeList.resultList;})
 ;
 enumBody
@@ -151,10 +160,10 @@ enumConstant
 normalInterfaceDeclaration
 @after{stack.pop();}
 : ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
-{ stack.push(executor.createInterface(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList)); }
+{ stack.push(executor.createInterface(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList)); }
 ;
-normalInterfaceDeclarationExtends returns [List<JavaTypeInterface> resultList]
-@init{$resultList = new ArrayList<JavaTypeInterface>();}
+normalInterfaceDeclarationExtends returns [List<JavaType> resultList]
+@init{$resultList = new ArrayList<JavaType>();}
 : ^(EXTENDS typeList{$resultList = $typeList.resultList;})
 ;
 typeList returns [List<JavaType> resultList]
@@ -170,11 +179,11 @@ interfaceBody
 typeBodyDeclaration
 : ^(INITIALIZER_BLOCK STATIC? block)
 | ^(CONSTRUCTOR_DECLARATION Identifier modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
-{ executor.createMethodConstructorDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $formalParameters.resultList, $annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList, $defaultValue); }
+{ executor.createMethodConstructorDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $formalParameters.resultList, $annotations.resultList,  $typeBodyDeclarationThrows.resultList); }
 | ^(FIELD_DECLARATION modifiers annotations? type variableDeclarator+)
-{ executor.createTypeDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $type.typeReturn); }
+{ executor.createFieldDeclaration(stack.peek(), $modifiers.modifiersResultList, $annotations.resultList, $type.typeReturn); }
 | ^(METHOD_DECLARATION Identifier modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
-{ executor.createMethodDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $formalParameters.resultList,$annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList, $defaultValue); }
+{ executor.createMethodDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $formalParameters.resultList,$annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList); }
 | ^(INNER_DECLARATION typeDeclaration)
 ;
 typeBodyDeclarationThrows returns [List<JavaType> resultList]
@@ -195,11 +204,11 @@ arrayInitializer
 : ^(ARRAY_INITIALIZER variableInitializer* RIGHT_CURLY)
 ;
 type returns [JavaType typeReturn]
-: ^(ARRAY_TYPE type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($type, $ARRAY_DIMENSION); }
+: ^(ARRAY_TYPE type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($type.typeReturn, $ARRAY_DIMENSION); }
 | ^(QUALIFIED_TYPE  type 
-       {    List<?> types = new ArrayList<?>(); 
-            types.add($type); } 
-       (DOT type {    types.add($type); } )+) 
+       {    List<JavaType> types = new ArrayList<JavaType>(); 
+            types.add($type.typeReturn); } 
+       (DOT type {    types.add($type.typeReturn); } )+) 
 { $typeReturn = executor.createQualifiedType(types); }
 | ^(PARAMETERIZED_TYPE type typeArguments {$typeReturn = executor.createParamerizedType($type.result,$typeList.resultList);} )
 | ^(WILDCARD_TYPE QUESTION (^(EXTENDS type {$typeReturn = executor.createExtendsParameterizedType($type.result);})|^(SUPER type {$typeReturn = executor.createSuperParameterizedType($type.result);}))? )
@@ -231,11 +240,11 @@ qualifiedName
 : ^(QUALIFIED_NAME (Identifier|THIS) (DOT Identifier)*)
 ;
 // ANNOTATIONS
-annotations returns [List<AnnotationType> resultList]
-@init { $resultList = new LinkedList<AnnotationType>(); }
+annotations returns [List<JavaTypeAnnotation> resultList]
+@init { $resultList = new LinkedList<JavaTypeAnnotation>(); }
 : ^(ANNOTATIONS (annotation {$resultList.add($annotation.typeNode);} )+)
 ;
-annotation returns [ AnnotationType typeNode]
+annotation returns [ JavaTypeAnnotation typeNode]
 : (
 ^(MARKER_ANNOTATION qualifiedName)
 | ^(SINGLE_MEMBER_ANNOTATION qualifiedName elementValue)
