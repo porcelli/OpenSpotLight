@@ -109,6 +109,7 @@ modifier returns [JavaModifier modifierResult]
 ;
 
 normalClassDeclaration
+@after{stack.pop();}
 : ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements?
 { stack.push(executor.createJavaClass(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $normalClassExtends.typeResult, $normalClassImplements.typeListReturn)); } 
 classBody)
@@ -132,6 +133,7 @@ typeBound
 : ^(TYPE_BOUND type+)
 ;
 enumDeclaration
+@after{stack.pop();}
 : ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements?
 { stack.push(executor.createEnum(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $enumDeclarationImplements.resultList)); }
 enumBody)
@@ -147,6 +149,7 @@ enumConstant
 : ^(ENUM_CONSTANT_DECLARATION Identifier annotations? arguments? classBody?)
 ;
 normalInterfaceDeclaration
+@after{stack.pop();}
 : ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
 { stack.push(executor.createInterface(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList)); }
 ;
@@ -167,13 +170,16 @@ interfaceBody
 typeBodyDeclaration
 : ^(INITIALIZER_BLOCK STATIC? block)
 | ^(CONSTRUCTOR_DECLARATION Identifier modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
+{ executor.createMethodConstructorDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $formalParameters.resultList, $annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList, $defaultValue); }
 | ^(FIELD_DECLARATION modifiers annotations? type variableDeclarator+)
+{ executor.createTypeDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $type.typeReturn); }
 | ^(METHOD_DECLARATION Identifier modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
-{ executor.createMethodDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, ....) }
+{ executor.createMethodDeclaration(stack.peek(), $Identifier, $modifiers.modifiersResultList, $formalParameters.resultList,$annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList, $defaultValue); }
 | ^(INNER_DECLARATION typeDeclaration)
 ;
-typeBodyDeclarationThrows
-: ^(THROWS type+)
+typeBodyDeclarationThrows returns [List<JavaType> resultList]
+@init { resultList=new ArrayList<JavaType>(); } 
+: ^(THROWS type+ {$resultList.add($type.typeReturn);})
 ;
 variableDeclarator
 : ^(VARIABLE_DECLARATION_FRAGMENT Identifier ARRAY_DIMENSION? variableDeclaratorAssign?)
@@ -195,10 +201,10 @@ type returns [JavaType typeReturn]
             types.add($type); } 
        (DOT type {    types.add($type); } )+) 
 { $typeReturn = executor.createQualifiedType(types); }
-| ^(PARAMETERIZED_TYPE type typeArguments)
-| ^(WILDCARD_TYPE QUESTION (^(EXTENDS type)|^(SUPER type))? )
-| ^(SIMPLE_TYPE (Identifier|VOID))
-| ^(PRIMITIVE_TYPE primitiveType)
+| ^(PARAMETERIZED_TYPE type typeArguments {$typeReturn = executor.createParamerizedType($type.result,$typeList.resultList);} )
+| ^(WILDCARD_TYPE QUESTION (^(EXTENDS type {$typeReturn = executor.createExtendsParameterizedType($type.result);})|^(SUPER type {$typeReturn = executor.createSuperParameterizedType($type.result);}))? )
+| ^(SIMPLE_TYPE (Identifier {$typeReturn = executor.createType($Identifier.text);} |VOID {$typeReturn = executor.createType(null);}))
+| ^(PRIMITIVE_TYPE primitiveType{$typeReturn = executor.createPrimitiveType($primitiveType);})
 ;
 primitiveType
 : BOOLEAN
@@ -213,11 +219,13 @@ primitiveType
 typeArguments
 : ^(TYPE_ARGUMENTS typeList)
 ;
-formalParameters
-: ^(FORMAL_PARAMETERS singleVariableDeclaration*)
+formalParameters returns [List<VariableDeclarationDto> resultList]
+@init {$resultList = new ArrayList<VariableDeclarationDto>();}
+: ^(FORMAL_PARAMETERS singleVariableDeclaration* {$resultList.add(singleVariableDeclaration.result);})
 ;
-singleVariableDeclaration
-: ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION?)
+singleVariableDeclaration returns [VariableDeclarationDto result]
+: ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION? 
+  { $result=new VariableDeclarationDto($Identifier.text, $modifiers.resultList, $type.result, $THREE_DOTS, $ARRAY_DIMENSION);})
 ;
 qualifiedName
 : ^(QUALIFIED_NAME (Identifier|THIS) (DOT Identifier)*)
