@@ -19,12 +19,16 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JavaParserNodeHelper {
 	private final SLNode currentContext;
 
 	private final SLNode abstractContext;
 	private final SLGraphSession session;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public JavaParserNodeHelper(final SLNode currentContext,
 			final SLGraphSession session) {
@@ -36,6 +40,12 @@ public class JavaParserNodeHelper {
 					JavaParserExecutor.ABSTRACT_CONTEXT).getRootNode();
 			this.session = session;
 			Assertions.checkNotNull("abstractContext", abstractContext);
+			logger.info("using abstract context:"
+					+ abstractContext.getContext().getID() + ":"
+					+ abstractContext.getName());
+			logger.info("using current context:"
+					+ currentContext.getContext().getID() + ":"
+					+ currentContext.getName());
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -74,6 +84,9 @@ public class JavaParserNodeHelper {
 			abstractNode.setCompleteName(completeName);
 
 			session.addLink(linkType, parent.getK2(), concreteNode, false);
+			logger.info("adding node " + concreteNode.getName() + " on parent "
+					+ parent.getK1().getName());
+
 			return new Pair<SLNode, SLNode>(abstractNode, concreteNode);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -110,6 +123,7 @@ public class JavaParserNodeHelper {
 					JavaPackage.class, packageName);
 			session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
 					false);
+			logger.info("adding node " + concreteNode.getName());
 			return new Pair<SLNode, SLNode>(abstractNode, concreteNode);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

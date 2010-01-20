@@ -1,4 +1,4 @@
-package org.openspotlight.bundle.language.java.bundle.test;
+package org.openspotlight.test;
 
 public class ExamplePublicClass {
 

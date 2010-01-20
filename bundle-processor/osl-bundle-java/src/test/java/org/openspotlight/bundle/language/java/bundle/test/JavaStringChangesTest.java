@@ -23,6 +23,7 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
@@ -122,8 +123,9 @@ public class JavaStringChangesTest {
 		final ExecutionContext context = includedFilesContextFactory
 				.createExecutionContext(username, password, descriptor,
 						repositoryName);
-		final SLNode groupNode = context.getGraphSession().getContext(
-				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
+		final SLContext ctx = context.getGraphSession().getContext(
+				SLConsts.DEFAULT_GROUP_CONTEXT);
+		final SLNode groupNode = ctx.getRootNode().getNode(
 				group.getUniqueName());
 		final SLNode packageNode = groupNode.getNode("org.openspotlight.test");
 		final SLNode classNode = packageNode.getNode("ExamplePublicClass");
