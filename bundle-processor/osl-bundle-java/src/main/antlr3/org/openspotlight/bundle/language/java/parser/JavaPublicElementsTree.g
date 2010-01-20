@@ -90,7 +90,8 @@ typeDeclaration
 ;
 
 modifiers returns [List<JavaModifier> modifiersResultList]
-: ^(MODIFIERS (modifier {modifiersResultList($modifier.modifierResult)})*)
+@init{$modifiersResultList=new ArrayList<JavaModifier>();}
+: ^(MODIFIERS (modifier {$modifiersResultList.add($modifier.modifierResult)})*)
 ;
 
 modifier returns [JavaModifier modifierResult]
@@ -104,7 +105,7 @@ modifier returns [JavaModifier modifierResult]
 | SYNCHRONIZED
 | TRANSIENT
 | VOLATILE
-| STRICTFP) {$modifierResult = executor.createModifier($modifier.text);}
+| STRICTFP) {$modifierResult = executor.getModifier($modifier.text);}
 ;
 
 normalClassDeclaration
@@ -113,10 +114,10 @@ normalClassDeclaration
 classBody)
 ;
 normalClassExtends returns [JavaType typeResult]
-: ^(EXTENDS type)
+: ^(EXTENDS type {$typeResult = $type.typeReturn;})
 ;
 normalClassImplements returns [List<JavaType> typeListReturn]
-: ^(IMPLEMENTS typeList)
+: ^(IMPLEMENTS typeList {$typeListReturn=$typeList.resultList;})
 ;
 typeParameters
 : ^(TYPE_PARAMETERS typeParameter+)
@@ -136,7 +137,8 @@ enumDeclaration
 enumBody)
 ;
 enumDeclarationImplements returns [List<JavaTypeInterface> resultList]
-: ^(IMPLEMENTS typeList {$resultList = executor.createEnumImplementList($typeList);})
+@init{$resultList = new ArrayList<JavaTypeInterface>();}
+: ^(IMPLEMENTS typeList {$resultList = $typeList.resultList;})
 ;
 enumBody
 : ^(ENUM_BODY enumConstant* typeBodyDeclaration* RIGHT_CURLY)
@@ -146,9 +148,11 @@ enumConstant
 ;
 normalInterfaceDeclaration
 : ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
+{ stack.push(executor.createInterface(stack.peek(), $Identifier, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList)); }
 ;
-normalInterfaceDeclarationExtends
-: ^(EXTENDS typeList)
+normalInterfaceDeclarationExtends returns [List<JavaTypeInterface> resultList]
+@init{$resultList = new ArrayList<JavaTypeInterface>();}
+: ^(EXTENDS typeList{$resultList = $typeList.resultList;})
 ;
 typeList returns [List<JavaType> resultList]
 @init { resultList=new ArrayList<JavaType>(); } 
