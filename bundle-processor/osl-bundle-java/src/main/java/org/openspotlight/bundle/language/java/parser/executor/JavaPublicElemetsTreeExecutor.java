@@ -25,6 +25,11 @@ public class JavaPublicElemetsTreeExecutor {
 		return null;
 	}
 
+	public JavaType createExtendsParameterizedType(final JavaType typeReturn) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public void createFieldDeclaration(final SLNode peek,
 			final List<JavaModifier> modifiers29,
 			final List<JavaTypeAnnotation> annotations30, final JavaType type31) {
@@ -68,6 +73,32 @@ public class JavaPublicElemetsTreeExecutor {
 
 	}
 
+	public JavaType createParamerizedType(final JavaType typeReturn,
+			final List<JavaType> typeArguments40) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType createPrimitiveType(final String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType createQualifiedType(final List<JavaType> types) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType createSuperParameterizedType(final JavaType typeReturn) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType createType(final String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public JavaModifier getModifier(final String string) {
 		// TODO Auto-generated method stub
 		return null;
@@ -81,6 +112,10 @@ public class JavaPublicElemetsTreeExecutor {
 
 	public JavaPackage packageDeclaration(final String string) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaTypeAnnotation resolveAnnotation(final String qualifiedName52) {
 		return null;
 	}
 

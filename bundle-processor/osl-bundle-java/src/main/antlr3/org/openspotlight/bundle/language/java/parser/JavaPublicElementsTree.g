@@ -84,12 +84,12 @@ compilationUnit
 ;
 packageDeclaration
 : ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-{ stack.push(executor.packageDeclaration($qualifiedName.text)); }
+{ stack.push(executor.packageDeclaration($qualifiedName.name)); }
 | {stack.push(executor.packageDeclaration(null)); }
 ;
 importDeclaration
 : ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
-{ executor.importDeclaration($STATIC,$STAR,$qualifiedName.text); }
+{ executor.importDeclaration($STATIC,$STAR,$qualifiedName.name); }
 ;
 typeDeclaration
 : normalClassDeclaration
@@ -210,10 +210,10 @@ type returns [JavaType typeReturn]
             types.add($type.typeReturn); } 
        (DOT type {    types.add($type.typeReturn); } )+) 
 { $typeReturn = executor.createQualifiedType(types); }
-| ^(PARAMETERIZED_TYPE type typeArguments {$typeReturn = executor.createParamerizedType($type.result,$typeList.resultList);} )
-| ^(WILDCARD_TYPE QUESTION (^(EXTENDS type {$typeReturn = executor.createExtendsParameterizedType($type.result);})|^(SUPER type {$typeReturn = executor.createSuperParameterizedType($type.result);}))? )
+| ^(PARAMETERIZED_TYPE type typeArguments {$typeReturn = executor.createParamerizedType($type.typeReturn,$typeArguments.resultList);} )
+| ^(WILDCARD_TYPE QUESTION (^(EXTENDS type {$typeReturn = executor.createExtendsParameterizedType($type.typeReturn);})|^(SUPER type {$typeReturn = executor.createSuperParameterizedType($type.typeReturn);}))? )
 | ^(SIMPLE_TYPE (Identifier {$typeReturn = executor.createType($Identifier.text);} |VOID {$typeReturn = executor.createType(null);}))
-| ^(PRIMITIVE_TYPE primitiveType{$typeReturn = executor.createPrimitiveType($primitiveType);})
+| ^(PRIMITIVE_TYPE primitiveType{$typeReturn = executor.createPrimitiveType($primitiveType.text);})
 ;
 primitiveType
 : BOOLEAN
@@ -225,19 +225,27 @@ primitiveType
 | FLOAT
 | DOUBLE
 ;
-typeArguments
-: ^(TYPE_ARGUMENTS typeList)
+typeArguments returns [List<JavaType> resultList]
+: ^(TYPE_ARGUMENTS typeList {$resultList=$typeList.resultList;})
 ;
 formalParameters returns [List<VariableDeclarationDto> resultList]
 @init {$resultList = new ArrayList<VariableDeclarationDto>();}
-: ^(FORMAL_PARAMETERS singleVariableDeclaration* {$resultList.add(singleVariableDeclaration.result);})
+: ^(FORMAL_PARAMETERS singleVariableDeclaration* {$resultList.add($singleVariableDeclaration.result);})
 ;
 singleVariableDeclaration returns [VariableDeclarationDto result]
 : ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION? 
-  { $result=new VariableDeclarationDto($Identifier.text, $modifiers.resultList, $type.result, $THREE_DOTS, $ARRAY_DIMENSION);})
+  { $result=new VariableDeclarationDto($Identifier.text, $modifiers.modifiersResultList, $type.typeReturn, $THREE_DOTS, $ARRAY_DIMENSION);})
 ;
-qualifiedName
-: ^(QUALIFIED_NAME (Identifier|THIS) (DOT Identifier)*)
+qualifiedName returns [String name]
+@init{StringBuilder sb = new StringBuilder();}
+@after{$name = sb.toString();}
+: ^(QUALIFIED_NAME (Identifier
+    {sb.append($Identifier.text);}
+   |THIS
+    {sb.append("this");}) 
+  (DOT Identifier 
+    { sb.append('.');
+      sb.append($Identifier.text);})*)
 ;
 // ANNOTATIONS
 annotations returns [List<JavaTypeAnnotation> resultList]
@@ -245,12 +253,11 @@ annotations returns [List<JavaTypeAnnotation> resultList]
 : ^(ANNOTATIONS (annotation {$resultList.add($annotation.typeNode);} )+)
 ;
 annotation returns [ JavaTypeAnnotation typeNode]
-: (
-^(MARKER_ANNOTATION qualifiedName)
-| ^(SINGLE_MEMBER_ANNOTATION qualifiedName elementValue)
-| ^(NORMAL_ANNOTATION qualifiedName elementValuePairs)
+: (^(MARKER_ANNOTATION qualifiedName)
+  | ^(SINGLE_MEMBER_ANNOTATION qualifiedName elementValue)
+  | ^(NORMAL_ANNOTATION qualifiedName elementValuePairs)
 )
-{ $typeNode=executor.resolveAnnotation($qualifiedName); }
+{ $typeNode=executor.resolveAnnotation($qualifiedName.name); }
 ;
 elementValuePairs
 : ^(MEMBER_VALUE_PAIR elementValuePair+)
