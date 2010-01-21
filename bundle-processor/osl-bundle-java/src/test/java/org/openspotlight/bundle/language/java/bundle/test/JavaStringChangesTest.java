@@ -4,6 +4,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
@@ -108,22 +109,24 @@ public class JavaStringChangesTest {
 		ctx.closeResources();
 	}
 
+	@Ignore
 	@Test
 	public void shouldRemoveDeletedInnerClassWhenItIsRemovedFromFile()
 			throws Exception {
-
+		// FIXME write this test!
 	}
 
+	@Ignore
 	@Test
 	public void shouldRemoveDeletedPublicClassWhenItsFileIsRemoved()
 			throws Exception {
+		// FIXME write this test!
 		DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
 				password, descriptor, includedFilesContextFactory, settings,
 				group);
 		final ExecutionContext context = includedFilesContextFactory
 				.createExecutionContext(username, password, descriptor,
 						repositoryName);
-		context.getGraphSession().get
 		final SLContext ctx = context.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode = ctx.getRootNode().getNode(
