@@ -7,7 +7,7 @@ import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.language.java.parser.JavaLexer;
 import org.openspotlight.bundle.language.java.parser.JavaParser;
-import org.openspotlight.bundle.language.java.parser.JavaTree;
+import org.openspotlight.bundle.language.java.parser.JavaPublicElementsTree;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaParserExecutor;
 import org.openspotlight.common.util.Assertions;
@@ -34,7 +34,7 @@ public class JavaTransientDto {
 		protected JavaParser parser;
 		protected Tree tree;
 		protected CommonTreeNodeStream treeNodes;
-		protected JavaTree walker;
+		protected JavaPublicElementsTree walker;
 
 		BuilderParameters() {
 
@@ -156,7 +156,7 @@ public class JavaTransientDto {
 			return this;
 		}
 
-		public TreeDtoBuilder withWalker(final JavaTree walker) {
+		public TreeDtoBuilder withWalker(final JavaPublicElementsTree walker) {
 			this.walker = walker;
 			return this;
 		}
@@ -180,14 +180,15 @@ public class JavaTransientDto {
 	public final JavaParserExecutor parserExecutor;
 	public final Tree tree;
 	public final CommonTreeNodeStream treeNodes;
-	public final JavaTree walker;
+	public final JavaPublicElementsTree walker;
 
 	private JavaTransientDto(final SLArtifactStream stream,
 			final JavaLexer lexer, final SourceLineInfoAggregator sourceLine,
 			final JavaLexerExecutor lexerExecutor,
 			final CommonTokenStream commonTokenStream, final JavaParser parser,
 			final JavaParserExecutor parserExecutor, final Tree tree,
-			final CommonTreeNodeStream treeNodes, final JavaTree walker) {
+			final CommonTreeNodeStream treeNodes,
+			final JavaPublicElementsTree walker) {
 		super();
 		this.stream = stream;
 		this.lexer = lexer;

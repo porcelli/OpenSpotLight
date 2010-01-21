@@ -1,7 +1,5 @@
 package org.openspotlight.bundle.language.java.bundle;
 
-import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.openspotlight.bundle.language.java.parser.JavaTree;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -27,15 +25,15 @@ public class JavaTreePhase implements
 	public LastProcessStatus processArtifact(final StringArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
-		JavaTransientDto dto = (JavaTransientDto) artifact.getTransientMap()
-				.get("DTO-Parser");
-		final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(
-				dto.tree);
-		final JavaTree walker = new JavaTree(treeNodes);
-		walker.compilationUnit();
-		dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)
-				.withWalker(walker).create();
-		artifact.getTransientMap().put("DTO-Tree", dto);
+		// JavaTransientDto dto = (JavaTransientDto) artifact.getTransientMap()
+		// .get("DTO-Parser");
+		// final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(
+		// dto.tree);
+		// final JavaTree walker = new JavaTree(treeNodes);
+		// walker.compilationUnit();
+		// dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)
+		// .withWalker(walker).create();
+		// artifact.getTransientMap().put("DTO-Tree", dto);
 		return LastProcessStatus.PROCESSED;
 	}
 

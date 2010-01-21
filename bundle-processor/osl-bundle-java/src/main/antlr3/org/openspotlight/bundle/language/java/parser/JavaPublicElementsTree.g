@@ -204,14 +204,14 @@ arrayInitializer
 : ^(ARRAY_INITIALIZER variableInitializer* RIGHT_CURLY)
 ;
 type returns [JavaType typeReturn]
-: ^(ARRAY_TYPE type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($type.typeReturn, $ARRAY_DIMENSION.text); }
-| ^(QUALIFIED_TYPE  type 
+: ^(ARRAY_TYPE tp0=type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($tp0.typeReturn, $ARRAY_DIMENSION.text); }
+| ^(QUALIFIED_TYPE  tp1=type 
        {    List<JavaType> types = new ArrayList<JavaType>(); 
-            types.add($type.typeReturn); } 
-       (DOT type {    types.add($type.typeReturn); } )+) 
+            types.add($tp1.typeReturn); } 
+       (DOT tp2=type {    types.add($tp2.typeReturn); } )+) 
 { $typeReturn = executor.createQualifiedType(types); }
-| ^(PARAMETERIZED_TYPE type typeArguments {$typeReturn = executor.createParamerizedType($type.typeReturn,$typeArguments.resultList);} )
-| ^(WILDCARD_TYPE QUESTION (^(EXTENDS type {$typeReturn = executor.createExtendsParameterizedType($type.typeReturn);})|^(SUPER type {$typeReturn = executor.createSuperParameterizedType($type.typeReturn);}))? )
+| ^(PARAMETERIZED_TYPE tp3=type typeArguments {$typeReturn = executor.createParamerizedType($tp3.typeReturn,$typeArguments.resultList);} )
+| ^(WILDCARD_TYPE QUESTION (^(EXTENDS tp4=type {$typeReturn = executor.createExtendsParameterizedType($tp4.typeReturn);})|^(SUPER tp5=type {$typeReturn = executor.createSuperParameterizedType($tp5.typeReturn);}))? )
 | ^(SIMPLE_TYPE (Identifier {$typeReturn = executor.createType($Identifier.text);} |VOID {$typeReturn = executor.createType(null);}))
 | ^(PRIMITIVE_TYPE primitiveType{$typeReturn = executor.createPrimitiveType($primitiveType.text);})
 ;
@@ -239,13 +239,13 @@ singleVariableDeclaration returns [VariableDeclarationDto result]
 qualifiedName returns [String name]
 @init{StringBuilder sb = new StringBuilder();}
 @after{$name = sb.toString();}
-: ^(QUALIFIED_NAME (Identifier
-    {sb.append($Identifier.text);}
+: ^(QUALIFIED_NAME (id1=Identifier
+    {sb.append($id1.text);}
    |THIS
     {sb.append("this");}) 
-  (DOT Identifier 
+  (DOT id2=Identifier 
     { sb.append('.');
-      sb.append($Identifier.text);})*)
+      sb.append($id2.text);})*)
 ;
 // ANNOTATIONS
 annotations returns [List<JavaTypeAnnotation> resultList]
@@ -253,11 +253,11 @@ annotations returns [List<JavaTypeAnnotation> resultList]
 : ^(ANNOTATIONS (annotation {$resultList.add($annotation.typeNode);} )+)
 ;
 annotation returns [ JavaTypeAnnotation typeNode]
-: (^(MARKER_ANNOTATION qualifiedName)
-  | ^(SINGLE_MEMBER_ANNOTATION qualifiedName elementValue)
-  | ^(NORMAL_ANNOTATION qualifiedName elementValuePairs)
+: (^(MARKER_ANNOTATION q1=qualifiedName){ $typeNode=executor.resolveAnnotation($q1.name); }
+  | ^(SINGLE_MEMBER_ANNOTATION q2=qualifiedName elementValue) { $typeNode=executor.resolveAnnotation($q2.name); }
+  | ^(NORMAL_ANNOTATION q3=qualifiedName elementValuePairs){ $typeNode=executor.resolveAnnotation($q3.name); }
 )
-{ $typeNode=executor.resolveAnnotation($qualifiedName.name); }
+
 ;
 elementValuePairs
 : ^(MEMBER_VALUE_PAIR elementValuePair+)
