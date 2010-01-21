@@ -97,6 +97,7 @@ public class TestExecutionContextFactory implements ExecutionContextFactory,
 		for (final SLGraphSession session : sessionMap.values()) {
 			session.close();
 		}
+		sessionMap.clear();
 	}
 
 	public synchronized ExecutionContext createExecutionContext(

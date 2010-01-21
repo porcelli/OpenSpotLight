@@ -5,11 +5,13 @@ import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.bundle.language.java.bundle.test.JavaStringArtifactProcessingTest.SampleJavaArtifactRegistry;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.context.TestExecutionContextFactory;
@@ -20,19 +22,21 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
+import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
+import org.openspotlight.federation.processing.internal.ExampleBundleProcessor;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-public class JavaStringChangesTest {
+public class JavaPublicElementsPhaseTest {
 
 	private ExecutionContextFactory includedFilesContextFactory;
-	private ExecutionContextFactory changedFilesContextFactory;
-	private ExecutionContextFactory removedFilesContextFactory;
 	private GlobalSettings settings;
 	private Group group;
 
@@ -44,6 +48,11 @@ public class JavaStringChangesTest {
 
 	@Before
 	public void setupResources() throws Exception {
+
+		JcrConnectionProvider.createFromData(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.closeRepositoryAndCleanResources();
+
 		final Repository repo = new Repository();
 		repo.setName("name");
 		repo.setActive(true);
@@ -52,25 +61,9 @@ public class JavaStringChangesTest {
 		includedSource.setRepository(repo);
 		includedSource.setName("classpath");
 		includedSource
-				.setInitialLookup("./src/test/resources/stringArtifacts/new_file");
+				.setInitialLookup("./src/test/resources/stringArtifacts/exampleFiles");
 		includedFilesContextFactory = TestExecutionContextFactory
 				.createFactory(ArtifactFinderType.LOCAL_SOURCE, includedSource);
-
-		final ArtifactSource changedSource = new ArtifactSource();
-		changedSource.setRepository(repo);
-		changedSource.setName("classpath");
-		changedSource
-				.setInitialLookup("./src/test/resources/stringArtifacts/changed_file");
-		changedFilesContextFactory = TestExecutionContextFactory.createFactory(
-				ArtifactFinderType.LOCAL_SOURCE, changedSource);
-
-		final ArtifactSource removedSource = new ArtifactSource();
-		removedSource.setRepository(repo);
-		removedSource.setName("classpath");
-		removedSource
-				.setInitialLookup("./src/test/resources/stringArtifacts/removed_file");
-		removedFilesContextFactory = TestExecutionContextFactory.createFactory(
-				ArtifactFinderType.LOCAL_SOURCE, removedSource);
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
@@ -98,7 +91,7 @@ public class JavaStringChangesTest {
 		final BundleSource bundleSource = new BundleSource();
 		commonProcessor.getSources().add(bundleSource);
 		bundleSource.setBundleProcessorType(commonProcessor);
-		bundleSource.setRelative("tests/");
+		bundleSource.setRelative("src/");
 		bundleSource.getIncludeds().add("**/*.java");
 		final ExecutionContext ctx = includedFilesContextFactory
 				.createExecutionContext(username, password, descriptor,
@@ -109,28 +102,30 @@ public class JavaStringChangesTest {
 	}
 
 	@Test
-	public void shouldRemoveDeletedInnerClassWhenItIsRemovedFromFile()
-			throws Exception {
+	public void shouldResoulveExpectedTokens() throws Exception {
+		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
+				.executeBundles(username, password, descriptor,
+						includedFilesContextFactory, settings, group);
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.ERROR), Is.is(false));
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
+				.is(false));
+		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
-	}
-
-	@Test
-	public void shouldRemoveDeletedPublicClassWhenItsFileIsRemoved()
-			throws Exception {
-		DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
-				password, descriptor, includedFilesContextFactory, settings,
-				group);
 		final ExecutionContext context = includedFilesContextFactory
 				.createExecutionContext(username, password, descriptor,
 						repositoryName);
-		context.getGraphSession().get
 		final SLContext ctx = context.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode = ctx.getRootNode().getNode(
 				group.getUniqueName());
-		final SLNode packageNode = groupNode.getNode("org.openspotlight.test");
-		final SLNode classNode = packageNode.getNode("ExamplePublicClass");
+
+		final SLNode packageNode = groupNode
+				.getNode(JavaConstants.DEFAULT_PACKAGE);
+		final SLNode classNode = packageNode.getNode("ClassOnDefaultPackage");
 		Assert.assertThat(classNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(classNode, Is.is(JavaTypeClass.class));
 
 	}
 }

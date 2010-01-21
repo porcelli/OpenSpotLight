@@ -85,6 +85,7 @@ public class SingleGraphSessionExecutionContextFactory implements
 		for (final SLGraphSession session : sessionMap.values()) {
 			session.close();
 		}
+		sessionMap.clear();
 	}
 
 	public synchronized ExecutionContext createExecutionContext(
