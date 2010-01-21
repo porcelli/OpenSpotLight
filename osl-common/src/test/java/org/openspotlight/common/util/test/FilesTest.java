@@ -68,9 +68,9 @@ import org.openspotlight.common.util.Files;
 
 /**
  * Test class for {@link Files}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
+ * 
  */
 @SuppressWarnings("all")
 public class FilesTest {
@@ -115,14 +115,22 @@ public class FilesTest {
 	@SuppressWarnings("boxing")
 	@Test
 	public void shouldListFileNamesInARecursiveWay() throws Exception {
-		final Set<String> fileNames = listFileNamesFrom(__LOWEST_PATH);
-		final String completePath = Files.getNormalizedFileName(new File(__LOWEST_PATH + RELATIVE_PATH_FILE));
+		final Set<String> fileNames = listFileNamesFrom(__LOWEST_PATH, false);
+		final String completePath = Files.getNormalizedFileName(new File(
+				__LOWEST_PATH + RELATIVE_PATH_FILE));
 		assertThat(fileNames.contains(completePath), is(true));
+	}
+
+	@Test
+	public void shouldReturnEmptySetWhenGettingInvalidFileWithSilentActivated()
+			throws Exception {
+		final Set<String> result = listFileNamesFrom("invalid base path", true); //$NON-NLS-1$
+		assertThat(result.size(), is(0));
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void shouldThrowExceptionWhenGettingInvalidFile() throws Exception {
-		listFileNamesFrom("invalid base path"); //$NON-NLS-1$
+		listFileNamesFrom("invalid base path", false); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("boxing")

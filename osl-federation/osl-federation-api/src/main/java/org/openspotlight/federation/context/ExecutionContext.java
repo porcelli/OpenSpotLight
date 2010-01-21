@@ -58,6 +58,8 @@ import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 public interface ExecutionContext extends Disposable {
+	public boolean artifactFinderSupportsThisType(Class<? extends Artifact> type);
+
 	public <A extends Artifact> ArtifactFinder<A> getArtifactFinder(
 			Class<A> type);
 

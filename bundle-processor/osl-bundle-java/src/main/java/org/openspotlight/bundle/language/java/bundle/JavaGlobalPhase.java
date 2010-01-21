@@ -36,7 +36,6 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 			final ArtifactChanges<Artifact> changes,
 			final ArtifactsToBeProcessed<Artifact> toBeReturned)
 			throws Exception {
-		// TODO Auto-generated method stub
 
 	}
 

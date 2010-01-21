@@ -136,7 +136,8 @@ public class FileSystemStreamArtifactFinder extends
 			final String pathToRemove = Files.getNormalizedFileName(new File(
 					artifactSource.getInitialLookup()));
 
-			final Set<String> pathList = Files.listFileNamesFrom(location);
+			final Set<String> pathList = Files.listFileNamesFrom(location,
+					false);
 
 			final Set<String> result = new HashSet<String>();
 			for (final String p : pathList) {
