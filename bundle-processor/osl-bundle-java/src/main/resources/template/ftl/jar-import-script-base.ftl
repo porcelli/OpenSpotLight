@@ -4,12 +4,12 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.bundle.language.java.metamodel.link.*;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
-import org.openspotlight.bundle.language.java.Constants;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import java.util.Map;
 import java.util.TreeMap;
 
 SLNode currentContextRootNode = session.createContext(currentContextName).getRootNode();
-SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
+SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
 JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode,abstractContextRootNode);
 JavaType newType=null;
 JavaMethod method=null;

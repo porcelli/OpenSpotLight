@@ -16,7 +16,7 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.bundle.language.java.metamodel.link.*;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
-import org.openspotlight.bundle.language.java.Constants;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -24,7 +24,7 @@ SLGraphFactory factory = new SLGraphFactoryImpl();
 SLGraph graph = factory.createTempGraph(true);
 SLGraphSession session = graph.openSession();
 SLNode currentContextRootNode = session.createContext("${doc.TypeDefinitionSet.name}-${doc.TypeDefinitionSet.version}").getRootNode();
-SLNode abstractContextRootNode = session.createContext(Constants.ABSTRACT_CONTEXT).getRootNode();
+SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
 JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode,abstractContextRootNode);
 JavaType newType;
 JavaMethod method;
