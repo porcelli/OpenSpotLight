@@ -89,7 +89,7 @@ packageDeclaration
 ;
 importDeclaration
 : ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
-{ executor.importDeclaration($STATIC,$STAR,$qualifiedName.name); }
+{ executor.importDeclaration($STATIC.text,$STAR.text,$qualifiedName.name); }
 ;
 typeDeclaration
 : normalClassDeclaration
@@ -204,7 +204,7 @@ arrayInitializer
 : ^(ARRAY_INITIALIZER variableInitializer* RIGHT_CURLY)
 ;
 type returns [JavaType typeReturn]
-: ^(ARRAY_TYPE type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($type.typeReturn, $ARRAY_DIMENSION); }
+: ^(ARRAY_TYPE type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($type.typeReturn, $ARRAY_DIMENSION.text); }
 | ^(QUALIFIED_TYPE  type 
        {    List<JavaType> types = new ArrayList<JavaType>(); 
             types.add($type.typeReturn); } 

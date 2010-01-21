@@ -2,7 +2,6 @@ package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
@@ -12,15 +11,15 @@ import org.openspotlight.graph.SLNode;
 public class JavaPublicElemetsTreeExecutor {
 
 	public JavaType createArrayType(final JavaType typeReturn,
-			final CommonTree aRRAYDIMENSION39) {
+			final String dimension) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public SLNode createEnum(final SLNode peek, final String string,
-			final List<JavaModifier> modifiers14,
-			final List<JavaTypeAnnotation> annotations15,
-			final List<JavaType> enumDeclarationImplements16) {
+	public SLNode createEnum(final SLNode parent, final String name,
+			final List<JavaModifier> modifiers,
+			final List<JavaTypeAnnotation> annotations,
+			final List<JavaType> interfaces) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -104,8 +103,8 @@ public class JavaPublicElemetsTreeExecutor {
 		return null;
 	}
 
-	public void importDeclaration(final CommonTree sTATIC2,
-			final CommonTree sTAR3, final String string) {
+	public void importDeclaration(final String string2, final String string3,
+			final String string) {
 		// TODO Auto-generated method stub
 
 	}
