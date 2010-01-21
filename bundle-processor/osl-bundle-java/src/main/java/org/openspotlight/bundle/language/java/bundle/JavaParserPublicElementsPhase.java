@@ -41,6 +41,7 @@ public class JavaParserPublicElementsPhase implements
 				dto.tree);
 		final JavaPublicElementsTree walker = new JavaPublicElementsTree(
 				treeNodes);
+		treeNodes.setTokenStream(dto.commonTokenStream);
 		walker.setExecutor(new JavaPublicElemetsTreeExecutor(currentContext
 				.getCurrentNodeGroup(), context.getGraphSession()));
 		walker.compilationUnit();

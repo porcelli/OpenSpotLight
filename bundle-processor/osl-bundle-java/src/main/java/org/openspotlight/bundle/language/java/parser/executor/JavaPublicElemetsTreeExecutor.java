@@ -154,8 +154,7 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaModifier getModifier(final String string) {
-		// TODO Auto-generated method stub
-		return null;
+		return JavaModifier.getByName(string);
 	}
 
 	public void importDeclaration(final String string2, final String string3,
