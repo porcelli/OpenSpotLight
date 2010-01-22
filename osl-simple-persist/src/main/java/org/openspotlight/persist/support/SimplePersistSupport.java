@@ -63,6 +63,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -475,7 +477,7 @@ public class SimplePersistSupport {
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
 		Assertions.checkCondition("sessionAlive", session.isLive());
-		final Set<Node> result = new HashSet<Node>();
+		final Set<Node> result = new LinkedHashSet<Node>();
 		for (final T bean : beans) {
 			final Node newNode = SimplePersistSupport.convertBeanToJcr(
 					parentJcrNode, session, bean);
@@ -501,7 +503,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
-		final Set<Node> result = new HashSet<Node>();
+		final Set<Node> result = new LinkedHashSet<Node>();
 		for (final T bean : beans) {
 			if (bean != null) {
 				final Node newNode = SimplePersistSupport.convertBeanToJcr(
@@ -617,7 +619,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
-		final Set<T> result = new HashSet<T>();
+		final Set<T> result = new LinkedHashSet<T>();
 		for (final Node node : jcrNodes) {
 			final T bean = SimplePersistSupport.<T> convertJcrToBean(session,
 					node, multipleLoadingStrategy);
@@ -645,7 +647,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
-		final Set<T> result = new HashSet<T>();
+		final Set<T> result = new LinkedHashSet<T>();
 		while (jcrNodes.hasNext()) {
 			final Node node = jcrNodes.nextNode();
 			final T bean = SimplePersistSupport.<T> convertJcrToBean(session,
@@ -1186,7 +1188,7 @@ public class SimplePersistSupport {
 			final String propertyNodeWhereXpath = buildPropertyString(nodeType,
 					propertyNames, propertyValues,
 					SimplePersistSupport.PROPERTY_VALUE);
-			final Set<T> resultNodes = new HashSet<T>();
+			final Set<T> resultNodes = new LinkedHashSet<T>();
 
 			executeXpathAndFillSet(rootPath, session, multipleLoadingStrategy,
 					propertyNodeWhereXpath, resultNodes);
@@ -1521,7 +1523,7 @@ public class SimplePersistSupport {
 					JcrNodeType.MULTIPLE_NODE_PROPERTY, null, entry.getKey());
 			final NodeIterator existentNodesIterator = parent
 					.getNodes(nodeName);
-			final HashMap<String, Node> existentNodes = new HashMap<String, Node>();
+			final LinkedHashMap<String, Node> existentNodes = new LinkedHashMap<String, Node>();
 			while (existentNodesIterator.hasNext()) {
 				final Node existentNode = existentNodesIterator.nextNode();
 				final String hash = existentNode.getProperty(
