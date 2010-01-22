@@ -1354,10 +1354,11 @@ genericMethodOrConstructorDecl[Object modifiersTree, int tokenStart]
 
 methodDeclaration
     :   Identifier methodDeclaratorRest
+    {executor.createMethodDeclare($Identifier.text);}
     ;
 
-fieldDeclaration
-    :   variableDeclarators SEMI_COLON!
+fieldDeclaration 
+    :   variableDeclarators {executor.createFields($variableDeclarators.names);} SEMI_COLON!
     ;
         
 interfaceBodyDeclaration
@@ -1428,13 +1429,14 @@ constantDeclarator
         -> ^(VARIABLE_DECLARATION_FRAGMENT Identifier constantDeclaratorRest)
     ;
 
-variableDeclarators
-    :    variableDeclarator (COMMA! variableDeclarator)*
+variableDeclarators returns [List<String> names]
+@init { $names = new ArrayList<String>(); }
+    :    vd1=variableDeclarator {$names.add($vd1.name);}(COMMA! vd2=variableDeclarator{$names.add($vd2.name);})*
     ;
 
-variableDeclarator
+variableDeclarator returns [String name]
 @init    {    int mode = 0;    }
-    :   variableDeclaratorId (ASSIGN variableInitializer {mode = 1;})?
+    :   variableDeclaratorId {$name = $variableDeclaratorId.name;}(ASSIGN variableInitializer {mode = 1;})?
         ->{mode == 1}? ^(VARIABLE_DECLARATION_FRAGMENT variableDeclaratorId ^(ASSIGN variableInitializer)) 
         ->  ^(VARIABLE_DECLARATION_FRAGMENT variableDeclaratorId)
     ;
@@ -1448,8 +1450,8 @@ constantDeclaratorRest
         -> arrayDimensionDeclaration? ^(ASSIGN variableInitializer)
     ;
     
-variableDeclaratorId
-    :   Identifier arrayDimensionDeclaration?
+variableDeclaratorId returns [String name]
+    :   Identifier {$name = $Identifier.text;} arrayDimensionDeclaration?
     ;
 
 variableInitializer

@@ -1,5 +1,6 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import java.util.List;
 import java.util.Stack;
 
 import org.antlr.runtime.tree.Tree;
@@ -29,6 +30,11 @@ public class JavaParserExecutor implements JavaConstants {
 		typeContext.push(newNode);
 	}
 
+	public void createFields(final List<String> list) {
+		// TODO Auto-generated method stub
+
+	}
+
 	public void createJavaTypeAnnotation(final SLCommonToken identifier292) {
 		final Pair<SLNode, SLNode> newNode = helper.createJavaTypeAnnotation(
 				typeContext.peek(), identifier292.getText());
@@ -52,6 +58,11 @@ public class JavaParserExecutor implements JavaConstants {
 		final Pair<SLNode, SLNode> newNode = helper.createJavaTypeInterface(
 				typeContext.peek(), identifier75.getText());
 		typeContext.push(newNode);
+
+	}
+
+	public void createMethodDeclare(final String string) {
+		// TODO Auto-generated method stub
 
 	}
 
