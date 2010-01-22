@@ -54,131 +54,172 @@ import org.openspotlight.graph.annotation.SLProperty;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Interface for node Java Method Meta Model. {@link JavaType} should be used as parent.
+ * The Interface for node Java Method Meta Model. {@link JavaType} should be
+ * used as parent.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Java Method" )
+@SLDescription("Java Method")
 public interface JavaMethod extends SLNode {
 
-    /**
-     * Gets the static.
-     * 
-     * @return the static
-     */
-    @SLProperty
-    public Boolean getStatic();
+	/**
+	 * Gets the abstract
+	 * 
+	 * @return the abstract
+	 */
+	@SLProperty
+	public Boolean getAbstract();
 
-    /**
-     * Sets the static.
-     * 
-     * @param newStatic the new static
-     */
-    public void setStatic( Boolean newStatic );
+	/**
+	 * Gets the final.
+	 * 
+	 * @return the final
+	 */
+	@SLProperty
+	public Boolean getFinal();
 
-    /**
-     * Gets the version.
-     * 
-     * @return the version
-     */
-    @SLProperty
-    public String getVersion();
+	/**
+	 * Gets the Native
+	 * 
+	 * @return the Native
+	 */
+	@SLProperty
+	public Boolean getNative();
 
-    /**
-     * Sets the version.
-     * 
-     * @param newVersion the new version
-     */
-    public void setVersion( String newVersion );
+	/**
+	 * Gets the private.
+	 * 
+	 * @return the private
+	 */
+	@SLProperty
+	public Boolean getPrivate();
 
-    /**
-     * Gets the public.
-     * 
-     * @return the public
-     */
-    @SLProperty
-    public Boolean getPublic();
+	/**
+	 * Gets the protected.
+	 * 
+	 * @return the protected
+	 */
+	@SLProperty
+	public Boolean getProtected();
 
-    /**
-     * Sets the public.
-     * 
-     * @param newPublic the new public
-     */
-    public void setPublic( Boolean newPublic );
+	/**
+	 * Gets the public.
+	 * 
+	 * @return the public
+	 */
+	@SLProperty
+	public Boolean getPublic();
 
-    /**
-     * Gets the protected.
-     * 
-     * @return the protected
-     */
-    @SLProperty
-    public Boolean getProtected();
+	/**
+	 * Gets the simple name.
+	 * 
+	 * @return the simple name
+	 */
+	@SLProperty
+	public String getSimpleName();
 
-    /**
-     * Sets the protected.
-     * 
-     * @param newProtected the new protected
-     */
-    public void setProtected( Boolean newProtected );
+	/**
+	 * Gets the static.
+	 * 
+	 * @return the static
+	 */
+	@SLProperty
+	public Boolean getStatic();
 
-    /**
-     * Gets the final.
-     * 
-     * @return the final
-     */
-    @SLProperty
-    public Boolean getFinal();
+	/**
+	 * Gets the synchronized.
+	 * 
+	 * @return the synchronized
+	 */
+	@SLProperty
+	public Boolean getSynchronized();
 
-    /**
-     * Sets the final.
-     * 
-     * @param newFinal the new final
-     */
-    public void setFinal( Boolean newFinal );
+	/**
+	 * Gets the version.
+	 * 
+	 * @return the version
+	 */
+	@SLProperty
+	public String getVersion();
 
-    /**
-     * Gets the synchronized.
-     * 
-     * @return the synchronized
-     */
-    @SLProperty
-    public Boolean getSynchronized();
+	/**
+	 * Sets the abstract.
+	 * 
+	 * @param newAbstract
+	 *            the new abstract
+	 */
+	public void setAbstract(Boolean newAbstract);
 
-    /**
-     * Sets the synchronized.
-     * 
-     * @param newSynchronized the new synchronized
-     */
-    public void setSynchronized( Boolean newSynchronized );
+	/**
+	 * Sets the final.
+	 * 
+	 * @param newFinal
+	 *            the new final
+	 */
+	public void setFinal(Boolean newFinal);
 
-    /**
-     * Gets the private.
-     * 
-     * @return the private
-     */
-    @SLProperty
-    public Boolean getPrivate();
+	/**
+	 * Sets the Native.
+	 * 
+	 * @param newNative
+	 *            the new Native
+	 */
+	public void setNative(Boolean newNative);
 
-    /**
-     * Sets the private.
-     * 
-     * @param newPrivate the new private
-     */
-    public void setPrivate( Boolean newPrivate );
+	/**
+	 * Sets the private.
+	 * 
+	 * @param newPrivate
+	 *            the new private
+	 */
+	public void setPrivate(Boolean newPrivate);
 
-    /**
-     * Gets the simple name.
-     * 
-     * @return the simple name
-     */
-    @SLProperty
-    public String getSimpleName();
+	/**
+	 * Sets the protected.
+	 * 
+	 * @param newProtected
+	 *            the new protected
+	 */
+	public void setProtected(Boolean newProtected);
 
-    /**
-     * Sets the simple name.
-     * 
-     * @param newSimpleName the new simple name
-     */
-    public void setSimpleName( String newSimpleName );
+	/**
+	 * Sets the public.
+	 * 
+	 * @param newPublic
+	 *            the new public
+	 */
+	public void setPublic(Boolean newPublic);
+
+	/**
+	 * Sets the simple name.
+	 * 
+	 * @param newSimpleName
+	 *            the new simple name
+	 */
+	public void setSimpleName(String newSimpleName);
+
+	/**
+	 * Sets the static.
+	 * 
+	 * @param newStatic
+	 *            the new static
+	 */
+	public void setStatic(Boolean newStatic);
+
+	/**
+	 * Sets the synchronized.
+	 * 
+	 * @param newSynchronized
+	 *            the new synchronized
+	 */
+	public void setSynchronized(Boolean newSynchronized);
+
+	/**
+	 * Sets the version.
+	 * 
+	 * @param newVersion
+	 *            the new version
+	 */
+	public void setVersion(String newVersion);
 
 }

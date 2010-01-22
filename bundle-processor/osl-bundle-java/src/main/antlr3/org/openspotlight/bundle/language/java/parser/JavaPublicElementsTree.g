@@ -234,7 +234,7 @@ formalParameters returns [List<VariableDeclarationDto> resultList]
 ;
 singleVariableDeclaration returns [VariableDeclarationDto result]
 : ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION? 
-  { $result=new VariableDeclarationDto($Identifier.text, $modifiers.modifiersResultList, $type.typeReturn, $THREE_DOTS, $ARRAY_DIMENSION);})
+  { $result=new VariableDeclarationDto($Identifier.text, $modifiers.modifiersResultList, $type.typeReturn, $THREE_DOTS.text, $ARRAY_DIMENSION.text);})
 ;
 qualifiedName returns [String name]
 @init{StringBuilder sb = new StringBuilder();}

@@ -8,6 +8,10 @@ import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.Anottates;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
+import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
@@ -21,16 +25,21 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 
+//FIXME RESOLVE ALL KINDS OF LINKS ONLY ON ABSTRACT CONTEXT, EXCEPT THE ONES OF THIS CLASSPATH
 public class JavaPublicElemetsTreeExecutor {
 
 	private final SLNode currentContext;
 
 	private final SLNode abstractContext;
+
 	private final SLGraphSession session;
+
 	private final IdentityHashMap<SLNode, SLNode> concreteAbstractCache = new IdentityHashMap<SLNode, SLNode>();
 
 	private List<String> includedPackages;
+
 	private List<String> includedClasses;
 
 	private List<String> includedStaticClasses;
@@ -169,23 +178,26 @@ public class JavaPublicElemetsTreeExecutor {
 				JavaTypeClass.class);
 	}
 
-	public void createMethodConstructorDeclaration(final SLNode peek,
+	public JavaMethod createMethodConstructorDeclaration(final SLNode peek,
 			final String string, final List<JavaModifier> modifiers25,
 			final List<VariableDeclarationDto> formalParameters26,
 			final List<JavaTypeAnnotation> annotations27,
-			final List<JavaType> typeBodyDeclarationThrows28) {
-		// TODO Auto-generated method stub
+			final List<JavaType> typeBodyDeclarationThrows28) throws Exception {
+		return internalCreateMethod(peek, string, modifiers25,
+				formalParameters26, annotations27, null,
+				typeBodyDeclarationThrows28, true);
 
 	}
 
-	public void createMethodDeclaration(final SLNode peek, final String string,
-			final List<JavaModifier> modifiers33,
+	public JavaMethod createMethodDeclaration(final SLNode peek,
+			final String string, final List<JavaModifier> modifiers33,
 			final List<VariableDeclarationDto> formalParameters34,
 			final List<JavaTypeAnnotation> annotations35,
 			final JavaType type36,
-			final List<JavaType> typeBodyDeclarationThrows37) {
-		// TODO Auto-generated method stub
-
+			final List<JavaType> typeBodyDeclarationThrows37) throws Exception {
+		return internalCreateMethod(peek, string, modifiers33,
+				formalParameters34, annotations35, type36,
+				typeBodyDeclarationThrows37, false);
 	}
 
 	private <T extends SLNode> T createNodeOnBothContexts(
@@ -276,6 +288,91 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 	}
 
+	private JavaMethod internalCreateMethod(final SLNode peek,
+			final String string, final List<JavaModifier> modifiers33,
+			final List<VariableDeclarationDto> formalParameters34,
+			final List<JavaTypeAnnotation> annotations35,
+			final JavaType type36,
+			final List<JavaType> typeBodyDeclarationThrows37,
+			final boolean constructor) throws SLNodeTypeNotInExistentHierarchy,
+			SLGraphSessionException, SLInvalidCredentialException {
+		final StringBuilder completeMethodName = new StringBuilder();
+		completeMethodName.append(string);
+		completeMethodName.append('(');
+		for (int i = 0, size = formalParameters34.size(); i < size; i++) {
+			completeMethodName.append(formalParameters34.get(i).getType()
+					.getCompleteName());
+			if (i != size - 1) {
+				completeMethodName.append(' ');
+				completeMethodName.append(',');
+			}
+		}
+		completeMethodName.append(')');
+		final String complMethodName = completeMethodName.toString();
+		final JavaMethod javaMethod;
+		if (constructor) {
+			javaMethod = peek.addNode(JavaMethodConstructor.class,
+					complMethodName);
+		} else {
+			javaMethod = peek.addNode(JavaMethod.class, complMethodName);
+		}
+		if (annotations35 != null) {
+			for (final JavaTypeAnnotation annotation : annotations35) {
+				session.addLink(Anottates.class, javaMethod, annotation, false);
+			}
+		}
+		if (annotations35 != null) {
+			for (final JavaTypeAnnotation annotation : annotations35) {
+				session.addLink(Anottates.class, javaMethod, annotation, false);
+			}
+		}
+		if (!constructor) {
+			session.addLink(MethodReturns.class, javaMethod, type36, false);
+		} else {
+			session.addLink(MethodReturns.class, javaMethod, peek, false);
+		}
+		if (typeBodyDeclarationThrows37 != null) {
+			for (final JavaType annotation : typeBodyDeclarationThrows37) {
+				session.addLink(MethodThrows.class, javaMethod, annotation,
+						false);
+			}
+		}
+
+		if (modifiers33 != null) {
+			for (final JavaModifier modifier : modifiers33) {
+				switch (modifier) {
+				case ABSTRACT:
+					javaMethod.setAbstract(true);
+					break;
+				case FINAL:
+					javaMethod.setFinal(true);
+					break;
+				case NATIVE:
+					javaMethod.setNative(true);
+					break;
+				case PRIVATE:
+					javaMethod.setPrivate(true);
+					break;
+				case PROTECTED:
+					javaMethod.setProtected(true);
+					break;
+				case PUBLIC:
+					javaMethod.setPublic(true);
+					break;
+				case STATIC:
+					javaMethod.setStatic(true);
+					break;
+				case SYNCHRONIZED:
+					javaMethod.setSynchronized(true);
+					break;
+				}
+			}
+
+		}
+		javaMethod.setSimpleName(string);
+		return javaMethod;
+	}
+
 	public JavaPackage packageDeclaration(final String string) {
 		final String packageName = string == null ? JavaConstants.DEFAULT_PACKAGE
 				: string;
@@ -286,7 +383,7 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaTypeAnnotation resolveAnnotation(final String qualifiedName52) {
-		//FIXME 
+		// FIXME
 		return null;
 	}
 
