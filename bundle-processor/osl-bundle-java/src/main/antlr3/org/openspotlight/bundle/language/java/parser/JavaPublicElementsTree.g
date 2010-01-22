@@ -206,16 +206,16 @@ arrayInitializer
 : ^(ARRAY_INITIALIZER variableInitializer* RIGHT_CURLY)
 ;
 type returns [JavaType typeReturn]
-: ^(ARRAY_TYPE tp0=type ARRAY_DIMENSION) { $typeReturn = executor.createArrayType($tp0.typeReturn, $ARRAY_DIMENSION.text); }
+: ^(ARRAY_TYPE tp0=type ARRAY_DIMENSION) { $typeReturn = executor.findArrayType($tp0.typeReturn, $ARRAY_DIMENSION.text); }
 | ^(QUALIFIED_TYPE  tp1=type 
        {    List<JavaType> types = new ArrayList<JavaType>(); 
             types.add($tp1.typeReturn); } 
        (DOT tp2=type {    types.add($tp2.typeReturn); } )+) 
-{ $typeReturn = executor.createQualifiedType(types); }
-| ^(PARAMETERIZED_TYPE tp3=type typeArguments {$typeReturn = executor.createParamerizedType($tp3.typeReturn,$typeArguments.resultList);} )
-| ^(WILDCARD_TYPE QUESTION (^(EXTENDS tp4=type {$typeReturn = executor.createExtendsParameterizedType($tp4.typeReturn);})|^(SUPER tp5=type {$typeReturn = executor.createSuperParameterizedType($tp5.typeReturn);}))? )
-| ^(SIMPLE_TYPE (Identifier {$typeReturn = executor.createType($Identifier.text);} |VOID {$typeReturn = executor.createType(null);}))
-| ^(PRIMITIVE_TYPE primitiveType{$typeReturn = executor.createPrimitiveType($primitiveType.text);})
+{ $typeReturn = executor.findByQualifiedTypes(types); }
+| ^(PARAMETERIZED_TYPE tp3=type typeArguments {$typeReturn = executor.findParamerizedType($tp3.typeReturn,$typeArguments.resultList);} )
+| ^(WILDCARD_TYPE QUESTION (^(EXTENDS tp4=type {$typeReturn = executor.findExtendsParameterizedType($tp4.typeReturn);})|^(SUPER tp5=type {$typeReturn = executor.findSuperParameterizedType($tp5.typeReturn);}))? )
+| ^(SIMPLE_TYPE (Identifier {$typeReturn = executor.findSimpleType($Identifier.text);} |VOID {$typeReturn = executor.findVoidType();}))
+| ^(PRIMITIVE_TYPE primitiveType{$typeReturn = executor.findPrimitiveType($primitiveType.text);})
 ;
 primitiveType
 : BOOLEAN

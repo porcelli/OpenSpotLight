@@ -54,23 +54,12 @@ public class JavaPublicElemetsTreeExecutor {
 		concreteAbstractCache.put(currentContext, abstractContext);
 	}
 
-	public JavaType createArrayType(final JavaType typeReturn,
-			final String dimension) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public JavaTypeEnum createEnum(final SLNode parent, final String name,
 			final List<JavaModifier> modifiers,
 			final List<JavaTypeAnnotation> annotations,
 			final List<JavaType> interfaces) {
 		return createInnerTypeWithSateliteData(parent, name, modifiers,
 				annotations, null, interfaces, JavaTypeEnum.class);
-	}
-
-	public JavaType createExtendsParameterizedType(final JavaType typeReturn) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public void createFieldDeclaration(final SLNode peek,
@@ -273,30 +262,46 @@ public class JavaPublicElemetsTreeExecutor {
 		return this.createNodeOnBothContexts(type, type, name);
 	}
 
-	public JavaType createParamerizedType(final JavaType typeReturn,
+	public JavaType findArrayType(final JavaType typeReturn,
+			final String dimension) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType findByQualifiedTypes(final List<JavaType> types) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType findExtendsParameterizedType(final JavaType typeReturn) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType findParamerizedType(final JavaType typeReturn,
 			final List<JavaType> typeArguments40) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public JavaType createPrimitiveType(final String string) {
+	public JavaType findPrimitiveType(final String string) {
 		final JavaTypePrimitive primitive = this.createNodeOnBothContexts(
 				JavaTypePrimitive.class, string);
 		return primitive;
 	}
 
-	public JavaType createQualifiedType(final List<JavaType> types) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public JavaType createSuperParameterizedType(final JavaType typeReturn) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public JavaType createType(final String string) {
+	public JavaType findSimpleType(final String string) {
 		return createNodeOnBothContexts(JavaType.class, string);
+	}
+
+	public JavaType findSuperParameterizedType(final JavaType typeReturn) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public JavaType findVoidType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public JavaModifier getModifier(final String string) {
