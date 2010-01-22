@@ -78,9 +78,9 @@ public class JavaPublicElemetsTreeExecutor {
 
 	public void createFieldDeclaration(final SLNode peek,
 			final List<JavaModifier> modifiers29,
-			final List<JavaTypeAnnotation> annotations30, final JavaType type31) {
-		// TODO Auto-generated method stub
-
+			final List<JavaTypeAnnotation> annotations30,
+			final JavaType type31, final List<VariableDeclarationDto> variables) {
+		// FIXME
 	}
 
 	private <T extends JavaType> T createInnerTypeWithSateliteData(

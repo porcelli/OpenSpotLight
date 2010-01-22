@@ -180,8 +180,10 @@ typeBodyDeclaration
 : ^(INITIALIZER_BLOCK STATIC? block)
 | ^(CONSTRUCTOR_DECLARATION Identifier modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
 { executor.createMethodConstructorDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $formalParameters.resultList, $annotations.resultList,  $typeBodyDeclarationThrows.resultList); }
-| ^(FIELD_DECLARATION modifiers annotations? type variableDeclarator+)
-{ executor.createFieldDeclaration(stack.peek(), $modifiers.modifiersResultList, $annotations.resultList, $type.typeReturn); }
+| ^(FIELD_DECLARATION 
+  { List<VariableDeclarationDto> variables = new ArrayList<VariableDeclarationDto>();}
+  modifiers annotations? type (variableDeclarator {variables.add($variableDeclarator.newVar);})+)
+{ executor.createFieldDeclaration(stack.peek(), $modifiers.modifiersResultList, $annotations.resultList, $type.typeReturn, variables); }
 | ^(METHOD_DECLARATION Identifier modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
 { executor.createMethodDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $formalParameters.resultList,$annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList); }
 | ^(INNER_DECLARATION typeDeclaration)
@@ -190,8 +192,8 @@ typeBodyDeclarationThrows returns [List<JavaType> resultList]
 @init { resultList=new ArrayList<JavaType>(); } 
 : ^(THROWS type+ {$resultList.add($type.typeReturn);})
 ;
-variableDeclarator
-: ^(VARIABLE_DECLARATION_FRAGMENT Identifier ARRAY_DIMENSION? variableDeclaratorAssign?)
+variableDeclarator returns [VariableDeclarationDto newVar]
+: ^(VARIABLE_DECLARATION_FRAGMENT Identifier ARRAY_DIMENSION? variableDeclaratorAssign? {$newVar = new VariableDeclarationDto($Identifier.text,null,null,null,$ARRAY_DIMENSION.text);})
 ;
 variableDeclaratorAssign
 : ^(ASSIGN variableInitializer)
