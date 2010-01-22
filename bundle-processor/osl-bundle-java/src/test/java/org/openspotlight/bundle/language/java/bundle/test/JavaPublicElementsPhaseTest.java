@@ -40,6 +40,8 @@ public class JavaPublicElementsPhaseTest {
 	private GlobalSettings settings;
 	private Group group;
 
+	// FIXME test new parser stuff
+
 	private final String username = "username";
 
 	private final String password = "password";

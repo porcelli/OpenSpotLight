@@ -7,7 +7,10 @@ import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
 import org.openspotlight.bundle.language.java.JavaConstants;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.common.Pair;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLNode;
 
 public class JavaParserExecutor implements JavaConstants {
@@ -31,7 +34,15 @@ public class JavaParserExecutor implements JavaConstants {
 	}
 
 	public void createFields(final List<String> list) {
-		// TODO Auto-generated method stub
+		try {
+			final SLNode parent = typeContext.peek().getK1();
+			for (final String s : list) {
+				parent.addNode(JavaDataField.class, s);
+			}
+
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 
 	}
 

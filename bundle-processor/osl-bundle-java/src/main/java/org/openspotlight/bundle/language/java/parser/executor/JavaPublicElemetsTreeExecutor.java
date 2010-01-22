@@ -23,10 +23,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 
 //FIXME RESOLVE ALL KINDS OF LINKS ONLY ON ABSTRACT CONTEXT, EXCEPT THE ONES OF THIS CLASSPATH
 public class JavaPublicElemetsTreeExecutor {
@@ -66,8 +63,7 @@ public class JavaPublicElemetsTreeExecutor {
 	public JavaTypeEnum createEnum(final SLNode parent, final String name,
 			final List<JavaModifier> modifiers,
 			final List<JavaTypeAnnotation> annotations,
-			final List<JavaType> interfaces) throws SLGraphSessionException,
-			SLInvalidCredentialException {
+			final List<JavaType> interfaces) {
 		return createInnerTypeWithSateliteData(parent, name, modifiers,
 				annotations, null, interfaces, JavaTypeEnum.class);
 	}
@@ -80,43 +76,46 @@ public class JavaPublicElemetsTreeExecutor {
 	public void createFieldDeclaration(final SLNode peek,
 			final List<JavaModifier> modifiers29,
 			final List<JavaTypeAnnotation> annotations30,
-			final JavaType type31, final List<VariableDeclarationDto> variables)
-			throws Exception {
-		for (final VariableDeclarationDto var : variables) {
-			final JavaDataField newField = peek.addNode(JavaDataField.class,
-					var.getName());
-			for (final JavaModifier modifier : modifiers29) {
-				switch (modifier) {
-				case FINAL:
-					newField.setFinal(true);
-					break;
-				case PRIVATE:
-					newField.setPrivate(true);
-					break;
-				case PROTECTED:
-					newField.setProtected(true);
-					break;
-				case PUBLIC:
-					newField.setPublic(true);
-					break;
-				case TRANSIENT:
-					newField.setTransient(true);
-					break;
-				case VOLATILE:
-					newField.setVolatile(true);
-					break;
-				default:
-					break;
+			final JavaType type31, final List<VariableDeclarationDto> variables) {
+		try {
+			for (final VariableDeclarationDto var : variables) {
+				final JavaDataField newField = peek.addNode(
+						JavaDataField.class, var.getName());
+				for (final JavaModifier modifier : modifiers29) {
+					switch (modifier) {
+					case FINAL:
+						newField.setFinal(true);
+						break;
+					case PRIVATE:
+						newField.setPrivate(true);
+						break;
+					case PROTECTED:
+						newField.setProtected(true);
+						break;
+					case PUBLIC:
+						newField.setPublic(true);
+						break;
+					case TRANSIENT:
+						newField.setTransient(true);
+						break;
+					case VOLATILE:
+						newField.setVolatile(true);
+						break;
+					default:
+						break;
+					}
 				}
-			}
 
-			if (annotations30 != null) {
-				for (final JavaTypeAnnotation annotation : annotations30) {
-					session.addLink(AnottatedBy.class, newField, annotation,
-							false);
+				if (annotations30 != null) {
+					for (final JavaTypeAnnotation annotation : annotations30) {
+						session.addLink(AnottatedBy.class, newField,
+								annotation, false);
+					}
 				}
-			}
 
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 
 	}
@@ -126,81 +125,84 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<JavaModifier> modifiers7,
 			final List<JavaTypeAnnotation> annotations8,
 			final JavaType normalClassExtends9,
-			final List<JavaType> normalClassImplements10, final Class<T> type)
-			throws SLGraphSessionException, SLInvalidCredentialException {
-		final T newClass = createNodeOnBothContexts(JavaType.class, type, peek,
-				string);
-		final JavaType newAbstractClass = (JavaType) concreteAbstractCache
-				.get(newClass);
-		if (!(peek instanceof JavaPackage)) {
-			newClass.setInner(true);
-			newAbstractClass.setInner(true);
-		}
-		final StringBuilder qualifiedName = new StringBuilder();
-		SLNode parent = peek;
-		do {
-			qualifiedName.append(parent.getName());
-			qualifiedName.append('.');
-			parent = parent.getParent();
-		} while (!(parent instanceof JavaPackage));
-		newClass.setCompleteName(qualifiedName.toString());
-		newClass.setSimpleName(string);
-		newAbstractClass.setSimpleName(string);
-		newAbstractClass.setCompleteName(qualifiedName.toString());
-		if (modifiers7 != null) {
-			for (final JavaModifier modifier : modifiers7) {
-				switch (modifier) {
-				case ABSTRACT:
-					newClass.setAbstract(true);
-					break;
-				case FINAL:
-					newClass.setFinal(true);
-					break;
-				case PRIVATE:
-					newClass.setPrivate(true);
-					break;
-				case PROTECTED:
-					newClass.setProtected(true);
-					break;
-				case PUBLIC:
-					newClass.setPublic(true);
-					break;
-				case STATIC:
-					newClass.setStatic(true);
-					break;
+			final List<JavaType> normalClassImplements10, final Class<T> type) {
+		try {
+			final T newClass = createNodeOnBothContexts(JavaType.class, type,
+					peek, string);
+			final JavaType newAbstractClass = (JavaType) concreteAbstractCache
+					.get(newClass);
+			if (!(peek instanceof JavaPackage)) {
+				newClass.setInner(true);
+				newAbstractClass.setInner(true);
+			}
+			final StringBuilder qualifiedName = new StringBuilder();
+			SLNode parent = peek;
+			do {
+				qualifiedName.append(parent.getName());
+				qualifiedName.append('.');
+				parent = parent.getParent();
+			} while (!(parent instanceof JavaPackage));
+			newClass.setCompleteName(qualifiedName.toString());
+			newClass.setSimpleName(string);
+			newAbstractClass.setSimpleName(string);
+			newAbstractClass.setCompleteName(qualifiedName.toString());
+			if (modifiers7 != null) {
+				for (final JavaModifier modifier : modifiers7) {
+					switch (modifier) {
+					case ABSTRACT:
+						newClass.setAbstract(true);
+						break;
+					case FINAL:
+						newClass.setFinal(true);
+						break;
+					case PRIVATE:
+						newClass.setPrivate(true);
+						break;
+					case PROTECTED:
+						newClass.setProtected(true);
+						break;
+					case PUBLIC:
+						newClass.setPublic(true);
+						break;
+					case STATIC:
+						newClass.setStatic(true);
+						break;
+					}
 				}
 			}
-		}
-		if (normalClassExtends9 != null) {
-			session
-					.addLink(Extends.class, newClass, normalClassExtends9,
-							false);
-			session.addLink(Extends.class, newAbstractClass,
-					concreteAbstractCache.get(normalClassExtends9), false);
-		}
-		if (annotations8 != null) {
-			for (final JavaTypeAnnotation annotation : annotations8) {
-				session.addLink(AnottatedBy.class, newClass, annotation, false);
-				session.addLink(AnottatedBy.class, newAbstractClass,
-						concreteAbstractCache.get(annotation), false);
-			}
-		}
-		if (normalClassImplements10 != null) {
-			for (final JavaType interfaceType : normalClassImplements10) {
-				session.addLink(Implements.class, newClass, interfaceType,
+			if (normalClassExtends9 != null) {
+				session.addLink(Extends.class, newClass, normalClassExtends9,
 						false);
-				session.addLink(Implements.class, newAbstractClass,
-						concreteAbstractCache.get(interfaceType), false);
+				session.addLink(Extends.class, newAbstractClass,
+						concreteAbstractCache.get(normalClassExtends9), false);
 			}
+			if (annotations8 != null) {
+				for (final JavaTypeAnnotation annotation : annotations8) {
+					session.addLink(AnottatedBy.class, newClass, annotation,
+							false);
+					session.addLink(AnottatedBy.class, newAbstractClass,
+							concreteAbstractCache.get(annotation), false);
+				}
+			}
+			if (normalClassImplements10 != null) {
+				for (final JavaType interfaceType : normalClassImplements10) {
+					session.addLink(Implements.class, newClass, interfaceType,
+							false);
+					session.addLink(Implements.class, newAbstractClass,
+							concreteAbstractCache.get(interfaceType), false);
+				}
+			}
+			return newClass;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
-		return newClass;
+
 	}
 
 	public JavaTypeInterface createInterface(final SLNode peek,
 			final String string, final List<JavaModifier> modifiers19,
 			final List<JavaTypeAnnotation> annotations20,
-			final List<JavaType> normalInterfaceDeclarationExtends21)
-			throws Exception {
+			final List<JavaType> normalInterfaceDeclarationExtends21) {
 		return createInnerTypeWithSateliteData(peek, string, modifiers19,
 				annotations20, null, normalInterfaceDeclarationExtends21,
 				JavaTypeInterface.class);
@@ -210,7 +212,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final String string, final List<JavaModifier> modifiers7,
 			final List<JavaTypeAnnotation> annotations8,
 			final JavaType normalClassExtends9,
-			final List<JavaType> normalClassImplements10) throws Exception {
+			final List<JavaType> normalClassImplements10) {
 		return createInnerTypeWithSateliteData(peek, string, modifiers7,
 				annotations8, normalClassExtends9, normalClassImplements10,
 				JavaTypeClass.class);
@@ -220,7 +222,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final String string, final List<JavaModifier> modifiers25,
 			final List<VariableDeclarationDto> formalParameters26,
 			final List<JavaTypeAnnotation> annotations27,
-			final List<JavaType> typeBodyDeclarationThrows28) throws Exception {
+			final List<JavaType> typeBodyDeclarationThrows28) {
 		return internalCreateMethod(peek, string, modifiers25,
 				formalParameters26, annotations27, null,
 				typeBodyDeclarationThrows28, true);
@@ -232,7 +234,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<VariableDeclarationDto> formalParameters34,
 			final List<JavaTypeAnnotation> annotations35,
 			final JavaType type36,
-			final List<JavaType> typeBodyDeclarationThrows37) throws Exception {
+			final List<JavaType> typeBodyDeclarationThrows37) {
 		return internalCreateMethod(peek, string, modifiers33,
 				formalParameters34, annotations35, type36,
 				typeBodyDeclarationThrows37, false);
@@ -332,85 +334,89 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<JavaTypeAnnotation> annotations35,
 			final JavaType type36,
 			final List<JavaType> typeBodyDeclarationThrows37,
-			final boolean constructor) throws SLNodeTypeNotInExistentHierarchy,
-			SLGraphSessionException, SLInvalidCredentialException {
-		final StringBuilder completeMethodName = new StringBuilder();
-		completeMethodName.append(string);
-		completeMethodName.append('(');
-		for (int i = 0, size = formalParameters34.size(); i < size; i++) {
-			completeMethodName.append(formalParameters34.get(i).getType()
-					.getCompleteName());
-			if (i != size - 1) {
-				completeMethodName.append(' ');
-				completeMethodName.append(',');
+			final boolean constructor) {
+		try {
+			final StringBuilder completeMethodName = new StringBuilder();
+			completeMethodName.append(string);
+			completeMethodName.append('(');
+			for (int i = 0, size = formalParameters34.size(); i < size; i++) {
+				completeMethodName.append(formalParameters34.get(i).getType()
+						.getCompleteName());
+				if (i != size - 1) {
+					completeMethodName.append(' ');
+					completeMethodName.append(',');
+				}
 			}
-		}
-		completeMethodName.append(')');
-		final String complMethodName = completeMethodName.toString();
-		final JavaMethod javaMethod;
-		if (constructor) {
-			javaMethod = peek.addNode(JavaMethodConstructor.class,
-					complMethodName);
-		} else {
-			javaMethod = peek.addNode(JavaMethod.class, complMethodName);
-		}
-		if (annotations35 != null) {
-			for (final JavaTypeAnnotation annotation : annotations35) {
-				session.addLink(AnottatedBy.class, javaMethod, annotation,
-						false);
+			completeMethodName.append(')');
+			final String complMethodName = completeMethodName.toString();
+			final JavaMethod javaMethod;
+			if (constructor) {
+				javaMethod = peek.addNode(JavaMethodConstructor.class,
+						complMethodName);
+			} else {
+				javaMethod = peek.addNode(JavaMethod.class, complMethodName);
 			}
-		}
-		if (annotations35 != null) {
-			for (final JavaTypeAnnotation annotation : annotations35) {
-				session.addLink(AnottatedBy.class, javaMethod, annotation,
-						false);
+			if (annotations35 != null) {
+				for (final JavaTypeAnnotation annotation : annotations35) {
+					session.addLink(AnottatedBy.class, javaMethod, annotation,
+							false);
+				}
 			}
-		}
-		if (!constructor) {
-			session.addLink(MethodReturns.class, javaMethod, type36, false);
-		} else {
-			session.addLink(MethodReturns.class, javaMethod, peek, false);
-		}
-		if (typeBodyDeclarationThrows37 != null) {
-			for (final JavaType annotation : typeBodyDeclarationThrows37) {
-				session.addLink(MethodThrows.class, javaMethod, annotation,
-						false);
+			if (annotations35 != null) {
+				for (final JavaTypeAnnotation annotation : annotations35) {
+					session.addLink(AnottatedBy.class, javaMethod, annotation,
+							false);
+				}
 			}
-		}
-
-		if (modifiers33 != null) {
-			for (final JavaModifier modifier : modifiers33) {
-				switch (modifier) {
-				case ABSTRACT:
-					javaMethod.setAbstract(true);
-					break;
-				case FINAL:
-					javaMethod.setFinal(true);
-					break;
-				case NATIVE:
-					javaMethod.setNative(true);
-					break;
-				case PRIVATE:
-					javaMethod.setPrivate(true);
-					break;
-				case PROTECTED:
-					javaMethod.setProtected(true);
-					break;
-				case PUBLIC:
-					javaMethod.setPublic(true);
-					break;
-				case STATIC:
-					javaMethod.setStatic(true);
-					break;
-				case SYNCHRONIZED:
-					javaMethod.setSynchronized(true);
-					break;
+			if (!constructor) {
+				session.addLink(MethodReturns.class, javaMethod, type36, false);
+			} else {
+				session.addLink(MethodReturns.class, javaMethod, peek, false);
+			}
+			if (typeBodyDeclarationThrows37 != null) {
+				for (final JavaType annotation : typeBodyDeclarationThrows37) {
+					session.addLink(MethodThrows.class, javaMethod, annotation,
+							false);
 				}
 			}
 
+			if (modifiers33 != null) {
+				for (final JavaModifier modifier : modifiers33) {
+					switch (modifier) {
+					case ABSTRACT:
+						javaMethod.setAbstract(true);
+						break;
+					case FINAL:
+						javaMethod.setFinal(true);
+						break;
+					case NATIVE:
+						javaMethod.setNative(true);
+						break;
+					case PRIVATE:
+						javaMethod.setPrivate(true);
+						break;
+					case PROTECTED:
+						javaMethod.setProtected(true);
+						break;
+					case PUBLIC:
+						javaMethod.setPublic(true);
+						break;
+					case STATIC:
+						javaMethod.setStatic(true);
+						break;
+					case SYNCHRONIZED:
+						javaMethod.setSynchronized(true);
+						break;
+					}
+				}
+
+			}
+			javaMethod.setSimpleName(string);
+			return javaMethod;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
-		javaMethod.setSimpleName(string);
-		return javaMethod;
+
 	}
 
 	public JavaPackage packageDeclaration(final String string) {
