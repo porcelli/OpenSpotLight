@@ -77,6 +77,9 @@ public interface JavaType extends SLNode {
 	@SLProperty
 	public Boolean getAnonymous();
 
+	@SLProperty
+	public Boolean getArray();
+
 	/**
 	 * Gets the complete name.
 	 * 
@@ -164,6 +167,8 @@ public interface JavaType extends SLNode {
 	 *            the new anonymous
 	 */
 	public void setAnonymous(Boolean newAnonymous);
+
+	public void setArray(Boolean newArray);
 
 	/**
 	 * Sets the complete name.

@@ -6,6 +6,7 @@ import java.util.List;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
+import org.openspotlight.bundle.language.java.metamodel.link.ArrayOfType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
@@ -262,10 +263,27 @@ public class JavaPublicElemetsTreeExecutor {
 		return this.createNodeOnBothContexts(type, type, name);
 	}
 
+	// FIXME create arrays in the same on java graph node support
 	public JavaType findArrayType(final JavaType typeReturn,
 			final String dimension) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			final JavaType simpleOne = findSimpleType(typeReturn
+					.getCompleteName());
+			final SLNode parent = simpleOne.getParent();
+			final String arrayName = simpleOne.getName() + "[]";
+			JavaType arrayNode = (JavaType) parent.getNode(arrayName);
+			if (arrayNode == null) {
+				@SuppressWarnings("unchecked")
+				final Class<? extends JavaType> sameType = simpleOne.getClass()
+						.getInterfaces()[0];
+				arrayNode = parent.addNode(sameType, arrayName);
+				arrayNode.setArray(true);
+				session.addLink(ArrayOfType.class, arrayNode, simpleOne, false);
+			}
+			return arrayNode;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public JavaType findByQualifiedTypes(final List<JavaType> types) {
@@ -285,13 +303,21 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findPrimitiveType(final String string) {
-		final JavaTypePrimitive primitive = this.createNodeOnBothContexts(
-				JavaTypePrimitive.class, string);
-		return primitive;
+		try {
+			final JavaTypePrimitive primitive = abstractContext.addNode(
+					JavaTypePrimitive.class, string);
+			return primitive;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public JavaType findSimpleType(final String string) {
-		return createNodeOnBothContexts(JavaType.class, string);
+		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
+			return findPrimitiveType(string);
+		}
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public JavaType findSuperParameterizedType(final JavaType typeReturn) {
@@ -300,8 +326,7 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findVoidType() {
-		// TODO Auto-generated method stub
-		return null;
+		return findPrimitiveType("void");
 	}
 
 	public JavaModifier getModifier(final String string) {
