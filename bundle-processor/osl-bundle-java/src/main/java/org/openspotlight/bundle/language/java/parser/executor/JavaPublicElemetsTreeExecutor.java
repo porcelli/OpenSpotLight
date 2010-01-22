@@ -1,5 +1,6 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
@@ -266,6 +267,9 @@ public class JavaPublicElemetsTreeExecutor {
 	// FIXME create arrays in the same on java graph node support
 	public JavaType findArrayType(final JavaType typeReturn,
 			final String dimension) {
+		if (typeReturn.getArray()) {
+			return typeReturn;
+		}
 		try {
 			final JavaType simpleOne = findSimpleType(typeReturn
 					.getCompleteName());
@@ -278,6 +282,8 @@ public class JavaPublicElemetsTreeExecutor {
 						.getInterfaces()[0];
 				arrayNode = parent.addNode(sameType, arrayName);
 				arrayNode.setArray(true);
+				arrayNode.setCompleteName(simpleOne.getCompleteName() + "[]");
+				arrayNode.setSimpleName(arrayName);
 				session.addLink(ArrayOfType.class, arrayNode, simpleOne, false);
 			}
 			return arrayNode;
@@ -287,8 +293,17 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findByQualifiedTypes(final List<JavaType> types) {
-		// TODO Auto-generated method stub
-		return null;
+		final StringBuilder completeName = new StringBuilder();
+		for (int i = 0, size = types.size(); i < size; i++) {
+			final String name = i == 0 ? types.get(i).getCompleteName() : types
+					.get(i).getSimpleName();
+			completeName.append(name);
+			if (i != size - 1) {
+				completeName.append('.');
+			}
+
+		}
+		return findSimpleType(completeName.toString());
 	}
 
 	public JavaType findExtendsParameterizedType(final JavaType typeReturn) {
@@ -313,11 +328,25 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findSimpleType(final String string) {
+
 		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
 			return findPrimitiveType(string);
 		}
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			final List<String> possibleNames = new ArrayList<String>();
+			possibleNames.add(string);
+			if (!includedClasses.contains(string)) {
+				for (final String pack : includedPackages) {
+					possibleNames.add(pack + "." + string);
+				}
+			}
+
+			// FIXME
+			return null;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+
 	}
 
 	public JavaType findSuperParameterizedType(final JavaType typeReturn) {
