@@ -57,5 +57,5 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Autoboxes" )
-public interface Anottates extends SLLink {
+public interface AnottatedBy extends SLLink {
 }

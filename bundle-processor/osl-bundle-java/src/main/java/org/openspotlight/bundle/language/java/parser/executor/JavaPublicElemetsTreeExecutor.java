@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
-import org.openspotlight.bundle.language.java.metamodel.link.Anottates;
+import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
@@ -79,8 +80,45 @@ public class JavaPublicElemetsTreeExecutor {
 	public void createFieldDeclaration(final SLNode peek,
 			final List<JavaModifier> modifiers29,
 			final List<JavaTypeAnnotation> annotations30,
-			final JavaType type31, final List<VariableDeclarationDto> variables) {
-		// FIXME
+			final JavaType type31, final List<VariableDeclarationDto> variables)
+			throws Exception {
+		for (final VariableDeclarationDto var : variables) {
+			final JavaDataField newField = peek.addNode(JavaDataField.class,
+					var.getName());
+			for (final JavaModifier modifier : modifiers29) {
+				switch (modifier) {
+				case FINAL:
+					newField.setFinal(true);
+					break;
+				case PRIVATE:
+					newField.setPrivate(true);
+					break;
+				case PROTECTED:
+					newField.setProtected(true);
+					break;
+				case PUBLIC:
+					newField.setPublic(true);
+					break;
+				case TRANSIENT:
+					newField.setTransient(true);
+					break;
+				case VOLATILE:
+					newField.setVolatile(true);
+					break;
+				default:
+					break;
+				}
+			}
+
+			if (annotations30 != null) {
+				for (final JavaTypeAnnotation annotation : annotations30) {
+					session.addLink(AnottatedBy.class, newField, annotation,
+							false);
+				}
+			}
+
+		}
+
 	}
 
 	private <T extends JavaType> T createInnerTypeWithSateliteData(
@@ -142,8 +180,8 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 		if (annotations8 != null) {
 			for (final JavaTypeAnnotation annotation : annotations8) {
-				session.addLink(Anottates.class, newClass, annotation, false);
-				session.addLink(Anottates.class, newAbstractClass,
+				session.addLink(AnottatedBy.class, newClass, annotation, false);
+				session.addLink(AnottatedBy.class, newAbstractClass,
 						concreteAbstractCache.get(annotation), false);
 			}
 		}
@@ -318,12 +356,14 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 		if (annotations35 != null) {
 			for (final JavaTypeAnnotation annotation : annotations35) {
-				session.addLink(Anottates.class, javaMethod, annotation, false);
+				session.addLink(AnottatedBy.class, javaMethod, annotation,
+						false);
 			}
 		}
 		if (annotations35 != null) {
 			for (final JavaTypeAnnotation annotation : annotations35) {
-				session.addLink(Anottates.class, javaMethod, annotation, false);
+				session.addLink(AnottatedBy.class, javaMethod, annotation,
+						false);
 			}
 		}
 		if (!constructor) {
