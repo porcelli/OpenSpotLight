@@ -89,7 +89,7 @@ packageDeclaration
 ;
 importDeclaration
 : ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
-{ executor.importDeclaration($STATIC.text,$STAR.text,$qualifiedName.name); }
+{ executor.importDeclaration($STATIC.text!=null,$STAR.text!=null,$qualifiedName.name); }
 ;
 typeDeclaration
 : normalClassDeclaration

@@ -58,157 +58,183 @@ import org.openspotlight.graph.annotation.SLProperty;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Java Type" )
+@SLDescription("Java Type")
 public interface JavaType extends SLNode {
 
-    /**
-     * Gets the static.
-     * 
-     * @return the static
-     */
-    @SLProperty
-    public Boolean getStatic();
+	/**
+	 * Gets the final.
+	 * 
+	 * @return the final
+	 */
+	@SLProperty
+	public Boolean getAbstract();
 
-    /**
-     * Sets the static.
-     * 
-     * @param newStatic the new static
-     */
-    public void setStatic( Boolean newStatic );
+	/**
+	 * Gets the anonymous.
+	 * 
+	 * @return the anonymous
+	 */
+	@SLProperty
+	public Boolean getAnonymous();
 
-    /**
-     * Gets the anonymous.
-     * 
-     * @return the anonymous
-     */
-    @SLProperty
-    public Boolean getAnonymous();
+	/**
+	 * Gets the complete name.
+	 * 
+	 * @return the complete name
+	 */
+	@SLProperty
+	public String getCompleteName();
 
-    /**
-     * Sets the anonymous.
-     * 
-     * @param newAnonymous the new anonymous
-     */
-    public void setAnonymous( Boolean newAnonymous );
+	/**
+	 * Gets the final.
+	 * 
+	 * @return the final
+	 */
+	@SLProperty
+	public Boolean getFinal();
 
-    /**
-     * Gets the inner.
-     * 
-     * @return the inner
-     */
-    @SLProperty
-    public Boolean getInner();
+	/**
+	 * Gets the inner.
+	 * 
+	 * @return the inner
+	 */
+	@SLProperty
+	public Boolean getInner();
 
-    /**
-     * Sets the inner.
-     * 
-     * @param newInner the new inner
-     */
-    public void setInner( Boolean newInner );
+	/**
+	 * Gets the private.
+	 * 
+	 * @return the private
+	 */
+	@SLProperty
+	public Boolean getPrivate();
 
-    /**
-     * Gets the version.
-     * 
-     * @return the version
-     */
-    @SLProperty
-    public String getVersion();
+	/**
+	 * Gets the protected.
+	 * 
+	 * @return the protected
+	 */
+	@SLProperty
+	public Boolean getProtected();
 
-    /**
-     * Sets the version.
-     * 
-     * @param newVersion the new version
-     */
-    public void setVersion( String newVersion );
+	/**
+	 * Gets the public.
+	 * 
+	 * @return the public
+	 */
+	@SLProperty
+	public Boolean getPublic();
 
-    /**
-     * Gets the public.
-     * 
-     * @return the public
-     */
-    @SLProperty
-    public Boolean getPublic();
+	/**
+	 * Gets the simple name.
+	 * 
+	 * @return the simple name
+	 */
+	@SLProperty
+	public String getSimpleName();
 
-    /**
-     * Sets the public.
-     * 
-     * @param newPublic the new public
-     */
-    public void setPublic( Boolean newPublic );
+	/**
+	 * Gets the static.
+	 * 
+	 * @return the static
+	 */
+	@SLProperty
+	public Boolean getStatic();
 
-    /**
-     * Gets the private.
-     * 
-     * @return the private
-     */
-    @SLProperty
-    public Boolean getPrivate();
+	/**
+	 * Gets the version.
+	 * 
+	 * @return the version
+	 */
+	@SLProperty
+	public String getVersion();
 
-    /**
-     * Sets the private.
-     * 
-     * @param newPrivate the new private
-     */
-    public void setPrivate( Boolean newPrivate );
+	/**
+	 * Sets the Abstract.
+	 * 
+	 * @param newAbstract
+	 *            the new Abstract
+	 */
+	public void setAbstract(Boolean newAbstract);
 
-    /**
-     * Gets the final.
-     * 
-     * @return the final
-     */
-    @SLProperty
-    public Boolean getFinal();
+	/**
+	 * Sets the anonymous.
+	 * 
+	 * @param newAnonymous
+	 *            the new anonymous
+	 */
+	public void setAnonymous(Boolean newAnonymous);
 
-    /**
-     * Sets the final.
-     * 
-     * @param newFinal the new final
-     */
-    public void setFinal( Boolean newFinal );
+	/**
+	 * Sets the complete name.
+	 * 
+	 * @param newCompleteName
+	 *            the new complete name
+	 */
+	public void setCompleteName(String newCompleteName);
 
-    /**
-     * Gets the protected.
-     * 
-     * @return the protected
-     */
-    @SLProperty
-    public Boolean getProtected();
+	/**
+	 * Sets the final.
+	 * 
+	 * @param newFinal
+	 *            the new final
+	 */
+	public void setFinal(Boolean newFinal);
 
-    /**
-     * Sets the protected.
-     * 
-     * @param newProtected the new protected
-     */
-    public void setProtected( Boolean newProtected );
+	/**
+	 * Sets the inner.
+	 * 
+	 * @param newInner
+	 *            the new inner
+	 */
+	public void setInner(Boolean newInner);
 
-    /**
-     * Gets the simple name.
-     * 
-     * @return the simple name
-     */
-    @SLProperty
-    public String getSimpleName();
+	/**
+	 * Sets the private.
+	 * 
+	 * @param newPrivate
+	 *            the new private
+	 */
+	public void setPrivate(Boolean newPrivate);
 
-    /**
-     * Sets the simple name.
-     * 
-     * @param newSimpleName the new simple name
-     */
-    public void setSimpleName( String newSimpleName );
+	/**
+	 * Sets the protected.
+	 * 
+	 * @param newProtected
+	 *            the new protected
+	 */
+	public void setProtected(Boolean newProtected);
 
-    /**
-     * Gets the complete name.
-     * 
-     * @return the complete name
-     */
-    @SLProperty
-    public String getCompleteName();
+	/**
+	 * Sets the public.
+	 * 
+	 * @param newPublic
+	 *            the new public
+	 */
+	public void setPublic(Boolean newPublic);
 
-    /**
-     * Sets the complete name.
-     * 
-     * @param newCompleteName the new complete name
-     */
-    public void setCompleteName( String newCompleteName );
+	/**
+	 * Sets the simple name.
+	 * 
+	 * @param newSimpleName
+	 *            the new simple name
+	 */
+	public void setSimpleName(String newSimpleName);
+
+	/**
+	 * Sets the static.
+	 * 
+	 * @param newStatic
+	 *            the new static
+	 */
+	public void setStatic(Boolean newStatic);
+
+	/**
+	 * Sets the version.
+	 * 
+	 * @param newVersion
+	 *            the new version
+	 */
+	public void setVersion(String newVersion);
 
 }
