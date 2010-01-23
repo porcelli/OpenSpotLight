@@ -59,6 +59,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -266,6 +267,8 @@ public class SimplePersistSupport {
 	/** The Constant propertyValue_ */
 	public static final String PROPERTY_VALUE = "node_property_{0}_value";
 
+	public static final String INTERNAL_TIMESTAMP = "internal_timestamp";
+
 	/** The Constant propertyType_ */
 	public static final String PROPERTY_TYPE = "node_property_{0}_type";
 
@@ -349,7 +352,7 @@ public class SimplePersistSupport {
 						SERIALIZED_PROPERTY_VALUE, entry.getKey()), entry
 						.getValue());
 			}
-
+			result.setProperty(INTERNAL_TIMESTAMP, Calendar.getInstance());
 			SimplePersistSupport.saveSimplePropertiesOnJcr(descriptor, result);
 			SimplePersistSupport.saveComplexMultiplePropertiesOnJcr(session,
 					descriptor, result);
@@ -1131,6 +1134,7 @@ public class SimplePersistSupport {
 		if (xpath.endsWith("[]")) {
 			xpath = xpath.substring(0, xpath.length() - 2);
 		}
+		xpath += " order by @" + INTERNAL_TIMESTAMP;
 		final Query query = session.getWorkspace().getQueryManager()
 				.createQuery(xpath, Query.XPATH);
 		final QueryResult result = query.execute();
