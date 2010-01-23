@@ -352,7 +352,9 @@ public class SimplePersistSupport {
 						SERIALIZED_PROPERTY_VALUE, entry.getKey()), entry
 						.getValue());
 			}
-			result.setProperty(INTERNAL_TIMESTAMP, Calendar.getInstance());
+			if (!result.hasProperty(INTERNAL_TIMESTAMP)) {
+				result.setProperty(INTERNAL_TIMESTAMP, Calendar.getInstance());
+			}
 			SimplePersistSupport.saveSimplePropertiesOnJcr(descriptor, result);
 			SimplePersistSupport.saveComplexMultiplePropertiesOnJcr(session,
 					descriptor, result);

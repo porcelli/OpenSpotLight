@@ -798,10 +798,6 @@ public class SimplePersistSupportTest {
 				.findNodesByProperties(rootPath, session, SimpleObject.class,
 						LazyType.LAZY, new String[] {}, new Object[] {});
 
-		for (final SimpleObject obj : nodes) {
-			System.err.println(obj.getId());
-		}
-
 		int i = 0;
 		for (final SimpleObject obj : nodes) {
 			Assert.assertThat(obj.getId(), Is.is(i));
