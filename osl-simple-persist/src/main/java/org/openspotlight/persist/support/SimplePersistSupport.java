@@ -59,10 +59,13 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -264,6 +267,8 @@ public class SimplePersistSupport {
 	/** The Constant propertyValue_ */
 	public static final String PROPERTY_VALUE = "node_property_{0}_value";
 
+	public static final String INTERNAL_TIMESTAMP = "internal_timestamp";
+
 	/** The Constant propertyType_ */
 	public static final String PROPERTY_TYPE = "node_property_{0}_type";
 
@@ -347,7 +352,9 @@ public class SimplePersistSupport {
 						SERIALIZED_PROPERTY_VALUE, entry.getKey()), entry
 						.getValue());
 			}
-
+			if (!result.hasProperty(INTERNAL_TIMESTAMP)) {
+				result.setProperty(INTERNAL_TIMESTAMP, Calendar.getInstance());
+			}
 			SimplePersistSupport.saveSimplePropertiesOnJcr(descriptor, result);
 			SimplePersistSupport.saveComplexMultiplePropertiesOnJcr(session,
 					descriptor, result);
@@ -475,7 +482,7 @@ public class SimplePersistSupport {
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
 		Assertions.checkCondition("sessionAlive", session.isLive());
-		final Set<Node> result = new HashSet<Node>();
+		final Set<Node> result = new LinkedHashSet<Node>();
 		for (final T bean : beans) {
 			final Node newNode = SimplePersistSupport.convertBeanToJcr(
 					parentJcrNode, session, bean);
@@ -501,7 +508,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
-		final Set<Node> result = new HashSet<Node>();
+		final Set<Node> result = new LinkedHashSet<Node>();
 		for (final T bean : beans) {
 			if (bean != null) {
 				final Node newNode = SimplePersistSupport.convertBeanToJcr(
@@ -617,7 +624,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
-		final Set<T> result = new HashSet<T>();
+		final Set<T> result = new LinkedHashSet<T>();
 		for (final Node node : jcrNodes) {
 			final T bean = SimplePersistSupport.<T> convertJcrToBean(session,
 					node, multipleLoadingStrategy);
@@ -645,7 +652,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 
-		final Set<T> result = new HashSet<T>();
+		final Set<T> result = new LinkedHashSet<T>();
 		while (jcrNodes.hasNext()) {
 			final Node node = jcrNodes.nextNode();
 			final T bean = SimplePersistSupport.<T> convertJcrToBean(session,
@@ -1129,6 +1136,7 @@ public class SimplePersistSupport {
 		if (xpath.endsWith("[]")) {
 			xpath = xpath.substring(0, xpath.length() - 2);
 		}
+		xpath += " order by @" + INTERNAL_TIMESTAMP;
 		final Query query = session.getWorkspace().getQueryManager()
 				.createQuery(xpath, Query.XPATH);
 		final QueryResult result = query.execute();
@@ -1186,7 +1194,7 @@ public class SimplePersistSupport {
 			final String propertyNodeWhereXpath = buildPropertyString(nodeType,
 					propertyNames, propertyValues,
 					SimplePersistSupport.PROPERTY_VALUE);
-			final Set<T> resultNodes = new HashSet<T>();
+			final Set<T> resultNodes = new LinkedHashSet<T>();
 
 			executeXpathAndFillSet(rootPath, session, multipleLoadingStrategy,
 					propertyNodeWhereXpath, resultNodes);
@@ -1521,7 +1529,7 @@ public class SimplePersistSupport {
 					JcrNodeType.MULTIPLE_NODE_PROPERTY, null, entry.getKey());
 			final NodeIterator existentNodesIterator = parent
 					.getNodes(nodeName);
-			final HashMap<String, Node> existentNodes = new HashMap<String, Node>();
+			final LinkedHashMap<String, Node> existentNodes = new LinkedHashMap<String, Node>();
 			while (existentNodesIterator.hasNext()) {
 				final Node existentNode = existentNodesIterator.nextNode();
 				final String hash = existentNode.getProperty(

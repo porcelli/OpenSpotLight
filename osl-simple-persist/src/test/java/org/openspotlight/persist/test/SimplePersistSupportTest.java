@@ -777,6 +777,35 @@ public class SimplePersistSupportTest {
 		Assert.assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
 	}
 
+	@Test
+	public void shouldMaintainOrder() throws Exception {
+		final int count = 20;
+		final String rootPath = "z/x/y";
+
+		final ArrayList<SimpleObject> objs = new ArrayList<SimpleObject>();
+
+		for (int i = 0; i < count; i++) {
+			final SimpleObject root = new SimpleObject();
+			root.setId(i);
+			objs.add(root);
+		}
+
+		SimplePersistSupport.convertBeansToJcrs(rootPath, session, objs);
+
+		session.save();
+
+		final Set<SimpleObject> nodes = SimplePersistSupport
+				.findNodesByProperties(rootPath, session, SimpleObject.class,
+						LazyType.LAZY, new String[] {}, new Object[] {});
+
+		int i = 0;
+		for (final SimpleObject obj : nodes) {
+			Assert.assertThat(obj.getId(), Is.is(i));
+			i++;
+		}
+
+	}
+
 	@Test(expected = SLRuntimeException.class)
 	public void shouldNotFindWithWrongPropertyName() throws Exception {
 		SimplePersistSupport.findNodesByProperties("a/b/c", session,

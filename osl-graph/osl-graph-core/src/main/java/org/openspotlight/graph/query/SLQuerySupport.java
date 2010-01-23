@@ -108,6 +108,9 @@ public class SLQuerySupport {
 	 * @throws SLQueryException the SL query exception
 	 */
 	static String[] getNodeIDs(Collection<SLNode> nodes) throws SLQueryException {
+	    if( nodes == null ) {
+	        return null;
+	    }
 		try {
 			int count = 0;
 			String[] ids = new String[nodes.size()];
