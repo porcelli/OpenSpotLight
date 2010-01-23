@@ -22,10 +22,12 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.query.SLQueryApi;
 
 //FIXME RESOLVE ALL KINDS OF LINKS ONLY ON ABSTRACT CONTEXT, EXCEPT THE ONES OF THIS CLASSPATH
 public class JavaPublicElemetsTreeExecutor {
@@ -333,6 +335,7 @@ public class JavaPublicElemetsTreeExecutor {
 			return findPrimitiveType(string);
 		}
 		try {
+			// FIXME cache results!!!!
 			final List<String> possibleNames = new ArrayList<String>();
 			possibleNames.add(string);
 			if (!includedClasses.contains(string)) {
@@ -340,9 +343,25 @@ public class JavaPublicElemetsTreeExecutor {
 					possibleNames.add(pack + "." + string);
 				}
 			}
+			for (final String possibleName : possibleNames) {
+				final SLQueryApi query = session.createQueryApi();
+				query.select().type(JavaType.class.getName()).subTypes()
+						.selectEnd().where().type(JavaType.class.getName())
+						.subTypes().each().property("completeName").equalsTo()
+						.value(possibleName).typeEnd().whereEnd();
+				final NeedsSyncronizationList<SLNode> result = query.execute()
+						.getNodes();
+				if (result.size() > 0) {
+					synchronized (result.getLockObject()) {
 
-			// FIXME
-			return null;
+					}
+					final JavaType foundType = (JavaType) result.get(0);
+					return foundType;
+				}
+			}
+			throw Exceptions.logAndReturnNew(new IllegalStateException(
+					"any node was found for type " + string),
+					SLRuntimeException.class);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
