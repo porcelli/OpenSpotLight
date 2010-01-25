@@ -195,7 +195,8 @@ public class JavaPublicElemetsTreeExecutor {
 	public JavaTypeInterface createInterface(final SLNode peek,
 			final String string, final List<JavaModifier> modifiers19,
 			final List<JavaTypeAnnotation> annotations20,
-			final List<JavaType> normalInterfaceDeclarationExtends21) {
+			final List<JavaType> normalInterfaceDeclarationExtends21,
+			final List<TypeParameterDto> typeParameters28) {
 		return createInnerTypeWithSateliteData(peek, string, modifiers19,
 				annotations20, null, normalInterfaceDeclarationExtends21,
 				JavaTypeInterface.class);
@@ -205,7 +206,8 @@ public class JavaPublicElemetsTreeExecutor {
 			final String string, final List<JavaModifier> modifiers7,
 			final List<JavaTypeAnnotation> annotations8,
 			final JavaType normalClassExtends9,
-			final List<JavaType> normalClassImplements10) {
+			final List<JavaType> normalClassImplements10,
+			final List<TypeParameterDto> typeParameters11) {
 		return createInnerTypeWithSateliteData(peek, string, modifiers7,
 				annotations8, normalClassExtends9, normalClassImplements10,
 				JavaTypeClass.class);

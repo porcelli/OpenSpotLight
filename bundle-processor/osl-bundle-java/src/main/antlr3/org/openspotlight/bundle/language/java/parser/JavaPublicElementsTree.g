@@ -121,7 +121,7 @@ modifier returns [JavaModifier modifierResult]
 normalClassDeclaration
 @after{stack.pop();}
 : ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements?
-{ stack.push(executor.createJavaClass(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalClassExtends.typeResult, $normalClassImplements.typeListReturn)); } 
+{ stack.push(executor.createJavaClass(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalClassExtends.typeResult, $normalClassImplements.typeListReturn,$typeParameters.resultList)); } 
 classBody)
 ;
 normalClassExtends returns [JavaType typeResult]
@@ -163,7 +163,7 @@ enumConstant
 normalInterfaceDeclaration
 @after{stack.pop();}
 : ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
-{ stack.push(executor.createInterface(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList)); }
+{ stack.push(executor.createInterface(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList,$typeParameters.resultList)); }
 ;
 normalInterfaceDeclarationExtends returns [List<JavaType> resultList]
 @init{$resultList = new ArrayList<JavaType>();}
