@@ -59,7 +59,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -352,8 +351,9 @@ public class SimplePersistSupport {
 						SERIALIZED_PROPERTY_VALUE, entry.getKey()), entry
 						.getValue());
 			}
+
 			if (!result.hasProperty(INTERNAL_TIMESTAMP)) {
-				result.setProperty(INTERNAL_TIMESTAMP, Calendar.getInstance());
+				result.setProperty(INTERNAL_TIMESTAMP, System.nanoTime());
 			}
 			SimplePersistSupport.saveSimplePropertiesOnJcr(descriptor, result);
 			SimplePersistSupport.saveComplexMultiplePropertiesOnJcr(session,

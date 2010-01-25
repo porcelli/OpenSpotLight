@@ -2,6 +2,7 @@ package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -47,13 +48,13 @@ public class JavaPublicElemetsTreeExecutor {
 
 	private final IdentityHashMap<SLNode, SLNode> concreteAbstractCache = new IdentityHashMap<SLNode, SLNode>();
 
-	private List<String> includedPackages;
+	private final List<String> includedPackages = new LinkedList<String>();
 
-	private List<String> includedClasses;
+	private final List<String> includedClasses = new LinkedList<String>();
 
-	private List<String> includedStaticClasses;
+	private final List<String> includedStaticClasses = new LinkedList<String>();
 
-	private List<String> includedStaticMethods;
+	private final List<String> includedStaticMethods = new LinkedList<String>();
 
 	public JavaPublicElemetsTreeExecutor(final SLNode currentContext,
 			final SLGraphSession session) throws Exception {
