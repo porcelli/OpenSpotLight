@@ -70,6 +70,12 @@ public interface JavaMethod extends SLNode {
 	@SLProperty
 	public Boolean getAbstract();
 
+	@SLProperty
+	public String getCompleteName();
+
+	@SLProperty
+	public String getCompleteQualifiedName();
+
 	/**
 	 * Gets the final.
 	 * 
@@ -109,6 +115,9 @@ public interface JavaMethod extends SLNode {
 	 */
 	@SLProperty
 	public Boolean getPublic();
+
+	@SLProperty
+	public String getQualifiedName();
 
 	/**
 	 * Gets the simple name.
@@ -150,6 +159,10 @@ public interface JavaMethod extends SLNode {
 	 */
 	public void setAbstract(Boolean newAbstract);
 
+	public void setCompleteName(String newCompleteName);
+
+	public void setCompleteQualifiedName(String newCompleteQualifiedName);
+
 	/**
 	 * Sets the final.
 	 * 
@@ -189,6 +202,8 @@ public interface JavaMethod extends SLNode {
 	 *            the new public
 	 */
 	public void setPublic(Boolean newPublic);
+
+	public void setQualifiedName(String newQualifiedName);
 
 	/**
 	 * Sets the simple name.

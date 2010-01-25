@@ -14,6 +14,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
 import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
+import org.openspotlight.bundle.language.java.metamodel.link.References;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
@@ -34,8 +35,12 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.query.SLInvalidQueryElementException;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
+import org.openspotlight.graph.query.SLQueryException;
 
 //FIXME RESOLVE ALL KINDS OF LINKS ONLY ON ABSTRACT CONTEXT, EXCEPT THE ONES OF THIS CLASSPATH
 public class JavaPublicElemetsTreeExecutor {
@@ -309,6 +314,30 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T extends SLNode> T findByProperty(final Class<T> type,
+			final String propertyName, final String propertyValue)
+			throws SLGraphSessionException, SLQueryException,
+			SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+		final SLQueryApi query = session.createQueryApi();
+		query.select().type(type.getName()).subTypes().selectEnd().where()
+				.type(type.getName()).subTypes().each().property(propertyName)
+				.equalsTo().value(propertyValue).typeEnd().whereEnd();
+		final NeedsSyncronizationList<SLNode> result = query.execute()
+				.getNodes();
+		if (result.size() > 0) {
+			synchronized (result.getLockObject()) {
+				for (final SLNode found : result) {
+					if (found.getContext().getRootNode()
+							.equals(abstractContext)) {
+						return (T) found;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public JavaType findByQualifiedTypes(final List<JavaType> types) {
 		final StringBuilder completeName = new StringBuilder();
 		for (int i = 0, size = types.size(); i < size; i++) {
@@ -408,19 +437,10 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 			}
 			for (final String possibleName : possibleNames) {
-				final SLQueryApi query = session.createQueryApi();
-				query.select().type(JavaType.class.getName()).subTypes()
-						.selectEnd().where().type(JavaType.class.getName())
-						.subTypes().each().property("completeName").equalsTo()
-						.value(possibleName).typeEnd().whereEnd();
-				final NeedsSyncronizationList<SLNode> result = query.execute()
-						.getNodes();
-				if (result.size() > 0) {
-					synchronized (result.getLockObject()) {
-
-					}
-					final JavaType foundType = (JavaType) result.get(0);
-					return foundType;
+				final JavaType javaType = findByProperty(JavaType.class,
+						"completeName", possibleName);
+				if (javaType != null) {
+					return javaType;
 				}
 			}
 			throw Exceptions.logAndReturnNew(new IllegalStateException(
@@ -465,21 +485,38 @@ public class JavaPublicElemetsTreeExecutor {
 		return JavaModifier.getByName(string);
 	}
 
-	public void importDeclaration(final boolean isStatic,
+	public void importDeclaration(final SLNode peek, final boolean isStatic,
 			final boolean starred, final String string) {
-		if (isStatic) {
-			if (starred) {
-				includedStaticClasses.add(string);
+		try {
+			if (isStatic) {
+				if (starred) {
+					includedStaticClasses.add(string);
+					final JavaType classNode = findByProperty(JavaType.class,
+							"completeName", string);
+					session.addLink(References.class, peek, classNode, false);
+				} else {
+					includedStaticMethods.add(string);
+					final JavaMethod methodNode = findByProperty(
+							JavaMethod.class, "qualifiedName", string);
+					session.addLink(References.class, peek, methodNode, false);
+				}
 			} else {
-				includedStaticMethods.add(string);
+				if (starred) {
+					includedPackages.add(string);
+					final JavaPackage packageNode = (JavaPackage) abstractContext
+							.getNode(string);
+					session.addLink(References.class, peek, packageNode, false);
+				} else {
+					includedClasses.add(string);
+					final JavaType classNode = findByProperty(JavaType.class,
+							"completeName", string);
+					session.addLink(References.class, peek, classNode, false);
+				}
 			}
-		} else {
-			if (starred) {
-				includedPackages.add(string);
-			} else {
-				includedClasses.add(string);
-			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
+
 	}
 
 	private JavaMethod internalCreateMethod(final SLNode peek,
@@ -500,6 +537,7 @@ public class JavaPublicElemetsTreeExecutor {
 					completeMethodName.append(' ');
 					completeMethodName.append(',');
 				}
+
 			}
 			completeMethodName.append(')');
 			final String complMethodName = completeMethodName.toString();
@@ -510,6 +548,18 @@ public class JavaPublicElemetsTreeExecutor {
 			} else {
 				javaMethod = peek.addNode(JavaMethod.class, complMethodName);
 			}
+			javaMethod.setCompleteName(complMethodName);
+			javaMethod.setSimpleName(string);
+			final StringBuilder qualifiedName = new StringBuilder();
+			SLNode parent = peek;
+			do {
+				qualifiedName.append(parent.getName());
+				qualifiedName.append('.');
+				parent = parent.getParent();
+			} while (!(parent instanceof JavaPackage) && parent != null);
+			javaMethod.setCompleteQualifiedName(qualifiedName + "."
+					+ complMethodName);
+			javaMethod.setQualifiedName(qualifiedName + "." + string);
 			if (annotations35 != null) {
 				for (final JavaTypeAnnotation annotation : annotations35) {
 					session.addLink(AnottatedBy.class, javaMethod, annotation,
@@ -565,7 +615,6 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 
 			}
-			javaMethod.setSimpleName(string);
 			return javaMethod;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -577,7 +626,7 @@ public class JavaPublicElemetsTreeExecutor {
 		final String packageName = string == null ? JavaConstants.DEFAULT_PACKAGE
 				: string;
 		if (string != null) {
-			importDeclaration(false, true, packageName);
+			importDeclaration(currentContext, false, true, packageName);
 		}
 		return this.createNodeOnBothContexts(JavaPackage.class, packageName);
 	}
