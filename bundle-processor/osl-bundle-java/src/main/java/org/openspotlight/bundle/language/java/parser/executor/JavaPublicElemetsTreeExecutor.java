@@ -12,6 +12,8 @@ import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
+import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
@@ -23,6 +25,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedExtended;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedSuper;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
@@ -273,14 +276,12 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	// FIXME create arrays in the same on java graph node support
-	public JavaType findArrayType(final JavaType typeReturn,
+	public JavaType findArrayType(final JavaType simpleOne,
 			final String dimension) {
-		if (typeReturn.getArray()) {
-			return typeReturn;
+		if (simpleOne.getArray()) {
+			return simpleOne;
 		}
 		try {
-			final JavaType simpleOne = findSimpleType(typeReturn
-					.getCompleteName());
 			final SLNode parent = simpleOne.getParent();
 			final String arrayName = simpleOne.getName() + "[]";
 			JavaType arrayNode = (JavaType) parent.getNode(arrayName);
@@ -315,10 +316,8 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaTypeParameterizedExtended findExtendsParameterizedType(
-			final JavaType typeReturn) {
+			final JavaType simpleOne) {
 		try {
-			final JavaType simpleOne = findSimpleType(typeReturn
-					.getCompleteName());
 			final SLNode parent = simpleOne.getParent();
 			final String parameterizedName = "<? extends "
 					+ simpleOne.getName() + ">";
@@ -339,10 +338,41 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 	}
 
-	public JavaType findParamerizedType(final JavaType typeReturn,
+	public JavaTypeParameterized findParamerizedType(final JavaType simpleOne,
 			final List<JavaType> typeArguments40) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			final SLNode parent = simpleOne.getParent();
+			final StringBuilder parameterizedNameBuilder = new StringBuilder();
+			parameterizedNameBuilder.append('<');
+			for (int i = 0, size = typeArguments40.size(); i < size; i++) {
+				parameterizedNameBuilder.append('?');
+				if (i - 1 != size) {
+					parameterizedNameBuilder.append(',');
+				}
+			}
+			parameterizedNameBuilder.append('>');
+			final String parameterizedName = simpleOne.getName()
+					+ parameterizedNameBuilder.toString();
+			JavaTypeParameterized parameterizedNode = (JavaTypeParameterized) parent
+					.getNode(parameterizedName);
+			if (parameterizedNode == null) {
+				parameterizedNode = parent.addNode(JavaTypeParameterized.class,
+						parameterizedName);
+				parameterizedNode.setCompleteName(simpleOne.getCompleteName()
+						+ parameterizedNameBuilder.toString());
+				parameterizedNode.setSimpleName(parameterizedName);
+
+				session.addLink(ParameterizedTypeClass.class,
+						parameterizedNode, simpleOne, false);
+				for (final JavaType argument : typeArguments40) {
+					session.addLink(TypeArgument.class, parameterizedNode,
+							argument, false);
+				}
+			}
+			return parameterizedNode;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public JavaType findPrimitiveType(final String string) {
