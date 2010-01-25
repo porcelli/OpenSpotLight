@@ -242,7 +242,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final SLNode newAbstractNode = cachedParent.addNode(abstractType,
 					name);
 			session.addLink(AbstractTypeBind.class, newAbstractNode, newNode,
-					false);// FIXME is it true?
+					true);
 			return newNode;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -381,14 +381,6 @@ public class JavaPublicElemetsTreeExecutor {
 		return JavaModifier.getByName(string);
 	}
 
-	private String getQualifiedJavaClass(final String unqualifiedClassName) {
-		throw new UnsupportedOperationException();
-	}
-
-	private String getUnqualifiedJavaClass(final String unqualifiedClassName) {
-		throw new UnsupportedOperationException();
-	}
-
 	public void importDeclaration(final boolean isStatic,
 			final boolean starred, final String string) {
 		if (isStatic) {
@@ -507,8 +499,7 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaTypeAnnotation resolveAnnotation(final String qualifiedName52) {
-		// FIXME
-		return null;
+		return (JavaTypeAnnotation) findSimpleType(qualifiedName52);
 	}
 
 }

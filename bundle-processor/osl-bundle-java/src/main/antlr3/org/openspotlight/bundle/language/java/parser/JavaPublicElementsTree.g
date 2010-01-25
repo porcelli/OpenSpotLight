@@ -53,16 +53,17 @@ options{
 }
 
 @header {
-    package org.openspotlight.bundle.language.java.parser;
-    import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
-    import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
-    import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
-    import org.openspotlight.bundle.language.java.metamodel.node.*;
-    import org.openspotlight.graph.SLNode;
-    import java.util.List;
-    import java.util.ArrayList;
-    import java.util.LinkedList;
-    import java.util.Stack;
+package org.openspotlight.bundle.language.java.parser;
+import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
+import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
+import org.openspotlight.graph.SLNode;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Stack;
+import org.openspotlight.bundle.language.java.parser.executor.TypeParameterDto;
     
 }
 
@@ -129,17 +130,19 @@ normalClassExtends returns [JavaType typeResult]
 normalClassImplements returns [List<JavaType> typeListReturn]
 : ^(IMPLEMENTS typeList {$typeListReturn=$typeList.resultList;})
 ;
-typeParameters
-: ^(TYPE_PARAMETERS typeParameter+)
+typeParameters returns [List<TypeParameterDto> resultList]
+@init { $resultList = new ArrayList<TypeParameterDto>(); }
+: ^(TYPE_PARAMETERS (typeParameter {$resultList.add($typeParameter.result);} )+)
 ;
-typeParameter
-: ^(TYPE_PARAMETER Identifier typeParameterExtends?)
+typeParameter returns [TypeParameterDto result]
+: ^(TYPE_PARAMETER Identifier typeParameterExtends? {$result = new TypeParameterDto($Identifier.text,$typeParameterExtends.resultList);})
 ;
-typeParameterExtends
-: ^(EXTENDS typeBound)
+typeParameterExtends returns [List<JavaType> resultList]
+: ^(EXTENDS typeBound {$resultList = $typeBound.resultList;})
 ;
-typeBound
-: ^(TYPE_BOUND type+)
+typeBound returns [List<JavaType> resultList]
+@init { $resultList = new ArrayList<JavaType>(); }
+: ^(TYPE_BOUND (type {$resultList.add($type.typeReturn);} )+)
 ;
 enumDeclaration
 @after{stack.pop();}

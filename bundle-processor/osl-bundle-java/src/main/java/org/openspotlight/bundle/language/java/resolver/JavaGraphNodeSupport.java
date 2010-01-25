@@ -93,6 +93,8 @@ import org.openspotlight.graph.SLNode;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
+// FIXME create arrays in the same on java graph node support
+
 public class JavaGraphNodeSupport {
 
 	/** The using cache. */
