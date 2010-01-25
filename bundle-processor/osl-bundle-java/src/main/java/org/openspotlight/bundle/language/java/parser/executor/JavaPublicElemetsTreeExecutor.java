@@ -265,6 +265,7 @@ public class JavaPublicElemetsTreeExecutor {
 				currentContext, name);
 	}
 
+	@SuppressWarnings("unused")
 	private <T extends SLNode> T createNodeOnBothContexts(final Class<T> type,
 			final SLNode parent, final String name) {
 		return this.createNodeOnBothContexts(type, type, parent, name);
