@@ -41,9 +41,20 @@ import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-//FIXME RESOLVE ALL KINDS OF LINKS ONLY ON ABSTRACT CONTEXT, EXCEPT THE ONES OF THIS CLASSPATH
+//FIXME import java.lang.*
+//FIXME import all packages on extends and implements hierarchy
+//FIXME add parameters to methods
+//FIXME take care of parameterized types
 public class JavaPublicElemetsTreeExecutor {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private final HashMap<String, SLNode> importedNodeCache = new HashMap<String, SLNode>();
+
+	private final String completeArtifactName;
 
 	private final SLNode currentContext;
 
@@ -62,13 +73,23 @@ public class JavaPublicElemetsTreeExecutor {
 	private final List<String> includedStaticMethods = new LinkedList<String>();
 
 	public JavaPublicElemetsTreeExecutor(final SLNode currentContext,
-			final SLGraphSession session) throws Exception {
+			final SLGraphSession session, final String completeArtifactName)
+			throws Exception {
 		super();
 		this.currentContext = currentContext;
 		abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT)
 				.getRootNode();
 		this.session = session;
 		concreteAbstractCache.put(currentContext, abstractContext);
+		this.completeArtifactName = completeArtifactName;
+		if (logger.isInfoEnabled()) {
+			logger.info(completeArtifactName + ": " + "creating "
+					+ getClass().getSimpleName() + " with "
+					+ currentContext.getContext().getID() + ":"
+					+ currentContext.getName() + "/"
+					+ abstractContext.getContext().getID() + ":"
+					+ abstractContext.getName());
+		}
 	}
 
 	public JavaTypeEnum createEnum(final SLNode parent, final String name,
@@ -133,6 +154,15 @@ public class JavaPublicElemetsTreeExecutor {
 			final JavaType normalClassExtends9,
 			final List<JavaType> normalClassImplements10, final Class<T> type) {
 		try {
+			if (logger.isInfoEnabled()) {
+				logger.info(completeArtifactName + ": " + "creating type "
+						+ type.getSimpleName() + " with parent= "
+						+ peek.getName() + ", name=" + string + ", modifiers="
+						+ modifiers7 + ", annotations=" + annotations8
+						+ ", extends=" + normalClassExtends9 + ", implements="
+						+ normalClassImplements10);
+			}
+
 			final T newClass = createNodeOnBothContexts(JavaType.class, type,
 					peek, string);
 			final JavaType newAbstractClass = (JavaType) concreteAbstractCache
@@ -330,10 +360,22 @@ public class JavaPublicElemetsTreeExecutor {
 				for (final SLNode found : result) {
 					if (found.getContext().getRootNode()
 							.equals(abstractContext)) {
+						if (logger.isInfoEnabled()) {
+							logger.info(completeArtifactName + ": " + "found "
+									+ found.getName() + " for search on type:"
+									+ type.getSimpleName() + " with "
+									+ propertyName + "=" + propertyValue);
+						}
 						return (T) found;
 					}
 				}
 			}
+		}
+		if (logger.isInfoEnabled()) {
+			logger.info(completeArtifactName + ": "
+					+ "not found any node for search on type:"
+					+ type.getSimpleName() + " with " + propertyName + "="
+					+ propertyValue);
 		}
 		return null;
 	}
@@ -423,12 +465,14 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findSimpleType(final String string) {
-
 		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
 			return findPrimitiveType(string);
 		}
 		try {
-			// FIXME cache results!!!!
+			final JavaType cached = (JavaType) importedNodeCache.get(string);
+			if (cached != null) {
+				return cached;
+			}
 			final List<String> possibleNames = new ArrayList<String>();
 			possibleNames.add(string);
 			if (!includedClasses.contains(string)) {
@@ -440,12 +484,14 @@ public class JavaPublicElemetsTreeExecutor {
 				final JavaType javaType = findByProperty(JavaType.class,
 						"completeName", possibleName);
 				if (javaType != null) {
+					importedNodeCache.put(javaType.getSimpleName(), javaType);
+					importedNodeCache.put(javaType.getCompleteName(), javaType);
 					return javaType;
 				}
 			}
 			throw Exceptions.logAndReturnNew(new IllegalStateException(
-					"any node was found for type " + string),
-					SLRuntimeException.class);
+					completeArtifactName + ": any node was found for type "
+							+ string), SLRuntimeException.class);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -494,11 +540,18 @@ public class JavaPublicElemetsTreeExecutor {
 					final JavaType classNode = findByProperty(JavaType.class,
 							"completeName", string);
 					session.addLink(References.class, peek, classNode, false);
+					importedNodeCache.put(classNode.getCompleteName(),
+							classNode);
+					importedNodeCache.put(classNode.getSimpleName(), classNode);
 				} else {
 					includedStaticMethods.add(string);
 					final JavaMethod methodNode = findByProperty(
 							JavaMethod.class, "qualifiedName", string);
 					session.addLink(References.class, peek, methodNode, false);
+					importedNodeCache.put(methodNode.getQualifiedName(),
+							methodNode);
+					importedNodeCache.put(methodNode.getSimpleName(),
+							methodNode);
 				}
 			} else {
 				if (starred) {
@@ -511,10 +564,15 @@ public class JavaPublicElemetsTreeExecutor {
 					final JavaType classNode = findByProperty(JavaType.class,
 							"completeName", string);
 					session.addLink(References.class, peek, classNode, false);
+					importedNodeCache.put(classNode.getCompleteName(),
+							classNode);
+					importedNodeCache.put(classNode.getSimpleName(), classNode);
 				}
 			}
 		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			throw Exceptions.logAndReturnNew("parameters passed: parent:"
+					+ peek + ", static:" + isStatic + ", starred:" + starred
+					+ ", name:" + string, e, SLRuntimeException.class);
 		}
 
 	}

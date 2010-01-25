@@ -116,7 +116,9 @@ public class SLNodeInvocationHandler implements InvocationHandler,
 							.getPropertyName(method);
 					final Class<? extends Serializable> typeClass = (Class<? extends Serializable>) method
 							.getReturnType();
-					result = node.getProperty(typeClass, propName).getValue();
+					final SLNodeProperty<? extends Serializable> property = node
+							.getProperty(typeClass, propName);
+					result = property != null ? property.getValue() : null;
 				} else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
 					final Method getterMethod = method.getDeclaringClass()
 							.getMethod("get" + method.getName().substring(3));

@@ -37,7 +37,8 @@ public class JavaParserPublicElementsPhase implements
 				treeNodes);
 		treeNodes.setTokenStream(dto.commonTokenStream);
 		walker.setExecutor(new JavaPublicElemetsTreeExecutor(currentContext
-				.getCurrentNodeGroup(), context.getGraphSession()));
+				.getCurrentNodeGroup(), context.getGraphSession(), artifact
+				.getArtifactCompleteName()));
 		walker.compilationUnit();
 		dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)
 				.withWalker(walker).create();
