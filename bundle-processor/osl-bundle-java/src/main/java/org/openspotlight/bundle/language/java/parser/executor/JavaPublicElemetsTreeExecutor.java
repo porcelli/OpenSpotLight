@@ -12,6 +12,8 @@ import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
@@ -21,6 +23,8 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedExtended;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedSuper;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -310,9 +314,29 @@ public class JavaPublicElemetsTreeExecutor {
 		return findSimpleType(completeName.toString());
 	}
 
-	public JavaType findExtendsParameterizedType(final JavaType typeReturn) {
-		// TODO Auto-generated method stub
-		return null;
+	public JavaTypeParameterizedExtended findExtendsParameterizedType(
+			final JavaType typeReturn) {
+		try {
+			final JavaType simpleOne = findSimpleType(typeReturn
+					.getCompleteName());
+			final SLNode parent = simpleOne.getParent();
+			final String parameterizedName = "<? extends "
+					+ simpleOne.getName() + ">";
+			JavaTypeParameterizedExtended parameterizedNode = (JavaTypeParameterizedExtended) parent
+					.getNode(parameterizedName);
+			if (parameterizedNode == null) {
+				parameterizedNode = parent.addNode(
+						JavaTypeParameterizedExtended.class, parameterizedName);
+				parameterizedNode.setCompleteName("<? extends "
+						+ simpleOne.getCompleteName() + ">");
+				parameterizedNode.setSimpleName(parameterizedName);
+				session.addLink(TypeArgumentExtends.class, parameterizedNode,
+						simpleOne, false);
+			}
+			return parameterizedNode;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public JavaType findParamerizedType(final JavaType typeReturn,
@@ -370,9 +394,29 @@ public class JavaPublicElemetsTreeExecutor {
 
 	}
 
-	public JavaType findSuperParameterizedType(final JavaType typeReturn) {
-		// TODO Auto-generated method stub
-		return null;
+	public JavaTypeParameterizedSuper findSuperParameterizedType(
+			final JavaType typeReturn) {
+		try {
+			final JavaType simpleOne = findSimpleType(typeReturn
+					.getCompleteName());
+			final SLNode parent = simpleOne.getParent();
+			final String parameterizedName = "<? super " + simpleOne.getName()
+					+ ">";
+			JavaTypeParameterizedSuper parameterizedNode = (JavaTypeParameterizedSuper) parent
+					.getNode(parameterizedName);
+			if (parameterizedNode == null) {
+				parameterizedNode = parent.addNode(
+						JavaTypeParameterizedSuper.class, parameterizedName);
+				parameterizedNode.setCompleteName("<? super "
+						+ simpleOne.getCompleteName() + ">");
+				parameterizedNode.setSimpleName(parameterizedName);
+				session.addLink(TypeArgumentSuper.class, parameterizedNode,
+						simpleOne, false);
+			}
+			return parameterizedNode;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public JavaType findVoidType() {
