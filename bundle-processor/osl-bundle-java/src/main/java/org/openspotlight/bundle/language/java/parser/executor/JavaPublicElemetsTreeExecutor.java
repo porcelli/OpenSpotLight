@@ -1,7 +1,7 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class JavaPublicElemetsTreeExecutor {
 
 	private final SLGraphSession session;
 
-	private final IdentityHashMap<SLNode, SLNode> concreteAbstractCache = new IdentityHashMap<SLNode, SLNode>();
+	private final HashMap<SLNode, SLNode> concreteAbstractCache = new HashMap<SLNode, SLNode>();
 
 	private final List<String> includedPackages = new LinkedList<String>();
 
@@ -142,7 +142,7 @@ public class JavaPublicElemetsTreeExecutor {
 				qualifiedName.append(parent.getName());
 				qualifiedName.append('.');
 				parent = parent.getParent();
-			} while (!(parent instanceof JavaPackage));
+			} while (!(parent instanceof JavaPackage) && parent != null);
 			newClass.setCompleteName(qualifiedName.toString());
 			newClass.setSimpleName(string);
 			newAbstractClass.setSimpleName(string);
@@ -248,9 +248,15 @@ public class JavaPublicElemetsTreeExecutor {
 			final SLNode parent, final String name) {
 		try {
 			final T newNode = parent.addNode(type, name);
-			final SLNode cachedParent = concreteAbstractCache.get(parent);
+			final SLNode cachedParent;
+			if (parent.getContext().equals(abstractContext.getContext())) {
+				cachedParent = parent;
+			} else {
+				cachedParent = concreteAbstractCache.get(parent);
+			}
 			final SLNode newAbstractNode = cachedParent.addNode(abstractType,
 					name);
+			concreteAbstractCache.put(newNode, newAbstractNode);
 			session.addLink(AbstractTypeBind.class, newAbstractNode, newNode,
 					true);
 			return newNode;

@@ -100,7 +100,7 @@ public class SLContextImpl implements SLContext {
 	public boolean equals(final Object obj) {
 		synchronized (lock) {
 			try {
-				if (obj == null) {
+				if (!(obj instanceof SLContext)) {
 					return false;
 				}
 				final SLContext context = (SLContext) obj;
