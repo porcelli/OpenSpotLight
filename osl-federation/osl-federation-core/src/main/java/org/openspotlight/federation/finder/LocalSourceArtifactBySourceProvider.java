@@ -50,15 +50,18 @@ package org.openspotlight.federation.finder;
 
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class LocalSourceArtifactBySourceProvider implements
 		ArtifactFinderBySourceProvider {
 
+	@SuppressWarnings("unchecked")
 	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
-		if (artifactType.equals(StringArtifact.class)) {
-			new LocalSourceStreamArtifactFinder(source);
+		if (artifactType.equals(StringArtifact.class)
+				|| artifactType.equals(StreamArtifact.class)) {
+			new LocalSourceStreamArtifactFinder(artifactType, source);
 		}
 		return null;
 	}

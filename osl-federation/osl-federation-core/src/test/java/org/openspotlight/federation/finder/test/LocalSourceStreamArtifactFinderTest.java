@@ -71,7 +71,7 @@ import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
 public class LocalSourceStreamArtifactFinderTest {
 
 	/** The stream artifact finder. */
-	private LocalSourceStreamArtifactFinder streamArtifactFinder;
+	private LocalSourceStreamArtifactFinder<StringArtifact> streamArtifactFinder;
 
 	/** The artifact source. */
 	private ArtifactSource artifactSource;
@@ -90,8 +90,8 @@ public class LocalSourceStreamArtifactFinderTest {
 		artifactSource.setRepository(repo);
 		artifactSource.setName("classpath");
 		artifactSource.setInitialLookup("./src/test/resources/artifacts");
-		streamArtifactFinder = new LocalSourceStreamArtifactFinder(
-				artifactSource);
+		streamArtifactFinder = new LocalSourceStreamArtifactFinder<StringArtifact>(
+				StringArtifact.class, artifactSource);
 	}
 
 	/**

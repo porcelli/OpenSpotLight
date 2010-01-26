@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
+import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
@@ -39,8 +40,6 @@ public class JavaPublicElementsPhaseTest {
 	private ExecutionContextFactory includedFilesContextFactory;
 	private GlobalSettings settings;
 	private Group group;
-
-	// FIXME test new parser stuff
 
 	private final String username = "username";
 
@@ -78,6 +77,19 @@ public class JavaPublicElementsPhaseTest {
 		group.setRepository(repo);
 		repo.getGroups().add(group);
 		group.setActive(true);
+
+		final BundleProcessorType jarProcessor = new BundleProcessorType();
+		jarProcessor.setActive(true);
+		jarProcessor.setGroup(group);
+		jarProcessor.setGlobalPhase(JavaGlobalPhase.class);
+		jarProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
+		group.getBundleTypes().add(jarProcessor);
+
+		final BundleSource bundleJarSource = new BundleSource();
+		jarProcessor.getSources().add(bundleJarSource);
+		bundleJarSource.setBundleProcessorType(jarProcessor);
+		bundleJarSource.setRelative("jar/");
+		bundleJarSource.getIncludeds().add("**/*.jar");
 
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);

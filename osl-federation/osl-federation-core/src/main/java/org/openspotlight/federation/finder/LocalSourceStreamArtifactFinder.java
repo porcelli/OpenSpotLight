@@ -65,36 +65,41 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.PathElement;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
-public class LocalSourceStreamArtifactFinder extends
-		AbstractArtifactFinder<StringArtifact> {
+public class LocalSourceStreamArtifactFinder<T extends Artifact> extends
+		AbstractArtifactFinder<T> {
 
 	private final ArtifactSource artifactSource;
 
-	public LocalSourceStreamArtifactFinder(final ArtifactSource artifactSource) {
+	private final Class<T> artifactType;
+
+	public LocalSourceStreamArtifactFinder(final Class<T> artifactType,
+			final ArtifactSource artifactSource) {
 		super(artifactSource.getRepository().getName());
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("fileExists", new File(artifactSource
 				.getInitialLookup()
 				+ "/").exists());
 		this.artifactSource = artifactSource;
+		this.artifactType = artifactType;
 	}
 
 	public void closeResources() {
-		// TODO Auto-generated method stub
 
 	}
 
-	public Class<StringArtifact> getArtifactType() {
-		return StringArtifact.class;
+	public Class<T> getArtifactType() {
+		return artifactType;
 	}
 
 	public Class<? extends ArtifactSource> getSourceType() {
 		return null;
 	}
 
-	protected StringArtifact internalFindByPath(final String rawPath) {
+	@SuppressWarnings("unchecked")
+	protected T internalFindByPath(final String rawPath) {
 		Assertions.checkNotEmpty("rawPath", rawPath);
 		for (final ChangeType t : ChangeType.values()) {
 			try {
@@ -109,19 +114,27 @@ public class LocalSourceStreamArtifactFinder extends
 				}
 
 				final FileInputStream resource = new FileInputStream(file);
-				final BufferedReader reader = new BufferedReader(
-						new InputStreamReader(resource));
-				final StringBuilder buffer = new StringBuilder();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					buffer.append(line);
-					buffer.append('\n');
+				if (artifactType.equals(StringArtifact.class)) {
+					final BufferedReader reader = new BufferedReader(
+							new InputStreamReader(resource));
+					final StringBuilder buffer = new StringBuilder();
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						buffer.append(line);
+						buffer.append('\n');
+					}
+					final String content = buffer.toString();
+					final StringArtifact streamArtifact = Artifact
+							.createArtifact(StringArtifact.class, rawPath, t);
+					streamArtifact.setContent(content);
+					return (T) streamArtifact;
+				} else if (artifactType.equals(StreamArtifact.class)) {
+					final StreamArtifact streamArtifact = Artifact
+							.createArtifact(StreamArtifact.class, rawPath,
+									ChangeType.INCLUDED);
+					streamArtifact.setContent(resource);
+					return (T) streamArtifact;
 				}
-				final String content = buffer.toString();
-				final StringArtifact streamArtifact = Artifact.createArtifact(
-						StringArtifact.class, rawPath, t);
-				streamArtifact.setContent(content);
-				return streamArtifact;
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 			}
@@ -131,8 +144,8 @@ public class LocalSourceStreamArtifactFinder extends
 
 	}
 
-	protected StringArtifact internalFindByRelativePath(
-			final StringArtifact relativeTo, final String path) {
+	protected T internalFindByRelativePath(final StringArtifact relativeTo,
+			final String path) {
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkNotNull("relativeTo", relativeTo);
 		Assertions.checkNotEmpty("path", path);
@@ -142,12 +155,12 @@ public class LocalSourceStreamArtifactFinder extends
 		return findByPath(newPath);
 	}
 
-	protected Set<StringArtifact> internalListByPath(final String rawPath) {
+	protected Set<T> internalListByPath(final String rawPath) {
 		try {
-			final Set<StringArtifact> result = new HashSet<StringArtifact>();
+			final Set<T> result = new HashSet<T>();
 			final Set<String> allFilePaths = retrieveAllArtifactNames(rawPath);
 			for (final String path : allFilePaths) {
-				final StringArtifact sa = findByPath(path);
+				final T sa = findByPath(path);
 				result.add(sa);
 			}
 			return result;
