@@ -23,6 +23,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.References;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
@@ -50,7 +51,6 @@ import org.openspotlight.graph.query.SLQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//FIXME take care of parameterized types
 public class JavaPublicElemetsTreeExecutor {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -101,7 +101,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<JavaType> interfaces) {
 		final JavaType enumType = findSimpleType("Enum");
 		return createInnerTypeWithSateliteData(parent, name, modifiers,
-				annotations, enumType, interfaces, JavaTypeEnum.class);
+				annotations, enumType, interfaces, JavaTypeEnum.class, null);
 	}
 
 	public void createFieldDeclaration(final SLNode peek,
@@ -156,7 +156,8 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<JavaModifier> modifiers7,
 			final List<JavaTypeAnnotation> annotations8,
 			final JavaType normalClassExtends9,
-			final List<JavaType> normalClassImplements10, final Class<T> type) {
+			final List<JavaType> normalClassImplements10, final Class<T> type,
+			final List<TypeParameterDto> typeParams) {
 		try {
 			if (logger.isInfoEnabled()) {
 				logger.info(completeArtifactName + ": " + "creating type "
@@ -318,6 +319,21 @@ public class JavaPublicElemetsTreeExecutor {
 					}
 				}
 			}
+
+			for (final TypeParameterDto typeParam : typeParams) {
+				final JavaTypeParameterized typeParameterized = newClass
+						.addNode(JavaTypeParameterized.class, typeParam
+								.getName());
+				session.addLink(TypeParameter.class, newClass,
+						typeParameterized, false);
+				if (typeParam.getTypeParameterExtends() != null) {
+					for (final JavaType ext : typeParam
+							.getTypeParameterExtends()) {
+						session.addLink(TypeArgumentExtends.class,
+								typeParameterized, ext, false);
+					}
+				}
+			}
 			return newClass;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -332,7 +348,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<TypeParameterDto> typeParameters28) {
 		return createInnerTypeWithSateliteData(peek, string, modifiers19,
 				annotations20, null, normalInterfaceDeclarationExtends21,
-				JavaTypeInterface.class);
+				JavaTypeInterface.class, typeParameters28);
 	}
 
 	public JavaTypeClass createJavaClass(final SLNode peek,
@@ -343,7 +359,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<TypeParameterDto> typeParameters11) {
 		return createInnerTypeWithSateliteData(peek, string, modifiers7,
 				annotations8, normalClassExtends9, normalClassImplements10,
-				JavaTypeClass.class);
+				JavaTypeClass.class, typeParameters11);
 	}
 
 	public JavaMethod createMethodConstructorDeclaration(final SLNode peek,
