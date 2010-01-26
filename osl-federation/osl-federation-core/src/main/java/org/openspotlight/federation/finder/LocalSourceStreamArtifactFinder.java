@@ -49,6 +49,8 @@
 package org.openspotlight.federation.finder;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -56,6 +58,7 @@ import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -129,10 +132,14 @@ public class LocalSourceStreamArtifactFinder<T extends Artifact> extends
 					streamArtifact.setContent(content);
 					return (T) streamArtifact;
 				} else if (artifactType.equals(StreamArtifact.class)) {
+					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+					IOUtils.copy(resource, baos);
 					final StreamArtifact streamArtifact = Artifact
 							.createArtifact(StreamArtifact.class, rawPath,
 									ChangeType.INCLUDED);
-					streamArtifact.setContent(resource);
+					streamArtifact.setContent(new ByteArrayInputStream(baos
+							.toByteArray()));
 					return (T) streamArtifact;
 				}
 			} catch (final Exception e) {

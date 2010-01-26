@@ -109,6 +109,9 @@ public class BundleProcessorExecution {
 		}
 
 		public boolean equals(final Object o) {
+			if (o == this) {
+				return true;
+			}
 			if (!(o instanceof StartingSearchArtifactsDto)) {
 				return false;
 			}
@@ -228,9 +231,7 @@ public class BundleProcessorExecution {
 					final StartingSearchArtifactsDto dto = new StartingSearchArtifactsDto(
 							currentContextImpl, repository, artifactType,
 							processor);
-					if (!newTaskData.contains(dto)) {
-						newTaskData.add(dto);
-					}
+					newTaskData.add(dto);
 				}
 			}
 		}
@@ -244,7 +245,11 @@ public class BundleProcessorExecution {
 					+ ":"
 					+ dto.artifactType.getSimpleName()
 					+ ":"
-					+ dto.currentContext.getCurrentGroup().toUniqueJobString();
+					+ dto.currentContext.getCurrentGroup().toUniqueJobString()
+					+ ":"
+					+ dto.bundleProcessorType.getName()
+					+ ":"
+					+ dto.bundleProcessorType.getGlobalPhase().getName();
 			final String seachId = idPrefix + ":searchArtifacts";
 			final TaskGroup searchArtifacts = pool.createTaskGroup(seachId,
 					priority);

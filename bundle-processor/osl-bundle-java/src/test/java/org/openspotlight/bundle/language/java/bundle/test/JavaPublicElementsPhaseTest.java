@@ -80,6 +80,7 @@ public class JavaPublicElementsPhaseTest {
 
 		final BundleProcessorType jarProcessor = new BundleProcessorType();
 		jarProcessor.setActive(true);
+		jarProcessor.setName("jar processor");
 		jarProcessor.setGroup(group);
 		jarProcessor.setGlobalPhase(JavaGlobalPhase.class);
 		jarProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
@@ -89,10 +90,11 @@ public class JavaPublicElementsPhaseTest {
 		jarProcessor.getSources().add(bundleJarSource);
 		bundleJarSource.setBundleProcessorType(jarProcessor);
 		bundleJarSource.setRelative("jar/");
-		bundleJarSource.getIncludeds().add("**/*.jar");
+		bundleJarSource.getIncludeds().add("**/luni-lang-util-only.jar");
 
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
+		commonProcessor.setName("source processor");
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
 		commonProcessor.getArtifactPhases().add(

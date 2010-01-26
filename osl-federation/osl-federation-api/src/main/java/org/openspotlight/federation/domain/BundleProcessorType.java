@@ -73,6 +73,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name("bundle_processor_type")
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
+	private String name;
+
 	private Map<String, String> bundleProperties = new HashMap<String, String>();
 
 	private static final long serialVersionUID = -8305990807194729295L;
@@ -100,13 +102,16 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(final Object o) {
+		if (o == this) {
+			return true;
+		}
 		if (!(o instanceof BundleProcessorType)) {
 			return false;
 		}
 		final BundleProcessorType that = (BundleProcessorType) o;
-		final boolean result = Equals.eachEquality(Arrays
-				.of(group, globalPhase), Arrays.andOf(that.group,
-				that.globalPhase));
+		final boolean result = Equals.eachEquality(Arrays.of(group,
+				globalPhase, name), Arrays.andOf(that.group, that.globalPhase,
+				that.name));
 		return result;
 	}
 
@@ -133,6 +138,11 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 		return group;
 	}
 
+	@KeyProperty
+	public String getName() {
+		return name;
+	}
+
 	/**
 	 * Gets the sources.
 	 * 
@@ -150,7 +160,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 	public int hashCode() {
 		int result = hashCode;
 		if (result == 0) {
-			result = HashCodes.hashOf(group, globalPhase);
+			result = HashCodes.hashOf(group, globalPhase, name);
 			hashCode = result;
 		}
 		return result;
@@ -197,6 +207,10 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 	 */
 	public void setGroup(final Group group) {
 		this.group = group;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	/**
