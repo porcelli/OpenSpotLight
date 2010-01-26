@@ -31,20 +31,58 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.remote.server.UserAuthenticator;
 
 public class JavaPublicElementsPhaseTest {
 
+	public static void main(final String... args) throws Exception {
+		final JavaPublicElementsPhaseTest test = new JavaPublicElementsPhaseTest();
+		test.setupResources();
+		try {
+			test.shouldResoulveExpectedTokens();
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} catch (final AssertionError e) {
+			e.printStackTrace();
+		}
+		RemoteGraphSessionServer server = null;
+		try {
+			server = new RemoteGraphSessionServer(new UserAuthenticator() {
+
+				public boolean canConnect(final String userName,
+						final String password, final String clientHost) {
+					return true;
+				}
+
+				public boolean equals(final Object o) {
+					return this.getClass().equals(o.getClass());
+				}
+			}, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+			System.err.println("Server waiting connections on port 7070");
+			while (true) {
+				Thread.sleep(5000);
+			}
+		} finally {
+			if (server != null) {
+				server.shutdown();
+			}
+		}
+
+	}
+
 	private ExecutionContextFactory includedFilesContextFactory;
 	private GlobalSettings settings;
+
 	private Group group;
 
 	private final String username = "username";
-
 	private final String password = "password";
 	private final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
+
 	private String repositoryName;
 
 	@Before

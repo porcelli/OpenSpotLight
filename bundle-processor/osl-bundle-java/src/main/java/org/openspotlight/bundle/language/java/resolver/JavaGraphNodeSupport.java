@@ -82,6 +82,8 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class should be used to insert all java relationships on the OSL Graph
@@ -113,6 +115,8 @@ public class JavaGraphNodeSupport {
 
 	/** The nodes from abstract context. */
 	private final Map<String, JavaType> nodesFromAbstractContext = new TreeMap<String, JavaType>();
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Instantiates a new java graph node support. The abstractContextRootNode
@@ -275,6 +279,12 @@ public class JavaGraphNodeSupport {
 		newType.setCompleteName(packageName + "." + nodeName);
 		session.addLink(PackageType.class, newPackage, newType, false);
 		nodesFromAbstractContext.put(packageName + nodeName, newType);
+		if (logger.isInfoEnabled()) {
+			logger.info("abstract ctx - added class "
+					+ nodeType.getSimpleName() + " " + packageName + "."
+					+ nodeName);
+		}
+
 		return newType;
 	}
 
@@ -372,6 +382,10 @@ public class JavaGraphNodeSupport {
 				.addLink(AbstractTypeBind.class, newAbstractType, newType,
 						false);
 		nodesFromThisContext.put(packageName + nodeName, newType);
+		if (logger.isInfoEnabled()) {
+			logger.info("added class " + nodeType.getSimpleName() + " "
+					+ packageName + "." + nodeName);
+		}
 		return newType;
 	}
 

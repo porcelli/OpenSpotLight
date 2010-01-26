@@ -57,6 +57,8 @@ public class JavaPublicElemetsTreeExecutor {
 
 	private final HashMap<String, SLNode> importedNodeCache = new HashMap<String, SLNode>();
 
+	private JavaPackage currentPackage;
+
 	private final String completeArtifactName;
 
 	private final SLNode currentContext;
@@ -185,19 +187,24 @@ public class JavaPublicElemetsTreeExecutor {
 			}
 			final StringBuilder qualifiedName = new StringBuilder();
 			SLNode parent = peek;
-			JavaPackage packageNode = null;
 			do {
 				qualifiedName.append(parent.getName());
 				qualifiedName.append('.');
-				if (parent instanceof JavaPackage) {
-					packageNode = (JavaPackage) parent;
-				}
 				parent = parent.getParent();
 			} while (!(parent instanceof JavaPackage) && parent != null);
-			session.addLink(PackageType.class, newClass, packageNode, false);
-			SLNode abstractParent = concreteAbstractCache.get(packageNode);
+			if (logger.isInfoEnabled()
+					&& (currentPackage == null || newClass == null)) {
+				logger.info("error on adding link "
+						+ PackageType.class.getSimpleName()
+						+ " with "
+						+ (currentPackage != null ? currentPackage.getName()
+								: "null") + " and "
+						+ (newClass != null ? newClass.getName() : "null"));
+			}
+			session.addLink(PackageType.class, currentPackage, newClass, false);
+			SLNode abstractParent = concreteAbstractCache.get(currentPackage);
 			if (abstractParent == null) {
-				abstractParent = packageNode;
+				abstractParent = currentPackage;
 			}
 			session.addLink(PackageType.class, newAbstractClass,
 					abstractParent, false);
@@ -253,7 +260,7 @@ public class JavaPublicElemetsTreeExecutor {
 				if (nodes.size() > 0) {
 					synchronized (nodes.getLockObject()) {
 						for (final SLNode node : nodes) {
-							importDeclaration(packageNode, false, true, node
+							importDeclaration(currentPackage, false, true, node
 									.getName());
 						}
 					}
@@ -290,7 +297,7 @@ public class JavaPublicElemetsTreeExecutor {
 					if (nodes.size() > 0) {
 						synchronized (nodes.getLockObject()) {
 							for (final SLNode node : nodes) {
-								importDeclaration(packageNode, false, true,
+								importDeclaration(currentPackage, false, true,
 										node.getName());
 							}
 						}
@@ -312,7 +319,7 @@ public class JavaPublicElemetsTreeExecutor {
 					if (nodes.size() > 0) {
 						synchronized (nodes.getLockObject()) {
 							for (final SLNode node : nodes) {
-								importDeclaration(packageNode, false, true,
+								importDeclaration(currentPackage, false, true,
 										node.getName());
 							}
 						}
@@ -329,8 +336,10 @@ public class JavaPublicElemetsTreeExecutor {
 				if (typeParam.getTypeParameterExtends() != null) {
 					for (final JavaType ext : typeParam
 							.getTypeParameterExtends()) {
-						session.addLink(TypeArgumentExtends.class,
-								typeParameterized, ext, false);
+						if (ext != null) {
+							session.addLink(TypeArgumentExtends.class,
+									typeParameterized, ext, false);
+						}
 					}
 				}
 			}
@@ -454,10 +463,33 @@ public class JavaPublicElemetsTreeExecutor {
 			final String propertyName, final String propertyValue)
 			throws SLGraphSessionException, SLQueryException,
 			SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
-		final SLQueryApi query = session.createQueryApi();
-		query.select().type(type.getName()).subTypes().selectEnd().where()
+		final SLQueryApi query1 = session.createQueryApi();
+		query1.select().type(type.getName()).subTypes().selectEnd().where()
 				.type(type.getName()).subTypes().each().property(propertyName)
 				.equalsTo().value(propertyValue).typeEnd().whereEnd();
+		final NeedsSyncronizationList<SLNode> result1 = query1.execute()
+				.getNodes();
+		if (result1.size() > 0) {
+			synchronized (result1.getLockObject()) {
+				for (final SLNode found : result1) {
+					if (found.getContext().getRootNode()
+							.equals(abstractContext)) {
+						if (logger.isInfoEnabled()) {
+							logger.info(completeArtifactName + ": " + "found "
+									+ found.getName() + " for search on type:"
+									+ type.getSimpleName() + " with "
+									+ propertyName + "=" + propertyValue);
+						}
+						return (T) found;
+					}
+				}
+			}
+		}
+
+		final SLQueryApi query = session.createQueryApi();
+		query.select().type(type.getName()).selectEnd().where().type(
+				type.getName()).each().property(propertyName).equalsTo().value(
+				propertyValue).typeEnd().whereEnd();
 		final NeedsSyncronizationList<SLNode> result = query.execute()
 				.getNodes();
 		if (result.size() > 0) {
@@ -476,6 +508,7 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 			}
 		}
+
 		if (logger.isInfoEnabled()) {
 			logger.info(completeArtifactName + ": "
 					+ "not found any node for search on type:"
@@ -663,11 +696,32 @@ public class JavaPublicElemetsTreeExecutor {
 					includedPackages.add(string);
 					final JavaPackage packageNode = (JavaPackage) abstractContext
 							.getNode(string);
+					if (logger.isInfoEnabled()
+							&& (packageNode == null || peek == null)) {
+						logger.info("error on adding link "
+								+ References.class.getSimpleName()
+								+ " with "
+								+ (peek != null ? peek.getName() : "null")
+								+ " and "
+								+ (packageNode != null ? packageNode.getName()
+										: "null"));
+					}
 					session.addLink(References.class, peek, packageNode, false);
 				} else {
 					includedClasses.add(string);
 					final JavaType classNode = findByProperty(JavaType.class,
 							"completeName", string);
+					if (logger.isInfoEnabled()
+							&& (classNode == null || peek == null)) {
+						logger.info("error on adding link "
+								+ References.class.getSimpleName()
+								+ " with "
+								+ (peek != null ? peek.getName() : "null")
+								+ " and "
+								+ (classNode != null ? classNode.getName()
+										: "null"));
+					}
+
 					session.addLink(References.class, peek, classNode, false);
 					importedNodeCache.put(classNode.getCompleteName(),
 							classNode);
@@ -808,7 +862,9 @@ public class JavaPublicElemetsTreeExecutor {
 			importDeclaration(currentContext, false, true, packageName);
 		}
 		importDeclaration(currentContext, false, true, "java.lang");
-		return this.createNodeOnBothContexts(JavaPackage.class, packageName);
+		currentPackage = this.createNodeOnBothContexts(JavaPackage.class,
+				packageName);
+		return currentPackage;
 	}
 
 	public JavaTypeAnnotation resolveAnnotation(final String qualifiedName52) {
