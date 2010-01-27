@@ -80,7 +80,7 @@ public class LocalSourceStreamArtifactFinder<T extends Artifact> extends
 
 	public LocalSourceStreamArtifactFinder(final Class<T> artifactType,
 			final ArtifactSource artifactSource) {
-		super(artifactSource.getRepository().getName());
+		super(artifactType, artifactSource.getRepository().getName());
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("fileExists", new File(artifactSource
 				.getInitialLookup()

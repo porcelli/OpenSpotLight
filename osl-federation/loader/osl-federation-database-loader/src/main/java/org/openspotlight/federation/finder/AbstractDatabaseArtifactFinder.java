@@ -111,9 +111,9 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 
 	private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
 
-	protected AbstractDatabaseArtifactFinder(
+	protected AbstractDatabaseArtifactFinder(final Class<A> artifactType,
 			final DbArtifactSource artifactSource) {
-		super(artifactSource.getRepository().getName());
+		super(artifactType, artifactSource.getRepository().getName());
 		this.artifactSource = artifactSource;
 	}
 

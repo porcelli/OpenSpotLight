@@ -71,7 +71,7 @@ public class DatabaseStreamArtifactFinder extends
 		ArtifactFinder<StringArtifact> {
 
 	public DatabaseStreamArtifactFinder(final DbArtifactSource artifactSource) {
-		super(artifactSource);
+		super(StringArtifact.class, artifactSource);
 	}
 
 	protected StringArtifact internalFindByPath(final String path) {

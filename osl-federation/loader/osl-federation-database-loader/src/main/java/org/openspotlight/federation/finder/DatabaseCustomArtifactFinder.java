@@ -312,7 +312,7 @@ public class DatabaseCustomArtifactFinder extends
 	private final ConcurrentHashMap<ArtifactSource, Map<String, DatabaseCustomArtifact>> resultCache = new ConcurrentHashMap<ArtifactSource, Map<String, DatabaseCustomArtifact>>();
 
 	public DatabaseCustomArtifactFinder(final DbArtifactSource artifactSource) {
-		super(artifactSource);
+		super(DatabaseCustomArtifact.class, artifactSource);
 	}
 
 	@Override

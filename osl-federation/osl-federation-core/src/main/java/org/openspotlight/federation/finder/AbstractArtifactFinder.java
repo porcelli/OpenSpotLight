@@ -69,18 +69,23 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractArtifactFinder<A extends Artifact> implements
 		ArtifactFinder<A> {
 
+	private final Class<A> targetArtifactType;
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final String currentRepository;
 
-	protected AbstractArtifactFinder(final String currentRepository) {
+	protected AbstractArtifactFinder(final Class<A> targetArtifactType,
+			final String currentRepository) {
 		this.currentRepository = currentRepository;
+		this.targetArtifactType = targetArtifactType;
 	}
 
 	private void didLoadArtifact(final A artifact) {
 		if (artifact != null) {
 			artifact.setRepositoryName(currentRepository);
-			logger.info("loaded " + artifact.getArtifactCompleteName());
+			logger.info("(" + targetArtifactType.getSimpleName() + "):"
+					+ "loaded " + artifact.getArtifactCompleteName());
 		}
 	}
 
@@ -89,7 +94,8 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 			for (final A artifact : artifacts) {
 				if (artifact != null) {
 					artifact.setRepositoryName(currentRepository);
-					logger.info("loaded " + artifact.getArtifactCompleteName());
+					logger.info("(" + targetArtifactType.getSimpleName() + "):"
+							+ "loaded " + artifact.getArtifactCompleteName());
 				}
 			}
 		}
@@ -152,7 +158,8 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 	public final Set<String> retrieveAllArtifactNames(final String initialPath) {
 		final Set<String> result = new TreeSet<String>(
 				internalRetrieveAllArtifactNames(initialPath));
-		logger.info("retrieved names for path " + initialPath + ": " + result);
+		logger.info("(" + targetArtifactType.getSimpleName() + "):"
+				+ "retrieved names for path " + initialPath + ": " + result);
 
 		return result;
 	}

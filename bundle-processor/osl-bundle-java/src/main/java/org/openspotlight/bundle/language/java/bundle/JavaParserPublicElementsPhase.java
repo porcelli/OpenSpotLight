@@ -1,6 +1,7 @@
 package org.openspotlight.bundle.language.java.bundle;
 
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.openspotlight.bundle.common.parser.SLCommonTreeAdaptor;
 import org.openspotlight.bundle.language.java.parser.JavaPublicElementsTree;
 import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -35,6 +36,7 @@ public class JavaParserPublicElementsPhase implements
 				dto.tree);
 		final JavaPublicElementsTree walker = new JavaPublicElementsTree(
 				treeNodes);
+		treeNodes.setTreeAdaptor(new SLCommonTreeAdaptor());
 		treeNodes.setTokenStream(dto.commonTokenStream);
 		walker.setExecutor(new JavaPublicElemetsTreeExecutor(currentContext
 				.getCurrentNodeGroup(), context.getGraphSession(), artifact

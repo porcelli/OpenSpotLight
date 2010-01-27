@@ -1092,8 +1092,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	public String getPropertyValueAsString(final String name)
 			throws SLNodePropertyNotFoundException, SLGraphSessionException {
 		synchronized (lock) {
-			return this.getProperty(Serializable.class, name).getValue()
-					.toString();
+			final SLNodeProperty<Serializable> prop = this.getProperty(
+					Serializable.class, name);
+			final Serializable val = prop != null ? prop.getValue() : null;
+			return val != null ? val.toString() : null;
 		}
 	}
 

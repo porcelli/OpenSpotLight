@@ -326,19 +326,20 @@ public class JavaPublicElemetsTreeExecutor {
 					}
 				}
 			}
-
-			for (final TypeParameterDto typeParam : typeParams) {
-				final JavaTypeParameterized typeParameterized = newClass
-						.addNode(JavaTypeParameterized.class, typeParam
-								.getName());
-				session.addLink(TypeParameter.class, newClass,
-						typeParameterized, false);
-				if (typeParam.getTypeParameterExtends() != null) {
-					for (final JavaType ext : typeParam
-							.getTypeParameterExtends()) {
-						if (ext != null) {
-							session.addLink(TypeArgumentExtends.class,
-									typeParameterized, ext, false);
+			if (typeParams != null) {
+				for (final TypeParameterDto typeParam : typeParams) {
+					final JavaTypeParameterized typeParameterized = newClass
+							.addNode(JavaTypeParameterized.class, typeParam
+									.getName());
+					session.addLink(TypeParameter.class, newClass,
+							typeParameterized, false);
+					if (typeParam.getTypeParameterExtends() != null) {
+						for (final JavaType ext : typeParam
+								.getTypeParameterExtends()) {
+							if (ext != null) {
+								session.addLink(TypeArgumentExtends.class,
+										typeParameterized, ext, false);
+							}
 						}
 					}
 				}
@@ -504,6 +505,17 @@ public class JavaPublicElemetsTreeExecutor {
 									+ propertyName + "=" + propertyValue);
 						}
 						return (T) found;
+					} else {
+						if (logger.isInfoEnabled()) {
+							logger.info(completeArtifactName + ": "
+									+ "ignore found type " + found.getName()
+									+ " for search on type:"
+									+ type.getSimpleName() + " with "
+									+ propertyName + "=" + propertyValue
+									+ " due to its context "
+									+ found.getContext().getID());
+						}
+
 					}
 				}
 			}
