@@ -160,8 +160,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
 				Class<T> type = null;
 				final String encodedName = encoder.encode(name);
-				SLPersistentNode pChildNode = getHierarchyChildNode(clazz,
-						name, encodedName);
+				SLPersistentNode pChildNode = getHierarchyChildNode(
+						SLNode.class, name, encodedName);
 				if (pChildNode == null) {
 					type = clazz;
 					pChildNode = pNode.addNode(encodedName);

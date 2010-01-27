@@ -51,6 +51,7 @@ package org.openspotlight.graph.util;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
+import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLLink;
@@ -96,9 +97,10 @@ public class ProxyUtil {
 	 */
 	public static <T extends SLNode> T createNodeProxy(final Class<T> nodeType,
 			final SLNode node) {
-		synchronized (node.getLockObject()) {
-			Assertions.checkNotNull("nodeType", nodeType);
-			Assertions.checkNotNull("node", node);
+		Assertions.checkNotNull("nodeType", nodeType);
+		Assertions.checkNotNull("node", node);
+		final Lock lock = node.getLockObject();
+		synchronized (lock) {
 			T proxyNode = null;
 			if (node instanceof Proxy) {
 				proxyNode = nodeType.cast(node);
