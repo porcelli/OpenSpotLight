@@ -1192,7 +1192,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	private boolean nodeTypesOfSameHierarchy(
 			final Class<? extends SLNode> type1,
 			final Class<? extends SLNode> type2) {
-		return type1.isAssignableFrom(type2) || type2.isAssignableFrom(type2);
+
+		return type1.isAssignableFrom(type2) || type2.isAssignableFrom(type1);
 	}
 
 	// @Override
