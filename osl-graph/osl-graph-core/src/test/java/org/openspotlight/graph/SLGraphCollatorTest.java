@@ -174,6 +174,8 @@ public class SLGraphCollatorTest {
 					"selecao");
 			final SQLElement element2 = root1.addNode(SQLElement.class,
 					"sele\u00E7\u00E3o");
+			Assert.assertEquals(1, root1.getNodes().size());
+
 			Assert.assertEquals(element1, element2);
 
 			// test getNode ...

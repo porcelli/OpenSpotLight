@@ -161,7 +161,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 				Class<T> type = null;
 				final String encodedName = encoder.encode(name);
 				SLPersistentNode pChildNode = getHierarchyChildNode(
-						SLNode.class, name, encodedName);
+						SLNode.class, name, encodedName, clazz);
 				if (pChildNode == null) {
 					type = clazz;
 					pChildNode = pNode.addNode(encodedName);
@@ -720,7 +720,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	private SLPersistentNode getHierarchyChildNode(
 			final Class<? extends SLNode> clazz, final String decodedName,
-			final String encodedName) throws SLException {
+			final String encodedName,
+			final Class<? extends SLNode> clazzToGetCollator)
+			throws SLException {
 
 		synchronized (lock) {
 			SLPersistentNode pChildNode = null;
@@ -737,9 +739,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			}
 
 			if (pChildNode == null
-					&& !SLCollatorSupport.isCollatorStrengthIdentical(clazz)) {
+					&& !SLCollatorSupport
+							.isCollatorStrengthIdentical(clazzToGetCollator)) {
 				final Collator collator = SLCollatorSupport
-						.getNodeCollator(clazz);
+						.getNodeCollator(clazzToGetCollator);
 				for (final SLPersistentNode current : pNode.getNodes()) {
 					final String currentDecodedName = SLCommonSupport
 							.getUserNodeName(current);
