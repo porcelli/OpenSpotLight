@@ -87,8 +87,8 @@ public class JavaPublicElemetsTreeExecutor {
 		this.session = session;
 		concreteAbstractCache.put(currentContext, abstractContext);
 		this.completeArtifactName = completeArtifactName;
-		if (logger.isInfoEnabled()) {
-			logger.info(completeArtifactName + ": " + "creating "
+		if (logger.isDebugEnabled()) {
+			logger.debug(completeArtifactName + ": " + "creating "
 					+ getClass().getSimpleName() + " with "
 					+ currentContext.getContext().getID() + ":"
 					+ currentContext.getName() + "/"
@@ -161,8 +161,8 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<JavaType> normalClassImplements10, final Class<T> type,
 			final List<TypeParameterDto> typeParams) {
 		try {
-			if (logger.isInfoEnabled()) {
-				logger.info(completeArtifactName + ": " + "creating type "
+			if (logger.isDebugEnabled()) {
+				logger.debug(completeArtifactName + ": " + "creating type "
 						+ type.getSimpleName() + " with parent= "
 						+ peek.getName() + ", name=" + string + ", modifiers="
 						+ modifiers7 + ", annotations=" + annotations8
@@ -192,9 +192,9 @@ public class JavaPublicElemetsTreeExecutor {
 				qualifiedName.append('.');
 				parent = parent.getParent();
 			} while (!(parent instanceof JavaPackage) && parent != null);
-			if (logger.isInfoEnabled()
+			if (logger.isDebugEnabled()
 					&& (currentPackage == null || newClass == null)) {
-				logger.info("error on adding link "
+				logger.debug("error on adding link "
 						+ PackageType.class.getSimpleName()
 						+ " with "
 						+ (currentPackage != null ? currentPackage.getName()
@@ -475,9 +475,10 @@ public class JavaPublicElemetsTreeExecutor {
 				for (final SLNode found : result1) {
 					if (found.getContext().getRootNode()
 							.equals(abstractContext)) {
-						if (logger.isInfoEnabled()) {
-							logger.info(completeArtifactName + ": " + "found "
-									+ found.getName() + " for search on type:"
+						if (logger.isDebugEnabled()) {
+							logger.debug(completeArtifactName + ": "
+									+ "found on 1st try " + found.getName()
+									+ " for search on type:"
 									+ type.getSimpleName() + " with "
 									+ propertyName + "=" + propertyValue);
 						}
@@ -498,16 +499,17 @@ public class JavaPublicElemetsTreeExecutor {
 				for (final SLNode found : result) {
 					if (found.getContext().getRootNode()
 							.equals(abstractContext)) {
-						if (logger.isInfoEnabled()) {
-							logger.info(completeArtifactName + ": " + "found "
-									+ found.getName() + " for search on type:"
+						if (logger.isDebugEnabled()) {
+							logger.debug(completeArtifactName + ": "
+									+ "found on 2nd try " + found.getName()
+									+ " for search on type:"
 									+ type.getSimpleName() + " with "
 									+ propertyName + "=" + propertyValue);
 						}
 						return (T) found;
 					} else {
-						if (logger.isInfoEnabled()) {
-							logger.info(completeArtifactName + ": "
+						if (logger.isDebugEnabled()) {
+							logger.debug(completeArtifactName + ": "
 									+ "ignore found type " + found.getName()
 									+ " for search on type:"
 									+ type.getSimpleName() + " with "
@@ -521,8 +523,8 @@ public class JavaPublicElemetsTreeExecutor {
 			}
 		}
 
-		if (logger.isInfoEnabled()) {
-			logger.info(completeArtifactName + ": "
+		if (logger.isDebugEnabled()) {
+			logger.debug(completeArtifactName + ": "
 					+ "not found any node for search on type:"
 					+ type.getSimpleName() + " with " + propertyName + "="
 					+ propertyValue);
@@ -708,9 +710,9 @@ public class JavaPublicElemetsTreeExecutor {
 					includedPackages.add(string);
 					final JavaPackage packageNode = (JavaPackage) abstractContext
 							.getNode(string);
-					if (logger.isInfoEnabled()
+					if (logger.isDebugEnabled()
 							&& (packageNode == null || peek == null)) {
-						logger.info("error on adding link "
+						logger.debug("error on adding link "
 								+ References.class.getSimpleName()
 								+ " with "
 								+ (peek != null ? peek.getName() : "null")
@@ -723,9 +725,9 @@ public class JavaPublicElemetsTreeExecutor {
 					includedClasses.add(string);
 					final JavaType classNode = findByProperty(JavaType.class,
 							"completeName", string);
-					if (logger.isInfoEnabled()
+					if (logger.isDebugEnabled()
 							&& (classNode == null || peek == null)) {
-						logger.info("error on adding link "
+						logger.debug("error on adding link "
 								+ References.class.getSimpleName()
 								+ " with "
 								+ (peek != null ? peek.getName() : "null")
