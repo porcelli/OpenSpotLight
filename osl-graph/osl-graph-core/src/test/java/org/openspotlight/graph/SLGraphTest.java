@@ -95,6 +95,7 @@ import org.openspotlight.graph.test.domain.JavaPackageNode;
 import org.openspotlight.graph.test.domain.JavaPackageNodePrivate;
 import org.openspotlight.graph.test.domain.JavaPackagePublicElement;
 import org.openspotlight.graph.test.domain.NamePredicate;
+import org.openspotlight.graph.test.domain.SerializableBean;
 import org.openspotlight.graph.test.domain.TransientLink;
 import org.openspotlight.graph.test.domain.TransientNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -1082,54 +1083,104 @@ public class SLGraphTest {
 		}
 	}
 
-	/**
-	 * Test any serializable property.
-	 */
-	@Test
-	// ( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
-	public void testAnySerializableProperty() {
+    /**
+     * Test any serializable property.
+     */
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
+    public void testAnySerializableProperty() {
 
-		try {
-			final Date now = new Date();
+        try {
+            final Date now = new Date();
 
-			// set new property ...
-			final SLNode root = session.createContext("1L").getRootNode();
-			final SLNodeProperty<Date> prop1 = root.setProperty(Date.class,
-					VisibilityLevel.PUBLIC, "prop", now);
-			Assert.assertNotNull(prop1);
-			Assert.assertNotNull(prop1.getValue());
-			Assert.assertEquals(prop1.getValue(), now);
+            // set new property ...
+            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNodeProperty<Date> prop1 = root.setProperty(Date.class,
+                    VisibilityLevel.PUBLIC, "prop", now);
+            Assert.assertNotNull(prop1);
+            Assert.assertNotNull(prop1.getValue());
+            Assert.assertEquals(prop1.getValue(), now);
 
-			// get existent property ...
-			final SLNodeProperty<Date> prop2 = root.getProperty(Date.class,
-					"prop");
-			Assert.assertNotNull(prop2);
-			Assert.assertNotNull(prop2.getValue());
-			Assert.assertEquals(prop2.getValue(), now);
+            // get existent property ...
+            final SLNodeProperty<Date> prop2 = root.getProperty(Date.class,
+                    "prop");
+            Assert.assertNotNull(prop2);
+            Assert.assertNotNull(prop2.getValue());
+            Assert.assertEquals(prop2.getValue(), now);
 
-			// get property as Serializable ...
-			final SLNodeProperty<Serializable> prop5 = root.getProperty(
-					Serializable.class, "prop");
-			Assert.assertNotNull(prop5);
-			Assert.assertNotNull(prop5.getValue());
-			Assert.assertEquals(prop5.getValue(), now);
+            // get property as Serializable ...
+            final SLNodeProperty<Serializable> prop5 = root.getProperty(
+                    Serializable.class, "prop");
+            Assert.assertNotNull(prop5);
+            Assert.assertNotNull(prop5.getValue());
+            Assert.assertEquals(prop5.getValue(), now);
 
-			// try to integer property as non-hierarchy class ...
-			try {
-				root.getProperty(Integer.class, "prop");
-				Assert.fail();
-			} catch (final SLInvalidNodePropertyTypeException e) {
-				Assert.assertTrue(true);
-			}
-		} catch (final SLGraphSessionException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
-	}
+            // try to integer property as non-hierarchy class ...
+            try {
+                root.getProperty(Integer.class, "prop");
+                Assert.fail();
+            } catch (final SLInvalidNodePropertyTypeException e) {
+                Assert.assertTrue(true);
+            }
+        } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (final SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        }
+    }
 
+    /**
+     * Test a big serializable property.
+     */
+    @Test
+    // ( dependsOnMethods = "testAddSimpleLinkExistentBothCaseACTB" )
+    public void testBigSerializableProperty() {
+
+        try {
+            final SerializableBean bean = new SerializableBean();
+            bean.testString = "A random sample string";
+            bean.testBuffer = new byte[1024*1024];
+
+            // set new property ...
+            final SLNode root = session.createContext("1L").getRootNode();
+            final SLNodeProperty<SerializableBean> prop1 = root.setProperty(SerializableBean.class,
+                    VisibilityLevel.PUBLIC, "prop", bean);
+            Assert.assertNotNull(prop1);
+            Assert.assertNotNull(prop1.getValue());
+            Assert.assertEquals(prop1.getValue(), bean);
+
+            // get existent property ...
+            final SLNodeProperty<SerializableBean> prop2 = root.getProperty(SerializableBean.class,
+                    "prop");
+            Assert.assertNotNull(prop2);
+            Assert.assertNotNull(prop2.getValue());
+            Assert.assertEquals(prop2.getValue(), bean);
+
+            // get property as Serializable ...
+            final SLNodeProperty<Serializable> prop5 = root.getProperty(
+                    Serializable.class, "prop");
+            Assert.assertNotNull(prop5);
+            Assert.assertNotNull(prop5.getValue());
+            Assert.assertEquals(prop5.getValue(), bean);
+
+            // try to integer property as non-hierarchy class ...
+            try {
+                root.getProperty(Integer.class, "prop");
+                Assert.fail();
+            } catch (final SLInvalidNodePropertyTypeException e) {
+                Assert.assertTrue(true);
+            }
+        } catch (final SLGraphSessionException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        } catch (final SLInvalidCredentialException e) {
+            LOGGER.error(e);
+            Assert.fail();
+        }
+    }
+    
 	/**
 	 * Test boolean property.
 	 */
