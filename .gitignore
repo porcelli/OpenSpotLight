@@ -20,6 +20,8 @@ temp-testng-customsuite.xml
 test-output
 target
 bin
+META-INF
+out.slql
 
 # General folders
 local
