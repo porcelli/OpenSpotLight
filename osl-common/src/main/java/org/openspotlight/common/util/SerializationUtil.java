@@ -57,8 +57,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -66,107 +64,38 @@ import org.openspotlight.common.exception.SerializationUtilException;
 
 /**
  * The Class SerializationUtil.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class SerializationUtil {
 
+	private static class CloneInput extends ObjectInputStream {
+		private final CloneOutput output;
 
-	/**
-	 * Serialize.
-	 *
-	 * @param object the object
-	 *
-	 * @return the input stream
-	 *
-	 * @throws SerializationUtilException the serialization util exception
-	 */
-	public static InputStream serialize(final Object object) throws SerializationUtilException {
-		PipedOutputStream out = null;
-		PipedInputStream in = null;
-		ObjectOutputStream oos = null;
-		try {
-	    	out = new PipedOutputStream();
-	    	in = new PipedInputStream(out);
-	    	oos = new ObjectOutputStream(out);
-	    	oos.writeObject(object);
-	    	oos.close();
-	    	return in;
+		CloneInput(final InputStream in, final CloneOutput output)
+				throws IOException {
+			super(in);
+			this.output = output;
 		}
-		catch (final IOException e) {
-			throw new SerializationUtilException("Error on attempt to serialize object.", e);
-		}
-		finally {
-			close(oos, out);
-		}
-	}
 
-	/**
-	 * Deserialize.
-	 *
-	 * @param inputStream the input stream
-	 *
-	 * @return the object
-	 *
-	 * @throws SerializationUtilException the serialization util exception
-	 */
-	public static Object deserialize(final InputStream inputStream) throws SerializationUtilException {
-		ObjectInputStream ois = null;
-		try {
-			ois = new ObjectInputStream(inputStream);
-			return ois.readObject();
+		@Override
+		protected Class<?> resolveClass(final ObjectStreamClass osc)
+				throws IOException, ClassNotFoundException {
+			final Class<?> c = output.classQueue.poll();
+			final String expected = osc.getName();
+			final String found = c == null ? null : c.getName();
+			if (!expected.equals(found)) {
+				throw new InvalidClassException("Classes desynchronized: "
+						+ "found " + found + " when expecting " + expected);
+			}
+			return c;
 		}
-		catch (final Exception e) {
-			throw new SerializationUtilException("Error on attempt to deserialize object.", e);
-		}
-		finally {
-			close(ois);
-		}
-	}
 
-	/**
-	 * Clone.
-	 *
-	 * @param x the x
-	 *
-	 * @return the t
-	 */
-	public static <T> T clone(final T x) {
-		try {
-			return cloneX(x);
+		@Override
+		protected Class<?> resolveProxyClass(final String[] interfaceNames)
+				throws IOException, ClassNotFoundException {
+			return output.classQueue.poll();
 		}
-		catch (final IOException e) {
-			throw new IllegalArgumentException(e);
-		}
-		catch (final ClassNotFoundException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
-
-	/**
-	 * Clone x.
-	 *
-	 * @param x the x
-	 *
-	 * @return the t
-	 *
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws ClassNotFoundException the class not found exception
-	 */
-	private static <T> T cloneX(final T x) throws IOException, ClassNotFoundException {
-		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		final CloneOutput cout = new CloneOutput(bout);
-		cout.writeObject(x);
-		final byte[] bytes = bout.toByteArray();
-
-		final ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
-		final CloneInput cin = new CloneInput(bin, cout);
-
-		@SuppressWarnings("unchecked")
-        final
-		// thanks to Bas de Bakker for the tip!
-		T clone = (T) cin.readObject();
-		return clone;
 	}
 
 	private static class CloneOutput extends ObjectOutputStream {
@@ -178,69 +107,129 @@ public class SerializationUtil {
 
 		@Override
 		protected void annotateClass(final Class<?> c) {
-			this.classQueue.add(c);
+			classQueue.add(c);
 		}
 
 		@Override
 		protected void annotateProxyClass(final Class<?> c) {
-			this.classQueue.add(c);
-		}
-	}
-
-	private static class CloneInput extends ObjectInputStream {
-		private final CloneOutput output;
-
-		CloneInput(final InputStream in, final CloneOutput output) throws IOException {
-			super(in);
-			this.output = output;
-		}
-
-		@Override
-		protected Class<?> resolveClass(final ObjectStreamClass osc) throws IOException, ClassNotFoundException {
-			final Class<?> c = this.output.classQueue.poll();
-			final String expected = osc.getName();
-			final String found = (c == null) ? null : c.getName();
-			if (!expected.equals(found)) {
-				throw new InvalidClassException("Classes desynchronized: " + "found " + found + " when expecting " + expected);
-			}
-			return c;
-		}
-
-		@Override
-		protected Class<?> resolveProxyClass(final String[] interfaceNames) throws IOException, ClassNotFoundException {
-			return this.output.classQueue.poll();
+			classQueue.add(c);
 		}
 	}
 
 	/**
-	 * Close.
-	 *
-	 * @param inputStreams the input streams
+	 * Clone.
+	 * 
+	 * @param x
+	 *            the x
+	 * 
+	 * @return the t
 	 */
-	private static void close(final InputStream...inputStreams) {
+	public static <T> T clone(final T x) {
+		try {
+			return cloneX(x);
+		} catch (final IOException e) {
+			throw new IllegalArgumentException(e);
+		} catch (final ClassNotFoundException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	/**
+	 * Clone x.
+	 * 
+	 * @param x
+	 *            the x
+	 * 
+	 * @return the t
+	 * 
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws ClassNotFoundException
+	 *             the class not found exception
+	 */
+	private static <T> T cloneX(final T x) throws IOException,
+			ClassNotFoundException {
+		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		final CloneOutput cout = new CloneOutput(bout);
+		cout.writeObject(x);
+		final byte[] bytes = bout.toByteArray();
+
+		final ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
+		final CloneInput cin = new CloneInput(bin, cout);
+
+		@SuppressWarnings("unchecked")
+		final// thanks to Bas de Bakker for the tip!
+		T clone = (T) cin.readObject();
+		return clone;
+	}
+
+	/**
+	 * Close.
+	 * 
+	 * @param inputStreams
+	 *            the input streams
+	 */
+	private static void close(final InputStream... inputStreams) {
 		for (final InputStream inputStream : inputStreams) {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
+				} catch (final IOException e) {
 				}
-				catch (final IOException e) {}
 			}
 		}
 	}
 
 	/**
-	 * Close.
-	 *
-	 * @param outputStreams the output streams
+	 * Deserialize.
+	 * 
+	 * @param inputStream
+	 *            the input stream
+	 * 
+	 * @return the object
+	 * 
+	 * @throws SerializationUtilException
+	 *             the serialization util exception
 	 */
-	private static void close(final OutputStream...outputStreams) {
-		for (final OutputStream outputStream : outputStreams) {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				}
-				catch (final IOException e) {}
-			}
+	public static Object deserialize(final InputStream inputStream)
+			throws SerializationUtilException {
+		ObjectInputStream ois = null;
+		try {
+			ois = new ObjectInputStream(inputStream);
+			return ois.readObject();
+		} catch (final Exception e) {
+			throw new SerializationUtilException(
+					"Error on attempt to deserialize object.", e);
+		} finally {
+			close(ois);
+		}
+	}
+
+	/**
+	 * Serialize.
+	 * 
+	 * @param object
+	 *            the object
+	 * 
+	 * @return the input stream
+	 * 
+	 * @throws SerializationUtilException
+	 *             the serialization util exception
+	 */
+	public static InputStream serialize(final Object object)
+			throws SerializationUtilException {
+		try {
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(object);
+			oos.flush();
+			oos.close();
+			final ByteArrayInputStream bais = new ByteArrayInputStream(baos
+					.toByteArray());
+			return bais;
+		} catch (final IOException e) {
+			throw new SerializationUtilException(
+					"Error on attempt to serialize object.", e);
 		}
 	}
 
