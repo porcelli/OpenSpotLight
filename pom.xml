@@ -21,6 +21,10 @@
 			<name>Vitor Hugo Chagas</name>
 			<email>vitorhugo@caravelatech.com</email>
 		</developer>
+		<developer>
+			<name>Bruno Barbeti Figueiredo</name>
+			<email>bbf@caravelatech.com</email>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
@@ -108,25 +112,64 @@
 				</configuration>
 			</plugin>
 			<plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.4.3</version>
 				<configuration>
 					<argLine>-Xmx256m</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.5</version>
+				<!--  <inherited>false</inherited> -->
+				<executions>
+					<execution>
+						<id>create-report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report-only</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<aggregate>tue</aggregate>
+					<outputName>surefire-report-${project.artifactId}</outputName>
+					<outputDirectory>${PROJECT_HOME}/target/site</outputDirectory>
+					<showSuccess>false</showSuccess>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.0.1</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>create-site</id>
+						<phase>test</phase>
+						<goals>
+							<goal>site</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${basedir}/target/site</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -498,9 +541,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-			  <groupId>org.apache.httpcomponents</groupId>
-			  <artifactId>httpclient</artifactId>
-			  <version>4.0</version>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.0</version>
 			</dependency>
 			<!-- JAAS implementation (and dependencies) for DNA security -->
 			<dependency>
@@ -743,4 +786,35 @@
 
 		</dependencies>
 	</dependencyManagement>
+	<profiles>
+		<profile>
+			<id>setup</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.groovy.maven</groupId>
+						<artifactId>gmaven-plugin</artifactId>
+						<version>1.0</version>
+						<inherited>false</inherited> <!-- Works only if inheritance is deactivated -->
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<source> ${pom.basedir}/profiles.groovy</source>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<activation> <!-- Only create profiles.xml if there's no profiles.xml yet -->
+				<file>
+					<missing>profiles.xml</missing>
+				</file>
+			</activation>
+		</profile>
+	</profiles>
 </project>

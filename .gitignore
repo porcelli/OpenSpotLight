@@ -22,6 +22,7 @@ target
 bin
 META-INF
 out.slql
+profiles.xml
 
 # General folders
 local

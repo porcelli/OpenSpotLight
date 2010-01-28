@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profilesXml>
+  <profiles xmlns="http://maven.apache.org/PROFILES/1.0.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://maven.apache.org/xsd/profiles-1.0.0.xsd">
+    <profile>
+      <id>env</id>
+      <properties>
+         <!-- Replaced by Groovy scriptlet when copying over to profiles.xml -->
+         <PROJECT_HOME>@PROJECT_HOME@</PROJECT_HOME>
+      </properties>
+      <activation>
+        <file><missing>always</missing></file>
+      </activation>
+    </profile>
+  </profiles>
+</profilesXml>
