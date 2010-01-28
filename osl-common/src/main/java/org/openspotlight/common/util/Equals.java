@@ -53,6 +53,7 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 
@@ -68,8 +69,16 @@ public class Equals {
 		return of == andOf;
 	}
 
+	public static boolean eachEquality(final boolean[] of, final boolean[] andOf) {
+		return Arrays.equals(of, andOf);
+	}
+
 	public static boolean eachEquality(final byte of, final byte andOf) {
 		return of == andOf;
+	}
+
+	public static boolean eachEquality(final byte[] of, final byte[] andOf) {
+		return Arrays.equals(of, andOf);
 	}
 
 	public static boolean eachEquality(final char of, final char andOf) {
@@ -126,16 +135,32 @@ public class Equals {
 		return of == andOf;
 	}
 
+	public static boolean eachEquality(final double[] of, final double[] andOf) {
+		return Arrays.equals(of, andOf);
+	}
+
 	public static boolean eachEquality(final float of, final float andOf) {
 		return of == andOf;
+	}
+
+	public static boolean eachEquality(final float[] of, final float[] andOf) {
+		return Arrays.equals(of, andOf);
 	}
 
 	public static boolean eachEquality(final int of, final int andOf) {
 		return of == andOf;
 	}
 
+	public static boolean eachEquality(final int[] of, final int[] andOf) {
+		return Arrays.equals(of, andOf);
+	}
+
 	public static boolean eachEquality(final long of, final long andOf) {
 		return of == andOf;
+	}
+
+	public static boolean eachEquality(final long[] of, final long[] andOf) {
+		return Arrays.equals(of, andOf);
 	}
 
 	/**
@@ -214,4 +239,5 @@ public class Equals {
 		logAndThrow(new IllegalStateException(Messages
 				.getString("invalidConstructor"))); //$NON-NLS-1$
 	}
+
 }

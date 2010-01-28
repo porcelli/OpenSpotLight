@@ -59,41 +59,41 @@ import org.junit.Test;
 
 /**
  * Test class for {@link Equals}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
+ * 
  */
 @SuppressWarnings("all")
 public class EqualsTest {
 
-    @SuppressWarnings("boxing")
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionGettingDifferentParameterSize() {
-        eachEquality(of(1, 2, 3), andOf(1, 2));
-    }
+	@SuppressWarnings("boxing")
+	@Test(expected = IllegalStateException.class)
+	public void shouldThrowExceptionGettingDifferentParameterSize() {
+		eachEquality(of(1, 2, 3), andOf(1, 2));
+	}
 
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldVerifyEquality() {
-        assertThat(eachEquality(of(1, 2, 3), andOf(1, 2, 3)), is(true));
-        assertThat(eachEquality(of(1, 2, 5), andOf(1, 2, 3)), is(false));
-    }
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldVerifyEquality() {
+		assertThat(eachEquality(of(1, 2, 3), andOf(1, 2, 3)), is(true));
+		assertThat(eachEquality(of(1, 2, 5), andOf(1, 2, 3)), is(false));
+	}
 
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldVerifyEqualityInANullPointerSafeWay() {
-        assertThat(eachEquality(null, 1), is(false));
-        assertThat(eachEquality(1, null), is(false));
-        assertThat(eachEquality(1, 1), is(true));
-        assertThat(eachEquality(null, null), is(true));
-        assertThat(eachEquality(2, 1), is(false));
-    }
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldVerifyEqualityInANullPointerSafeWay() {
+		assertThat(eachEquality(null, 1), is(false));
+		assertThat(eachEquality(1, null), is(false));
+		assertThat(eachEquality(1, 1), is(true));
+		assertThat(eachEquality((Object) null, (Object) null), is(true));
+		assertThat(eachEquality(2, 1), is(false));
+	}
 
-    @SuppressWarnings("boxing")
-    @Test
-    public void shouldWorkWithNulls() {
-        assertThat(eachEquality(of(1, 2, null), andOf(1, 2, null)), is(true));
-        assertThat(eachEquality(of(1, 2, null), andOf(1, 2, 3)), is(false));
-    }
+	@SuppressWarnings("boxing")
+	@Test
+	public void shouldWorkWithNulls() {
+		assertThat(eachEquality(of(1, 2, null), andOf(1, 2, null)), is(true));
+		assertThat(eachEquality(of(1, 2, null), andOf(1, 2, 3)), is(false));
+	}
 
 }
