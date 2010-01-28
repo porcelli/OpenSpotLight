@@ -588,6 +588,18 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>jackrabbit-jcr-rmi</artifactId>
+				<version>1.5.0</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>slf4j-api</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
 				<artifactId>jackrabbit-core</artifactId>
 				<version>1.6.0</version>
 				<!-- Exclude these since they are included in JDK 1.5 -->

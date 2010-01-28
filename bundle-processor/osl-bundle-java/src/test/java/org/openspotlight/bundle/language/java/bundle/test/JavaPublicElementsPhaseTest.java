@@ -1,5 +1,11 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+import org.apache.jackrabbit.rmi.remote.RemoteRepository;
+import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
+import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -49,6 +55,19 @@ public class JavaPublicElementsPhaseTest {
 		} catch (final AssertionError e) {
 			e.printStackTrace();
 		}
+
+		final javax.jcr.Repository repository = JcrConnectionProvider
+				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+				.getRepository();
+
+		final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
+		final RemoteRepository remote = saFactory
+				.getRemoteRepository(repository);
+
+		final Registry registry = LocateRegistry
+				.createRegistry(Registry.REGISTRY_PORT);
+		registry.bind("jackrabbit.repository", remote);
+
 		RemoteGraphSessionServer server = null;
 		try {
 			server = new RemoteGraphSessionServer(new UserAuthenticator() {
