@@ -82,15 +82,15 @@ public class SerializationUtil {
 	 * @throws SerializationUtilException the serialization util exception
 	 */
 	public static InputStream serialize(final Object object) throws SerializationUtilException {
-		PipedOutputStream out = null;
-		PipedInputStream in = null;
+	    ByteArrayInputStream in = null;
+	    ByteArrayOutputStream out = null;
 		ObjectOutputStream oos = null;
 		try {
-	    	out = new PipedOutputStream();
-	    	in = new PipedInputStream(out);
+		    out = new ByteArrayOutputStream();
 	    	oos = new ObjectOutputStream(out);
 	    	oos.writeObject(object);
 	    	oos.close();
+            in = new ByteArrayInputStream(out.toByteArray());
 	    	return in;
 		}
 		catch (final IOException e) {

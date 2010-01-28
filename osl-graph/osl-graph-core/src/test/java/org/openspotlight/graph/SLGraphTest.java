@@ -62,6 +62,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -1142,6 +1143,8 @@ public class SLGraphTest {
             final SerializableBean bean = new SerializableBean();
             bean.testString = "A random sample string";
             bean.testBuffer = new byte[1024*1024];
+            Random rand = new Random();
+            rand.nextBytes(bean.testBuffer);
 
             // set new property ...
             final SLNode root = session.createContext("1L").getRootNode();
@@ -1149,29 +1152,20 @@ public class SLGraphTest {
                     VisibilityLevel.PUBLIC, "prop", bean);
             Assert.assertNotNull(prop1);
             Assert.assertNotNull(prop1.getValue());
-            Assert.assertEquals(prop1.getValue(), bean);
-
+            
+            SerializableBean bean2 = prop1.getValue();
+            Assert.assertEquals(bean.testString, bean2.testString);
+            Assert.assertArrayEquals(bean.testBuffer, bean2.testBuffer);
+            
             // get existent property ...
             final SLNodeProperty<SerializableBean> prop2 = root.getProperty(SerializableBean.class,
                     "prop");
             Assert.assertNotNull(prop2);
             Assert.assertNotNull(prop2.getValue());
-            Assert.assertEquals(prop2.getValue(), bean);
+            bean2 = prop2.getValue();
+            Assert.assertEquals(bean.testString, bean2.testString);
+            Assert.assertArrayEquals(bean.testBuffer, bean2.testBuffer);
 
-            // get property as Serializable ...
-            final SLNodeProperty<Serializable> prop5 = root.getProperty(
-                    Serializable.class, "prop");
-            Assert.assertNotNull(prop5);
-            Assert.assertNotNull(prop5.getValue());
-            Assert.assertEquals(prop5.getValue(), bean);
-
-            // try to integer property as non-hierarchy class ...
-            try {
-                root.getProperty(Integer.class, "prop");
-                Assert.fail();
-            } catch (final SLInvalidNodePropertyTypeException e) {
-                Assert.assertTrue(true);
-            }
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
