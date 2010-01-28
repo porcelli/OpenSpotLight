@@ -128,7 +128,7 @@ public class JavaPublicElementsPhaseTest {
 		jarProcessor.getSources().add(bundleJarSource);
 		bundleJarSource.setBundleProcessorType(jarProcessor);
 		bundleJarSource.setRelative("jar/");
-		bundleJarSource.getIncludeds().add("**/luni-lang-util-only.jar");
+		bundleJarSource.getIncludeds().add("**/luni-few-classes.jar");
 
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
