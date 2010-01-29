@@ -85,8 +85,7 @@ public class ExampleBundleProcessor implements
 		logger.info("starting to process " + artifact);
 	}
 
-	public void didFinishProcessing(
-			final ArtifactChanges<StringArtifact> changes) {
+	public void didFinishProcessing(final ArtifactChanges<Artifact> changes) {
 
 	}
 
@@ -132,8 +131,8 @@ public class ExampleBundleProcessor implements
 	public void selectArtifactsToBeProcessed(
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context,
-			final ArtifactChanges<StringArtifact> changes,
-			final ArtifactsToBeProcessed<StringArtifact> toBeReturned) {
+			final ArtifactChanges<Artifact> changes,
+			final ArtifactsToBeProcessed<Artifact> toBeReturned) {
 
 	}
 

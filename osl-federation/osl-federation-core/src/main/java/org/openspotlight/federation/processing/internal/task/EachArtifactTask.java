@@ -82,14 +82,15 @@ public class EachArtifactTask<T extends Artifact> extends
 	private final CurrentProcessorContextImpl currentContextImpl;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@SuppressWarnings("unchecked")
 	public EachArtifactTask(final boolean first, final String repositoryName,
-			final Class<T> artifactType, final T artifact,
+			final Class<? extends Artifact> artifactType, final T artifact,
 			final SaveBehavior saveBehavior,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
 			final CurrentProcessorContextImpl currentContextImpl) {
 		super(repositoryName);
 		this.first = first;
-		this.artifactType = artifactType;
+		this.artifactType = (Class<T>) artifactType;
 		this.artifact = artifact;
 		this.saveBehavior = saveBehavior;
 		this.bundleProcessor = bundleProcessor;
