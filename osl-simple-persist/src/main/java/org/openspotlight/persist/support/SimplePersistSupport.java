@@ -114,6 +114,8 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.StreamPropertyWithParent;
 import org.openspotlight.persist.annotation.TransientProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -277,6 +279,9 @@ public class SimplePersistSupport {
 	/** The Constant keyType_ */
 	public static final String KEY_TYPE = "node_key_{0}_type";
 
+	private static Logger logger = LoggerFactory
+			.getLogger(SimplePersistSupport.class);
+
 	/**
 	 * Adds the or create jcr node.
 	 * 
@@ -422,10 +427,16 @@ public class SimplePersistSupport {
 
 	private static <T> String buildPropertyString(final Class<T> nodeType,
 			final String[] propertyNames, final Object[] propertyValues,
-			final String basePropertyName) throws InstantiationException,
-			IllegalAccessException, SLException {
+			final String basePropertyName) throws Exception {
 		final StringBuilder propertyWhereXpath = new StringBuilder();
-		final T dummyInstance = nodeType.newInstance();
+
+		final T dummyInstance;
+		try {
+			dummyInstance = nodeType.newInstance();
+		} catch (final Exception e) {
+			logger.error("error creating type " + nodeType.getName(), e);
+			throw e;
+		}
 		propertyWhereXpath.append('@');
 		propertyWhereXpath.append("node_typeName");
 		propertyWhereXpath.append('=');

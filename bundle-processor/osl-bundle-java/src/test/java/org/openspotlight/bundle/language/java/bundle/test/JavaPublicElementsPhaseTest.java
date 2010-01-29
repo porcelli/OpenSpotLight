@@ -31,10 +31,8 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
-import org.openspotlight.federation.processing.internal.ExampleBundleProcessor;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
@@ -181,17 +179,6 @@ public class JavaPublicElementsPhaseTest {
 		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
 				.executeBundles(username, password, descriptor,
 						includedFilesContextFactory, settings, group);
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.ERROR), Is.is(false));
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
-				.is(false));
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.IGNORED), Is.is(false));
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.NOT_PROCESSED_YET), Is.is(false));
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.PROCESSED), Is.is(true));
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
 		final ExecutionContext context = includedFilesContextFactory

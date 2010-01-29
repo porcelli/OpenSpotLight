@@ -129,19 +129,25 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 						src.getIncludeds(), src.getExcludeds(), false);
 				for (final String name : newNames.getIncludedNames()) {
 					final Artifact savedArtifact = finder.findByPath(name);
-					switch (savedArtifact.getChangeType()) {
-					case CHANGED:
-						changes.getChangedArtifacts().add(savedArtifact);
-						break;
-					case EXCLUDED:
-						changes.getExcludedArtifacts().add(savedArtifact);
-						break;
-					case INCLUDED:
-						changes.getIncludedArtifacts().add(savedArtifact);
-						break;
-					case NOT_CHANGED:
-						changes.getNotChangedArtifacts().add(savedArtifact);
-						break;
+					if (savedArtifact != null) {
+						switch (savedArtifact.getChangeType()) {
+						case CHANGED:
+							changes.getChangedArtifacts().add(savedArtifact);
+							break;
+						case EXCLUDED:
+							changes.getExcludedArtifacts().add(savedArtifact);
+							break;
+						case INCLUDED:
+							changes.getIncludedArtifacts().add(savedArtifact);
+							break;
+						case NOT_CHANGED:
+							changes.getNotChangedArtifacts().add(savedArtifact);
+							break;
+						}
+					} else {
+						logger.info("null artifact " + name
+								+ " on finder of type "
+								+ artifactType.getName());
 					}
 				}
 			}
@@ -261,22 +267,23 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 				parentTasks.addAll(thisPhaseTasks);
 				thisPhaseTasks.clear();
 
-				final EndingToProcessArtifactsTask phaseThree = new EndingToProcessArtifactsTask(
-						changes, bundleProcessor, repository.getName());
-				currentGroup.prepareTask().withParentTasks(allParentTasks)
-						.withReadableDescriptionAndUniqueId(
-								bundleProcessor.getClass().getSimpleName()
-										+ ":"
-										+ getRepositoryName()
-										+ artifactType.getSimpleName()
-										+ ":"
-										+ bundleProcessorType.getName()
-										+ ":"
-										+ bundleProcessorType.getGroup()
-												.getUniqueName()).withRunnable(
-								phaseThree).andPublishTask();
-
 			}
+
+			final EndingToProcessArtifactsTask phaseThree = new EndingToProcessArtifactsTask(
+					changes, bundleProcessor, repository.getName());
+			currentGroup.prepareTask().withParentTasks(allParentTasks)
+					.withReadableDescriptionAndUniqueId(
+							bundleProcessor.getClass().getSimpleName()
+									+ ":"
+									+ getRepositoryName()
+									+ ":"
+									+ artifactType.getSimpleName()
+									+ ":"
+									+ bundleProcessorType.getName()
+									+ ":"
+									+ bundleProcessorType.getGroup()
+											.getUniqueName()).withRunnable(
+							phaseThree).andPublishTask();
 
 		}
 

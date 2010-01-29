@@ -24,11 +24,14 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bsh.Interpreter;
 
 public class JavaBinaryProcessor implements
 		BundleProcessorArtifactPhase<StreamArtifact> {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void beforeProcessArtifact(final StreamArtifact artifact) {
 
@@ -46,53 +49,66 @@ public class JavaBinaryProcessor implements
 	public LastProcessStatus processArtifact(final StreamArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
-		final CompiledTypesExtractor extractor = new CompiledTypesExtractor();
-		final List<TypeDefinition> types = extractor.getJavaTypes(artifact
-				.getContent(), artifact.getArtifactCompleteName());
-		final String script = BeanShellTemplateSupport
-				.createBeanShellScriptToImpotJar(types);
-		final Interpreter interpreter = new Interpreter();
-		interpreter.set("session", context.getGraphSession());
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		IOUtils.copy(artifact.getContent(), baos);
-		final String uniqueContextName = UUID.nameUUIDFromBytes(
-				Sha1.getSha1Signature(baos.toByteArray())).toString();
-		interpreter.set("currentContextName", uniqueContextName);
-		artifact.setUniqueContextName(uniqueContextName);
-		final SLContext slContext = context.getGraphSession().createContext(
-				uniqueContextName);
-		slContext.getRootNode().setProperty(String.class,
-				"classPathArtifactPath", artifact.getArtifactCompleteName());
-		final SLGraphSession session = context.getGraphSession();
-		final SLNode currentContextRootNode = session.createContext(
-				uniqueContextName).getRootNode();
-		final SLNode abstractContextRootNode = session.createContext(
-				JavaConstants.ABSTRACT_CONTEXT).getRootNode();
-		final JavaGraphNodeSupport helper = InvocationCacheFactory
-				.createIntoCached(JavaGraphNodeSupport.class, new Class<?>[] {
-						SLGraphSession.class, SLNode.class, SLNode.class },
-						new Object[] { session, currentContextRootNode,
-								abstractContextRootNode });
-		interpreter.set("helper", helper);
-		final BufferedReader reader = new BufferedReader(new StringReader(
-				script));
-		String line;
-		final Lock lock = context.getGraphSession().getLockObject();
-		boolean hasError = false;
-		synchronized (lock) {
-			while ((line = reader.readLine()) != null) {
-				try {
-					interpreter.eval(line);
-				} catch (final Exception e) {
-					hasError = true;
-					Exceptions.catchAndLog("error on line: " + e.getClass()
-							+ " " + line, e);
-					Exceptions.catchAndLog("error on line: " + e.getClass()
-							+ line + " caused by: ", e.getCause());
+		if (logger.isDebugEnabled()) {
+			logger.debug(" starting to process artifact " + artifact);
+		}
+		try {
+			final CompiledTypesExtractor extractor = new CompiledTypesExtractor();
+			final List<TypeDefinition> types = extractor.getJavaTypes(artifact
+					.getContent(), artifact.getArtifactCompleteName());
+			final String script = BeanShellTemplateSupport
+					.createBeanShellScriptToImpotJar(types);
+			final Interpreter interpreter = new Interpreter();
+			interpreter.set("session", context.getGraphSession());
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			IOUtils.copy(artifact.getContent(), baos);
+			final String uniqueContextName = UUID.nameUUIDFromBytes(
+					Sha1.getSha1Signature(baos.toByteArray())).toString();
+			interpreter.set("currentContextName", uniqueContextName);
+			artifact.setUniqueContextName(uniqueContextName);
+			final SLContext slContext = context.getGraphSession()
+					.createContext(uniqueContextName);
+			slContext.getRootNode()
+					.setProperty(String.class, "classPathArtifactPath",
+							artifact.getArtifactCompleteName());
+			final SLGraphSession session = context.getGraphSession();
+			final SLNode currentContextRootNode = session.createContext(
+					uniqueContextName).getRootNode();
+			final SLNode abstractContextRootNode = session.createContext(
+					JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+			final JavaGraphNodeSupport helper = InvocationCacheFactory
+					.createIntoCached(JavaGraphNodeSupport.class,
+							new Class<?>[] { SLGraphSession.class,
+									SLNode.class, SLNode.class }, new Object[] {
+									session, currentContextRootNode,
+									abstractContextRootNode });
+			interpreter.set("helper", helper);
+			final BufferedReader reader = new BufferedReader(new StringReader(
+					script));
+			String line;
+			final Lock lock = context.getGraphSession().getLockObject();
+			boolean hasError = false;
+			synchronized (lock) {
+				while ((line = reader.readLine()) != null) {
+					try {
+						interpreter.eval(line);
+					} catch (final Exception e) {
+						hasError = true;
+						Exceptions.catchAndLog("error on line: " + e.getClass()
+								+ " " + line, e);
+						Exceptions.catchAndLog("error on line: " + e.getClass()
+								+ line + " caused by: ", e.getCause());
+					}
 				}
 			}
+			return hasError ? LastProcessStatus.ERROR
+					: LastProcessStatus.PROCESSED;
+		} finally {
+			if (logger.isDebugEnabled()) {
+				logger.debug("ending to process artifact " + artifact);
+			}
 		}
-		return hasError ? LastProcessStatus.ERROR : LastProcessStatus.PROCESSED;
+
 	}
 
 }

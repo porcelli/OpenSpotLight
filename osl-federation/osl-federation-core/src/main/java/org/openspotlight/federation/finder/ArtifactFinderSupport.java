@@ -73,35 +73,38 @@ public class ArtifactFinderSupport {
 		final Set<T> result = new HashSet<T>();
 		final Set<T> delta = new HashSet<T>(newOnes);
 		for (final T existent : existents) {
-			final T newOne = findTheEquivalent(existent, newOnes);
-			delta.remove(newOne);
-			if (newOne != null) {
-				final ChangeType defaultChangeType = newOne
-						.contentEquals(existent) ? ChangeType.NOT_CHANGED
-						: ChangeType.CHANGED;
-				switch (existent.getChangeType()) {
-				case INCLUDED:
-					if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
-						newOne.setChangeType(ChangeType.INCLUDED);
+			if (existent != null) {
+				final T newOne = findTheEquivalent(existent, newOnes);
+				delta.remove(newOne);
+				if (newOne != null) {
+					final ChangeType defaultChangeType = newOne
+							.contentEquals(existent) ? ChangeType.NOT_CHANGED
+							: ChangeType.CHANGED;
+					switch (existent.getChangeType()) {
+					case INCLUDED:
+						if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
+							newOne.setChangeType(ChangeType.INCLUDED);
+						}
+						break;
+					case EXCLUDED:
+						if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
+							newOne.setChangeType(ChangeType.CHANGED);
+						}
+						break;
+					default:
+						newOne.setChangeType(defaultChangeType);
 					}
-					break;
-				case EXCLUDED:
-					if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
-						newOne.setChangeType(ChangeType.CHANGED);
+					final boolean bothIncludedAndExcluded = ChangeType.INCLUDED
+							.equals(existent.getChangeType())
+							&& ChangeType.EXCLUDED.equals(newOne
+									.getChangeType());
+					if (!bothIncludedAndExcluded) {
+						result.add(newOne);
 					}
-					break;
-				default:
-					newOne.setChangeType(defaultChangeType);
+				} else {
+					existent.setChangeType(ChangeType.EXCLUDED);
+					result.add(existent);
 				}
-				final boolean bothIncludedAndExcluded = ChangeType.INCLUDED
-						.equals(existent.getChangeType())
-						&& ChangeType.EXCLUDED.equals(newOne.getChangeType());
-				if (!bothIncludedAndExcluded) {
-					result.add(newOne);
-				}
-			} else {
-				existent.setChangeType(ChangeType.EXCLUDED);
-				result.add(existent);
 			}
 		}
 		for (final T newOne : delta) {

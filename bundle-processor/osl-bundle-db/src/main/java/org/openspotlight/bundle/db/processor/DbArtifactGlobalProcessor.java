@@ -57,7 +57,6 @@ import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.db.ConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
@@ -78,7 +77,9 @@ public class DbArtifactGlobalProcessor implements
 
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends DatabaseCustomArtifact>> getArtifactTypes() {
-		return Collections.setOf(TableArtifact.class, ConstraintArtifact.class);
+		return Collections.setOf(TableArtifact.class,
+				ForeignKeyConstraintArtifact.class,
+				PrimaryKeyConstraintArtifact.class);
 	}
 
 	public SaveBehavior getSaveBehavior() {
