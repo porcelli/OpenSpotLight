@@ -19,6 +19,8 @@ import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPha
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.bundle.language.java.bundle.test.JavaStringArtifactProcessingTest.SampleJavaArtifactRegistry;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.context.TestExecutionContextFactory;
@@ -184,6 +186,12 @@ public class JavaPublicElementsPhaseTest {
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
 				.is(false));
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.IGNORED), Is.is(false));
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.NOT_PROCESSED_YET), Is.is(false));
+		Assert.assertThat(ExampleBundleProcessor.allStatus
+				.contains(LastProcessStatus.PROCESSED), Is.is(true));
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
 		final ExecutionContext context = includedFilesContextFactory
@@ -194,11 +202,44 @@ public class JavaPublicElementsPhaseTest {
 		final SLNode groupNode = ctx.getRootNode().getNode(
 				group.getUniqueName());
 
-		final SLNode packageNode = groupNode
+		final SLNode defaultPackageNode = groupNode
 				.getNode(JavaConstants.DEFAULT_PACKAGE);
-		final SLNode classNode = packageNode.getNode("ClassOnDefaultPackage");
+		final SLNode classNode = defaultPackageNode.getNode("ExampleClass");
 		Assert.assertThat(classNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(classNode, Is.is(JavaTypeClass.class));
+		final SLNode enumNode = defaultPackageNode.getNode("ExampleEnum");
+		Assert.assertThat(enumNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(enumNode, Is.is(JavaTypeEnum.class));
+
+		final SLNode examplePackageNode = groupNode.getNode("example.pack");
+		final SLNode anotherClassNode = examplePackageNode
+				.getNode("AnotherExampleClass");
+		Assert.assertThat(anotherClassNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(anotherClassNode, Is.is(JavaTypeClass.class));
+		final SLNode anotherInnerClassNode = anotherClassNode
+				.getNode("InnerClass");
+		Assert.assertThat(anotherInnerClassNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(anotherInnerClassNode, Is.is(JavaTypeClass.class));
+		final SLNode anotherEnumNode = examplePackageNode
+				.getNode("AnotherExampleEnum");
+		Assert.assertThat(anotherEnumNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(anotherEnumNode, Is.is(JavaTypeEnum.class));
+		final SLNode exampleSubPackageNode = groupNode
+				.getNode("example.pack.subpack");
+		final SLNode classWithStuffNode = exampleSubPackageNode
+				.getNode("ClassWithLotsOfStuff");
+		Assert.assertThat(classWithStuffNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(classWithStuffNode, Is.is(JavaTypeClass.class));
+		final NeedsSyncronizationSet<SLNode> nodes = classWithStuffNode
+				.getNodes();
+		for (final SLNode n : nodes) {
+			System.err.println(n.getName());
+		}
+
+		final SLNode doSomethingMethodNode = classWithStuffNode
+				.getNode("doSomething()");
+		Assert.assertThat(doSomethingMethodNode, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(doSomethingMethodNode, Is.is(JavaTypeClass.class));
 
 	}
 }
