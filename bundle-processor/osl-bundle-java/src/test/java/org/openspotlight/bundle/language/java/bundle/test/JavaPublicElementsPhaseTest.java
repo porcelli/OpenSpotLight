@@ -1,5 +1,6 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
+import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -18,6 +19,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhas
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.bundle.language.java.bundle.test.JavaStringArtifactProcessingTest.SampleJavaArtifactRegistry;
+import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
@@ -43,6 +45,8 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
 
+import bsh.Interpreter;
+
 public class JavaPublicElementsPhaseTest {
 
 	public static void main(final String... args) throws Exception {
@@ -67,6 +71,14 @@ public class JavaPublicElementsPhaseTest {
 		final Registry registry = LocateRegistry
 				.createRegistry(Registry.REGISTRY_PORT);
 		registry.bind("jackrabbit.repository", remote);
+
+		final Interpreter interpreter = new Interpreter(new InputStreamReader(
+				System.in), System.out, System.err, false);
+		interpreter.set("executionContextFactory",
+				test.includedFilesContextFactory);
+		interpreter.set("executionContext", test.includedFilesContextFactory
+				.createExecutionContext("sa", "sa", test.descriptor,
+						test.repositoryName));
 
 		RemoteGraphSessionServer server = null;
 		try {
@@ -217,14 +229,22 @@ public class JavaPublicElementsPhaseTest {
 				.getNode("ClassWithLotsOfStuff");
 		Assert.assertThat(classWithStuffNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(classWithStuffNode, Is.is(JavaTypeClass.class));
-		final NeedsSyncronizationSet<SLNode> nodes = classWithStuffNode
+
+		final AbstractTypeBind link = context.getGraphSession().getLinks(
+				AbstractTypeBind.class, classWithStuffNode, null).iterator()
+				.next();
+		final SLNode classOnConcreteContext = link.getSource();
+		System.err.println(" concrete " + classOnConcreteContext.getID());
+		System.err.println(" abstract " + classWithStuffNode.getID());
+		final SLNode doSomethingMethodNode = classOnConcreteContext
+				.getNode("doSomething()");
+
+		final NeedsSyncronizationSet<SLNode> nodes = classOnConcreteContext
 				.getNodes();
 		for (final SLNode n : nodes) {
 			System.err.println(n.getName());
 		}
 
-		final SLNode doSomethingMethodNode = classWithStuffNode
-				.getNode("doSomething()");
 		Assert.assertThat(doSomethingMethodNode, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(doSomethingMethodNode, Is.is(JavaTypeClass.class));
 

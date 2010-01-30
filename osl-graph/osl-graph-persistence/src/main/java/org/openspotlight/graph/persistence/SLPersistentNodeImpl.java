@@ -67,6 +67,8 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.util.JCRUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class SLPersistentNodeImpl.
@@ -382,6 +384,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public SLPersistentTreeSession getSession() {
 		return session;
 	}
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	// @Override
 	/*
@@ -392,6 +396,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public void remove() throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			try {
+				if(logger.isDebugEnabled())
+				logger.debug("Removed " + getName());
 				jcrNode.remove();
 				eventPoster.post(new SLPersistentNodeEvent(
 						SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));

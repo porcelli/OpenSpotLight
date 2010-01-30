@@ -40,6 +40,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
@@ -185,13 +186,14 @@ public class JavaPublicElemetsTreeExecutor {
 				session.addLink(InnerClass.class, newAbstractClass,
 						abstractParent, false);
 			}
-			final StringBuilder qualifiedName = new StringBuilder();
+			final StringBuilder qualifiedNameBuff = new StringBuilder();
 			SLNode parent = peek;
 			do {
-				qualifiedName.append(parent.getName());
-				qualifiedName.append('.');
+				qualifiedNameBuff.append(parent.getName());
+				qualifiedNameBuff.append('.');
 				parent = parent.getParent();
-			} while (!(parent instanceof JavaPackage) && parent != null);
+			} while (parent instanceof JavaType);
+			qualifiedNameBuff.append(string);
 			if (logger.isDebugEnabled()
 					&& (currentPackage == null || newClass == null)) {
 				logger.debug("error on adding link "
@@ -208,11 +210,13 @@ public class JavaPublicElemetsTreeExecutor {
 			}
 			session.addLink(PackageType.class, newAbstractClass,
 					abstractParent, false);
-
-			newClass.setCompleteName(qualifiedName.toString());
+			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
+					JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
+							.toString().replaceAll("[$]", "."));
+			newClass.setCompleteName(qualifiedName);
 			newClass.setSimpleName(string);
 			newAbstractClass.setSimpleName(string);
-			newAbstractClass.setCompleteName(qualifiedName.toString());
+			newAbstractClass.setCompleteName(qualifiedName);
 			if (modifiers7 != null) {
 				for (final JavaModifier modifier : modifiers7) {
 					switch (modifier) {
@@ -487,42 +491,6 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 			}
 		}
-
-		final SLQueryApi query = session.createQueryApi();
-		query.select().type(type.getName()).selectEnd().where().type(
-				type.getName()).each().property(propertyName).equalsTo().value(
-				propertyValue).typeEnd().whereEnd();
-		final NeedsSyncronizationList<SLNode> result = query.execute()
-				.getNodes();
-		if (result.size() > 0) {
-			synchronized (result.getLockObject()) {
-				for (final SLNode found : result) {
-					if (found.getContext().getRootNode()
-							.equals(abstractContext)) {
-						if (logger.isDebugEnabled()) {
-							logger.debug(completeArtifactName + ": "
-									+ "found on 2nd try " + found.getName()
-									+ " for search on type:"
-									+ type.getSimpleName() + " with "
-									+ propertyName + "=" + propertyValue);
-						}
-						return (T) found;
-					} else {
-						if (logger.isDebugEnabled()) {
-							logger.debug(completeArtifactName + ": "
-									+ "ignore found type " + found.getName()
-									+ " for search on type:"
-									+ type.getSimpleName() + " with "
-									+ propertyName + "=" + propertyValue
-									+ " due to its context "
-									+ found.getContext().getID());
-						}
-
-					}
-				}
-			}
-		}
-
 		if (logger.isDebugEnabled()) {
 			logger.debug(completeArtifactName + ": "
 					+ "not found any node for search on type:"
@@ -632,6 +600,7 @@ public class JavaPublicElemetsTreeExecutor {
 					possibleNames.add(pack + "." + string);
 				}
 			}
+
 			for (final String possibleName : possibleNames) {
 				final JavaType javaType = findByProperty(JavaType.class,
 						"completeName", possibleName);
@@ -641,6 +610,7 @@ public class JavaPublicElemetsTreeExecutor {
 					return javaType;
 				}
 			}
+
 			throw Exceptions.logAndReturnNew(new IllegalStateException(
 					completeArtifactName + ": any node was found for type "
 							+ string), SLRuntimeException.class);
@@ -733,7 +703,8 @@ public class JavaPublicElemetsTreeExecutor {
 								+ (peek != null ? peek.getName() : "null")
 								+ " and "
 								+ (classNode != null ? classNode.getName()
-										: "null"));
+										: "null")
+								+ " and string to find classnode = " + string);
 					}
 
 					session.addLink(References.class, peek, classNode, false);
@@ -780,6 +751,12 @@ public class JavaPublicElemetsTreeExecutor {
 			} else {
 				javaMethod = peek.addNode(JavaMethod.class, complMethodName);
 			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("creating method " + complMethodName
+						+ " inside its parent " + peek.getName() + " (id "
+						+ peek.getID() + ")");
+			}
+
 			int i = 0;
 			for (final VariableDeclarationDto param : formalParameters34) {
 				final MethodParameterDefinition methodParametersTypeLink = session
@@ -797,15 +774,20 @@ public class JavaPublicElemetsTreeExecutor {
 			}
 			javaMethod.setCompleteName(complMethodName);
 			javaMethod.setSimpleName(string);
-			final StringBuilder qualifiedName = new StringBuilder();
+			final StringBuilder qualifiedNameBuff = new StringBuilder();
 			SLNode parent = peek;
 			do {
-				qualifiedName.append(parent.getName());
-				qualifiedName.append('.');
+				qualifiedNameBuff.append(parent.getName());
+				qualifiedNameBuff.append('.');
 				parent = parent.getParent();
-			} while (!(parent instanceof JavaPackage) && parent != null);
+			} while (parent instanceof JavaType);
+			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
+					JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
+							.toString().replaceAll("[$]", "."));
+
 			javaMethod.setCompleteQualifiedName(qualifiedName + "."
 					+ complMethodName);
+
 			javaMethod.setQualifiedName(qualifiedName + "." + string);
 			if (annotations35 != null) {
 				for (final JavaTypeAnnotation annotation : annotations35) {

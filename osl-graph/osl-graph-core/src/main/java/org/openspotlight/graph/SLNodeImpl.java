@@ -78,6 +78,8 @@ import org.openspotlight.security.authz.EnforcementContext;
 import org.openspotlight.security.authz.EnforcementException;
 import org.openspotlight.security.authz.EnforcementResponse;
 import org.openspotlight.security.authz.graph.GraphElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class SLNodeImpl.
@@ -99,6 +101,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
 	/** The event poster. */
 	private final SLGraphSessionEventPoster eventPoster;
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openspotlight.graph.SLNode#remove()
+	 */
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Instantiates a new sL node impl.
@@ -150,7 +160,6 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
-
 			try {
 
 				if (!hasPrivileges(GraphElement.NODE, Action.WRITE)) {
@@ -1201,16 +1210,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 		return type1.isAssignableFrom(type2) || type2.isAssignableFrom(type1);
 	}
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLNode#remove()
-	 */
 	public void remove() throws SLGraphSessionException,
 			SLInvalidCredentialException {
 		synchronized (lock) {
 			try {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Removed " + getName());
+				}
+
 				if (!hasPrivileges(GraphElement.NODE, Action.DELETE)) {
 					throw new SLInvalidCredentialException(
 							"User does not have privilegies to delete nodes.");
@@ -1273,7 +1280,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 				final SLNodeProperty<V> property = factory.createProperty(
 						nodeProxy, pProperty, eventPoster);
 				final SLNodePropertyEvent event = new SLNodePropertySetEvent(
-						property, pProperty);
+						property, pProperty, name);
 				event.setVisibility(visibility);
 				eventPoster.post(event);
 				return property;

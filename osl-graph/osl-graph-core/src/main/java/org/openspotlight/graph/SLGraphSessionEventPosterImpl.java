@@ -53,6 +53,8 @@ import java.util.Collection;
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Exceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class SLGraphSessionEventPosterImpl.
@@ -67,6 +69,8 @@ public class SLGraphSessionEventPosterImpl implements
 	/** The listeners. */
 	private final Collection<SLGraphSessionEventListener> listeners;
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	/**
 	 * Instantiates a new sL graph session event poster impl.
 	 * 
@@ -80,10 +84,6 @@ public class SLGraphSessionEventPosterImpl implements
 		lock = parent.getLockObject();
 	}
 
-	public Lock getLockObject() {
-		return lock;
-	}
-
 	// @Override
 	/*
 	 * (non-Javadoc)
@@ -92,6 +92,11 @@ public class SLGraphSessionEventPosterImpl implements
 	 * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
 	 * .graph.SLGraphSessionEvent)
 	 */
+
+	public Lock getLockObject() {
+		return lock;
+	}
+
 	public void post(final SLGraphSessionEvent event)
 			throws SLGraphSessionException, SLInvalidCredentialException {
 		synchronized (lock) {
@@ -107,8 +112,19 @@ public class SLGraphSessionEventPosterImpl implements
 				} else if (event instanceof SLNodeAddedEvent) {
 					listener.nodeAdded((SLNodeAddedEvent) event);
 				} else if (event instanceof SLNodePropertySetEvent) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Graph node property setted "
+								+ ((SLNodePropertyEvent) event)
+										.getPropertyName());
+					}
 					listener.nodePropertySet((SLNodePropertySetEvent) event);
 				} else if (event instanceof SLNodePropertyRemovedEvent) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Graph property removed "
+								+ ((SLNodePropertyEvent) event)
+										.getPropertyName());
+					}
+
 					listener
 							.nodePropertyRemoved((SLNodePropertyRemovedEvent) event);
 				} else {

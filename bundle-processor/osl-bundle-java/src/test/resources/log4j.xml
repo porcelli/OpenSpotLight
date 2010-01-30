@@ -16,6 +16,7 @@
 			<param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss:SSS} %p %c{2}: %m%n" />
 		</layout>
 	</appender>
+
 	<logger name="org.openspotlight.common.util.Exceptions">
 		<priority value="debug" />
 		<appender-ref ref="console" />
@@ -26,13 +27,26 @@
 		<appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" />
 	</logger>
-
 	<logger name="org.openspotlight.bundle.language.java.parser.executor">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" />
 	</logger>
-	<!--
+
+	<!--logger name="org.openspotlight.graph.SLNodeImpl">
+		<priority value="debug" />
+		<appender-ref ref="console" />
+		<appender-ref ref="SocketAppender" />
+	</logger>
+	<logger name="org.openspotlight.graph.persistence.SLPersistentNodeImpl">
+		<priority value="debug" />
+		<appender-ref ref="console" />
+		<appender-ref ref="SocketAppender" />
+	</logger>
+	
+	
+	
+
 		<root> <priority value="debug" /> <appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" /> </root>
 	-->

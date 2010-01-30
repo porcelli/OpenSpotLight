@@ -120,6 +120,8 @@ public class EachArtifactTask<T extends Artifact> extends
 					this.currentContextImpl, getBundleContext());
 			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
 				getBundleContext().getGraphSession().save();
+			} else {
+				logger.warn("Didn't save because of its save behavior");
 			}
 		} catch (final Exception e) {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
@@ -140,21 +142,16 @@ public class EachArtifactTask<T extends Artifact> extends
 			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
 				final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
 				try {
-					if (LastProcessStatus.PROCESSED.equals(artifact
-							.getLastProcessStatus())
-							|| LastProcessStatus.IGNORED.equals(artifact
-									.getLastProcessStatus())) {
-						synchronized (SAVE_LOCK) {
-							if (ChangeType.EXCLUDED.equals(this.artifact
-									.getChangeType())) {
-								finderWithSaveCapabilitie
-										.markAsRemoved(this.artifact);
-							} else {
-								finderWithSaveCapabilitie
-										.addTransientArtifact(this.artifact);
-							}
-							finderWithSaveCapabilitie.save();
+					synchronized (SAVE_LOCK) {
+						if (ChangeType.EXCLUDED.equals(this.artifact
+								.getChangeType())) {
+							finderWithSaveCapabilitie
+									.markAsRemoved(this.artifact);
+						} else {
+							finderWithSaveCapabilitie
+									.addTransientArtifact(this.artifact);
 						}
+						finderWithSaveCapabilitie.save();
 					}
 
 				} catch (final Exception e) {

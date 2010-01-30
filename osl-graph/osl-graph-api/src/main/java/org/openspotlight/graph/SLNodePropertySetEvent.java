@@ -56,8 +56,9 @@ public final class SLNodePropertySetEvent extends SLNodePropertyEvent {
 
 	public SLNodePropertySetEvent(
 			final SLNodeProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty) {
-		super(property, pProperty);
+			final SLPersistentProperty<? extends Serializable> pProperty,
+			final String propertyName) {
+		super(property, pProperty, propertyName);
 	}
 
 }

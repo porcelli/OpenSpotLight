@@ -73,7 +73,7 @@ public abstract class SLNodePropertyEvent extends SLGraphSessionEvent {
 	private VisibilityLevel visibility;
 
 	/** The property name. */
-	private String propertyName;
+	private final String propertyName;
 
 	/** The string. */
 	private boolean string;
@@ -90,10 +90,12 @@ public abstract class SLNodePropertyEvent extends SLGraphSessionEvent {
 	 */
 	public SLNodePropertyEvent(
 			final SLNodeProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty) {
+			final SLPersistentProperty<? extends Serializable> pProperty,
+			final String propertyName) {
 		super(property.getNode().getSession());
 		this.property = property;
 		this.pProperty = pProperty;
+		this.propertyName = propertyName;
 	}
 
 	/**
@@ -143,12 +145,6 @@ public abstract class SLNodePropertyEvent extends SLGraphSessionEvent {
 	public void setPNode(final SLPersistentNode node) {
 		synchronized (lock) {
 			pNode = node;
-		}
-	}
-
-	public void setPropertyName(final String propertyName) {
-		synchronized (lock) {
-			this.propertyName = propertyName;
 		}
 	}
 
