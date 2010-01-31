@@ -51,19 +51,21 @@ package org.openspotlight.federation.processing;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.processing.internal.BundleProcessorExecution;
-import org.openspotlight.federation.registry.ArtifactTypeRegistry;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 // TODO: Auto-generated Javadoc
 /**
  * The {@link DefaultBundleProcessorManager} is the class reposable to get an
  * {@link GlobalSettings} and to process all {@link Artifact artifacts} on this
- * {@link GlobalSettings}. The {@link DefaultBundleProcessorManager} should get the
- * {@link ArtifactSource bundle's} {@link BundleProcessorType types} and find
- * all the {@link BundleProcessor processors} for each
+ * {@link GlobalSettings}. The {@link DefaultBundleProcessorManager} should get
+ * the {@link ArtifactSource bundle's} {@link BundleProcessorType types} and
+ * find all the {@link BundleProcessor processors} for each
  * {@link BundleProcessorType type} . After all {@link BundleProcessor
  * processors} was found, the {@link DefaultBundleProcessorManager} should
  * distribute the processing job in some threads obeying the
@@ -83,8 +85,7 @@ public enum DefaultBundleProcessorManager implements BundleProcessorManager {
 			throws Exception {
 		final GlobalExecutionStatus result = new BundleProcessorExecution(
 				username, password, descriptor, contextFactory, settings,
-				groups, ArtifactTypeRegistry.INSTANCE
-						.getRegisteredArtifactTypes()).execute();
+				groups).execute();
 		return result;
 	}
 
@@ -96,9 +97,8 @@ public enum DefaultBundleProcessorManager implements BundleProcessorManager {
 			public void run() {
 				try {
 					new BundleProcessorExecution(username, password,
-							descriptor, contextFactory, settings, groups,
-							ArtifactTypeRegistry.INSTANCE
-									.getRegisteredArtifactTypes()).execute();
+							descriptor, contextFactory, settings, groups)
+							.execute();
 
 				} catch (final Exception e) {
 					Exceptions.catchAndLog(e);

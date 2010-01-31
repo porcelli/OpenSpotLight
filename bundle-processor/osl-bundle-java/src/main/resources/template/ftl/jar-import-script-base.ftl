@@ -8,9 +8,6 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import java.util.Map;
 import java.util.TreeMap;
 
-SLNode currentContextRootNode = session.createContext(currentContextName).getRootNode();
-SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
-JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode,abstractContextRootNode);
 JavaType newType=null;
 JavaMethod method=null;
 

@@ -48,12 +48,8 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import static org.openspotlight.common.util.Arrays.andOf;
-import static org.openspotlight.common.util.Arrays.of;
-
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -61,7 +57,6 @@ import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.task.TaskGroup;
 import org.openspotlight.common.task.TaskManager;
 import org.openspotlight.common.task.TaskPool;
-import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -72,7 +67,6 @@ import org.openspotlight.federation.domain.GroupListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.GroupListener.ListenerAction;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
-import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.BundleExecutionException;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.internal.domain.CurrentProcessorContextImpl;
@@ -91,36 +85,6 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 
 public class BundleProcessorExecution {
 
-	private static class StartingSearchArtifactsDto {
-		public final CurrentProcessorContextImpl currentContext;
-		public final Repository repository;
-		public final Class<? extends Artifact> artifactType;
-		public final BundleProcessorType bundleProcessorType;
-
-		public StartingSearchArtifactsDto(
-				final CurrentProcessorContextImpl currentContext,
-				final Repository repository,
-				final Class<? extends Artifact> artifactType,
-				final BundleProcessorType bundleProcessorType) {
-			this.currentContext = currentContext;
-			this.repository = repository;
-			this.artifactType = artifactType;
-			this.bundleProcessorType = bundleProcessorType;
-		}
-
-		public boolean equals(final Object o) {
-			if (!(o instanceof StartingSearchArtifactsDto)) {
-				return false;
-			}
-			final StartingSearchArtifactsDto that = (StartingSearchArtifactsDto) o;
-			return Equals.eachEquality(of(currentContext.getCurrentGroup(),
-					repository, artifactType, bundleProcessorType), andOf(
-					that.currentContext.getCurrentGroup(), that.repository,
-					that.artifactType, that.bundleProcessorType));
-		}
-
-	}
-
 	private final GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
 	/** The executor. */
 	private final TaskPool pool;
@@ -133,9 +97,6 @@ public class BundleProcessorExecution {
 
 	/** The context factory. */
 	private final ExecutionContextFactory contextFactory;
-
-	/** The artifact types. */
-	private final Set<Class<? extends Artifact>> artifactTypes;
 
 	/** The default sleep interval in millis. */
 	private final long defaultSleepIntervalInMillis;
@@ -162,8 +123,7 @@ public class BundleProcessorExecution {
 	public BundleProcessorExecution(final String username,
 			final String password, final JcrConnectionDescriptor descriptor,
 			final ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Group[] groups,
-			final Set<Class<? extends Artifact>> artifactTypes) {
+			final GlobalSettings settings, final Group[] groups) {
 		this.username = username;
 		this.password = password;
 		this.descriptor = descriptor;
@@ -175,7 +135,6 @@ public class BundleProcessorExecution {
 
 		this.groups = groups;
 		this.contextFactory = contextFactory;
-		this.artifactTypes = artifactTypes;
 		threads = settings.getNumberOfParallelThreads();
 		if (threads <= 0) {
 			Exceptions.logAndThrow(new IllegalStateException(
@@ -214,53 +173,47 @@ public class BundleProcessorExecution {
 	}
 
 	private void fillTaskQueue(final List<Group> groupsWithBundles) {
-		final List<StartingSearchArtifactsDto> newTaskData = new LinkedList<StartingSearchArtifactsDto>();
-		for (final Class<? extends Artifact> artifactType : artifactTypes) {
-			for (final Group group : groupsWithBundles) {
-				for (final BundleProcessorType processor : group
-						.getBundleTypes()) {
-					final Repository repository = group.getRootRepository();
-					final CurrentProcessorContextImpl currentContextImpl = new CurrentProcessorContextImpl();
-					currentContextImpl.setBundleProperties(processor
-							.getBundleProperties());
-					currentContextImpl.setCurrentGroup(group);
-					currentContextImpl.setCurrentRepository(repository);
-					final StartingSearchArtifactsDto dto = new StartingSearchArtifactsDto(
-							currentContextImpl, repository, artifactType,
-							processor);
-					if (!newTaskData.contains(dto)) {
-						newTaskData.add(dto);
-					}
-				}
-			}
-		}
-
 		int priority = 1;
-		for (final StartingSearchArtifactsDto dto : newTaskData) {
-			final String idPrefix = dto.bundleProcessorType.getGlobalPhase()
-					.getSimpleName()
-					+ ":"
-					+ dto.repository.getName()
-					+ ":"
-					+ dto.artifactType.getSimpleName()
-					+ ":"
-					+ dto.currentContext.getCurrentGroup().toUniqueJobString();
-			final String seachId = idPrefix + ":searchArtifacts";
-			final TaskGroup searchArtifacts = pool.createTaskGroup(seachId,
-					priority);
+		for (final Group group : groupsWithBundles) {
+			for (final BundleProcessorType bundleProcessorType : group
+					.getBundleTypes()) {
+				final Repository repository = group.getRootRepository();
+				final CurrentProcessorContextImpl currentContext = new CurrentProcessorContextImpl();
+				currentContext.setBundleProperties(bundleProcessorType
+						.getBundleProperties());
+				currentContext.setCurrentGroup(group);
+				currentContext.setCurrentRepository(repository);
 
-			final StartingToSearchArtifactsTask<? extends Artifact> searchTask = new StartingToSearchArtifactsTask<Artifact>(
-					dto.artifactType, dto.currentContext,
-					dto.bundleProcessorType, dto.repository, searchArtifacts);
-			searchArtifacts.prepareTask().withReadableDescriptionAndUniqueId(
-					seachId).withRunnable(searchTask).andPublishTask();
-			final String saveId = idPrefix + ":saveGraph";
-			final TaskGroup saveGraph = pool
-					.createTaskGroup(saveId, ++priority);
-			saveGraph.prepareTask().withReadableDescriptionAndUniqueId(saveId)
-					.withRunnable(new SaveGraphTask(dto.repository.getName()))
-					.andPublishTask();
-			++priority;
+				final String idPrefix = bundleProcessorType.getGlobalPhase()
+						.getSimpleName()
+						+ ":"
+						+ repository.getName()
+						+ ":"
+						+ currentContext.getCurrentGroup().toUniqueJobString()
+						+ ":"
+						+ bundleProcessorType.getName()
+						+ ":"
+						+ bundleProcessorType.getGlobalPhase().getName();
+				final String seachId = idPrefix + ":searchArtifacts";
+				final TaskGroup searchArtifacts = pool.createTaskGroup(seachId,
+						priority);
+
+				final StartingToSearchArtifactsTask searchTask = new StartingToSearchArtifactsTask(
+						currentContext, bundleProcessorType, repository,
+						searchArtifacts);
+				searchArtifacts.prepareTask()
+						.withReadableDescriptionAndUniqueId(seachId)
+						.withRunnable(searchTask).andPublishTask();
+				final String saveId = idPrefix + ":saveGraph";
+				final TaskGroup saveGraph = pool.createTaskGroup(saveId,
+						++priority);
+				saveGraph.prepareTask().withReadableDescriptionAndUniqueId(
+						saveId).withRunnable(
+						new SaveGraphTask(repository.getName()))
+						.andPublishTask();
+				++priority;
+
+			}
 		}
 
 	}

@@ -71,7 +71,7 @@ public class FileSystemStreamArtifactFinder extends
 	private final ArtifactSource artifactSource;
 
 	public FileSystemStreamArtifactFinder(final ArtifactSource artifactSource) {
-		super(artifactSource.getRepository().getName());
+		super(StreamArtifact.class, artifactSource.getRepository().getName());
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("sourceExists", new File(artifactSource
 				.getInitialLookup()).exists());

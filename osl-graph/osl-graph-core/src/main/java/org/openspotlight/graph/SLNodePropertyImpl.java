@@ -214,8 +214,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements
 				final boolean string = pProperty.getValue() instanceof String;
 				pProperty.remove();
 				final SLNodePropertyEvent event = new SLNodePropertyRemovedEvent(
-						this, pProperty);
-				event.setPropertyName(name);
+						this, pProperty, name);
 				event.setString(string);
 				event.setPNode(pNode);
 				eventPoster.post(event);

@@ -61,7 +61,7 @@ public interface BundleProcessorGlobalPhase<T extends Artifact> {
 	 * @param changes
 	 *            the changes
 	 */
-	public void didFinishProcessing(ArtifactChanges<T> changes);
+	public void didFinishProcessing(ArtifactChanges<Artifact> changes);
 
 	/**
 	 * Gets the artifact type.
@@ -92,8 +92,8 @@ public interface BundleProcessorGlobalPhase<T extends Artifact> {
 	 */
 	public void selectArtifactsToBeProcessed(
 			CurrentProcessorContext currentContext, ExecutionContext context,
-			ArtifactChanges<T> changes,
+			ArtifactChanges<Artifact> changes,
 
-			ArtifactsToBeProcessed<T> toBeReturned) throws Exception;
+			ArtifactsToBeProcessed<Artifact> toBeReturned) throws Exception;
 
 }

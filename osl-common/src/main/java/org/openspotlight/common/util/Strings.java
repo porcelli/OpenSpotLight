@@ -162,6 +162,26 @@ public class Strings {
 	}
 
 	/**
+	 * removes an starting string for a bigger string that starts with it.
+	 * 
+	 * @param beginning
+	 *            the beginning
+	 * @param toBeCorrected
+	 *            the to be corrected
+	 * @return the string without the beggining
+	 */
+	public static String tryToRemoveBegginingFrom(final String beginning,
+			final String toBeCorrected) {
+		checkNotEmpty("beginning", beginning);//$NON-NLS-1$
+		checkNotEmpty("toBeCorrected", toBeCorrected);//$NON-NLS-1$
+		if (toBeCorrected.startsWith(beginning)) {
+			return toBeCorrected.substring(beginning.length());
+		} else {
+			return toBeCorrected;
+		}
+	}
+
+	/**
 	 * Should not be instantiated.
 	 */
 	private Strings() {

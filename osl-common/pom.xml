@@ -25,6 +25,11 @@
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+
 		<!-- Java Concurrency in Practice annotations -->
 		<dependency>
 			<groupId>net.jcip</groupId>

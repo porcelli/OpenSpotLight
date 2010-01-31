@@ -101,7 +101,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 
 	private JcrSessionArtifactFinder(final Class<A> artifactType,
 			final Session session, final Repository repository) {
-		super(repository.getName());
+		super(artifactType, repository.getName());
 		Assertions.checkCondition("sessionAlive", session.isLive());
 		this.session = session;
 		this.artifactType = artifactType;

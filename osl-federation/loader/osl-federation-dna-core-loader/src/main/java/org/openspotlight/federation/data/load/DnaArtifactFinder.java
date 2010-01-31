@@ -125,7 +125,7 @@ public abstract class DnaArtifactFinder extends
 	private final Map<ArtifactSource, Session> mappingSessions = new ConcurrentHashMap<ArtifactSource, Session>();
 
 	public DnaArtifactFinder(final ArtifactSource source) {
-		super(source.getRepository().getName());
+		super(StringArtifact.class, source.getRepository().getName());
 		artifactSource = source;
 	}
 

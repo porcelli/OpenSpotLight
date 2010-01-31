@@ -3,6 +3,7 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.InnerClass;
 import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
@@ -16,6 +17,7 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
@@ -40,12 +42,16 @@ public class JavaParserNodeHelper {
 					JavaParserExecutor.ABSTRACT_CONTEXT).getRootNode();
 			this.session = session;
 			Assertions.checkNotNull("abstractContext", abstractContext);
-			logger.info("using abstract context:"
-					+ abstractContext.getContext().getID() + ":"
-					+ abstractContext.getName());
-			logger.info("using current context:"
-					+ currentContext.getContext().getID() + ":"
-					+ currentContext.getName());
+			if (logger.isDebugEnabled()) {
+				logger.debug("using abstract context:"
+						+ abstractContext.getContext().getID() + ":"
+						+ abstractContext.getName());
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("using current context:"
+						+ currentContext.getContext().getID() + ":"
+						+ currentContext.getName());
+			}
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -66,13 +72,16 @@ public class JavaParserNodeHelper {
 		Assertions.checkNotNull("parent.K2", parent.getK2());
 
 		try {
-			final T abstractNode = parent.getK1().addNode(type, typeName);
+			final JavaType abstractNode = parent.getK1().addNode(
+					JavaType.class, typeName);
 			final T concreteNode = parent.getK2().addNode(type, typeName);
 			session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
 					false);
 			final Class<? extends SLLink> linkType;
-			final String completeName = parent.getK2().getName() + "."
-					+ typeName;
+			final String completeName = Strings.tryToRemoveBegginingFrom(
+					JavaConstants.DEFAULT_PACKAGE + ".", (parent.getK2()
+							.getName()
+							+ "." + typeName).replaceAll("[$]", "."));
 			if (parent.getK1() instanceof JavaPackage) {
 				linkType = PackageType.class;
 			} else {
@@ -84,8 +93,11 @@ public class JavaParserNodeHelper {
 			abstractNode.setCompleteName(completeName);
 
 			session.addLink(linkType, parent.getK2(), concreteNode, false);
-			logger.info("adding node " + concreteNode.getName() + " on parent "
-					+ parent.getK1().getName());
+			if (logger.isDebugEnabled()) {
+				logger.debug("adding node " + concreteNode.getName()
+						+ " on parent " + parent.getK1().getName()
+						+ " with complete name " + completeName);
+			}
 
 			return new Pair<SLNode, SLNode>(abstractNode, concreteNode);
 		} catch (final Exception e) {
@@ -123,7 +135,9 @@ public class JavaParserNodeHelper {
 					JavaPackage.class, packageName);
 			session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
 					false);
-			logger.info("adding node " + concreteNode.getName());
+			if (logger.isDebugEnabled()) {
+				logger.debug("adding node " + concreteNode.getName());
+			}
 			return new Pair<SLNode, SLNode>(abstractNode, concreteNode);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

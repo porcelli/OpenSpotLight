@@ -78,10 +78,13 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class should be used to insert all java relationships on the OSL Graph
@@ -93,7 +96,6 @@ import org.openspotlight.graph.SLNode;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-// FIXME create arrays in the same on java graph node support
 
 public class JavaGraphNodeSupport {
 
@@ -114,6 +116,8 @@ public class JavaGraphNodeSupport {
 
 	/** The nodes from abstract context. */
 	private final Map<String, JavaType> nodesFromAbstractContext = new TreeMap<String, JavaType>();
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Instantiates a new java graph node support. The abstractContextRootNode
@@ -273,9 +277,17 @@ public class JavaGraphNodeSupport {
 				JavaPackage.class, packageName);
 		final T newType = newPackage.addNode(nodeType, nodeName);
 		newType.setSimpleName(nodeName);
-		newType.setCompleteName(packageName + "." + nodeName);
+		newType.setCompleteName(Strings.tryToRemoveBegginingFrom(
+				JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
+						+ nodeName.replaceAll("[$]", ".")));
 		session.addLink(PackageType.class, newPackage, newType, false);
 		nodesFromAbstractContext.put(packageName + nodeName, newType);
+		if (logger.isInfoEnabled()) {
+			logger.info("abstract ctx - added class "
+					+ nodeType.getSimpleName() + " " + packageName + "."
+					+ nodeName);
+		}
+
 		return newType;
 	}
 
@@ -351,7 +363,9 @@ public class JavaGraphNodeSupport {
 		}
 
 		newType.setSimpleName(nodeName);
-		newType.setCompleteName(packageName + "." + nodeName);
+		newType.setCompleteName(Strings.tryToRemoveBegginingFrom(
+				JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
+						+ nodeName.replaceAll("[$]", ".")));
 		session.addLink(PackageType.class, newPackage, newType, false);
 		final boolean isPublic = (access & Opcodes.ACC_PUBLIC) != 0;
 		final boolean isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
@@ -368,11 +382,20 @@ public class JavaGraphNodeSupport {
 				JavaPackage.class, packageName);
 		final JavaType newAbstractType = newAbstractPackage.addNode(
 				JavaType.class, nodeName);
+		newAbstractType.setCompleteName(Strings.tryToRemoveBegginingFrom(
+				JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
+						+ nodeName.replaceAll("[$]", ".")));
+		newAbstractType.setSimpleName(nodeName);
+
 		session.addLink(PackageType.class, newPackage, newType, false);
 		session
 				.addLink(AbstractTypeBind.class, newAbstractType, newType,
 						false);
 		nodesFromThisContext.put(packageName + nodeName, newType);
+		if (logger.isInfoEnabled()) {
+			logger.info("added class " + nodeType.getSimpleName() + " "
+					+ packageName + "." + nodeName);
+		}
 		return newType;
 	}
 

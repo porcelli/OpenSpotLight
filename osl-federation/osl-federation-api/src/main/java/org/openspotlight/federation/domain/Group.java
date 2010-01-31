@@ -50,9 +50,7 @@ package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
@@ -92,7 +90,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 
 	private volatile int hashCode;
 
-	private Set<BundleProcessorType> bundleTypes = new HashSet<BundleProcessorType>();
+	private List<BundleProcessorType> bundleTypes = new ArrayList<BundleProcessorType>();
 
 	private List<String> cronInformation = new ArrayList<String>();
 
@@ -115,7 +113,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 		return result;
 	}
 
-	public Set<BundleProcessorType> getBundleTypes() {
+	public List<BundleProcessorType> getBundleTypes() {
 		return bundleTypes;
 	}
 
@@ -210,7 +208,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 		this.active = active;
 	}
 
-	public void setBundleTypes(final Set<BundleProcessorType> bundleTypes) {
+	public void setBundleTypes(final List<BundleProcessorType> bundleTypes) {
 		this.bundleTypes = bundleTypes;
 	}
 

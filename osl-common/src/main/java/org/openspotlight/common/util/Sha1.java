@@ -54,123 +54,155 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jasypt.util.digest.Digester;
 import org.openspotlight.common.exception.SLException;
 
 /**
  * Class with sha1 signature method.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Sha1 {
 
-    /**
-     * SHA-1 digester.
-     */
-    private static final Digester DIGESTER = new Digester("SHA-1"); //$NON-NLS-1$
+	/**
+	 * SHA-1 digester.
+	 */
+	private static final Digester DIGESTER = new Digester("SHA-1"); //$NON-NLS-1$
 
-    /**
-     * Returns a sha-1 signature for that content.
-     *
-     * @param content
-     * @return a byte array representing the signature
-     * @throws SLException
-     */
-    public static byte[] getSha1Signature( final byte[] content ) throws SLException {
-        checkNotNull("content", content);//$NON-NLS-1$
-        try {
-            return DIGESTER.digest(content);
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+	/**
+	 * Returns a sha-1 signature for that content.
+	 * 
+	 * @param content
+	 * @return a byte array representing the signature
+	 * @throws SLException
+	 */
+	public static byte[] getSha1Signature(final byte[] content)
+			throws SLException {
+		checkNotNull("content", content);//$NON-NLS-1$
+		try {
+			return DIGESTER.digest(content);
+		} catch (final Exception e) {
+			throw logAndReturnNew(e, SLException.class);
+		}
+	}
 
-    /**
-     * A syntax sugar method that returns a sha-1 signature for that content.
-     *
-     * @param content
-     * @return a byte array representing the signature
-     * @throws SLException
-     */
-    public static byte[] getSha1Signature( final String content ) throws SLException {
-        return getSha1Signature(content.getBytes());
-    }
+	/**
+	 * Returns a sha-1 signature for that content.
+	 * 
+	 * @param content
+	 * @return a byte array representing the signature
+	 * @throws SLException
+	 */
+	public static byte[] getSha1Signature(final InputStream content)
+			throws SLException {
+		checkNotNull("content", content);//$NON-NLS-1$
+		try {
+			final ByteArrayOutputStream output = new ByteArrayOutputStream();
+			IOUtils.copy(content, output);
+			return DIGESTER.digest(output.toByteArray());
+		} catch (final Exception e) {
+			throw logAndReturnNew(e, SLException.class);
+		}
+	}
 
-    /**
-     * Returns a sha-1 signature for that content as a base64 string.
-     *
-     * @param content
-     * @return a base64 string representing the signature
-     * @throws SLException
-     */
-    public static String getSha1SignatureEncodedAsBase64( final byte[] content ) throws SLException {
-        checkNotNull("content", content);//$NON-NLS-1$
-        try {
-            final byte[] sha1 = getSha1Signature(content);
-            final String result = new String(encodeBase64(sha1));
-            return result;
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+	/**
+	 * A syntax sugar method that returns a sha-1 signature for that content.
+	 * 
+	 * @param content
+	 * @return a byte array representing the signature
+	 * @throws SLException
+	 */
+	public static byte[] getSha1Signature(final String content)
+			throws SLException {
+		return getSha1Signature(content.getBytes());
+	}
 
-    /**
-     * A syntax sugar method that returns a sha-1 signature for that content as an Base64 string.
-     *
-     * @param content
-     * @return sha-1 base64 string
-     * @throws SLException
-     */
-    public static String getSha1SignatureEncodedAsBase64( final String content ) throws SLException {
-        return getSha1SignatureEncodedAsBase64(content.getBytes());
-    }
+	/**
+	 * Returns a sha-1 signature for that content as a base64 string.
+	 * 
+	 * @param content
+	 * @return a base64 string representing the signature
+	 * @throws SLException
+	 */
+	public static String getSha1SignatureEncodedAsBase64(final byte[] content)
+			throws SLException {
+		checkNotNull("content", content);//$NON-NLS-1$
+		try {
+			final byte[] sha1 = getSha1Signature(content);
+			final String result = new String(encodeBase64(sha1));
+			return result;
+		} catch (final Exception e) {
+			throw logAndReturnNew(e, SLException.class);
+		}
+	}
 
-    /**
-     * Returns a sha-1 signature for that content as an Hexa string.
-     *
-     * @param content
-     * @return a base64 string representing the signature
-     * @throws SLException
-     */
-    public static String getSha1SignatureEncodedAsHexa( final byte[] content ) throws SLException {
-        checkNotNull("content", content);//$NON-NLS-1$
-        try {
-            final byte[] sha1 = getSha1Signature(content);
-            return toHexa(sha1);
-        } catch (final Exception e) {
-            throw logAndReturnNew(e, SLException.class);
-        }
-    }
+	/**
+	 * A syntax sugar method that returns a sha-1 signature for that content as
+	 * an Base64 string.
+	 * 
+	 * @param content
+	 * @return sha-1 base64 string
+	 * @throws SLException
+	 */
+	public static String getSha1SignatureEncodedAsBase64(final String content)
+			throws SLException {
+		return getSha1SignatureEncodedAsBase64(content.getBytes());
+	}
 
-    /**
-     * A syntax sugar method that returns a sha-1 signature for that content as an Hexa string.
-     *
-     * @param content
-     * @return a base64 string representing the signature
-     * @throws SLException
-     */
-    public static String getSha1SignatureEncodedAsHexa( final String content ) throws SLException {
-        return getSha1SignatureEncodedAsHexa(content.getBytes());
-    }
+	/**
+	 * Returns a sha-1 signature for that content as an Hexa string.
+	 * 
+	 * @param content
+	 * @return a base64 string representing the signature
+	 * @throws SLException
+	 */
+	public static String getSha1SignatureEncodedAsHexa(final byte[] content)
+			throws SLException {
+		checkNotNull("content", content);//$NON-NLS-1$
+		try {
+			final byte[] sha1 = getSha1Signature(content);
+			return toHexa(sha1);
+		} catch (final Exception e) {
+			throw logAndReturnNew(e, SLException.class);
+		}
+	}
 
-    private static String toHexa( final byte[] bytes ) {
-        final StringBuilder s = new StringBuilder();
-        for (final byte b : bytes) {
-            final int parteAlta = (b >> 4 & 0xf) << 4;
-            final int parteBaixa = b & 0xf;
-            if (parteAlta == 0) {
-                s.append('0');
-            }
-            s.append(Integer.toHexString(parteAlta | parteBaixa));
-        }
-        return s.toString();
-    }
+	/**
+	 * A syntax sugar method that returns a sha-1 signature for that content as
+	 * an Hexa string.
+	 * 
+	 * @param content
+	 * @return a base64 string representing the signature
+	 * @throws SLException
+	 */
+	public static String getSha1SignatureEncodedAsHexa(final String content)
+			throws SLException {
+		return getSha1SignatureEncodedAsHexa(content.getBytes());
+	}
 
-    /**
-     * Should not be instantiated
-     */
-    private Sha1() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
-    }
+	private static String toHexa(final byte[] bytes) {
+		final StringBuilder s = new StringBuilder();
+		for (final byte b : bytes) {
+			final int parteAlta = (b >> 4 & 0xf) << 4;
+			final int parteBaixa = b & 0xf;
+			if (parteAlta == 0) {
+				s.append('0');
+			}
+			s.append(Integer.toHexString(parteAlta | parteBaixa));
+		}
+		return s.toString();
+	}
+
+	/**
+	 * Should not be instantiated
+	 */
+	private Sha1() {
+		logAndThrow(new IllegalStateException(Messages
+				.getString("invalidConstructor"))); //$NON-NLS-1$
+	}
 
 }

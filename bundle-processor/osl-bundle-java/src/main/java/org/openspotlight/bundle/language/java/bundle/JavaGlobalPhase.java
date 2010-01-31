@@ -27,7 +27,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 	}
 
 	public SaveBehavior getSaveBehavior() {
-		return SaveBehavior.PER_PROCESSING;
+		return SaveBehavior.PER_ARTIFACT;
 	}
 
 	public void selectArtifactsToBeProcessed(

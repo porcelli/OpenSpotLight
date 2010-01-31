@@ -55,8 +55,10 @@ import org.openspotlight.federation.context.TestExecutionContextFactory.Artifact
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.finder.FileSystemStringArtifactFinder;
 import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
 import org.openspotlight.graph.SLGraphSession;
@@ -90,25 +92,32 @@ public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 
 	public boolean artifactFinderSupportsThisType(
 			final Class<? extends Artifact> type) {
-		return type.equals(StringArtifact.class);
+		return type.equals(StringArtifact.class)
+				|| type.equals(StreamArtifact.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
 			final Class<A> artifactType, final Repository typedRepository) {
-		Assertions.checkCondition("artifactTypeAsStream", StringArtifact.class
-				.equals(artifactType));
+		Assertions.checkCondition("compatibleArtifactType",
+				StringArtifact.class.equals(artifactType)
+						|| StreamArtifact.class.equals(artifactType));
 		ArtifactFinder<A> finder;
 		switch (type) {
 		case LOCAL_SOURCE:
 			finder = (ArtifactFinder<A>) new LocalSourceStreamArtifactFinder(
-					source);
+					artifactType, source);
 
 			break;
 		case FILESYSTEM:
-			finder = (ArtifactFinder<A>) new FileSystemStringArtifactFinder(
-					source);
+			if (artifactType.equals(StringArtifact.class)) {
+				finder = (ArtifactFinder<A>) new FileSystemStringArtifactFinder(
+						source);
+			} else {
+				finder = (ArtifactFinder<A>) new FileSystemStreamArtifactFinder(
+						source);
+			}
 
 			break;
 		default:

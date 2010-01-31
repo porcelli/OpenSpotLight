@@ -82,14 +82,15 @@ public class EachArtifactTask<T extends Artifact> extends
 	private final CurrentProcessorContextImpl currentContextImpl;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@SuppressWarnings("unchecked")
 	public EachArtifactTask(final boolean first, final String repositoryName,
-			final Class<T> artifactType, final T artifact,
+			final Class<? extends Artifact> artifactType, final T artifact,
 			final SaveBehavior saveBehavior,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
 			final CurrentProcessorContextImpl currentContextImpl) {
 		super(repositoryName);
 		this.first = first;
-		this.artifactType = artifactType;
+		this.artifactType = (Class<T>) artifactType;
 		this.artifact = artifact;
 		this.saveBehavior = saveBehavior;
 		this.bundleProcessor = bundleProcessor;
@@ -119,6 +120,8 @@ public class EachArtifactTask<T extends Artifact> extends
 					this.currentContextImpl, getBundleContext());
 			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
 				getBundleContext().getGraphSession().save();
+			} else {
+				logger.warn("Didn't save because of its save behavior");
 			}
 		} catch (final Exception e) {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
@@ -139,21 +142,16 @@ public class EachArtifactTask<T extends Artifact> extends
 			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
 				final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
 				try {
-					if (LastProcessStatus.PROCESSED.equals(artifact
-							.getLastProcessStatus())
-							|| LastProcessStatus.IGNORED.equals(artifact
-									.getLastProcessStatus())) {
-						synchronized (SAVE_LOCK) {
-							if (ChangeType.EXCLUDED.equals(this.artifact
-									.getChangeType())) {
-								finderWithSaveCapabilitie
-										.markAsRemoved(this.artifact);
-							} else {
-								finderWithSaveCapabilitie
-										.addTransientArtifact(this.artifact);
-							}
-							finderWithSaveCapabilitie.save();
+					synchronized (SAVE_LOCK) {
+						if (ChangeType.EXCLUDED.equals(this.artifact
+								.getChangeType())) {
+							finderWithSaveCapabilitie
+									.markAsRemoved(this.artifact);
+						} else {
+							finderWithSaveCapabilitie
+									.addTransientArtifact(this.artifact);
 						}
+						finderWithSaveCapabilitie.save();
 					}
 
 				} catch (final Exception e) {

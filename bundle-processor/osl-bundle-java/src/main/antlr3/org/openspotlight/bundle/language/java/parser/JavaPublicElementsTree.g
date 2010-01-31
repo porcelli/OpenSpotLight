@@ -253,11 +253,11 @@ qualifiedName returns [String name]
       sb.append($id2.text);})*)
 ;
 // ANNOTATIONS
-annotations returns [List<JavaTypeAnnotation> resultList]
-@init { $resultList = new LinkedList<JavaTypeAnnotation>(); }
+annotations returns [List<JavaType> resultList]
+@init { $resultList = new LinkedList<JavaType>(); }
 : ^(ANNOTATIONS (annotation {$resultList.add($annotation.typeNode);} )+)
 ;
-annotation returns [ JavaTypeAnnotation typeNode]
+annotation returns [ JavaType typeNode]
 : (^(MARKER_ANNOTATION q1=qualifiedName){ $typeNode=executor.resolveAnnotation($q1.name); }
   | ^(SINGLE_MEMBER_ANNOTATION q2=qualifiedName elementValue) { $typeNode=executor.resolveAnnotation($q2.name); }
   | ^(NORMAL_ANNOTATION q3=qualifiedName elementValuePairs){ $typeNode=executor.resolveAnnotation($q3.name); }
