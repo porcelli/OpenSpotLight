@@ -173,33 +173,39 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 	}
 
-	public void addLineReference(final CommonTree commonTree, final SLNode node) {
-		if (commonTree != null) {
-			try {
-				if (!(commonTree instanceof SLCommonTree)) {
-					throw Exceptions.logAndReturn(new IllegalStateException(
-							"wrong type of tree " + commonTree.getClass()));
-				}
+	private void addIncludedClass(final String name) {
+		includedStaticClasses.add(fixIncludedName(name));
+	}
 
-				final SLCommonTree typed = (SLCommonTree) commonTree;
-				Assertions.checkCondition("validLineStart:" + typed.getLine(),
-						typed.getLine() > 0);
-				Assertions.checkCondition("validStartCharOffset:"
-						+ typed.getStartCharOffset(), typed
-						.getStartCharOffset() > 0);
-				Assertions.checkCondition("validEndCharOffset:"
-						+ typed.getEndCharOffset(),
-						typed.getEndCharOffset() > 0
-								&& typed.getEndCharOffset() >= typed
-										.getStartCharOffset());
-				Assertions.checkNotEmpty("text", typed.getText());
-				node.addLineReference(typed.getLine(), typed.getLine(), typed
-						.getStartCharOffset(), typed.getEndCharOffset(), typed
-						.getText(), completeArtifactName, artifactVersion);
-				typed.setNode(node);
-			} catch (final Exception e) {
-				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+	private void addIncludedStaticClass(final String name) {
+		includedClasses.add(fixIncludedName(name));
+	}
+
+	public void addLineReference(final CommonTree commonTree, final SLNode node) {
+		Assertions.checkNotNull("commonTree", commonTree);
+		Assertions.checkNotNull("node", node);
+		try {
+			if (!(commonTree instanceof SLCommonTree)) {
+				throw Exceptions.logAndReturn(new IllegalStateException(
+						"wrong type of tree " + commonTree.getClass()));
 			}
+
+			final SLCommonTree typed = (SLCommonTree) commonTree;
+			Assertions.checkCondition("validLineStart:" + typed.getLine(),
+					typed.getLine() > 0);
+			Assertions.checkCondition("validStartCharOffset:"
+					+ typed.getStartCharOffset(),
+					typed.getStartCharOffset() > 0);
+			Assertions.checkCondition("validEndCharOffset:"
+					+ typed.getEndCharOffset(), typed.getEndCharOffset() > 0
+					&& typed.getEndCharOffset() >= typed.getStartCharOffset());
+			Assertions.checkNotEmpty("text", typed.getText());
+			node.addLineReference(typed.getLine(), typed.getLine(), typed
+					.getStartCharOffset(), typed.getEndCharOffset(), typed
+					.getText(), completeArtifactName, artifactVersion);
+			typed.setNode(node);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
@@ -211,15 +217,18 @@ public class JavaPublicElemetsTreeExecutor {
 				annotations, enumType, interfaces, JavaTypeEnum.class, null);
 	}
 
-	public void createFieldDeclaration(final SLNode peek,
+	public List<SLNode> createFieldDeclaration(final SLNode peek,
 			final List<JavaModifier> modifiers29,
 			final List<JavaType> annotations30, final JavaType type31,
 			final List<VariableDeclarationDto> variables) {
 		try {
+			final List<SLNode> nodes = new ArrayList<SLNode>();
 			for (final VariableDeclarationDto var : variables) {
 				final JavaDataField newField = peek.addNode(
 						JavaDataField.class, var.getName());
+				nodes.add(newField);
 				for (final JavaModifier modifier : modifiers29) {
+
 					switch (modifier) {
 					case FINAL:
 						newField.setFinal(true);
@@ -252,6 +261,7 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 
 			}
+			return nodes;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -259,7 +269,7 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	private <T extends JavaType> T createInnerTypeWithSateliteData(
-			final SLNode peek, final String string,
+			final SLNode lalala, final String string,
 			final List<JavaModifier> modifiers7,
 			final List<JavaType> annotations8,
 			final JavaType normalClassExtends9,
@@ -269,12 +279,12 @@ public class JavaPublicElemetsTreeExecutor {
 			if (logger.isDebugEnabled()) {
 				logger.debug(completeArtifactName + ": " + "creating type "
 						+ type.getSimpleName() + " with parent= "
-						+ peek.getName() + ", name=" + string + ", modifiers="
-						+ modifiers7 + ", annotations=" + annotations8
-						+ ", extends=" + normalClassExtends9 + ", implements="
-						+ normalClassImplements10);
+						+ lalala.getName() + ", name=" + string
+						+ ", modifiers=" + modifiers7 + ", annotations="
+						+ annotations8 + ", extends=" + normalClassExtends9
+						+ ", implements=" + normalClassImplements10);
 			}
-
+			final SLNode peek = findEquivalend(lalala, WhatContext.CONCRETE);
 			final T newClass = createNodeOnBothContexts(JavaType.class, type,
 					peek, string);
 			final JavaType newAbstractClass = findEquivalend(newClass,
@@ -353,6 +363,7 @@ public class JavaPublicElemetsTreeExecutor {
 
 			if (normalClassExtends9 != null) {
 				session.addLink(linkType, newClass, normalClassExtends9, false);
+				addIncludedStaticClass(normalClassExtends9.getCompleteName());
 				SLNode superType = findEquivalend(normalClassExtends9,
 						WhatContext.ABSTRACT);
 				if (superType == null) {
@@ -393,6 +404,7 @@ public class JavaPublicElemetsTreeExecutor {
 			}
 			if (normalClassImplements10 != null) {
 				for (final JavaType interfaceType : normalClassImplements10) {
+					addIncludedStaticClass(interfaceType.getCompleteName());
 					session.addLink(Implements.class, newClass, interfaceType,
 							false);
 					final JavaType abstractInterfaceType = findEquivalend(
@@ -462,6 +474,8 @@ public class JavaPublicElemetsTreeExecutor {
 					}
 				}
 			}
+			addIncludedClass(newClass.getCompleteName());
+
 			return newClass;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -485,9 +499,10 @@ public class JavaPublicElemetsTreeExecutor {
 			final JavaType normalClassExtends9,
 			final List<JavaType> normalClassImplements10,
 			final List<TypeParameterDto> typeParameters11) {
-		return createInnerTypeWithSateliteData(peek, string, modifiers7,
-				annotations8, normalClassExtends9, normalClassImplements10,
-				JavaTypeClass.class, typeParameters11);
+		final JavaTypeClass javaClass = createInnerTypeWithSateliteData(peek,
+				string, modifiers7, annotations8, normalClassExtends9,
+				normalClassImplements10, JavaTypeClass.class, typeParameters11);
+		return javaClass;
 	}
 
 	public JavaMethod createMethodConstructorDeclaration(final SLNode peek,
@@ -583,10 +598,6 @@ public class JavaPublicElemetsTreeExecutor {
 		final StringBuilder completeName = new StringBuilder();
 		for (int i = 0, size = types.size(); i < size; i++) {
 			final JavaType currentType = types.get(i);
-			if (currentType == null) {
-				continue;// FIXME for some mysterious, the last element here is
-				// null
-			}
 			final String name = i == 0 ? currentType.getCompleteName()
 					: currentType.getSimpleName();
 			completeName.append(name);
@@ -733,6 +744,13 @@ public class JavaPublicElemetsTreeExecutor {
 				for (final String pack : includedPackages) {
 					possibleNames.add(pack + "." + string);
 				}
+				for (final String pack : includedClasses) {
+					possibleNames.add(pack);
+				}
+				for (final String pack : includedStaticClasses) {
+					possibleNames.add(pack + "." + string);
+
+				}
 			}
 
 			for (final String possibleName : possibleNames) {
@@ -802,15 +820,12 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findSimpleType(final String string) {
-		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
-			return findPrimitiveType(string);
+		final JavaType foundType = internalFindSimpleType(string);
+		if (foundType == null) {
+			toString();
 		}
-		JavaType type = findOnContext(string, currentContextFinder);
-		if (type == null) {
-			type = findOnContext(string, abstractContextFinder);
-		}
-		return type;
-
+		Assertions.checkNotNull("foundType:" + string, foundType);
+		return foundType;
 	}
 
 	public JavaTypeParameterizedSuper findSuperParameterizedType(
@@ -842,11 +857,20 @@ public class JavaPublicElemetsTreeExecutor {
 		return findPrimitiveType("void");
 	}
 
+	private String fixIncludedName(final String name) {
+		if (name.contains("[")) {
+			return name.substring(0, name.indexOf("["));
+		} else if (name.contains("<")) {
+			return name.substring(0, name.indexOf("<"));
+		}
+		return name;
+	}
+
 	public JavaModifier getModifier(final String string) {
 		return JavaModifier.getByName(string);
 	}
 
-	public void importDeclaration(final SLNode peek, final boolean isStatic,
+	public SLNode importDeclaration(final SLNode peek, final boolean isStatic,
 			final boolean starred, final String string) {
 		try {
 			if (isStatic) {
@@ -863,6 +887,7 @@ public class JavaPublicElemetsTreeExecutor {
 					importedNodeCache.put(classNode.getCompleteName(),
 							classNode);
 					importedNodeCache.put(classNode.getSimpleName(), classNode);
+					return classNode;
 				} else {
 					includedStaticMethods.add(string);
 					final JavaMethod methodNode = abstractContextFinder
@@ -873,6 +898,7 @@ public class JavaPublicElemetsTreeExecutor {
 							methodNode);
 					importedNodeCache.put(methodNode.getSimpleName(),
 							methodNode);
+					return methodNode;
 				}
 			} else {
 				if (starred) {
@@ -890,6 +916,7 @@ public class JavaPublicElemetsTreeExecutor {
 										: "null"));
 					}
 					session.addLink(References.class, peek, packageNode, false);
+					return packageNode;
 				} else {
 					includedClasses.add(string);
 					JavaType classNode = currentContextFinder.findByProperty(
@@ -915,6 +942,7 @@ public class JavaPublicElemetsTreeExecutor {
 					importedNodeCache.put(classNode.getCompleteName(),
 							classNode);
 					importedNodeCache.put(classNode.getSimpleName(), classNode);
+					return classNode;
 				}
 			}
 		} catch (final Exception e) {
@@ -1053,6 +1081,17 @@ public class JavaPublicElemetsTreeExecutor {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 
+	}
+
+	private JavaType internalFindSimpleType(final String string) {
+		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
+			return findPrimitiveType(string);
+		}
+		JavaType type = findOnContext(string, currentContextFinder);
+		if (type == null) {
+			type = findOnContext(string, abstractContextFinder);
+		}
+		return type;
 	}
 
 	public JavaPackage packageDeclaration(final String string) {

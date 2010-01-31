@@ -125,7 +125,7 @@ normalClassDeclaration
 	{ SLNode node = executor.createJavaClass(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	               $annotations.resultList, $normalClassExtends.typeResult, 
 	               $normalClassImplements.typeListReturn,$typeParameters.resultList);
-	executor.addLineReference($Identifier.start, node);
+	executor.addLineReference($Identifier, node);
 	stack.push(node); } 
 	classBody)
 	;
@@ -154,7 +154,7 @@ enumDeclaration
 	: ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements?
 	{ SLNode node = executor.createEnum(stack.peek(), $Identifier.text, 
 	                         $modifiers.modifiersResultList, $annotations.resultList, $enumDeclarationImplements.resultList);
-	  executor.addLineReference($Identifier.start,node);
+	  executor.addLineReference($Identifier,node);
 	  stack.push(node); }
 	enumBody)
 	;
@@ -172,7 +172,7 @@ normalInterfaceDeclaration
 	@after{stack.pop();}
 	: ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
 	{ SLNode node = executor.createInterface(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, $annotations.resultList, $normalInterfaceDeclarationExtends.resultList,$typeParameters.resultList);
-	  executor.addLineReference($Identifier.start, node);
+	  executor.addLineReference($Identifier, node);
 	  stack.push(node); }
 	;
 normalInterfaceDeclarationExtends returns [List<JavaType> resultList]
@@ -194,7 +194,7 @@ typeBodyDeclaration
 	| ^(CONSTRUCTOR_DECLARATION Identifier modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
 	{ SLNode node = executor.createMethodConstructorDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	                                   $formalParameters.resultList, $annotations.resultList,  $typeBodyDeclarationThrows.resultList); 
-	  executor.addLineReference( $Identifier.start,node);                                  
+	  executor.addLineReference( $Identifier,node);                                  
 	}
 	| ^(FIELD_DECLARATION 
 	  {    List<VariableDeclarationDto> variables = new ArrayList<VariableDeclarationDto>();
@@ -202,7 +202,7 @@ typeBodyDeclaration
 	  modifiers annotations? type (variableDeclarator 
 	       { variables.add($variableDeclarator.newVar); 
 	         treeItems.add($variableDeclarator.treeItem); })+)
-	  { List<SLNode> nodes = nodeexecutor.createFieldDeclaration(stack.peek(), $modifiers.modifiersResultList, 
+	  { List<SLNode> nodes = executor.createFieldDeclaration(stack.peek(), $modifiers.modifiersResultList, 
 	                     $annotations.resultList, $type.typeReturn, variables); 
 	    for(int i=0,size=nodes.size();i<size;i++){
 	       executor.addLineReference(treeItems.get(i),nodes.get(i));
@@ -211,7 +211,7 @@ typeBodyDeclaration
 	| ^(METHOD_DECLARATION Identifier modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
 	{ SLNode node = executor.createMethodDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	                 $formalParameters.resultList,$annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList); 
-	  executor.addLineReference($Identifier.start,node);}
+	  executor.addLineReference($Identifier,node);}
 	| ^(INNER_DECLARATION typeDeclaration)
 	;
 typeBodyDeclarationThrows returns [List<JavaType> resultList]
@@ -221,7 +221,7 @@ typeBodyDeclarationThrows returns [List<JavaType> resultList]
 variableDeclarator returns [VariableDeclarationDto newVar, CommonTree treeItem]
 	: ^(VARIABLE_DECLARATION_FRAGMENT Identifier ARRAY_DIMENSION? variableDeclaratorAssign? {
 	     $newVar = new VariableDeclarationDto($Identifier.text,null,null,null,$ARRAY_DIMENSION.text);
-	     $treeItem = $Identifier.start;
+	     $treeItem = $Identifier;
 	     })
 	;
 variableDeclaratorAssign
@@ -246,13 +246,13 @@ type returns [JavaType typeReturn]
 	| ^(WILDCARD_TYPE QUESTION (^(EXTENDS tp4=type {$typeReturn = executor.findExtendsParameterizedType($tp4.typeReturn);})|^(SUPER tp5=type {$typeReturn = executor.findSuperParameterizedType($tp5.typeReturn);}))? )
 	| ^(SIMPLE_TYPE (Identifier 
 	       {$typeReturn = executor.findSimpleType($Identifier.text);
-	        executor.addLineReference($Identifier.start,$typeReturn);} 
+	        executor.addLineReference($Identifier,$typeReturn);} 
 	     |VOID 
 	       { $typeReturn = executor.findVoidType();
-	         executor.addLineReference($VOID.start,$typeReturn);}))
+	         executor.addLineReference($VOID,$typeReturn);}))
 	| ^(PRIMITIVE_TYPE primitiveType
 	       {$typeReturn = executor.findPrimitiveType($primitiveType.text);
-	         executor.addLineReference($PRIMITIVE_TYPE.start,$typeReturn);
+	         executor.addLineReference($PRIMITIVE_TYPE,$typeReturn);
 	       })
 	;
 primitiveType
