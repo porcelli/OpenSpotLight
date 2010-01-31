@@ -5,6 +5,7 @@ import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.common.parser.SLArtifactStreamBasicImpl;
+import org.openspotlight.bundle.common.parser.SLCommonTreeAdaptor;
 import org.openspotlight.bundle.language.java.parser.JavaLexer;
 import org.openspotlight.bundle.language.java.parser.JavaParser;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
@@ -54,6 +55,8 @@ public class JavaLexerAndParserTypesPhase implements
 					lexer);
 			commonTokenStream.getTokens();
 			final JavaParser parser = new JavaParser(commonTokenStream);
+			parser.setTreeAdaptor(new SLCommonTreeAdaptor());
+
 			final JavaParserNodeHelper helper = new JavaParserNodeHelper(
 					currentContext.getCurrentNodeGroup(), context
 							.getGraphSession());

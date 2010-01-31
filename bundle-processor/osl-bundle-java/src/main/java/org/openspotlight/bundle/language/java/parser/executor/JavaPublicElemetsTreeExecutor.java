@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.antlr.runtime.tree.CommonTree;
+import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
@@ -41,6 +43,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLContext;
@@ -127,6 +130,8 @@ public class JavaPublicElemetsTreeExecutor {
 
 	private final String completeArtifactName;
 
+	private final String artifactVersion;
+
 	private final SLNode currentContext;
 
 	private final SLNode abstractContext;
@@ -145,8 +150,8 @@ public class JavaPublicElemetsTreeExecutor {
 	private final Map<SLNode, SLNode> abstractConcreteCache = new HashMap<SLNode, SLNode>();
 
 	public JavaPublicElemetsTreeExecutor(final SLNode currentContext,
-			final SLGraphSession session, final String completeArtifactName)
-			throws Exception {
+			final SLGraphSession session, final String completeArtifactName,
+			final String artifactVersion) throws Exception {
 		super();
 		this.currentContext = currentContext;
 		abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT)
@@ -157,6 +162,7 @@ public class JavaPublicElemetsTreeExecutor {
 				session, currentContext);
 		abstractContextFinder = new ByPropertyFinder(completeArtifactName,
 				session, abstractContext);
+		this.artifactVersion = artifactVersion;
 		if (logger.isDebugEnabled()) {
 			logger.debug(completeArtifactName + ": " + "creating "
 					+ getClass().getSimpleName() + " with "
@@ -164,6 +170,36 @@ public class JavaPublicElemetsTreeExecutor {
 					+ currentContext.getName() + "/"
 					+ abstractContext.getContext().getID() + ":"
 					+ abstractContext.getName());
+		}
+	}
+
+	public void addLineReference(final CommonTree commonTree, final SLNode node) {
+		if (commonTree != null) {
+			try {
+				if (!(commonTree instanceof SLCommonTree)) {
+					throw Exceptions.logAndReturn(new IllegalStateException(
+							"wrong type of tree " + commonTree.getClass()));
+				}
+
+				final SLCommonTree typed = (SLCommonTree) commonTree;
+				Assertions.checkCondition("validLineStart:" + typed.getLine(),
+						typed.getLine() > 0);
+				Assertions.checkCondition("validStartCharOffset:"
+						+ typed.getStartCharOffset(), typed
+						.getStartCharOffset() > 0);
+				Assertions.checkCondition("validEndCharOffset:"
+						+ typed.getEndCharOffset(),
+						typed.getEndCharOffset() > 0
+								&& typed.getEndCharOffset() >= typed
+										.getStartCharOffset());
+				Assertions.checkNotEmpty("text", typed.getText());
+				node.addLineReference(typed.getLine(), typed.getLine(), typed
+						.getStartCharOffset(), typed.getEndCharOffset(), typed
+						.getText(), completeArtifactName, artifactVersion);
+				typed.setNode(node);
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			}
 		}
 	}
 

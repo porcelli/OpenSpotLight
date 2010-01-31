@@ -47,8 +47,6 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
 			final CommonToken typed = (CommonToken) payload;
 			tree.setStartCharOffset(typed.getStartIndex());
 			tree.setEndCharOffset(typed.getStopIndex());
-			tree.setLineStart(typed.getLine());
-			tree.setLineEnd(typed.getLine());// FIXME get the line end
 		}
 		return tree;
 	}

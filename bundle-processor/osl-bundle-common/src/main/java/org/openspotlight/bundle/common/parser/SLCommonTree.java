@@ -3,13 +3,14 @@ package org.openspotlight.bundle.common.parser;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.openspotlight.graph.SLNode;
 
 public class SLCommonTree extends CommonTree {
 
 	private int startCharOffset = -1;
-	private int lineStart = -1;
-	private int lineEnd = -1;
 	private int endCharOffset = -1;
+
+	private SLNode node;
 
 	public SLCommonTree() {
 		super();
@@ -33,12 +34,8 @@ public class SLCommonTree extends CommonTree {
 		return endCharOffset;
 	}
 
-	public int getLineEnd() {
-		return lineEnd;
-	}
-
-	public int getLineStart() {
-		return lineStart;
+	public SLNode getNode() {
+		return node;
 	}
 
 	public int getStartCharOffset() {
@@ -49,12 +46,8 @@ public class SLCommonTree extends CommonTree {
 		this.endCharOffset = endCharOffset;
 	}
 
-	public void setLineEnd(final int lineEnd) {
-		this.lineEnd = lineEnd;
-	}
-
-	public void setLineStart(final int lineStart) {
-		this.lineStart = lineStart;
+	public void setNode(final SLNode node) {
+		this.node = node;
 	}
 
 	public void setStartCharOffset(final int startCharOffset) {
