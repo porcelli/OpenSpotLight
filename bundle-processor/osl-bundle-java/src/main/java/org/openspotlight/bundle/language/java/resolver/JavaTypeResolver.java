@@ -58,7 +58,6 @@ import static org.openspotlight.bundle.language.java.JavaConstants.ABSTRACT_CONT
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
-import static org.openspotlight.common.util.Strings.replaceLast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,11 +147,8 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 	 */
 	private abstract class DolarReplacerQueryExecutor {
 
-		/** The first string. */
-		private final String firstString;
-
 		/** The actual string. */
-		private String actualString;
+		private final String actualString;
 
 		/**
 		 * Instantiates a new dolar replacer query executor.
@@ -161,8 +157,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 		 *            the s
 		 */
 		public DolarReplacerQueryExecutor(final String s) {
-			firstString = s;
-			actualString = s;
+			actualString = s.replaceAll("[$]", ".");
 		}
 
 		/**
@@ -183,7 +178,6 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 		 * @return the new string
 		 */
 		protected String getNewString() {
-			actualString = replaceLast(actualString, ".", "$");
 			return actualString;
 		}
 
@@ -233,21 +227,8 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 		 *             the exception
 		 */
 		public SLNode getTypeByAllPossibleNames() throws Exception {
-
-			SLNode result = getPrefferedType(executeWithThisString(firstString));
-			if (result != null) {
-				return result;
-			}
-			String newName = firstString;
-			while (newName.indexOf(".") != -1) {
-				newName = getNewString();
-				result = getPrefferedType(executeWithThisString(newName));
-				if (result != null) {
-					return result;
-				}
-			}
-			return null;
-
+			final SLNode result = getPrefferedType(executeWithThisString(actualString));
+			return result;
 		}
 
 	}

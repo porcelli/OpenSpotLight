@@ -1,14 +1,18 @@
 package org.openspotlight.bundle.language.java.template.test;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.util.List;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.asm.CompiledTypesExtractor;
 import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
+import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.bundle.language.java.template.BeanShellTemplateSupport;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
@@ -47,7 +51,17 @@ public class BeanShellTemplateSupportTest {
 		SLContext exampleContext = context.getGraphSession().getContext(
 				"exampleContext");
 		Assert.assertThat(exampleContext, Is.is(IsNull.nullValue()));
-		interpreter.eval(beanShellScript);
+		final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(context
+				.getGraphSession(), context.getGraphSession().createContext(
+				"exampleContext").getRootNode(), context.getGraphSession()
+				.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode());
+		interpreter.set("helper", helper);
+		final BufferedReader reader = new BufferedReader(new StringReader(
+				beanShellScript));
+		String line;
+		while ((line = reader.readLine()) != null) {
+			interpreter.eval(line);
+		}
 		exampleContext = context.getGraphSession().getContext("exampleContext");
 		Assert.assertThat(exampleContext, Is.is(IsNull.notNullValue()));
 	}
