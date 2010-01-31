@@ -20,6 +20,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPha
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.bundle.language.java.bundle.test.JavaStringArtifactProcessingTest.SampleJavaArtifactRegistry;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
@@ -246,7 +247,7 @@ public class JavaPublicElementsPhaseTest {
 		}
 
 		Assert.assertThat(doSomethingMethodNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(doSomethingMethodNode, Is.is(JavaTypeClass.class));
+		Assert.assertThat(doSomethingMethodNode, Is.is(JavaMethodMethod.class));
 
 	}
 }

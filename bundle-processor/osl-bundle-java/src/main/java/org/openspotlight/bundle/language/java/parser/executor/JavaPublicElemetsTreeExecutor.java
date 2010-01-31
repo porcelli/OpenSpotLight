@@ -28,6 +28,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
@@ -492,7 +493,7 @@ public class JavaPublicElemetsTreeExecutor {
 					name);
 			putOnBothCaches(newNode, newAbstractNode);
 			session.addLink(AbstractTypeBind.class, newAbstractNode, newNode,
-					true);
+					false);
 			return newNode;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -545,8 +546,13 @@ public class JavaPublicElemetsTreeExecutor {
 	public JavaType findByQualifiedTypes(final List<JavaType> types) {
 		final StringBuilder completeName = new StringBuilder();
 		for (int i = 0, size = types.size(); i < size; i++) {
-			final String name = i == 0 ? types.get(i).getCompleteName() : types
-					.get(i).getSimpleName();
+			final JavaType currentType = types.get(i);
+			if (currentType == null) {
+				continue;// FIXME for some mysterious, the last element here is
+				// null
+			}
+			final String name = i == 0 ? currentType.getCompleteName()
+					: currentType.getSimpleName();
 			completeName.append(name);
 			if (i != size - 1) {
 				completeName.append('.');
@@ -910,7 +916,8 @@ public class JavaPublicElemetsTreeExecutor {
 				javaMethod = peek.addNode(JavaMethodConstructor.class,
 						complMethodName);
 			} else {
-				javaMethod = peek.addNode(JavaMethod.class, complMethodName);
+				javaMethod = peek.addNode(JavaMethodMethod.class,
+						complMethodName);
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("creating method " + complMethodName
@@ -946,10 +953,10 @@ public class JavaPublicElemetsTreeExecutor {
 					JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
 							.toString().replaceAll("[$]", "."));
 
-			javaMethod.setCompleteQualifiedName(qualifiedName + "."
-					+ complMethodName);
+			javaMethod
+					.setCompleteQualifiedName(qualifiedName + complMethodName);
 
-			javaMethod.setQualifiedName(qualifiedName + "." + string);
+			javaMethod.setQualifiedName(qualifiedName + string);
 			if (annotations35 != null) {
 				for (final JavaType annotation : annotations35) {
 					session.addLink(AnottatedBy.class, javaMethod, annotation,
