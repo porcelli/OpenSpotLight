@@ -190,4 +190,11 @@ public abstract class SLQLVariable implements Serializable {
             Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
         }
     }
+    
+    /**
+     * Returns the variable type.
+     * 
+     * @return parameter type
+     */
+    public abstract SLQLVariableType getType();
 }
