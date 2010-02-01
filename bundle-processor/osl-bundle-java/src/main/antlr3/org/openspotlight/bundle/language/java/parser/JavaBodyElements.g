@@ -68,9 +68,6 @@ import org.openspotlight.bundle.language.java.parser.executor.TypeParameterDto;
 
 @members{
     private JavaBodyElementsExecutor executor;
-    private final List<CommonTree> importedList = new ArrayList<CommonTree>();
-    private final Stack<CommonTree> elementStack = new Stack<CommonTree>();
-    
     public void setExecutor(JavaBodyElementsExecutor executor){
         this.executor = executor;
     } 
@@ -85,13 +82,13 @@ compilationUnit
 
 packageDeclaration
     :   ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-        { stack.push($qualifiedName.start); }
+        { executor.pushToElementStack($qualifiedName.start); }
     |	  
     ;
 
 importDeclaration
     :   ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
-        { importedList.push($qualifiedName.start); }
+        { executor.addToImportedList($qualifiedName.start); }
     ;
     
 typeDeclaration
@@ -120,17 +117,24 @@ modifier
     ;
     
 normalClassDeclaration
-    @after{ stack.pop(); }
-    :   ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements? classBody)
-        { stack.push($Identifier); }
+    @after{ executor.popFromElementStack(); }
+    :   ^(CLASS_DECLARATION Identifier 
+        { executor.pushToElementStack($Identifier); }
+            modifiers annotations? typeParameters? (normalClassExtends 
+        { executor.addExtends(executor.peek(), $normalClassExtends.treeElement); }
+            )? (normalClassImplements
+        { executor.addImplements(executor.peek(), $normalClassImplements.treeElements); }    
+            )? classBody)
     ;
 
-normalClassExtends
-    :    ^(EXTENDS type)
+normalClassExtends returns [CommonTree treeElement]
+    :    ^(EXTENDS type 
+         { $treeElement = $type.treeElement; })
     ;
 
-normalClassImplements
-    :    ^(IMPLEMENTS typeList)
+normalClassImplements returns [List<CommonTree> treeElements]
+    :    ^(IMPLEMENTS typeList 
+        { $treeElements=$typeList.treeElements; })
     ;
 
 typeParameters
@@ -150,13 +154,18 @@ typeBound
     ;
 
 enumDeclaration
-    @after{ stack.pop(); }
-    :   ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements? enumBody)
-        { stack.push($Identifier); }
+    @after{ executor.popFromElementStack(); }
+    :   ^(ENUM_DECLARATION Identifier
+        { executor.pushToElementStack($Identifier); }
+            modifiers annotations? (enumDeclarationImplements 
+        { executor.addImplements(executor.peek(), $enumDeclarationImplements.treeElements); }    
+            )? enumBody)
     ;
 
-enumDeclarationImplements
-    :   ^(IMPLEMENTS typeList)
+
+enumDeclarationImplements returns [List<CommonTree> treeElements]
+    :   ^(IMPLEMENTS typeList 
+        { $treeElements=$typeList.treeElements; } )
     ;
 
 enumBody
@@ -168,17 +177,23 @@ enumConstant
     ;
     
 normalInterfaceDeclaration
-    @after{ stack.pop(); }
-    :   ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
-        { stack.push($Identifier); }
+    @after{ executor.popFromElementStack(); }
+    :   ^(INTERFACE_DECLARATION Identifier 
+        { executor.pushToElementStack($Identifier); }    
+        modifiers annotations? typeParameters? (normalInterfaceDeclarationExtends 
+        { executor.addExtends(executor.peek(), $normalInterfaceDeclarationExtends.treeElements); }
+         )? interfaceBody)
     ;
 
-normalInterfaceDeclarationExtends
-    :   ^(EXTENDS typeList)
+normalInterfaceDeclarationExtends returns [List<CommonTree> treeElements]
+    :   ^(EXTENDS typeList 
+        { $treeElements = $typeList.treeElements; })
     ;
 
-typeList
-    :   ^(TYPE_LIST type+)
+typeList returns [List<CommonTree> treeElements]
+    @init{ $treeElements = new ArrayList<CommonTree>(); }
+    :   ^(TYPE_LIST (type 
+        { $treeElements.add($type.treeElement); } )+)
     ;
     
 classBody
@@ -190,10 +205,23 @@ interfaceBody
     ;
 
 typeBodyDeclaration
-    :   ^(INITIALIZER_BLOCK STATIC? block)
-    |   ^(CONSTRUCTOR_DECLARATION Identifier modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
-    |   ^(FIELD_DECLARATION modifiers annotations? type variableDeclarator+)
-    |   ^(METHOD_DECLARATION Identifier modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
+    @init{ boolean addedToStack=false; }
+    @after{ if(addedToStack) { executor.popFromElementStack(); }; }
+    :   ^(INITIALIZER_BLOCK STATIC? block 
+        { executor.pushToElementStack(executor.createBlockAndReturnTree(executor.peek(), $STATIC!=null)); 
+          addedToStack=true; }
+           )
+    |   ^(CONSTRUCTOR_DECLARATION Identifier 
+        { executor.pushToElementStack($Identifier)); 
+          addedToStack=true; }
+            modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
+    |   ^(FIELD_DECLARATION modifiers annotations? type (variableDeclarator 
+        { executor.addField(executor.peek(),$variableDeclarator.treeElement); }
+            )+)
+    |   ^(METHOD_DECLARATION Identifier 
+        { executor.pushToElementStack($Identifier)); 
+          addedToStack=true; }
+            modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
     |   ^(INNER_DECLARATION typeDeclaration)
     ;
 
@@ -201,8 +229,10 @@ typeBodyDeclarationThrows
     :   ^(THROWS type+)
     ;
 
-variableDeclarator
-    :   ^(VARIABLE_DECLARATION_FRAGMENT Identifier ARRAY_DIMENSION? variableDeclaratorAssign?) 
+variableDeclarator returns [CommonTree treeElement]
+    :   ^(VARIABLE_DECLARATION_FRAGMENT Identifier 
+        { $treeElement=$Identifier; }
+           ARRAY_DIMENSION? variableDeclaratorAssign?) 
     ;
 
 variableDeclaratorAssign
@@ -218,13 +248,25 @@ arrayInitializer
     :   ^(ARRAY_INITIALIZER variableInitializer* RIGHT_CURLY)
     ;
 
-type
-    :   ^(ARRAY_TYPE type ARRAY_DIMENSION)
-    |   ^(QUALIFIED_TYPE type (DOT type)+)
-    |   ^(PARAMETERIZED_TYPE type typeArguments)
-    |   ^(WILDCARD_TYPE QUESTION (^(EXTENDS type)|^(SUPER type))? )
-    |   ^(SIMPLE_TYPE (Identifier|VOID))
-    |   ^(PRIMITIVE_TYPE primitiveType)
+type returns [CommonTree treeElement]
+    :   ^(ARRAY_TYPE t1=type ARRAY_DIMENSION 
+        { $treeElement = $t1.start; } )
+    |   ^(QUALIFIED_TYPE t2=type 
+        { $treeElement = $t2.start; } 
+            (DOT t3=type)+)
+    |   ^(PARAMETERIZED_TYPE t4=type 
+        { $treeElement = $t4.start; } 
+            typeArguments)
+    |   ^(WILDCARD_TYPE QUESTION (^(EXTENDS t5=type 
+        { $treeElement = $t5.start; } 
+             )|^(SUPER t6=type 
+        { $treeElement = $t6.start; } ))? )
+    |   ^(SIMPLE_TYPE (t7=Identifier 
+        { $treeElement = $t7; } 
+             |t8=VOID 
+        { $treeElement = $t8; } ))
+    |   ^(t9=PRIMITIVE_TYPE primitiveType 
+        { $treeElement = $t9; } )
     ;
 
 primitiveType
@@ -285,9 +327,11 @@ elementValueArrayInitializer
     ;
 
 annotationTypeDeclaration
-    @after{ stack.pop(); }
-    :   ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody)
-        { stack.push($Identifier); }
+    @after{ executor.popFromElementStack(); }
+    :   ^(ANNOTATION_DECLARATION Identifier 
+        { executor.pushToElementStack($Identifier); }
+            modifiers annotations? annotationTypeBody)
+        
     ;
     
 annotationTypeBody

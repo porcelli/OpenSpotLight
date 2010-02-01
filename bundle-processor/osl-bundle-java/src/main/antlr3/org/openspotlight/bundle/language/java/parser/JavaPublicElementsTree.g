@@ -246,19 +246,24 @@ arrayInitializer
     ;
 type returns [JavaType typeReturn]
     :    ^(ARRAY_TYPE tp0=type ARRAY_DIMENSION) 
-         { $typeReturn = executor.findArrayType($tp0.typeReturn, $ARRAY_DIMENSION.text); }
+         { $typeReturn = executor.findArrayType($tp0.typeReturn, $ARRAY_DIMENSION.text); 
+           executor.addLineReference($tp0.start,$typeReturn); }
     |    ^(QUALIFIED_TYPE  tp1=type 
 	       { List<JavaType> types = new ArrayList<JavaType>(); 
 	         types.add($tp1.typeReturn); } 
 	       (DOT tp2=type 
 	       { types.add($tp2.typeReturn); } )+) 
-	       { $typeReturn = executor.findByQualifiedTypes(types); }
+	       { $typeReturn = executor.findByQualifiedTypes(types); 
+	         executor.addLineReference($tp1.start,$typeReturn);}
     |    ^(PARAMETERIZED_TYPE tp3=type typeArguments 
-         { $typeReturn = executor.findParamerizedType($tp3.typeReturn,$typeArguments.resultList); } )
+         { $typeReturn = executor.findParamerizedType($tp3.typeReturn,$typeArguments.resultList); 
+           executor.addLineReference($tp3.start,$typeReturn); } )
     |    ^(WILDCARD_TYPE QUESTION (^(EXTENDS tp4=type 
-         { $typeReturn = executor.findExtendsParameterizedType($tp4.typeReturn); })
+         { $typeReturn = executor.findExtendsParameterizedType($tp4.typeReturn); 
+           executor.addLineReference($tp4.start,$typeReturn); })
          |^(SUPER tp5=type 
-         { $typeReturn = executor.findSuperParameterizedType($tp5.typeReturn); }))? )
+         { $typeReturn = executor.findSuperParameterizedType($tp5.typeReturn); 
+           executor.addLineReference($tp5.start,$typeReturn); }))? )
     |    ^(SIMPLE_TYPE (Identifier 
 	       { $typeReturn = executor.findSimpleType($Identifier.text);
 	         executor.addLineReference($Identifier,$typeReturn);} 
