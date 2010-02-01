@@ -54,7 +54,29 @@ options{
 
 @header {
 package org.openspotlight.bundle.language.java.parser;
+import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
+import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
+import org.openspotlight.graph.SLNode;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Stack;
+import org.openspotlight.bundle.language.java.parser.executor.TypeParameterDto;
 }
+
+@members{
+    private JavaBodyElementsExecutor executor;
+    private final List<CommonTree> importedList = new ArrayList<CommonTree>();
+    private final Stack<CommonTree> elementStack = new Stack<CommonTree>();
+    
+    public void setExecutor(JavaBodyElementsExecutor executor){
+        this.executor = executor;
+    } 
+    
+}
+
 
 // starting point for parsing a java file
 compilationUnit
@@ -63,12 +85,13 @@ compilationUnit
 
 packageDeclaration
     :   ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-    |	{}
+        { stack.push($qualifiedName.start); }
+    |	  
     ;
 
 importDeclaration
     :   ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
-    	{		}
+        { importedList.push($qualifiedName.start); }
     ;
     
 typeDeclaration
@@ -97,7 +120,9 @@ modifier
     ;
     
 normalClassDeclaration
+    @after{ stack.pop(); }
     :   ^(CLASS_DECLARATION Identifier modifiers annotations? typeParameters? normalClassExtends? normalClassImplements? classBody)
+        { stack.push($Identifier); }
     ;
 
 normalClassExtends
@@ -125,7 +150,9 @@ typeBound
     ;
 
 enumDeclaration
+    @after{ stack.pop(); }
     :   ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements? enumBody)
+        { stack.push($Identifier); }
     ;
 
 enumDeclarationImplements
@@ -141,7 +168,9 @@ enumConstant
     ;
     
 normalInterfaceDeclaration
+    @after{ stack.pop(); }
     :   ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
+        { stack.push($Identifier); }
     ;
 
 normalInterfaceDeclarationExtends
@@ -256,7 +285,9 @@ elementValueArrayInitializer
     ;
 
 annotationTypeDeclaration
+    @after{ stack.pop(); }
     :   ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody)
+        { stack.push($Identifier); }
     ;
     
 annotationTypeBody
