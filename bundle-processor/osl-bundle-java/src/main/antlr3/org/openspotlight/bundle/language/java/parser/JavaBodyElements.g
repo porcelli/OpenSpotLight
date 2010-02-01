@@ -357,7 +357,9 @@ blockStatement
     ;
 
 localVariableDeclaration
-    :   ^(VARIABLE_DECLARATION modifiers annotations? type variableDeclarator+)
+    :   ^(VARIABLE_DECLARATION modifiers annotations? type (variableDeclarator  
+        { executor.addLocalVariableDeclaration(executor.peek(), $type.treeElement, $variableDeclarator.treeElement ); }
+            )+)
     ;
     
 statement
