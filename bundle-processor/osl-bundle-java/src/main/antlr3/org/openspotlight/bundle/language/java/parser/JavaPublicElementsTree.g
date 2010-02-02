@@ -458,7 +458,7 @@ expression
     |    ^(NULL_LITERAL NULL)
     ;
 anonymousClassDeclaration [JavaType superType] returns [JavaType typeElement]
-@init{ JavaType $typeElement = executor.createAnonymousClass(stack.peek(),$superType); 
+@init{ $typeElement = executor.createAnonymousClass(stack.peek(),$superType); 
        stack.push($typeElement); }
 @after{ stack.pop(); }
     :    ^(ANONYMOUS_CLASS_DECLARATION classBody)

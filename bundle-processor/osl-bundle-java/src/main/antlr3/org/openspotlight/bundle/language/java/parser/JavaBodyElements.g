@@ -212,14 +212,14 @@ typeBodyDeclaration
           addedToStack=true; }
            )
     |   ^(CONSTRUCTOR_DECLARATION Identifier 
-        { executor.pushToElementStack($Identifier)); 
+        { executor.pushToElementStack($Identifier); 
           addedToStack=true; }
             modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
     |   ^(FIELD_DECLARATION modifiers annotations? type (variableDeclarator 
         { executor.addField(executor.peek(),$variableDeclarator.treeElement); }
             )+)
     |   ^(METHOD_DECLARATION Identifier 
-        { executor.pushToElementStack($Identifier)); 
+        { executor.pushToElementStack($Identifier); 
           addedToStack=true; }
             modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
     |   ^(INNER_DECLARATION typeDeclaration)
@@ -370,6 +370,8 @@ localVariableDeclaration
     ;
     
 statement
+    @init{ executor.createStatementAndPushOnStack($statement.start); }
+    @after{ executor.popFromElementStack(); }
     :   block
     |   EMPTY_STATEMENT
     |   ^(ASSERT expression expression?)
@@ -499,7 +501,7 @@ expression returns [ExpressionDto info]
     |   ^(ARRAY_ACCESS e52=expression? dimensionValue 
         { $info=executor.createArrayExpression($e52.info); } )
     |   ^(CLASS_INSTANCE_CREATION (e53=expression DOT)? t4=type a2=arguments acd1=anonymousClassDeclaration? 
-        { $info=executor.createClassInstanceExpression($e53.info, $t4.treeElement, $a2.expressions, $acd1.needsToPutSomethingHere); } )
+        { $info=executor.createClassInstanceExpression($e53.info, $t4.treeElement, $a2.expressions, $acd1.start); } )
     |   ^(ARRAY_CREATION t5=type dimensionValue+ arrayInitializer? 
         { $info=executor.createArrayExpression($t5.treeElement,$arrayInitializer.info); } )
     |   ^(QUALIFIED_NAME
