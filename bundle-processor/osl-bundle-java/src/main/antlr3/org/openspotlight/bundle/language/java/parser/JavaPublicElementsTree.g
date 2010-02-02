@@ -445,7 +445,8 @@ expression
     |    ^(TYPE_LITERAL type DOT CLASS)
     |    ^(THIS_EXPRESSION (expression DOT)? THIS)
     |    ^(ARRAY_ACCESS expression? dimensionValue)
-    |    ^(CLASS_INSTANCE_CREATION (expression DOT)? type arguments anonymousClassDeclaration?)
+    |    ^(CLASS_INSTANCE_CREATION (expression DOT)? superType1=type arguments (anonymousClassDeclaration[superType1]  
+         { executor.addLineReference($anonymousClassDeclaration.start,$anonymousClassDeclaration.typeElement); } )?)
     |    ^(ARRAY_CREATION type dimensionValue+ arrayInitializer?)
     |    ^(QUALIFIED_NAME (Identifier|THIS|expression) (DOT Identifier)*)
     |    ^(METHOD_INVOCATION (expression DOT)? Identifier typeArguments? arguments)
@@ -456,7 +457,10 @@ expression
     |    ^(BOOLEAN_LITERAL booleanLiteral)
     |    ^(NULL_LITERAL NULL)
     ;
-anonymousClassDeclaration
+anonymousClassDeclaration [JavaType superType] returns [JavaType typeElement]
+@init{ JavaType $typeElement = executor.createAnonymousClass(stack.peek(),$superType); 
+       stack.push($typeElement); }
+@after{ stack.pop(); }
     :    ^(ANONYMOUS_CLASS_DECLARATION classBody)
     ;
 assignmentOperator

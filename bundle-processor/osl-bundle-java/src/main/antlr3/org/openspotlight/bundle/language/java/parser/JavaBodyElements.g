@@ -468,7 +468,7 @@ expression returns [ExpressionDto info]
     |   ^(PREFIX_EXPRESSION e38=expression 
         { $info=executor.createNumberExpression($e38.info); } )
     |   ^(POSTFIX_EXPRESSION e39=expression (DOUBLE_PLUS|DOUBLE_MINUS) 
-        { $info=executor.createNumberExpression($e39); } )
+        { $info=executor.createNumberExpression($e39.info); } )
     |   ^(UNARY_PLUS e40=expression 
         { $info=executor.createNumberExpression($e40.info); } )
     |   ^(UNARY_MINUS e41=expression 
@@ -487,9 +487,9 @@ expression returns [ExpressionDto info]
         { $info=executor.createCastExpression($e47.info,$e48.info); } )
 
     |   ^(SUPER_CONSTRUCTOR_INVOCATION e48=expression? a1=arguments 
-        { $info=executor.createSuperConstructorExpression($e48.info,$a1.elements); } )
+        { $info=executor.createSuperConstructorExpression($e48.info,$a1.expressions); } )
     |   ^(SUPER_METHOD_INVOCATION e49=expression? DOT id1=Identifier ta1=typeArguments? a2=arguments 
-        { $info=executor.createSuperInvocationExpression($e49.info,$ta.treeElements,$a2.elements,$id1.text); } )
+        { $info=executor.createSuperInvocationExpression($e49.info,$ta1.treeElements,$a2.expressions,$id1.text); } )
     |   ^(SUPER_FIELD_ACCESS e50=expression? DOT id2=Identifier 
         { $info=executor.createSuperFieldExpression($e50.info,$id1.text); } )
     |   ^(TYPE_LITERAL t3=type DOT CLASS 
@@ -501,19 +501,37 @@ expression returns [ExpressionDto info]
     |   ^(CLASS_INSTANCE_CREATION (e53=expression DOT)? t4=type a2=arguments acd1=anonymousClassDeclaration? 
         { $info=executor.createClassInstanceExpression($e53.info, $t4.treeElement, $a2.expressions, $acd1.needsToPutSomethingHere); } )
     |   ^(ARRAY_CREATION t5=type dimensionValue+ arrayInitializer? 
-        { $info=executor.createArrayExpression($t5.info); } )
-    |   ^(QUALIFIED_NAME (Identifier|THIS|expression) (DOT Identifier)*)
-    |   ^(METHOD_INVOCATION (expression DOT)? Identifier typeArguments? arguments)
+        { $info=executor.createArrayExpression($t5.treeElement,$arrayInitializer.info); } )
+    |   ^(QUALIFIED_NAME
+        { StringBuilder sb = new StringBuilder(); }
+            (id2=Identifier 
+            { sb.append($id2.text); }
+            |THIS
+            { sb.append($THIS.text); }
+            |e54=expression) (DOT id3=Identifier
+            { sb.append('.');
+              sb.append($id3.text); } )*
+        { $info=executor.createExpressionFromQualified(sb.toString,$e54.info); } )
+    |   ^(METHOD_INVOCATION (e55=expression DOT)? id4=Identifier ta2=typeArguments? a3=arguments 
+        { $info=executor.createMethodInvocation($e55.info,$id4.text,$ta2.treeElements,$a3.expressions); } )
     
-    |   ^(INTEGER_LITERAL integerLiteral)
-    |   ^(FLOATING_POINT_LITERAL FloatingPointLiteral)
-    |   ^(CHARACTER_LITERAL StringLiteral)
-    |   ^(STRING_LITERAL StringLiteral)
-    |   ^(BOOLEAN_LITERAL booleanLiteral)
-    |   ^(NULL_LITERAL NULL)
+    |   ^(INTEGER_LITERAL integerLiteral 
+        { $info=executor.createIntegerLiteral(); } )
+    |   ^(FLOATING_POINT_LITERAL FloatingPointLiteral 
+        { $info=executor.createFloatLiteral(); } )
+    |   ^(CHARACTER_LITERAL StringLiteral 
+        { $info=executor.createCharLiteral(); } )
+    |   ^(STRING_LITERAL StringLiteral 
+        { $info=executor.createStringLiteral(); } )
+    |   ^(BOOLEAN_LITERAL booleanLiteral 
+        { $info=executor.createBooleanLiteral(); } )
+    |   ^(NULL_LITERAL NULL 
+        { $info=executor.createNullLiteral(); } )
     ;
 
 anonymousClassDeclaration
+    @after{ executor.popFromElementStack(); }
+    @init{ executor.pushToElementStack($anonymousClassDeclaration.start); }
 	:	^(ANONYMOUS_CLASS_DECLARATION classBody)
 	;
 
@@ -563,5 +581,5 @@ dimensionValue
 arguments returns [List<ExpressionDto> expressions]
     @init{ $expressions=Collections.emptyList(); }
     :   ^(ARGUMENTS (expressionList 
-        {$expresions=$expressionList.expressions; } )?)
+        {$expressions=$expressionList.expressions; } )?)
     ;
