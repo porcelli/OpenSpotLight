@@ -445,7 +445,7 @@ expression
     |    ^(TYPE_LITERAL type DOT CLASS)
     |    ^(THIS_EXPRESSION (expression DOT)? THIS)
     |    ^(ARRAY_ACCESS expression? dimensionValue)
-    |    ^(CLASS_INSTANCE_CREATION (expression DOT)? superType1=type arguments (anonymousClassDeclaration[superType1]  
+    |    ^(CLASS_INSTANCE_CREATION (expression DOT)? superType1=type arguments (anonymousClassDeclaration[superType1.typeReturn]  
          { executor.addLineReference($anonymousClassDeclaration.start,$anonymousClassDeclaration.typeElement); } )?)
     |    ^(ARRAY_CREATION type dimensionValue+ arrayInitializer?)
     |    ^(QUALIFIED_NAME (Identifier|THIS|expression) (DOT Identifier)*)

@@ -54,16 +54,7 @@ options{
 
 @header {
 package org.openspotlight.bundle.language.java.parser;
-import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
-import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
-import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
-import org.openspotlight.bundle.language.java.metamodel.node.*;
-import org.openspotlight.graph.SLNode;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Stack;
-import org.openspotlight.bundle.language.java.parser.executor.TypeParameterDto;
+import java.util.Collections;
 }
 
 @members{
@@ -244,7 +235,7 @@ variableInitializer returns [ExpressionDto info]
     :   arrayInitializer 
         { $info=$arrayInitializer.info; } 
     |   expression 
-        { $info=expression.info; } 
+        { $info=$expression.info; } 
     ;
 
 arrayInitializer returns [ExpressionDto info]
@@ -434,9 +425,9 @@ expression returns [ExpressionDto info]
     |   ^(PARENTHESIZED_EXPRESSION e3=expression
         { $info=$e3.info; } )
     |   ^(assignmentOperator e4=expression e5=expression
-        { $info=createAssignExpression($e4.info, $e5.info); } )
+        { $info=executor.createAssignExpression($e4.info, $e5.info); } )
     |   ^(CONDITIONAL_EXPRESSION e6=expression e7=expression e8=expression
-        { $info=createConditionalExpression($e6.info, $e7.info, $e8.info); } )
+        { $info=executor.createConditionalExpression($e6.info, $e7.info, $e8.info); } )
     |   ^(DOUPLE_PIPE e9=expression e10=expression 
         { $info=executor.createBooleanExpression($e9.info,$e10.info); } )
     |   ^(DOUBLE_AMPERSAND e11=expression e12=expression 
@@ -457,7 +448,7 @@ expression returns [ExpressionDto info]
         { $info=executor.createBooleanExpression($e24.info,$e25.info); } )
     |   ^(shiftOp e26=expression e27=expression 
         { $info=executor.createNumberExpression($e26.info,$e27.info); } )
-    |   ^(PLUS ex28=expression ex29=expression 
+    |   ^(PLUS e28=expression e29=expression 
         { $info=executor.createPlusExpression($e28.info,$e29.info); } )
     |   ^(MINUS e30=expression e31=expression 
         { $info=executor.createNumberExpression($e30.info,$e31.info); } )
@@ -513,7 +504,7 @@ expression returns [ExpressionDto info]
             |e54=expression) (DOT id3=Identifier
             { sb.append('.');
               sb.append($id3.text); } )*
-        { $info=executor.createExpressionFromQualified(sb.toString,$e54.info); } )
+        { $info=executor.createExpressionFromQualified(sb.toString(),$e54.info); } )
     |   ^(METHOD_INVOCATION (e55=expression DOT)? id4=Identifier ta2=typeArguments? a3=arguments 
         { $info=executor.createMethodInvocation($e55.info,$id4.text,$ta2.treeElements,$a3.expressions); } )
     
