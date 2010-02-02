@@ -235,17 +235,23 @@ variableDeclarator returns [CommonTree treeElement]
            ARRAY_DIMENSION? variableDeclaratorAssign?) 
     ;
 
-variableDeclaratorAssign
-    :   ^(ASSIGN variableInitializer)
+variableDeclaratorAssign returns [ExpressionDto info]
+    :   ^(ASSIGN variableInitializer 
+        { $info=$variableInitializer.info; } )
     ;
 
-variableInitializer
-    :   arrayInitializer
-    |   expression
+variableInitializer returns [ExpressionDto info]
+    :   arrayInitializer 
+        { $info=$arrayInitializer.info; } 
+    |   expression 
+        { $info=expression.info; } 
     ;
 
-arrayInitializer
-    :   ^(ARRAY_INITIALIZER variableInitializer* RIGHT_CURLY)
+arrayInitializer returns [ExpressionDto info]
+    @init{ List<ExpressionDto> expressions = new ArrayList<ExpressionDto>(); }
+    @after{ $info=executor.createFromArrayInitialization(expressions); }
+    :   ^(ARRAY_INITIALIZER (variableInitializer 
+        { expressions.add($variableInitializer.info); } )* RIGHT_CURLY)
     ;
 
 type returns [CommonTree treeElement]
@@ -280,8 +286,9 @@ primitiveType
     |   DOUBLE
     ;
 
-typeArguments
-    :   ^(TYPE_ARGUMENTS typeList)
+typeArguments returns [List<CommonTree> treeElements]
+    :   ^(TYPE_ARGUMENTS typeList 
+        { $treeElements=$typeList.treeElements; } )
     ;
 
 formalParameters
@@ -410,8 +417,10 @@ switchLabel
 
 // EXPRESSIONS
 
-expressionList
-    :   ^(EXPR_LIST expression+)
+expressionList returns [List<ExpressionDto> expressions]
+    @init{ $expressions = new ArrayList(); }
+    :   ^(EXPR_LIST (expression 
+        { $expressions.add($expression.info); } )+)
     ;
 
 //ExpressionDto[JavaType resultType, SLNode leaf, List<ExpressionDto> participants]
@@ -477,14 +486,22 @@ expression returns [ExpressionDto info]
     |   ^(CAST_EXPRESSION e47=expression e48=expression 
         { $info=executor.createCastExpression($e47.info,$e48.info); } )
 
-    |   ^(SUPER_CONSTRUCTOR_INVOCATION expression? arguments)
-    |   ^(SUPER_METHOD_INVOCATION expression? DOT Identifier typeArguments? arguments)
-    |   ^(SUPER_FIELD_ACCESS expression? DOT Identifier)
-    |   ^(TYPE_LITERAL type DOT CLASS)
-    |   ^(THIS_EXPRESSION (expression DOT)? THIS)
-    |   ^(ARRAY_ACCESS expression? dimensionValue)
-    |   ^(CLASS_INSTANCE_CREATION (expression DOT)? type arguments anonymousClassDeclaration?)
-    |   ^(ARRAY_CREATION type dimensionValue+ arrayInitializer?)
+    |   ^(SUPER_CONSTRUCTOR_INVOCATION e48=expression? a1=arguments 
+        { $info=executor.createSuperConstructorExpression($e48.info,$a1.elements); } )
+    |   ^(SUPER_METHOD_INVOCATION e49=expression? DOT id1=Identifier ta1=typeArguments? a2=arguments 
+        { $info=executor.createSuperInvocationExpression($e49.info,$ta.treeElements,$a2.elements,$id1.text); } )
+    |   ^(SUPER_FIELD_ACCESS e50=expression? DOT id2=Identifier 
+        { $info=executor.createSuperFieldExpression($e50.info,$id1.text); } )
+    |   ^(TYPE_LITERAL t3=type DOT CLASS 
+        { $info=executor.createTypeLiteralExpression($t3.treeElement); } )
+    |   ^(THIS_EXPRESSION (e51=expression DOT)? THIS 
+        { $info=executor.createThisExpression($e51.info); } )
+    |   ^(ARRAY_ACCESS e52=expression? dimensionValue 
+        { $info=executor.createArrayExpression($e52.info); } )
+    |   ^(CLASS_INSTANCE_CREATION (e53=expression DOT)? t4=type a2=arguments acd1=anonymousClassDeclaration? 
+        { $info=executor.createClassInstanceExpression($e53.info, $t4.treeElement, $a2.expressions, $acd1.needsToPutSomethingHere); } )
+    |   ^(ARRAY_CREATION t5=type dimensionValue+ arrayInitializer? 
+        { $info=executor.createArrayExpression($t5.info); } )
     |   ^(QUALIFIED_NAME (Identifier|THIS|expression) (DOT Identifier)*)
     |   ^(METHOD_INVOCATION (expression DOT)? Identifier typeArguments? arguments)
     
@@ -543,6 +560,8 @@ dimensionValue
     :   ^(DIMENSION expression?)
     ;
 
-arguments
-    :   ^(ARGUMENTS expressionList?)
+arguments returns [List<ExpressionDto> expressions]
+    @init{ $expressions=Collections.emptyList(); }
+    :   ^(ARGUMENTS (expressionList 
+        {$expresions=$expressionList.expressions; } )?)
     ;
