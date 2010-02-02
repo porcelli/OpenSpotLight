@@ -364,7 +364,7 @@ localVariableDeclaration
     
 statement
     :   block
-    |	EMPTY_STATEMENT
+    |   EMPTY_STATEMENT
     |   ^(ASSERT expression expression?)
     |   ^(IF expression statement statementElse?)
     |   ^(ENHANCED_FOR localVariableDeclaration expression statement)
@@ -414,37 +414,68 @@ expressionList
     :   ^(EXPR_LIST expression+)
     ;
 
-expression
-    :   ^(BOOLEAN_EXPRESSION expression)
-    |   ^(EXPRESSION expression)
-    |   ^(PARENTHESIZED_EXPRESSION expression)
-    |   ^(assignmentOperator expression expression)
-    |   ^(CONDITIONAL_EXPRESSION expression expression expression)
-    |   ^(DOUPLE_PIPE expression expression)
-    |   ^(DOUBLE_AMPERSAND expression expression)
-    |   ^(PIPE expression expression)
-    |   ^(CIRCUMFLEX expression expression)
-    |   ^(AMPERSAND expression expression)
-    |   ^(EQUALS expression expression)
-    |   ^(EXCLAMATION_EQUALS expression expression)
-    |   ^(INSTANCEOF expression type)
-    |   ^(relationalOp expression expression)
-    |   ^(shiftOp expression expression)
-    |   ^(PLUS ex1=expression expression)
-    |   ^(MINUS expression expression)
-    |   ^(STAR expression expression)
-    |   ^(SLASH expression expression)
-    |   ^(PERCENT expression expression)
-    |   ^(PREFIX_EXPRESSION expression)
-    |   ^(POSTFIX_EXPRESSION expression (DOUBLE_PLUS|DOUBLE_MINUS))
-    |   ^(UNARY_PLUS expression)
-    |   ^(UNARY_MINUS expression)
-    |   ^(DOUBLE_PLUS expression)
-    |   ^(DOUBLE_MINUS expression)
-    |   ^(TILDE expression)
-    |   ^(EXCLAMATION expression)
-    |   ^(CAST_TYPE type expression)
-    |   ^(CAST_EXPRESSION expression expression)
+//ExpressionDto[JavaType resultType, SLNode leaf, List<ExpressionDto> participants]
+expression returns [ExpressionDto info]
+    :   ^(BOOLEAN_EXPRESSION e1=expression 
+        { $info=executor.createBooleanExpression($e1.info); } )
+    |   ^(EXPRESSION e2=expression 
+        { $info=$e2.info; } )
+    |   ^(PARENTHESIZED_EXPRESSION e3=expression
+        { $info=$e3.info; } )
+    |   ^(assignmentOperator e4=expression e5=expression
+        { $info=createAssignExpression($e4.info, $e5.info); } )
+    |   ^(CONDITIONAL_EXPRESSION e6=expression e7=expression e8=expression
+        { $info=createConditionalExpression($e6.info, $e7.info, $e8.info); } )
+    |   ^(DOUPLE_PIPE e9=expression e10=expression 
+        { $info=executor.createBooleanExpression($e9.info,$e10.info); } )
+    |   ^(DOUBLE_AMPERSAND e11=expression e12=expression 
+        { $info=executor.createBooleanExpression($e11.info,$e12.info); } )
+    |   ^(PIPE e13=expression e14=expression 
+        { $info=executor.createBinaryExpression($e13.info,$e14.info); } )
+    |   ^(CIRCUMFLEX e15=expression e16=expression 
+        { $info=executor.createBinaryExpression($e15.info,$e16.info); } )
+    |   ^(AMPERSAND e17=expression e18=expression 
+        { $info=executor.createBinaryExpression($e17.info,$e18.info); } )
+    |   ^(EQUALS e19=expression e20=expression 
+        { $info=executor.createBooleanExpression($e19.info,$e20.info); } )
+    |   ^(EXCLAMATION_EQUALS e21=expression e22=expression 
+        { $info=executor.createBooleanExpression($e21.info,$e22.info); } )
+    |   ^(INSTANCEOF e23=expression t1=type 
+        { $info=executor.createBooleanExpression($e23.info,$t1.treeElement); } )
+    |   ^(relationalOp e24=expression e25=expression 
+        { $info=executor.createBooleanExpression($e24.info,$e25.info); } )
+    |   ^(shiftOp e26=expression e27=expression 
+        { $info=executor.createNumberExpression($e26.info,$e27.info); } )
+    |   ^(PLUS ex28=expression ex29=expression 
+        { $info=executor.createPlusExpression($e28.info,$e29.info); } )
+    |   ^(MINUS e30=expression e31=expression 
+        { $info=executor.createNumberExpression($e30.info,$e31.info); } )
+    |   ^(STAR e32=expression e33=expression 
+        { $info=executor.createNumberExpression($e32.info,$e33.info); } )
+    |   ^(SLASH e34=expression e35=expression 
+        { $info=executor.createNumberExpression($e34.info,$e35.info); } )
+    |   ^(PERCENT e36=expression e37=expression 
+        { $info=executor.createNumberExpression($e36.info,$e37.info); } )
+    |   ^(PREFIX_EXPRESSION e38=expression 
+        { $info=executor.createNumberExpression($e38.info); } )
+    |   ^(POSTFIX_EXPRESSION e39=expression (DOUBLE_PLUS|DOUBLE_MINUS) 
+        { $info=executor.createNumberExpression($e39); } )
+    |   ^(UNARY_PLUS e40=expression 
+        { $info=executor.createNumberExpression($e40.info); } )
+    |   ^(UNARY_MINUS e41=expression 
+        { $info=executor.createNumberExpression($e41.info); } )
+    |   ^(DOUBLE_PLUS e42=expression 
+        { $info=executor.createNumberExpression($e42.info); } )
+    |   ^(DOUBLE_MINUS e43=expression 
+        { $info=executor.createNumberExpression($e43.info); } )
+    |   ^(TILDE e44=expression 
+        { $info=executor.createBooleanExpression($e44.info); } )
+    |   ^(EXCLAMATION e45=expression 
+        { $info=executor.createBooleanExpression($e45.info); } )
+    |   ^(CAST_TYPE t2=type e46=expression 
+        { $info=executor.createCastExpression($e46.info,$t2.treeElement); } )
+    |   ^(CAST_EXPRESSION e47=expression e48=expression 
+        { $info=executor.createCastExpression($e47.info,$e48.info); } )
 
     |   ^(SUPER_CONSTRUCTOR_INVOCATION expression? arguments)
     |   ^(SUPER_METHOD_INVOCATION expression? DOT Identifier typeArguments? arguments)
@@ -456,6 +487,7 @@ expression
     |   ^(ARRAY_CREATION type dimensionValue+ arrayInitializer?)
     |   ^(QUALIFIED_NAME (Identifier|THIS|expression) (DOT Identifier)*)
     |   ^(METHOD_INVOCATION (expression DOT)? Identifier typeArguments? arguments)
+    
     |   ^(INTEGER_LITERAL integerLiteral)
     |   ^(FLOATING_POINT_LITERAL FloatingPointLiteral)
     |   ^(CHARACTER_LITERAL StringLiteral)
