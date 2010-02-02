@@ -55,6 +55,7 @@ options{
 @header {
 package org.openspotlight.bundle.language.java.parser;
 import java.util.Collections;
+import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
 }
 
 @members{
@@ -250,7 +251,7 @@ type returns [CommonTree treeElement]
         { $treeElement = $t1.start; } )
     |   ^(QUALIFIED_TYPE t2=type 
         { $treeElement = $t2.start; } 
-            (DOT t3=type)+)
+            (DOT type)+)
     |   ^(PARAMETERIZED_TYPE t4=type 
         { $treeElement = $t4.start; } 
             typeArguments)
@@ -411,7 +412,7 @@ switchLabel
 // EXPRESSIONS
 
 expressionList returns [List<ExpressionDto> expressions]
-    @init{ $expressions = new ArrayList(); }
+    @init{ $expressions = new ArrayList<ExpressionDto>(); }
     :   ^(EXPR_LIST (expression 
         { $expressions.add($expression.info); } )+)
     ;
