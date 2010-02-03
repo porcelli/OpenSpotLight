@@ -17,10 +17,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
+import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
@@ -49,10 +49,10 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.remote.server.UserAuthenticator;
 
-public class JavaPublicElementsPhaseTest {
+public class JavaBodyElementsPhaseTest {
 
 	public static void main(final String... args) throws Exception {
-		final JavaPublicElementsPhaseTest test = new JavaPublicElementsPhaseTest();
+		final JavaBodyElementsPhaseTest test = new JavaBodyElementsPhaseTest();
 		test.setupResources();
 		try {
 			test.shouldResoulveExpectedTokens();
@@ -157,7 +157,7 @@ public class JavaPublicElementsPhaseTest {
 				JavaLexerAndParserTypesPhase.class);
 		commonProcessor.getArtifactPhases().add(
 				JavaParserPublicElementsPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaTreePhase.class);
+		commonProcessor.getArtifactPhases().add(JavaBodyElementsPhase.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();
