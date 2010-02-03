@@ -74,7 +74,7 @@ compilationUnit
 
 packageDeclaration
     :   ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-        { executor.pushToElementStack($qualifiedName.start); }
+        { executor.pushToElementStack($packageDeclaration.start); }
     |	  
     ;
 

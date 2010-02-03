@@ -33,6 +33,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstruct
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
@@ -149,6 +150,8 @@ public class JavaPublicElemetsTreeExecutor {
 	private final Map<SLNode, SLNode> concreteAbstractCache = new HashMap<SLNode, SLNode>();
 	private final Map<SLNode, SLNode> abstractConcreteCache = new HashMap<SLNode, SLNode>();
 
+	private final int currentAnonymousInnerClassName = 1;
+
 	public JavaPublicElemetsTreeExecutor(final SLNode currentContext,
 			final SLGraphSession session, final String completeArtifactName,
 			final String artifactVersion) throws Exception {
@@ -209,9 +212,22 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 	}
 
+	public SLNode createAnnotation(final SLNode peek, final String string,
+			final List<JavaModifier> modifiers64,
+			final List<JavaType> annotations65) {
+		return createInnerTypeWithSateliteData(peek, string, modifiers64,
+				annotations65, null, null, JavaTypeAnnotation.class, null);
+	}
+
 	public JavaType createAnonymousClass(final SLNode peek,
 			final JavaType superType) {
-		throw new UnsupportedOperationException();
+		try {
+			return createInnerTypeWithSateliteData(peek, peek.getName() + "$"
+					+ currentAnonymousInnerClassName, null, null, superType,
+					null, JavaTypeClass.class, null);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public JavaTypeEnum createEnum(final SLNode parent, final String name,
@@ -1099,7 +1115,8 @@ public class JavaPublicElemetsTreeExecutor {
 		return type;
 	}
 
-	public JavaPackage packageDeclaration(final String string) {
+	public JavaPackage packageDeclaration(final String string,
+			final CommonTree tree) {
 		final String packageName = string == null ? JavaConstants.DEFAULT_PACKAGE
 				: string;
 		if (string != null) {
@@ -1108,6 +1125,7 @@ public class JavaPublicElemetsTreeExecutor {
 		importDeclaration(currentContext, false, true, "java.lang");
 		currentPackage = this.createNodeOnBothContexts(JavaPackage.class,
 				packageName);
+		addLineReference(tree, currentPackage);
 		return currentPackage;
 	}
 

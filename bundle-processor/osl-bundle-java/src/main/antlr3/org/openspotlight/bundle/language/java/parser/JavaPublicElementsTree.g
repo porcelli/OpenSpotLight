@@ -85,8 +85,8 @@ compilationUnit
     ;
 packageDeclaration
     :    ^(PACKAGE_DECLARATION annotations? PACKAGE qualifiedName)
-	       { stack.push(executor.packageDeclaration($qualifiedName.name)); }
-    |    { stack.push(executor.packageDeclaration(null)); }
+	       { stack.push(executor.packageDeclaration($qualifiedName.name,$packageDeclaration.start)); }
+    |    { stack.push(executor.packageDeclaration(null,$packageDeclaration.start)); }
     ;
 importDeclaration
     :    ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
@@ -343,8 +343,15 @@ elementValueArrayInitializer
     :    ^(ARRAY_INITIALIZER elementValue* RIGHT_CURLY)
     ;
 annotationTypeDeclaration
-    :    ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody)
+    :    ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody
+         { SLNode node = executor.createAnnotation(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
+                                    $annotations.resultList);
+           executor.addLineReference($Identifier, node);
+           stack.push(node); } )
     ;
+      
+    
+    
 annotationTypeBody
     :    ^(ANNOTATION_BODY typeBodyDeclaration* RIGHT_CURLY)
     ;

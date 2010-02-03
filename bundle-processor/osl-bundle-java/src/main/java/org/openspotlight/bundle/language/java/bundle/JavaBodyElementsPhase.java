@@ -31,6 +31,7 @@ public class JavaBodyElementsPhase implements
 		final JavaTransientDto dto = (JavaTransientDto) artifact
 				.getTransientMap().get("DTO-PublicElementsTree");
 		final CommonTreeNodeStream stream = dto.treeNodes;
+		stream.reset();
 		final JavaBodyElements elements = new JavaBodyElements(stream);
 		elements.setExecutor(new JavaBodyElementsExecutor());
 		elements.compilationUnit();

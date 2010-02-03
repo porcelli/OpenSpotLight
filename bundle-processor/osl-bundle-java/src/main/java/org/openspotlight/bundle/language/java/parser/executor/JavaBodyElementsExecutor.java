@@ -1,25 +1,53 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.graph.SLNode;
 
 public class JavaBodyElementsExecutor {
 	private final List<CommonTree> importedList = new ArrayList<CommonTree>();
 	private final Stack<CommonTree> elementStack = new Stack<CommonTree>();
+	private final IdentityHashMap<CommonTree, CommonTree> extendedClasses = new IdentityHashMap<CommonTree, CommonTree>();
+	private final IdentityHashMap<CommonTree, List<CommonTree>> extendedInterfaces = new IdentityHashMap<CommonTree, List<CommonTree>>();
+	private final IdentityHashMap<CommonTree, List<CommonTree>> implementedInterfaces = new IdentityHashMap<CommonTree, List<CommonTree>>();
 
-	public void addExtends(final CommonTree peek,
-			final CommonTree normalClassExtends4) {
-		// TODO Auto-generated method stub
+	public void addExtends(final CommonTree peek, final CommonTree extended) {
+		Assertions.checkCondition("peekInstanceOfSLTree",
+				peek instanceof SLCommonTree);
+		final SLCommonTree typedPeek = (SLCommonTree) peek;
+		final SLNode peekNode = typedPeek.getNode();
+		Assertions.checkNotNull("peekNode", peekNode);
 
+		Assertions.checkCondition("extendedInstanceOfSLTree",
+				extended instanceof SLCommonTree);
+		final SLCommonTree typedExtended = (SLCommonTree) extended;
+		final SLNode extendedNode = typedExtended.getNode();
+		Assertions.checkNotNull("extendedNode", extendedNode);
+		extendedClasses.put(peek, extended);
 	}
 
 	public void addExtends(final CommonTree peek,
-			final List<CommonTree> normalInterfaceDeclarationExtends12) {
-		// TODO Auto-generated method stub
+			final List<CommonTree> extendeds) {
+		Assertions.checkCondition("peekInstanceOfSLTree",
+				peek instanceof SLCommonTree);
+		final SLCommonTree typedPeek = (SLCommonTree) peek;
+		final SLNode peekNode = typedPeek.getNode();
+		Assertions.checkNotNull("peekNode", peekNode);
+		for (final CommonTree extended : extendeds) {
+			Assertions.checkCondition("extendedInstanceOfSLTree",
+					extended instanceof SLCommonTree);
+			final SLCommonTree typedExtended = (SLCommonTree) extended;
+			final SLNode extendedNode = typedExtended.getNode();
+			Assertions.checkNotNull("extendedNode", extendedNode);
+		}
+		extendedInterfaces.put(peek, extendeds);
 
 	}
 
@@ -30,9 +58,20 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public void addImplements(final CommonTree peek,
-			final List<CommonTree> normalClassImplements5) {
-		// TODO Auto-generated method stub
-
+			final List<CommonTree> extendeds) {
+		Assertions.checkCondition("peekInstanceOfSLTree",
+				peek instanceof SLCommonTree);
+		final SLCommonTree typedPeek = (SLCommonTree) peek;
+		final SLNode peekNode = typedPeek.getNode();
+		Assertions.checkNotNull("peekNode", peekNode);
+		for (final CommonTree extended : extendeds) {
+			Assertions.checkCondition("extendedInstanceOfSLTree",
+					extended instanceof SLCommonTree);
+			final SLCommonTree typedExtended = (SLCommonTree) extended;
+			final SLNode extendedNode = typedExtended.getNode();
+			Assertions.checkNotNull("extendedNode", extendedNode);
+		}
+		implementedInterfaces.put(peek, extendeds);
 	}
 
 	public void addLocalVariableDeclaration(final CommonTree peek,
@@ -213,6 +252,12 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public void pushToElementStack(final CommonTree imported) {
+		Assertions.checkCondition("treeInstanceOfSLTree",
+				imported instanceof SLCommonTree);
+		final SLCommonTree typed = (SLCommonTree) imported;
+		final SLNode node = typed.getNode();
+		Assertions.checkNotNull("node", node);
+
 		elementStack.push(imported);
 	}
 
