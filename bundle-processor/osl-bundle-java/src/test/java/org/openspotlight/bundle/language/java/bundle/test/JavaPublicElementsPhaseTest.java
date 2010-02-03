@@ -1,8 +1,13 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import javax.jcr.ImportUUIDBehavior;
+import javax.jcr.Node;
 
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
@@ -13,7 +18,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
@@ -43,6 +47,7 @@ import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.remote.server.UserAuthenticator;
 
 import bsh.Interpreter;
@@ -61,8 +66,7 @@ public class JavaPublicElementsPhaseTest {
 		}
 
 		final javax.jcr.Repository repository = JcrConnectionProvider
-				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-				.getRepository();
+				.createFromData(descriptor).getRepository();
 
 		final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
 		final RemoteRepository remote = saFactory
@@ -77,7 +81,7 @@ public class JavaPublicElementsPhaseTest {
 		interpreter.set("executionContextFactory",
 				test.includedFilesContextFactory);
 		interpreter.set("executionContext", test.includedFilesContextFactory
-				.createExecutionContext("sa", "sa", test.descriptor,
+				.createExecutionContext("sa", "sa", descriptor,
 						test.repositoryName));
 
 		RemoteGraphSessionServer server = null;
@@ -92,7 +96,7 @@ public class JavaPublicElementsPhaseTest {
 				public boolean equals(final Object o) {
 					return this.getClass().equals(o.getClass());
 				}
-			}, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+			}, 7070, 60 * 1000 * 10L, descriptor);
 			System.err.println("Server waiting connections on port 7070");
 			while (true) {
 				Thread.sleep(5000);
@@ -112,17 +116,23 @@ public class JavaPublicElementsPhaseTest {
 
 	private final String username = "username";
 	private final String password = "password";
-	private final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
+	private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
 	private String repositoryName;
 
 	@Before
 	public void setupResources() throws Exception {
-
-		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+		JcrConnectionProvider.createFromData(descriptor)
 				.closeRepositoryAndCleanResources();
 
+		final SessionWithLock session = JcrConnectionProvider.createFromData(
+				descriptor).openSession();
+		final Node root = session.getRootNode();
+		final BufferedInputStream bufferedInputStream = new BufferedInputStream(
+				new FileInputStream("src/test/resources/exportedData.xml"));
+		session.importXML(root.getPath(), bufferedInputStream,
+				ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
+		session.save();
 		final Repository repo = new Repository();
 		repo.setName("name");
 		repo.setActive(true);
@@ -147,20 +157,6 @@ public class JavaPublicElementsPhaseTest {
 		repo.getGroups().add(group);
 		group.setActive(true);
 
-		final BundleProcessorType jarProcessor = new BundleProcessorType();
-		jarProcessor.setActive(true);
-		jarProcessor.setName("jar processor");
-		jarProcessor.setGroup(group);
-		jarProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		jarProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
-		group.getBundleTypes().add(jarProcessor);
-
-		final BundleSource bundleJarSource = new BundleSource();
-		jarProcessor.getSources().add(bundleJarSource);
-		bundleJarSource.setBundleProcessorType(jarProcessor);
-		bundleJarSource.setRelative("jar/");
-		bundleJarSource.getIncludeds().add("**/luni-few-classes.jar");
-
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
 		commonProcessor.setName("source processor");
@@ -183,6 +179,16 @@ public class JavaPublicElementsPhaseTest {
 						repositoryName);
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
+		try {
+			final SLNode ctxRoot = ctx.getGraphSession().getContext(
+					JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+			final SLNode objectNode = ctxRoot.getNode("java.lang").getNode(
+					"Object");
+			Assert.assertThat(objectNode, Is.is(IsNull.notNullValue()));
+
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 		ctx.closeResources();
 	}
 
