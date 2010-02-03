@@ -2,6 +2,7 @@ package org.openspotlight.bundle.language.java.bundle;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
 import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.bundle.language.java.template.BeanShellTemplateSupport;
 import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.InvocationCacheFactory;
 import org.openspotlight.common.util.Sha1;
@@ -31,6 +33,16 @@ import bsh.Interpreter;
 
 public class JavaBinaryProcessor implements
 		BundleProcessorArtifactPhase<StreamArtifact> {
+	public static String discoverContextName(final StreamArtifact artifact)
+			throws IOException, SLException {
+		artifact.getContent().reset();
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		IOUtils.copy(artifact.getContent(), baos);
+		final String uniqueContextName = UUID.nameUUIDFromBytes(
+				Sha1.getSha1Signature(baos.toByteArray())).toString();
+		return uniqueContextName;
+	}
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void beforeProcessArtifact(final StreamArtifact artifact) {
@@ -60,10 +72,7 @@ public class JavaBinaryProcessor implements
 					.createBeanShellScriptToImpotJar(types);
 			final Interpreter interpreter = new Interpreter();
 			interpreter.set("session", context.getGraphSession());
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			IOUtils.copy(artifact.getContent(), baos);
-			final String uniqueContextName = UUID.nameUUIDFromBytes(
-					Sha1.getSha1Signature(baos.toByteArray())).toString();
+			final String uniqueContextName = discoverContextName(artifact);
 			interpreter.set("currentContextName", uniqueContextName);
 			artifact.setUniqueContextName(uniqueContextName);
 			final SLContext slContext = context.getGraphSession()
@@ -71,6 +80,8 @@ public class JavaBinaryProcessor implements
 			slContext.getRootNode()
 					.setProperty(String.class, "classPathArtifactPath",
 							artifact.getArtifactCompleteName());
+			logger.info("creating context " + uniqueContextName
+					+ " for artifact " + artifact.getArtifactCompleteName());
 			final SLGraphSession session = context.getGraphSession();
 			final SLNode currentContextRootNode = session.createContext(
 					uniqueContextName).getRootNode();

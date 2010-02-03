@@ -158,6 +158,8 @@ public class JavaPublicElementsPhaseTest {
 		group.setActive(true);
 
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
+		commonProcessor.getBundleProperties().put(JavaConstants.JAR_CLASSPATH,
+				"jar/lib/apache-harmony-5.0-lib/luni-few-classes.jar");
 		commonProcessor.setActive(true);
 		commonProcessor.setName("source processor");
 		commonProcessor.setGroup(group);

@@ -110,4 +110,6 @@ public interface CurrentProcessorContext {
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException;
 
+	public Map<String, Object> getTransientProperties();
+
 }

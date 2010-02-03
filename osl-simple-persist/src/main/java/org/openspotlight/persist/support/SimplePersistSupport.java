@@ -348,12 +348,14 @@ public class SimplePersistSupport {
 			// Stream properties are handled here
 			for (final Map.Entry<String, InputStream> entry : descriptor.streamProperties
 					.entrySet()) {
+				entry.getValue().reset();
 				result.setProperty(MessageFormat.format(STREAM_PROPERTY_VALUE,
 						entry.getKey()), entry.getValue());
 			}
 			// Serialized properties are handled here
 			for (final Map.Entry<String, InputStream> entry : descriptor.serializedProperties
 					.entrySet()) {
+				entry.getValue().reset();
 				result.setProperty(MessageFormat.format(
 						SERIALIZED_PROPERTY_VALUE, entry.getKey()), entry
 						.getValue());
@@ -744,6 +746,7 @@ public class SimplePersistSupport {
 
 	private static Serializable convertStreamToSerializable(
 			final InputStream is, final SimpleNodeType parent) throws Exception {
+		is.reset();
 		final ObjectInputStream ois = new ObjectInputStream(is);
 		final Serializable serializable = (Serializable) ois.readObject();
 		setParentProperty(serializable, parent);
@@ -754,6 +757,7 @@ public class SimplePersistSupport {
 			throws IOException {
 		if (!(is instanceof ByteArrayInputStream)) {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			is.reset();
 			IOUtils.copy(is, baos);
 			is = new ByteArrayInputStream(baos.toByteArray());
 		}

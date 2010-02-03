@@ -49,7 +49,9 @@
 package org.openspotlight.federation.processing.internal.domain;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.openspotlight.common.collection.AddOnlyConcurrentMap;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
@@ -71,6 +73,9 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 	private Repository currentRepository;
 
 	private SLContext groupContext;
+
+	private final Map<String, Object> transientProperties = new AddOnlyConcurrentMap<String, Object>(
+			new ConcurrentHashMap<String, Object>());
 
 	public Map<String, String> getBundleProperties() {
 		return bundleProperties;
@@ -108,6 +113,10 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException {
 		return groupContext.getRootNode().addNode(group.getUniqueName());
+	}
+
+	public Map<String, Object> getTransientProperties() {
+		return transientProperties;
 	}
 
 	public void setBundleProperties(final Map<String, String> bundleProperties) {
