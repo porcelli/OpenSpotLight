@@ -9,7 +9,7 @@ import javax.jcr.Node;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
@@ -33,6 +33,7 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 
+@Ignore
 public class JavaExampleDataCreationTest {
 
 	public static void main(final String... args) throws Exception {
@@ -62,7 +63,6 @@ public class JavaExampleDataCreationTest {
 
 	private String repositoryName;
 
-	@Before
 	public void setupResourcesAndCreateData() throws Exception {
 		JcrConnectionProvider.createFromData(descriptor)
 				.closeRepositoryAndCleanResources();
