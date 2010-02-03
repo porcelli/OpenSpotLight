@@ -50,6 +50,7 @@
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
@@ -173,7 +174,11 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 	 */
 	private void createRepositoryRootNode(final Node repositoryRootNode)
 			throws RepositoryException {
-		rootNode = repositoryRootNode.addNode(repositoryName);
+		try {
+			rootNode = repositoryRootNode.getNode(repositoryName);
+		} catch (final PathNotFoundException e) {
+			rootNode = repositoryRootNode.addNode(repositoryName);
+		}
 	}
 
 	public Lock getLockObject() {

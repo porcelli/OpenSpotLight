@@ -282,6 +282,8 @@ public class SimplePersistSupport {
 	private static Logger logger = LoggerFactory
 			.getLogger(SimplePersistSupport.class);
 
+	private static final Value[] emptyValue = new Value[] {};
+
 	/**
 	 * Adds the or create jcr node.
 	 * 
@@ -1261,6 +1263,24 @@ public class SimplePersistSupport {
 		return nodeName;
 	}
 
+	private static Value[] getValuesAsArray(final Node jcrNode,
+			final String propertyName) {
+		try {
+			try {
+
+				return jcrNode.getProperty(propertyName).getValues();
+			} catch (final ValueFormatException e) {
+				final Value value = jcrNode.getProperty(propertyName)
+						.getValue();
+				return new Value[] { value };
+			} catch (final PathNotFoundException e) {
+				return emptyValue;
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
+
 	/**
 	 * Handle parent property.
 	 * 
@@ -1819,13 +1839,13 @@ public class SimplePersistSupport {
 		try {
 			desc.valueType = jcrNode.getProperty(valueType).getString();
 			desc.multipleType = jcrNode.getProperty(type).getString();
-			final Value[] rawValues = jcrNode.getProperty(values).getValues();
+			final Value[] rawValues = getValuesAsArray(jcrNode, values);
 			for (final Value v : rawValues) {
 				desc.valuesAsStrings.add(v.getString());
 			}
 			if (jcrNode.hasProperty(keyType)) {
 				desc.keyType = jcrNode.getProperty(keyType).getString();
-				final Value[] rawKeys = jcrNode.getProperty(keys).getValues();
+				final Value[] rawKeys = getValuesAsArray(jcrNode, keys);
 				for (final Value v : rawKeys) {
 					desc.keysAsStrings.add(v.getString());
 				}
@@ -2000,8 +2020,7 @@ public class SimplePersistSupport {
 			final String propertyName, final String propertyValue[])
 			throws RepositoryException {
 		if (jcrNode.hasProperty(propertyName)) {
-			final Value[] rawValues = jcrNode.getProperty(propertyName)
-					.getValues();
+			final Value[] rawValues = getValuesAsArray(jcrNode, propertyName);
 			final String[] values = new String[rawValues != null ? rawValues.length
 					: 0];
 			if (rawValues != null) {
@@ -2010,8 +2029,12 @@ public class SimplePersistSupport {
 				}
 			}
 			if (!java.util.Arrays.equals(values, propertyValue)) {
-				jcrNode.setProperty(propertyName, propertyValue);
-
+				try {
+					jcrNode.setProperty(propertyName, propertyValue);
+				} catch (final ValueFormatException e) {
+					jcrNode.getProperty(propertyName).remove();
+					jcrNode.setProperty(propertyName, propertyValue);
+				}
 			}
 		} else {
 			jcrNode.setProperty(propertyName, propertyValue);

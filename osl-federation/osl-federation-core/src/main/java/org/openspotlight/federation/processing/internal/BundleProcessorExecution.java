@@ -261,6 +261,8 @@ public class BundleProcessorExecution {
 						SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
 								+ repository);
 			}
+			session.save();// here the new repository nodes needs to be seen by
+							// another opened sessions
 			final Set<Group> allGroups = new HashSet<Group>();
 			final AggregateVisitor<Group> visitor = new AggregateVisitor<Group>(
 					allGroups);

@@ -209,6 +209,11 @@ public class JavaPublicElemetsTreeExecutor {
 		}
 	}
 
+	public JavaType createAnonymousClass(final SLNode peek,
+			final JavaType superType) {
+		throw new UnsupportedOperationException();
+	}
+
 	public JavaTypeEnum createEnum(final SLNode parent, final String name,
 			final List<JavaModifier> modifiers,
 			final List<JavaType> annotations, final List<JavaType> interfaces) {
