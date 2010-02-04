@@ -2,6 +2,7 @@ package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -28,6 +29,7 @@ public class JavaBodyElementsExecutor {
 	private final IdentityHashMap<SLCommonTree, SLCommonTree> extendedClasses = new IdentityHashMap<SLCommonTree, SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> extendedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> implementedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
+	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> fieldsFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private int currentBlock = 0;
 
 	public JavaBodyElementsExecutor(final String artifactName) {
@@ -76,9 +78,21 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public void addField(final CommonTree peek,
-			final CommonTree variableDeclarator17) {
-		// TODO Auto-generated method stub
-
+			final CommonTree variableDeclarator) {
+		Assertions.checkCondition("peekInstanceOfSLTree",
+				peek instanceof SLCommonTree);
+		Assertions.checkCondition("variableDeclaratorInstanceOfSLTree",
+				variableDeclarator instanceof SLCommonTree);
+		final SLCommonTree typedVariableDeclarator = (SLCommonTree) variableDeclarator;
+		final SLNode field = typedVariableDeclarator.getNode();
+		Assertions.checkNotNull("field", field);
+		final SLCommonTree typedPeek = (SLCommonTree) peek;
+		List<SLCommonTree> value = fieldsFromContext.get(peek);
+		if (value == null) {
+			value = new LinkedList<SLCommonTree>();
+			fieldsFromContext.put(typedPeek, value);
+		}
+		value.add(typedVariableDeclarator);
 	}
 
 	public void addImplements(final CommonTree peek,
@@ -245,9 +259,18 @@ public class JavaBodyElementsExecutor {
 		return null;
 	}
 
-	public void createStatementAndPushOnStack(final CommonTree commonTree) {
-		// TODO Auto-generated method stub
-
+	public void createStatement(final CommonTree peek,
+			final CommonTree statement) {
+		try {
+			final SLCommonTree typed = (SLCommonTree) peek;
+			final SLNode parent = typed.getNode();
+			final JavaBlockSimple newBlock = parent.addNode(
+					JavaBlockSimple.class, statement.getText());
+			final SLCommonTree typedStatement = (SLCommonTree) statement;
+			typedStatement.setNode(newBlock);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createStringLiteral() {

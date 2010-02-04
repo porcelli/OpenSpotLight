@@ -363,7 +363,8 @@ localVariableDeclaration
     ;
     
 statement
-    @init{ executor.createStatementAndPushOnStack($statement.start); }
+    @init{ executor.createStatement(executor.peek(),$statement.start); 
+           executor.pushToElementStack($statement.start); }
     @after{ executor.popFromElementStack(); }
     :   block
     |   EMPTY_STATEMENT
