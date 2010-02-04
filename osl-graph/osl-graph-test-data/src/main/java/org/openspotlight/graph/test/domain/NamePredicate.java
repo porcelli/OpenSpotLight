@@ -48,8 +48,6 @@
  */
 package org.openspotlight.graph.test.domain;
 
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodePredicate;
 
@@ -59,31 +57,30 @@ import org.openspotlight.graph.SLNodePredicate;
  * @author Vitor Hugo Chagas
  */
 public class NamePredicate implements SLNodePredicate {
-	
-    private static final long serialVersionUID = -8119875059064738404L;
 
-    /** The name. */
-	private String name;
-	
+	private static final long serialVersionUID = -8119875059064738404L;
+
+	/** The name. */
+	private final String name;
+
 	/**
 	 * Instantiates a new name predicate.
 	 * 
-	 * @param name the name
+	 * @param name
+	 *            the name
 	 */
-	public NamePredicate(String name) {
+	public NamePredicate(final String name) {
 		this.name = name;
 	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.apache.commons.collections15.Predicate#evaluate(java.lang.Object)
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.commons.collections15.Predicate#evaluate(java.lang.Object)
 	 */
-	public boolean evaluate(SLNode node) {
-		try {
-			return node.getName().indexOf(name) > -1;
-		}
-		catch (SLGraphSessionException e) {
-			throw new SLRuntimeException("Error on attempt to evaluate name predicate.", e);
-		}
+	public boolean evaluate(final SLNode node) {
+		return node.getName().indexOf(name) > -1;
 	}
 }

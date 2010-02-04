@@ -359,12 +359,8 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 			this.order = order;
 			if (object instanceof SLNode) {
 				final SLNode node = (SLNode) object;
-				try {
-					uniqueId = node.getID();
-				} catch (final SLGraphSessionException e) {
-					throw Exceptions.logAndReturnNew(e,
-							SLRuntimeException.class);
-				}
+				uniqueId = node.getID();
+
 				friendlyDescription = node.toString();
 				typeName = node.getClass().getInterfaces()[0].getName();
 			} else if (object instanceof ArtifactSource) {

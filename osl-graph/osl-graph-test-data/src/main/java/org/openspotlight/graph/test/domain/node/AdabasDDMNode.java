@@ -69,7 +69,7 @@ public interface AdabasDDMNode extends SLNode {
 	 *             the SL graph session exception
 	 */
 
-	public String getCaption() throws SLGraphSessionException;
+	public String getCaption();
 
 	/**
 	 * Sets the caption.

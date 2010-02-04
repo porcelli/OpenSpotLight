@@ -200,7 +200,8 @@ typeBodyDeclaration
     @init{ boolean addedToStack=false; }
     @after{ if(addedToStack) { executor.popFromElementStack(); }; }
     :   ^(INITIALIZER_BLOCK STATIC? block 
-        { executor.pushToElementStack(executor.createBlockAndReturnTree(executor.peek(), $STATIC!=null)); 
+        { CommonTree blockTree = executor.createBlockAndReturnTree(executor.peek(), $block.start, $STATIC!=null); 
+          executor.pushToElementStack(blockTree);
           addedToStack=true; }
            )
     |   ^(CONSTRUCTOR_DECLARATION Identifier 

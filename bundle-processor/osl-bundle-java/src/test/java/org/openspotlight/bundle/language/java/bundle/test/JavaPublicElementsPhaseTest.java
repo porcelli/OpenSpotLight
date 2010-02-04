@@ -15,6 +15,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
@@ -49,6 +50,7 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.remote.server.UserAuthenticator;
 
+@Ignore
 public class JavaPublicElementsPhaseTest {
 
 	public static void main(final String... args) throws Exception {

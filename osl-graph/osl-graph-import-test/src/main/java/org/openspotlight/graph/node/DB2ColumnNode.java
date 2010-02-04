@@ -69,7 +69,7 @@ public interface DB2ColumnNode extends SLNode {
      * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public String getCaption() throws SLGraphSessionException;
+    public String getCaption();
     
     /**
      * Sets the caption.

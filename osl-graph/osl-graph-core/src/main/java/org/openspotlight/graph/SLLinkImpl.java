@@ -270,12 +270,12 @@ public class SLLinkImpl implements SLLink {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getID() throws SLGraphSessionException {
+	public String getID() {
 		synchronized (lock) {
 			try {
 				return linkNode.getID();
 			} catch (final SLPersistentTreeSessionException e) {
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to retrieve link ID.", e);
 			}
 		}
@@ -299,13 +299,13 @@ public class SLLinkImpl implements SLLink {
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public Class<? extends SLLink> getLinkType() throws SLGraphSessionException {
+	public Class<? extends SLLink> getLinkType() {
 		synchronized (lock) {
 			try {
 				return (Class<? extends SLLink>) Class
 						.forName(getLinkClassNode().getName());
 			} catch (final Exception e) {
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to retrieve link type.", e);
 			}
 		}
@@ -503,7 +503,7 @@ public class SLLinkImpl implements SLLink {
 	/**
 	 * {@inheritDoc}
 	 */
-	public SLNode[] getSides() throws SLGraphSessionException {
+	public SLNode[] getSides() {
 		synchronized (lock) {
 			try {
 				SLNode[] sides = sidesCache;
@@ -513,7 +513,7 @@ public class SLLinkImpl implements SLLink {
 				}
 				return sides;
 			} catch (final SLException e) {
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to retrieve link sides.", e);
 			}
 		}
@@ -522,7 +522,7 @@ public class SLLinkImpl implements SLLink {
 	/**
 	 * {@inheritDoc}
 	 */
-	public SLNode getSource() throws SLGraphSessionException {
+	public SLNode getSource() {
 		synchronized (lock) {
 			if (isBidirectional()) {
 				// this method cannot be used on bidirecional links, because
@@ -539,7 +539,7 @@ public class SLLinkImpl implements SLLink {
 				}
 				return source;
 			} catch (final SLException e) {
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to retrieve link source.", e);
 			}
 		}
@@ -548,7 +548,7 @@ public class SLLinkImpl implements SLLink {
 	/**
 	 * {@inheritDoc}
 	 */
-	public SLNode getTarget() throws SLGraphSessionException {
+	public SLNode getTarget() {
 		synchronized (lock) {
 			if (isBidirectional()) {
 				// this method cannot be used on bidirecional links, because
@@ -565,7 +565,7 @@ public class SLLinkImpl implements SLLink {
 				}
 				return target;
 			} catch (final SLException e) {
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to retrieve link source.", e);
 			}
 		}
@@ -579,7 +579,7 @@ public class SLLinkImpl implements SLLink {
 		synchronized (lock) {
 			try {
 				return getID().hashCode();
-			} catch (final SLGraphSessionException e) {
+			} catch (final SLRuntimeException e) {
 				throw new SLRuntimeException(
 						"Error on attempt to execute SLLinkImpl.hasCode().", e);
 			}
@@ -607,13 +607,13 @@ public class SLLinkImpl implements SLLink {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean isBidirectional() throws SLGraphSessionException {
+	public boolean isBidirectional() {
 		synchronized (lock) {
 			try {
 				return getDirection() == SLConsts.DIRECTION_BOTH;
 			} catch (final SLPersistentTreeSessionException e) {
 				Exceptions.catchAndLog(e);
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to verify if link is bidirectional.",
 						e);
 			}

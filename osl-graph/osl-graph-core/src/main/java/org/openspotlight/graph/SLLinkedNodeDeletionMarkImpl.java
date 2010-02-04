@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * The Class SLLinkedNodeDeletionMarkImpl.
@@ -58,64 +57,67 @@ import org.openspotlight.common.exception.SLRuntimeException;
 public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
 
 	/** The link type. */
-	private Class<? extends SLLink> linkType;
-	
+	private final Class<? extends SLLink> linkType;
+
 	/** The node. */
-	private SLNode node;
-	
+	private final SLNode node;
+
 	/**
 	 * Instantiates a new sL linked node deletion mark impl.
 	 * 
-	 * @param linkType the link type
-	 * @param node the node
+	 * @param linkType
+	 *            the link type
+	 * @param node
+	 *            the node
 	 */
-	SLLinkedNodeDeletionMarkImpl(Class<? extends SLLink> linkType, SLNode node) {
+	SLLinkedNodeDeletionMarkImpl(final Class<? extends SLLink> linkType,
+			final SLNode node) {
 		this.linkType = linkType;
 		this.node = node;
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof SLLinkedNodeDeletionMark)) {
+			return false;
+		}
+		final SLLinkedNodeDeletionMark order = (SLLinkedNodeDeletionMark) obj;
+		return linkType.getName().concat(node.getID()).equals(
+				order.getLinkType().getName().concat(order.getNode().getID()));
+	}
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLLinkedNodeDeletionMark#getLinkType()
 	 */
 	public Class<? extends SLLink> getLinkType() {
 		return linkType;
 	}
 
-	//@Override
-	/* (non-Javadoc)
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openspotlight.graph.SLLinkedNodeDeletionMark#getNode()
 	 */
 	public SLNode getNode() {
 		return node;
 	}
-	
-	//@Override
-	/* (non-Javadoc)
+
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		try {
-			return linkType.getName().concat(node.getID()).hashCode();
-		}
-		catch (SLGraphSessionException e) {
-			throw new SLRuntimeException("Error on attempt to execute SLLinkedNodeDeletionMarkImpl.hasCode()", e);
-		}
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object obj) {
-		try {
-			if (!(obj instanceof SLLinkedNodeDeletionMark)) return false;
-			SLLinkedNodeDeletionMark order = (SLLinkedNodeDeletionMark) obj;
-			return linkType.getName().concat(node.getID())
-				.equals(order.getLinkType().getName().concat(order.getNode().getID()));
-		}
-		catch (SLGraphSessionException e) {
-			throw new SLRuntimeException("Error on attempt to execute SLLinkedNodeDeletionMarkImpl.equals()", e);
-		}
+		return linkType.getName().concat(node.getID()).hashCode();
 	}
 }

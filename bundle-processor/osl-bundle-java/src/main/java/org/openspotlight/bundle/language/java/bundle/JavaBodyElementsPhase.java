@@ -33,7 +33,8 @@ public class JavaBodyElementsPhase implements
 		final CommonTreeNodeStream stream = dto.treeNodes;
 		stream.reset();
 		final JavaBodyElements elements = new JavaBodyElements(stream);
-		elements.setExecutor(new JavaBodyElementsExecutor());
+		elements.setExecutor(new JavaBodyElementsExecutor(artifact
+				.getArtifactCompleteName()));
 		elements.compilationUnit();
 		return LastProcessStatus.PROCESSED;
 	}

@@ -539,7 +539,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getCaption() throws SLGraphSessionException {
+	public String getCaption() {
 		synchronized (lock) {
 			return getPropertyValueAsString(SLConsts.PROPERTY_CAPTION_NAME);
 		}
@@ -775,11 +775,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * 
 	 * @see org.openspotlight.graph.SLNode#getID()
 	 */
-	public String getID() throws SLGraphSessionException {
+	public String getID() {
 		try {
 			return pNode.getID();
 		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
+			throw new SLRuntimeException(
 					"Error on attempt to retrieve the node ID.", e);
 		}
 	}
@@ -854,7 +854,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * 
 	 * @see org.openspotlight.graph.SLNode#getName()
 	 */
-	public String getName() throws SLGraphSessionException {
+	public String getName() {
 		synchronized (lock) {
 			try {
 				final String decodedName = SLCommonSupport
@@ -862,7 +862,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 								SLConsts.PROPERTY_NAME_DECODED_NAME);
 				return decodedName == null ? pNode.getName() : decodedName;
 			} catch (final SLPersistentTreeSessionException e) {
-				throw new SLGraphSessionException(
+				throw new SLRuntimeException(
 						"Error on attempt to retrieve the node name.", e);
 			}
 		}
@@ -1101,13 +1101,16 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 * @see
 	 * org.openspotlight.graph.SLNode#getPropertyValueAsString(java.lang.String)
 	 */
-	public String getPropertyValueAsString(final String name)
-			throws SLNodePropertyNotFoundException, SLGraphSessionException {
+	public String getPropertyValueAsString(final String name) {
 		synchronized (lock) {
-			final SLNodeProperty<Serializable> prop = this.getProperty(
-					Serializable.class, name);
-			final Serializable val = prop != null ? prop.getValue() : null;
-			return val != null ? val.toString() : null;
+			try {
+				final SLNodeProperty<Serializable> prop = this.getProperty(
+						Serializable.class, name);
+				final Serializable val = prop != null ? prop.getValue() : null;
+				return val != null ? val.toString() : null;
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			}
 		}
 	}
 
@@ -1154,12 +1157,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 	 */
 	@Override
 	public int hashCode() {
-		try {
-			return getID().hashCode();
-		} catch (final SLGraphSessionException e) {
-			throw new SLRuntimeException(
-					"Error on attempt to calculate node hash code.", e);
-		}
+		return getID().hashCode();
+
 	}
 
 	/**

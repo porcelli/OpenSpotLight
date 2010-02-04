@@ -91,7 +91,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public String getID() throws SLGraphSessionException;
+	public String getID();
 
 	/**
 	 * Gets the link type.
@@ -100,7 +100,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public Class<? extends SLLink> getLinkType() throws SLGraphSessionException;
+	public Class<? extends SLLink> getLinkType();
 
 	/**
 	 * Gets the meta link.
@@ -205,7 +205,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public SLNode[] getSides() throws SLGraphSessionException;
+	public SLNode[] getSides();
 
 	/**
 	 * Gets the source.
@@ -214,7 +214,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public SLNode getSource() throws SLGraphSessionException;
+	public SLNode getSource();
 
 	/**
 	 * Gets the target.
@@ -223,7 +223,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public SLNode getTarget() throws SLGraphSessionException;
+	public SLNode getTarget();
 
 	/**
 	 * Checks if is bidirectional.
@@ -232,7 +232,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
 	 */
-	public boolean isBidirectional() throws SLGraphSessionException;
+	public boolean isBidirectional();
 
 	/**
 	 * Removes the.

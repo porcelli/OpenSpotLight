@@ -7,16 +7,32 @@ import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JavaBodyElementsExecutor {
-	private final List<CommonTree> importedList = new ArrayList<CommonTree>();
-	private final Stack<CommonTree> elementStack = new Stack<CommonTree>();
-	private final IdentityHashMap<CommonTree, CommonTree> extendedClasses = new IdentityHashMap<CommonTree, CommonTree>();
-	private final IdentityHashMap<CommonTree, List<CommonTree>> extendedInterfaces = new IdentityHashMap<CommonTree, List<CommonTree>>();
-	private final IdentityHashMap<CommonTree, List<CommonTree>> implementedInterfaces = new IdentityHashMap<CommonTree, List<CommonTree>>();
+
+	private final String artifactName;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private final List<SLCommonTree> importedList = new ArrayList<SLCommonTree>();
+
+	private final Stack<SLCommonTree> elementStack = new Stack<SLCommonTree>();
+	private final IdentityHashMap<SLCommonTree, SLCommonTree> extendedClasses = new IdentityHashMap<SLCommonTree, SLCommonTree>();
+	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> extendedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
+	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> implementedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
+	private int currentBlock = 0;
+
+	public JavaBodyElementsExecutor(final String artifactName) {
+		this.artifactName = artifactName;
+	}
 
 	public void addExtends(final CommonTree peek, final CommonTree extended) {
 		Assertions.checkCondition("peekInstanceOfSLTree",
@@ -30,7 +46,11 @@ public class JavaBodyElementsExecutor {
 		final SLCommonTree typedExtended = (SLCommonTree) extended;
 		final SLNode extendedNode = typedExtended.getNode();
 		Assertions.checkNotNull("extendedNode", extendedNode);
-		extendedClasses.put(peek, extended);
+		if (logger.isDebugEnabled()) {
+			logger.debug(artifactName + ": " + "adding extend information: "
+					+ peekNode.getName());
+		}
+		extendedClasses.put(typedPeek, typedExtended);
 	}
 
 	public void addExtends(final CommonTree peek,
@@ -40,14 +60,18 @@ public class JavaBodyElementsExecutor {
 		final SLCommonTree typedPeek = (SLCommonTree) peek;
 		final SLNode peekNode = typedPeek.getNode();
 		Assertions.checkNotNull("peekNode", peekNode);
+		final List<SLCommonTree> typedExtends = new ArrayList<SLCommonTree>(
+				extendeds.size());
 		for (final CommonTree extended : extendeds) {
 			Assertions.checkCondition("extendedInstanceOfSLTree",
 					extended instanceof SLCommonTree);
 			final SLCommonTree typedExtended = (SLCommonTree) extended;
 			final SLNode extendedNode = typedExtended.getNode();
 			Assertions.checkNotNull("extendedNode", extendedNode);
+			typedExtends.add(typedExtended);
 		}
-		extendedInterfaces.put(peek, extendeds);
+
+		extendedInterfaces.put(typedPeek, typedExtends);
 
 	}
 
@@ -64,14 +88,17 @@ public class JavaBodyElementsExecutor {
 		final SLCommonTree typedPeek = (SLCommonTree) peek;
 		final SLNode peekNode = typedPeek.getNode();
 		Assertions.checkNotNull("peekNode", peekNode);
+		final List<SLCommonTree> typedExtends = new ArrayList<SLCommonTree>(
+				extendeds.size());
 		for (final CommonTree extended : extendeds) {
 			Assertions.checkCondition("extendedInstanceOfSLTree",
 					extended instanceof SLCommonTree);
 			final SLCommonTree typedExtended = (SLCommonTree) extended;
 			final SLNode extendedNode = typedExtended.getNode();
 			Assertions.checkNotNull("extendedNode", extendedNode);
+			typedExtends.add(typedExtended);
 		}
-		implementedInterfaces.put(peek, extendeds);
+		implementedInterfaces.put(typedPeek, typedExtends);
 	}
 
 	public void addLocalVariableDeclaration(final CommonTree peek,
@@ -81,7 +108,9 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public void addToImportedList(final CommonTree imported) {
-		importedList.add(imported);
+		Assertions.checkCondition("importedInstanceOfSLTree",
+				imported instanceof SLCommonTree);
+		importedList.add((SLCommonTree) imported);
 	}
 
 	public ExpressionDto createArrayExpression(final CommonTree commonTree,
@@ -108,9 +137,21 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public CommonTree createBlockAndReturnTree(final CommonTree peek,
-			final boolean b) {
-		// TODO Auto-generated method stub
-		return null;
+			final CommonTree blockTreeElement, final boolean isStatic) {
+		try {
+			final SLCommonTree typed = (SLCommonTree) peek;
+			final SLNode parent = typed.getNode();
+			final String name = (isStatic ? "staticBlockDeclaration"
+					: "blockDeclaration")
+					+ ++currentBlock;
+			final JavaBlockSimple newBlock = parent.addNode(
+					JavaBlockSimple.class, name);
+			final SLCommonTree typedBlockTreeElement = (SLCommonTree) blockTreeElement;
+			typedBlockTreeElement.setNode(newBlock);
+			return typedBlockTreeElement;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createBooleanExpression(final ExpressionDto... e1) {
@@ -248,6 +289,13 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public CommonTree popFromElementStack() {
+		final SLCommonTree element = elementStack.peek();
+		if (logger.isDebugEnabled()) {
+			logger.debug(artifactName + ": " + "poping from stack "
+					+ element.getText() + " " + element.getNode().getName()
+					+ " " + element.getNode().getClass().getInterfaces()[0]);
+		}
+		currentBlock = 0;
 		return elementStack.pop();
 	}
 
@@ -257,8 +305,12 @@ public class JavaBodyElementsExecutor {
 		final SLCommonTree typed = (SLCommonTree) imported;
 		final SLNode node = typed.getNode();
 		Assertions.checkNotNull("node", node);
-
-		elementStack.push(imported);
+		if (logger.isDebugEnabled()) {
+			logger.debug(artifactName + ": " + "pushing into stack "
+					+ imported.getText() + " " + node.getName()
+					+ node.getClass().getInterfaces()[0].getSimpleName());
+		}
+		elementStack.push(typed);
 	}
 
 }
