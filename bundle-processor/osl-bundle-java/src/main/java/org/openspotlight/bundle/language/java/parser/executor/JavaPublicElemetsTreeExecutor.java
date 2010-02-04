@@ -298,12 +298,40 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<TypeParameterDto> typeParams) {
 		try {
 			if (logger.isDebugEnabled()) {
-				logger.debug(completeArtifactName + ": " + "creating type "
-						+ type.getSimpleName() + " with parent= "
-						+ lalala.getName() + ", name=" + string
-						+ ", modifiers=" + modifiers7 + ", annotations="
-						+ annotations8 + ", extends=" + normalClassExtends9
-						+ ", implements=" + normalClassImplements10);
+				String implementsStr = "";
+				if (normalClassImplements10 != null) {
+					final StringBuilder sb = new StringBuilder();
+					for (final JavaType t : normalClassImplements10) {
+						sb.append(t.getName());
+						sb.append(",");
+					}
+					implementsStr = sb.toString();
+				}
+				String annotationsStr = "";
+				if (annotations8 != null) {
+					final StringBuilder sb = new StringBuilder();
+					for (final JavaType t : normalClassImplements10) {
+						sb.append(t.getName());
+						sb.append(",");
+					}
+					annotationsStr = sb.toString();
+				}
+				logger.debug(completeArtifactName
+						+ ": "
+						+ "creating type "
+						+ type.getSimpleName()
+						+ " with parent= "
+						+ lalala.getName()
+						+ ", name="
+						+ string
+						+ ", modifiers="
+						+ modifiers7
+						+ ", annotations="
+						+ annotationsStr
+						+ ", extends="
+						+ (normalClassExtends9 != null ? normalClassExtends9
+								.getName() : "") + ", implements="
+						+ implementsStr);
 			}
 			final SLNode peek = findEquivalend(lalala, WhatContext.CONCRETE);
 			final T newClass = createNodeOnBothContexts(JavaType.class, type,
