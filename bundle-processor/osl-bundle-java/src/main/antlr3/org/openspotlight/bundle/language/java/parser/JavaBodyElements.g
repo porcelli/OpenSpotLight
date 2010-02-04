@@ -207,14 +207,14 @@ typeBodyDeclaration
     |   ^(CONSTRUCTOR_DECLARATION Identifier 
         { executor.pushToElementStack($Identifier); 
           addedToStack=true; }
-            modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
+            modifiers annotations? typeParameters? formalParameters[false] typeBodyDeclarationThrows? block)
     |   ^(FIELD_DECLARATION modifiers annotations? type (variableDeclarator 
         { executor.addField(executor.peek(),$variableDeclarator.treeElement); }
             )+)
     |   ^(METHOD_DECLARATION Identifier 
         { executor.pushToElementStack($Identifier); 
           addedToStack=true; }
-            modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
+            modifiers annotations? typeParameters? type formalParameters[false] typeBodyDeclarationThrows? defaultValue? block?)
     |   ^(INNER_DECLARATION typeDeclaration)
     ;
 
@@ -284,13 +284,21 @@ typeArguments returns [List<CommonTree> treeElements]
         { $treeElements=$typeList.treeElements; } )
     ;
 
-formalParameters
-    :   ^(FORMAL_PARAMETERS singleVariableDeclaration*)
+formalParameters[boolean fromCatch] returns [List<SingleVarDto> result]
+@init{ if(fromCatch){ $result = new ArrayList<SingleVarDto>(); } }
+    :   ^(FORMAL_PARAMETERS (singleVariableDeclaration[fromCatch]
+        { if(fromCatch) {$result.add($singleVariableDeclaration.result);} }
+        )*)
     ;
 
-singleVariableDeclaration
+singleVariableDeclaration [boolean fromCatch] returns [SingleVarDto result]
     :   ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION?
-        { executor.addParameterDeclaration(executor.peek(),$type.start,$Identifier); } )
+        { if(fromCatch){
+             $result = new SingleVarDto($type.start,$Identifier);             
+          }else{
+             executor.addParameterDeclaration(executor.peek(),$type.start,$Identifier); 
+          }
+        } )
     ;
 
 qualifiedName
@@ -399,7 +407,9 @@ catches
     ;
 
 catchClause
-    :   ^(CATCH formalParameters block)
+    :   ^(CATCH formalParameters[true] 
+        { executor.createParametersFromCatch(executor.peek(),$formalParameters.result); }
+        block)
     ;
 
 switchBlockStatementGroup

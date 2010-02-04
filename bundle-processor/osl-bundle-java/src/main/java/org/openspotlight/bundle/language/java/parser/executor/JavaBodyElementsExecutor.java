@@ -10,9 +10,11 @@ import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
+import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -290,6 +292,24 @@ public class JavaBodyElementsExecutor {
 	public ExpressionDto createNumberExpression(final ExpressionDto... e39) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void createParametersFromCatch(final CommonTree peek,
+			final List<SingleVarDto> formalParameters) {
+		try {
+			final SLCommonTree parentTree = (SLCommonTree) peek;
+			final SLNode parent = parentTree.getNode();
+			for (final SingleVarDto dto : formalParameters) {
+				final JavaDataParameter parameter = parent.addNode(
+						JavaDataParameter.class, dto.identifierTreeElement
+								.getText());
+				dto.identifierTreeElement.setNode(parameter);
+				session.addLink(DataType.class, parameter, dto.typeTreeElement
+						.getNode(), false);
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createPlusExpression(final ExpressionDto e28,
