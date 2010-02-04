@@ -29,7 +29,7 @@ public class JavaBodyElementsExecutor {
 	private final IdentityHashMap<SLCommonTree, SLCommonTree> extendedClasses = new IdentityHashMap<SLCommonTree, SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> extendedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> implementedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
-	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> fieldsFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
+	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> variablesFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private int currentBlock = 0;
 
 	public JavaBodyElementsExecutor(final String artifactName) {
@@ -87,10 +87,10 @@ public class JavaBodyElementsExecutor {
 		final SLNode field = typedVariableDeclarator.getNode();
 		Assertions.checkNotNull("field", field);
 		final SLCommonTree typedPeek = (SLCommonTree) peek;
-		List<SLCommonTree> value = fieldsFromContext.get(peek);
+		List<SLCommonTree> value = variablesFromContext.get(peek);
 		if (value == null) {
 			value = new LinkedList<SLCommonTree>();
-			fieldsFromContext.put(typedPeek, value);
+			variablesFromContext.put(typedPeek, value);
 		}
 		value.add(typedVariableDeclarator);
 	}
@@ -116,8 +116,22 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public void addLocalVariableDeclaration(final CommonTree peek,
-			final CommonTree commonTree, final CommonTree variableDeclarator27) {
-		// TODO Auto-generated method stub
+			final CommonTree commonTree, final CommonTree variableDeclarator29) {
+		// session.
+
+	}
+
+	public void addParameterDeclaration(final CommonTree peek,
+			final CommonTree typeTreeElement,
+			final CommonTree parameterTreeElement) {
+		final SLCommonTree typedPeek = (SLCommonTree) peek;
+		final SLCommonTree typedParameterTreeElement = (SLCommonTree) parameterTreeElement;
+		List<SLCommonTree> value = variablesFromContext.get(peek);
+		if (value == null) {
+			value = new LinkedList<SLCommonTree>();
+			variablesFromContext.put(typedPeek, value);
+		}
+		value.add(typedParameterTreeElement);
 
 	}
 
@@ -319,7 +333,12 @@ public class JavaBodyElementsExecutor {
 					+ " " + element.getNode().getClass().getInterfaces()[0]);
 		}
 		currentBlock = 0;
-		return elementStack.pop();
+		final SLCommonTree poped = elementStack.pop();
+		extendedClasses.remove(poped);
+		extendedInterfaces.remove(poped);
+		implementedInterfaces.remove(poped);
+		variablesFromContext.remove(poped);
+		return poped;
 	}
 
 	public void pushToElementStack(final CommonTree imported) {

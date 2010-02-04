@@ -222,22 +222,23 @@ public class JavaBodyElementsPhaseTest {
 		Assert.assertThat(anotherEnumNode, Is.is(JavaTypeEnum.class));
 		final SLNode exampleSubPackageNode = groupNode
 				.getNode("example.pack.subpack");
-		final SLNode classWithStuffNode = exampleSubPackageNode
+		final SLNode classOnConcrete = exampleSubPackageNode
 				.getNode("ClassWithLotsOfStuff");
-		Assert.assertThat(classWithStuffNode, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(classWithStuffNode, Is.is(JavaTypeClass.class));
+		Assert.assertThat(classOnConcrete, Is.is(IsNull.notNullValue()));
+		Assert.assertThat(classOnConcrete, Is.is(JavaTypeClass.class));
 
 		final AbstractTypeBind link = context.getGraphSession().getLinks(
-				AbstractTypeBind.class, classWithStuffNode, null).iterator()
+				AbstractTypeBind.class, classOnConcrete, null).iterator()
 				.next();
-		final SLNode classOnConcreteContext = link.getSource();
-		System.err.println(" concrete " + classOnConcreteContext.getID());
-		System.err.println(" abstract " + classWithStuffNode.getID());
-		final SLNode doSomethingMethodNode = classOnConcreteContext
+		final SLNode classOnAbstract = link.getTarget();
+		System.err.println(" abstract " + classOnAbstract.getID());
+		System.err.println(" concrete " + classOnConcrete.getID());
+		System.err.println(" abstract " + classOnAbstract.getContext().getID());
+		System.err.println(" concrete " + classOnConcrete.getContext().getID());
+		final SLNode doSomethingMethodNode = classOnConcrete
 				.getNode("doSomething()");
 
-		final NeedsSyncronizationSet<SLNode> nodes = classOnConcreteContext
-				.getNodes();
+		final NeedsSyncronizationSet<SLNode> nodes = classOnAbstract.getNodes();
 		for (final SLNode n : nodes) {
 			System.err.println(n.getName());
 		}

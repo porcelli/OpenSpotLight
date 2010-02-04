@@ -1052,6 +1052,8 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 				methodParametersTypeLink.setArray(arrayDimensions != 0);
 				methodParametersTypeLink.setArrayDimension(arrayDimensions);
+				param.getTreeElement().setPrincipalLink(
+						methodParametersTypeLink);
 			}
 			javaMethod.setCompleteName(complMethodName);
 			javaMethod.setSimpleName(string);

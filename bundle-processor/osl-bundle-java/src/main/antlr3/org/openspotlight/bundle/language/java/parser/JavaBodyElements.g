@@ -289,7 +289,8 @@ formalParameters
     ;
 
 singleVariableDeclaration
-    :   ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION?)
+    :   ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION?
+        { executor.addParameterDeclaration(executor.peek(),$type.start,$Identifier); } )
     ;
 
 qualifiedName

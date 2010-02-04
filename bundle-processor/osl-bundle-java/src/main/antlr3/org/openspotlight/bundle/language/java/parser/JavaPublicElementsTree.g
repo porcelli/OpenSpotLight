@@ -231,7 +231,7 @@ typeBodyDeclarationThrows returns [List<JavaType> resultList]
     ;
 variableDeclarator returns [VariableDeclarationDto newVar, CommonTree treeItem]
     :    ^(VARIABLE_DECLARATION_FRAGMENT Identifier ARRAY_DIMENSION? variableDeclaratorAssign? 
-         { $newVar = new VariableDeclarationDto($Identifier.text,null,null,null,$ARRAY_DIMENSION.text);
+         { $newVar = new VariableDeclarationDto($Identifier.text,null,null,null,$ARRAY_DIMENSION.text, $Identifier);
 	         $treeItem = $Identifier; })
     ;
 variableDeclaratorAssign
@@ -296,7 +296,7 @@ formalParameters returns [List<VariableDeclarationDto> resultList]
 singleVariableDeclaration returns [VariableDeclarationDto result]
     :    ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION? 
 	       { $result=new VariableDeclarationDto($Identifier.text, $modifiers.modifiersResultList, 
-	                      $type.typeReturn, $THREE_DOTS.text, $ARRAY_DIMENSION.text);})
+	                      $type.typeReturn, $THREE_DOTS.text, $ARRAY_DIMENSION.text, $Identifier);})
     ;
 qualifiedName returns [String name]
     @init{ StringBuilder sb = new StringBuilder(); }
