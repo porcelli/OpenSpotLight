@@ -8,11 +8,15 @@ import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
+import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +24,8 @@ import org.slf4j.LoggerFactory;
 public class JavaBodyElementsExecutor {
 
 	private final String artifactName;
+
+	private final SLGraphSession session;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -32,8 +38,10 @@ public class JavaBodyElementsExecutor {
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> variablesFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private int currentBlock = 0;
 
-	public JavaBodyElementsExecutor(final String artifactName) {
+	public JavaBodyElementsExecutor(final SLGraphSession session,
+			final String artifactName) {
 		this.artifactName = artifactName;
+		this.session = session;
 	}
 
 	public void addExtends(final CommonTree peek, final CommonTree extended) {
@@ -116,9 +124,26 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public void addLocalVariableDeclaration(final CommonTree peek,
-			final CommonTree commonTree, final CommonTree variableDeclarator29) {
-		// session.
-
+			final CommonTree type, final CommonTree variableDeclarator29) {
+		try {
+			final SLCommonTree typedPeek = (SLCommonTree) peek;
+			final SLCommonTree typedType = (SLCommonTree) type;
+			final SLCommonTree typedVariableDeclarator = (SLCommonTree) variableDeclarator29;
+			final SLNode parent = typedPeek.getNode();
+			final JavaType typeAsNode = (JavaType) typedType.getNode();
+			final JavaDataVariable variable = parent.addNode(
+					JavaDataVariable.class, variableDeclarator29.getText());
+			session.addLink(DataType.class, variable, typeAsNode, false);
+			typedVariableDeclarator.setNode(variable);
+			List<SLCommonTree> value = variablesFromContext.get(peek);
+			if (value == null) {
+				value = new LinkedList<SLCommonTree>();
+				variablesFromContext.put(typedPeek, value);
+			}
+			value.add(typedVariableDeclarator);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public void addParameterDeclaration(final CommonTree peek,

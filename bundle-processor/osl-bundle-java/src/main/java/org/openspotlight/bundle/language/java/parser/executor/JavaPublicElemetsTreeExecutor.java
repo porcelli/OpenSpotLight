@@ -13,6 +13,7 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
 import org.openspotlight.bundle.language.java.metamodel.link.ArrayOfType;
+import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.link.InnerClass;
@@ -28,6 +29,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
@@ -1052,8 +1054,12 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 				methodParametersTypeLink.setArray(arrayDimensions != 0);
 				methodParametersTypeLink.setArrayDimension(arrayDimensions);
-				param.getTreeElement().setPrincipalLink(
-						methodParametersTypeLink);
+				final JavaDataParameter parameter = javaMethod.addNode(
+						JavaDataParameter.class, param.getName());
+				param.getTreeElement().setNode(parameter);
+				session.addLink(DataType.class, parameter, param.getType(),
+						false);
+
 			}
 			javaMethod.setCompleteName(complMethodName);
 			javaMethod.setSimpleName(string);
