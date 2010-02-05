@@ -257,6 +257,10 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createExpressionFromQualified(final String string,
 			final ExpressionDto e54) {
+		// 1st - try to find classes
+		// 2nd - try to find fields
+		// use the stuff present on this class!
+
 		// TODO Auto-generated method stub
 		return null;
 	}
