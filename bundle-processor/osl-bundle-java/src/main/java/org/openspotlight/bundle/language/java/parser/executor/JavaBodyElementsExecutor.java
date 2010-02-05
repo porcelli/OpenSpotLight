@@ -41,8 +41,18 @@ public class JavaBodyElementsExecutor {
 
 	private final JavaExecutorSupport support;
 
-	public JavaBodyElementsExecutor(final JavaExecutorSupport support) {
+	private final List<ByPropertyFinder> finders;
+
+	public JavaBodyElementsExecutor(final JavaExecutorSupport support,
+			final List<String> contextNamesInOrder) throws Exception {
 		this.support = support;
+		finders = new ArrayList<ByPropertyFinder>(contextNamesInOrder.size());
+		for (final String s : contextNamesInOrder) {
+			final SLNode contextRootNode = support.session.getContext(s)
+					.getRootNode();
+			finders.add(new ByPropertyFinder(support.completeArtifactName,
+					support.session, contextRootNode));
+		}
 	}
 
 	public void addExtends(final CommonTree peek, final CommonTree extended) {
@@ -257,21 +267,70 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createExpressionFromQualified(final String string,
 			final ExpressionDto e54) {
-		System.err.println(string);
-		if (e54 == null) {
+		try {
+			System.err.println(string);
+			if (e54 == null) {
+				String currentClassTry = string;
+				JavaType typeToThisExpression = null;
+				while (currentClassTry != null) {
+					typeToThisExpression = support
+							.internalFindSimpleType(currentClassTry);
+					if (typeToThisExpression == null) {
+						currentClassTry = string.contains(".") ? currentClassTry
+								.substring(currentClassTry.lastIndexOf('.'))
+								: null;
+					}
+				}
 
-			final JavaType type = support.findOnContext(string,
-					support.abstractContextFinder);
-			if (type == null) {
+				if (typeToThisExpression != null) {
+					final String notFoundYet = string.substring(currentClassTry
+							.length() + 1);
+					final String[] splited;
+					if (notFoundYet.contains(".")) {
+						splited = string.split("[.]");
+					} else {
+						splited = new String[] { notFoundYet };
+					}
 
+				}
+
+				final String[] splited;
+				if (string.contains(".")) {
+					splited = string.split("[.]");
+				} else {
+					splited = new String[] { string };
+				}
+				final SLNode currentClassNode = currentClass.peek().getNode();
+				SLNode currentNode;
+				for (final String s : splited) {
+					if (s.equals("this")) {
+						currentNode = currentClassNode;
+					} else if (s.equals("super")) {
+						currentNode = extendedClasses.get(currentClass.peek())
+								.getNode();
+					} else {
+
+					}
+
+					final SLNode child = currentClassNode.getNode(s);
+				}
+				final JavaType type = support.findOnContext(string,
+						support.abstractContextFinder);
+				if (type == null) {
+
+				}
 			}
+
+			// 1st - try to find classes
+			// 2nd - try to find fields
+			// use the stuff present on this class!
+
+			// TODO Auto-generated method stub
+
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 
-		// 1st - try to find classes
-		// 2nd - try to find fields
-		// use the stuff present on this class!
-
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -39,7 +39,6 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedExtended;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedSuper;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
@@ -629,17 +628,11 @@ public class JavaPublicElementsTreeExecutor {
 	}
 
 	public JavaType findPrimitiveType(final String string) {
-		try {
-			final JavaTypePrimitive primitive = support.abstractContext
-					.addNode(JavaTypePrimitive.class, string);
-			return primitive;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+		return support.findPrimitiveType(string);
 	}
 
 	public JavaType findSimpleType(final String string) {
-		final JavaType foundType = internalFindSimpleType(string);
+		final JavaType foundType = support.internalFindSimpleType(string);
 		Assertions.checkNotNull("foundType:" + string, foundType);
 		return foundType;
 	}
@@ -697,8 +690,8 @@ public class JavaPublicElementsTreeExecutor {
 									string);
 					if (classNode == null) {
 						classNode = support.abstractContextFinder
-								.findByProperty(JavaType.class, "qualifiedName",
-										string);
+								.findByProperty(JavaType.class,
+										"qualifiedName", string);
 					}
 
 					support.session.addLink(References.class, peek, classNode,
@@ -746,8 +739,8 @@ public class JavaPublicElementsTreeExecutor {
 									string);
 					if (classNode == null) {
 						classNode = support.abstractContextFinder
-								.findByProperty(JavaType.class, "qualifiedName",
-										string);
+								.findByProperty(JavaType.class,
+										"qualifiedName", string);
 					}
 
 					if (logger.isDebugEnabled()
@@ -915,18 +908,6 @@ public class JavaPublicElementsTreeExecutor {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 
-	}
-
-	private JavaType internalFindSimpleType(final String string) {
-		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
-			return findPrimitiveType(string);
-		}
-		JavaType type = support.findOnContext(string,
-				support.currentContextFinder);
-		if (type == null) {
-			type = support.findOnContext(string, support.abstractContextFinder);
-		}
-		return type;
 	}
 
 	public JavaPackage packageDeclaration(final String string,

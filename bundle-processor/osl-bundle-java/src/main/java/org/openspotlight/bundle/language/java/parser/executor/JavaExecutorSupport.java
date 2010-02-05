@@ -10,6 +10,7 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
@@ -192,7 +193,8 @@ public class JavaExecutorSupport {
 						"qualifiedName", possibleName);
 				if (javaType != null) {
 					importedNodeCache.put(javaType.getSimpleName(), javaType);
-					importedNodeCache.put(javaType.getQualifiedName(), javaType);
+					importedNodeCache
+							.put(javaType.getQualifiedName(), javaType);
 					return javaType;
 				}
 			}
@@ -204,6 +206,27 @@ public class JavaExecutorSupport {
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
+	}
+
+	JavaType findPrimitiveType(final String string) {
+		try {
+			final JavaTypePrimitive primitive = abstractContext.addNode(
+					JavaTypePrimitive.class, string);
+			return primitive;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
+
+	JavaType internalFindSimpleType(final String string) {
+		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
+			return findPrimitiveType(string);
+		}
+		JavaType type = findOnContext(string, currentContextFinder);
+		if (type == null) {
+			type = findOnContext(string, abstractContextFinder);
+		}
+		return type;
 	}
 
 	void putOnBothCaches(final SLNode concrete, final SLNode abstractN) {

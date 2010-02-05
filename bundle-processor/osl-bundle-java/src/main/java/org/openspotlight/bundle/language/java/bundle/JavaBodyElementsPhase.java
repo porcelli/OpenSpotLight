@@ -1,6 +1,9 @@
 package org.openspotlight.bundle.language.java.bundle;
 
+import java.util.List;
+
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.parser.JavaBodyElements;
 import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
@@ -33,9 +36,12 @@ public class JavaBodyElementsPhase implements
 				.getTransientMap().get("DTO-PublicElementsTree");
 		final JavaExecutorSupport support = dto.support;
 		final CommonTreeNodeStream stream = dto.treeNodes;
+		@SuppressWarnings("unchecked")
+		final List<String> contexts = (List<String>) currentContext
+				.getTransientProperties().get(JavaConstants.USING_CONTEXTS);
 		stream.reset();
 		final JavaBodyElements elements = new JavaBodyElements(stream);
-		elements.setExecutor(new JavaBodyElementsExecutor(support));
+		elements.setExecutor(new JavaBodyElementsExecutor(support, contexts));
 		elements.compilationUnit();
 		return LastProcessStatus.PROCESSED;
 	}
